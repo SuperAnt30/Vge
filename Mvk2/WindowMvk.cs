@@ -9,7 +9,6 @@ using WinGL.Actions;
 using System.Reflection;
 using Vge.Renderer.Font;
 using Vge.Renderer;
-using System.Threading;
 using Vge;
 
 namespace Mvk2

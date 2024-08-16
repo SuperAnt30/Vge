@@ -5,7 +5,7 @@ namespace WinGL.Audio
 {
     public static partial class Al
     {
-        private const string OpenAL32 = "OpenAL32.dll";
+        private const string OpenAL32 = "OpenAL64.dll";
 
         /* typedef int ALenum; */
         public const int AL_NONE = 0x0000;
