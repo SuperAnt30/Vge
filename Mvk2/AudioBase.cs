@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Numerics;
 using WinGL.Audio;
-using WinGL.Util;
 
 namespace Mvk2
 {
@@ -62,7 +60,7 @@ namespace Mvk2
         /// <summary>
         /// Проиграть звук
         /// </summary>
-        public void PlaySound(int key, Vector3 pos, float volume, float pitch)
+        public void PlaySound(int key, float posX, float posY, float posZ, float volume, float pitch)
         {
            // if (Setting.SoundVolume > 0)
             {
@@ -73,7 +71,7 @@ namespace Mvk2
                     if (source != null)
                     {
                         source.Sample(sample);
-                        source.Play(pos, volume /* Setting.ToFloatSoundVolume()*/, pitch);
+                        source.Play(posX, posY, posZ, volume /* Setting.ToFloatSoundVolume()*/, pitch);
                     }
                 }
             }

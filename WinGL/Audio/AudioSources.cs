@@ -8,15 +8,19 @@ namespace WinGL.Audio
     /// </summary>
     public class AudioSources
     {
-        private AudioSource[] sources;
         /// <summary>
         /// Общее количество источников
         /// </summary>
-        public int CountAll { get; protected set; } = 0;
+        public int CountAll { get; private set; } = 0;
         /// <summary>
         /// Количество источников воспроизводившие звуки
         /// </summary>
-        public int CountProcessing { get; protected set; } = 0;
+        public int CountProcessing { get; private set; } = 0;
+
+        /// <summary>
+        /// Список всех источников звуков
+        /// </summary>
+        private AudioSource[] sources;
 
         /// <summary>
         /// Инициализировать и определеить количество источников
@@ -26,7 +30,7 @@ namespace WinGL.Audio
             IntPtr device = Al.alcOpenDevice("");
             if (device == IntPtr.Zero)
             {
-                throw new Exception("Библиотека звука OpenAL не смогла инициализироваться, скорее всего файл OpenAL32.dll не подходит.");
+                throw new Exception("Библиотека звука OpenAL не смогла инициализироваться, скорее всего файл OpenAL64.dll не подходит.");
             }
             List<AudioSource> list = new List<AudioSource>();
             bool error = false;
@@ -35,13 +39,13 @@ namespace WinGL.Audio
             {
                 count--;
                 AudioSource audio = new AudioSource();
-                if (audio.IsError)
+                if (audio.Initialized())
                 {
-                    error = audio.IsError;
+                    list.Add(audio);
                 }
                 else
                 {
-                    list.Add(audio);
+                    error = true;
                 }
             }
             if (count <= 0)
@@ -55,7 +59,6 @@ namespace WinGL.Audio
         /// <summary>
         /// Получить свободный источник
         /// </summary>
-        /// <returns></returns>
         public AudioSource GetAudio()
         {
             foreach (AudioSource audio in sources)

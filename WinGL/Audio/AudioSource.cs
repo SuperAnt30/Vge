@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using WinGL.Util;
-
-namespace WinGL.Audio
+﻿namespace WinGL.Audio
 {
     /// <summary>
     /// Объект источника звука
@@ -9,17 +6,9 @@ namespace WinGL.Audio
     public class AudioSource
     {
         /// <summary>
-        /// Тон звука
+        /// Проигрывает ли сейчас звук
         /// </summary>
-        public float Pitch { get; private set; } = 1.0f;
-        /// <summary>
-        /// Усиление звука
-        /// </summary>
-        public float Volume { get; private set; } = 1.0f;
-        /// <summary>
-        /// Позиция где будет звук
-        /// </summary>
-        public Vector3 Position { get; private set; } = Vector3.Zero;
+        public bool Processing { get; private set; } = false;
 
         /// <summary>
         /// Id источника
@@ -30,19 +19,7 @@ namespace WinGL.Audio
         /// </summary>
         private uint bufferId = 0;
 
-        /// <summary>
-        /// Есть ли ошибка
-        /// </summary>
-        public bool IsError { get; private set; } = false;
-        /// <summary>
-        /// Проигрывает ли сейчас звук
-        /// </summary>
-        public bool Processing { get; private set; } = false;
-
-        /// <summary>
-        /// Создать объект звукового источника
-        /// </summary>
-        public AudioSource()
+        public bool Initialized()
         {
             Al.alGenSources(1, out uint sid);
             int errorCode = Al.alGetError();
@@ -56,36 +33,36 @@ namespace WinGL.Audio
                     // Всё норм
                     bufferId = bid;
                     sourceId = sid;
-                    return;
+                    return true;
                 }
             }
-            IsError = true;
+            return false;
         }
 
         /// <summary>
         /// Проиграть звук
         /// </summary>
-        public void Play()
+        public void Play(float posX, float posY, float posZ, float volume, float pitch)
         {
-            if (IsError) return;
             Processing = true;
-            Al.alSourcef(sourceId, Al.AL_PITCH, Pitch);
-            Al.alSourcef(sourceId, Al.AL_GAIN, Volume);
-            Al.alSource3f(sourceId, Al.AL_POSITION, Position.X, Position.Y, Position.Z);
+            Al.alSourcef(sourceId, Al.AL_PITCH, pitch);
+            Al.alSourcef(sourceId, Al.AL_GAIN, volume);
+            Al.alSource3f(sourceId, Al.AL_POSITION, posX, posY, posZ);
             Al.alSource3f(sourceId, Al.AL_ORIENTATION, 0, 0, -1);
             Al.alSourcePlay(sourceId);
         }
-
         /// <summary>
-        /// Проиграть звук
+        /// Проиграть звук, указав расположение и громкость
         /// </summary>
-        public void Play(Vector3 pos, float volume, float pitch)
-        {
-            Position = pos;
-            Volume = volume;
-            Pitch = pitch;
-            Play();
-        }
+        public void Play(float posX, float posY, float posZ, float volume) => Play(posX, posY, posZ, volume, 1f);
+        /// <summary>
+        /// Проиграть звук, указав громкость и тональность
+        /// </summary>
+        public void Play(float volume, float pitch) => Play(0, 0, 0, volume, pitch);
+        /// <summary>
+        /// Проиграть звук, указав только громкость
+        /// </summary>
+        public void Play(float volume) => Play(0, 0, 0, volume, 1f);
 
         /// <summary>
         /// Проверить процесс звучания

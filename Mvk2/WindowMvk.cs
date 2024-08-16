@@ -314,7 +314,7 @@ namespace Mvk2
             base.OnKeyDown(keys);
             if (keys == Keys.Space)
             {
-                audio.PlaySound(0, Vector3.Zero, 1, 1);
+                audio.PlaySound(0, 0, 0, 0, 1, 1);
             }
             //map.ContainsKey(keys);
             textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);

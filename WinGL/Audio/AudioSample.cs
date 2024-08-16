@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace WinGL.Audio
 {
@@ -11,19 +10,19 @@ namespace WinGL.Audio
         /// <summary>
         /// Количество каналов
         /// </summary>
-        public int Channels { get; protected set; } = 1;
+        public int Channels { get; private set; } = 1;
         /// <summary>
         /// Частота
         /// </summary>
-        public int SamplesPerSecond { get; protected set; } = 44100;
+        public int SamplesPerSecond { get; private set; } = 44100;
         /// <summary>
         /// Буфер данных
         /// </summary>
-        public byte[] Buffer { get; protected set; } = new byte[0];
+        public byte[] Buffer { get; private set; } = new byte[0];
         /// <summary>
         /// Размер буфера
         /// </summary>
-        public int Size { get; protected set; } = 0;
+        public int Size { get; private set; } = 0;
 
         /// <summary>
         /// Формат для буффера
