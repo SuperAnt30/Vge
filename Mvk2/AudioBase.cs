@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using WinGL.Audio;
 using WinGL.Util;
 
@@ -61,7 +62,7 @@ namespace Mvk2
         /// <summary>
         /// Проиграть звук
         /// </summary>
-        public void PlaySound(int key, Vec3 pos, float volume, float pitch)
+        public void PlaySound(int key, Vector3 pos, float volume, float pitch)
         {
            // if (Setting.SoundVolume > 0)
             {

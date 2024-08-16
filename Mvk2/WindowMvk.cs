@@ -10,6 +10,7 @@ using System.Reflection;
 using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge;
+using System.Numerics;
 
 namespace Mvk2
 {
@@ -29,6 +30,7 @@ namespace Mvk2
         public WindowMvk() : base()
         {
             version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
             //FullScreen = true;
             //  CursorShow(true);
 
@@ -197,8 +199,8 @@ namespace Mvk2
             shaderText.Bind(gl);
             shaderText.SetUniformMatrix4(gl, "projview", Ortho2D);
 
-            Vec4 bg = new Vec4(.2f, .2f, .2f, 1f);
-            Vec4 cw = new Vec4(.9f, .9f, .9f, 1f);
+            Vector4 bg = new Vector4(.2f, .2f, .2f, 1f);
+            Vector4 cw = new Vector4(.9f, .9f, .9f, 1f);
 
             FontRenderer.RenderString(gl, xx + 1, 401, bg, "-O-", FontSize.Font12);
             FontRenderer.RenderString(gl, xx, 400, cw, "-O-", FontSize.Font12);
@@ -255,7 +257,7 @@ namespace Mvk2
             textureMap.BindTexture((int)AssetsTexture.Font16);
             int w = FontRenderer.WidthString(version, FontSize.Font16);
             FontRenderer.RenderString(gl, Width - w - 9f, Height - 18f, bg, version, FontSize.Font16);
-            FontRenderer.RenderString(gl, Width - w - 10f, Height - 19f, new Vec4(0.6f, 0.9f, .9f, 1f), version, FontSize.Font16);
+            FontRenderer.RenderString(gl, Width - w - 10f, Height - 19f, new Vector4(0.6f, 0.9f, .9f, 1f), version, FontSize.Font16);
 
             textureMap.BindTexture((int)AssetsTexture.Font12);
             // fps
@@ -312,7 +314,7 @@ namespace Mvk2
             base.OnKeyDown(keys);
             if (keys == Keys.Space)
             {
-                audio.PlaySound(0, new Vec3(0), 1, 1);
+                audio.PlaySound(0, Vector3.Zero, 1, 1);
             }
             //map.ContainsKey(keys);
             textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);

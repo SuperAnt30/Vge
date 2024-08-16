@@ -15,7 +15,7 @@ namespace WinGL.Win32.User32
         public IntPtr wParam;
         public IntPtr lParam;
         public short time;
-        public Vec2l pt;
+        public Vector2l pt;
         public short lPrivate;
     }
 }

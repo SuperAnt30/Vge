@@ -190,7 +190,7 @@ namespace WinGL.Win32.User32
 
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetCursorPos(out Vec2i point);
+        static extern bool GetCursorPos(out Vector2i point);
 
         [DllImport(User32, SetLastError = true)]
         static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
@@ -204,9 +204,9 @@ namespace WinGL.Win32.User32
         /// <summary>
         /// Получить позицию курсора мыши
         /// </summary>
-        public static Vec2i GetCursorPos()
+        public static Vector2i GetCursorPos()
         {
-            Vec2i pos = new Vec2i();
+            Vector2i pos = new Vector2i();
             GetCursorPos(out pos);
             return pos;
         }

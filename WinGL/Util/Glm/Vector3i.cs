@@ -6,91 +6,91 @@ namespace WinGL.Util
     /// <summary>
     /// Представляет трехмерный вектор
     /// </summary>
-    public struct Vec3i
+    public struct Vector3i
     {
-        public int x;
-        public int y;
-        public int z;
+        public int X;
+        public int Y;
+        public int Z;
 
         public int this[int index]
         {
             get
             {
-                if (index == 0) return x;
-                else if (index == 1) return y;
-                else if (index == 2) return z;
+                if (index == 0) return X;
+                else if (index == 1) return Y;
+                else if (index == 2) return Z;
                 else throw new Exception("Out of range.");
             }
             set
             {
-                if (index == 0) x = value;
-                else if (index == 1) y = value;
-                else if (index == 2) z = value;
+                if (index == 0) X = value;
+                else if (index == 1) Y = value;
+                else if (index == 2) Z = value;
                 else throw new Exception("Out of range.");
             }
         }
 
-        public Vec3i(int s)
+        public Vector3i(int s)
         {
-            x = y = z = s;
+            X = Y = Z = s;
         }
 
-        public Vec3i(int x, int y, int z)
+        public Vector3i(int x, int y, int z)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
-        public Vec3i(Vec3i v)
+        public Vector3i(Vector3i v)
         {
-            x = v.x;
-            y = v.y;
-            z = v.z;
+            X = v.X;
+            Y = v.Y;
+            Z = v.Z;
         }
 
-        public Vec3i(Vec2i xy, int z)
+        public Vector3i(Vector2i xy, int z)
         {
-            x = xy.x;
-            y = xy.y;
-            this.z = z;
+            X = xy.X;
+            Y = xy.Y;
+            Z = z;
         }
 
         /// <summary>
         /// Инверсия
         /// </summary>
-        public Vec3i Inverse() => this * -1;
+        public Vector3i Inverse() => this * -1;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator +(Vec3i lhs, Vec3i rhs)
-            => new Vec3i(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+        public static Vector3i operator +(Vector3i lhs, Vector3i rhs)
+            => new Vector3i(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator +(Vec3i lhs, int rhs)
-            => new Vec3i(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs);
+        public static Vector3i operator +(Vector3i lhs, int rhs)
+            => new Vector3i(lhs.X + rhs, lhs.Y + rhs, lhs.Z + rhs);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator -(Vec3i lhs, Vec3i rhs)
-            => new Vec3i(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+        public static Vector3i operator -(Vector3i lhs, Vector3i rhs)
+            => new Vector3i(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator -(Vec3i lhs, int rhs)
-            => new Vec3i(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs);
+        public static Vector3i operator -(Vector3i lhs, int rhs)
+            => new Vector3i(lhs.X - rhs, lhs.Y - rhs, lhs.Z - rhs);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator *(Vec3i self, int s)
-            => new Vec3i(self.x * s, self.y * s, self.z * s);
+        public static Vector3i operator *(Vector3i self, int s)
+            => new Vector3i(self.X * s, self.Y * s, self.Z * s);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator *(int s, Vec3i self)
-            => new Vec3i(self.x * s, self.y * s, self.z * s);
+        public static Vector3i operator *(int s, Vector3i self)
+            => new Vector3i(self.X * s, self.Y * s, self.Z * s);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator /(Vec3i lhs, int rhs)
-            => new Vec3i(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs);
+        public static Vector3i operator /(Vector3i lhs, int rhs)
+            => new Vector3i(lhs.X / rhs, lhs.Y / rhs, lhs.Z / rhs);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec3i operator *(Vec3i lhs, Vec3i rhs)
-            => new Vec3i(rhs.x * lhs.x, rhs.y * lhs.y, rhs.z * lhs.z);
+        public static Vector3i operator *(Vector3i lhs, Vector3i rhs)
+            => new Vector3i(rhs.X * lhs.X, rhs.Y * lhs.Y, rhs.Z * lhs.Z);
 
-        public int[] ToArray() => new[] { x, y, z };
+        public int[] ToArray() => new[] { X, Y, Z };
 
         /// <summary>
         /// Равно ли значение нулю
         /// </summary>
-        public bool IsZero() => x == 0 && y == 0 && z == 0;
+        public bool IsZero() => X == 0 && Y == 0 && Z == 0;
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
@@ -102,10 +102,10 @@ namespace WinGL.Util
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() == typeof(Vec3i))
+            if (obj.GetType() == typeof(Vector3i))
             {
-                var vec = (Vec3i)obj;
-                if (x == vec.x && y == vec.y && z == vec.z)
+                var vec = (Vector3i)obj;
+                if (X == vec.X && Y == vec.Y && Z == vec.Z)
                     return true;
             }
 
@@ -119,7 +119,7 @@ namespace WinGL.Util
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Vec3i v1, Vec3i v2) => v1.Equals(v2);
+        public static bool operator ==(Vector3i v1, Vector3i v2) => v1.Equals(v2);
 
         /// <summary>
         /// Implements the operator !=.
@@ -129,7 +129,7 @@ namespace WinGL.Util
         /// <returns>
         /// The result of the operator.
         /// </returns> 
-        public static bool operator !=(Vec3i v1, Vec3i v2) => !v1.Equals(v2);
+        public static bool operator !=(Vector3i v1, Vector3i v2) => !v1.Equals(v2);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -138,8 +138,8 @@ namespace WinGL.Util
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode()
-            => x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
+            => X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
 
-        public override string ToString() => x + "; " + y + "; " + z;
+        public override string ToString() => X + "; " + Y + "; " + Z;
     }
 }

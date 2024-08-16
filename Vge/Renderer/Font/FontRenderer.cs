@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -32,7 +33,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Прорисовка текста
         /// </summary>
-        public static float[] RenderText(GL gl, float x, float y, Vec4 color, string text, FontSize size)
+        public static float[] RenderText(GL gl, float x, float y, Vector4 color, string text, FontSize size)
         {
             float[] buffer = null;
             string[] stringSeparators = new string[] { "\r\n" };
@@ -58,7 +59,7 @@ namespace Vge.Renderer.Font
                     symbol = FontAdvance.Get(vc[i], sizeInt);
                     list.AddRange(RenderFigure.Rectangle2d(
                     w, h, w + FontAdvance.HoriAdvance[sizeInt], h + FontAdvance.VertAdvance[sizeInt],
-                    symbol.U1, symbol.V1, symbol.U2, symbol.V2, color.x, color.y, color.z));
+                    symbol.U1, symbol.V1, symbol.U2, symbol.V2, color.X, color.Y, color.Z));
                     if (symbol.Width > 0) w += symbol.Width + StepFont(size);
                 }
                 h += FontAdvance.VertAdvance[(int)size] + 4;
@@ -75,10 +76,10 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Прорисовка строки
         /// </summary>
-        public static int RenderString(GL gl, float x, float y, Vec4 color, string text, FontSize size)
+        public static int RenderString(GL gl, float x, float y, Vector4 color, string text, FontSize size)
             => RenderString(gl, x, y, color, text, size, true);
 
-        private static int RenderString(GL gl, float x, float y, Vec4 color, string text, FontSize size, bool isColor)
+        private static int RenderString(GL gl, float x, float y, Vector4 color, string text, FontSize size, bool isColor)
         {
             char[] vc = text.ToCharArray();
             int h = (int)y;
@@ -90,7 +91,7 @@ namespace Vge.Renderer.Font
             ////    WindowMain2.shader2D.SetUniform1(gl, "biasY", 0);
             ////    WindowMain2.shader2D.SetUniform1(gl, "biasX", 0);
             //}
-            float rgb = color.x + color.y * 100f + color.z * 10000;
+            float rgb = color.X + color.Y * 100f + color.Z * 10000;
 
 
             List<float> list = new List<float>();
@@ -115,7 +116,7 @@ namespace Vge.Renderer.Font
 
                 list.AddRange(RenderFigure.Rectangle2d(
                     w, h, w + FontAdvance.HoriAdvance[sizeInt], h + FontAdvance.VertAdvance[sizeInt],
-                    symbol.U1, symbol.V1 , symbol.U2, symbol.V2, color.x, color.y, color.z));
+                    symbol.U1, symbol.V1 , symbol.U2, symbol.V2, color.X, color.Y, color.Z));
                 if (symbol.Width > 0) w += symbol.Width + StepFont(size);
             }
             if (list.Count > 0)

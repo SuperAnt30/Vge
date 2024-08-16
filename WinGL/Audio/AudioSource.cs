@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using System.Numerics;
+using WinGL.Util;
 
 namespace WinGL.Audio
 {
@@ -18,7 +19,7 @@ namespace WinGL.Audio
         /// <summary>
         /// Позиция где будет звук
         /// </summary>
-        public Vec3 Position { get; private set; } = new Vec3(0);
+        public Vector3 Position { get; private set; } = Vector3.Zero;
 
         /// <summary>
         /// Id источника
@@ -70,7 +71,7 @@ namespace WinGL.Audio
             Processing = true;
             Al.alSourcef(sourceId, Al.AL_PITCH, Pitch);
             Al.alSourcef(sourceId, Al.AL_GAIN, Volume);
-            Al.alSource3f(sourceId, Al.AL_POSITION, Position.x, Position.y, Position.z);
+            Al.alSource3f(sourceId, Al.AL_POSITION, Position.X, Position.Y, Position.Z);
             Al.alSource3f(sourceId, Al.AL_ORIENTATION, 0, 0, -1);
             Al.alSourcePlay(sourceId);
         }
@@ -78,7 +79,7 @@ namespace WinGL.Audio
         /// <summary>
         /// Проиграть звук
         /// </summary>
-        public void Play(Vec3 pos, float volume, float pitch)
+        public void Play(Vector3 pos, float volume, float pitch)
         {
             Position = pos;
             Volume = volume;

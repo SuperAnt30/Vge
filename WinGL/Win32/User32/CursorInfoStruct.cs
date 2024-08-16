@@ -14,6 +14,6 @@ namespace WinGL.Win32.User32
         /// <summary> A handle to the cursor. </summary>
         public IntPtr hCursor;
         /// <summary> The cursor screen coordinates.</summary>
-        public Vec2i pt;
+        public Vector2i pt;
     }
 }

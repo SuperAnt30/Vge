@@ -10,38 +10,38 @@ namespace WinGL.Util
         {
             for (int i = 0; i < 65536; i++)
             {
-                sinTable[i] = (float)Math.Sin((float)i * Math.PI * 2.0f / 65536.0f);
+                sinTable[i] = (float)Math.Sin(i * PI360 / 65536f);
             }
         }
 
         /// <summary>
         /// Четверть Пи 0.79, аналог 45гр
         /// </summary>
-        public const float pi45 = 0.7853981625f;
+        public const float PI45 = 0.7853982f;
         /// <summary>
         /// Половина Пи 1.57, аналог 90гр
         /// </summary>
-        public const float pi90 = 1.570796325f;
+        public const float PI90 = 1.57079637f;
         /// <summary>
         /// 3/4 Пи 2.36, аналог 135гр
         /// </summary>
-        public const float pi135 = 2.356194487f;
+        public const float PI135 = 2.3561945f;
         /// <summary>
         /// Пи 3.14, аналог 180гр
         /// </summary>
-        public const float pi = 3.14159265f;
+        public const float PI = 3.14159274f;
         /// <summary>
         /// 3/2 Пи 4.71, аналог 270гр
         /// </summary>
-        public const float pi270 = 4.712388985f;
+        public const float PI270 = 4.712389f;
         /// <summary>
         /// Два Пи 6.28, аналог 360гр
         /// </summary>
-        public const float pi360 = 6.28318531f;
+        public const float PI360 = 6.28318548f;
         /// <summary>
         /// Множетель для умножения радиан, чтоб получить градусы
         /// </summary>
-        public const float degreesInRadians = 57.295779513082320876798154814105f;
+        public const float DegreesInRadians = 57.29578f;
 
         public static float Degrees(float radians)
             => radians * 57.295779513082320876798154814105f;
@@ -51,13 +51,13 @@ namespace WinGL.Util
 
         public static float Cos(float angle)
         {
-            angle %= pi360;
+            angle %= PI360;
             return sinTable[(int)(angle * 10430.378f + 16384.0f) & 65535];
         }
 
         public static float Sin(float angle)
         {
-            angle %= pi360;
+            angle %= PI360;
             return sinTable[(int)(angle * 10430.378f) & 65535];
         }
 
@@ -78,9 +78,9 @@ namespace WinGL.Util
         /// </summary>
         public static float WrapAngleToPi(float angle)
         {
-            angle %= pi360;
-            if (angle >= pi) angle -= pi360;
-            if (angle < -pi) angle += pi360;
+            angle %= PI360;
+            if (angle >= PI) angle -= PI360;
+            if (angle < -PI) angle += PI360;
             return angle;
         }
     }

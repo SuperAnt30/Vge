@@ -5,33 +5,33 @@ namespace WinGL.Util
     /// <summary>
     /// Представляет двумерный вектор с 64 разнрядным числом
     /// </summary>
-    public struct Vec2l
+    public struct Vector2l
     {
-        public long x;
-        public long y;
+        public long X;
+        public long Y;
 
         public long this[int index]
         {
             get
             {
-                if (index == 0) return x;
-                else if (index == 1) return y;
+                if (index == 0) return X;
+                else if (index == 1) return Y;
                 else throw new Exception("Out of range.");
             }
             set
             {
-                if (index == 0) x = value;
-                else if (index == 1) y = value;
+                if (index == 0) X = value;
+                else if (index == 1) Y = value;
                 else throw new Exception("Out of range.");
             }
         }
 
-        public Vec2l(long x, long y)
+        public Vector2l(long x, long y)
         {
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
         }
 
-        public override string ToString() => x + "; " + y;
+        public override string ToString() => X + "; " + Y;
     }
 }

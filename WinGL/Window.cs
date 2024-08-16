@@ -6,6 +6,7 @@ using WinGL.Win32.Gdi32;
 using WinGL.OpenGL;
 using WinGL.Win32.User32;
 using WinGL.Actions;
+using System.Numerics;
 
 namespace WinGL
 {
@@ -392,10 +393,10 @@ namespace WinGL
                     // Проверяем выход мыши за пределы окна
                     if (mouseEntity)
                     {
-                        Vec2i pos = WinUser.GetCursorPos();
-                        if (pos.x < LocationX || pos.y < LocationY
-                            || pos.x > LocationX + Width
-                            || pos.y > LocationY + Height)
+                        Vector2i pos = WinUser.GetCursorPos();
+                        if (pos.X < LocationX || pos.Y < LocationY
+                            || pos.X > LocationX + Width
+                            || pos.Y > LocationY + Height)
                         {
                             mouseEntity = false;
                             OnMouseLeave();
@@ -479,8 +480,16 @@ namespace WinGL
                 windowWidth = width + windowWidthBorder;
                 windowHeigt = height + windowHeigtBorder;
             }
-            //aspect = Width / Height;
-            Ortho2D = Glm.Ortho(0, Width, Height, 0).ToArray();
+
+            Matrix4x4 mat = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
+            Ortho2D = new float[]
+            {
+                mat.M11, mat.M12, mat.M13, mat.M14,
+                mat.M21, mat.M22, mat.M23, mat.M24,
+                mat.M31, mat.M32, mat.M33, mat.M34,
+                mat.M41, mat.M42, mat.M43, mat.M44
+            };
+            //Ortho2D  = Glm.Ortho(0, Width, Height, 0).ToArray();
 
             gl.Viewport(0, 0, width, height);
         }

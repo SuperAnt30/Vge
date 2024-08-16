@@ -7,66 +7,66 @@ namespace WinGL.Util
     /// <summary>
     /// Представляет двумерный вектор
     /// </summary>
-    public struct Vec2i
+    public struct Vector2i
     {
-        public int x;
-        public int y;
+        public int X;
+        public int Y;
 
         public int this[int index]
         {
             get
             {
-                if (index == 0) return x;
-                else if (index == 1) return y;
+                if (index == 0) return X;
+                else if (index == 1) return Y;
                 else throw new Exception("Out of range.");
             }
             set
             {
-                if (index == 0) x = value;
-                else if (index == 1) y = value;
+                if (index == 0) X = value;
+                else if (index == 1) Y = value;
                 else throw new Exception("Out of range.");
             }
         }
 
-        public Vec2i(int s) => x = y = s;
+        public Vector2i(int s) => X = Y = s;
 
-        public Vec2i(int x, int y)
+        public Vector2i(int x, int y)
         {
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
         }
 
-        public Vec2i(Vec2i v)
+        public Vector2i(Vector2i v)
         {
-            x = v.x;
-            y = v.y;
+            X = v.X;
+            Y = v.Y;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator +(Vec2i lhs, Vec2i rhs)
-            => new Vec2i(lhs.x + rhs.x, lhs.y + rhs.y);
+        public static Vector2i operator +(Vector2i lhs, Vector2i rhs)
+            => new Vector2i(lhs.X + rhs.X, lhs.Y + rhs.Y);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator +(Vec2i lhs, int rhs)
-            => new Vec2i(lhs.x + rhs, lhs.y + rhs);
+        public static Vector2i operator +(Vector2i lhs, int rhs)
+            => new Vector2i(lhs.X + rhs, lhs.Y + rhs);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator -(Vec2i lhs, Vec2i rhs)
-            => new Vec2i(lhs.x - rhs.x, lhs.y - rhs.y);
+        public static Vector2i operator -(Vector2i lhs, Vector2i rhs)
+            => new Vector2i(lhs.X - rhs.X, lhs.Y - rhs.Y);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator -(Vec2i lhs, int rhs)
-            => new Vec2i(lhs.x - rhs, lhs.y - rhs);
+        public static Vector2i operator -(Vector2i lhs, int rhs)
+            => new Vector2i(lhs.X - rhs, lhs.Y - rhs);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator *(Vec2i self, int s)
-            => new Vec2i(self.x * s, self.y * s);
+        public static Vector2i operator *(Vector2i self, int s)
+            => new Vector2i(self.X * s, self.Y * s);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator *(int s, Vec2i self)
-            => new Vec2i(self.x * s, self.y * s);
+        public static Vector2i operator *(int s, Vector2i self)
+            => new Vector2i(self.X * s, self.Y * s);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator *(Vec2i lhs, Vec2i rhs)
-            => new Vec2i(rhs.x * lhs.x, rhs.y * lhs.y);
+        public static Vector2i operator *(Vector2i lhs, Vector2i rhs)
+            => new Vector2i(rhs.X * lhs.X, rhs.Y * lhs.Y);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vec2i operator /(Vec2i lhs, int rhs)
-            => new Vec2i(lhs.x / rhs, lhs.y / rhs);
+        public static Vector2i operator /(Vector2i lhs, int rhs)
+            => new Vector2i(lhs.X / rhs, lhs.Y / rhs);
 
-        public int[] ToArray() => new[] { x, y };
+        public int[] ToArray() => new[] { X, Y };
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
@@ -78,10 +78,10 @@ namespace WinGL.Util
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() == typeof(Vec2i))
+            if (obj.GetType() == typeof(Vector2i))
             {
-                var vec = (Vec2i)obj;
-                if (x == vec.x && y == vec.y)
+                var vec = (Vector2i)obj;
+                if (X == vec.X && Y == vec.Y)
                     return true;
             }
 
@@ -95,7 +95,7 @@ namespace WinGL.Util
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Vec2i v1, Vec2i v2) => v1.Equals(v2);
+        public static bool operator ==(Vector2i v1, Vector2i v2) => v1.Equals(v2);
 
         /// <summary>
         /// Implements the operator !=.
@@ -105,7 +105,7 @@ namespace WinGL.Util
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(Vec2i v1, Vec2i v2) => !v1.Equals(v2);
+        public static bool operator !=(Vector2i v1, Vector2i v2) => !v1.Equals(v2);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -113,8 +113,8 @@ namespace WinGL.Util
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => x.GetHashCode() ^ y.GetHashCode();
+        public override int GetHashCode() => X.GetHashCode() ^ Y.GetHashCode();
 
-        public override string ToString() => x + "; " + y;
+        public override string ToString() => X + "; " + Y;
     }
 }
