@@ -11,6 +11,7 @@ using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge;
 using System.Numerics;
+using Mvk2.Util;
 
 namespace Mvk2
 {
@@ -68,21 +69,24 @@ namespace Mvk2
         {
             base.OnOpenGLInitialized();
 
+            new OptionsFileMvk().Load();
+            new OptionsFileMvk().Save();
+            
             audio.Initialize();
             audio.InitializeArray(1);
-            audio.InitializeSample("say1.wav");
+            audio.InitializeSample(OptionsMvk.PathAsets + "say1.wav");
 
             textureMap = new TextureMap(gl, 4);
-            Bitmap bitmap = Image.FromFile("cursor.png") as Bitmap;
+            Bitmap bitmap = Image.FromFile(OptionsMvk.PathAsets + "cursor.png") as Bitmap;
 
             textureMap.AddTexture((int)AssetsTexture.cursor,
                 new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap)));
 
-            bitmap = Image.FromFile("Font8.png") as Bitmap;
+            bitmap = Image.FromFile(OptionsMvk.PathAsets + "Font8.png") as Bitmap;
             BufferedImage font8 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile("Font12.png") as Bitmap;
+            bitmap = Image.FromFile(OptionsMvk.PathAsets + "Font12.png") as Bitmap;
             BufferedImage font12 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile("Font16.png") as Bitmap;
+            bitmap = Image.FromFile(OptionsMvk.PathAsets + "Font16.png") as Bitmap;
             BufferedImage font16 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
 
             textureMap.AddTexture((int)AssetsTexture.Font8, font8);
