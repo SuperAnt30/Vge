@@ -67,10 +67,12 @@ namespace Mvk2
 
         protected override void OnOpenGLInitialized()
         {
-            base.OnOpenGLInitialized();
-
             new OptionsFileMvk().Load();
             new OptionsFileMvk().Save();
+
+            base.OnOpenGLInitialized();
+
+           
             
             audio.Initialize();
             audio.InitializeArray(1);

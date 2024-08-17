@@ -8,7 +8,7 @@
         /// <summary>
         /// путь к ресурсам
         /// </summary>
-        public static string PathAsets { get; set; } = "assets\\";
+        public static string PathAsets { get; set; } = "Assets\\";
         /// <summary>
         /// Общая громкость
         /// </summary>
@@ -33,6 +33,10 @@
         /// Получить чувствительность мыши
         /// </summary>
         public static float ToFloatMouseSensitivity() => mouseSensitivity;
+        /// <summary>
+        /// Путь к папке шейдеров
+        /// </summary>
+        public static string ToPathShaders() => PathAsets + "Shaders\\";
 
         /// <summary>
         /// Обновить переменные float
