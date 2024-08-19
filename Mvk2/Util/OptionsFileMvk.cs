@@ -7,10 +7,10 @@ namespace Mvk2.Util
     {
         public OptionsFileMvk() => title = "Mvk2 Project - (c)2024";
 
-        protected override void UpFloat()
+        protected override void UpData()
         {
-            base.UpFloat();
-            OptionsMvk.UpFloatMvk();
+            base.UpData();
+            OptionsMvk.UpDataMvk();
         }
 
         /// <summary>

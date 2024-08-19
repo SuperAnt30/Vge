@@ -41,10 +41,10 @@ namespace Vge.Util
                     }
                 }
             }
-            UpFloat();
+            UpData();
         }
 
-        protected virtual void UpFloat() => Options.UpFloat();
+        protected virtual void UpData() => Options.UpData();
 
         /// <summary>
         /// Сохранить настройки
@@ -67,7 +67,7 @@ namespace Vge.Util
         {
             switch(key)
             {
-                case "PathAsets": Options.PathAsets = value; return true;
+                case "PathAssets": Options.PathAssets = value; return true;
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
@@ -80,7 +80,7 @@ namespace Vge.Util
         /// </summary>
         protected virtual void SaveLine(StreamWriter file)
         {
-            file.WriteLine("PathAsets: " + Options.PathAsets);
+            file.WriteLine("PathAssets: " + Options.PathAssets);
             file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
             file.WriteLine("Fps: " + Options.Fps.ToString());
             file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());

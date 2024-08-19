@@ -8,8 +8,8 @@ namespace Vge
     {
         public ShaderText(GL gl)
         {
-            string vsh = FileAssets.ReadString(Options.ToPathShaders() + "Text.vsh");
-            string fsh = FileAssets.ReadString(Options.ToPathShaders() + "Text.fsh");
+            string vsh = FileAssets.ReadString(Options.PathShaders + "Text.vsh");
+            string fsh = FileAssets.ReadString(Options.PathShaders + "Text.fsh");
 
             Create(gl, vsh, fsh,
                 new Dictionary<uint, string> {
