@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8D221652-1451-40B6-9BB5-B24DDED2D7EF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WinGL</RootNamespace>
+    <AssemblyName>WinGL</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions\Keys.cs" />
+    <Compile Include="Actions\MouseButton.cs" />
+    <Compile Include="OpenGL\Shader.cs" />
+    <Compile Include="OpenGL\ShaderCompilationException.cs" />
+    <Compile Include="OpenGL\ShaderProgram.cs" />
+    <Compile Include="OpenGL\OpenGLVersion.cs" />
+    <Compile Include="Util\Glm\GlmTrigonometric.cs" />
+    <Compile Include="Util\Glm\Vector2l.cs" />
+    <Compile Include="Util\Glm\Vector2i.cs" />
+    <Compile Include="Util\Glm\Vector3i.cs" />
+    <Compile Include="OpenGL\Mesh.cs" />
+    <Compile Include="OpenGL\TextureMap.cs" />
+    <Compile Include="Util\BufferedImage.cs" />
+    <Compile Include="Util\CounterTick.cs" />
+    <Compile Include="Util\Mth.cs" />
+    <Compile Include="Win32\Gdi32\PixelFormatDescriptor.cs" />
+    <Compile Include="Win32\Gdi32\WinGdi.cs" />
+    <Compile Include="OpenGL\GLconst.cs" />
+    <Compile Include="OpenGL\GLextern.cs" />
+    <Compile Include="OpenGL\GL.cs" />
+    <Compile Include="Win32\User32\CursorInfoStruct.cs" />
+    <Compile Include="Win32\User32\DevMode.cs" />
+    <Compile Include="Win32\User32\MSG.cs" />
+    <Compile Include="Win32\User32\ScreenOrientation.cs" />
+    <Compile Include="Win32\User32\WindowStyles.cs" />
+    <Compile Include="Win32\User32\WindowStylesEx.cs" />
+    <Compile Include="Win32\WinApi.cs" />
+    <Compile Include="Window.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Win32\User32\ClassStyles.cs" />
+    <Compile Include="Win32\User32\WinUser.cs" />
+    <Compile Include="Win32\User32\WndClassEx.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
