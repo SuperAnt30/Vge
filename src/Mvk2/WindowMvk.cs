@@ -12,6 +12,7 @@ using Vge.Renderer;
 using Vge;
 using System.Numerics;
 using Mvk2.Util;
+using Mvk2.Audio;
 
 namespace Mvk2
 {
@@ -26,7 +27,7 @@ namespace Mvk2
         /// </summary>
         private bool cursorShow = false;
 
-        private AudioBase audio = new AudioBase();
+        private AudioMvk audio = new AudioMvk();
 
         public WindowMvk() : base()
         {
@@ -70,12 +71,14 @@ namespace Mvk2
             new OptionsFileMvk().Load();
             new OptionsFileMvk().Save();
 
+            // Загрузка опций должна быть до инициализации графики, 
+            // так -как нужно знать откуда грузить шейдера
             base.OnOpenGLInitialized();
 
-            audio.Initialize();
-            audio.InitializeArray(2);
-            audio.InitializeSample(OptionsMvk.PathSounds + "say1.wav",
-                OptionsMvk.PathSounds + "Click.ogg");
+            // Инициализация звука и загрузка семплов
+            audio.Initialize(2);
+            audio.InitializeSample();
+
 
             textureMap = new TextureMap(gl, 4);
             Bitmap bitmap = Image.FromFile(OptionsMvk.PathTextures + "cursor.png") as Bitmap;

@@ -1,17 +1,17 @@
 ﻿using System;
-using Vge.Audio;
+using Vge.Util;
 
-namespace Mvk2
+namespace Vge.Audio
 {
     /// <summary>
     /// Базовый класс звуков
     /// </summary>
-    public class AudioBase
+    public abstract class AudioBase
     {
         /// <summary>
         /// Массив всех семплов
         /// </summary>
-        private AudioSample[] items;
+        protected AudioSample[] items;
         /// <summary>
         /// Объект источников звука
         /// </summary>
@@ -19,9 +19,13 @@ namespace Mvk2
         /// <summary>
         /// Строка для дэбага сколько источников и занятых
         /// </summary>
-        public string StrDebug { get; protected set; }
+        public string StrDebug { get; private set; }
 
-        public void Initialize()
+        /// <summary>
+        /// Инициализация звукового драйвера
+        /// </summary>
+        /// <param name="count">указываем количество звуков, ключи начинаются с 0</param>
+        public void Initialize(int count)
         {
             // Инициализация звука
             IntPtr pDevice = Al.alcOpenDevice(null);
@@ -30,26 +34,15 @@ namespace Mvk2
 
             // Инициализация источников звука
             sources.Initialize();
-        }
 
-        /// <summary>
-        /// Инициализировать длинну массива для семплов
-        /// </summary>
-        public void InitializeArray(int count) => items = new AudioSample[count];
+            // Указываем количество звуков
+            items = new AudioSample[count];
+        }
 
         /// <summary>
         /// Загрузка сэмпла
         /// </summary>
-        public void InitializeSample(string fileName, string fileNameClick)
-        {
-            //byte[] vs = Assets.GetSample(key.ToString());
-            AudioSample sample = new AudioSample();
-            sample.LoadWave(fileName);
-            items[0] = sample;
-            sample = new AudioSample();
-            sample.LoadOgg(fileNameClick);
-            items[1] = sample;
-        }
+        public virtual void InitializeSample() { }
 
         /// <summary>
         /// Такт
@@ -65,7 +58,7 @@ namespace Mvk2
         /// </summary>
         public void PlaySound(int key, float posX, float posY, float posZ, float volume, float pitch)
         {
-           // if (Setting.SoundVolume > 0)
+            if (Options.SoundVolume > 0)
             {
                 AudioSample sample = items[key];
                 if (sample != null && sample.Size > 0)
@@ -74,7 +67,7 @@ namespace Mvk2
                     if (source != null)
                     {
                         source.Sample(sample);
-                        source.Play(posX, posY, posZ, volume /* Setting.ToFloatSoundVolume()*/, pitch);
+                        source.Play(posX, posY, posZ, volume * Options.SoundVolumeFloat, pitch);
                     }
                 }
             }
