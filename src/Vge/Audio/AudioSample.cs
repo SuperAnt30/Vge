@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using NVorbis;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Vge.Audio
 {
@@ -48,7 +50,6 @@ namespace Vge.Audio
             }
         }
 
-        /*
         /// <summary>
         /// Загрузить Ogg сэмпл с файла по адресу
         /// </summary>
@@ -90,7 +91,6 @@ namespace Vge.Audio
             Buffer = result.ToArray();
             Size = Buffer.Length;
         }
-        */
 
         /// <summary>
         /// Очистить буфер

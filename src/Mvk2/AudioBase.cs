@@ -40,12 +40,15 @@ namespace Mvk2
         /// <summary>
         /// Загрузка сэмпла
         /// </summary>
-        public void InitializeSample(string fileName)
+        public void InitializeSample(string fileName, string fileNameClick)
         {
             //byte[] vs = Assets.GetSample(key.ToString());
             AudioSample sample = new AudioSample();
             sample.LoadWave(fileName);
             items[0] = sample;
+            sample = new AudioSample();
+            sample.LoadOgg(fileNameClick);
+            items[1] = sample;
         }
 
         /// <summary>

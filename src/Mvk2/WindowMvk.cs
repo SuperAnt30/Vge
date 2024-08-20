@@ -73,8 +73,9 @@ namespace Mvk2
             base.OnOpenGLInitialized();
 
             audio.Initialize();
-            audio.InitializeArray(1);
-            audio.InitializeSample(OptionsMvk.PathSounds + "say1.wav");
+            audio.InitializeArray(2);
+            audio.InitializeSample(OptionsMvk.PathSounds + "say1.wav",
+                OptionsMvk.PathSounds + "Click.ogg");
 
             textureMap = new TextureMap(gl, 4);
             Bitmap bitmap = Image.FromFile(OptionsMvk.PathTextures + "cursor.png") as Bitmap;
@@ -319,6 +320,10 @@ namespace Mvk2
             if (keys == Keys.Space)
             {
                 audio.PlaySound(0, 0, 0, 0, 1, 1);
+            }
+            else if (keys == Keys.Enter)
+            {
+                audio.PlaySound(1, 0, 0, 0, 1, 1);
             }
             //map.ContainsKey(keys);
             textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
