@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WinGL.Audio
+namespace Vge.Audio
 {
     /// <summary>
     /// Объект источкиков звука

@@ -1,4 +1,4 @@
-﻿namespace WinGL.Audio
+﻿namespace Vge.Audio
 {
     /// <summary>
     /// Объект источника звука

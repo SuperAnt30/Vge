@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace WinGL.Audio
+namespace Vge.Audio
 {
     public static partial class Al
     {

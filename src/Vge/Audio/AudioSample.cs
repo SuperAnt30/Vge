@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace WinGL.Audio
+namespace Vge.Audio
 {
     /// <summary>
     /// Объект аудио сэмпла
