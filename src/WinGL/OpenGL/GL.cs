@@ -94,8 +94,10 @@ namespace WinGL.OpenGL
         private delegate void glGetProgramInfoLog(uint program, int bufSize, IntPtr length, StringBuilder infoLog);
         private glGetProgramInfoLog delegateGetProgramInfoLog;
 
+        private delegate void glUniform1i(int location, int v0);
+        private glUniform1i delegateUniform1i;
         private delegate void glUniform1f(int location, float v0);
-        private glUniform1f delegateUniform1;
+        private glUniform1f delegateUniform1f;
         private delegate void glUniform2f(int location, float v0, float v1);
         private glUniform2f delegateUniform2;
         private delegate void glUniform3f(int location, float v0, float v1, float v2);
@@ -312,11 +314,17 @@ namespace WinGL.OpenGL
                 delegateGetProgramInfoLog = GetDelegate<glGetProgramInfoLog>() as glGetProgramInfoLog;
             delegateGetProgramInfoLog(program, bufSize, length, infoLog);
         }
+        public void Uniform1(int location, int v0)
+        {
+            if (delegateUniform1i == null)
+                delegateUniform1i = GetDelegate<glUniform1i>() as glUniform1i;
+            delegateUniform1i(location, v0);
+        }
         public void Uniform1(int location, float v0)
         {
-            if (delegateUniform1 == null)
-                delegateUniform1 = GetDelegate<glUniform1f>() as glUniform1f;
-            delegateUniform1(location, v0);
+            if (delegateUniform1f == null)
+                delegateUniform1f = GetDelegate<glUniform1f>() as glUniform1f;
+            delegateUniform1f(location, v0);
         }
         public void Uniform2(int location, float v0, float v1)
         {

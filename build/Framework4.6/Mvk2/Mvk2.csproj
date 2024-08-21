@@ -41,9 +41,10 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioBase.cs" />
+    <Compile Include="Audio\AudioMvk.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\RenderMvk.cs" />
     <Compile Include="Util\OptionsFileMvk.cs" />
     <Compile Include="Util\OptionsMvk.cs" />
     <Compile Include="WindowMvk.cs" />

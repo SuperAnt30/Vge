@@ -1,18 +1,12 @@
 ﻿using System;
-using WinGL.Util;
 using WinGL.OpenGL;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using WinGL.Actions;
 using System.Reflection;
-using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge;
-using System.Numerics;
 using Mvk2.Util;
 using Mvk2.Audio;
+using Mvk2.Renderer;
 
 namespace Mvk2
 {
@@ -31,7 +25,7 @@ namespace Mvk2
 
         public WindowMvk() : base()
         {
-            version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             //FullScreen = true;
             //  CursorShow(true);
@@ -79,26 +73,6 @@ namespace Mvk2
             audio.Initialize(2);
             audio.InitializeSample();
 
-
-            textureMap = new TextureMap(gl, 4);
-            Bitmap bitmap = Image.FromFile(OptionsMvk.PathTextures + "cursor.png") as Bitmap;
-
-            textureMap.AddTexture((int)AssetsTexture.cursor,
-                new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap)));
-
-            bitmap = Image.FromFile(OptionsMvk.PathTextures + "Font8.png") as Bitmap;
-            BufferedImage font8 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile(OptionsMvk.PathTextures + "Font12.png") as Bitmap;
-            BufferedImage font12 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile(OptionsMvk.PathTextures + "Font16.png") as Bitmap;
-            BufferedImage font16 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-
-            textureMap.AddTexture((int)AssetsTexture.Font8, font8);
-            textureMap.AddTexture((int)AssetsTexture.Font12, font12);
-            textureMap.AddTexture((int)AssetsTexture.Font16, font16);
-
-            FontAdvance.Initialize(font8, font12, font16);
-
             cursorVBO = new Mesh(gl, RenderFigure.Rectangle2d(0, 0, 24, 24, 0, 0, 1, 1), new int[] { 2, 2 });
 
             gl.ShadeModel(GL.GL_SMOOTH);
@@ -108,8 +82,15 @@ namespace Mvk2
             gl.Enable(GL.GL_DEPTH_TEST);
             gl.DepthFunc(GL.GL_LEQUAL);
             gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        }
 
-
+        /// <summary>
+        /// Инициализаця объекта рендера
+        /// </summary>
+        protected override void RenderInitialized()
+        {
+            render = new RenderMvk(this, gl);
+            render.InitializeFirst();
         }
 
         protected override void OnOpenGlDraw()
@@ -123,183 +104,25 @@ namespace Mvk2
             gl.ClearColor(.7f, .4f, .4f, 1f);
             gl.Enable(GL.GL_BLEND);
 
-            DrawStatVBO();
+            ((RenderMvk)render).DrawDebug();
 
             if (cursorShow)
             {
-
-                textureMap.BindTexture((int)AssetsTexture.cursor);
+                render.BindTexture((int)AssetsTexture.cursor);
                 shader2D.Bind(gl);
                 shader2D.SetUniformMatrix4(gl, "projview", Ortho2D);
-                shader2D.SetUniform1(gl, "biasX", mouseX);
-                shader2D.SetUniform1(gl, "biasY", mouseY);
+                shader2D.SetUniform1(gl, "biasX", MouseX);
+                shader2D.SetUniform1(gl, "biasY", MouseY);
                 shader2D.SetUniform4(gl, "color", 1, 1, 1, 1);
                 cursorVBO.Draw();
 
             }
         }
 
-        /// <summary>
-        /// Конвертация из Bitmap в объект BufferedImage
-        /// </summary>
-        private byte[] BitmapToByteArray(Bitmap bitmap)
-        {
-            BitmapData bmpdata = null;
-            try
-            {
-                bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                int numbytes = bmpdata.Stride * bitmap.Height;
-                byte[] bytedata = new byte[numbytes];
-                IntPtr ptr = bmpdata.Scan0;
-
-                Marshal.Copy(ptr, bytedata, 0, numbytes);
-
-                return bytedata;
-            }
-            finally
-            {
-                if (bmpdata != null)
-                    bitmap.UnlockBits(bmpdata);
-            }
-        }
-
         protected override void OnResized(int width, int height)
         {
             base.OnResized(width, height);
-            t1 = null;
-        }
-
-        /// <summary>
-        /// Отладочный теккст
-        /// VBO 450-460 fps, если biasY вывести на строку один то 540
-        /// DL 650 fps
-        /// </summary>
-        public string textDebug =
-            "Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n" +
-            "Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n";
-
-        private int xx = 0;
-
-        Mesh mesh1;
-        private float[] t1;
-
-        /// <summary>
-        /// Статистика на экране
-        /// </summary>
-        private void DrawStatVBO()
-        {
-            // Tessellation.Texture2DEnable();
-            textureMap.BindTexture((int)AssetsTexture.Font12);
-            shaderText.Bind(gl);
-            shaderText.SetUniformMatrix4(gl, "projview", Ortho2D);
-
-            Vector4 bg = new Vector4(.2f, .2f, .2f, 1f);
-            Vector4 cw = new Vector4(.9f, .9f, .9f, 1f);
-
-            FontRenderer.RenderString(gl, xx + 1, 401, bg, "-O-", FontSize.Font12);
-            FontRenderer.RenderString(gl, xx, 400, cw, "-O-", FontSize.Font12);
-            
-            if (++xx > 900) xx = 0;
-
-            // textDebug
-            if (t1 == null)
-            {
-                
-                t1 = FontRenderer.RenderText(gl, 11, 11, bg, textDebug, FontSize.Font12);
-                
-                //mesh1.Render(t1);
-                List<float> list = new List<float>(t1);
-                t1 = FontRenderer.RenderText(gl, 10, 10, cw, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 211, 11, bg, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 210, 10, cw, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 411, 11, bg, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 410, 10, cw, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 611, 11, bg, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-                t1 = FontRenderer.RenderText(gl, 610, 10, cw, textDebug, FontSize.Font12);
-                list.AddRange(t1);
-
-                mesh1 = new Mesh(gl, list.ToArray(), new int[] { 2, 2, 3 });
-                //mesh1.Render(list.ToArray());
-                //mesh1.RenderEbo(list.ToArray());
-
-            }
-            //if (t2 == null)
-            //{
-            //    t2 = FontRendererVBO2.RenderText(gl, 10, 10, cw, textDebug, FontSize.Font12);
-            //    mesh2 = new RenderMeshColor(gl);
-                
-            //    mesh2.Render(t2);
-            //}
-            //shaderText.SetUniform4(gl, "color", bg.x, bg.y, bg.z, bg.w);
-            mesh1.Draw();
-            //shaderText.SetUniform4(gl, "color", cw.x, cw.y, cw.z, cw.w);
-            //mesh2.Draw();
-
-            // stringInfo
-            //FontRendererVBO.RenderString(gl, 11, Height - 38f, bg, stringInfo, FontSize.Font12);
-            //FontRendererVBO.RenderString(gl, 11, Height - 39f, cw, stringInfo, FontSize.Font12);
-
-            
-
-            // Version
-            textureMap.BindTexture((int)AssetsTexture.Font16);
-            int w = FontRenderer.WidthString(version, FontSize.Font16);
-            FontRenderer.RenderString(gl, Width - w - 9f, Height - 18f, bg, version, FontSize.Font16);
-            FontRenderer.RenderString(gl, Width - w - 10f, Height - 19f, new Vector4(0.6f, 0.9f, .9f, 1f), version, FontSize.Font16);
-
-            textureMap.BindTexture((int)AssetsTexture.Font12);
-            // fps
-            string str = "FPS " + fps.ToString() + " TPS " + tps.ToString();
-            FontRenderer.RenderString(gl, 11f, Height - 18f, bg, str, FontSize.Font12);
-            FontRenderer.RenderString(gl, 10f, Height - 19f, cw, str, FontSize.Font12);
-
-            // XYZ
-            w = 190;
-            str = Width + " " + Height;
-            if (VSync) str += " VSync";
-            FontRenderer.RenderString(gl, w + 1, Height - 18f, bg, str, FontSize.Font12);
-            w += FontRenderer.RenderString(gl, w, Height - 19f, cw, str, FontSize.Font12) + 10;
-
-            // XY
-            w = 400;
-            str = "XY";
-            FontRenderer.RenderString(gl, w + 1, Height - 18f, bg, str, FontSize.Font12);
-            w += FontRenderer.RenderString(gl, w, Height - 19f, cw, str, FontSize.Font12) + 10;
-            str = mouseX.ToString("0.0");
-            FontRenderer.RenderString(gl, w + 1, Height - 18f, bg, str, FontSize.Font12);
-            w += FontRenderer.RenderString(gl, w, Height - 19f, cw, str, FontSize.Font12) + 10;
-            str = mouseY.ToString("0.0");
-            FontRenderer.RenderString(gl, w + 1, Height - 18f, bg, str, FontSize.Font12);
-            FontRenderer.RenderString(gl, w, Height - 19f, cw, str, FontSize.Font12);
-
-            //textDb
-            if (textDb != "")
-            {
-                FontRenderer.RenderString(gl, 11f, Height - 38f, bg, textDb, FontSize.Font12);
-                FontRenderer.RenderString(gl, 10f, Height - 39f, cw, textDb, FontSize.Font12);
-            }
-
-            //  shaderText.Unbind(gl);
+           // t1 = null;
         }
 
         protected override void Client_Frame(object sender, EventArgs e)
@@ -311,8 +134,11 @@ namespace Mvk2
         protected override void Client_Tick(object sender, EventArgs e)
         {
             base.Client_Tick(sender, e);
-            xx -= 100;
-            if (xx < 0) xx = 0;
+
+            int x = ((RenderMvk)render).xx;
+            x -= 100;
+            if (x < 0) x = 0;
+            ((RenderMvk)render).xx = x;
         }
 
         private string textDb = "";

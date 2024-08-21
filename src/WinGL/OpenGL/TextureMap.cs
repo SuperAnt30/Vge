@@ -29,33 +29,16 @@ namespace WinGL.OpenGL
         }
 
         /// <summary>
-        /// Добавить текстуру
-        /// </summary>
-        /// <param name="index">индекс текстуры массива</param>
-        /// <param name="image">рисунок</param>
-        public void AddTexture(int index, BufferedImage image)
-            => SetTexture(index, image);
-
-        /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
-        public void BindTexture(int index)
+        /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
+        public void BindTexture(int index, uint texture = 0)
         {
             if (index < textures.Length)
             {
-                BindTexture(textures[index], 0);
+                gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
+                gl.BindTexture(GL.GL_TEXTURE_2D, textures[index]);
             }
-        }
-
-        /// <summary>
-        /// Запустить текстуру по ключу текстуры сгенерированным OpenGL
-        /// </summary>
-        /// <param name="key">ключ текстуры</param>
-        /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
-        private void BindTexture(uint key, uint texture)
-        {
-            gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
-            gl.BindTexture(GL.GL_TEXTURE_2D, key);
         }
 
         /// <summary>
@@ -63,21 +46,21 @@ namespace WinGL.OpenGL
         /// </summary>
         /// <param name="index">индекс текстуры массива</param>
         /// <param name="image">рисунок</param>
-        private uint SetTexture(int index, BufferedImage image)
+        public uint SetTexture(int index, BufferedImage image, uint texture = 0)
         {
             if (index < textures.Length)
             {
                 uint key = textures[index];
                 if (key == 0)
                 {
-                    uint[] texture = new uint[1];
-                    gl.GenTextures(1, texture);
-                    key = texture[0];
+                    uint[] id = new uint[1];
+                    gl.GenTextures(1, id);
+                    key = id[0];
                     textures[index] = key;
                 }
 
                 gl.BindTexture(GL.GL_TEXTURE_2D, key);
-                gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);
+               // gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);
 
                 gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.width, image.height,
                     0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.buffer);
@@ -85,8 +68,6 @@ namespace WinGL.OpenGL
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-
-                gl.BindTexture(GL.GL_TEXTURE_2D, 0);
 
                 return key;
             }

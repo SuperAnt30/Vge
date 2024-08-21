@@ -51,7 +51,7 @@ namespace WinGL
         /// <summary>
         /// Массив матрицы для проецирования двумерных координат на экран
         /// </summary>
-        protected float[] Ortho2D { get; private set; }
+        public float[] Ortho2D { get; private set; }
 
         /// <summary>
         /// Объект OpenGL для элемента управления

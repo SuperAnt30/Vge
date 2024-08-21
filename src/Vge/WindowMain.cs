@@ -6,6 +6,11 @@ using System.Reflection;
 using System.Threading;
 using WinGL.Actions;
 using Vge.Renderer.Font;
+using Vge.Util;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using Vge.Renderer;
 
 namespace Vge
 {
@@ -20,32 +25,35 @@ namespace Vge
         /// </summary>
         public static ShaderText shaderText;
 
-        
-        /// <summary>
-        /// Координата мыши Х
-        /// </summary>
-        protected int mouseX;
-        /// <summary>
-        /// Координата мыши Y
-        /// </summary>
-        protected int mouseY;
-        /// <summary>
-        /// Счётчик фпс за кадр
-        /// </summary>
-        protected int fps = 0;
-        protected int tps = 0;
         /// <summary>
         /// Версия OpenGL
         /// </summary>
-        protected string versionOpenGL = "";
+        public string VersionOpenGL { get; protected set; } = "";
         /// <summary>
         /// Версия программы
         /// </summary>
-        protected string version = "";
+        public string Version { get; protected set; } = "";
         /// <summary>
-        /// Объект текстур
+        /// Координата мыши Х
         /// </summary>
-        protected TextureMap textureMap;
+        public int MouseX { get; protected set; }
+        /// <summary>
+        /// Координата мыши Y
+        /// </summary>
+        public int MouseY { get; protected set; }
+        /// <summary>
+        /// Счётчик кадров в секунду
+        /// </summary>
+        public int Fps { get; protected set; } = 0;
+        /// <summary>
+        /// Счётчик игровых тиков в секунду
+        /// </summary>
+        public int Tps { get; protected set; } = 0;
+        
+        /// <summary>
+        /// Объект отвечающий за прорисовку
+        /// </summary>
+        protected RenderBase render;
         /// <summary>
         /// Объект сервера
         /// </summary>
@@ -61,7 +69,7 @@ namespace Vge
 
         public WindowMain() : base()
         {
-            version = "Vge " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Version = "Vge " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             openGLVersion = OpenGLVersion.OpenGL3_3;
             counterFps.Tick += CounterFps_Tick;
             counterTps.Tick += CounterTps_Tick;
@@ -87,20 +95,20 @@ namespace Vge
 
         private void CounterTps_Tick(object sender, EventArgs e)
         {
-            tps = counterTps.CountTick;
+            Tps = counterTps.CountTick;
         }
 
         protected virtual void CounterFps_Tick(object sender, EventArgs e)
         {
            // if (InvokeRequired) Invoke(new EventHandler(Ticker_Frame), sender, e);
-            SetTitle(versionOpenGL + "FPS " + counterFps.CountTick);
-            fps = counterFps.CountTick;
+            SetTitle(VersionOpenGL + "FPS " + counterFps.CountTick);
+            Fps = counterFps.CountTick;
         }
 
         protected override void OnMouseMove(int x, int y)
         {
-            mouseX = x;
-            mouseY = y;
+            MouseX = x;
+            MouseY = y;
         }
 
         protected override void OnKeyDown(Keys keys)
@@ -130,14 +138,12 @@ namespace Vge
 
         protected override void OnOpenGLInitialized()
         {
-            FontRenderer.Init(gl);
-
             shader2D = new Shader2d(gl);
             shaderText = new ShaderText(gl);
 
             if (openGLVersion == OpenGLVersion.OpenGL2_1)
             {
-                versionOpenGL = "OpenGL 2.1 ";
+                VersionOpenGL = "OpenGL 2.1 ";
             }
             else
             {
@@ -145,9 +151,16 @@ namespace Vge
                 var minVers = new int[1];
                 gl.GetInteger(GL.GL_MAJOR_VERSION, majVers);
                 gl.GetInteger(GL.GL_MINOR_VERSION, minVers);
-                versionOpenGL = "OpenGL " + majVers[0] + "." + minVers[0] + " ";
+                VersionOpenGL = "OpenGL " + majVers[0] + "." + minVers[0] + " ";
             }
+
+            RenderInitialized();
         }
+
+        /// <summary>
+        /// Инициализаця объекта рендера
+        /// </summary>
+        protected virtual void RenderInitialized() => render = new RenderBase(this, gl);
 
         protected override void OnOpenGlDraw()
         {
@@ -233,6 +246,8 @@ namespace Vge
         //}
 
         #endregion
+
+
         
     }
 }
