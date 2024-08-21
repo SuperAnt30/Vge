@@ -35,7 +35,7 @@ namespace Vge.Renderer
         {
             this.window = window;
             this.gl = gl;
-            textureMap = new TextureMap(gl, 4);
+            textureMap = new TextureMap(gl);
         }
 
         /// <summary>
@@ -43,32 +43,38 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void InitializeFirst()
         {
+            TextureSetCount();
+
             //TODO::2024-08-21 временное создание текстур, надо заменить!!!
-            Bitmap bitmap = Image.FromFile(Options.PathTextures + "cursor.png") as Bitmap;
+            SetTexture(Options.PathTextures + "cursor.png", (int)AssetsTexture.cursor);
 
-            textureMap.SetTexture((int)AssetsTexture.cursor,
-                new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap)));
-
-            bitmap = Image.FromFile(Options.PathTextures + "Font8.png") as Bitmap;
-            BufferedImage font8 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile(Options.PathTextures + "Font12.png") as Bitmap;
-            BufferedImage font12 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            bitmap = Image.FromFile(Options.PathTextures + "Font16.png") as Bitmap;
-            BufferedImage font16 = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-
-            textureMap.SetTexture((int)AssetsTexture.Font8, font8);
-            textureMap.SetTexture((int)AssetsTexture.Font12, font12);
-            textureMap.SetTexture((int)AssetsTexture.Font16, font16);
-
-            this.font8 = new FontBase(gl, font8, 1);
-            this.font12 = new FontBase(gl, font12, 1);
-            this.font16 = new FontBase(gl, font16, 2);
+            font8 = new FontBase(gl, SetTexture(Options.PathTextures + "Font8.png", (int)AssetsTexture.Font8), 1);
+            font12 = new FontBase(gl, SetTexture(Options.PathTextures + "Font12.png", (int)AssetsTexture.Font12), 1);
+            font16 = new FontBase(gl, SetTexture(Options.PathTextures + "Font16.png", (int)AssetsTexture.Font16), 2);
         }
+
+        #region Texture
+
+        /// <summary>
+        /// Задать количество текстур
+        /// </summary>
+        protected virtual void TextureSetCount() => textureMap.SetCount(4);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
         public void BindTexture(int index, uint texture = 0) => textureMap.BindTexture(index, texture);
+
+        /// <summary>
+        /// Задать текстуру
+        /// </summary>
+        protected BufferedImage SetTexture(string fileName, int index)
+        {
+            Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
+            BufferedImage image = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
+            textureMap.SetTexture(index, image);
+            return image;
+        }
 
         /// <summary>
         /// Конвертация из Bitmap в объект BufferedImage
@@ -93,5 +99,7 @@ namespace Vge.Renderer
                     bitmap.UnlockBits(bmpdata);
             }
         }
+
+        #endregion
     }
 }

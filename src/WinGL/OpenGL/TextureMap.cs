@@ -21,12 +21,12 @@ namespace WinGL.OpenGL
         /// Создать объект текстур
         /// </summary>
         /// <param name="gl">Объект методов OpenGL</param>
-        /// <param name="count">Указать количество текстур</param>
-        public TextureMap(GL gl, int count)
-        {
-            this.gl = gl;
-            textures = new uint[count];
-        }
+        public TextureMap(GL gl) => this.gl = gl;
+
+        /// <summary>
+        /// Указать количество текстур
+        /// </summary>
+        public void SetCount(int count) => textures = new uint[count];
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
@@ -46,7 +46,7 @@ namespace WinGL.OpenGL
         /// </summary>
         /// <param name="index">индекс текстуры массива</param>
         /// <param name="image">рисунок</param>
-        public uint SetTexture(int index, BufferedImage image, uint texture = 0)
+        public uint SetTexture(int index, BufferedImage image)
         {
             if (index < textures.Length)
             {
