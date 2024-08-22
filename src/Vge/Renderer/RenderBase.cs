@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using Vge.Renderer.Font;
+using Vge.Renderer.Shaders;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -15,6 +16,11 @@ namespace Vge.Renderer
     public class RenderBase
     {
         /// <summary>
+        /// Основной шрифт
+        /// </summary>
+        public FontBase FontMain { get; private set; }
+
+        /// <summary>
         /// Объект окна
         /// </summary>
         protected readonly WindowMain window;
@@ -26,16 +32,22 @@ namespace Vge.Renderer
         /// Объект текстур
         /// </summary>
         protected readonly TextureMap textureMap;
-
-        public FontBase font8;
-        public FontBase font12;
-        public FontBase font16;
+        /// <summary>
+        /// Шейдоры для 2д
+        /// </summary>
+        protected readonly Shader2d shader2D;
+        /// <summary>
+        /// Шейдоры для текста
+        /// </summary>
+        protected readonly ShaderText shaderText;
 
         public RenderBase(WindowMain window, GL gl)
         {
             this.window = window;
             this.gl = gl;
             textureMap = new TextureMap(gl);
+            shader2D = new Shader2d(gl);
+            shaderText = new ShaderText(gl);
         }
 
         /// <summary>
@@ -43,14 +55,10 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void InitializeFirst()
         {
+            // Задать количество текстур
             TextureSetCount();
 
-            //TODO::2024-08-21 временное создание текстур, надо заменить!!!
-            SetTexture(Options.PathTextures + "cursor.png", (int)AssetsTexture.cursor);
-
-            font8 = new FontBase(gl, SetTexture(Options.PathTextures + "Font8.png", (int)AssetsTexture.Font8), 1);
-            font12 = new FontBase(gl, SetTexture(Options.PathTextures + "Font12.png", (int)AssetsTexture.Font12), 1);
-            font16 = new FontBase(gl, SetTexture(Options.PathTextures + "Font16.png", (int)AssetsTexture.Font16), 2);
+            FontMain = new FontBase(gl, SetTexture(Options.PathTextures + "FontMain.png", 0), 1);
         }
 
         #region Texture
@@ -58,8 +66,12 @@ namespace Vge.Renderer
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected virtual void TextureSetCount() => textureMap.SetCount(4);
+        protected virtual void TextureSetCount() => textureMap.SetCount(1);
 
+        /// <summary>
+        /// Запустить текстуру основного шрифта
+        /// </summary>
+        public void BindTexutreFontMain() => textureMap.BindTexture(0);
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>

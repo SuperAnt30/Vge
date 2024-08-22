@@ -5,26 +5,12 @@ using WinGL.OpenGL;
 using System.Reflection;
 using System.Threading;
 using WinGL.Actions;
-using Vge.Renderer.Font;
-using Vge.Util;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using Vge.Renderer;
 
 namespace Vge
 {
     public class WindowMain : Window
     {
-        /// <summary>
-        /// Шейдоры для 2д
-        /// </summary>
-        public static Shader2d shader2D;
-        /// <summary>
-        /// Шейдоры для текста
-        /// </summary>
-        public static ShaderText shaderText;
-
         /// <summary>
         /// Версия OpenGL
         /// </summary>
@@ -138,9 +124,6 @@ namespace Vge
 
         protected override void OnOpenGLInitialized()
         {
-            shader2D = new Shader2d(gl);
-            shaderText = new ShaderText(gl);
-
             if (openGLVersion == OpenGLVersion.OpenGL2_1)
             {
                 VersionOpenGL = "OpenGL 2.1 ";

@@ -2,7 +2,6 @@
 using WinGL.OpenGL;
 using WinGL.Actions;
 using System.Reflection;
-using Vge.Renderer;
 using Vge;
 using Mvk2.Util;
 using Mvk2.Audio;
@@ -13,13 +12,14 @@ namespace Mvk2
     public class WindowMvk : WindowMain
     {
         /// <summary>
-        /// Объект сетки курсора, временно
-        /// </summary>
-        private Mesh cursorVBO;
-        /// <summary>
         /// Виден ли курсор
         /// </summary>
-        private bool cursorShow = false;
+        public bool cursorShow = false;
+
+        /// <summary>
+        /// Объект отвечающий за прорисовку Малювек
+        /// </summary>
+        private RenderMvk renderMvk;
 
         private AudioMvk audio = new AudioMvk();
 
@@ -73,8 +73,6 @@ namespace Mvk2
             audio.Initialize(2);
             audio.InitializeSample();
 
-            cursorVBO = new Mesh(gl, RenderFigure.Rectangle2d(0, 0, 24, 24, 0, 0, 1, 1), new int[] { 2, 2 });
-
             gl.ShadeModel(GL.GL_SMOOTH);
             gl.ClearColor(0.0f, .5f, 0.0f, 1f);
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -89,8 +87,8 @@ namespace Mvk2
         /// </summary>
         protected override void RenderInitialized()
         {
-            render = new RenderMvk(this, gl);
-            render.InitializeFirst();
+            render = renderMvk = new RenderMvk(this, gl);
+            renderMvk.InitializeFirst();
         }
 
         protected override void OnOpenGlDraw()
@@ -104,25 +102,12 @@ namespace Mvk2
             gl.ClearColor(.7f, .4f, .4f, 1f);
             gl.Enable(GL.GL_BLEND);
 
-            ((RenderMvk)render).DrawDebug();
-
-            if (cursorShow)
-            {
-                render.BindTexture((int)AssetsTexture.cursor);
-                shader2D.Bind(gl);
-                shader2D.SetUniformMatrix4(gl, "projview", Ortho2D);
-                shader2D.SetUniform1(gl, "biasX", MouseX);
-                shader2D.SetUniform1(gl, "biasY", MouseY);
-                shader2D.SetUniform4(gl, "color", 1, 1, 1, 1);
-                cursorVBO.Draw();
-
-            }
+            renderMvk.DrawDebug();
         }
 
         protected override void OnResized(int width, int height)
         {
             base.OnResized(width, height);
-           // t1 = null;
         }
 
         protected override void Client_Frame(object sender, EventArgs e)
@@ -135,10 +120,10 @@ namespace Mvk2
         {
             base.Client_Tick(sender, e);
 
-            int x = ((RenderMvk)render).xx;
+            int x = renderMvk.xx;
             x -= 100;
             if (x < 0) x = 0;
-            ((RenderMvk)render).xx = x;
+            renderMvk.xx = x;
         }
 
         private string textDb = "";

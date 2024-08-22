@@ -2,7 +2,7 @@
 using Vge.Util;
 using WinGL.OpenGL;
 
-namespace Vge
+namespace Vge.Renderer.Shaders
 {
     public class ShaderText : ShaderProgram
     {

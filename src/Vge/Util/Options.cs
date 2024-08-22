@@ -16,10 +16,6 @@ namespace Vge.Util
         /// </summary>
         public static string PathShaders { get; private set; }
         /// <summary>
-        /// Путь к папке звуков
-        /// </summary>
-        public static string PathSounds { get; private set; }
-        /// <summary>
         /// Путь к папке текстур
         /// </summary>
         public static string PathTextures { get; private set; }
@@ -63,7 +59,6 @@ namespace Vge.Util
             }
 
             PathShaders = PathAssets + "Shaders" + Path.DirectorySeparatorChar;
-            PathSounds = PathAssets + "Sounds" + Path.DirectorySeparatorChar;
             PathTextures = PathAssets + "Textures" + Path.DirectorySeparatorChar;
         }
     }

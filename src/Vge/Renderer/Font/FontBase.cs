@@ -41,9 +41,13 @@ namespace Vge.Renderer.Font
         /// </summary>
         /// <param name="textureFont">Объект изображения</param>
         /// <param name="stepFont">растояние между буквами в пикселях</param>
-        public FontBase(GL gl, BufferedImage textureFont, byte stepFont)
+        /// <param name="isMesh">нужен ли меш</param>
+        public FontBase(GL gl, BufferedImage textureFont, byte stepFont, bool isMesh = true)
         {
-            mesh = new Mesh(gl, new float[0], new int[] { 2, 2, 3 });
+            if (isMesh)
+            {
+                mesh = new Mesh(gl, new float[0], new int[] { 2, 2, 3 });
+            }
 
             horiAdvance = textureFont.width >> 4;
             vertAdvance = textureFont.height >> 4;
@@ -183,8 +187,11 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void ReloadDraw()
         {
-            mesh.Reload(buffer.ToArray());
-            mesh.Draw();
+            if (mesh != null)
+            {
+                mesh.Reload(buffer.ToArray());
+                mesh.Draw();
+            }
         }
 
         #endregion

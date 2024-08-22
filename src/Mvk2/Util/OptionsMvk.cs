@@ -1,9 +1,23 @@
-﻿using Vge.Util;
+﻿using System.IO;
+using Vge.Util;
 
 namespace Mvk2.Util
 {
-    public class OptionsMvk : Options
+    public class OptionsMvk
     {
+        /// <summary>
+        /// Путь к папке шейдеров
+        /// </summary>
+        public static string PathShaders { get; private set; }
+        /// <summary>
+        /// Путь к папке звуков
+        /// </summary>
+        public static string PathSounds { get; private set; }
+        /// <summary>
+        /// Путь к папке текстур
+        /// </summary>
+        public static string PathTextures { get; private set; }
+
         /// <summary>
         /// Громкость музыки
         /// </summary>
@@ -39,6 +53,11 @@ namespace Mvk2.Util
         public static void UpDataMvk()
         {
             MusicVolumeFloat = MusicVolume / 100f;
+
+            string path = Options.PathAssets;
+            PathShaders = path + "Mvk2Shaders" + Path.DirectorySeparatorChar;
+            PathSounds = path + "Mvk2Sounds" + Path.DirectorySeparatorChar;
+            PathTextures = path + "Mvk2Textures" + Path.DirectorySeparatorChar;
         }
     }
 }
