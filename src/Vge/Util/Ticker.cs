@@ -3,15 +3,18 @@ using System.Diagnostics;
 using System.Threading;
 using WinGL.Util;
 
-namespace Vge
+namespace Vge.Util
 {
     /// <summary>
     /// Объект клиентской частки, в котором есть один луп, 
     /// но с двумя разделениями, для кадра и для игрового тика
     /// </summary>
-    public class Client
+    public class Ticker
     {
-        #region Ticker
+        /// <summary>
+        /// Получает частоту таймера в виде количества тактов в милисекунду
+        /// </summary>
+        public static long TimerFrequency { get; private set; }
 
         /// <summary>
         /// Желаемое количество кадров в секунду
@@ -28,7 +31,7 @@ namespace Vge
         /// <summary>
         /// Запущен ли loop игры
         /// </summary>
-        public bool IsRunGameLoop { get; set; } = false;
+        public bool IsRunGameLoop { get; set; } = true;
 
         private readonly Stopwatch stopwatch = new Stopwatch();
         /// <summary>
@@ -88,6 +91,24 @@ namespace Vge
         /// Время в тактах для следующего кадра
         /// </summary>
         private long nextFrame;
+
+        public Ticker(int wishTick = 20)
+        {
+            WishTick = wishTick;
+            timerFrequency = Stopwatch.Frequency / 1000;
+            timerFrequencyTps = Stopwatch.Frequency / wishTick;
+            intervalTick = timerFrequencyTps;
+            sleepTickDef = intervalTick / timerFrequency;
+
+            stopwatch.Start();
+            lastTimeFrame = stopwatch.ElapsedTicks;
+            lastTimeTick = lastTimeFrame;
+
+            nextTick = lastTimeTick + intervalTick;
+            nextFrame = lastTimeFrame + intervalFrame;
+
+            TimerFrequency = Stopwatch.Frequency / 1000;
+        }
 
         /// <summary>
         /// Задать желаемый фпс
@@ -175,23 +196,14 @@ namespace Vge
             }
         }
 
-        #endregion
-
-        public Client(int wishTick = 20)
-        {
-            WishTick = wishTick;
-            timerFrequency = Stopwatch.Frequency / 1000;
-            timerFrequencyTps = Stopwatch.Frequency / wishTick;
-            intervalTick = timerFrequencyTps;
-            sleepTickDef = intervalTick / timerFrequency;
-
-            stopwatch.Start();
-            lastTimeFrame = stopwatch.ElapsedTicks;
-            lastTimeTick = lastTimeFrame;
-
-            nextTick = lastTimeTick + intervalTick;
-            nextFrame = lastTimeFrame + intervalFrame;
-        }
+        /// <summary>
+        /// Получить время в милисекундах с момента запуска проекта
+        /// </summary>
+        public long Time() => stopwatch.ElapsedMilliseconds;
+        /// <summary>
+        /// Получить время в тактах с момента запуска проекта
+        /// </summary>
+        public long TimeTicks() => stopwatch.ElapsedTicks;
 
         #region Events
 
@@ -206,13 +218,6 @@ namespace Vge
         /// </summary>
         public event EventHandler Frame;
         private void OnFrame() => Frame?.Invoke(this, new EventArgs());
-
-        /// <summary>
-        /// Событие ошибки на сервере
-        /// </summary>
-        public event ThreadExceptionEventHandler Error;
-        private void OnError(Exception ex)
-            => Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
 
         #endregion
     }

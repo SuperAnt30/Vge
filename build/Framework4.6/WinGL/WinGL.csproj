@@ -50,7 +50,6 @@
     <Compile Include="OpenGL\Mesh.cs" />
     <Compile Include="OpenGL\TextureMap.cs" />
     <Compile Include="Util\BufferedImage.cs" />
-    <Compile Include="Util\CounterTick.cs" />
     <Compile Include="Util\Mth.cs" />
     <Compile Include="Win32\Gdi32\PixelFormatDescriptor.cs" />
     <Compile Include="Win32\Gdi32\WinGdi.cs" />

@@ -2,6 +2,7 @@
 using System.Numerics;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -49,6 +50,23 @@ namespace Mvk2.Renderer
                 SetTexture(OptionsMvk.PathTextures + "FontSmall.png", AssetsTexture.FontSmall), 1);
             FontLarge = new FontBase(gl, 
                 SetTexture(OptionsMvk.PathTextures + "FontLarge.png", AssetsTexture.FontLarge), 2);
+
+            SetTextDebug("Занесло меня на остров,\r\n" +
+            "Ожидало много бед.\r\n" +
+            "Жить на нём совсем не просто,\r\n" +
+            "А прошло не мало лет.\r\n\r\n" +
+            "Почти вымерли все звери,\r\n" +
+            "Я остался лишь живой.\r\n" +
+            "И ходил я всё и думал,\r\n" +
+            "Как попасть же мне домой.\r\n\r\n" +
+            "Занесло меня на остров,\r\n" +
+            "Ожидало много бед.\r\n" +
+            "Жить на нём совсем не просто,\r\n" +
+            "А прошло не мало лет.\r\n\r\n" +
+            "Почти вымерли все звери,\r\n" +
+            "Я остался лишь живой.\r\n" +
+            "И ходил я всё и думал,\r\n" +
+            "Как попасть же мне домой.\r\n\r\n");
         }
 
         #region Texture
@@ -72,34 +90,9 @@ namespace Mvk2.Renderer
 
         #endregion
 
-        /// <summary>
-        /// Отладочный теккст
-        /// VBO 450-460 fps, если biasY вывести на строку один то 540
-        /// DL 650 fps
-        /// </summary>
-        public string textDebug =
-            "Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n" +
-            "Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n";
-
         public int xx = 0;
 
-        Mesh mesh1;
-
-        public void DrawDebug(string textDb)
+        protected override void OnDraw()
         {
             FontSmall.BufferClear();
             FontMain.BufferClear();
@@ -107,6 +100,9 @@ namespace Mvk2.Renderer
 
             shaderText.Bind(gl);
             shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+
+            RenderTextDebug();
+            DrawTextDebug();
 
             Vector3 bg = new Vector3(.2f, .2f, .2f);
             Vector3 cw = new Vector3(.9f, .9f, .9f);
@@ -116,28 +112,6 @@ namespace Mvk2.Renderer
 
             if (++xx > 900) xx = 0;
             
-            // textDebug
-            if (mesh1 == null)
-            {
-
-                FontMain.RenderText(11, 11, textDebug, bg);
-
-                FontMain.RenderText(10, 10, textDebug, cw);
-                FontMain.RenderText(211, 11, textDebug, bg);
-                FontMain.RenderText(210, 10, textDebug, cw);
-                FontMain.RenderText(411, 11, textDebug, bg);
-                FontMain.RenderText(410, 10, textDebug, cw);
-                FontMain.RenderText(611, 11, textDebug, bg);
-                FontMain.RenderText(610, 10, textDebug, cw);
-
-                mesh1 = new Mesh(gl, FontMain.ToBuffer(), new int[] { 2, 2, 3 });
-                FontMain.BufferClear();
-
-            }
-
-            BindTexutreFontMain();
-            mesh1.Draw();
-
             int width = window.Width;
             int height = window.Height;
 
@@ -146,10 +120,11 @@ namespace Mvk2.Renderer
             FontLarge.RenderString(width - w - 9, height - 18, window.Version, bg);
             FontLarge.RenderString(width - w - 10, height - 19, window.Version, new Vector3(0.6f, 0.9f, .9f));
 
+            string str;
             // fps
-            string str = "FPS " + window.Fps.ToString() + " TPS " + window.Tps.ToString();
-            FontMain.RenderString(11, height - 18, str, bg);
-            FontMain.RenderString(10, height - 19, str, cw);
+            //string str = "FPS " + window.Fps.ToString() + " TPS " + window.Tps.ToString();
+            //FontMain.RenderString(11, height - 18, str, bg);
+            //FontMain.RenderString(10, height - 19, str, cw);
 
             // XYZ
             w = 190;
@@ -171,11 +146,11 @@ namespace Mvk2.Renderer
             FontMain.RenderString(w, height - 19, str, cw);
 
             //textDb
-            if (textDb != "")
-            {
-                FontMain.RenderString(11, height - 38, textDb, bg);
-                FontMain.RenderString(10, height - 39, textDb, cw);
-            }
+            //if (textDb != "")
+            //{
+            //    FontMain.RenderString(11, height - 38, textDb, bg);
+            //    FontMain.RenderString(10, height - 39, textDb, cw);
+            //}
 
             // Draw
             BindTexture(AssetsTexture.FontSmall);

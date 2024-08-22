@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using WinGL.Util;
 using WinGL.Win32;
 using WinGL.Win32.Gdi32;
@@ -407,8 +406,6 @@ namespace WinGL
             }
         }
 
-        
-
         /// <summary>
         /// Очистить
         /// </summary>
@@ -430,12 +427,7 @@ namespace WinGL
         /// <summary>
         /// Тик в лупе
         /// </summary>
-        protected virtual void LoopTick()
-        {
-           // DrawFrame();
-            //Thread.Sleep(16);
-            //Thread.Sleep(3);
-        }
+        protected virtual void LoopTick() { }
 
         /// <summary>
         /// Прорисовать кадр, с заменой буфера
@@ -489,7 +481,6 @@ namespace WinGL
                 mat.M31, mat.M32, mat.M33, mat.M34,
                 mat.M41, mat.M42, mat.M43, mat.M44
             };
-            //Ortho2D  = Glm.Ortho(0, Width, Height, 0).ToArray();
 
             gl.Viewport(0, 0, width, height);
         }

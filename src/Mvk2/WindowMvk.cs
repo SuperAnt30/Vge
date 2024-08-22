@@ -21,30 +21,32 @@ namespace Mvk2
         /// </summary>
         private RenderMvk renderMvk;
 
-        private AudioMvk audio = new AudioMvk();
+        public WindowMvk() : base() { }
 
-        public WindowMvk() : base()
+        protected override void Initialized()
         {
             Version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            //FullScreen = true;
-            //  CursorShow(true);
+            // TODO::2024-08-22 продумать перезагрузку опций
+            new OptionsFileMvk().Load();
+            new OptionsFileMvk().Save();
 
-            //WinUser.CursorShow(false);
+            audio = new AudioMvk();
+            // Инициализация звука и загрузка семплов
+            audio.Initialize(2);
+            audio.InitializeSample();
         }
 
         protected override void OnMouseDown(MouseButton button, int x, int y)
         {
             base.OnMouseDown(button, x, y);
             if (button == MouseButton.Left) cursorShow = true;
-            client.IsRunGameLoop = true;
         }
 
         protected override void OnMouseUp(MouseButton button, int x, int y)
         {
             base.OnMouseUp(button, x, y);
             if (button == MouseButton.Left) cursorShow = false;
-            client.IsRunGameLoop = false;
         }
 
         protected override void OnMouseEnter()
@@ -62,16 +64,7 @@ namespace Mvk2
 
         protected override void OnOpenGLInitialized()
         {
-            new OptionsFileMvk().Load();
-            new OptionsFileMvk().Save();
-
-            // Загрузка опций должна быть до инициализации графики, 
-            // так -как нужно знать откуда грузить шейдера
             base.OnOpenGLInitialized();
-
-            // Инициализация звука и загрузка семплов
-            audio.Initialize(2);
-            audio.InitializeSample();
 
             gl.ShadeModel(GL.GL_SMOOTH);
             gl.ClearColor(0.0f, .5f, 0.0f, 1f);
@@ -102,7 +95,7 @@ namespace Mvk2
             gl.ClearColor(.7f, .4f, .4f, 1f);
             gl.Enable(GL.GL_BLEND);
 
-            renderMvk.DrawDebug(textDb);
+            renderMvk.Draw();
         }
 
         protected override void OnResized(int width, int height)
@@ -110,15 +103,9 @@ namespace Mvk2
             base.OnResized(width, height);
         }
 
-        protected override void Client_Frame(object sender, EventArgs e)
+        protected override void OnTick()
         {
-            DrawFrame();
-            //Thread.Sleep(25);
-        }
-
-        protected override void Client_Tick(object sender, EventArgs e)
-        {
-            base.Client_Tick(sender, e);
+            base.OnTick();
 
             int x = renderMvk.xx;
             x -= 100;
@@ -126,12 +113,33 @@ namespace Mvk2
             renderMvk.xx = x;
         }
 
-        private string textDb = "";
-
         protected override void OnKeyDown(Keys keys)
         {
             base.OnKeyDown(keys);
-            if (keys == Keys.Space)
+            if (keys == Keys.F2)
+            {
+                // Включить сервер по сети
+                GameNetRun();
+            }
+            if (keys == Keys.F3)
+            {
+                // Включить сервер локальный
+                GameLocalRun();
+            }
+            else if (keys == Keys.F4)
+            {
+                // Пауза
+                if (game != null)
+                {
+                    game.SetGamePauseSingle(!game.IsGamePaused);
+                }
+            }
+            else if (keys == Keys.F5)
+            {
+                // Остановить сервер
+                GameStoping();
+            }
+            else if (keys == Keys.Space)
             {
                 audio.PlaySound(0, 0, 0, 0, 1, 1);
             }
@@ -139,14 +147,15 @@ namespace Mvk2
             {
                 audio.PlaySound(1, 0, 0, 0, 1, 1);
             }
+            
             //map.ContainsKey(keys);
-            textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
+            //textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
         }
 
         protected override void OnKeyUp(Keys keys)
         {
             base.OnKeyUp(keys);
-            textDb = "up " + keys.ToString();
+            //textDb = "up " + keys.ToString();
         }
 
         protected override void OnKeyPress(char key)
@@ -161,11 +170,5 @@ namespace Mvk2
                 return;
             }
         }
-
-        //protected override void Server_Tick(object sender, EventArgs e)
-        //{
-        //    xx -= 100;
-        //    if (xx < 0) xx = 0;
-        //}
     }
 }

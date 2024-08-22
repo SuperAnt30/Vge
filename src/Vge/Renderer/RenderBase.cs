@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
@@ -48,6 +49,7 @@ namespace Vge.Renderer
             textureMap = new TextureMap(gl);
             shader2D = new Shader2d(gl);
             shaderText = new ShaderText(gl);
+            meshTextDebug = new Mesh(gl, new float[0], new int[] { 2, 2, 3 });
         }
 
         /// <summary>
@@ -110,6 +112,109 @@ namespace Vge.Renderer
                 if (bmpdata != null)
                     bitmap.UnlockBits(bmpdata);
             }
+        }
+
+        #endregion
+
+        #region TextDebug
+
+        private string textDebug = "";
+        private bool isTextDebug = false;
+        private Mesh meshTextDebug;
+
+        /// <summary>
+        /// Внести текст отладки
+        /// </summary>
+        public void SetTextDebug(string text)
+        {
+            textDebug = text;
+            isTextDebug = true;
+        }
+
+        /// <summary>
+        /// Рендер текста отладки
+        /// </summary>
+        protected void RenderTextDebug()
+        {
+            if (isTextDebug)
+            {
+                isTextDebug = false;
+                FontMain.RenderText(11, 11, textDebug, new Vector3(.2f, .2f, .2f));
+                FontMain.RenderText(10, 10, textDebug, new Vector3(.9f, .9f, .9f));
+                
+                meshTextDebug.Reload(FontMain.ToBuffer());
+                FontMain.BufferClear();
+            }
+        }
+
+        /// <summary>
+        /// Прорисовка отладки
+        /// </summary>
+        protected void DrawTextDebug()
+        {
+            BindTexutreFontMain();
+            meshTextDebug.Draw();
+        }
+
+        #endregion
+
+        #region Draw + Debug
+
+        /// <summary>
+        /// Прорисовка кадра
+        /// </summary>
+        public void Draw()
+        {
+            DrawBegin();
+            OnDraw();
+            DrawEnd();
+        }
+
+        private float speedFrameAll;
+        private float speedTickAll;
+        private long timerSecond;
+        private int fps;
+        private int tps;
+        private long tickDraw;
+
+        protected virtual void DrawBegin()
+        {
+            fps++;
+            tickDraw = window.TimeTicks();
+        }
+
+        protected virtual void OnDraw() { }
+
+        /// <summary>
+        /// После прорисовки каждого кадра OpenGL
+        /// </summary>
+        protected virtual void DrawEnd()
+        {
+            // Перерасчёт кадров раз в секунду, и среднее время прорисовки кадра
+            if (window.Time() >= timerSecond + 1000)
+            {
+                float speedTick = 0;
+                if (tps > 0) speedTick = speedTickAll / tps;
+                window.debug.SetTpsFps(fps, speedFrameAll / fps, tps, speedTick);
+
+                timerSecond += 1000;
+                speedFrameAll = 0;
+                speedTickAll = 0;
+                fps = 0;
+                tps = 0;
+            }
+
+            speedFrameAll += (float)(window.TimeTicks() - tickDraw) / Ticker.TimerFrequency;
+        }
+
+        /// <summary>
+        /// В такте игрового времени
+        /// </summary>
+        /// <param name="time">время затраченное на такт</param>
+        public void UpdateTick(float time)
+        {
+            speedTickAll += time;
+            tps++;
         }
 
         #endregion

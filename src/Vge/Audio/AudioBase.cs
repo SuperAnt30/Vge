@@ -19,7 +19,7 @@ namespace Vge.Audio
         /// <summary>
         /// Строка для дэбага сколько источников и занятых
         /// </summary>
-        public string StrDebug { get; private set; }
+        public string StrDebug { get; private set; } = "";
 
         /// <summary>
         /// Инициализация звукового драйвера

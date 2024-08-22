@@ -1,11 +1,13 @@
 ﻿using System;
 using WinGL;
-using WinGL.Util;
 using WinGL.OpenGL;
 using System.Reflection;
 using System.Threading;
 using WinGL.Actions;
 using Vge.Renderer;
+using Vge.Util;
+using Vge.Games;
+using Vge.Audio;
 
 namespace Vge
 {
@@ -28,68 +30,59 @@ namespace Vge
         /// </summary>
         public int MouseY { get; protected set; }
         /// <summary>
-        /// Счётчик кадров в секунду
+        /// Отладочный класс
         /// </summary>
-        public int Fps { get; protected set; } = 0;
-        /// <summary>
-        /// Счётчик игровых тиков в секунду
-        /// </summary>
-        public int Tps { get; protected set; } = 0;
-        
+        public readonly Debug debug = new Debug();
+
         /// <summary>
         /// Объект отвечающий за прорисовку
         /// </summary>
         protected RenderBase render;
         /// <summary>
-        /// Объект сервера
+        /// Объект создающий последовательные кадры и тики
         /// </summary>
-        //protected Server server;
+        protected Ticker ticker;
         /// <summary>
-        /// Объект клиента плюс локальный луп сервера
+        /// Игровой объект
         /// </summary>
-        protected Client client;
+        protected GameBase game;
+        /// <summary>
+        /// Объект звуков
+        /// </summary>
+        protected AudioBase audio;
 
-        public CounterTick counterFps = new CounterTick();
-        public CounterTick counterTps = new CounterTick();
-
+        /// <summary>
+        /// Флаг на удаление, ждём когда закроется сервер
+        /// </summary>
+        private bool flagClose = false;
 
         public WindowMain() : base()
         {
-            Version = "Vge " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Initialized();
+
             openGLVersion = OpenGLVersion.OpenGL3_3;
-            counterFps.Tick += CounterFps_Tick;
-            counterTps.Tick += CounterTps_Tick;
+
+            ticker = new Ticker();
+            ticker.Tick += Ticker_Tick;
+            ticker.Frame += Ticker_Frame;
+            ticker.SetWishFrame(60);
+        }
+
+        protected virtual void Initialized()
+        {
+            Version = "Vge " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
         /// <summary>
-        /// Включить или выключить вертикальную сенхронизацию
+        /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
-        protected override void SetVSync(bool on)
-        {
-            base.SetVSync(on);
-            client.ResetTimeFrame();
-        }
-
+        public long Time() => ticker.Time();
         /// <summary>
-        /// Запущено окно
+        /// Получить время в тактах с момента запуска проекта
         /// </summary>
-        public override void Begined()
-        {
-            //StartServer();
-            StartClient();
-        }
+        public long TimeTicks() => ticker.TimeTicks();
 
-        private void CounterTps_Tick(object sender, EventArgs e)
-        {
-            Tps = counterTps.CountTick;
-        }
-
-        protected virtual void CounterFps_Tick(object sender, EventArgs e)
-        {
-           // if (InvokeRequired) Invoke(new EventHandler(Ticker_Frame), sender, e);
-            SetTitle(VersionOpenGL + "FPS " + counterFps.CountTick);
-            Fps = counterFps.CountTick;
-        }
+        #region On...
 
         protected override void OnMouseMove(int x, int y)
         {
@@ -110,15 +103,15 @@ namespace Vge
             }
             else if (keys == Keys.F8)
             {
-                client.SetWishFrame(120);
+                ticker.SetWishFrame(120);
             }
             else if (keys == Keys.F7)
             {
-                client.SetWishFrame(20);
+                ticker.SetWishFrame(20);
             }
             else if (keys == Keys.F6)
             {
-                client.SetWishFrame(280);
+                ticker.SetWishFrame(280);
             }
         }
 
@@ -140,97 +133,152 @@ namespace Vge
             RenderInitialized();
         }
 
+        #endregion
+
+        #region WindowOverride
+
+        /// <summary>
+        /// Включить или выключить вертикальную сенхронизацию
+        /// </summary>
+        protected override void SetVSync(bool on)
+        {
+            base.SetVSync(on);
+            ticker.ResetTimeFrame();
+        }
+
+        /// <summary>
+        /// Запущено окно
+        /// </summary>
+        public override void Begined()
+        {
+            // TODO::2024-08-22 тут загрузчик включит, текстур и прочего
+        }
+
         /// <summary>
         /// Инициализаця объекта рендера
         /// </summary>
         protected virtual void RenderInitialized() => render = new RenderBase(this, gl);
-
-        protected override void OnOpenGlDraw()
-        {
-            counterFps.CalculateFrameRate();
-        }
 
         /// <summary>
         /// Закрыть приложение
         /// </summary>
         protected override void Close()
         {
-            base.Close();
-            //client.Stoping();
-            //server.Stop();
+            if (game != null)
+            {
+                flagClose = true;
+                game.GameStoping();
+            }
+            else
+            {
+                base.Close();
+            }
         }
 
         /// <summary>
         /// Тик в лупе
         /// </summary>
-        protected override void LoopTick()
-        {
-            // DrawFrame();
-            //Thread.Sleep(16);
-            //Thread.Sleep(3);
-            client.DoTick();
-        }
+        protected override void LoopTick() => ticker.DoTick();
 
-        #region Client
+        #endregion
+
+        #region Game
 
         /// <summary>
-        /// Запустить сервер в отдельном потоке
+        /// Запустить игру по сети
         /// </summary>
-        private void StartClient()
+        protected void GameNetRun()
         {
-            client = new Client();
-            client.Error += Client_Error;
-            client.Tick += Client_Tick;
-            client.Frame += Client_Frame;
-            client.SetWishFrame(60);
+            if (game == null)
+            {
+                game = new GameNet();
+                GameRun();
+            }
         }
 
-        protected virtual void Client_Error(object sender, ThreadExceptionEventArgs e)
+        /// <summary>
+        /// Запустить локальную игру
+        /// </summary>
+        protected void GameLocalRun()
+        {
+            if (game == null)
+            {
+                game = new GameLocal();
+                GameRun();
+            }
+        }
+
+        private void GameRun()
+        {
+            game.Stoped += Game_Stoped;
+            game.Error += Game_Error;
+            game.ServerTextDebug += Game_ServerTextDebug;
+            game.GameStarting();
+        }
+
+        private void Game_ServerTextDebug(object sender, StringEventArgs e)
+            => debug.server = e.Text;
+
+        /// <summary>
+        /// Игра остановлена
+        /// </summary>
+        protected virtual void Game_Stoped(object sender, EventArgs e)
+        {
+            game = null;
+            debug.server = "";
+            if (flagClose)
+            {
+                // Если закрытие игры из-за закритии приложения, 
+                // повторяем закрытие приложения
+                Close();
+            }
+        }
+
+        private void Game_Error(object sender, ThreadExceptionEventArgs e)
         {
             MessageBoxCrach(e.Exception);
         }
 
-        protected virtual void Client_Frame(object sender, EventArgs e)
+        /// <summary>
+        /// Остановить игру
+        /// </summary>
+        protected void GameStoping()
+        {
+            if (game != null)
+            {
+                game.GameStoping();
+            }
+        }
+
+        #endregion
+
+        #region Ticker
+
+        protected virtual void Ticker_Frame(object sender, EventArgs e)
         {
             DrawFrame();
         }
 
-        protected virtual void Client_Tick(object sender, EventArgs e)
+        private void Ticker_Tick(object sender, EventArgs e)
         {
-            counterTps.CalculateFrameRate();
+            timeBegin = TimeTicks();
+            OnTick();
+            render.UpdateTick((float)(TimeTicks() - timeBegin) / (float)Ticker.TimerFrequency);
+        }
+
+        private long timeBegin;
+
+        protected virtual void OnTick()
+        {
+            audio.Tick();
+            debug.audio = audio.StrDebug;
+            debug.client = game != null ? game.ToString() : "null";
+
+            // Отладка на экране
+            render.SetTextDebug(debug.ToText());
         }
 
         #endregion
 
-        #region Server
-
-        /// <summary>
-        /// Запустить сервер в отдельном потоке
-        /// </summary>
-        //private void StartServer()
-        //{
-        //    server = new Server();
-        //    server.Closeded += Server_Closeded;
-        //    server.Error += Server_Error;
-        //    server.Tick += Server_Tick;
-        //    server.StartServer();
-        //}
-
-        //protected virtual void Server_Error(object sender, ThreadExceptionEventArgs e)
-        //{
-        //    MessageBoxCrach(e.Exception);
-        //}
-
-        //protected virtual void Server_Tick(object sender, EventArgs e) { }
-
-        //protected virtual void Server_Closeded(object sender, EventArgs e)
-        //{
-        //    Close();
-        //}
-
-        #endregion
-
-
-        
     }
 }
