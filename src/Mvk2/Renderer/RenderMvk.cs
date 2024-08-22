@@ -99,7 +99,7 @@ namespace Mvk2.Renderer
 
         Mesh mesh1;
 
-        public void DrawDebug()
+        public void DrawDebug(string textDb)
         {
             FontSmall.BufferClear();
             FontMain.BufferClear();
@@ -169,6 +169,13 @@ namespace Mvk2.Renderer
             str = window.MouseY.ToString("0.0");
             FontMain.RenderString(w + 1, height - 18, str, bg);
             FontMain.RenderString(w, height - 19, str, cw);
+
+            //textDb
+            if (textDb != "")
+            {
+                FontMain.RenderString(11, height - 38, textDb, bg);
+                FontMain.RenderString(10, height - 39, textDb, cw);
+            }
 
             // Draw
             BindTexture(AssetsTexture.FontSmall);

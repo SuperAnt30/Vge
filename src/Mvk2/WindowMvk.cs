@@ -102,7 +102,7 @@ namespace Mvk2
             gl.ClearColor(.7f, .4f, .4f, 1f);
             gl.Enable(GL.GL_BLEND);
 
-            renderMvk.DrawDebug();
+            renderMvk.DrawDebug(textDb);
         }
 
         protected override void OnResized(int width, int height)
