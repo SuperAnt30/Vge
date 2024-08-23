@@ -8,6 +8,7 @@ using Vge.Renderer;
 using Vge.Util;
 using Vge.Games;
 using Vge.Audio;
+using Vge.Event;
 
 namespace Vge
 {
@@ -222,10 +223,10 @@ namespace Vge
         /// <summary>
         /// Игра остановлена
         /// </summary>
-        protected virtual void Game_Stoped(object sender, EventArgs e)
+        protected virtual void Game_Stoped(object sender, StringEventArgs e)
         {
             game = null;
-            debug.server = "";
+            debug.server = e.Text;// "";
             if (flagClose)
             {
                 // Если закрытие игры из-за закритии приложения, 

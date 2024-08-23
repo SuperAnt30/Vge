@@ -1,4 +1,4 @@
-﻿namespace Vge.Util
+﻿namespace Vge.Event
 {
     public delegate void StringEventHandler(object sender, StringEventArgs e);
     public class StringEventArgs

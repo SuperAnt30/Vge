@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
+using Vge.Event;
 using Vge.Network;
-using Vge.Util;
 
 namespace Vge.Games
 {
@@ -19,7 +19,6 @@ namespace Vge.Games
         /// </summary>
         public bool IsGamePaused { get; protected set; } = false;
 
-
         /// <summary>
         /// Запуск игры
         /// </summary>
@@ -28,11 +27,7 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public virtual void GameStoping()
-        {
-            //System.Threading.Thread.Sleep(500);
-            OnStoped();
-        }
+        public virtual void GameStoping() => OnStoped();
 
         /// <summary>
         /// Задать паузу для одиночной игры
@@ -44,11 +39,15 @@ namespace Vge.Games
         /// </summary>
         public virtual void TrancivePacket(IPacket packet) { }
 
+        /// <summary>
+        /// Получить от сервера пакет
+        /// </summary>
+        protected void RecievePacket(ServerPacketEventArgs e) { }
+
         public override string ToString()
         {
             return string.Format("{0}{1}",
                 IsLoacl ? "Local" : "Net", IsGamePaused ? " Pause" : "");
-
         }
 
         #region Event
@@ -56,8 +55,9 @@ namespace Vge.Games
         /// <summary>
         /// Событие остановлена игра
         /// </summary>
-        public event EventHandler Stoped;
-        protected void OnStoped() => Stoped?.Invoke(this, new EventArgs());
+        public event StringEventHandler Stoped;
+        protected void OnStoped(string notification = "") 
+            => Stoped?.Invoke(this, new StringEventArgs(notification));
 
         /// <summary>
         /// Событие ошибки на сервере

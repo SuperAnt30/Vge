@@ -107,10 +107,10 @@ namespace Mvk2
         {
             base.OnTick();
 
-            int x = renderMvk.xx;
-            x -= 100;
-            if (x < 0) x = 0;
-            renderMvk.xx = x;
+            //int x = renderMvk.xx;
+            //x -= 100;
+            //if (x < 0) x = 0;
+            //renderMvk.xx = x;
         }
 
         protected override void OnKeyDown(Keys keys)

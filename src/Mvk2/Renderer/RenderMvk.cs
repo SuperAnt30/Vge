@@ -2,7 +2,6 @@
 using System.Numerics;
 using Vge.Renderer;
 using Vge.Renderer.Font;
-using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -50,23 +49,6 @@ namespace Mvk2.Renderer
                 SetTexture(OptionsMvk.PathTextures + "FontSmall.png", AssetsTexture.FontSmall), 1);
             FontLarge = new FontBase(gl, 
                 SetTexture(OptionsMvk.PathTextures + "FontLarge.png", AssetsTexture.FontLarge), 2);
-
-            SetTextDebug("Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n" +
-            "Занесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "Жить на нём совсем не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
-            "Как попасть же мне домой.\r\n\r\n");
         }
 
         #region Texture

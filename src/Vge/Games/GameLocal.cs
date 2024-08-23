@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
+using Vge.Event;
 using Vge.Network;
-using Vge.Util;
 
 namespace Vge.Games
 {
@@ -36,7 +36,9 @@ namespace Vge.Games
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;
+            server.RecievePacket += Server_RecievePacket;
             server.Starting();
+            server.RunNet(32021);
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace Vge.Games
         {
             if (server != null)
             {
-                server.Stoping();
+                server.Stop();
             }
         }
 
@@ -58,6 +60,9 @@ namespace Vge.Games
 
         private void Server_Closeded(object sender, EventArgs e)
             => OnStoped();
+
+        private void Server_RecievePacket(object sender, ServerPacketEventArgs e)
+            => RecievePacket(e);
 
         #endregion
     }
