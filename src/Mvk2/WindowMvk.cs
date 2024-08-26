@@ -37,6 +37,11 @@ namespace Mvk2
             audio.InitializeSample();
         }
 
+        protected override void Game_Tick(object sender, EventArgs e)
+        {
+            if (renderMvk.xx2++ > 900) renderMvk.xx2 = 0;
+        }
+
         protected override void OnMouseDown(MouseButton button, int x, int y)
         {
             base.OnMouseDown(button, x, y);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
@@ -18,8 +19,13 @@ namespace Vge.Games
         /// Время в мс на такт, в minecraft 50
         /// </summary>
         private const int speedMs = 1000 / speedTps;
-        
 
+
+        /// <summary>
+        /// Указывает, запущен сервер или нет. Установите значение false, 
+        /// чтобы инициировать завершение работы. 
+        /// </summary>
+        public bool IsServerRunning { get; private set; } = true;
         /// <summary>
         /// Увеличивается каждый тик 
         /// </summary>
@@ -33,11 +39,6 @@ namespace Vge.Games
         /// Для перевода тактов в мили секунды Stopwatch.Frequency / 1000;
         /// </summary>
         private readonly long frequencyMs;
-        /// <summary>
-        /// Указывает, запущен сервер или нет. Установите значение false, 
-        /// чтобы инициировать завершение работы. 
-        /// </summary>
-        private bool serverRunning = true;
         /// <summary>
         /// Устанавливается при появлении предупреждения «Не могу угнаться», 
         /// которое срабатывает снова через 15 секунд. 
@@ -87,10 +88,11 @@ namespace Vge.Games
         /// <summary>
         /// Объект работы с пакетами
         /// </summary>
-       // private ProcessServerPackets packets;
+        private ProcessServerPackets packets;
 
         public Server()
         {
+            packets = new ProcessServerPackets(this);
             frequencyMs = Stopwatch.Frequency / 1000;
             stopwatchTps.Start();
         }
@@ -109,7 +111,7 @@ namespace Vge.Games
         /// <summary>
         /// Запрос остановки сервера
         /// </summary>
-        public void Stop() => serverRunning = false;
+        public void Stop() => IsServerRunning = false;
 
         /// <summary>
         /// Задать паузу для одиночной игры
@@ -161,7 +163,7 @@ namespace Vge.Games
         private void SocketServer_Stopped(object sender, EventArgs e)
         {
             socketServer = null;
-            if (serverRunning)
+            if (IsServerRunning)
             {
                 // Если сеть остановилась, а луп нет, 
                 // запускаем остановку лупа и последующее завершение
@@ -178,7 +180,7 @@ namespace Vge.Games
         {
             if (e.Packet.status == StatusNet.Disconnect)
             {
-               // World.Players.PlayerRemove(e.Packet.WorkSocket);
+                // World.Players.PlayerRemove(e.Packet.WorkSocket);
             }
             else if (e.Packet.status == StatusNet.Connect)
             {
@@ -198,7 +200,7 @@ namespace Vge.Games
         public void LocalReceivePacket(Socket socket, byte[] buffer)
         {
             rx++;
-           // packets.ReceiveBuffer(socket, buffer);
+            packets.ReceiveBuffer(socket, buffer);
         }
 
         /// <summary>
@@ -211,25 +213,27 @@ namespace Vge.Games
         /// </summary>
         public void ResponsePacket(Socket socket, IPacket packet)
         {
-            //using (MemoryStream writeStream = new MemoryStream())
-            //{
-            //    using (StreamBase stream = new StreamBase(writeStream))
-            //    {
-            //        writeStream.WriteByte(ProcessPackets.GetId(packet));
-            //        packet.WritePacket(stream);
-            //        byte[] buffer = writeStream.ToArray();
-            //        tx++;
-            //        ServerPacket spacket = new ServerPacket(socket, buffer);
-            //        if (socket != null)
-            //        {
-            //            server.SendPacket(socket, buffer);
-            //        }
-            //        else
-            //        {
-            //            OnRecievePacket(new ServerPacketEventArgs(spacket));
-            //        }
-            //    }
-            //}
+            // TODO::2024-08-25 MemoryStream
+            using (MemoryStream writeStream = new MemoryStream())
+            {
+                using (StreamBase stream = new StreamBase(writeStream))
+                {
+                    writeStream.WriteByte(ProcessPackets.GetId(packet));
+                    packet.WritePacket(stream);
+                    byte[] buffer = writeStream.ToArray();
+                    tx++;
+
+                    if (socket != null)
+                    {
+                        socketServer.SendPacket(socket, buffer);
+                    }
+                    else
+                    {
+                        ServerPacket spacket = new ServerPacket(socket, buffer);
+                        OnRecievePacket(new ServerPacketEventArgs(spacket));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -237,6 +241,19 @@ namespace Vge.Games
         /// </summary>
         public void ResponsePacketAll(IPacket packet)
         {
+            ResponsePacket(null, packet);
+            if (socketServer != null)
+            {
+                Socket[] sockets = socketServer.GetSocketClients();
+                for (int i = 0; i < sockets.Length; i++)
+                {
+                    //  System.Threading.Thread.Sleep(40);
+                    if (sockets[i].Connected)
+                    {
+                        ResponsePacket(sockets[i], packet);
+                    }
+                }
+            }
             //if (World != null)
             //{
             //    World.Players.SendToAll(packet);
@@ -275,7 +292,7 @@ namespace Vge.Games
                 //Log.Log("server.runed");
 
                 // Рабочий цикл сервера
-                while (serverRunning)
+                while (IsServerRunning)
                 {
                     beginTime = stopwatchTps.ElapsedMilliseconds;
                     // Разница в милсекунда с прошлого такта
@@ -322,7 +339,7 @@ namespace Vge.Games
             //Log.Log("server.stoping");
             //World.WorldStoping();
             // Тут надо сохранить мир
-            //packets.Clear();
+            packets.Clear();
             if (socketServer != null)
             {
                 socketServer.Stop();
@@ -351,6 +368,9 @@ namespace Vge.Games
             beginTime = stopwatchTps.ElapsedTicks;
             TickCounter++;
 
+            // Сетевые пакеты
+            packets.Update();
+
             // Прошла секунда
             if (TickCounter % speedTps == 0)
             {
@@ -361,9 +381,14 @@ namespace Vge.Games
                     // раз в 30 секунд обновляем тик с клиентом
                   //  ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
                 }
+
+                rxPrev = rx;
+                txPrev = tx;
+                rx = 0;
+                tx = 0;
             }
 
-            Thread.Sleep(10);
+            //Thread.Sleep(10);
             // Тут игровые мировые тики
 
             differenceTime = stopwatchTps.ElapsedTicks - beginTime;
@@ -378,6 +403,11 @@ namespace Vge.Games
             // фиксируем время выполнения такта
             tickTimeArray[TickCounter % 4] = differenceTime;
         }
+
+        /// <summary>
+        /// Получить время в милисекундах с момента запуска проекта
+        /// </summary>
+        public long Time() => stopwatchTps.ElapsedMilliseconds;
 
         #endregion
 

@@ -11,6 +11,8 @@ namespace Vge.Network
         /// </summary>
         public int Port { get; protected set; }
 
+        protected readonly byte[] buff = new byte[1024];
+
         protected SocketBase() { }
         public SocketBase(int port) => Port = port;
 
@@ -19,27 +21,36 @@ namespace Vge.Network
         /// </summary>
         /// <param name="bytes">данные в массиве байт</param>
         /// <returns>результат отправки</returns>
-        protected bool SenderOld(Socket socket, byte[] bytes)
+        protected void SenderOld(Socket socket, byte[] bytes)
         {
             if (!IsConnected || bytes.Length == 0)
             {
-                return false;
+                return;
             }
+            // Отправляем пакет
+            //  System.Threading.Thread.Sleep(100);
+            // TODO::2024-08-23 Net Task pool
+            //System.Threading.Tasks.Task.Factory.StartNew(() =>
+            //{
+            //    //System.Threading.Thread.Sleep(300);
+            //    socket.Send(ReceivingBytes.BytesSender(bytes));
+            //});
             try
             {
-                // Отправляем пакет
-                // TODO::2024-08-23 Net Task pool
-                System.Threading.Tasks.Task.Factory.StartNew(() =>
-                {
-                    socket.Send(ReceivingBytes.BytesSender(bytes));
-                });
-                return true;
+                //socket.Send(ReceivingBytes.BytesSender(bytes));
+
+                byte[] ret = new byte[bytes.Length + 5];
+                Buffer.BlockCopy(new byte[] { 1 }, 0, ret, 0, 1);
+                Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, ret, 1, 4);
+                Buffer.BlockCopy(bytes, 0, ret, 5, bytes.Length);
+                socket.Send(ret);
+                
             }
-            catch (Exception e)
+            catch
             {
-                // Возвращаем ошибку
-                OnError(new ErrorEventArgs(e));
-                return false;
+                // Ошибку глушим, так-как разрыв сети будет отработан в другом месте,
+                // а тут отправка пакета, но если был разрыв сети, пакет не уйдёт.
+                // Но сделав ошибку, сломает корректность disconnection
             }
         }
         

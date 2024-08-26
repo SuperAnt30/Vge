@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Vge.Network
 {
@@ -15,9 +17,9 @@ namespace Vge.Network
         /// </summary>
         public override bool IsConnected => WorkSocket != null;
         /// <summary>
-        /// Колекция объектов ReceivingBytes
+        /// Колекция сокетов клиентов
         /// </summary>
-        private ReceivingBytesCollection clients = new ReceivingBytesCollection();
+        private List<Socket> clients = new List<Socket>();
 
         public SocketServer(int port) : base(port) { }
 
@@ -70,7 +72,7 @@ namespace Vge.Network
                     {
                         for (int i = clients.Count - 1; i >= 0; i--)
                         {
-                            DisconnectHandler(clients[i].WorkSocket, StatusNet.Disconnecting);
+                            DisconnectHandler(clients[i], StatusNet.Disconnecting);
                         }
                     }
                     WorkSocket.Close();
@@ -118,32 +120,21 @@ namespace Vge.Network
                 return;
             }
 
+            // Добавляем в массив клиентов
+            clients.Add(socket);
 
             // Создаём объекты склейки и присваиваем ему событие
             ReceivingBytes rb = new ReceivingBytes(socket);
             rb.Receive += RbReceive;
 
-            // Добавляем в массив клиентов
-            clients.Add(rb);
-
             // Получили клиента, оповещаем
             ServerPacket sp = new ServerPacket(socket, StatusNet.Connect);
             OnReceive(new ServerPacketEventArgs(sp));
 
-            StateObject state = new StateObject(socket);
-
             // Запуск ожидание ответа от клиента
-            try
-            {
-                socket.BeginReceive(
-                    state.Buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state
-                );
-            }
-            catch (Exception e)
-            {
-                OnError(new ErrorEventArgs(e));
-            }
+            Thread myThread = new Thread(ReceiveBuff);
+            myThread.Start(rb);
+
             // Запуск ожидание следующего клиента
             try
             {
@@ -156,45 +147,41 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// Ждём овета от клиента
+        /// Получить буфер по сети
         /// </summary>
-        private void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveBuff(object obj)
         {
-            // Получаем состояние объекта и обработчик сокета
-            // От асинхронного состояния объекта.
-            StateObject state = ar.AsyncState as StateObject;
-            Socket socket = state.WorkSocket;
-
-            // Проверка если обработчик без связи, разрываем с ним связь
-            if (!socket.Connected)
+            ReceivingBytes rb = obj as ReceivingBytes;
+            if (rb == null)
             {
-                DisconnectHandler(socket, StatusNet.Disconnect);
+                OnError(new ErrorEventArgs(new Exception("Отсутствует объект склейки для данного сокета [ServerSocket:ReceivingBytes]")));
                 return;
+            }
+            
+            Socket socket = rb.WorkSocket;
+            // Чтение данных из клиентского сокета. 
+            int bytesRead = 0;
+            try
+            {
+                bytesRead = socket.Receive(buff);
+            }
+            catch
+            {
+                // Затычка, если сеть будет разорвана
             }
 
             try
             {
-                // Чтение данных из клиентского сокета. 
-                int bytesRead = socket.EndReceive(ar);
-
                 if (bytesRead > 0)
                 {
-                    // Если длинна данных больше 0, то обрабатываем данные
-                    ReceivingBytes rb = clients.Search(socket);
-                    if (rb != null)
-                    {
-                        rb.Receiving(ReceivingBytes.DivisionAr(state.Buffer, 0, bytesRead));
-                    }
-                    else
-                    {
-                        OnError(new ErrorEventArgs(new Exception("Отсутствует объект склейки для данного сокета [ServerSocket:ReceiveCallback]")));
-                    }
+                    // Если длинны данный больше 0, то обрабатываем данные
+                    rb.Receiving(ReceivingBytes.DivisionAr(buff, 0, bytesRead));
 
                     // Запуск ожидание следующего ответа от клиента
-                    socket.BeginReceive(
-                        state.Buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state
-                    );
+                    if (socket != null && socket.Connected)
+                    {
+                        ReceiveBuff(rb);
+                    }
                 }
                 else
                 {
@@ -208,7 +195,7 @@ namespace Vge.Network
                 OnError(new ErrorEventArgs(e));
             }
         }
-
+        
         /// <summary>
         /// Разорвать соединение с игроком по сокету
         /// </summary>
@@ -234,6 +221,15 @@ namespace Vge.Network
         /// Количество сокет клиентов
         /// </summary>
         public int SocketCount() => clients.Count;
+
+        /// <summary>
+        /// Получить всех клиентов
+        /// </summary>
+        public Socket[] GetSocketClients()
+        {
+            //TODO::2024-08-26 Socket[] временно
+            return clients.ToArray();
+        }
 
         #region Event
 

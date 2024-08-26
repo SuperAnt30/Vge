@@ -2,7 +2,7 @@
 {
     public interface IPacket
     {
-        //void ReadPacket(StreamBase stream);
-        //void WritePacket(StreamBase stream);
+        void ReadPacket(StreamBase stream);
+        void WritePacket(StreamBase stream);
     }
 }

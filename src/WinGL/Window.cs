@@ -141,7 +141,7 @@ namespace WinGL
                 e = ex.InnerException;
                 stackTrace = e.StackTrace + "\r\n" + ex.StackTrace;
             }
-            if (stackTrace.Length > 500) stackTrace = stackTrace.Substring(0, 500) + "...";
+            if (stackTrace.Length > 800) stackTrace = stackTrace.Substring(0, 800) + "...";
             WinUser.MessageBox(string.Format("{0}: {1}\r\n---\r\n{2}", e.Source, e.Message, stackTrace),
                 "Crach", WinUser.MB_ICONSTOP);
         }

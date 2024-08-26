@@ -144,18 +144,6 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// Вернуть массив байт для отправки сообщения
-        /// </summary>
-        public static byte[] BytesSender(byte[] bytes)
-        {
-            byte[] ret = new byte[bytes.Length + 5];
-            Buffer.BlockCopy(new byte[] { 1 }, 0, ret, 0, 1);
-            Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, ret, 1, 4);
-            Buffer.BlockCopy(bytes, 0, ret, 5, bytes.Length);
-            return ret;
-        }
-
-        /// <summary>
         /// Событие, получать
         /// </summary>
         public event ServerPacketEventHandler Receive;

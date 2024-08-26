@@ -43,9 +43,7 @@ namespace Vge.Network
                     receivingBytes = new ReceivingBytes(WorkSocket);
                     receivingBytes.Receive += RbReceive;
 
-                    StateObject state = new StateObject(WorkSocket);
-                    WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state);
+                    ReceiveBuff();
 
                     return true;
                 }
@@ -103,44 +101,37 @@ namespace Vge.Network
         public void SendPacket(byte[] bytes) => SenderOld(WorkSocket, bytes);
 
         /// <summary>
-        /// Ждём овета от сервера
+        /// Получить буфер по сети
         /// </summary>
-        private void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveBuff()
         {
-            // Получаем состояние объекта и обработчик сокета
-            // От асинхронного состояния объекта.
-            StateObject state = ar.AsyncState as StateObject;
-
-            // Проверка если обработчик без связи, прекращаем
-            if (!IsConnected)
+            // Чтение данных из клиентского сокета. 
+            int bytesRead = 0;
+            try
             {
-                return;
+                bytesRead = WorkSocket.Receive(buff);
+            }
+            catch
+            {
+                // Затычка, если сеть будет разорвана
             }
 
             try
             {
-                // Чтение данных из клиентского сокета. 
-                int bytesRead = WorkSocket.EndReceive(ar);
-
                 if (bytesRead > 0)
                 {
                     // Если длинны данный больше 0, то обрабатываем данные
-                    receivingBytes.Receiving(ReceivingBytes.DivisionAr(state.Buffer, 0, bytesRead));
+                    receivingBytes.Receiving(ReceivingBytes.DivisionAr(buff, 0, bytesRead));
 
-                    if (WorkSocket == null) return;
                     // Запуск ожидание следующего ответа от клиента
-                    if (WorkSocket.Connected)
+                    if (WorkSocket != null && WorkSocket.Connected)
                     {
-                        WorkSocket.BeginReceive(
-                            state.Buffer, 0, StateObject.BufferSize, 0,
-                            new AsyncCallback(ReceiveCallback), state
-                        );
+                        ReceiveBuff();
                     }
                 }
                 else
                 {
                     // Если данные отсутствуют, то разрываем связь
-                    OnError(new ErrorEventArgs(new Exception("Если данные отсутствуют, то разрываем связь")));
                     Disconnect();
                 }
             }

@@ -214,8 +214,11 @@ namespace Vge
             game.Stoped += Game_Stoped;
             game.Error += Game_Error;
             game.ServerTextDebug += Game_ServerTextDebug;
+            game.Tick += Game_Tick;
             game.GameStarting();
         }
+
+        protected virtual void Game_Tick(object sender, EventArgs e) { }
 
         private void Game_ServerTextDebug(object sender, StringEventArgs e)
             => debug.server = e.Text;
@@ -273,6 +276,15 @@ namespace Vge
         {
             audio.Tick();
             debug.audio = audio.StrDebug;
+            if (game == null)
+            {
+                debug.client = "null";
+            }
+            else
+            {
+                game.OnTick();
+                debug.client = game.ToString();
+            }
             debug.client = game != null ? game.ToString() : "null";
 
             // Отладка на экране

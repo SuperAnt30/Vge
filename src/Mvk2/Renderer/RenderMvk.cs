@@ -73,6 +73,7 @@ namespace Mvk2.Renderer
         #endregion
 
         public int xx = 0;
+        public int xx2 = 0;
 
         protected override void OnDraw()
         {
@@ -89,11 +90,16 @@ namespace Mvk2.Renderer
             Vector3 bg = new Vector3(.2f, .2f, .2f);
             Vector3 cw = new Vector3(.9f, .9f, .9f);
 
-            FontSmall.RenderString(xx + 1, 401, "-O-", bg);
-            FontSmall.RenderString(xx, 400, "-O-", cw);
+            FontSmall.RenderString(xx + 1, 201, "-C-", bg);
+            FontSmall.RenderString(xx, 200, "-C-", cw);
 
             if (++xx > 900) xx = 0;
-            
+
+            FontSmall.RenderString(xx2 + 1, 221, "-S-", bg);
+            FontSmall.RenderString(xx2, 220, "-S-", cw);
+
+            //if (++xx2 > 900) xx2 = 0;
+
             int width = window.Width;
             int height = window.Height;
 
