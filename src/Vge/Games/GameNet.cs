@@ -19,7 +19,7 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-
+            Log.Log("[Client] Запускается по сети...");
             // Запуск поток для синхронной связи по сокету
             Thread myThread = new Thread(NetThread);
             myThread.Start();

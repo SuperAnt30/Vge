@@ -4,6 +4,7 @@ using System.Threading;
 using Vge.Event;
 using Vge.Network;
 using Vge.Network.Packets.Client;
+using Vge.Util;
 
 namespace Vge.Games
 {
@@ -12,6 +13,10 @@ namespace Vge.Games
     /// </summary>
     public abstract class GameBase
     {
+        /// <summary>
+        /// Объект лога
+        /// </summary>
+        public Logger Log { get; private set; }
         /// <summary>
         /// Локальная игра
         /// </summary>
@@ -50,6 +55,7 @@ namespace Vge.Games
         {
             stopwatch.Start();
             packets = new ProcessClientPackets(this);
+            Log = new Logger();
         }
 
         /// <summary>
@@ -84,6 +90,12 @@ namespace Vge.Games
 
             // почерёдно получаем пакеты с сервера
             packets.Update();
+
+            // Прошла минута, или 1200 тактов
+            if (tickCounterClient % 20 == 0)
+            {
+                Log.Save();
+            }
 
             if (tickCounterClient % 40 == 0)
             {
@@ -123,8 +135,12 @@ namespace Vge.Games
         /// Событие остановлена игра
         /// </summary>
         public event StringEventHandler Stoped;
-        protected void OnStoped(string notification = "") 
-            => Stoped?.Invoke(this, new StringEventArgs(notification));
+        protected void OnStoped(string notification = "")
+        {
+            Log.Log("[Client] Остановлен.");
+            Log.Save();
+            Stoped?.Invoke(this, new StringEventArgs(notification));
+        }
 
         /// <summary>
         /// Событие ошибки на сервере

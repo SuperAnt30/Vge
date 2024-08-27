@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
+using Vge.Util;
 using WinGL.Util;
 
 namespace Vge.Games
@@ -20,7 +21,10 @@ namespace Vge.Games
         /// </summary>
         private const int speedMs = 1000 / speedTps;
 
-
+        /// <summary>
+        /// Объект лога
+        /// </summary>
+        public Logger Log { get; private set; }
         /// <summary>
         /// Указывает, запущен сервер или нет. Установите значение false, 
         /// чтобы инициировать завершение работы. 
@@ -47,7 +51,7 @@ namespace Vge.Games
         /// <summary>
         /// Хранение тактов за 1/5 секунды игры, для статистики определения среднего времени такта
         /// </summary>
-        private long[] tickTimeArray = new long[4];
+        private readonly long[] tickTimeArray = new long[4];
         /// <summary>
         /// Пауза в игре, только для одиночной версии
         /// </summary>
@@ -90,8 +94,9 @@ namespace Vge.Games
         /// </summary>
         private ProcessServerPackets packets;
 
-        public Server()
+        public Server(Logger log)
         {
+            Log = log;
             packets = new ProcessServerPackets(this);
             frequencyMs = Stopwatch.Frequency / 1000;
             stopwatchTps.Start();
@@ -104,6 +109,9 @@ namespace Vge.Games
         /// </summary>
         public void Starting()
         {
+            byte slot = 1;
+            int indexVersion = 1;
+            Log.Log("[Server] Запускаем slot={0} idVer={1}", slot, indexVersion);
             Thread myThread = new Thread(Loop);
             myThread.Start();
         }
@@ -157,7 +165,7 @@ namespace Vge.Games
         private void SocketServer_Runned(object sender, EventArgs e)
         {
             isGamePaused = false;
-            // Log.Log("server.run.net");
+            Log.Log("[Server] Включен сетевой режим.");
         }
 
         private void SocketServer_Stopped(object sender, EventArgs e)
@@ -289,7 +297,7 @@ namespace Vge.Games
                 long currentTime = stopwatchTps.ElapsedMilliseconds;
                 long cacheTime = 0;
                 int timeSleep;
-                //Log.Log("server.runed");
+                Log.Log("[Server] Go!");
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)
@@ -304,7 +312,7 @@ namespace Vge.Games
                     {
                         // Не успеваю!Изменилось ли системное время, или сервер перегружен?
                         // Отставание на {differenceTime} мс, пропуск тиков({differenceTime / 50}) 
-                        //Log.Log("Не успеваю! Отставание на {0} мс, пропуск тиков {1}", differenceTime, differenceTime / 50);
+                        Log.Log("[Server] Не успеваю! Отставание на {0} мс, пропуск тиков {1}", differenceTime, differenceTime / 50);
                         differenceTime = 2000;
                         timeOfLastWarning = currentTime;
                     }
@@ -336,7 +344,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoping()
         {
-            //Log.Log("server.stoping");
+            Log.Log("[Server] Останавливаем...");
             //World.WorldStoping();
             // Тут надо сохранить мир
             packets.Clear();
@@ -355,8 +363,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoped()
         {
-            //Log.Log("server.stoped");
-            //Log.Close();
+            Log.Log("[Server] Остановлен.");
             OnCloseded();
         }
 

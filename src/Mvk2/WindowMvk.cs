@@ -6,6 +6,7 @@ using Vge;
 using Mvk2.Util;
 using Mvk2.Audio;
 using Mvk2.Renderer;
+using Vge.Util;
 
 namespace Mvk2
 {
@@ -26,6 +27,7 @@ namespace Mvk2
         protected override void Initialized()
         {
             Version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            
 
             // TODO::2024-08-22 продумать перезагрузку опций
             new OptionsFileMvk().Load();

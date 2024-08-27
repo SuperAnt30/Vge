@@ -176,11 +176,24 @@ namespace Vge
             }
         }
 
+        protected override void Begin()
+        {
+            try
+            {
+                base.Begin();
+            }
+            catch (Exception e)
+            {
+                Logger.Crach(e, "Begin");
+                throw e;
+            }
+        }
+
         /// <summary>
         /// Тик в лупе
         /// </summary>
         protected override void LoopTick() => ticker.DoTick();
-
+    
         #endregion
 
         #region Game
@@ -240,6 +253,7 @@ namespace Vge
 
         private void Game_Error(object sender, ThreadExceptionEventArgs e)
         {
+            Logger.Crach(e.Exception, "WindowMain");
             MessageBoxCrach(e.Exception);
         }
 

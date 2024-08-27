@@ -38,15 +38,18 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-
+            Log.Log("[Client] Запускается одиночная...");
             stopNotification = "";
-            server = new Server();
+            server = new Server(Log);
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;
             server.RecievePacket += Server_RecievePacket;
             server.Starting();
             server.RunNet(32021);
+
+            // Тест краша
+            //int i = 0; int j = 5 / i;
         }
 
         /// <summary>

@@ -175,7 +175,7 @@ namespace WinGL
         /// <summary>
         /// Запустить окно
         /// </summary>
-        private void Begin()
+        protected virtual void Begin()
         {
             bool timePeriodRun = false;
             try
