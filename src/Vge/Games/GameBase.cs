@@ -16,7 +16,12 @@ namespace Vge.Games
         /// <summary>
         /// Объект лога
         /// </summary>
-        public Logger Log { get; private set; }
+        public readonly Logger Log;
+        /// <summary>
+        /// Объект сыщик
+        /// </summary>
+        public readonly Profiler Filer;
+
         /// <summary>
         /// Локальная игра
         /// </summary>
@@ -38,7 +43,7 @@ namespace Vge.Games
         /// <summary>
         /// Объект времени с момента запуска проекта
         /// </summary>
-        private Stopwatch stopwatch = new Stopwatch();
+        private readonly Stopwatch stopwatch = new Stopwatch();
         /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
@@ -46,17 +51,19 @@ namespace Vge.Games
         /// <summary>
         /// Объект работы с пакетами
         /// </summary>
-        protected ProcessClientPackets packets;
+        protected readonly ProcessClientPackets packets;
+
+        public GameBase()
+        {
+            Log = new Logger();
+            Filer = new Profiler(Log, "[Client] ");
+            packets = new ProcessClientPackets(this);
+        }
 
         /// <summary>
         /// Запуск игры
         /// </summary>
-        public virtual void GameStarting()
-        {
-            stopwatch.Start();
-            packets = new ProcessClientPackets(this);
-            Log = new Logger();
-        }
+        public virtual void GameStarting() => stopwatch.Start();
 
         /// <summary>
         /// Остановка игры
@@ -92,7 +99,7 @@ namespace Vge.Games
             packets.Update();
 
             // Прошла минута, или 1200 тактов
-            if (tickCounterClient % 20 == 0)
+            if (tickCounterClient % 1200 == 0)
             {
                 Log.Save();
             }
@@ -137,7 +144,7 @@ namespace Vge.Games
         public event StringEventHandler Stoped;
         protected void OnStoped(string notification = "")
         {
-            Log.Log("[Client] Остановлен.");
+            Log.Client("Остановлен{0}.", notification == "" ? "" : " [" + notification + "]");
             Log.Save();
             Stoped?.Invoke(this, new StringEventArgs(notification));
         }
@@ -160,6 +167,7 @@ namespace Vge.Games
         /// Событие одного игрового такта
         /// </summary>
         public event EventHandler Tick;
+        // TODO::2024-08-27 OnTick2 временно
         public void OnTick2() => Tick?.Invoke(this, new EventArgs());
 
         #endregion

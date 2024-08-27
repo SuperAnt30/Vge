@@ -126,7 +126,7 @@ namespace Mvk2
             if (keys == Keys.F2)
             {
                 // Включить сервер по сети
-                GameNetRun();
+                GameNetRun(OptionsMvk.IpAddress, 32021);
             }
             if (keys == Keys.F3)
             {

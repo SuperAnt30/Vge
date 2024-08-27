@@ -14,13 +14,20 @@ namespace Vge.Games
         /// <summary>
         /// Объект сервера
         /// </summary>
-        private Server server;
+        private readonly Server server;
         /// <summary>
         /// Уведомление остановки сервера
         /// </summary>
         private string stopNotification = "";
 
-        public GameLocal() { }
+        public GameLocal() : base()
+        {
+            server = new Server(Log);
+            server.Closeded += Server_Closeded;
+            server.Error += Server_Error;
+            server.TextDebug += Server_TextDebug;
+            server.RecievePacket += Server_RecievePacket;
+        }
 
         /// <summary>
         /// Задать паузу для одиночной игры
@@ -38,14 +45,10 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-            Log.Log("[Client] Запускается одиночная...");
-            stopNotification = "";
-            server = new Server(Log);
-            server.Closeded += Server_Closeded;
-            server.Error += Server_Error;
-            server.TextDebug += Server_TextDebug;
-            server.RecievePacket += Server_RecievePacket;
+            Log.Client("Запускается одиночная...");
+            Log.Save();
             server.Starting();
+            // TODO::2024-08-27 Временно включил сеть
             server.RunNet(32021);
 
             // Тест краша

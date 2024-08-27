@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Threading;
 using Vge.Network;
 
@@ -10,8 +11,25 @@ namespace Vge.Games
     public class GameNet : GameBase
     {
         private SocketClient socket;
+        /// <summary>
+        /// Оповещение остановки, если "" её ещё не было
+        /// </summary>
+        private string notificationStop = "";
+        /// <summary>
+        /// IP адрес сервера
+        /// </summary>
+        private readonly string ipAddress;
+        /// <summary>
+        /// Portс сервера
+        /// </summary>
+        private readonly int port;
 
-        public GameNet() => IsLoacl = false;
+        public GameNet(string ipAddress, int port) : base()
+        {
+            IsLoacl = false;
+            this.ipAddress = ipAddress;
+            this.port = port;
+        }
 
         /// <summary>
         /// Запуск игры
@@ -19,7 +37,8 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-            Log.Log("[Client] Запускается по сети...");
+            Log.Client("Запускается по сети...");
+            Log.Save();
             // Запуск поток для синхронной связи по сокету
             Thread myThread = new Thread(NetThread);
             myThread.Start();
@@ -31,7 +50,7 @@ namespace Vge.Games
         private void NetThread()
         {
             // По сети сервер
-            socket = new SocketClient(System.Net.IPAddress.Parse("192.168.1.21"), 32021);
+            socket = new SocketClient(IPAddress.Parse(ipAddress), port);
             socket.ReceivePacket += Socket_ReceivePacket;
             socket.Receive += Socket_Receive;
             socket.Error += Socket_Error;
@@ -41,14 +60,18 @@ namespace Vge.Games
 
         public override void GameStoping(string notification = "")
         {
+            notificationStop = notification;
             if (socket != null)
             {
                 // Игра по сети
                 socket.Disconnect();
                 // отправляем событие остановки
-              //  ThreadServerStoped(errorNet);
+                //  ThreadServerStoped(errorNet);
             }
-            Stop(notification);
+            else
+            {
+                Stop(notification);
+            }
         }
 
         /// <summary>
@@ -59,20 +82,17 @@ namespace Vge.Games
         {
             // Останавливаем поток
             packets.Clear();
-            OnStoped(notification);
+            OnStoped(notificationStop == "" ? notification : notificationStop);
         }
 
         private void Socket_Error(object sender, ErrorEventArgs e)
-        {
-            Stop("Error: " + e.GetException().Message);
-            OnError(e.GetException());
-        }
+            => Stop("Error: " + e.GetException().Message);
 
         private void Socket_Receive(object sender, ServerPacketEventArgs e)
         {
             if (e.Packet.status == StatusNet.Disconnect)
             {
-                Stop("gui.error.server.disconnect");
+                Stop("Сервер разорвал соединение!");
             }
         }
 
@@ -96,6 +116,19 @@ namespace Vge.Games
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        public override void OnTick()
+        {
+            // Проверка на разрыв долгий сервера (нет связи)
+            if (TimeOut())
+            {
+                GameStoping("Сервер не отвечает");
+            }
+            base.OnTick();
         }
     }
 

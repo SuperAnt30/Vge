@@ -23,7 +23,7 @@ namespace Vge.Util
         /// <summary>
         /// Желаемое количество тактов в секунду
         /// </summary>
-        public int WishTick { get; private set; } = 20;
+        public readonly int WishTick = 20;
         /// <summary>
         /// Получить коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1
         /// </summary>

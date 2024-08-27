@@ -72,7 +72,7 @@ namespace Vge.Network
         public void Update()
         {
             networkTickCount++;
-            //if (networkTickCount - lastSentPingPacket > 40)
+            if (networkTickCount - lastSentPingPacket > 40)
             {
                 lastSentPingPacket = networkTickCount;
                 lastPingTime = ServerMain.Time();
@@ -95,7 +95,7 @@ namespace Vge.Network
         /// <summary>
         /// Ping-pong
         /// </summary>
-        private void Handle00Ping(Socket socket, PacketC00Ping packet) 
+        private void Handle00Ping(Socket socket, PacketC00Ping packet)
             => ServerMain.ResponsePacket(socket, new PacketS00Pong(packet.GetClientTime()));
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace Vge.Util
         /// <summary>
         /// Максимальное количество файлов
         /// </summary>
-        private const int MaxCountFile = 50;
+        private const int MaxCountFile = 20;
 
         /// <summary>
         /// Имя файла
@@ -47,19 +47,38 @@ namespace Vge.Util
                 i++;
             }
         }
-
+        /// <summary>
+        /// Добавить в лог
+        /// </summary>
         public void Log(string logMessage, params object[] args)
         {
             string text = string.Format(logMessage, args);
             log += $"[{DateTime.Now.ToLongTimeString()}] " + text + "\r\n";
             OnLoged(text);
         }
-
+        /// <summary>
+        /// Добавить в лог с префиксом [Client]
+        /// </summary>
+        public void Client(string logMessage, params object[] args)
+         => Log("[Client] " + logMessage, args);
+        /// <summary>
+        /// Добавить в лог с префиксом [Server]
+        /// </summary>
+        public void Server(string logMessage, params object[] args)
+         => Log("[Server] " + logMessage, args);
+        /// <summary>
+        /// Добавить в лог с префиксом [ERROR]
+        /// </summary>
         public void Error(string logMessage, params object[] args)
             => Log("[ERROR] " + logMessage, args);
-        
+        /// <summary>
+        /// Добавить в лог с префиксом [ERROR]
+        /// </summary>
         public void Error(Exception e)
-            => Log("[ERROR]{0}: {1}\r\n------\r\n{2} ", e.Source, e.Message, e.StackTrace);
+        {
+            e = GetException(e);
+            Log("[ERROR]{0}: {1}\r\n------\r\n{2} ", e.Source, e.Message, e.StackTrace);
+        }
 
         /// <summary>
         /// Добавить сохранение в файл
@@ -184,7 +203,7 @@ namespace Vge.Util
         /// </summary>
         public static void Crach(string logMessage, params object[] args)
         {
-            Logger logger = new Logger("Crach", false);
+            Logger logger = new Logger("Crach");
             logger.Error(logMessage, args);
             logger.Save();
         }
@@ -194,7 +213,8 @@ namespace Vge.Util
         /// </summary>
         public static void Crach(Exception e, string logMessage = "", params object[] args)
         {
-            Logger logger = new Logger("Crach", false);
+            e = GetException(e);
+            Logger logger = new Logger("Crach");
             string prefix = "";
             if (logMessage != "")
             {
@@ -203,6 +223,9 @@ namespace Vge.Util
             logger.Error(prefix + "{0}: {1}\r\n------\r\n{2}", e.Source, e.Message, e.StackTrace);
             logger.Save();
         }
+
+        private static Exception GetException(Exception ex)
+            => ex.InnerException == null ? ex : ex.InnerException;
 
         #region Event
 

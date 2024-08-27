@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Vge.Event;
 
 namespace Vge.Network
 {
@@ -52,6 +53,7 @@ namespace Vge.Network
             catch (Exception e)
             {
                 WorkSocket = null;
+                // TODO::2024-08-27 надо продумать ошибку если сеть не открылась
                 OnError(new ErrorEventArgs(e));
                 OnStopped();
                 return false;
@@ -122,6 +124,12 @@ namespace Vge.Network
 
             // Добавляем в массив клиентов
             clients.Add(socket);
+
+            // События соединения клиента
+            if (socket.RemoteEndPoint is IPEndPoint endPoint)
+            {
+                OnUserConnected(endPoint.ToString());
+            }
 
             // Создаём объекты склейки и присваиваем ему событие
             ReceivingBytes rb = new ReceivingBytes(socket);
@@ -250,6 +258,13 @@ namespace Vge.Network
         /// Событие остановлен
         /// </summary>
         private void OnStopped() => Stopped?.Invoke(this, new EventArgs());
+
+        /// <summary>
+        /// Событие пользователь соединён
+        /// </summary>
+        public event StringEventHandler UserConnected;
+        protected virtual void OnUserConnected(string text)
+            => UserConnected?.Invoke(this, new StringEventArgs(text));
 
         #endregion
     }

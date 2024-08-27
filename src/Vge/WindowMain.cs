@@ -168,7 +168,7 @@ namespace Vge
             if (game != null)
             {
                 flagClose = true;
-                game.GameStoping();
+                game.GameStoping("Закрытие приложения");
             }
             else
             {
@@ -201,11 +201,11 @@ namespace Vge
         /// <summary>
         /// Запустить игру по сети
         /// </summary>
-        protected void GameNetRun()
+        protected void GameNetRun(string ipAddress, int port)
         {
             if (game == null)
             {
-                game = new GameNet();
+                game = new GameNet(ipAddress, port);
                 GameRun();
             }
         }
@@ -264,7 +264,7 @@ namespace Vge
         {
             if (game != null)
             {
-                game.GameStoping();
+                game.GameStoping("Пользователь остановил игру");
             }
         }
 
@@ -290,16 +290,16 @@ namespace Vge
         {
             audio.Tick();
             debug.audio = audio.StrDebug;
+            
             if (game == null)
             {
                 debug.client = "null";
             }
             else
             {
-                game.OnTick();
                 debug.client = game.ToString();
+                game.OnTick();
             }
-            debug.client = game != null ? game.ToString() : "null";
 
             // Отладка на экране
             render.SetTextDebug(debug.ToText());
