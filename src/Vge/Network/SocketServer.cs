@@ -11,18 +11,28 @@ namespace Vge.Network
     /// <summary>
     /// Объект сервера используя сокет
     /// </summary>
-    public class SocketServer : SocketBase
+    public class SocketServer
     {
         /// <summary>
-        /// Получить истину есть ли соединение
+        /// Сокет сервера
         /// </summary>
-        public override bool IsConnected => WorkSocket != null;
+        private Socket socket;
+        /// <summary>
+        /// Порт сервера
+        /// </summary>
+        public readonly int Port;
+
         /// <summary>
         /// Колекция сокетов клиентов
         /// </summary>
-        private List<Socket> clients = new List<Socket>();
+        private List<SocketSide> clients = new List<SocketSide>();
 
-        public SocketServer(int port) : base(port) { }
+        public SocketServer(int port) => Port = port;
+
+        /// <summary>
+        /// Получить истину есть ли соединение
+        /// </summary>
+        public bool IsConnected() => socket != null;
 
         #region Runing
 
@@ -31,7 +41,7 @@ namespace Vge.Network
         /// </summary>
         public bool Run()
         {
-            if (IsConnected) return false;
+            if (socket != null) return true;
 
             try
             {
@@ -39,34 +49,59 @@ namespace Vge.Network
                 clients.Clear();
 
                 // Создание сокета сервера
-                WorkSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 // Связываем сокет с конечной точкой
-                WorkSocket.Bind(new IPEndPoint(IPAddress.Any, Port));
+                socket.Bind(new IPEndPoint(IPAddress.Any, Port));
                 // Начинаем слушать входящие соединения
-                WorkSocket.Listen(10);
+                socket.Listen(10);
 
                 // Запуск ожидание клиента
-                WorkSocket.BeginAccept(new AsyncCallback(AcceptCallback), WorkSocket);
+                socket.BeginAccept(new AsyncCallback(AcceptCallback), socket);
 
                 OnRunned();
+                return true;
             }
             catch (Exception e)
             {
-                WorkSocket = null;
-                // TODO::2024-08-27 надо продумать ошибку если сеть не открылась
-                OnError(new ErrorEventArgs(e));
-                OnStopped();
+                OnWarningString("Ошибка в момент запуска сети. " + e.Message);
+                if (socket != null)
+                {
+                    if (socket.Connected)
+                    {
+                        socket.Shutdown(SocketShutdown.Both);
+                        socket.Disconnect(false);
+                        socket.Close();
+                    }
+                    socket = null;
+                }
                 return false;
             }
-            return true;
+        }
+
+        /// <summary>
+        /// TODO::TestUserAllKill
+        /// </summary>
+        public void TestUserAllKill()
+        {
+            if (clients.Count > 0)
+            {
+                for (int i = clients.Count - 1; i >= 0; i--)
+                {
+                    DisconnectHandler(clients[i], "Выкинут");
+                }
+            }
         }
 
         /// <summary>
         /// Остановить сервер
         /// </summary>
-        public bool Stop()
+        public void Stop()
         {
-            if (IsConnected)
+            if (socket == null)
+            {
+                OnStopped();
+            }
+            else
             {
                 try
                 {
@@ -74,25 +109,17 @@ namespace Vge.Network
                     {
                         for (int i = clients.Count - 1; i >= 0; i--)
                         {
-                            DisconnectHandler(clients[i], StatusNet.Disconnecting);
+                            DisconnectHandler(clients[i], "Стоп сервер");
                         }
                     }
-                    WorkSocket.Close();
-                    WorkSocket = null;
-
-                    return true;
+                    socket.Close();
+                    socket = null;
                 }
                 catch (Exception e)
                 {
                     OnError(new ErrorEventArgs(e));
-                    return false;
                 }
             }
-            else
-            {
-                OnStopped();
-            }
-            return false;
         }
 
         #endregion
@@ -103,15 +130,15 @@ namespace Vge.Network
         private void AcceptCallback(IAsyncResult ar)
         {
             // обрабатываемый сокет
-            Socket socket;
+            Socket socketCln;
 
             try
             {
-                socket = WorkSocket.EndAccept(ar);
+                socketCln = socket.EndAccept(ar);
             }
             catch (Exception e)
             {
-                if (!IsConnected)
+                if (socket == null)
                 {
                     OnStopped();
                 }
@@ -122,31 +149,22 @@ namespace Vge.Network
                 return;
             }
 
-            // Добавляем в массив клиентов
-            clients.Add(socket);
+            SocketSide socketSide = new SocketSide(socketCln);
+            socketSide.ReceivePacket += SocketSide_ReceivePacket;
+            socketSide.Error += SocketSide_Error;
+            socketSide.Connected += SocketSide_Connected;
+            socketSide.Disconnected += SocketSide_Disconnected;
 
-            // События соединения клиента
-            if (socket.RemoteEndPoint is IPEndPoint endPoint)
-            {
-                OnUserConnected(endPoint.ToString());
-            }
+            OnUserJoined(socketSide.ToString());
 
-            // Создаём объекты склейки и присваиваем ему событие
-            ReceivingBytes rb = new ReceivingBytes(socket);
-            rb.Receive += RbReceive;
-
-            // Получили клиента, оповещаем
-            ServerPacket sp = new ServerPacket(socket, StatusNet.Connect);
-            OnReceive(new ServerPacketEventArgs(sp));
-
-            // Запуск ожидание ответа от клиента
-            Thread myThread = new Thread(ReceiveBuff);
-            myThread.Start(rb);
+            // Запуск поток для синхронной связи по сокету
+            Thread myThread = new Thread(NetThread);
+            myThread.Start(socketSide);
 
             // Запуск ожидание следующего клиента
             try
             {
-                WorkSocket.BeginAccept(new AsyncCallback(AcceptCallback), WorkSocket);
+                socket.BeginAccept(new AsyncCallback(AcceptCallback), socket);
             }
             catch (Exception e)
             {
@@ -155,75 +173,56 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// Получить буфер по сети
+        /// Сетевой поток, работает покуда имеется связь
         /// </summary>
-        private void ReceiveBuff(object obj)
+        private void NetThread(object obj)
         {
-            ReceivingBytes rb = obj as ReceivingBytes;
-            if (rb == null)
-            {
-                OnError(new ErrorEventArgs(new Exception("Отсутствует объект склейки для данного сокета [ServerSocket:ReceivingBytes]")));
-                return;
-            }
-            
-            Socket socket = rb.WorkSocket;
-            // Чтение данных из клиентского сокета. 
-            int bytesRead = 0;
             try
             {
-                bytesRead = socket.Receive(buff);
-            }
-            catch
-            {
-                // Затычка, если сеть будет разорвана
-            }
+                SocketSide socketClient = obj as SocketSide;
 
-            try
-            {
-                if (bytesRead > 0)
-                {
-                    // Если длинны данный больше 0, то обрабатываем данные
-                    rb.Receiving(ReceivingBytes.DivisionAr(buff, 0, bytesRead));
-
-                    // Запуск ожидание следующего ответа от клиента
-                    if (socket != null && socket.Connected)
-                    {
-                        ReceiveBuff(rb);
-                    }
-                }
-                else
-                {
-                    // Если данные отсутствуют, то разрываем связь
-                    DisconnectHandler(socket, StatusNet.Disconnect);
-                }
+                socketClient.Connect();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                // Возвращаем ошибку
-                OnError(new ErrorEventArgs(e));
+                SocketSide_Error(obj, new ErrorEventArgs(e));
             }
         }
-        
-        /// <summary>
-        /// Разорвать соединение с игроком по сокету
-        /// </summary>
-        public void DisconnectPlayer(Socket socket) => DisconnectHandler(socket, StatusNet.Disconnecting);
 
+        #region SocketSide
+
+        private void SocketSide_Connected(object sender, EventArgs e)
+            => clients.Add((SocketSide)sender);
+
+        private void SocketSide_Disconnected(object sender, StringEventArgs e)
+            => DisconnectHandler((SocketSide)sender, e.Text);
+
+        private void SocketSide_Error(object sender, ErrorEventArgs e)
+        {
+            DisconnectHandler((SocketSide)sender, e.GetException().Message);
+            OnWarningString(e.GetException().Message);
+        }
+            
+        private void SocketSide_ReceivePacket(object sender, PacketBufferEventArgs e)
+            => OnReceivePacket(e);
+
+        #endregion
+        
         /// <summary>
         /// Разрываем соединение с текущим обработчиком
         /// </summary>
-        private void DisconnectHandler(Socket socket, StatusNet status)
+        private void DisconnectHandler(SocketSide socketClient, string text)
         {
-            ServerPacket sp = new ServerPacket(socket, status);
-            clients.Remove(socket);
-            try { socket.Send(new byte[] { 0 }); } catch { } // защита от вылета сервера
-            OnReceive(new ServerPacketEventArgs(sp));
+            OnUserLeft(socketClient.ToString(), text);
+            clients.Remove(socketClient);
+            socketClient.DisconnectFromServer();
         }
 
         /// <summary>
         /// Отправить пакет
         /// </summary>
-        public void SendPacket(Socket socket, byte[] bytes) => SenderOld(socket, bytes);
+        public void SendPacket(SocketSide socketClient, byte[] bytes) 
+            => socketClient.SendPacket(bytes);
 
         /// <summary>
         /// Количество сокет клиентов
@@ -233,13 +232,43 @@ namespace Vge.Network
         /// <summary>
         /// Получить всех клиентов
         /// </summary>
-        public Socket[] GetSocketClients()
+        public SocketSide[] GetSocketClients()
         {
-            //TODO::2024-08-26 Socket[] временно
+            //TODO::2024-08-26 SocketSide[] временно
             return clients.ToArray();
         }
 
         #region Event
+
+        /// <summary>
+        /// Событие пользователь присоединился
+        /// </summary>
+        public event StringEventHandler UserJoined;
+        /// <summary>
+        /// Событие пользователь присоединился
+        /// </summary>
+        private void OnUserJoined(string text)
+            => UserJoined?.Invoke(this, new StringEventArgs(text));
+
+        /// <summary>
+        /// Событие пользователь вышел
+        /// </summary>
+        public event StringEventHandler UserLeft;
+        /// <summary>
+        /// Событие пользователь вышел
+        /// </summary>
+        private void OnUserLeft(string ipName, string text)
+            => UserLeft?.Invoke(this, new StringEventArgs(ipName, text));
+
+        /// <summary>
+        /// Событие предупреждающая строка
+        /// </summary>
+        public event StringEventHandler WarningString;
+        /// <summary>
+        /// Событие предупреждающая строка
+        /// </summary>
+        private void OnWarningString(string text)
+            => WarningString?.Invoke(this, new StringEventArgs(text));
 
         /// <summary>
         /// Событие, запущен
@@ -260,11 +289,22 @@ namespace Vge.Network
         private void OnStopped() => Stopped?.Invoke(this, new EventArgs());
 
         /// <summary>
-        /// Событие пользователь соединён
+        /// Событие, ошибка
         /// </summary>
-        public event StringEventHandler UserConnected;
-        protected virtual void OnUserConnected(string text)
-            => UserConnected?.Invoke(this, new StringEventArgs(text));
+        public event ErrorEventHandler Error;
+        /// <summary>
+        /// Событие ошибки
+        /// </summary>
+        private void OnError(ErrorEventArgs e) => Error?.Invoke(this, e);
+
+        /// <summary>
+        /// Событие, получать пакет
+        /// </summary>
+        public event PacketBufferEventHandler ReceivePacket;
+        /// <summary>
+        /// Событие получать пакет
+        /// </summary>
+        private void OnReceivePacket(PacketBufferEventArgs e) => ReceivePacket?.Invoke(this, e);
 
         #endregion
     }

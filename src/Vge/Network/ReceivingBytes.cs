@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace Vge.Network
 {
     /// <summary>
     /// Объект склейки и возрат при получении полного пакета
     /// </summary>
-    public class ReceivingBytes : SocketWork
+    public class ReceivingBytes
     {
         /// <summary>
         /// Массив байт сборки пакета
         /// </summary>
-        private byte[] bytesCache = new byte[0];
+        private byte[] bytesCache;
         /// <summary>
         /// Массив байт если остаток пакета меньше 5 байт
         /// </summary>
-        private byte[] bytesCache5  = new byte[0];
+        private byte[] bytesCache5;
         /// <summary>
         /// Длинна пакета 
         /// </summary>
@@ -27,8 +26,6 @@ namespace Vge.Network
 
         private int indexRun2;
 
-        public ReceivingBytes(Socket workSocket) : base(workSocket) { }
-
         /// <summary>
         /// Добавить пакет данных
         /// </summary>
@@ -37,15 +34,15 @@ namespace Vge.Network
             try
             {
                 // с какого индекса начинаем
-                int indexRun = 0;
+                byte indexRun = 0;
 
                 if (bodyLength == 0)
                 {
-                    if (bytesCache5.Length > 0)
+                    if (bytesCache5 != null)
                     {
                         // склейка двух массивов BytesCache5 + dataPacket 
                         dataPacket = JoinAr(bytesCache5, dataPacket);
-                        bytesCache5 = new byte[0];
+                        bytesCache5 = null;
                     }
 
                     if (dataPacket[0] == 1)
@@ -60,13 +57,6 @@ namespace Vge.Network
 
                         bytesCache = new byte[bodyLength];
                         bodyFactLength = 0;
-                    }
-                    else if (dataPacket[0] == 0)
-                    {
-                        // Пришел пакет от сервера, надо разорвать связь
-                        ServerPacket sp2 = new ServerPacket(WorkSocket, StatusNet.Disconnecting);
-                        OnReceive(new ServerPacketEventArgs(sp2));
-                        return;
                     }
                     else
                     {
@@ -105,17 +95,15 @@ namespace Vge.Network
                 // Добавляем длинну
                 bodyFactLength += lengthPacket;
 
-                // Закончен основной пакет
-                ServerPacket sp = new ServerPacket(WorkSocket, bytesCache, bodyFactLength);
-
                 // Финиш сборки паета
                 if (bodyFactLength == bodyLength)
                 {
                     // Отправляем событие получения
-                    OnReceive(new ServerPacketEventArgs(sp));
+                    OnReceive(new PacketBufferEventArgs(
+                        new PacketBuffer(bytesCache, bodyFactLength), null));
 
                     // Обнуляем глобальные переменные
-                    bytesCache = new byte[0];
+                    bytesCache = null;
                     bodyLength = 0;
 
                     indexRun2 = lengthPacket + indexRun;
@@ -144,15 +132,6 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// Событие, получать
-        /// </summary>
-        public event ServerPacketEventHandler Receive;
-        /// <summary>
-        /// Событие получать
-        /// </summary>
-        private void OnReceive(ServerPacketEventArgs e) => Receive?.Invoke(this, e);
-
-        /// <summary>
         /// Разделить часть массива
         /// </summary>
         public static byte[] DivisionAr(byte[] first, int indexStart, int indexLength)
@@ -172,5 +151,18 @@ namespace Vge.Network
             second.CopyTo(ret, first.Length);
             return ret;
         }
+
+        #region Event
+
+        /// <summary>
+        /// Событие, получать
+        /// </summary>
+        public event PacketBufferEventHandler Receive;
+        /// <summary>
+        /// Событие получать
+        /// </summary>
+        private void OnReceive(PacketBufferEventArgs e) => Receive?.Invoke(this, e);
+
+        #endregion
     }
 }

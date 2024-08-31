@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
@@ -27,6 +26,7 @@ namespace Vge.Games
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;
             server.RecievePacket += Server_RecievePacket;
+            server.RecieveMessage += Server_RecieveMessage;
         }
 
         /// <summary>
@@ -35,6 +35,8 @@ namespace Vge.Games
         public override void SetGamePauseSingle(bool value)
         {
             IsGamePaused = server.SetGamePauseSingle(value);
+            // TODO::TestUserAllKill();
+            server.TestUserAllKill();
         }
 
         #region Server
@@ -89,8 +91,13 @@ namespace Vge.Games
             OnStoped(stopNotification);
         }
 
-        private void Server_RecievePacket(object sender, ServerPacketEventArgs e)
-            => RecievePacket(e);
+        private void Server_RecievePacket(object sender, PacketBufferEventArgs e)
+            => packets.ReceiveBuffer(e.Buffer.bytes);
+
+        private void Server_RecieveMessage(object sender, StringEventArgs e)
+        {
+            // TODO::2024-08-27 сообщение основному клиенту от сервера
+        }
 
         #endregion
 
@@ -101,15 +108,8 @@ namespace Vge.Games
         {
             if (IsServerRunning())
             {
-                using (MemoryStream writeStream = new MemoryStream())
-                {
-                    using (StreamBase stream = new StreamBase(writeStream))
-                    {
-                        writeStream.WriteByte(ProcessPackets.GetId(packet));
-                        packet.WritePacket(stream);
-                        server.LocalReceivePacket(null, writeStream.ToArray());
-                    }
-                }
+                streamPacket.Trancive(packet);
+                server.LocalReceivePacket(null, streamPacket.ToArray());
             }
         }
     }

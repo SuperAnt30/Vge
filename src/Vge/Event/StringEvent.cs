@@ -6,8 +6,18 @@
         /// <summary>
         /// Строка лога
         /// </summary>
-        public string Text { get; protected set; }
+        public string Text { get; private set; }
+        /// <summary>
+        /// Дополнительный объект
+        /// </summary>
+        public object Tag { get; private set; }
 
         public StringEventArgs(string text) => Text = text;
+
+        public StringEventArgs(string text, object tag)
+        {
+            Text = text;
+            Tag = tag;
+        }
     }
 }

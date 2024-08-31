@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading;
+using Vge.Event;
 using Vge.Network;
 
 namespace Vge.Games
@@ -10,7 +12,7 @@ namespace Vge.Games
     /// </summary>
     public class GameNet : GameBase
     {
-        private SocketClient socket;
+        private SocketSide socket;
         /// <summary>
         /// Оповещение остановки, если "" её ещё не было
         /// </summary>
@@ -23,6 +25,8 @@ namespace Vge.Games
         /// Portс сервера
         /// </summary>
         private readonly int port;
+
+        private bool isWorkGame = false;
 
         public GameNet(string ipAddress, int port) : base()
         {
@@ -39,6 +43,13 @@ namespace Vge.Games
             base.GameStarting();
             Log.Client("Запускается по сети...");
             Log.Save();
+
+            socket = new SocketSide(IPAddress.Parse(ipAddress), port);
+            socket.ReceivePacket += Socket_ReceivePacket;
+            socket.Error += Socket_Error;
+            socket.Connected += Socket_Connected;
+            socket.Disconnected += Socket_Disconnected;
+
             // Запуск поток для синхронной связи по сокету
             Thread myThread = new Thread(NetThread);
             myThread.Start();
@@ -49,13 +60,14 @@ namespace Vge.Games
         /// </summary>
         private void NetThread()
         {
-            // По сети сервер
-            socket = new SocketClient(IPAddress.Parse(ipAddress), port);
-            socket.ReceivePacket += Socket_ReceivePacket;
-            socket.Receive += Socket_Receive;
-            socket.Error += Socket_Error;
-
-            socket.Connect();
+            try
+            {
+                socket.Connect();
+            }
+            catch(Exception e)
+            {
+                Socket_Error(socket, new ErrorEventArgs(e));
+            }
         }
 
         public override void GameStoping(string notification = "")
@@ -64,7 +76,7 @@ namespace Vge.Games
             if (socket != null)
             {
                 // Игра по сети
-                socket.Disconnect();
+                socket.DisconnectFromClient(notification);
                 // отправляем событие остановки
                 //  ThreadServerStoped(errorNet);
             }
@@ -85,36 +97,30 @@ namespace Vge.Games
             OnStoped(notificationStop == "" ? notification : notificationStop);
         }
 
+        private void Socket_Connected(object sender, EventArgs e)
+            => isWorkGame = true;
+
+        private void Socket_Disconnected(object sender, StringEventArgs e)
+        {
+            isWorkGame = false;
+            Stop(e.Text);
+        }
+
         private void Socket_Error(object sender, ErrorEventArgs e)
             => Stop("Error: " + e.GetException().Message);
 
-        private void Socket_Receive(object sender, ServerPacketEventArgs e)
-        {
-            if (e.Packet.status == StatusNet.Disconnect)
-            {
-                Stop("Сервер разорвал соединение!");
-            }
-        }
-
-        private void Socket_ReceivePacket(object sender, ServerPacketEventArgs e)
-            => RecievePacket(e);
+        private void Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
+            => packets.ReceiveBuffer(e.Buffer.bytes);
 
         /// <summary>
         /// Отправить пакет на сервер
         /// </summary>
         public override void TrancivePacket(IPacket packet)
         {
-            //if (IsStartWorld)
+            if (isWorkGame)
             {
-                using (MemoryStream writeStream = new MemoryStream())
-                {
-                    using (StreamBase stream = new StreamBase(writeStream))
-                    {
-                        writeStream.WriteByte(ProcessPackets.GetId(packet));
-                        packet.WritePacket(stream);
-                        socket.SendPacket(writeStream.ToArray());
-                    }
-                }
+                streamPacket.Trancive(packet);
+                socket.SendPacket(streamPacket.ToArray());
             }
         }
 
@@ -131,5 +137,4 @@ namespace Vge.Games
             base.OnTick();
         }
     }
-
 }

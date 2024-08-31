@@ -35,13 +35,12 @@ namespace Vge.Util
         /// </summary>
         public void Add(T item)
         {
-            Count++;
-            if (size < Count)
+            if (size <= Count)
             {
                 size = (int)(size * 1.5f);
                 Array.Resize(ref buffer, size);
             }
-            buffer[Count] = item;
+            buffer[Count++] = item;
         }
 
         /// <summary>

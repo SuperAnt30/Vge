@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Util;
 
@@ -98,6 +99,10 @@ namespace Vge.Games
         /// Объект работы с пакетами
         /// </summary>
         private ProcessServerPackets packets;
+        /// <summary>
+        /// Объект для запаковки пакетов в массив для отправки
+        /// </summary>
+        //private readonly WritePacket streamPacket = new WritePacket();
 
         public Server(Logger log)
         {
@@ -144,7 +149,7 @@ namespace Vge.Games
         /// <summary>
         /// Получить истину запущена ли сеть
         /// </summary>
-        public bool IsRunNet() => socketServer != null && socketServer.IsConnected;
+        public bool IsRunNet() => socketServer != null && socketServer.IsConnected();
 
         /// <summary>
         /// Запустить на сервере сеть
@@ -155,19 +160,30 @@ namespace Vge.Games
             {
                 socketServer = new SocketServer(port);
                 socketServer.ReceivePacket += SocketServer_ReceivePacket;
-                socketServer.Receive += SocketServer_Receive;
                 socketServer.Stopped += SocketServer_Stopped;
                 socketServer.Runned += SocketServer_Runned;
                 socketServer.Error += SocketServer_Error;
-                socketServer.UserConnected += SocketServer_UserConnected;
-                socketServer.Run();
+                socketServer.UserJoined += SocketServer_UserJoined;
+                socketServer.UserLeft += SocketServer_UserLeft;
+                socketServer.WarningString += SocketServer_WarningString;
+                if (!socketServer.Run())
+                {
+                    socketServer = null;
+                }
             }
         }
 
-        private void SocketServer_UserConnected(object sender, StringEventArgs e)
+        private void SocketServer_WarningString(object sender, StringEventArgs e)
         {
-            Log.Server("Пользователь [{0}] подключен к серверу.", e.Text);
+            Log.Server(e.Text);
+            OnRecieveMessage(e.Text);
         }
+
+        private void SocketServer_UserJoined(object sender, StringEventArgs e)
+            => Log.Server("[{0}] Подключен к серверу.", e.Text);
+
+        private void SocketServer_UserLeft(object sender, StringEventArgs e)
+            => Log.Server("[{0}] Отключен от сервера. {1}.", e.Text, e.Tag.ToString());
 
         private void SocketServer_Error(object sender, ErrorEventArgs e)
         {
@@ -198,31 +214,18 @@ namespace Vge.Games
             }
         }
 
-        private void SocketServer_Receive(object sender, ServerPacketEventArgs e)
+        private void SocketServer_ReceivePacket(object sender, PacketBufferEventArgs e)
         {
-            if (e.Packet.status == StatusNet.Disconnect)
-            {
-                // World.Players.PlayerRemove(e.Packet.WorkSocket);
-            }
-            else if (e.Packet.status == StatusNet.Connect)
-            {
-                // Отправляем игроку пинг
-                //ResponsePacket2(e.Packet.WorkSocket, new PacketSF0Connection(""));
-            }
-        }
-
-        private void SocketServer_ReceivePacket(object sender, ServerPacketEventArgs e)
-        {
-            LocalReceivePacket(e.Packet.workSocket, e.Packet.bytes);
+            LocalReceivePacket(e.Side, e.Buffer.bytes);
         }
 
         /// <summary>
         /// Локальная передача пакета
         /// </summary>
-        public void LocalReceivePacket(Socket socket, byte[] buffer)
+        public void LocalReceivePacket(SocketSide socketClient, byte[] buffer)
         {
             rx++;
-            packets.ReceiveBuffer(socket, buffer);
+            packets.ReceiveBuffer(socketClient, buffer);
         }
 
         /// <summary>
@@ -233,28 +236,18 @@ namespace Vge.Games
         /// <summary>
         /// Отправить пакет клиенту
         /// </summary>
-        public void ResponsePacket(Socket socket, IPacket packet)
+        public void ResponsePacket(SocketSide socketClient, IPacket packet)
         {
-            // TODO::2024-08-25 MemoryStream
-            using (MemoryStream writeStream = new MemoryStream())
+            WritePacket streamPacket = new WritePacket();
+            streamPacket.Trancive(packet);
+            tx++;
+            if (socketClient != null)
             {
-                using (StreamBase stream = new StreamBase(writeStream))
-                {
-                    writeStream.WriteByte(ProcessPackets.GetId(packet));
-                    packet.WritePacket(stream);
-                    byte[] buffer = writeStream.ToArray();
-                    tx++;
-
-                    if (socket != null)
-                    {
-                        socketServer.SendPacket(socket, buffer);
-                    }
-                    else
-                    {
-                        ServerPacket spacket = new ServerPacket(socket, buffer);
-                        OnRecievePacket(new ServerPacketEventArgs(spacket));
-                    }
-                }
+                socketServer.SendPacket(socketClient, streamPacket.ToArray());
+            }
+            else
+            {
+                OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(streamPacket.ToArray()), null));
             }
         }
 
@@ -266,11 +259,11 @@ namespace Vge.Games
             ResponsePacket(null, packet);
             if (socketServer != null)
             {
-                Socket[] sockets = socketServer.GetSocketClients();
+                SocketSide[] sockets = socketServer.GetSocketClients();
                 for (int i = 0; i < sockets.Length; i++)
                 {
                     //  System.Threading.Thread.Sleep(40);
-                    if (sockets[i].Connected)
+                    if (sockets[i].IsConnect())
                     {
                         ResponsePacket(sockets[i], packet);
                     }
@@ -285,7 +278,7 @@ namespace Vge.Games
         /// <summary>
         /// Разорвать соединение с игроком по сокету
         /// </summary>
-        public void DisconnectPlayer(Socket socket) => socketServer.DisconnectPlayer(socket);
+        //public void DisconnectPlayer(Socket socket) => socketServer.DisconnectPlayer(socket);
 
         #endregion
 
@@ -392,6 +385,7 @@ namespace Vge.Games
             // Сетевые пакеты
             packets.Update();
 
+           // ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
             // Прошла секунда
             if (TickCounter % speedTps == 0)
             {
@@ -400,7 +394,7 @@ namespace Vge.Games
                 if (TickCounter % 600 == 0)
                 {
                     // раз в 30 секунд обновляем тик с клиентом
-                  //  ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
+                    ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
                 }
 
                 rxPrev = rx;
@@ -441,9 +435,19 @@ namespace Vge.Games
             float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > speedMs ? speedMs / averageTime * speedTps : speedTps;
-            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} {4}{5}",
-                tps, averageTime, rxPrev, txPrev, strNet, isGamePaused ? " PAUSE" : "");
+            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} {4}{5}\r\n{6}",
+                tps, averageTime, rxPrev, txPrev, strNet, isGamePaused ? " PAUSE" : "", debugText);
         }
+
+        public void TestUserAllKill()
+        {
+            if (IsRunNet())
+            {
+                socketServer.TestUserAllKill();
+            }
+        }
+
+        public string debugText = "";
 
         #region Event
 
@@ -470,9 +474,16 @@ namespace Vge.Games
         /// <summary>
         /// Событие получить от сервера пакет
         /// </summary>
-        public event ServerPacketEventHandler RecievePacket;
-        private void OnRecievePacket(ServerPacketEventArgs e) 
+        public event PacketBufferEventHandler RecievePacket;
+        private void OnRecievePacket(PacketBufferEventArgs e) 
             => RecievePacket?.Invoke(this, e);
+
+        /// <summary>
+        /// Событие получить от сервера сообщение
+        /// </summary>
+        public event StringEventHandler RecieveMessage;
+        private void OnRecieveMessage(string message)
+            => RecieveMessage?.Invoke(this, new StringEventArgs(message));
 
         #endregion
     }

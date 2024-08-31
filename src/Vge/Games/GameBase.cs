@@ -36,6 +36,10 @@ namespace Vge.Games
         public int Ping { get; private set; } = -1;
 
         /// <summary>
+        /// Увеличивается каждый тик 
+        /// </summary>
+        public uint TickCounter { get; private set; } = 0;
+        /// <summary>
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
         /// </summary>
         protected uint tickCounterClient = 0;
@@ -49,9 +53,17 @@ namespace Vge.Games
         /// </summary>
         private long lastTimeServer;
         /// <summary>
+        /// Флаг было ли уже остановление
+        /// </summary>
+        private bool flagStoped = false;
+        /// <summary>
         /// Объект работы с пакетами
         /// </summary>
         protected readonly ProcessClientPackets packets;
+        /// <summary>
+        /// Объект для запаковки пакетов в массив для отправки
+        /// </summary>
+        protected readonly WritePacket streamPacket = new WritePacket();
 
         public GameBase()
         {
@@ -81,19 +93,12 @@ namespace Vge.Games
         public virtual void TrancivePacket(IPacket packet) { }
 
         /// <summary>
-        /// Получить от сервера пакет
-        /// </summary>
-        protected void RecievePacket(ServerPacketEventArgs e)
-        {
-            packets.ReceiveBuffer(e.Packet.bytes);
-        }
-
-        /// <summary>
         /// Игровой такт
         /// </summary>
         public virtual void OnTick()
         {
             tickCounterClient++;
+            TickCounter++;
 
             // почерёдно получаем пакеты с сервера
             packets.Update();
@@ -104,11 +109,14 @@ namespace Vge.Games
                 Log.Save();
             }
 
-            if (tickCounterClient % 40 == 0)
+            if (tickCounterClient % 20 == 0) //TODO:: 200
             {
-                // Раз в 2 секунды перепинговка
+                // Раз в 10 секунды перепинговка
                 TrancivePacket(new PacketC00Ping(Time()));
             }
+
+            // Тест
+         //   TrancivePacket(new PacketC04PlayerPosition(new System.Numerics.Vector3(1, 2.5f, 3.5f), true, false, true));
         }
 
         /// <summary>
@@ -128,12 +136,21 @@ namespace Vge.Games
         /// <summary>
         /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
         /// </summary>
-        public bool TimeOut() => (Time() - lastTimeServer) > 30000;
+        public bool TimeOut() => (Time() - lastTimeServer) > 3000;//30000;
+
+        /// <summary>
+        /// Задать время с сервера
+        /// </summary>
+        public void SetTickCounter(uint time) => TickCounter = time;
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms{2}",
-                IsLoacl ? "Local" : "Net", Ping, IsGamePaused ? " Pause" : "");
+            long traffic = packets.Traffic;
+            return string.Format("{0} ping: {1} ms Traffic: {3:0.00} mb{2}",
+                IsLoacl ? "Local" : "Net",
+                Ping,
+                IsGamePaused ? " Pause" : "",
+                traffic / 1048576f);
         }
 
         #region Event
@@ -144,9 +161,14 @@ namespace Vge.Games
         public event StringEventHandler Stoped;
         protected void OnStoped(string notification = "")
         {
-            Log.Client("Остановлен{0}.", notification == "" ? "" : " [" + notification + "]");
-            Log.Save();
-            Stoped?.Invoke(this, new StringEventArgs(notification));
+            if (!flagStoped)
+            {
+                // флаг нужен, так-как можно попасть сюда много раз, из-за разрыва сети.
+                flagStoped = true;
+                Log.Client("Остановлен{0}.", notification == "" ? "" : " [" + notification + "]");
+                Log.Save();
+                Stoped?.Invoke(this, new StringEventArgs(notification));
+            }
         }
 
         /// <summary>

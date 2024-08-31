@@ -1,8 +1,15 @@
 ﻿namespace Vge.Network
 {
+    /// <summary>
+    /// Интерфейс для сетевых пакетов
+    /// </summary>
     public interface IPacket
     {
-        void ReadPacket(StreamBase stream);
-        void WritePacket(StreamBase stream);
+        /// <summary>
+        /// Порядковый номер сетевого пакета, для клиента и серваера отдельный порядок.
+        /// </summary>
+        byte GetId();
+        void ReadPacket(ReadPacket stream);
+        void WritePacket(WritePacket stream);
     }
 }

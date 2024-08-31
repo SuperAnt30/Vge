@@ -7,6 +7,8 @@ using Mvk2.Util;
 using Mvk2.Audio;
 using Mvk2.Renderer;
 using Vge.Util;
+using Vge.Games;
+using Vge.Network.Packets.Client;
 
 namespace Mvk2
 {
@@ -154,7 +156,12 @@ namespace Mvk2
             {
                 audio.PlaySound(1, 0, 0, 0, 1, 1);
             }
-            
+
+            if (game != null)
+            {
+                game.TrancivePacket(new PacketC04PlayerPosition(keys.ToString()));
+            }
+
             //map.ContainsKey(keys);
             //textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
         }
