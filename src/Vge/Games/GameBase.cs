@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
-using Vge.Network.Packets.Client;
+using Vge.Network.Packets;
 using Vge.Util;
 
 namespace Vge.Games
@@ -112,7 +112,7 @@ namespace Vge.Games
             if (tickCounterClient % 20 == 0) //TODO:: 200
             {
                 // Раз в 10 секунды перепинговка
-                TrancivePacket(new PacketC00Ping(Time()));
+                TrancivePacket(new Packet00PingPong(Time()));
             }
 
             // Тест

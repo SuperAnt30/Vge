@@ -1,5 +1,5 @@
 ﻿using Vge.Games;
-using Vge.Network.Packets.Client;
+using Vge.Network.Packets;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 
@@ -44,10 +44,10 @@ namespace Vge.Network
             switch (buffer[0])
             {
                 case 0x00: 
-                    Handle00Pong((PacketS00Pong)readPacket.Receive(buffer, new PacketS00Pong()));
+                    Handle00Pong((Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
                     break;
                 case 0x01:
-                    Handle01KeepAlive((PacketS01KeepAlive)readPacket.Receive(buffer, new PacketS01KeepAlive()));
+                    Handle01KeepAlive((Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
                     break;
                 default:
                     // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
@@ -90,15 +90,15 @@ namespace Vge.Network
         /// <summary>
         /// Пакет связи
         /// </summary>
-        private void Handle00Pong(PacketS00Pong packet) 
+        private void Handle00Pong(Packet00PingPong packet) 
             => Game.SetPing(packet.GetClientTime());
 
         /// <summary>
         /// KeepAlive
         /// </summary>
-        private void Handle01KeepAlive(PacketS01KeepAlive packet)
+        private void Handle01KeepAlive(Packet01KeepAlive packet)
         {
-            Game.TrancivePacket(new PacketC01KeepAlive(packet.GetTime()));
+            Game.TrancivePacket(packet);// new PacketC01KeepAlive(packet.GetTime()));
             Game.OnTick2();
         }
 

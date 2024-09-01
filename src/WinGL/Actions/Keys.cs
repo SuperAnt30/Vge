@@ -1,14 +1,10 @@
-﻿using System;
-
-namespace WinGL.Actions
+﻿namespace WinGL.Actions
 {
     /// <summary>
     /// Зажатие кнопки клавиатуры
     /// </summary>
-    [Flags]
     public enum Keys
     {
-        Modifiers = -65536,
         None = 0,
         LButton = 1,
         RButton = 2,
@@ -198,7 +194,6 @@ namespace WinGL.Actions
         NoName = 252,
         Pa1 = 253,
         OemClear = 254,
-        KeyCode = 65535,
         Shift = 65536,
         Control = 131072,
         Alt = 262144

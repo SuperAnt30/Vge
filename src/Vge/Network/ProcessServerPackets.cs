@@ -1,6 +1,6 @@
 ﻿using Vge.Games;
+using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
-using Vge.Network.Packets.Server;
 using Vge.Util;
 
 namespace Vge.Network
@@ -65,10 +65,10 @@ namespace Vge.Network
             switch (buffer[0])
             {
                 case 0x00:
-                    Handle00Ping(socketSide, (PacketC00Ping)readPacket.Receive(buffer, new PacketC00Ping()));
+                    Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
                     break;
                 case 0x01:
-                    Handle01KeepAlive(socketSide, (PacketC01KeepAlive)readPacket.Receive(buffer, new PacketC01KeepAlive()));
+                    Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
                     break;
                 default:
                     // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
@@ -113,7 +113,7 @@ namespace Vge.Network
                 lastSentPingPacket = server.TickCounter;
                 lastPingTime = server.Time();
                 pingKeySend = (uint)lastPingTime;
-                server.ResponsePacketAll(new PacketS01KeepAlive(pingKeySend));
+                server.ResponsePacketAll(new Packet01KeepAlive(pingKeySend));
             }
             packets.Step();
             int count = packets.CountBackward;
@@ -131,13 +131,13 @@ namespace Vge.Network
         /// <summary>
         /// Ping-pong
         /// </summary>
-        private void Handle00Ping(SocketSide socketSide, PacketC00Ping packet)
-            => server.ResponsePacket(socketSide, new PacketS00Pong(packet.GetClientTime()));
+        private void Handle00Ping(SocketSide socketSide, Packet00PingPong packet)
+            => server.ResponsePacket(socketSide, packet);// new PacketS00Pong(packet.GetClientTime()));
 
         /// <summary>
         /// KeepAlive
         /// </summary>
-        private void Handle01KeepAlive(SocketSide socketSide, PacketC01KeepAlive packet)
+        private void Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
             //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
             //if (packet.GetTime() == pingKeySend && entityPlayer != null)

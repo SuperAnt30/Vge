@@ -48,6 +48,10 @@ namespace Vge.Network
         /// Получить рабочий сокет
         /// </summary>
         private Socket socket;
+        /// <summary>
+        /// Объект-событие
+        /// </summary>
+        private AutoResetEvent waitHandler;
 
         /// <summary>
         /// Создать сокет на стороне клиента
@@ -101,6 +105,8 @@ namespace Vge.Network
                 return;
             }
 
+            waitHandler = new AutoResetEvent(true);
+
             // Запускаем отдельный поток для отправки сообщений
             Thread myThread = new Thread(ThreadLoopSend);
             myThread.Start();
@@ -111,6 +117,8 @@ namespace Vge.Network
             WaitingReceive();
         }
 
+        
+
         /// <summary>
         /// Отдельный поток цикла для отправки пакетов
         /// </summary>
@@ -118,26 +126,21 @@ namespace Vge.Network
         {
             while (socket != null)
             {
-                if (packets.CountForward > 0)
+                packets.Step();
+                try
                 {
-                    packets.Step();
-                    try
+                    int count = packets.CountBackward;
+                    for (int i = 0; i < count; i++)
                     {
-                        int count = packets.CountBackward;
-                        for (int i = 0; i < count; i++)
-                        {
-                            socket.Send(packets.GetNext());
-                        }
-                    }
-                    catch
-                    {
-                        // Сюда можем попасть в момент когда сокет закрылся в другом потоке
+                        socket.Send(packets.GetNext());
                     }
                 }
-                else
+                catch
                 {
-                    Thread.Sleep(1);
+                    // Сюда можем попасть в момент когда сокет закрылся в другом потоке
                 }
+                // Ожидаем сигнала
+                waitHandler.WaitOne();
             }
         }
 
@@ -155,7 +158,8 @@ namespace Vge.Network
                 Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, ret, 1, 4);
                 Buffer.BlockCopy(bytes, 0, ret, 5, bytes.Length);
                 packets.Add(ret);
-                //socket.Send(ret);
+                // Сигнализируем, что waitHandler в сигнальном состоянии
+                waitHandler.Set();
             }
         }
 
@@ -208,6 +212,7 @@ namespace Vge.Network
                     socket.Close();
                 }
                 socket = null;
+                waitHandler.Set();
             }
         }
 
