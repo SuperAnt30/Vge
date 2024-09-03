@@ -9,6 +9,7 @@ using Vge.Util;
 using Vge.Games;
 using Vge.Audio;
 using Vge.Event;
+using Vge.Gui.Screens;
 
 namespace Vge
 {
@@ -38,15 +39,20 @@ namespace Vge
         /// <summary>
         /// Объект отвечающий за прорисовку
         /// </summary>
-        protected RenderBase render;
+        public RenderMain Render { get; protected set; }
+        /// <summary>
+        /// Объект экрана
+        /// </summary>
+        public ScreenBase Screen { get; protected set; }
+        /// <summary>
+        /// Игровой объект
+        /// </summary>
+        public GameBase Game { get; protected set; }
+
         /// <summary>
         /// Объект создающий последовательные кадры и тики
         /// </summary>
         protected Ticker ticker;
-        /// <summary>
-        /// Игровой объект
-        /// </summary>
-        protected GameBase game;
         /// <summary>
         /// Объект звуков
         /// </summary>
@@ -56,6 +62,10 @@ namespace Vge
         /// Флаг на удаление, ждём когда закроется сервер
         /// </summary>
         private bool flagClose = false;
+        /// <summary>
+        /// Фиксация времени тика
+        /// </summary>
+        private long timeBegin;
 
         public WindowMain() : base()
         {
@@ -73,6 +83,11 @@ namespace Vge
         {
             Version = "Vge " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
+
+        /// <summary>
+        /// Получить объект OpenGL
+        /// </summary>
+        public GL GetOpenGL() => gl;
 
         /// <summary>
         /// Получить время в милисекундах с момента запуска проекта
@@ -134,6 +149,24 @@ namespace Vge
             RenderInitialized();
         }
 
+        /// <summary>
+        /// Прорисовка кадра
+        /// </summary>
+        protected override void OnOpenGlDraw()
+        {
+            base.OnOpenGlDraw();
+
+            gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            //gl.ClearColor(.7f, .4f, .4f, 1f);
+            ///gl.Enable(GL.GL_DEPTH_TEST);
+            // группа для сглаживания, но может жутко тормазить
+            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.Enable(GL.GL_BLEND);
+
+            Render.Draw(ticker.Interpolation);
+            //renderMvk.Draw();
+        }
+
         #endregion
 
         #region WindowOverride
@@ -150,25 +183,22 @@ namespace Vge
         /// <summary>
         /// Запущено окно
         /// </summary>
-        public override void Begined()
-        {
-            // TODO::2024-08-22 тут загрузчик включит, текстур и прочего
-        }
+        public override void Begined() => Screen = new ScreenSplash(this);
 
         /// <summary>
         /// Инициализаця объекта рендера
         /// </summary>
-        protected virtual void RenderInitialized() => render = new RenderBase(this, gl);
+        protected virtual void RenderInitialized() => Render = new RenderMain(this);
 
         /// <summary>
         /// Закрыть приложение
         /// </summary>
         protected override void Close()
         {
-            if (game != null)
+            if (Game != null)
             {
                 flagClose = true;
-                game.GameStoping("Закрытие приложения");
+                Game.GameStoping("Закрытие приложения");
             }
             else
             {
@@ -193,7 +223,29 @@ namespace Vge
         /// Тик в лупе
         /// </summary>
         protected override void LoopTick() => ticker.DoTick();
-    
+
+        #endregion
+
+        #region Screen
+
+        /// <summary>
+        /// Создать скрин заставки
+        /// </summary>
+        public virtual void ScreenSplash() => Screen = new ScreenSplash(this);
+        /// <summary>
+        /// Создать скрин по индексу
+        /// </summary>
+        public virtual void ScreenMainMenu() => Screen = new ScreenMainMenu(this);
+
+        /// <summary>
+        /// Создать скрин по объекту, который есть в ядре
+        /// </summary>
+        public void ScreenCreate(ScreenBase screen) => Screen = screen;
+        /// <summary>
+        /// Закрыть скрин
+        /// </summary>
+        public void ScreenClose() => Screen = null;
+
         #endregion
 
         #region Game
@@ -203,9 +255,9 @@ namespace Vge
         /// </summary>
         protected void GameNetRun(string ipAddress, int port)
         {
-            if (game == null)
+            if (Game == null)
             {
-                game = new GameNet(ipAddress, port);
+                Game = new GameNet(this, ipAddress, port);
                 GameRun();
             }
         }
@@ -215,20 +267,20 @@ namespace Vge
         /// </summary>
         protected void GameLocalRun()
         {
-            if (game == null)
+            if (Game == null)
             {
-                game = new GameLocal();
+                Game = new GameLocal(this);
                 GameRun();
             }
         }
 
         private void GameRun()
         {
-            game.Stoped += Game_Stoped;
-            game.Error += Game_Error;
-            game.ServerTextDebug += Game_ServerTextDebug;
-            game.Tick += Game_Tick;
-            game.GameStarting();
+            Game.Stoped += Game_Stoped;
+            Game.Error += Game_Error;
+            Game.ServerTextDebug += Game_ServerTextDebug;
+            Game.Tick += Game_Tick;
+            Game.GameStarting();
         }
 
         protected virtual void Game_Tick(object sender, EventArgs e) { }
@@ -241,7 +293,7 @@ namespace Vge
         /// </summary>
         protected virtual void Game_Stoped(object sender, StringEventArgs e)
         {
-            game = null;
+            Game = null;
             debug.server = e.Text;// "";
             if (flagClose)
             {
@@ -262,9 +314,9 @@ namespace Vge
         /// </summary>
         protected void GameStoping()
         {
-            if (game != null)
+            if (Game != null)
             {
-                game.GameStoping("Пользователь остановил игру");
+                Game.GameStoping("Пользователь остановил игру");
             }
         }
 
@@ -272,37 +324,41 @@ namespace Vge
 
         #region Ticker
 
-        protected virtual void Ticker_Frame(object sender, EventArgs e)
-        {
-            DrawFrame();
-        }
+        protected virtual void Ticker_Frame(object sender, EventArgs e) => DrawFrame();
 
         private void Ticker_Tick(object sender, EventArgs e)
         {
             timeBegin = TimeTicks();
             OnTick();
-            render.UpdateTick((float)(TimeTicks() - timeBegin) / (float)Ticker.TimerFrequency);
+            // Считаем сколько затрачено мс времени на такт
+            Render.UpdateTick((float)(TimeTicks() - timeBegin) / (float)Ticker.TimerFrequency);
         }
 
-        private long timeBegin;
-
+        /// <summary>
+        /// Стабильный игровой такт
+        /// </summary>
         protected virtual void OnTick()
         {
             audio.Tick();
             debug.audio = audio.StrDebug;
             
-            if (game == null)
+            if (Screen != null)
+            {
+                Screen.OnTick();
+            }
+
+            if (Game == null)
             {
                 debug.client = "null";
             }
             else
             {
-                debug.client = game.ToString();
-                game.OnTick();
+                debug.client = Game.ToString();
+                Game.OnTick();
             }
 
             // Отладка на экране
-            render.SetTextDebug(debug.ToText());
+            Render.SetTextDebug(debug.ToText());
         }
 
         #endregion

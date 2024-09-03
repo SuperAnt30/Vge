@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.Threading;
 using Vge.Event;
+using Vge.Gui.Huds;
 using Vge.Network;
 using Vge.Network.Packets;
+using Vge.Renderer;
 using Vge.Util;
 
 namespace Vge.Games
@@ -11,7 +13,7 @@ namespace Vge.Games
     /// <summary>
     /// Абстрактный класс игры
     /// </summary>
-    public abstract class GameBase
+    public abstract class GameBase : RenderBase
     {
         /// <summary>
         /// Объект лога
@@ -34,11 +36,16 @@ namespace Vge.Games
         /// Пинг к серверу
         /// </summary>
         public int Ping { get; private set; } = -1;
+        /// <summary>
+        /// Объект индикация
+        /// </summary>
+        public HudBase Hud { get; protected set; }
 
         /// <summary>
         /// Увеличивается каждый тик 
         /// </summary>
         public uint TickCounter { get; private set; } = 0;
+
         /// <summary>
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
         /// </summary>
@@ -65,7 +72,7 @@ namespace Vge.Games
         /// </summary>
         protected readonly WritePacket streamPacket = new WritePacket();
 
-        public GameBase()
+        public GameBase(WindowMain window) : base(window)
         {
             Log = new Logger();
             Filer = new Profiler(Log, "[Client] ");
@@ -95,7 +102,7 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
-        public virtual void OnTick()
+        public override void OnTick()
         {
             tickCounterClient++;
             TickCounter++;
@@ -142,6 +149,23 @@ namespace Vge.Games
         /// Задать время с сервера
         /// </summary>
         public void SetTickCounter(uint time) => TickCounter = time;
+
+        /// <summary>
+        /// Метод для прорисовки кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public override void Draw(float timeIndex)
+        {
+            // Тут прорисовка мира
+            gl.ClearColor(.4f, .4f, .7f, 1f);
+
+            // мир
+            // Тут индикация если имеется
+            if (Hud != null)
+            {
+                Hud.Draw();
+            }
+        }
 
         public override string ToString()
         {

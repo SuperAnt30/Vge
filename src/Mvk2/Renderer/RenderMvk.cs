@@ -10,7 +10,7 @@ namespace Mvk2.Renderer
     /// <summary>
     /// Класс отвечающий за прорисовку для малювек
     /// </summary>
-    public class RenderMvk : RenderBase
+    public class RenderMvk : RenderMain
     {
         /// <summary>
         /// Мелкий шрифт
@@ -30,7 +30,7 @@ namespace Mvk2.Renderer
         /// </summary>
         private Mesh cursorVBO;
 
-        public RenderMvk(WindowMvk window, GL gl) : base(window, gl)
+        public RenderMvk(WindowMvk window) : base(window)
         {
             windowMvk = window;
             cursorVBO = new Mesh(gl, RenderFigure.Rectangle2d(0, 0, 24, 24, 0, 0, 1, 1), new int[] { 2, 2 });
@@ -75,7 +75,8 @@ namespace Mvk2.Renderer
         public int xx = 0;
         public int xx2 = 0;
 
-        protected override void OnDraw()
+
+        public override void DrawDebug()
         {
             FontSmall.BufferClear();
             FontMain.BufferClear();

@@ -28,7 +28,7 @@ namespace Vge.Games
 
         private bool isWorkGame = false;
 
-        public GameNet(string ipAddress, int port) : base()
+        public GameNet(WindowMain window, string ipAddress, int port) : base(window)
         {
             IsLoacl = false;
             this.ipAddress = ipAddress;

@@ -19,7 +19,7 @@ namespace Vge.Games
         /// </summary>
         private string stopNotification = "";
 
-        public GameLocal() : base()
+        public GameLocal(WindowMain window) : base(window)
         {
             server = new Server(Log);
             server.Closeded += Server_Closeded;

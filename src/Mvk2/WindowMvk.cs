@@ -9,6 +9,7 @@ using Mvk2.Renderer;
 using Vge.Util;
 using Vge.Games;
 using Vge.Network.Packets.Client;
+using Mvk2.Gui.Screens;
 
 namespace Mvk2
 {
@@ -75,13 +76,13 @@ namespace Mvk2
         {
             base.OnOpenGLInitialized();
 
-            gl.ShadeModel(GL.GL_SMOOTH);
-            gl.ClearColor(0.0f, .5f, 0.0f, 1f);
-            gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            gl.ClearDepth(1.0f);
-            gl.Enable(GL.GL_DEPTH_TEST);
+            //gl.ShadeModel(GL.GL_SMOOTH);
+            //gl.ClearColor(0.0f, .5f, 0.0f, 1f);
+            //gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            //gl.ClearDepth(1.0f);
+            //gl.Enable(GL.GL_DEPTH_TEST);
             gl.DepthFunc(GL.GL_LEQUAL);
-            gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+            //gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
         }
 
         /// <summary>
@@ -89,32 +90,39 @@ namespace Mvk2
         /// </summary>
         protected override void RenderInitialized()
         {
-            render = renderMvk = new RenderMvk(this, gl);
+            Render = renderMvk = new RenderMvk(this);
             renderMvk.InitializeFirst();
         }
 
-        protected override void OnOpenGlDraw()
-        {
-            base.OnOpenGlDraw();
+        //protected override void OnResized(int width, int height)
+        //{
+        //    base.OnResized(width, height);
+        //}
+
+        /// <summary>
+        /// Прорисовка кадра
+        /// </summary>
+        //protected override void OnOpenGlDraw()
+        //{
+        //    base.OnOpenGlDraw();
             
-            gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            gl.Enable(GL.GL_DEPTH_TEST);
-            // группа для сглаживания, но может жутко тормазить
-            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.ClearColor(.7f, .4f, .4f, 1f);
-            gl.Enable(GL.GL_BLEND);
+        //    gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        //    gl.Enable(GL.GL_DEPTH_TEST);
+        //    // группа для сглаживания, но может жутко тормазить
+        //    gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        //    gl.ClearColor(.7f, .4f, .4f, 1f);
+        //    gl.Enable(GL.GL_BLEND);
 
-            renderMvk.Draw();
-        }
+        //    renderMvk.Draw();
+        //}
 
-        protected override void OnResized(int width, int height)
-        {
-            base.OnResized(width, height);
-        }
-
+        /// <summary>
+        /// Стабильный игровой такт
+        /// </summary>
         protected override void OnTick()
         {
             base.OnTick();
+
 
             //int x = renderMvk.xx;
             //x -= 100;
@@ -138,9 +146,9 @@ namespace Mvk2
             else if (keys == Keys.F4)
             {
                 // Пауза
-                if (game != null)
+                if (Game != null)
                 {
-                    game.SetGamePauseSingle(!game.IsGamePaused);
+                    Game.SetGamePauseSingle(!Game.IsGamePaused);
                 }
             }
             else if (keys == Keys.F5)
@@ -157,9 +165,9 @@ namespace Mvk2
                 audio.PlaySound(1, 0, 0, 0, 1, 1);
             }
 
-            if (game != null)
+            if (Game != null)
             {
-                game.TrancivePacket(new PacketC04PlayerPosition(keys.ToString()));
+                Game.TrancivePacket(new PacketC04PlayerPosition(keys.ToString()));
             }
 
             //map.ContainsKey(keys);
@@ -184,5 +192,14 @@ namespace Mvk2
                 return;
             }
         }
+
+        #region Screen
+
+        /// <summary>
+        /// Создать скрин по индексу
+        /// </summary>
+        public override void ScreenMainMenu() => Screen = new ScreenDebug(this);
+
+        #endregion
     }
 }
