@@ -11,7 +11,7 @@
 
         public override void OnTick()
         {
-            if (count++ > 20)
+            if (count++ > 40)
             {
                 window.ScreenMainMenu();
             }

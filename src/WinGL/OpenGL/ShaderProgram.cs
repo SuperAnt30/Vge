@@ -46,8 +46,8 @@ namespace WinGL.OpenGL
             // Если он не связан должным образом, мы создадим исключение.
             if (GetLinkStatus(gl) == false)
             {
-                throw new ShaderCompilationException(string.Format("Не удалось связать шейдерную программу с ID {0}.",
-                    ShaderProgramObject), GetInfoLog(gl));
+                throw new ShaderCompilationException(
+                    SR.GetString(SR.FailedToAssociateShaderProgramWithID, ShaderProgramObject), GetInfoLog(gl));
             }
         }
 

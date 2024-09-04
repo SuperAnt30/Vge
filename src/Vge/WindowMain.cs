@@ -214,7 +214,7 @@ namespace Vge
             }
             catch (Exception e)
             {
-                Logger.Crach(e, "Begin");
+                Logger.Crash(e, "Begin");
                 throw e;
             }
         }
@@ -305,8 +305,8 @@ namespace Vge
 
         private void Game_Error(object sender, ThreadExceptionEventArgs e)
         {
-            Logger.Crach(e.Exception, "WindowMain");
-            MessageBoxCrach(e.Exception);
+            Logger.Crash(e.Exception, "WindowMain");
+            MessageBoxCrash(e.Exception);
         }
 
         /// <summary>

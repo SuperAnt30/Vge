@@ -60,7 +60,7 @@ namespace Vge.Network
                     }
                     else
                     {
-                        throw new Exception("Ошибка в склейке данных [ReceivingBytes:Receiving]");
+                        throw new Exception(SR.ErrorInGluingNetworkData);
                     }
                 }
                 // Определяем тикущую длинну пакета
@@ -124,6 +124,7 @@ namespace Vge.Network
                     }
                 }
             }
+            // TODO::2024-09-04 зачем это?
             catch (Exception e)
             {
                 throw e;

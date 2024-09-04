@@ -41,7 +41,7 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-            Log.Client("Запускается по сети...");
+            Log.Client(SRL.StartingMultiplayer);
             Log.Save();
 
             socket = new SocketSide(IPAddress.Parse(ipAddress), port);

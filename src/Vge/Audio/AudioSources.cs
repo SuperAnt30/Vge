@@ -30,7 +30,7 @@ namespace Vge.Audio
             IntPtr device = Al.alcOpenDevice("");
             if (device == IntPtr.Zero)
             {
-                throw new Exception("Библиотека звука OpenAL не смогла инициализироваться, скорее всего файл OpenAL64.dll не подходит.");
+                throw new Exception(SR.TheOpenALSoundLibraryFailedToInitialize);
             }
             List<AudioSource> list = new List<AudioSource>();
             bool error = false;
@@ -50,7 +50,7 @@ namespace Vge.Audio
             }
             if (count <= 0)
             {
-                throw new Exception("Библиотека звука OpenAL собрала больше 10000 каналов, это подозрительно!");
+                throw new Exception(SR.TheOpenALSoundLibraryHasCollectedManyChannels);
             }
             sources = list.ToArray();
             CountAll = list.Count;

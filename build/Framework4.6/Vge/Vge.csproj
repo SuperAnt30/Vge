@@ -62,23 +62,29 @@
     <Compile Include="Games\GameBase.cs" />
     <Compile Include="Games\GameLocal.cs" />
     <Compile Include="Games\GameNet.cs" />
-    <Compile Include="Network\Packets\Client\PacketC00Ping.cs" />
-    <Compile Include="Network\Packets\Client\PacketC01KeepAlive.cs" />
+    <Compile Include="Gui\Controls\ControlBase.cs" />
+    <Compile Include="Gui\Huds\HudBase.cs" />
+    <Compile Include="Gui\Screens\ScreenBase.cs" />
+    <Compile Include="Gui\Screens\ScreenMainMenu.cs" />
+    <Compile Include="Gui\Screens\ScreenSplash.cs" />
     <Compile Include="Network\IPacket.cs" />
     <Compile Include="Event\StringEvent.cs" />
     <Compile Include="Network\Packets\Client\PacketC04PlayerPosition.cs" />
+    <Compile Include="Network\Packets\Packet00PingPong.cs" />
+    <Compile Include="Network\Packets\Packet01KeepAlive.cs" />
     <Compile Include="Network\Packets\Server\PacketS03TimeUpdate.cs" />
     <Compile Include="Network\ProcessClientPackets.cs" />
     <Compile Include="Network\ProcessServerPackets.cs" />
     <Compile Include="Network\ReceivingBytes.cs" />
     <Compile Include="Network\PacketBuffer.cs" />
     <Compile Include="Network\PacketBufferEvent.cs" />
-    <Compile Include="Network\Packets\Server\PacketS00Pong.cs" />
-    <Compile Include="Network\Packets\Server\PacketS01KeepAlive.cs" />
     <Compile Include="Network\SocketSide.cs" />
     <Compile Include="Network\SocketServer.cs" />
     <Compile Include="Network\ReadPacket.cs" />
     <Compile Include="Network\WritePacket.cs" />
+    <Compile Include="Renderer\RenderMain.cs" />
+    <Compile Include="SRL.cs" />
+    <Compile Include="SR.cs" />
     <Compile Include="Util\DoubleList.cs" />
     <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\Profiler.cs" />
@@ -106,5 +112,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -65,7 +65,7 @@ namespace Vge.Renderer.Font
                 index = keys.IndexOf(symb) + 32;
                 if (index == -1)
                 {
-                    throw new Exception("Символ [" + vc[i] + "] отсутствует в перечне.");
+                    throw new Exception(SR.GetString(SR.TheSymbolIsNotInTheList, vc[i]));
                 }
                 width = GetWidth(textureFont, index);
                 Symbol symbol = new Symbol(symb, index, width);

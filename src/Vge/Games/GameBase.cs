@@ -74,7 +74,7 @@ namespace Vge.Games
 
         public GameBase(WindowMain window) : base(window)
         {
-            Log = new Logger();
+            Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
             packets = new ProcessClientPackets(this);
         }
@@ -189,7 +189,7 @@ namespace Vge.Games
             {
                 // флаг нужен, так-как можно попасть сюда много раз, из-за разрыва сети.
                 flagStoped = true;
-                Log.Client("Остановлен{0}.", notification == "" ? "" : " [" + notification + "]");
+                Log.Client(SRL.StoppedClient, notification == "" ? "" : " [" + notification + "]");
                 Log.Save();
                 Stoped?.Invoke(this, new StringEventArgs(notification));
             }

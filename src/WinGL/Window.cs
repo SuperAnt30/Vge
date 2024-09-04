@@ -127,7 +127,7 @@ namespace WinGL
         /// <summary>
         /// Системное окно ошибки
         /// </summary>
-        protected static void MessageBoxCrach(Exception ex)
+        protected static void MessageBoxCrash(Exception ex)
         {
             Exception e;
             string stackTrace;
@@ -143,7 +143,7 @@ namespace WinGL
             }
             if (stackTrace.Length > 800) stackTrace = stackTrace.Substring(0, 800) + "...";
             WinUser.MessageBox(string.Format("{0}: {1}\r\n---\r\n{2}", e.Source, e.Message, stackTrace),
-                "Crach", WinUser.MB_ICONSTOP);
+                "Crash", WinUser.MB_ICONSTOP);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace WinGL
             }
             catch (Exception ex)
             {
-                MessageBoxCrach(ex);
+                MessageBoxCrash(ex);
             }
         }
 
@@ -189,7 +189,7 @@ namespace WinGL
             catch (Exception ex)
             {
                 Close();
-                throw new Exception("Ошибка при запуске окна", ex);
+                throw new Exception(SR.ErrorWhileStartingWindow, ex);
             }
             finally
             {
@@ -228,8 +228,7 @@ namespace WinGL
             // Пытаемся зарегистрировать класс окна
             if (WinUser.RegisterClassEx(ref wc) == 0)
             {
-                //Failed To Register The Window Class
-                throw new Exception("Не удалось зарегистрировать класс окна.");
+                throw new Exception(SR.FailedToRegisterTheWindowClass);
             }
             int width = windowWidth;
             int height = windowHeigt;
@@ -292,8 +291,7 @@ namespace WinGL
 
             if (hWnd == IntPtr.Zero) 
             {
-                //Window Creation Error.
-                throw new Exception("Ошибка создания окна.");
+                throw new Exception(SR.WindowCreationError);
             }
 
             // pfd сообщает Windows каким будет вывод на экран каждого пикселя
@@ -315,22 +313,19 @@ namespace WinGL
             hDC = WinUser.GetDC(hWnd);
             if (hDC == IntPtr.Zero)
             {
-                //Can't Create A OpenGL Device Context.
-                throw new Exception("Невозможно создать контекст устройства OpenGL.");
+                throw new Exception(SR.CantCreateAOpenGLDeviceContext);
             }
 
             // Подходящий формат пикселя
             int iPixelformat = WinGdi.ChoosePixelFormat(hDC, pfd);
             if (iPixelformat == 0)
             {
-                //Can't Find A Suitable PixelFormat.
-                throw new Exception("Не удалось найти подходящий формат пикселя.");
+                throw new Exception(SR.CantFindASuitablePixelFormat);
             }
             // Установить формат пикселя
             if (WinGdi.SetPixelFormat(hDC, iPixelformat, pfd) == 0)
             {
-                //Can't Set The PixelFormat.
-                throw new Exception("Невозможно установить PixelFormat.");
+                throw new Exception(SR.CantSetThePixelFormat);
             }
             // Установить контекст рендеринга
             gl.Create(hDC, openGLVersion);

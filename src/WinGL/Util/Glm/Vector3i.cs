@@ -19,14 +19,14 @@ namespace WinGL.Util
                 if (index == 0) return X;
                 else if (index == 1) return Y;
                 else if (index == 2) return Z;
-                else throw new Exception("Out of range.");
+                else throw new Exception(SR.OutOfRange);
             }
             set
             {
                 if (index == 0) X = value;
                 else if (index == 1) Y = value;
                 else if (index == 2) Z = value;
-                else throw new Exception("Out of range.");
+                else throw new Exception(SR.OutOfRange);
             }
         }
 

@@ -122,7 +122,7 @@ namespace Vge.Games
         {
             byte slot = 1;
             int indexVersion = 1;
-            Log.Server("Запускаем slot={0} idVer={1}", slot, indexVersion);
+            Log.Server(SRL.Starting, slot, indexVersion);
             Thread myThread = new Thread(Loop);
             myThread.Start();
         }
@@ -180,10 +180,10 @@ namespace Vge.Games
         }
 
         private void SocketServer_UserJoined(object sender, StringEventArgs e)
-            => Log.Server("[{0}] Подключен к серверу.", e.Text);
+            => Log.Server(SRL.ConnectedToTheServer, e.Text);
 
         private void SocketServer_UserLeft(object sender, StringEventArgs e)
-            => Log.Server("[{0}] Отключен от сервера. {1}.", e.Text, e.Tag.ToString());
+            => Log.Server(SRL.DisconnectedFromServer, e.Text, e.Tag.ToString());
 
         private void SocketServer_Error(object sender, ErrorEventArgs e)
         {
@@ -195,7 +195,7 @@ namespace Vge.Games
         private void SocketServer_Runned(object sender, EventArgs e)
         {
             isGamePaused = false;
-            Log.Server("Включен сетевой режим.");
+            Log.Server(SRL.NetworkModeIsEnabled);
         }
 
         private void SocketServer_Stopped(object sender, EventArgs e)
@@ -304,7 +304,7 @@ namespace Vge.Games
                 long currentTime = stopwatchTps.ElapsedMilliseconds;
                 long cacheTime = 0;
                 int timeSleep;
-                Log.Server("Go!");
+                Log.Server(SRL.Go);
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)
@@ -319,7 +319,7 @@ namespace Vge.Games
                     {
                         // Не успеваю!Изменилось ли системное время, или сервер перегружен?
                         // Отставание на {differenceTime} мс, пропуск тиков({differenceTime / 50}) 
-                        Log.Server("Не успеваю! Отставание на {0} мс, пропуск тиков {1}", differenceTime, differenceTime / 50);
+                        Log.Server(SRL.LaggingBehind, differenceTime, differenceTime / 50);
                         differenceTime = 2000;
                         timeOfLastWarning = currentTime;
                     }
@@ -351,7 +351,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoping()
         {
-            Log.Server("Останавливаем...");
+            Log.Server(SRL.Stopping);
             //World.WorldStoping();
             // Тут надо сохранить мир
             packets.Clear();
@@ -370,7 +370,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoped()
         {
-            Log.Server("Остановлен.");
+            Log.Server(SRL.StoppedServer);
             OnCloseded();
         }
 

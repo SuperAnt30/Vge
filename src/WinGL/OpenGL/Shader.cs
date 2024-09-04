@@ -30,7 +30,7 @@ namespace WinGL.OpenGL
             if (GetCompileStatus(gl) == false)
             {
                 throw new ShaderCompilationException(
-                    string.Format("Failed to compile shader with ID {0}.", ShaderObject), GetInfoLog(gl));
+                    SR.GetString(SR.FailedToCompileShaderWithID, ShaderObject), GetInfoLog(gl));
             }
         }
 

@@ -28,7 +28,7 @@ namespace Vge.Util
         /// </summary>
         private string log = "";
 
-        public Logger(string folder = "Logs", bool clearing = true)
+        public Logger(string folder, bool clearing = true)
         {
             path = folder + Path.DirectorySeparatorChar;
             string sd = DateTime.Now.ToString("yyyy-MM-dd");
@@ -60,24 +60,24 @@ namespace Vge.Util
         /// Добавить в лог с префиксом [Client]
         /// </summary>
         public void Client(string logMessage, params object[] args)
-         => Log("[Client] " + logMessage, args);
+         => Log(SRL.Client + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [Server]
         /// </summary>
         public void Server(string logMessage, params object[] args)
-         => Log("[Server] " + logMessage, args);
+         => Log(SRL.Server + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [ERROR]
         /// </summary>
         public void Error(string logMessage, params object[] args)
-            => Log("[ERROR] " + logMessage, args);
+            => Log(SRL.Error + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [ERROR]
         /// </summary>
         public void Error(Exception e)
         {
             e = GetException(e);
-            Log("[ERROR]{0}: {1}\r\n------\r\n{2} ", e.Source, e.Message, e.StackTrace);
+            Log(SRL.ErrorException, e.Source, e.Message, e.StackTrace);
         }
 
         /// <summary>
@@ -182,10 +182,9 @@ namespace Vge.Util
                 {
                     return dateTime.CompareTo(fileSort.dateTime);
                 }
-                throw new ArgumentException("Некорректное значение параметра");
+                throw new ArgumentException(SR.IncorrectParameterValue);
             }
         }
-
 
         /// <summary>
         /// Проверка пути, если нет, то создаём
@@ -201,9 +200,9 @@ namespace Vge.Util
         /// <summary>
         /// Создать файл c ошибкой краша
         /// </summary>
-        public static void Crach(string logMessage, params object[] args)
+        public static void Crash(string logMessage, params object[] args)
         {
-            Logger logger = new Logger("Crach");
+            Logger logger = new Logger("Crash");
             logger.Error(logMessage, args);
             logger.Save();
         }
@@ -211,10 +210,10 @@ namespace Vge.Util
         /// <summary>
         /// Создать файл c ошибкой краша
         /// </summary>
-        public static void Crach(Exception e, string logMessage = "", params object[] args)
+        public static void Crash(Exception e, string logMessage = "", params object[] args)
         {
             e = GetException(e);
-            Logger logger = new Logger("Crach");
+            Logger logger = new Logger("Crash");
             string prefix = "";
             if (logMessage != "")
             {
