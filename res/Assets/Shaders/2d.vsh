@@ -10,11 +10,10 @@ uniform mat4 projview;
 uniform float biasX;
 uniform float biasY;
 uniform vec4 color;
-uniform float si;
 
 void main()
 {
 	a_color = color;
 	a_texCoord = v_texCoord;
-	gl_Position = projview * vec4(v_position.x * si + biasX, v_position.y * si + biasY, 0, 1.0);
+	gl_Position = projview * vec4(v_position.x + biasX, v_position.y + biasY, 0, 1.0);
 }

@@ -129,8 +129,8 @@ namespace Vge.Renderer
             if (isTextDebug)
             {
                 isTextDebug = false;
-                FontMain.RenderText(11, 11, textDebug, new Vector3(.2f, .2f, .2f));
-                FontMain.RenderText(10, 10, textDebug, new Vector3(.9f, .9f, .9f));
+                FontMain.RenderText(11 * Gi.Si, 11 * Gi.Si, textDebug, new Vector3(.2f, .2f, .2f));
+                FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug, new Vector3(.9f, .9f, .9f));
 
                 meshTextDebug.Reload(FontMain.ToBuffer());
                 FontMain.BufferClear();

@@ -32,6 +32,8 @@ namespace Mvk2.Gui.Screens
 
             if (window is WindowMvk windowMvk)
             {
+                int si = Gi.Si;
+
                 RenderMvk render = windowMvk.Render as RenderMvk;
                 render.FontSmall.BufferClear();
                 render.FontMain.BufferClear();
@@ -39,7 +41,6 @@ namespace Mvk2.Gui.Screens
 
                 render.shaderText.Bind(gl);
                 render.shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
-                render.shaderText.SetUniform1(gl, "si", Gi.Si);
 
                 render.RenderTextDebug();
                 render.DrawTextDebug();
@@ -47,23 +48,23 @@ namespace Mvk2.Gui.Screens
                 Vector3 bg = new Vector3(.2f, .2f, .2f);
                 Vector3 cw = new Vector3(.9f, .9f, .9f);
 
-                render.FontSmall.RenderString(xx + 1, 201, "-C-", bg);
-                render.FontSmall.RenderString(xx, 200, "-C-", cw);
+                render.FontSmall.RenderString(xx + 1 * si, 201 * si, "-C-", bg);
+                render.FontSmall.RenderString(xx, 200 * si, "-C-", cw);
 
                 if (++xx > 900) xx = 0;
 
-                render.FontSmall.RenderString(xx2 + 1, 221, "-S-", bg);
-                render.FontSmall.RenderString(xx2, 220, "-S-", cw);
+                render.FontSmall.RenderString(xx2 + 1 * si, 221 * si, "-S-", bg);
+                render.FontSmall.RenderString(xx2, 220 * si, "-S-", cw);
 
                 //if (++xx2 > 900) xx2 = 0;
 
-                int width = window.Width / Gi.Si;
-                int height = window.Height / Gi.Si;
+                int width = window.Width;
+                int height = window.Height;
 
                 // Version
-                int w = render.FontLarge.WidthString(window.Version);
-                render.FontLarge.RenderString(width - w - 9, height - 18, window.Version, bg);
-                render.FontLarge.RenderString(width - w - 10, height - 19, window.Version, new Vector3(0.6f, 0.9f, .9f));
+                int w = render.FontLarge.WidthString(window.Version) * si;
+                render.FontLarge.RenderString(width - w - 9 * si, height - 18 * si, window.Version, bg);
+                render.FontLarge.RenderString(width - w - 10 * si, height - 19 * si, window.Version, new Vector3(0.6f, 0.9f, .9f));
 
                 string str;
                 // fps
@@ -71,24 +72,27 @@ namespace Mvk2.Gui.Screens
                 //FontMain.RenderString(11, height - 18, str, bg);
                 //FontMain.RenderString(10, height - 19, str, cw);
 
+               
                 // XYZ
-                w = 190;
+                w = 190 * si;
                 str = window.Width + " " + window.Height;
                 if (window.VSync) str += " VSync";
-                render.FontMain.RenderString(w + 1, height - 18, str, bg);
-                render.FontMain.RenderString(w, height - 19, str, cw);
+                render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
+                render.FontMain.RenderString(w, height - 19 * si, str, cw);
 
                 // XY
-                w = 400;
+                w = 400 * si;
                 str = "XY";
-                render.FontMain.RenderString(w + 1, height - 18, str, bg);
-                w += render.FontMain.RenderString(w, height - 19, str, cw) + 10;
+                render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
+                render.FontMain.RenderString(w, height - 19 * si, str, cw);
+                w = 430 * si;
                 str = window.MouseX.ToString("0.0");
-                render.FontMain.RenderString(w + 1, height - 18, str, bg);
-                w += render.FontMain.RenderString(w, height - 19, str, cw) + 10;
+                render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
+                render.FontMain.RenderString(w, height - 19 * si, str, cw);
+                w = 490 * si;
                 str = window.MouseY.ToString("0.0");
-                render.FontMain.RenderString(w + 1, height - 18, str, bg);
-                render.FontMain.RenderString(w, height - 19, str, cw);
+                render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
+                render.FontMain.RenderString(w, height - 19 * si, str, cw);
 
                 //textDb
                 //if (textDb != "")
@@ -113,7 +117,6 @@ namespace Mvk2.Gui.Screens
                     render.shader2D.SetUniform1(gl, "biasX", window.MouseX);
                     render.shader2D.SetUniform1(gl, "biasY", window.MouseY);
                     render.shader2D.SetUniform4(gl, "color", 1, 1, 1, 1);
-                    render.shader2D.SetUniform1(gl, "si", Gi.Si);
                     cursorVBO.Draw();
                 }
             }

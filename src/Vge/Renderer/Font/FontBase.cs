@@ -35,6 +35,18 @@ namespace Vge.Renderer.Font
         /// Сетка шрифта
         /// </summary>
         private readonly Mesh mesh;
+        /// <summary>
+        /// Горизонтальное смещение начала следующего глифа с учётом размера интерфейса
+        /// </summary>
+        private int hori;
+        /// <summary>
+        /// Вертикальное смещение начала следующего глифа с учётом размера интерфейса 
+        /// </summary>
+        private int vert;
+        /// <summary>
+        /// Размера интерфейса
+        /// </summary>
+        private int si;
 
         /// <summary>
         /// Класс шрифта
@@ -72,6 +84,17 @@ namespace Vge.Renderer.Font
                 key = symb;
                 items[key - (key > 1000 ? 929 : 32)] = symbol;
             }
+            UpdateSizeInterface();
+        }
+
+        /// <summary>
+        /// Обновить размер инерфейса
+        /// </summary>
+        public void UpdateSizeInterface()
+        {
+            si = Gi.Si;
+            hori = horiAdvance * si;
+            vert = vertAdvance * si;
         }
 
         /// <summary>
@@ -137,11 +160,11 @@ namespace Vge.Renderer.Font
                 for (int i = 0; i < vc.Length; i++)
                 {
                     symbol = Get(vc[i]);
-                    buffer.AddRange(Rectangle2d(x, y, x + horiAdvance, y + vertAdvance,
+                    buffer.AddRange(Rectangle2d(x, y, x + hori, y + vert,
                         symbol.U1, symbol.V1, symbol.U2, symbol.V2, color.X, color.Y, color.Z));
-                    if (symbol.Width > 0) x += symbol.Width + stepFont;
+                    if (symbol.Width > 0) x += (symbol.Width + stepFont) * si;
                 }
-                y += vertAdvance + 4;
+                y += vert + 4;
             }
         }
 
@@ -157,9 +180,9 @@ namespace Vge.Renderer.Font
             for (int i = 0; i < vc.Length; i++)
             {
                 symbol = Get(vc[i]);
-                buffer.AddRange(Rectangle2d(x, y, x + horiAdvance, y + vertAdvance,
+                buffer.AddRange(Rectangle2d(x, y, x + hori, y + vert,
                     symbol.U1, symbol.V1, symbol.U2, symbol.V2, color.X, color.Y, color.Z));
-                if (symbol.Width > 0) x += symbol.Width + stepFont;
+                if (symbol.Width > 0) x += (symbol.Width + stepFont) * si;
             }
             return x - x0;
         }
@@ -197,7 +220,7 @@ namespace Vge.Renderer.Font
         #endregion
 
         /// <summary>
-        /// Узнать ширину текста
+        /// Узнать ширину текста без размера интерфейса
         /// </summary>
         public int WidthString(string text)
         {

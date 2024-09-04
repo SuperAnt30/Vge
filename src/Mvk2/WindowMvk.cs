@@ -87,6 +87,19 @@ namespace Mvk2
         }
 
         /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void OnResized(int width, int height)
+        {
+            base.OnResized(width, height);
+            if (renderMvk != null)
+            {
+                renderMvk.FontLarge.UpdateSizeInterface();
+                renderMvk.FontSmall.UpdateSizeInterface();
+            }
+        }
+
+        /// <summary>
         /// Инициализаця объекта рендера
         /// </summary>
         protected override void RenderInitialized()

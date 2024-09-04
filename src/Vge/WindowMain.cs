@@ -176,6 +176,10 @@ namespace Vge
             Gi.Width = Width;
             Gi.Height = Height;
             Gi.UpdateSizeInterface();
+            if (Render != null)
+            {
+                Render.FontMain.UpdateSizeInterface();
+            }
         }
 
         #endregion
