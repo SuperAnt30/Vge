@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Vge.Gui;
 
 namespace Vge.Util
 {
@@ -19,6 +20,11 @@ namespace Vge.Util
         /// Путь к папке текстур
         /// </summary>
         public static string PathTextures { get; private set; }
+
+        /// <summary>
+        /// Размер интерфеса с учётом размера окна
+        /// </summary>
+        public static int SizeInterface { get; set; } = 1;
 
         /// <summary>
         /// Общая громкость
@@ -60,6 +66,9 @@ namespace Vge.Util
 
             PathShaders = PathAssets + "Shaders" + Path.DirectorySeparatorChar;
             PathTextures = PathAssets + "Textures" + Path.DirectorySeparatorChar;
+
+            // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
+            // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()
         }
     }
 }

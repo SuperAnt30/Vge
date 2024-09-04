@@ -29,8 +29,9 @@ namespace WinGL.OpenGL
             // Если он скомпилирован неправильно, мы создадим исключение.
             if (GetCompileStatus(gl) == false)
             {
+                string log = GetInfoLog(gl);
                 throw new ShaderCompilationException(
-                    SR.GetString(SR.FailedToCompileShaderWithID, ShaderObject), GetInfoLog(gl));
+                    SR.GetString(SR.FailedToCompileShaderWithID, ShaderObject, log), log);
             }
         }
 

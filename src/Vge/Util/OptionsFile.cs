@@ -15,7 +15,7 @@ namespace Vge.Util
         protected string fileName = "options.ini";
 
         /// <summary>
-        /// Загрузить настройки
+        /// Загрузить настройки, true вернёт если файл был, false если файла настроек нет
         /// </summary>
         public void Load()
         {
@@ -40,11 +40,14 @@ namespace Vge.Util
                         if (vs.Length == 2) ReadLine(vs[0], vs[1]);
                     }
                 }
+                UpData();
             }
-            UpData();
+            else
+            {
+                // Если файла опций нет, мы его создаём
+                Save();
+            }
         }
-
-        protected virtual void UpData() => Options.UpData();
 
         /// <summary>
         /// Сохранить настройки
@@ -58,7 +61,10 @@ namespace Vge.Util
                 SaveLine(file);
                 file.Close();
             }
+            UpData();
         }
+
+        protected virtual void UpData() => Options.UpData();
 
         /// <summary>
         /// Загрузить настройки
@@ -68,6 +74,7 @@ namespace Vge.Util
             switch(key)
             {
                 case "PathAssets": Options.PathAssets = value; return true;
+                case "SizeInterface": Options.SizeInterface = int.Parse(value); return true;
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
@@ -81,6 +88,7 @@ namespace Vge.Util
         protected virtual void SaveLine(StreamWriter file)
         {
             file.WriteLine("PathAssets: " + Options.PathAssets);
+            file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());
             file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
             file.WriteLine("Fps: " + Options.Fps.ToString());
             file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());

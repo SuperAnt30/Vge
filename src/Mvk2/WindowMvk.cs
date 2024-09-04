@@ -29,12 +29,10 @@ namespace Mvk2
 
         protected override void Initialized()
         {
-            Version = "Test VBO by Ant " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            
+            Version = "Test Малювек2 by SuperAnt ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            // TODO::2024-08-22 продумать перезагрузку опций
+            // Загружаем опции
             new OptionsFileMvk().Load();
-            new OptionsFileMvk().Save();
 
             audio = new AudioMvk();
             // Инициализация звука и загрузка семплов
@@ -44,7 +42,10 @@ namespace Mvk2
 
         protected override void Game_Tick(object sender, EventArgs e)
         {
-            if (renderMvk.xx2++ > 900) renderMvk.xx2 = 0;
+            if (Screen != null && Screen is ScreenDebug screenDebug)
+            {
+                if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
+            }
         }
 
         protected override void OnMouseDown(MouseButton button, int x, int y)

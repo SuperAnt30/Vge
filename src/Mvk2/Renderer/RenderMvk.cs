@@ -72,93 +72,9 @@ namespace Mvk2.Renderer
 
         #endregion
 
-        public int xx = 0;
-        public int xx2 = 0;
+        
 
 
-        public override void DrawDebug()
-        {
-            FontSmall.BufferClear();
-            FontMain.BufferClear();
-            FontLarge.BufferClear();
-
-            shaderText.Bind(gl);
-            shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
-
-            RenderTextDebug();
-            DrawTextDebug();
-
-            Vector3 bg = new Vector3(.2f, .2f, .2f);
-            Vector3 cw = new Vector3(.9f, .9f, .9f);
-
-            FontSmall.RenderString(xx + 1, 201, "-C-", bg);
-            FontSmall.RenderString(xx, 200, "-C-", cw);
-
-            if (++xx > 900) xx = 0;
-
-            FontSmall.RenderString(xx2 + 1, 221, "-S-", bg);
-            FontSmall.RenderString(xx2, 220, "-S-", cw);
-
-            //if (++xx2 > 900) xx2 = 0;
-
-            int width = window.Width;
-            int height = window.Height;
-
-            // Version
-            int w = FontLarge.WidthString(window.Version);
-            FontLarge.RenderString(width - w - 9, height - 18, window.Version, bg);
-            FontLarge.RenderString(width - w - 10, height - 19, window.Version, new Vector3(0.6f, 0.9f, .9f));
-
-            string str;
-            // fps
-            //string str = "FPS " + window.Fps.ToString() + " TPS " + window.Tps.ToString();
-            //FontMain.RenderString(11, height - 18, str, bg);
-            //FontMain.RenderString(10, height - 19, str, cw);
-
-            // XYZ
-            w = 190;
-            str = width + " " + height;
-            if (window.VSync) str += " VSync";
-            FontMain.RenderString(w + 1, height - 18, str, bg);
-            FontMain.RenderString(w, height - 19, str, cw);
-
-            // XY
-            w = 400;
-            str = "XY";
-            FontMain.RenderString(w + 1, height - 18, str, bg);
-            w += FontMain.RenderString(w, height - 19, str, cw) + 10;
-            str = window.MouseX.ToString("0.0");
-            FontMain.RenderString(w + 1, height - 18, str, bg);
-            w += FontMain.RenderString(w, height - 19, str, cw) + 10;
-            str = window.MouseY.ToString("0.0");
-            FontMain.RenderString(w + 1, height - 18, str, bg);
-            FontMain.RenderString(w, height - 19, str, cw);
-
-            //textDb
-            //if (textDb != "")
-            //{
-            //    FontMain.RenderString(11, height - 38, textDb, bg);
-            //    FontMain.RenderString(10, height - 39, textDb, cw);
-            //}
-
-            // Draw
-            BindTexture(AssetsTexture.FontSmall);
-            FontSmall.ReloadDraw();
-            BindTexutreFontMain();
-            FontMain.ReloadDraw();
-            BindTexture(AssetsTexture.FontLarge);
-            FontLarge.ReloadDraw();
-
-            if (windowMvk.cursorShow)
-            {
-                BindTexture(AssetsTexture.Cursor);
-                shader2D.Bind(gl);
-                shader2D.SetUniformMatrix4(gl, "projview", window.Ortho2D);
-                shader2D.SetUniform1(gl, "biasX", window.MouseX);
-                shader2D.SetUniform1(gl, "biasY", window.MouseY);
-                shader2D.SetUniform4(gl, "color", 1, 1, 1, 1);
-                cursorVBO.Draw();
-            }
-        }
+        
     }
 }

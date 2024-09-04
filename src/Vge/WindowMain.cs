@@ -167,6 +167,17 @@ namespace Vge
             //renderMvk.Draw();
         }
 
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void OnResized(int width, int height)
+        {
+            base.OnResized(width, height);
+            Gi.Width = Width;
+            Gi.Height = Height;
+            Gi.UpdateSizeInterface();
+        }
+
         #endregion
 
         #region WindowOverride
