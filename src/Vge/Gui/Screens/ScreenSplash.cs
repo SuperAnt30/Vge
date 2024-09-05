@@ -9,7 +9,7 @@
 
         public ScreenSplash(WindowMain window) : base(window) { }
 
-        public override void OnTick()
+        public override void OnTick(float deltaTime)
         {
             if (count++ > 2)
             {

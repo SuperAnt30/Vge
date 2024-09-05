@@ -102,7 +102,7 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
-        public override void OnTick()
+        public override void OnTick(float deltaTime)
         {
             tickCounterClient++;
             TickCounter++;

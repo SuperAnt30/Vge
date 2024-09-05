@@ -31,6 +31,6 @@ namespace Vge.Renderer
         /// <summary>
         /// Игровой такт
         /// </summary>
-        public virtual void OnTick() { }
+        public virtual void OnTick(float deltaTime) { }
     }
 }

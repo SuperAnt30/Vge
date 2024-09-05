@@ -127,14 +127,14 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
-        public override void OnTick()
+        public override void OnTick(float deltaTime)
         {
             // Проверка на разрыв долгий сервера (нет связи)
             if (TimeOut())
             {
                 GameStoping("Сервер не отвечает");
             }
-            base.OnTick();
+            base.OnTick(deltaTime);
         }
     }
 }

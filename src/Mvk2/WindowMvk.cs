@@ -133,16 +133,16 @@ namespace Mvk2
         /// <summary>
         /// Стабильный игровой такт
         /// </summary>
-        protected override void OnTick()
-        {
-            base.OnTick();
+        //protected override void OnTick()
+        //{
+        //    base.OnTick();
 
 
-            //int x = renderMvk.xx;
-            //x -= 100;
-            //if (x < 0) x = 0;
-            //renderMvk.xx = x;
-        }
+        //    //int x = renderMvk.xx;
+        //    //x -= 100;
+        //    //if (x < 0) x = 0;
+        //    //renderMvk.xx = x;
+        //}
 
         protected override void OnKeyDown(Keys keys)
         {

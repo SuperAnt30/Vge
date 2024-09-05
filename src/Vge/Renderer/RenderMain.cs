@@ -162,7 +162,7 @@ namespace Vge.Renderer
                 // Нет игры
                 if (window.Screen == null)
                 {
-                    // Ой, такого быть посути не должно!
+                    //TODO::2024-09-05 Ой, такого быть посути не должно!
                 }
                 else
                 {
@@ -217,10 +217,9 @@ namespace Vge.Renderer
         }
 
         /// <summary>
-        /// В такте игрового времени
+        /// Время выполнения такта в мс
         /// </summary>
-        /// <param name="time">время затраченное на такт</param>
-        public void UpdateTick(float time)
+        public void SetExecutionTime(float time)
         {
             speedTickAll += time;
             tps++;

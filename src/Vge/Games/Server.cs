@@ -39,7 +39,11 @@ namespace Vge.Games
         /// <summary>
         /// Увеличивается каждый тик 
         /// </summary>
-        public uint TickCounter { get; protected set; }
+        public uint TickCounter { get; private set; }
+        /// <summary>
+        /// Дельта последнего тика в mc
+        /// </summary>
+        public float DeltaTime { get; private set; }
 
         /// <summary>
         /// Часы для Tps
@@ -62,14 +66,6 @@ namespace Vge.Games
         /// Пауза в игре, только для одиночной версии
         /// </summary>
         private bool isGamePaused = false;
-        /// <summary>
-        /// Разница времени для такта
-        /// </summary>
-        private long differenceTime;
-        /// <summary>
-        /// Нчальное время такта
-        /// </summary>
-        private long beginTime;
 
         /// <summary>
         /// Принято пакетов за секунду
@@ -301,10 +297,22 @@ namespace Vge.Games
             try
             {
                 ToLoop();
-                long currentTime = stopwatchTps.ElapsedMilliseconds;
-                long cacheTime = 0;
-                int timeSleep;
                 Log.Server(SRL.Go);
+
+                // Текущее время для расчёта сна потока
+                long currentTime = stopwatchTps.ElapsedMilliseconds;
+                // Накопленное время для определении сна
+                long accumulatedTime = 0;
+                // Время сна потока, в мс
+                int timeSleep;
+                // Разница времени для такта
+                long differenceTime;
+                // Текущее время такта
+                long currentTimeTakt;
+                // Конечное время такта
+                long endTimeTakt = currentTime;
+                // Начальное время такта
+                long beginTime;
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)
@@ -324,15 +332,31 @@ namespace Vge.Games
                         timeOfLastWarning = currentTime;
                     }
 
-                    cacheTime += differenceTime;
+                    accumulatedTime += differenceTime;
                     currentTime = beginTime;
 
-                    while (cacheTime > speedMs)
+                    while (accumulatedTime > speedMs)
                     {
-                        cacheTime -= speedMs;
-                        if (!isGamePaused) OnTick();
+                        accumulatedTime -= speedMs;
+                        if (!isGamePaused)
+                        {
+                            // фиксируем начальное время такта
+                            beginTime = stopwatchTps.ElapsedTicks;
+                            // =======
+                            OnTick();
+                            // =======
+                            // фиксируем текущее время такта
+                            currentTimeTakt = stopwatchTps.ElapsedTicks;
+                            // Находим дельту времени между тактами
+                            DeltaTime = (currentTimeTakt - endTimeTakt) / (float)frequencyMs;
+                            //tickTimeArray[TickCounter % 4] = currentTimeTakt - endTimeTakt;
+                            // фиксируем время выполнения такта
+                            tickTimeArray[TickCounter % 4] = currentTimeTakt - beginTime;
+                            // фиксируем конечное время
+                            endTimeTakt = currentTimeTakt;
+                        }
                     }
-                    timeSleep = speedMs - (int)cacheTime;
+                    timeSleep = speedMs - (int)accumulatedTime;
                     Thread.Sleep(timeSleep > 0 ? timeSleep : 1);
                 }
             }
@@ -379,8 +403,9 @@ namespace Vge.Games
         /// </summary>
         private void OnTick()
         {
-            beginTime = stopwatchTps.ElapsedTicks;
             TickCounter++;
+
+            //DeltaTime
 
             // Сетевые пакеты
             packets.Update();
@@ -406,17 +431,12 @@ namespace Vge.Games
             //Thread.Sleep(10);
             // Тут игровые мировые тики
 
-            differenceTime = stopwatchTps.ElapsedTicks - beginTime;
-
             // Прошла 1/5 секунда, или 4 такта
             if (TickCounter % 4 == 0)
             {
                 // лог статистика за это время
                 OnTextDebug();
             }
-
-            // фиксируем время выполнения такта
-            tickTimeArray[TickCounter % 4] = differenceTime;
         }
 
         /// <summary>

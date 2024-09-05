@@ -48,6 +48,10 @@ namespace Vge
         /// Игровой объект
         /// </summary>
         public GameBase Game { get; protected set; }
+        /// <summary>
+        /// Дельта последнего тика в mc
+        /// </summary>
+        public float DeltaTime { get; private set; }
 
         /// <summary>
         /// Объект создающий последовательные кадры и тики
@@ -63,9 +67,17 @@ namespace Vge
         /// </summary>
         private bool flagClose = false;
         /// <summary>
-        /// Фиксация времени тика
+        /// Фиксация времени начала тика
         /// </summary>
         private long timeBegin;
+        /// <summary>
+        /// Фиксация конечное время тика
+        /// </summary>
+        private long endTime;
+        /// <summary>
+        /// Фиксация текущее время тика
+        /// </summary>
+        private long currentTime;
 
         public WindowMain() : base()
         {
@@ -345,8 +357,14 @@ namespace Vge
         {
             timeBegin = TimeTicks();
             OnTick();
-            // Считаем сколько затрачено мс времени на такт
-            Render.UpdateTick((float)(TimeTicks() - timeBegin) / (float)Ticker.TimerFrequency);
+            // фиксируем текущее время такта
+            currentTime = TimeTicks();
+            // Находим дельту времени между тактами
+            DeltaTime = (currentTime - endTime) / (float)Ticker.TimerFrequency;
+            // фиксируем конечное время
+            endTime = currentTime;
+            // Считаем время выполнение такта и тикаем рендер
+            Render.SetExecutionTime((currentTime - timeBegin) / (float)Ticker.TimerFrequency);
         }
 
         /// <summary>
@@ -359,7 +377,7 @@ namespace Vge
             
             if (Screen != null)
             {
-                Screen.OnTick();
+                Screen.OnTick(DeltaTime);
             }
 
             if (Game == null)
@@ -369,7 +387,7 @@ namespace Vge
             else
             {
                 debug.client = Game.ToString();
-                Game.OnTick();
+                Game.OnTick(DeltaTime);
             }
 
             // Отладка на экране
