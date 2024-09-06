@@ -212,7 +212,10 @@ namespace Vge.Network
                     socket.Close();
                 }
                 socket = null;
-                waitHandler.Set();
+                if (waitHandler != null)
+                {
+                    waitHandler.Set();
+                }
             }
         }
 

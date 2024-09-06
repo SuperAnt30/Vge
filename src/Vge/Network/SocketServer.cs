@@ -134,7 +134,15 @@ namespace Vge.Network
 
             try
             {
-                socketCln = socket.EndAccept(ar);
+                if (socket == null)
+                {
+                    OnStopped();
+                    return;
+                }
+                else
+                {
+                    socketCln = socket.EndAccept(ar);
+                }
             }
             catch (Exception e)
             {
