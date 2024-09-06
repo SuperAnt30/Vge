@@ -178,16 +178,26 @@ namespace WinGL.OpenGL
         }
         public void BufferData(uint target, float[] data, uint usage)
         {
-            IntPtr p = Marshal.AllocHGlobal(data.Length * sizeof(float));
+            int size = data.Length * sizeof(float);
+            IntPtr p = Marshal.AllocHGlobal(size);
             Marshal.Copy(data, 0, p, data.Length);
-            BufferData(target, data.Length * sizeof(float), p, usage);
+            BufferData(target, size, p, usage);
+            Marshal.FreeHGlobal(p);
+        }
+        public void BufferData(uint target, int count, float[] data, uint usage)
+        {
+            int size = count * sizeof(float);
+            IntPtr p = Marshal.AllocHGlobal(size);
+            Marshal.Copy(data, 0, p, count);
+            BufferData(target, size, p, usage);
             Marshal.FreeHGlobal(p);
         }
         public void BufferData(uint target, int[] data, uint usage)
         {
-            IntPtr p = Marshal.AllocHGlobal(data.Length * sizeof(int));
+            int size = data.Length * sizeof(int);
+            IntPtr p = Marshal.AllocHGlobal(size);
             Marshal.Copy(data, 0, p, data.Length);
-            BufferData(target, data.Length * sizeof(int), p, usage);
+            BufferData(target, size, p, usage);
             Marshal.FreeHGlobal(p);
         }
 

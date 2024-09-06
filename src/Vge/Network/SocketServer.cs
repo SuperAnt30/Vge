@@ -158,7 +158,7 @@ namespace Vge.Network
             OnUserJoined(socketSide.ToString());
 
             // Запуск поток для синхронной связи по сокету
-            Thread myThread = new Thread(NetThread);
+            Thread myThread = new Thread(NetThread) { Name = "ServerNetwork" };
             myThread.Start(socketSide);
 
             // Запуск ожидание следующего клиента

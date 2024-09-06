@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NVorbis, Version=0.10.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,6 +61,7 @@
     <Compile Include="Audio\AudioSource.cs" />
     <Compile Include="Audio\AudioSources.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Event\GameStopEvent.cs" />
     <Compile Include="Games\GameBase.cs" />
     <Compile Include="Games\GameLocal.cs" />
     <Compile Include="Games\GameNet.cs" />
@@ -66,6 +69,7 @@
     <Compile Include="Gi.cs" />
     <Compile Include="Gui\Huds\HudBase.cs" />
     <Compile Include="Gui\Screens\ScreenBase.cs" />
+    <Compile Include="Gui\Screens\ScreenNotification.cs" />
     <Compile Include="Gui\Screens\ScreenMainMenu.cs" />
     <Compile Include="Gui\Screens\ScreenSplash.cs" />
     <Compile Include="Network\IPacket.cs" />
@@ -83,6 +87,7 @@
     <Compile Include="Network\SocketServer.cs" />
     <Compile Include="Network\ReadPacket.cs" />
     <Compile Include="Network\WritePacket.cs" />
+    <Compile Include="Renderer\Mesh2d.cs" />
     <Compile Include="Renderer\RenderMain.cs" />
     <Compile Include="SRL.cs" />
     <Compile Include="SR.cs" />

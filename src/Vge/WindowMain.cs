@@ -162,6 +162,17 @@ namespace Vge
         }
 
         /// <summary>
+        /// После перезапуска FullScreen происходит
+        /// </summary>
+        protected override void OnReloadGLWindow()
+        {
+            if (Screen != null)
+            {
+                Screen.Initialize();
+            }
+        }
+
+        /// <summary>
         /// Прорисовка кадра
         /// </summary>
         protected override void OnOpenGlDraw()
@@ -215,7 +226,10 @@ namespace Vge
         /// <summary>
         /// Инициализаця объекта рендера
         /// </summary>
-        protected virtual void RenderInitialized() => Render = new RenderMain(this);
+        protected virtual void RenderInitialized()
+        {
+            Render = new RenderMain(this);
+        }
 
         /// <summary>
         /// Закрыть приложение
@@ -225,7 +239,7 @@ namespace Vge
             if (Game != null)
             {
                 flagClose = true;
-                Game.GameStoping("Закрытие приложения");
+                Game.GameStoping(SRL.ClosingTheApplication, false);
             }
             else
             {
@@ -258,20 +272,34 @@ namespace Vge
         /// <summary>
         /// Создать скрин заставки
         /// </summary>
-        public virtual void ScreenSplash() => Screen = new ScreenSplash(this);
+        public virtual void ScreenSplash() => ScreenCreate(new ScreenSplash(this));
         /// <summary>
-        /// Создать скрин по индексу
+        /// Создать скрин главного меню
         /// </summary>
-        public virtual void ScreenMainMenu() => Screen = new ScreenMainMenu(this);
+        public virtual void ScreenMainMenu() 
+            => ScreenCreate(new ScreenMainMenu(this));
+        /// <summary>
+        /// Создать скрин оповещения, после которого выйдем в меню
+        /// </summary>
+        public virtual void ScreenNotification(string notification) 
+            => ScreenCreate(new ScreenNotification(this, notification));
 
         /// <summary>
         /// Создать скрин по объекту, который есть в ядре
         /// </summary>
-        public void ScreenCreate(ScreenBase screen) => Screen = screen;
+        public void ScreenCreate(ScreenBase screen)
+        {
+            if (Screen != null) Screen.Dispose();
+            Screen = screen;
+        }
         /// <summary>
         /// Закрыть скрин
         /// </summary>
-        public void ScreenClose() => Screen = null;
+        public void ScreenClose()
+        {
+            if (Screen != null) Screen.Dispose();
+            Screen = null;
+        }
 
         #endregion
 
@@ -318,15 +346,31 @@ namespace Vge
         /// <summary>
         /// Игра остановлена
         /// </summary>
-        protected virtual void Game_Stoped(object sender, StringEventArgs e)
+        protected virtual void Game_Stoped(object sender, GameStopEventArgs e)
         {
+            Game.Dispose();
             Game = null;
-            debug.server = e.Text;// "";
+            debug.server = e.Notification;
             if (flagClose)
             {
                 // Если закрытие игры из-за закритии приложения, 
                 // повторяем закрытие приложения
                 Close();
+            }
+            else
+            {
+                // Тут надо вызвать запуск окна с ошибкой
+                if (e.IsWarning)
+                {
+                    // Окно оповещения
+                    ScreenNotification(e.Notification);
+                }
+                else
+                {
+                    // Меню
+                    ScreenMainMenu();
+                }
+                return;
             }
         }
 
@@ -343,7 +387,7 @@ namespace Vge
         {
             if (Game != null)
             {
-                Game.GameStoping("Пользователь остановил игру");
+                Game.GameStoping(SRL.TheUserStoppedTheGame, false);
             }
         }
 
@@ -389,12 +433,8 @@ namespace Vge
                 debug.client = Game.ToString();
                 Game.OnTick(DeltaTime);
             }
-
-            // Отладка на экране
-            Render.SetTextDebug(debug.ToText());
         }
 
         #endregion
-
     }
 }

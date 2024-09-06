@@ -42,7 +42,7 @@ namespace Mvk2
 
         protected override void Game_Tick(object sender, EventArgs e)
         {
-            if (Screen != null && Screen is ScreenDebug screenDebug)
+            if (Screen != null && Screen is ScreenGameDebug screenDebug)
             {
                 if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
             }
@@ -151,11 +151,13 @@ namespace Mvk2
             {
                 // Включить сервер по сети
                 GameNetRun(OptionsMvk.IpAddress, 32021);
+                ScreenCreate(new ScreenGameDebug(this));
             }
             if (keys == Keys.F3)
             {
                 // Включить сервер локальный
                 GameLocalRun();
+                ScreenCreate(new ScreenGameDebug(this));
             }
             else if (keys == Keys.F4)
             {
@@ -210,9 +212,9 @@ namespace Mvk2
         #region Screen
 
         /// <summary>
-        /// Создать скрин по индексу
+        /// Создать скрин главного меню
         /// </summary>
-        public override void ScreenMainMenu() => Screen = new ScreenDebug(this);
+        public override void ScreenMainMenu() => ScreenCreate(new ScreenDebug(this));
 
         #endregion
     }

@@ -82,6 +82,11 @@ namespace Vge.Util
             return result;
         }
 
+        /// <summary>
+        /// Получить целый буфер
+        /// </summary>
+        public T[] GetBufferAll() => buffer;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear() => Count = 0;
     }

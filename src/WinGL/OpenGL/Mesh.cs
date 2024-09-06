@@ -7,34 +7,29 @@ namespace WinGL.OpenGL
     /// </summary>
     public class Mesh : IDisposable
     {
-        private uint ebo = 0;
-        private uint vao = 0;
-        private uint vbo = 0;
-        private int[] attrs;
-        private GL gl;
+        private readonly uint ebo = 0;
+        private readonly uint vao = 0;
+        private readonly uint vbo = 0;
+        private readonly int[] attrs;
+        private readonly GL gl;
         private int countVertices;
         private int countIndices;
         private readonly int vertexSize;
         /// <summary>
         /// Количество float в буфере на один полигон
         /// </summary>
-        public int PoligonFloat { get; private set; }
+        public readonly int PoligonFloat;
 
-        public Mesh(GL gl, float[] vertices, int[] attrs)
+        public Mesh(GL gl, int[] attrs)
         {
             this.gl = gl;
             for (int i = 0; i < attrs.Length; i++)
             {
                 vertexSize += attrs[i];
             }
-            countVertices = vertices.Length / vertexSize;
             PoligonFloat = vertexSize * 3;
             this.attrs = attrs;
-            BufferData(vertices);
-        }
 
-        private void BufferData(float[] vertices)
-        {
             uint[] id = new uint[1];
             gl.GenVertexArrays(1, id);
             vao = id[0];
@@ -42,12 +37,10 @@ namespace WinGL.OpenGL
             gl.GenBuffers(1, id);
             vbo = id[0];
             gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STREAM_DRAW);
-
             gl.GenBuffers(1, id);
             ebo = id[0];
-            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
+          //  gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+            
 
             // attributes
             int stride = vertexSize * sizeof(float);
@@ -56,14 +49,18 @@ namespace WinGL.OpenGL
             {
                 if (attrs[i] == 0) break;
                 int size = attrs[i];
-                gl.VertexAttribPointer(i, size, GL.GL_FLOAT, false, 
+                gl.VertexAttribPointer(i, size, GL.GL_FLOAT, false,
                     stride, new IntPtr(offset * sizeof(float)));
                 gl.EnableVertexAttribArray(i);
                 offset += size;
             }
-
-            gl.BindVertexArray(0);
+            //gl.BindVertexArray(0);
+            // TODO::2024-09-05 при фул экран слетает/ бага
+            //Reload(new float[0]);
         }
+
+        public Mesh(GL gl, float[] vertices, int[] attrs) : this(gl, attrs)
+            => Reload(vertices);
 
         private int[] Indices()
         {
@@ -115,6 +112,8 @@ namespace WinGL.OpenGL
         //    gl.BindVertexArray(0);
         //}
 
+        #region Reload
+
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
         /// </summary>
@@ -124,11 +123,37 @@ namespace WinGL.OpenGL
             gl.BindVertexArray(vao);
             gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
             gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
-
             gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
             gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
-
         }
+
+        /// <summary>
+        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// </summary>
+        public void Reload(float[] vertices, int count)
+        {
+            countVertices = count / vertexSize;
+            gl.BindVertexArray(vao);
+            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
+            gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
+            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
+        }
+
+        /// <summary>
+        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// </summary>
+        public void Reload(IntPtr intPtr, int count)
+        {
+            countVertices = count / vertexSize;
+            gl.BindVertexArray(vao);
+            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
+            gl.BufferData(GL.GL_ARRAY_BUFFER, count * 4, intPtr, GL.GL_STATIC_DRAW);
+            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
+        }
+
+        #endregion
 
         public void Dispose() => Delete();
     }

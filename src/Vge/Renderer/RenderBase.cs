@@ -1,11 +1,12 @@
-﻿using WinGL.OpenGL;
+﻿using System;
+using WinGL.OpenGL;
 
 namespace Vge.Renderer
 {
     /// <summary>
     /// Базовый класс отвечающий за прорисовку
     /// </summary>
-    public abstract class RenderBase
+    public abstract class RenderBase : IDisposable
     {
         /// <summary>
         /// Объект окна
@@ -32,5 +33,7 @@ namespace Vge.Renderer
         /// Игровой такт
         /// </summary>
         public virtual void OnTick(float deltaTime) { }
+
+        public virtual void Dispose() { }
     }
 }

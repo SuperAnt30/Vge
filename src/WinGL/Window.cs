@@ -342,9 +342,9 @@ namespace WinGL
             {
                 gl.SwapIntervalEXT(0);
             }
+
             // Тут графический метод первого запуска OpenGL
             OnOpenGLInitialized();
-
             // Обменивается передним и задним буферами
             WinGdi.SwapBuffers(hDC);
 
@@ -352,13 +352,20 @@ namespace WinGL
         }
 
         /// <summary>
-        /// Перезапустить окно, к примеру смена режима
+        /// Перезапустить окно, смена режима FullScreen
         /// </summary>
         protected void ReloadGLWindow()
         {
             CleanUp();
             CreateGLWindow();
+            Begined();
+            OnReloadGLWindow();
         }
+
+        /// <summary>
+        /// После перезапуска OpenGL происходит
+        /// </summary>
+        protected virtual void OnReloadGLWindow() { }
 
         /// <summary>
         /// Основной цикл окна
@@ -587,8 +594,15 @@ namespace WinGL
                     return IntPtr.Zero;
                 // Перемещение окна
                 case WinUser.WM_MOVE:
-                    param = lParam.ToInt32();
-                    OnMove((short)(param & 0xFFFF), (short)(param >> 16));
+                    if (lParam.ToInt64() == 2197848832)
+                    {
+                        // Свернули окно
+                    }
+                    else
+                    {
+                        param = lParam.ToInt32();
+                        OnMove((short)(param & 0xFFFF), (short)(param >> 16));
+                    }
                     return IntPtr.Zero;
 
                 #endregion

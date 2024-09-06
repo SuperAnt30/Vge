@@ -13,10 +13,7 @@ namespace Vge.Games
     public class GameNet : GameBase
     {
         private SocketSide socket;
-        /// <summary>
-        /// Оповещение остановки, если "" её ещё не было
-        /// </summary>
-        private string notificationStop = "";
+        
         /// <summary>
         /// IP адрес сервера
         /// </summary>
@@ -27,6 +24,12 @@ namespace Vge.Games
         private readonly int port;
 
         private bool isWorkGame = false;
+
+        
+        /// <summary>
+        /// Оповещение если был стоп из потока
+        /// </summary>
+        private string stopText;
 
         public GameNet(WindowMain window, string ipAddress, int port) : base(window)
         {
@@ -51,7 +54,7 @@ namespace Vge.Games
             socket.Disconnected += Socket_Disconnected;
 
             // Запуск поток для синхронной связи по сокету
-            Thread myThread = new Thread(NetThread);
+            Thread myThread = new Thread(NetThread) { Name = "GameNetwork" };
             myThread.Start();
         }
 
@@ -70,9 +73,10 @@ namespace Vge.Games
             }
         }
 
-        public override void GameStoping(string notification = "")
+        public override void GameStoping(string notification, bool isWarning)
         {
-            notificationStop = notification;
+            stopIsWarning = isWarning;
+            stopNotification = notification;
             if (socket != null)
             {
                 // Игра по сети
@@ -82,7 +86,7 @@ namespace Vge.Games
             }
             else
             {
-                Stop(notification);
+                Stop(notification, isWarning);
             }
         }
 
@@ -90,11 +94,18 @@ namespace Vge.Games
         /// Остановка сервера и игры
         /// </summary>
         /// <param name="notification">Уведомление причины</param>
-        private void Stop(string notification = "")
+        private void Stop(string notification, bool isWarning)
         {
             // Останавливаем поток
             packets.Clear();
-            OnStoped(notificationStop == "" ? notification : notificationStop);
+            if (stopNotification == "")
+            {
+                OnStoped(notification , isWarning);
+            }
+            else
+            {
+                OnStoped(stopNotification, stopIsWarning);
+            }
         }
 
         private void Socket_Connected(object sender, EventArgs e)
@@ -103,14 +114,25 @@ namespace Vge.Games
         private void Socket_Disconnected(object sender, StringEventArgs e)
         {
             isWorkGame = false;
-            Stop(e.Text);
+            StopAfterTick(e.Text);
         }
 
         private void Socket_Error(object sender, ErrorEventArgs e)
-            => Stop("Error: " + e.GetException().Message);
+            => StopAfterTick("Error: " + e.GetException().Message);
 
         private void Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
             => packets.ReceiveBuffer(e.Buffer.bytes);
+
+        /// <summary>
+        /// Остановить через тик
+        /// </summary>
+        private void StopAfterTick(string text)
+        {
+            // Сюда прилетаем из друго-го потока, ставим пометку на остановку
+            // В ближайшем тике произойдёт остановка
+            stopText = text;
+            isStop = true;
+        }
 
         /// <summary>
         /// Отправить пакет на сервер
@@ -132,9 +154,15 @@ namespace Vge.Games
             // Проверка на разрыв долгий сервера (нет связи)
             if (TimeOut())
             {
-                GameStoping("Сервер не отвечает");
+                GameStoping(SRL.TheServerIsNotResponding, true);
             }
             base.OnTick(deltaTime);
+
+            if (isStop)
+            {
+                Stop(stopText, true);
+                isStop = false;
+            }
         }
     }
 }

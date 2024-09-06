@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
@@ -34,12 +33,36 @@ namespace Vge.Renderer
         /// </summary>
         public readonly ShaderText shaderText;
 
+        /// <summary>
+        /// Время выполнения кадра
+        /// </summary>
+        private float speedFrameAll;
+        /// <summary>
+        /// Время выполнения такта
+        /// </summary>
+        private float speedTickAll;
+        /// <summary>
+        /// Счётчик времени кратно секундам в мс
+        /// </summary>
+        private long timeSecond;
+        /// <summary>
+        /// Количество фпс
+        /// </summary>
+        private int fps;
+        /// <summary>
+        /// Количество тпс
+        /// </summary>
+        private int tps;
+        /// <summary>
+        /// Время перед начало прорисовки кадра
+        /// </summary>
+        private long timeBegin;
+
         public RenderMain(WindowMain window) : base(window)
         {
             textureMap = new TextureMap(gl);
             shader2D = new Shader2d(gl);
             shaderText = new ShaderText(gl);
-            meshTextDebug = new Mesh(gl, new float[0], new int[] { 2, 2, 3 });
         }
 
         /// <summary>
@@ -106,49 +129,7 @@ namespace Vge.Renderer
 
         #endregion
 
-        #region TextDebug
-
-        private string textDebug = "";
-        private bool isTextDebug = false;
-        private Mesh meshTextDebug;
-
-        /// <summary>
-        /// Внести текст отладки
-        /// </summary>
-        public void SetTextDebug(string text)
-        {
-            textDebug = text;
-            isTextDebug = true;
-        }
-
-        /// <summary>
-        /// Рендер текста отладки
-        /// </summary>
-        public void RenderTextDebug()
-        {
-            if (isTextDebug)
-            {
-                isTextDebug = false;
-                FontMain.RenderText(11 * Gi.Si, 11 * Gi.Si, textDebug, new Vector3(.2f, .2f, .2f));
-                FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug, new Vector3(.9f, .9f, .9f));
-
-                meshTextDebug.Reload(FontMain.ToBuffer());
-                FontMain.BufferClear();
-            }
-        }
-
-        /// <summary>
-        /// Прорисовка отладки
-        /// </summary>
-        public void DrawTextDebug()
-        {
-            BindTexutreFontMain();
-            meshTextDebug.Draw();
-        }
-
-        #endregion
-
-        #region Draw + Debug
+        #region Draw
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -162,7 +143,8 @@ namespace Vge.Renderer
                 // Нет игры
                 if (window.Screen == null)
                 {
-                    //TODO::2024-09-05 Ой, такого быть посути не должно!
+                    // Отсутствует прорисовка
+                    throw new Exception(SR.ThereIsNoDrawing);
                 }
                 else
                 {
@@ -181,17 +163,10 @@ namespace Vge.Renderer
             DrawEnd();
         }
 
-        private float speedFrameAll;
-        private float speedTickAll;
-        private long timerSecond;
-        private int fps;
-        private int tps;
-        private long tickDraw;
-
         public virtual void DrawBegin()
         {
             fps++;
-            tickDraw = window.TimeTicks();
+            timeBegin = window.TimeTicks();
         }
 
         /// <summary>
@@ -200,20 +175,20 @@ namespace Vge.Renderer
         public virtual void DrawEnd()
         {
             // Перерасчёт кадров раз в секунду, и среднее время прорисовки кадра
-            if (window.Time() >= timerSecond + 1000)
+            if (window.Time() >= timeSecond)
             {
                 float speedTick = 0;
                 if (tps > 0) speedTick = speedTickAll / tps;
                 window.debug.SetTpsFps(fps, speedFrameAll / fps, tps, speedTick);
 
-                timerSecond += 1000;
+                timeSecond += 1000;
                 speedFrameAll = 0;
                 speedTickAll = 0;
                 fps = 0;
                 tps = 0;
             }
 
-            speedFrameAll += (float)(window.TimeTicks() - tickDraw) / Ticker.TimerFrequency;
+            speedFrameAll += (float)(window.TimeTicks() - timeBegin) / Ticker.TimerFrequency;
         }
 
         /// <summary>
@@ -226,7 +201,5 @@ namespace Vge.Renderer
         }
 
         #endregion
-
-        public virtual void DrawDebug() { }
     }
 }

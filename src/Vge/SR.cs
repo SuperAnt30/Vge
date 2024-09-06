@@ -26,6 +26,7 @@ internal sealed class SR
     #region Renderer
 
     internal const string TheSymbolIsNotInTheList = "Символ [{0}] отсутствует в перечне";
+    internal const string ThereIsNoDrawing = "Отсутствует прорисовка";
 
     #endregion
 

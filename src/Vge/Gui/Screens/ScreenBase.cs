@@ -7,12 +7,13 @@ namespace Vge.Gui.Screens
     /// </summary>
     public abstract class ScreenBase : RenderBase
     {
+
+        public ScreenBase(WindowMain window) : base(window) => Initialize();
+
         /// <summary>
-        /// Размер интерфеса
+        /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        public int SizeInterface { get; private set; }
-        
-        public ScreenBase(WindowMain window) : base(window) { }
+        public virtual void Initialize() { }
 
     }
 }

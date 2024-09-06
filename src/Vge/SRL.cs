@@ -4,6 +4,9 @@
 /// </summary>
 internal sealed class SRL
 {
+    internal static string GetString(string name, params object[] args)
+        => string.Format(name, args);
+
     #region Prefix
 
     internal const string Client = "[Client] ";
@@ -17,6 +20,21 @@ internal sealed class SRL
 
     internal const string SomethingIsTooLong = "{0}Что-то слишком долго! {1} заняло приблизительно {2} мс";
     internal const string EndSectionTime = "{0}{1} {2:0.00} мс";
+
+    #endregion
+
+    #region Game
+
+    internal const string TheServerIsNotResponding = "Сервер не отвечает";
+    internal const string ClosingTheApplication = "Закрытие приложения";
+    internal const string TheUserStoppedTheGame = "Пользователь остановил игру";
+
+    #endregion
+
+    #region Network
+
+    internal const string TheConnectionIsBroken = "Связь разорвана";
+    internal const string TheConnectionWasBrokenDueToAnError = "Связь разорвана из-за ошибки. {0}";
 
     #endregion
 

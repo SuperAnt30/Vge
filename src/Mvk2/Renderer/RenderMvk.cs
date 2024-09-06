@@ -25,15 +25,10 @@ namespace Mvk2.Renderer
         /// Объект окна малювек
         /// </summary>
         protected readonly WindowMvk windowMvk;
-        /// <summary>
-        /// Объект сетки курсора, временно
-        /// </summary>
-        private Mesh cursorVBO;
 
         public RenderMvk(WindowMvk window) : base(window)
         {
             windowMvk = window;
-            cursorVBO = new Mesh(gl, RenderFigure.Rectangle2d(0, 0, 24, 24, 0, 0, 1, 1), new int[] { 2, 2 });
         }
 
         /// <summary>

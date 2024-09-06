@@ -58,7 +58,7 @@ namespace Vge.Renderer.Font
         {
             if (isMesh)
             {
-                mesh = new Mesh(gl, new float[0], new int[] { 2, 2, 3 });
+                mesh = new Mesh2d(gl);
             }
 
             horiAdvance = textureFont.width >> 4;
@@ -190,7 +190,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Нарисовать прямоугольник в 2д, с цветом [2, 2, 3]
         /// </summary>
-        public float[] Rectangle2d(float x1, float y1, float x2, float y2, float v1, float u1, float v2, float u2,
+        private float[] Rectangle2d(float x1, float y1, float x2, float y2, float v1, float u1, float v2, float u2,
             float r, float g, float b)
         {
             return new float[]
@@ -212,8 +212,20 @@ namespace Vge.Renderer.Font
         {
             if (mesh != null)
             {
-                mesh.Reload(buffer.ToArray());
+                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
+                //mesh.Reload(buffer.ToArray());
                 mesh.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Перезалить в сторонюю сетку
+        /// </summary>
+        public void Reload(Mesh mesh)
+        {
+            if (mesh != null)
+            {
+                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
             }
         }
 

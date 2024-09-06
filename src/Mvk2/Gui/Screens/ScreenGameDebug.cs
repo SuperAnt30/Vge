@@ -9,14 +9,14 @@ namespace Mvk2.Gui.Screens
     /// <summary>
     /// Заставка
     /// </summary>
-    public class ScreenDebug : ScreenBase
+    public class ScreenGameDebug : ScreenBase
     {
         /// <summary>
         /// Объект сетки курсора, временно
         /// </summary>
         private Mesh cursorVBO;
 
-        public ScreenDebug(WindowMvk window) : base(window) { }
+        public ScreenGameDebug(WindowMvk window) : base(window) { }
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
@@ -56,7 +56,6 @@ namespace Mvk2.Gui.Screens
             if (isTextDebug)
             {
                 isTextDebug = false;
-                window.Render.FontMain.BufferClear();
                 window.Render.FontMain.RenderText(11 * Gi.Si, 11 * Gi.Si, textDebug, new Vector3(.2f, .2f, .2f));
                 window.Render.FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug, new Vector3(.9f, .9f, .9f));
 
@@ -120,12 +119,15 @@ namespace Mvk2.Gui.Screens
                 int width = window.Width;
                 int height = window.Height;
 
-                // Version
-                int w = render.FontLarge.WidthString(window.Version) * si;
-                render.FontLarge.RenderString(width - w - 9 * si, height - 18 * si, window.Version, bg);
-                render.FontLarge.RenderString(width - w - 10 * si, height - 19 * si, window.Version, new Vector3(0.6f, 0.9f, .9f));
-
                 string str;
+
+                // Version
+                str = "GAME! " + window.Version;
+                int w = render.FontLarge.WidthString(str) * si;
+                render.FontLarge.RenderString(width - w - 9 * si, height - 18 * si, str, bg);
+                render.FontLarge.RenderString(width - w - 10 * si, height - 19 * si, str, new Vector3(0.6f, 0.9f, .9f));
+
+                
                 // fps
                 //string str = "FPS " + window.Fps.ToString() + " TPS " + window.Tps.ToString();
                 //FontMain.RenderString(11, height - 18, str, bg);

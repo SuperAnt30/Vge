@@ -31,104 +31,95 @@ namespace Vge.Network
         /// </summary>
         public void Receiving(byte[] dataPacket)
         {
-            try
+            // с какого индекса начинаем
+            byte indexRun = 0;
+
+            if (bodyLength == 0)
             {
-                // с какого индекса начинаем
-                byte indexRun = 0;
-
-                if (bodyLength == 0)
+                if (bytesCache5 != null)
                 {
-                    if (bytesCache5 != null)
-                    {
-                        // склейка двух массивов BytesCache5 + dataPacket 
-                        dataPacket = JoinAr(bytesCache5, dataPacket);
-                        bytesCache5 = null;
-                    }
-
-                    if (dataPacket[0] == 1)
-                    {
-                        // Начало пакета
-
-                        // длинна пакета
-                        bodyLength = BitConverter.ToInt32(dataPacket, 1);
-
-                        // устанавливаем индекс
-                        indexRun = 5;
-
-                        bytesCache = new byte[bodyLength];
-                        bodyFactLength = 0;
-                    }
-                    else
-                    {
-                        throw new Exception(SR.ErrorInGluingNetworkData);
-                    }
+                    // склейка двух массивов BytesCache5 + dataPacket 
+                    dataPacket = JoinAr(bytesCache5, dataPacket);
+                    bytesCache5 = null;
                 }
-                // Определяем тикущую длинну пакета
-                int lengthPacket = dataPacket.Length - indexRun;
-                // Общая длинна с фактическим паетом
-                int length = lengthPacket + bodyFactLength;
-                // Если общая длинна больше нужной
-                if (length > bodyLength)
-                {
-                    // Меняем длину пакета с учётом нужного
-                    lengthPacket -= (length - bodyLength);
-                    length = bodyLength;
-                }
-                // Объеденяем массив байт пакетов
-                if (indexRun == 0)
-                {
-                    int begin = bodyFactLength;
 
-                    for (int i = 0; i < lengthPacket; i++)
-                    {
-                        bytesCache[i + begin] = dataPacket[i];
-                    }
+                if (dataPacket[0] == 1)
+                {
+                    // Начало пакета
+
+                    // длинна пакета
+                    bodyLength = BitConverter.ToInt32(dataPacket, 1);
+
+                    // устанавливаем индекс
+                    indexRun = 5;
+
+                    bytesCache = new byte[bodyLength];
+                    bodyFactLength = 0;
                 }
                 else
                 {
-                    byte[] vs = DivisionAr(dataPacket, indexRun, lengthPacket);
-                    for (int i = 0; i < vs.Length; i++)
-                    {
-                        bytesCache[i] = vs[i];
-                    }
-                }
-                // Добавляем длинну
-                bodyFactLength += lengthPacket;
-
-                // Финиш сборки паета
-                if (bodyFactLength == bodyLength)
-                {
-                    // Отправляем событие получения
-                    OnReceive(new PacketBufferEventArgs(
-                        new PacketBuffer(bytesCache, bodyFactLength), null));
-
-                    // Обнуляем глобальные переменные
-                    bytesCache = null;
-                    bodyLength = 0;
-
-                    indexRun2 = lengthPacket + indexRun;
-                    if (indexRun2 < dataPacket.Length)
-                    {
-                        // не прерывный пакет
-                        byte[] vs = DivisionAr(dataPacket, indexRun2, dataPacket.Length - indexRun2);
-                        if (vs.Length < 5)
-                        {
-                            // Если остался хвостик фиксируем для след пакета
-                            bytesCache5 = vs;
-                        }
-                        else
-                        {
-                            // Обрабатываем следующий пакет
-                            Receiving(vs);
-                        }
-                    }
+                    throw new Exception(SR.ErrorInGluingNetworkData);
                 }
             }
-            // TODO::2024-09-04 зачем это?
-            catch (Exception e)
+            // Определяем тикущую длинну пакета
+            int lengthPacket = dataPacket.Length - indexRun;
+            // Общая длинна с фактическим паетом
+            int length = lengthPacket + bodyFactLength;
+            // Если общая длинна больше нужной
+            if (length > bodyLength)
             {
-                throw e;
-                // исключение намекает на разрыв соединения
+                // Меняем длину пакета с учётом нужного
+                lengthPacket -= (length - bodyLength);
+                length = bodyLength;
+            }
+            // Объеденяем массив байт пакетов
+            if (indexRun == 0)
+            {
+                int begin = bodyFactLength;
+
+                for (int i = 0; i < lengthPacket; i++)
+                {
+                    bytesCache[i + begin] = dataPacket[i];
+                }
+            }
+            else
+            {
+                byte[] vs = DivisionAr(dataPacket, indexRun, lengthPacket);
+                for (int i = 0; i < vs.Length; i++)
+                {
+                    bytesCache[i] = vs[i];
+                }
+            }
+            // Добавляем длинну
+            bodyFactLength += lengthPacket;
+
+            // Финиш сборки паета
+            if (bodyFactLength == bodyLength)
+            {
+                // Отправляем событие получения
+                OnReceive(new PacketBufferEventArgs(
+                    new PacketBuffer(bytesCache, bodyFactLength), null));
+
+                // Обнуляем глобальные переменные
+                bytesCache = null;
+                bodyLength = 0;
+
+                indexRun2 = lengthPacket + indexRun;
+                if (indexRun2 < dataPacket.Length)
+                {
+                    // не прерывный пакет
+                    byte[] vs = DivisionAr(dataPacket, indexRun2, dataPacket.Length - indexRun2);
+                    if (vs.Length < 5)
+                    {
+                        // Если остался хвостик фиксируем для след пакета
+                        bytesCache5 = vs;
+                    }
+                    else
+                    {
+                        // Обрабатываем следующий пакет
+                        Receiving(vs);
+                    }
+                }
             }
         }
 

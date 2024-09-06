@@ -14,10 +14,6 @@ namespace Vge.Games
         /// Объект сервера
         /// </summary>
         private readonly Server server;
-        /// <summary>
-        /// Уведомление остановки сервера
-        /// </summary>
-        private string stopNotification = "";
 
         public GameLocal(WindowMain window) : base(window)
         {
@@ -35,7 +31,6 @@ namespace Vge.Games
         public override void SetGamePauseSingle(bool value)
         {
             IsGamePaused = server.SetGamePauseSingle(value);
-            // TODO::TestUserAllKill();
             server.TestUserAllKill();
         }
 
@@ -60,7 +55,7 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public override void GameStoping(string notification = "")
+        public override void GameStoping(string notification, bool isWarning)
         {
             if (server != null)
             {
@@ -70,7 +65,7 @@ namespace Vge.Games
             else
             {
                 packets.Clear();
-                OnStoped(notification);
+                OnStoped(notification, isWarning);
             }
         }
 
@@ -88,7 +83,9 @@ namespace Vge.Games
         private void Server_Closeded(object sender, EventArgs e)
         {
             packets.Clear();
-            OnStoped(stopNotification);
+            // Сюда прилетаем из друго-го потока, ставим пометку на остановку
+            // В ближайшем тике произойдёт остановка
+            isStop = true;
         }
 
         private void Server_RecievePacket(object sender, PacketBufferEventArgs e)
@@ -97,6 +94,7 @@ namespace Vge.Games
         private void Server_RecieveMessage(object sender, StringEventArgs e)
         {
             // TODO::2024-08-27 сообщение основному клиенту от сервера
+            // Надо учесть потокобезопастность, прилетает из другого потока
         }
 
         #endregion
@@ -110,6 +108,28 @@ namespace Vge.Games
             {
                 streamPacket.Trancive(packet);
                 server.LocalReceivePacket(null, streamPacket.ToArray());
+            }
+        }
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        public override void OnTick(float deltaTime)
+        {
+            base.OnTick(deltaTime);
+
+            if (isStop)
+            {
+                OnStoped(stopNotification, stopIsWarning);
+                isStop = false;
+            }
+        }
+
+        public override void Dispose()
+        {
+            if (server != null)
+            {
+                server.Stop();
             }
         }
     }

@@ -50,6 +50,18 @@ namespace Vge.Games
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
         /// </summary>
         protected uint tickCounterClient = 0;
+        /// <summary>
+        /// Оповещение остановки, если "" её ещё не было
+        /// </summary>
+        protected string stopNotification = "";
+        /// <summary>
+        /// Надо ли выводить окно оповещении 
+        /// </summary>
+        protected bool stopIsWarning = false;
+        /// <summary>
+        /// Остановка из потока
+        /// </summary>
+        protected bool isStop = false;
 
         /// <summary>
         /// Объект времени с момента запуска проекта
@@ -87,7 +99,7 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public virtual void GameStoping(string notification = "") { }
+        public virtual void GameStoping(string notification, bool isWarning) { }
 
         /// <summary>
         /// Задать паузу для одиночной игры
@@ -110,13 +122,15 @@ namespace Vge.Games
             // почерёдно получаем пакеты с сервера
             packets.Update();
 
+            // Тут надо указать 60 секунд
             // Прошла минута, или 1200 тактов
             if (tickCounterClient % 1200 == 0)
             {
                 Log.Save();
             }
 
-            if (tickCounterClient % 20 == 0) //TODO:: 200
+            // Тут надо указать 10 секунд
+            if (tickCounterClient % 20 == 0)
             {
                 // Раз в 10 секунды перепинговка
                 TrancivePacket(new Packet00PingPong(Time()));
@@ -170,11 +184,12 @@ namespace Vge.Games
         public override string ToString()
         {
             long traffic = packets.Traffic;
-            return string.Format("{0} ping: {1} ms Traffic: {3:0.00} mb{2}",
+            return string.Format("{0} ping: {1} ms Traffic: {3:0.00} mb{2} Tick {4}",
                 IsLoacl ? "Local" : "Net",
                 Ping,
                 IsGamePaused ? " Pause" : "",
-                traffic / 1048576f);
+                traffic / 1048576f,
+                TickCounter);
         }
 
         #region Event
@@ -182,8 +197,8 @@ namespace Vge.Games
         /// <summary>
         /// Событие остановлена игра
         /// </summary>
-        public event StringEventHandler Stoped;
-        protected void OnStoped(string notification = "")
+        public event GameStopEventHandler Stoped;
+        protected void OnStoped(string notification, bool isWarning)
         {
             if (!flagStoped)
             {
@@ -191,7 +206,7 @@ namespace Vge.Games
                 flagStoped = true;
                 Log.Client(SRL.StoppedClient, notification == "" ? "" : " [" + notification + "]");
                 Log.Save();
-                Stoped?.Invoke(this, new StringEventArgs(notification));
+                Stoped?.Invoke(this, new GameStopEventArgs(notification, isWarning));
             }
         }
 

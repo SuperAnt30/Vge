@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
@@ -119,7 +118,7 @@ namespace Vge.Games
             byte slot = 1;
             int indexVersion = 1;
             Log.Server(SRL.Starting, slot, indexVersion);
-            Thread myThread = new Thread(Loop);
+            Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
 

@@ -108,7 +108,7 @@ namespace Vge.Network
             waitHandler = new AutoResetEvent(true);
 
             // Запускаем отдельный поток для отправки сообщений
-            Thread myThread = new Thread(ThreadLoopSend);
+            Thread myThread = new Thread(ThreadLoopSend) { Name = "SoketSide" };
             myThread.Start();
 
             OnConnected();
@@ -250,12 +250,15 @@ namespace Vge.Network
                 {
                     // Если данные отсутствуют, то разрываем связь
                     // Сюда попадаем если обратная сторона разорвала связь 
-                    DisconnectFromClient("Связь разорвана");
+                    DisconnectFromClient(SRL.TheConnectionIsBroken);
                 }
             }
             catch (Exception e)
             {
-                OnError(new ErrorEventArgs(e));
+                // Для лога, имя ошибки
+                DisconnectFromClient(SRL.GetString(SRL.TheConnectionWasBrokenDueToAnError, e.Message));
+                // Подробную инфу ошибки в краш файл
+                Logger.Crash(e, ToString());
             }
         }
 
