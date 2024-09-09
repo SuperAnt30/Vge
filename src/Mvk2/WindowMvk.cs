@@ -6,8 +6,6 @@ using Vge;
 using Mvk2.Util;
 using Mvk2.Audio;
 using Mvk2.Renderer;
-using Vge.Util;
-using Vge.Games;
 using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
 
@@ -25,6 +23,8 @@ namespace Mvk2
         /// </summary>
         private RenderMvk renderMvk;
 
+        #region Initialized
+
         public WindowMvk() : base() { }
 
         protected override void Initialized()
@@ -40,13 +40,9 @@ namespace Mvk2
             audio.InitializeSample();
         }
 
-        protected override void Game_Tick(object sender, EventArgs e)
-        {
-            if (Screen != null && Screen is ScreenGameDebug screenDebug)
-            {
-                if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
-            }
-        }
+        #endregion
+
+        #region OnMouse
 
         protected override void OnMouseDown(MouseButton button, int x, int y)
         {
@@ -73,76 +69,9 @@ namespace Mvk2
             //CursorShow(true);
         }
 
-        protected override void OnOpenGLInitialized()
-        {
-            base.OnOpenGLInitialized();
+        #endregion
 
-            //gl.ShadeModel(GL.GL_SMOOTH);
-            //gl.ClearColor(0.0f, .5f, 0.0f, 1f);
-            //gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            //gl.ClearDepth(1.0f);
-            //gl.Enable(GL.GL_DEPTH_TEST);
-            gl.DepthFunc(GL.GL_LEQUAL);
-            //gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        }
-
-        /// <summary>
-        /// Изменён размер окна
-        /// </summary>
-        protected override void OnResized(int width, int height)
-        {
-            base.OnResized(width, height);
-            if (renderMvk != null)
-            {
-                renderMvk.FontLarge.UpdateSizeInterface();
-                renderMvk.FontSmall.UpdateSizeInterface();
-            }
-        }
-
-        /// <summary>
-        /// Инициализаця объекта рендера
-        /// </summary>
-        protected override void RenderInitialized()
-        {
-            Render = renderMvk = new RenderMvk(this);
-            renderMvk.InitializeFirst();
-        }
-
-        //protected override void OnResized(int width, int height)
-        //{
-        //    base.OnResized(width, height);
-        //}
-
-        /// <summary>
-        /// Прорисовка кадра
-        /// </summary>
-        //protected override void OnOpenGlDraw()
-        //{
-        //    base.OnOpenGlDraw();
-            
-        //    gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        //    gl.Enable(GL.GL_DEPTH_TEST);
-        //    // группа для сглаживания, но может жутко тормазить
-        //    gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-        //    gl.ClearColor(.7f, .4f, .4f, 1f);
-        //    gl.Enable(GL.GL_BLEND);
-
-        //    renderMvk.Draw();
-        //}
-
-        /// <summary>
-        /// Стабильный игровой такт
-        /// </summary>
-        //protected override void OnTick()
-        //{
-        //    base.OnTick();
-
-
-        //    //int x = renderMvk.xx;
-        //    //x -= 100;
-        //    //if (x < 0) x = 0;
-        //    //renderMvk.xx = x;
-        //}
+        #region OnKey
 
         protected override void OnKeyDown(Keys keys)
         {
@@ -178,7 +107,7 @@ namespace Mvk2
             }
             else if (keys == Keys.Enter)
             {
-                audio.PlaySound(1, 0, 0, 0, 1, 1);
+                SoundClick(1);
             }
 
             if (Game != null)
@@ -209,12 +138,78 @@ namespace Mvk2
             }
         }
 
+        #endregion
+
+        #region On...
+
+        protected override void OnOpenGLInitialized()
+        {
+            base.OnOpenGLInitialized();
+
+            //gl.ShadeModel(GL.GL_SMOOTH);
+            //gl.ClearColor(0.0f, .5f, 0.0f, 1f);
+            //gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            //gl.ClearDepth(1.0f);
+            //gl.Enable(GL.GL_DEPTH_TEST);
+            gl.DepthFunc(GL.GL_LEQUAL);
+            //gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        }
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void OnResized(int width, int height)
+        {
+            base.OnResized(width, height);
+            if (renderMvk != null)
+            {
+                renderMvk.FontLarge.UpdateSizeInterface();
+                renderMvk.FontSmall.UpdateSizeInterface();
+            }
+        }
+
+        #endregion
+
+        #region WindowOverride
+
+        /// <summary>
+        /// Инициализаця объекта рендера
+        /// </summary>
+        protected override void RenderInitialized()
+        {
+            Render = renderMvk = new RenderMvk(this);
+            renderMvk.InitializeFirst();
+        }
+
+        #endregion
+
         #region Screen
 
         /// <summary>
         /// Создать скрин главного меню
         /// </summary>
         public override void ScreenMainMenu() => ScreenCreate(new ScreenDebug(this));
+
+        #endregion
+
+        #region Game
+
+        protected override void Game_Tick(object sender, EventArgs e)
+        {
+            if (Screen != null && Screen is ScreenGameDebug screenDebug)
+            {
+                if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
+            }
+        }
+
+        #endregion
+
+        #region Sound
+
+        /// <summary>
+        /// Звук клика
+        /// </summary>
+        public override void SoundClick(float volume) => audio.PlaySound(1, 0, 0, 0, volume, 1);
 
         #endregion
     }

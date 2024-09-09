@@ -65,8 +65,10 @@
     <Compile Include="Games\GameBase.cs" />
     <Compile Include="Games\GameLocal.cs" />
     <Compile Include="Games\GameNet.cs" />
-    <Compile Include="Gui\Controls\ControlBase.cs" />
+    <Compile Include="Gui\Controls\Button.cs" />
+    <Compile Include="Gui\Controls\WidgetBase.cs" />
     <Compile Include="Gi.cs" />
+    <Compile Include="Gui\Controls\Label.cs" />
     <Compile Include="Gui\Huds\HudBase.cs" />
     <Compile Include="Gui\Screens\ScreenBase.cs" />
     <Compile Include="Gui\Screens\ScreenNotification.cs" />

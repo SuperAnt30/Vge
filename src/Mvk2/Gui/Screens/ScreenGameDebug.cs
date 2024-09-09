@@ -21,8 +21,9 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        public override void Initialize()
+        protected override void OnInitialize()
         {
+            base.OnInitialize();
             cursorVBO = new Mesh(gl, new float[0], new int[] { 2, 2 });
             meshTextDebug = new Mesh2d(gl);
         }
@@ -84,6 +85,8 @@ namespace Mvk2.Gui.Screens
 
         public override void Draw(float timeIndex)
         {
+            base.Draw(timeIndex);
+
             if (window.Game == null) gl.ClearColor(.7f, .4f, .4f, 1f);
             //gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
             //gl.Enable(GL.GL_BLEND);

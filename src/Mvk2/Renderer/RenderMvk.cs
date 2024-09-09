@@ -51,7 +51,7 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected override void TextureSetCount() => textureMap.SetCount(4);
+        protected override void TextureSetCount() => textureMap.SetCount(6);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива

@@ -19,7 +19,11 @@ namespace Vge.Renderer
         /// Основной шрифт
         /// </summary>
         public FontBase FontMain { get; private set; }
-
+        /// <summary>
+        /// Шрифт для GUI виджетов, с обводкой
+        /// </summary>
+        public FontBase FontControl { get; private set; }
+        
         /// <summary>
         /// Объект текстур
         /// </summary>
@@ -74,6 +78,8 @@ namespace Vge.Renderer
             TextureSetCount();
 
             FontMain = new FontBase(gl, SetTexture(Options.PathTextures + "FontMain.png", 0), 1);
+            FontControl = new FontBase(gl, SetTexture(Options.PathTextures + "FontControl.png", 1), 1);
+            SetTexture(Options.PathTextures + "Widgets.png", 2);
         }
 
         #region Texture
@@ -81,12 +87,21 @@ namespace Vge.Renderer
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected virtual void TextureSetCount() => textureMap.SetCount(1);
+        protected virtual void TextureSetCount() => textureMap.SetCount(3);
 
         /// <summary>
         /// Запустить текстуру основного шрифта
         /// </summary>
         public void BindTexutreFontMain() => textureMap.BindTexture(0);
+        /// <summary>
+        /// Запустить текстуру шрифта для GUI виджетов, с обводкой
+        /// </summary>
+        public void BindTexutreFontControl() => textureMap.BindTexture(1);
+        /// <summary>
+        /// Запустить текстуру основного виджета
+        /// </summary>
+        public void BindTexutreWidgets() => textureMap.BindTexture(2);
+
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>

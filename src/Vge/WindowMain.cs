@@ -15,6 +15,8 @@ namespace Vge
 {
     public class WindowMain : Window
     {
+        #region Properties
+
         /// <summary>
         /// Версия OpenGL
         /// </summary>
@@ -53,6 +55,10 @@ namespace Vge
         /// </summary>
         public float DeltaTime { get; private set; }
 
+        #endregion
+
+        #region Variables
+
         /// <summary>
         /// Объект создающий последовательные кадры и тики
         /// </summary>
@@ -79,6 +85,10 @@ namespace Vge
         /// </summary>
         private long currentTime;
 
+        #endregion
+
+        #region Initialized
+
         public WindowMain() : base()
         {
             Initialized();
@@ -101,25 +111,66 @@ namespace Vge
         /// </summary>
         public GL GetOpenGL() => gl;
 
-        /// <summary>
-        /// Получить время в милисекундах с момента запуска проекта
-        /// </summary>
-        public long Time() => ticker.Time();
-        /// <summary>
-        /// Получить время в тактах с момента запуска проекта
-        /// </summary>
-        public long TimeTicks() => ticker.TimeTicks();
+        #endregion
 
-        #region On...
+        #region OnMouse
 
+        /// <summary>
+        /// Перемещение мыши
+        /// </summary>
         protected override void OnMouseMove(int x, int y)
         {
             MouseX = x;
             MouseY = y;
+            if (Screen != null) Screen.OnMouseMove(x, y);
+            if (Game != null) Game.OnMouseMove(x, y);
         }
 
+        /// <summary>
+        /// Нажатие курсора мыши
+        /// </summary>
+        protected override void OnMouseDown(MouseButton button, int x, int y)
+        {
+            MouseX = x;
+            MouseY = y;
+            if (Screen != null) Screen.OnMouseDown(button, x, y);
+            if (Game != null) Game.OnMouseDown(button, x, y);
+        }
+
+        /// <summary>
+        /// Отпустил курсор мыши
+        /// </summary>
+        protected override void OnMouseUp(MouseButton button, int x, int y)
+        {
+            MouseX = x;
+            MouseY = y;
+            if (Screen != null) Screen.OnMouseUp(button, x, y);
+            if (Game != null) Game.OnMouseUp(button, x, y);
+        }
+
+        /// <summary>
+        /// Вращение колёсика мыши
+        /// </summary>
+        protected override void OnMouseWheel(int delta, int x, int y)
+        {
+            MouseX = x;
+            MouseY = y;
+            if (Screen != null) Screen.OnMouseWheel(delta, x, y);
+            if (Game != null) Game.OnMouseWheel(delta, x, y);
+        }
+
+        #endregion
+
+        #region OnKey
+
+        /// <summary>
+        /// Клавиша нажата
+        /// </summary>
         protected override void OnKeyDown(Keys keys)
         {
+            if (Screen != null) Screen.OnKeyDown(keys);
+            if (Game != null) Game.OnKeyDown(keys);
+
             if (keys == Keys.F11)
             {
                 FullScreen = !FullScreen;
@@ -142,6 +193,27 @@ namespace Vge
                 ticker.SetWishFrame(280);
             }
         }
+
+        /// <summary>
+        /// Клавиша отпущена
+        /// </summary>
+        protected override void OnKeyUp(Keys keys)
+        {
+            if (Screen != null) Screen.OnKeyUp(keys);
+            if (Game != null) Game.OnKeyUp(keys);
+        }
+
+        /// <summary>
+        /// Нажата клавиша в char формате
+        /// </summary>
+        protected override void OnKeyPress(char key)
+        {
+            if (Screen != null) Screen.OnKeyPress(key);
+        }
+
+        #endregion
+
+        #region On...
 
         protected override void OnOpenGLInitialized()
         {
@@ -180,11 +252,11 @@ namespace Vge
             base.OnOpenGlDraw();
 
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            //gl.ClearColor(.7f, .4f, .4f, 1f);
-            ///gl.Enable(GL.GL_DEPTH_TEST);
+           // gl.ClearColor(.7f, .4f, .4f, 1f);
+            //gl.Enable(GL.GL_DEPTH_TEST);
             // группа для сглаживания, но может жутко тормазить
-            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(GL.GL_BLEND);
+            //gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            //gl.Enable(GL.GL_BLEND);
 
             Render.Draw(ticker.Interpolation);
             //renderMvk.Draw();
@@ -202,6 +274,11 @@ namespace Vge
             if (Render != null)
             {
                 Render.FontMain.UpdateSizeInterface();
+                Render.FontControl.UpdateSizeInterface();
+            }
+            if (Screen != null) 
+            {
+                Screen.Resized();
             }
         }
 
@@ -221,7 +298,7 @@ namespace Vge
         /// <summary>
         /// Запущено окно
         /// </summary>
-        public override void Begined() => Screen = new ScreenSplash(this);
+        public override void Begined() => ScreenCreate(new ScreenSplash(this));
 
         /// <summary>
         /// Инициализаця объекта рендера
@@ -291,6 +368,7 @@ namespace Vge
         {
             if (Screen != null) Screen.Dispose();
             Screen = screen;
+            Screen.Initialize();
         }
         /// <summary>
         /// Закрыть скрин
@@ -434,6 +512,24 @@ namespace Vge
                 Game.OnTick(DeltaTime);
             }
         }
+
+        /// <summary>
+        /// Получить время в милисекундах с момента запуска проекта
+        /// </summary>
+        public long Time() => ticker.Time();
+        /// <summary>
+        /// Получить время в тактах с момента запуска проекта
+        /// </summary>
+        public long TimeTicks() => ticker.TimeTicks();
+
+        #endregion
+
+        #region Sound
+
+        /// <summary>
+        /// Звук клика
+        /// </summary>
+        public virtual void SoundClick(float volume) { }
 
         #endregion
     }

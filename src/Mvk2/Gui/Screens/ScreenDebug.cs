@@ -1,5 +1,6 @@
 ﻿using Mvk2.Renderer;
 using System.Numerics;
+using Vge.Gui.Controls;
 using Vge.Gui.Screens;
 using Vge.Renderer;
 using WinGL.OpenGL;
@@ -16,15 +17,46 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         private Mesh cursorVBO;
 
-        public ScreenDebug(WindowMvk window) : base(window) { }
+        private Label label;
+        private Button button;
+        private Button button2;
+
+        public ScreenDebug(WindowMvk window) : base(window)
+        {
+            label = new Label(window, 400, 40, "http://superant.by/mkv");
+            label.Click += Label_Click;
+            button = new Button(window, 360, 40, "Кнопка супер Tag");
+            button2 = new Button(window, 640, 40, "Кнопка супер Tag2");
+        }
+
+        private void Label_Click(object sender, System.EventArgs e)
+        {
+            label.SetText(label.Text + "*");
+        }
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        public override void Initialize()
+        protected override void OnInitialize()
         {
+            base.OnInitialize();
             cursorVBO = new Mesh(gl, new float[0], new int[] { 2, 2 });
             meshTextDebug = new Mesh2d(gl);
+            AddControls(label);
+            AddControls(button);
+            AddControls(button2);
+        }
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void OnResized()
+        {
+            // Положение устанваливаем тут, если есть привязка к размеру окна
+            int w = Gi.Width / 2 / si;
+            label.SetPosition(w - label.Width / 2, 200);
+            button.SetPosition(w - button.Width / 2, 100);
+            button2.SetPosition(w - button2.Width / 2, 150);
         }
 
         /// <summary>
@@ -35,6 +67,10 @@ namespace Mvk2.Gui.Screens
             // Отладка на экране
             textDebug = window.debug.ToText();
             isTextDebug = true;
+
+            //int x = button.PosX + 1;
+            //if (x > 500) x = 100;
+            //button.SetPosition(x, button.PosY);
 
             if (((WindowMvk)window).cursorShow)
             {
@@ -85,9 +121,14 @@ namespace Mvk2.Gui.Screens
 
         public override void Draw(float timeIndex)
         {
+            base.Draw(timeIndex);
+
             if (window.Game == null) gl.ClearColor(.7f, .4f, .4f, 1f);
-            //gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            //gl.Enable(GL.GL_BLEND);
+            //gl.Enable(GL.GL_DEPTH_TEST);
+            //gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.Enable(GL.GL_BLEND);
+            gl.Enable(GL.GL_ALPHA_TEST);
 
             if (window is WindowMvk windowMvk)
             {
@@ -183,6 +224,7 @@ namespace Mvk2.Gui.Screens
 
         public override void Dispose()
         {
+            base.Dispose();
             cursorVBO.Dispose();
             meshTextDebug.Dispose();
         }

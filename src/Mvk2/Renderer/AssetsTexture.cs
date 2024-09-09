@@ -9,14 +9,14 @@
         /// <summary>
         /// Мелкий шрифт (8 пиксель)
         /// </summary>
-        FontSmall = 1,
+        FontSmall = 3,
         /// <summary>
         /// Крупный шрифт (16 пиксель)
         /// </summary>
-        FontLarge = 2,
+        FontLarge = 4,
         /// <summary>
         /// Курсор
         /// </summary>
-        Cursor = 3
+        Cursor = 5
     }
 }

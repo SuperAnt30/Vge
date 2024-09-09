@@ -111,6 +111,8 @@ namespace Vge.Games
         /// </summary>
         public virtual void TrancivePacket(IPacket packet) { }
 
+        #region TickDraw
+
         /// <summary>
         /// Игровой такт
         /// </summary>
@@ -180,6 +182,10 @@ namespace Vge.Games
                 Hud.Draw();
             }
         }
+
+        #endregion
+
+
 
         public override string ToString()
         {
