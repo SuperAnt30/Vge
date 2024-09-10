@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using Vge.Gui;
+using Vge.Realms;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -20,6 +20,11 @@ namespace Vge.Renderer.Font
         /// Цвет по умолчанию фона 
         /// </summary>
         private readonly static Vector3 colorDefBg = new Vector3(.25f);
+
+        /// <summary>
+        /// Разбитие строк
+        /// </summary>
+        public readonly TransferText Transfer;
 
         /// <summary>
         /// Массив символов
@@ -77,6 +82,7 @@ namespace Vge.Renderer.Font
         /// Размер float в байтах
         /// </summary>
         private readonly int sizeFloat = sizeof(float);
+        
 
         /// <summary>
         /// Класс шрифта
@@ -94,6 +100,7 @@ namespace Vge.Renderer.Font
             horiAdvance = textureFont.width >> 4;
             vertAdvance = textureFont.height >> 4;
             this.stepFont = stepFont;
+            Transfer = new TransferText(this);
 
             string keys = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзиклмнопрстуфхцчшщъыьэюяЁёЙй";
             char[] vc = keys.ToCharArray();
@@ -203,6 +210,27 @@ namespace Vge.Renderer.Font
                 }
             }
             return w;
+        }
+
+        /// <summary>
+        /// Обрезка строки и ставится ... если не влазит в ширину
+        /// </summary>
+        public string TransferString(string text, int width)
+        {
+            Transfer.Run(text, width, si);
+            string[] strs = Transfer.OutText.Split(new string[] { "\r\n", ChatStyle.Br }, StringSplitOptions.None);
+            if (strs.Length > 0) text = strs[0];
+            if (strs.Length > 1) text += "...";
+            return text;
+        }
+
+        /// <summary>
+        /// Перенести текст согласно ширине контрола
+        /// </summary>
+        public string TransferWidth(string text, int width)
+        {
+            Transfer.Run(text, width, si);
+            return Transfer.OutText;
         }
 
         #endregion

@@ -77,11 +77,14 @@ namespace Vge.Gui.Controls
             {
 
                 render.FontMain.Clear();
-                int biasX = (Width - render.FontMain.WidthString(Text)) / 2 * si;
+
+                string text = window.Render.FontMain.TransferString(Text, Width);
+
+                int biasX = (Width - render.FontMain.WidthString(text)) / 2 * si;
                 //int biasX = 0;
 
                 render.FontMain.SetColor(color, colorBg).SetFontFX(Renderer.Font.EnumFontFX.Outline);
-                render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, Text);
+                render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, text);
                 render.FontMain.RenderFX();
 
             }

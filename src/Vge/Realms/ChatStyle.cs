@@ -1,4 +1,4 @@
-﻿namespace Vge.Util
+﻿namespace Vge.Realms
 {
     /// <summary>
     /// Статический класс констант стиля чата
