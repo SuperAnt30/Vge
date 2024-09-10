@@ -9,7 +9,7 @@ namespace Vge.Gui.Screens
     /// <summary>
     /// Абстрактный класс экрана
     /// </summary>
-    public abstract class ScreenBase : RenderBase
+    public abstract class ScreenBase : Warp
     {
         /// <summary>
         /// Колекция всех контролов

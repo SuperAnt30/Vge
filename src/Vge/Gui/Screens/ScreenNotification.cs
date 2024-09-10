@@ -61,7 +61,7 @@ namespace Vge.Gui.Screens
 
             RenderMain render = window.Render;
 
-            render.FontMain.BufferClear();
+            render.FontMain.Clear();
 
             render.shaderText.Bind(gl);
             render.shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
@@ -73,8 +73,9 @@ namespace Vge.Gui.Screens
                 {
                     mesh = new Mesh2d(gl);
                 }
-                render.FontMain.RenderText(11 * si, 11 * si, notification, new Vector3(.2f, .2f, .2f));
-                render.FontMain.RenderText(10 * si, 10 * si, notification, new Vector3(.9f, .9f, .9f));
+                render.FontMain.SetColor(new Vector3(.9f, .9f, .9f), new Vector3(.2f, .2f, .2f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
+                render.FontMain.RenderText(10 * si, 10 * si, notification);
+                render.FontMain.RenderFX();
                 render.FontMain.Reload(mesh);
             }
 

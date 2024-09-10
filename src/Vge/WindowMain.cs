@@ -274,7 +274,6 @@ namespace Vge
             if (Render != null)
             {
                 Render.FontMain.UpdateSizeInterface();
-                Render.FontControl.UpdateSizeInterface();
             }
             if (Screen != null) 
             {

@@ -2,6 +2,7 @@
 using System.Numerics;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -45,6 +46,16 @@ namespace Mvk2.Renderer
             FontLarge = new FontBase(gl, 
                 SetTexture(OptionsMvk.PathTextures + "FontLarge.png", AssetsTexture.FontLarge), 2);
         }
+
+        /// <summary>
+        /// Получить массив имён файл текстур,
+        /// 0 - FontMain основной шрифт
+        /// 2 - Widgets
+        /// </summary>
+        protected override string[] GetFileNameTextures() => new string[] {
+            Options.PathTextures + "FontMain.png",
+            OptionsMvk.PathTextures + "WidgetsMvk.png"
+        };
 
         #region Texture
 

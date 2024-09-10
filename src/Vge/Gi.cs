@@ -26,4 +26,18 @@ public sealed class Gi
     {
         Si = (Options.SizeInterface > 1 && Height < 880) ? 1 : Options.SizeInterface;
     }
+
+    /// <summary>
+    /// Перечень 16-ти цветов Красного как в майне
+    /// </summary>
+    public static float[] ColorReg = new float[] { 0, 0, 0, 0, .67f, .67f, 1, .67f, .33f, .33f, .33f, .33f, 1, 1, 1, 1 };
+    /// <summary>
+    /// Перечень 16-ти цветов Зелёного как в майне
+    /// </summary>
+    public static float[] ColorGreen = new float[] { 0, 0, .67f, .67f, 0, 0, .67f, .67f, .33f, .33f, 1, 1, .33f, .33f, 1, 1 };
+    /// <summary>
+    /// Перечень 16-ти цветов Синего как в майне
+    /// </summary>
+    public static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
+
 }

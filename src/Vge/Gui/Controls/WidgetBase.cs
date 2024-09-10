@@ -1,13 +1,11 @@
-﻿using System.Numerics;
-using Vge.Gui.Screens;
-using Vge.Renderer;
+﻿using Vge.Gui.Screens;
 
 namespace Vge.Gui.Controls
 {
     /// <summary>
     /// Виджет для GUI
     /// </summary>
-    public abstract class WidgetBase : RenderBase
+    public abstract class WidgetBase : Warp
     {
         /// <summary>
         /// Нужен ли рендер
@@ -96,12 +94,9 @@ namespace Vge.Gui.Controls
 
         #endregion
 
-        /// <summary>
-        /// Нажата клавиша в char формате
-        /// </summary>
-        public virtual void OnKeyPress(char key) { }
+        #region OnKey
 
-        
+        #endregion
 
         #region Set...
 
@@ -149,32 +144,32 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
-        protected float[] RectangleTwo(int x1, float y1, float v1, float u1, float r, float g, float b)
+        protected float[] RectangleTwo(int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
         {
             int w = Width * si / 2;
             float wf = Width / 1024f;
             float h = Height * si;
 
             float y2 = y1 + h;
-            float u2 = u1 + .078125f;
+            float v2 = v1 + vk;
             float x2 = x1 + w;
             float x3 = x2 + w;
-            float v2 = wf;
-            float v4 = 1;
-            float v3 = v4 - wf;
+            float u2 = wf;
+            float u4 = 1;
+            float u3 = u4 - wf;
 
 
             return new float[]
             {
-                x1, y1, v1, u1, r, g, b,
-                x1, y2, v1, u2, r, g, b,
-                x2, y1, v2, u1, r, g, b,
-                x2, y2, v2, u2, r, g, b,
+                x1, y1, u1, v1, r, g, b,
+                x1, y2, u1, v2, r, g, b,
+                x2, y1, u2, v1, r, g, b,
+                x2, y2, u2, v2, r, g, b,
 
-                x2, y1, v3, u1, r, g, b,
-                x2, y2, v3, u2, r, g, b,
-                x3, y1, v4, u1, r, g, b,
-                x3, y2, v4, u2, r, g, b,
+                x2, y1, u3, v1, r, g, b,
+                x2, y2, u3, v2, r, g, b,
+                x3, y1, u4, v1, r, g, b,
+                x3, y2, u4, v2, r, g, b,
             };
         }
 

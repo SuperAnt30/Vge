@@ -13,17 +13,13 @@ namespace Vge.Renderer
     /// <summary>
     /// Основной класс рендера
     /// </summary>
-    public class RenderMain : RenderBase
+    public class RenderMain : Warp
     {
         /// <summary>
         /// Основной шрифт
         /// </summary>
         public FontBase FontMain { get; private set; }
-        /// <summary>
-        /// Шрифт для GUI виджетов, с обводкой
-        /// </summary>
-        public FontBase FontControl { get; private set; }
-        
+
         /// <summary>
         /// Объект текстур
         /// </summary>
@@ -77,30 +73,36 @@ namespace Vge.Renderer
             // Задать количество текстур
             TextureSetCount();
 
-            FontMain = new FontBase(gl, SetTexture(Options.PathTextures + "FontMain.png", 0), 1);
-            FontControl = new FontBase(gl, SetTexture(Options.PathTextures + "FontControl.png", 1), 1);
-            SetTexture(Options.PathTextures + "Widgets.png", 2);
+            string[] vs = GetFileNameTextures();
+            FontMain = new FontBase(gl, SetTexture(vs[0], 0), 1);
+            SetTexture(vs[1], 1);
         }
+
+        /// <summary>
+        /// Получить массив имён файл текстур,
+        /// 0 - FontMain основной шрифт
+        /// 1 - Widgets
+        /// </summary>
+        protected virtual string[] GetFileNameTextures() => new string[] {
+            Options.PathTextures + "FontMain.png",
+            Options.PathTextures + "Widgets.png"
+        };
 
         #region Texture
 
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected virtual void TextureSetCount() => textureMap.SetCount(3);
+        protected virtual void TextureSetCount() => textureMap.SetCount(2);
 
         /// <summary>
         /// Запустить текстуру основного шрифта
         /// </summary>
         public void BindTexutreFontMain() => textureMap.BindTexture(0);
         /// <summary>
-        /// Запустить текстуру шрифта для GUI виджетов, с обводкой
-        /// </summary>
-        public void BindTexutreFontControl() => textureMap.BindTexture(1);
-        /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
-        public void BindTexutreWidgets() => textureMap.BindTexture(2);
+        public void BindTexutreWidgets() => textureMap.BindTexture(1);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива

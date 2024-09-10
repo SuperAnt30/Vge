@@ -2,12 +2,12 @@
 using WinGL.Actions;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge
 {
     /// <summary>
-    /// Базовый класс отвечающий за прорисовку
+    /// Базовый класс основы, для объектов Screen, Game
     /// </summary>
-    public abstract class RenderBase : IDisposable
+    public abstract class Warp : IDisposable
     {
         /// <summary>
         /// Объект окна
@@ -18,13 +18,13 @@ namespace Vge.Renderer
         /// </summary>
         protected readonly GL gl;
 
-        public RenderBase(WindowMain window)
+        public Warp(WindowMain window)
         {
             this.window = window;
             gl = window.GetOpenGL();
         }
 
-        #region DrawTick
+        #region Draw
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -82,7 +82,6 @@ namespace Vge.Renderer
         public virtual void OnKeyPress(char key) { }
 
         #endregion
-
 
         public virtual void Dispose() { }
     }

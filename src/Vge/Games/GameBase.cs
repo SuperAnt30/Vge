@@ -5,7 +5,6 @@ using Vge.Event;
 using Vge.Gui.Huds;
 using Vge.Network;
 using Vge.Network.Packets;
-using Vge.Renderer;
 using Vge.Util;
 
 namespace Vge.Games
@@ -13,7 +12,7 @@ namespace Vge.Games
     /// <summary>
     /// Абстрактный класс игры
     /// </summary>
-    public abstract class GameBase : RenderBase
+    public abstract class GameBase : Warp
     {
         /// <summary>
         /// Объект лога

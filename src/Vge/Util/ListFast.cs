@@ -28,7 +28,11 @@ namespace Vge.Util
             buffer = new T[size];
         }
 
-        public T this[int index] => buffer[index];
+        public T this[int index]
+        {
+            get => buffer[index];
+            set => buffer[index] = value;
+        }
 
         /// <summary>
         /// Добавить значение
@@ -46,18 +50,53 @@ namespace Vge.Util
         /// <summary>
         /// Добавить массив значений
         /// </summary>
-        public void AddRange(T[] items)
+        /// <param name="sizeType">Размер типа в байтах</param>
+        public void AddRange(T[] items, int sizeType)
         {
             int count = items.Length;
             if (size < Count + count)
             {
-                size = (int)(size + count + (size * 0.3f));
+                size = Count + count + (Count + count) / 2;
                 Array.Resize(ref buffer, size);
             }
-            for (int i = 0; i < count; i++)
-                buffer[Count + i] = items[i];
-
+            Buffer.BlockCopy(items, 0, buffer, Count * sizeType, count * sizeType);
             Count += count;
+        }
+
+        /// <summary>
+        /// Добавить копию из текущего буффера в конец
+        /// </summary>
+        /// <param name="offset">откуда начинаем буфер</param>
+        /// <param name="count">количество элементов буфера</param>
+        public void AddCopy(int offset, int count, int sizeType)
+        {
+            if (size < Count + count)
+            {
+                size += Count + count + (Count + count) / 2;
+                Array.Resize(ref buffer, size);
+            }
+            Buffer.BlockCopy(buffer, offset, buffer, Count * sizeType, count * sizeType);
+            Count += count;
+        }
+
+        /// <summary>
+        /// Добавить копию из текущего буффера в определённое место dstOffset
+        /// </summary>
+        /// <param name="srcOffset">откуда начинаем буфер</param>
+        /// <param name="count">количество элементов буфера</param>
+        /// /// <param name="dstOffset">откуда начинаем заливать буфер</param>
+        public void AddCopy(int srcOffset, int count, int dstOffset, int sizeType)
+        {
+            if (size < dstOffset + count)
+            {
+                size += dstOffset + count + (dstOffset + count) / 2;
+                Array.Resize(ref buffer, size);
+            }
+            Buffer.BlockCopy(buffer, srcOffset, buffer, dstOffset * sizeType, count * sizeType);
+            if (dstOffset + count > Count)
+            {
+                Count = dstOffset + count;
+            }
         }
 
         /// <summary>

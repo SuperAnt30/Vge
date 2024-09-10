@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using Vge.Renderer;
 using WinGL.Actions;
@@ -40,6 +41,15 @@ namespace Vge.Gui.Controls
             }
         }
 
+        public override void OnMouseMove(int x, int y)
+        {
+            base.OnMouseMove(x, y);
+            if (enter)
+            {
+                IsRender = true;
+            }
+        }
+
         #endregion
 
         #region Draw
@@ -57,18 +67,40 @@ namespace Vge.Gui.Controls
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected virtual void RenderInside(RenderMain render, int x, int y)
         {
-            render.FontControl.BufferClear();
-            int biasX = (Width - render.FontControl.WidthString(Text)) / 2 * si;
-            // TODO::2024-09-09 Задать правила цвета
             Vector3 color = Enabled ? enter ? new Vector3(.9f, .9f, .5f) : new Vector3(.8f) : new Vector3(.5f);
-            render.FontControl.RenderText(x + biasX, y + 12 * si, Text, color);
-            render.FontControl.Reload(meshTxt);
+            Vector3 colorBg = new Vector3(0);
+
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
+
+            //for (int i = 0; i < 100; i++)
+            {
+
+                render.FontMain.Clear();
+                int biasX = (Width - render.FontMain.WidthString(Text)) / 2 * si;
+                //int biasX = 0;
+
+                render.FontMain.SetColor(color, colorBg).SetFontFX(Renderer.Font.EnumFontFX.Outline);
+                render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, Text);
+                render.FontMain.RenderFX();
+
+            }
+
+            //stopwatch.Stop();
+            //string s = ((float)(stopwatch.ElapsedTicks / (Stopwatch.Frequency / 1000f))).ToString("0.000");
+            //render.FontWidget.Clear();
+            //render.FontWidget.SetColor(color, colorBg).SetFontFX(Renderer.Font.EnumFontFX.Outline);
+            //render.FontWidget.RenderText(x, y + (Height - 16) / 2 * si, Text + " " + s);
+            //render.FontWidget.RenderFX();
+            render.FontMain.Reload(meshTxt);
+            
+            return;
         }
 
         public override void Draw(float timeIndex)
         {
             // Рисуем текст кнопки
-            window.Render.BindTexutreFontControl();
+            window.Render.BindTexutreFontMain();
             meshTxt.Draw();
         }
 
