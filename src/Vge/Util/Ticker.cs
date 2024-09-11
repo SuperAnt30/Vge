@@ -23,7 +23,7 @@ namespace Vge.Util
         /// <summary>
         /// Желаемое количество тактов в секунду
         /// </summary>
-        public readonly int WishTick = 20;
+        public readonly int WishTick;
         /// <summary>
         /// Получить коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1
         /// </summary>
@@ -92,11 +92,11 @@ namespace Vge.Util
         /// </summary>
         private long nextFrame;
 
-        public Ticker(int wishTick = 20)
+        public Ticker()
         {
-            WishTick = wishTick;
+            WishTick = Ce.Tps;
             timerFrequency = Stopwatch.Frequency / 1000;
-            timerFrequencyTps = Stopwatch.Frequency / wishTick;
+            timerFrequencyTps = Stopwatch.Frequency / Ce.Tps;
             intervalTick = timerFrequencyTps;
             sleepTickDef = intervalTick / timerFrequency;
 

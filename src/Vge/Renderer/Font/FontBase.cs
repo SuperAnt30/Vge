@@ -114,7 +114,7 @@ namespace Vge.Renderer.Font
                 index = keys.IndexOf(symb) + 32;
                 if (index == -1)
                 {
-                    throw new Exception(SR.GetString(SR.TheSymbolIsNotInTheList, vc[i]));
+                    throw new Exception(Sr.GetString(Sr.TheSymbolIsNotInTheList, vc[i]));
                 }
                 width = GetWidth(textureFont, index);
                 Symbol symbol = new Symbol(symb, index, width);
@@ -218,7 +218,7 @@ namespace Vge.Renderer.Font
         public string TransferString(string text, int width)
         {
             Transfer.Run(text, width, si);
-            string[] strs = Transfer.OutText.Split(new string[] { "\r\n", ChatStyle.Br }, StringSplitOptions.None);
+            string[] strs = Transfer.OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
             if (strs.Length > 0) text = strs[0];
             if (strs.Length > 1) text += "...";
             return text;
@@ -315,7 +315,7 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void RenderText(int x, int y, string text)
         {
-            string[] stringSeparators = new string[] { "\r\n", ChatStyle.Br };
+            string[] stringSeparators = new string[] { Ce.Br, ChatStyle.Br };
             string[] strs = text.Split(stringSeparators, StringSplitOptions.None);
 
             foreach (string str in strs)

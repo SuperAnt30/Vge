@@ -44,7 +44,7 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-            Log.Client(SRL.StartingMultiplayer);
+            Log.Client(Srl.StartingMultiplayer);
             Log.Save();
 
             socket = new SocketSide(IPAddress.Parse(ipAddress), port);
@@ -154,7 +154,7 @@ namespace Vge.Games
             // Проверка на разрыв долгий сервера (нет связи)
             if (TimeOut())
             {
-                GameStoping(SRL.TheServerIsNotResponding, true);
+                GameStoping(Srl.TheServerIsNotResponding, true);
             }
             base.OnTick(deltaTime);
 

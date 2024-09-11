@@ -58,7 +58,7 @@ namespace Vge.Network
                 }
                 else
                 {
-                    throw new Exception(SR.ErrorInGluingNetworkData);
+                    throw new Exception(Sr.ErrorInGluingNetworkData);
                 }
             }
             // Определяем тикущую длинну пакета

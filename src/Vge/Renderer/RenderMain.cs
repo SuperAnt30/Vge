@@ -161,7 +161,7 @@ namespace Vge.Renderer
                 if (window.Screen == null)
                 {
                     // Отсутствует прорисовка
-                    throw new Exception(SR.ThereIsNoDrawing);
+                    throw new Exception(Sr.ThereIsNoDrawing);
                 }
                 else
                 {

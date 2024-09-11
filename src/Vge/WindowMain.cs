@@ -315,7 +315,7 @@ namespace Vge
             if (Game != null)
             {
                 flagClose = true;
-                Game.GameStoping(SRL.ClosingTheApplication, false);
+                Game.GameStoping(Srl.ClosingTheApplication, false);
             }
             else
             {
@@ -464,7 +464,7 @@ namespace Vge
         {
             if (Game != null)
             {
-                Game.GameStoping(SRL.TheUserStoppedTheGame, false);
+                Game.GameStoping(Srl.TheUserStoppedTheGame, false);
             }
         }
 

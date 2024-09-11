@@ -2,7 +2,7 @@
 /// StringsResource 
 /// Строки ресурсов, на которые ссылается код
 /// </summary>
-internal sealed class SR
+internal sealed class Sr
 {
     internal static string GetString(string name, params object[] args)
         => string.Format(name, args);

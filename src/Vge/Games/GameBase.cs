@@ -209,7 +209,7 @@ namespace Vge.Games
             {
                 // флаг нужен, так-как можно попасть сюда много раз, из-за разрыва сети.
                 flagStoped = true;
-                Log.Client(SRL.StoppedClient, notification == "" ? "" : " [" + notification + "]");
+                Log.Client(Srl.StoppedClient, notification == "" ? "" : " [" + notification + "]");
                 Log.Save();
                 Stoped?.Invoke(this, new GameStopEventArgs(notification, isWarning));
             }

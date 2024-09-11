@@ -52,7 +52,7 @@ namespace Vge.Renderer.Font
         {
             OutWidth = 0;
             NumberLines = 1;
-            string[] strs = inText.Split(new string[] { "\r\n", ChatStyle.Br }, StringSplitOptions.None);
+            string[] strs = inText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
 
             font.Clear();
             // Ширина пробела
@@ -65,7 +65,7 @@ namespace Vge.Renderer.Font
             {
                 symbols = str.Split(' ');
                 w = 0;
-                if (!first) text += "\r\n"; else first = false;
+                if (!first) text += Ce.Br; else first = false;
 
                 foreach (string symbol in symbols)
                 {
@@ -75,7 +75,7 @@ namespace Vge.Renderer.Font
                         if (w > OutWidth) OutWidth = w;
                         NumberLines++;
                         w = ws;
-                        text += "\r\n" + symbol;
+                        text += Ce.Br + symbol;
                     }
                     else
                     {

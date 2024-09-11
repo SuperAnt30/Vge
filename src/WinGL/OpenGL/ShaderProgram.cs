@@ -47,7 +47,7 @@ namespace WinGL.OpenGL
             if (GetLinkStatus(gl) == false)
             {
                 throw new ShaderCompilationException(
-                    SR.GetString(SR.FailedToAssociateShaderProgramWithID, ShaderProgramObject), GetInfoLog(gl));
+                    Sr.GetString(Sr.FailedToAssociateShaderProgramWithID, ShaderProgramObject), GetInfoLog(gl));
             }
         }
 

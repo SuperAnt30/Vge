@@ -2,7 +2,7 @@
 /// StringsResourceLogs 
 /// Строки ресурсов логов, на которые ссылается код
 /// </summary>
-internal sealed class SRL
+internal sealed class Srl
 {
     internal static string GetString(string name, params object[] args)
         => string.Format(name, args);

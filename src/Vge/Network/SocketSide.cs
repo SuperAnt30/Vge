@@ -253,13 +253,13 @@ namespace Vge.Network
                 {
                     // Если данные отсутствуют, то разрываем связь
                     // Сюда попадаем если обратная сторона разорвала связь 
-                    DisconnectFromClient(SRL.TheConnectionIsBroken);
+                    DisconnectFromClient(Srl.TheConnectionIsBroken);
                 }
             }
             catch (Exception e)
             {
                 // Для лога, имя ошибки
-                DisconnectFromClient(SRL.GetString(SRL.TheConnectionWasBrokenDueToAnError, e.Message));
+                DisconnectFromClient(Srl.GetString(Srl.TheConnectionWasBrokenDueToAnError, e.Message));
                 // Подробную инфу ошибки в краш файл
                 Logger.Crash(e, ToString());
             }

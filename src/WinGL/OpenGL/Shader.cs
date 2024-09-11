@@ -31,7 +31,7 @@ namespace WinGL.OpenGL
             {
                 string log = GetInfoLog(gl);
                 throw new ShaderCompilationException(
-                    SR.GetString(SR.FailedToCompileShaderWithID, ShaderObject, log), log);
+                    Sr.GetString(Sr.FailedToCompileShaderWithID, ShaderObject, log), log);
             }
         }
 

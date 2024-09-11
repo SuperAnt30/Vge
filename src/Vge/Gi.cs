@@ -1,6 +1,7 @@
 ﻿using Vge.Util;
 
 /// <summary>
+/// GraphicalInterface
 /// Класс статический данных для GUI
 /// </summary>
 public sealed class Gi

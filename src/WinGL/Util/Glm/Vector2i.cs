@@ -18,13 +18,13 @@ namespace WinGL.Util
             {
                 if (index == 0) return X;
                 else if (index == 1) return Y;
-                else throw new Exception(SR.OutOfRange);
+                else throw new Exception(Sr.OutOfRange);
             }
             set
             {
                 if (index == 0) X = value;
                 else if (index == 1) Y = value;
-                else throw new Exception(SR.OutOfRange);
+                else throw new Exception(Sr.OutOfRange);
             }
         }
 

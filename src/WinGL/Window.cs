@@ -189,7 +189,7 @@ namespace WinGL
             catch (Exception ex)
             {
                 Close();
-                throw new Exception(SR.ErrorWhileStartingWindow, ex);
+                throw new Exception(Sr.ErrorWhileStartingWindow, ex);
             }
             finally
             {
@@ -228,7 +228,7 @@ namespace WinGL
             // Пытаемся зарегистрировать класс окна
             if (WinUser.RegisterClassEx(ref wc) == 0)
             {
-                throw new Exception(SR.FailedToRegisterTheWindowClass);
+                throw new Exception(Sr.FailedToRegisterTheWindowClass);
             }
             int width = windowWidth;
             int height = windowHeigt;
@@ -291,7 +291,7 @@ namespace WinGL
 
             if (hWnd == IntPtr.Zero) 
             {
-                throw new Exception(SR.WindowCreationError);
+                throw new Exception(Sr.WindowCreationError);
             }
 
             // pfd сообщает Windows каким будет вывод на экран каждого пикселя
@@ -313,19 +313,19 @@ namespace WinGL
             hDC = WinUser.GetDC(hWnd);
             if (hDC == IntPtr.Zero)
             {
-                throw new Exception(SR.CantCreateAOpenGLDeviceContext);
+                throw new Exception(Sr.CantCreateAOpenGLDeviceContext);
             }
 
             // Подходящий формат пикселя
             int iPixelformat = WinGdi.ChoosePixelFormat(hDC, pfd);
             if (iPixelformat == 0)
             {
-                throw new Exception(SR.CantFindASuitablePixelFormat);
+                throw new Exception(Sr.CantFindASuitablePixelFormat);
             }
             // Установить формат пикселя
             if (WinGdi.SetPixelFormat(hDC, iPixelformat, pfd) == 0)
             {
-                throw new Exception(SR.CantSetThePixelFormat);
+                throw new Exception(Sr.CantSetThePixelFormat);
             }
             // Установить контекст рендеринга
             gl.Create(hDC, openGLVersion);

@@ -57,7 +57,7 @@ namespace Vge.Util
             using (StreamWriter file = new StreamWriter(fileName))
             {
                 file.WriteLine("# " + title);
-                file.WriteLine("# File Created: {0:dd.MM.yyyy HH:mm.ss}\r\n", DateTime.Now);
+                file.WriteLine("# File Created: {0:dd.MM.yyyy HH:mm.ss}" + Ce.Br, DateTime.Now);
                 SaveLine(file);
                 file.Close();
             }

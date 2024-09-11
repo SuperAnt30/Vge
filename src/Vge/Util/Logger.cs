@@ -13,7 +13,7 @@ namespace Vge.Util
         /// <summary>
         /// Максимальное количество файлов
         /// </summary>
-        private const int MaxCountFile = 20;
+        private const int MaxCountFile = 30;
 
         /// <summary>
         /// Имя файла
@@ -53,31 +53,31 @@ namespace Vge.Util
         public void Log(string logMessage, params object[] args)
         {
             string text = string.Format(logMessage, args);
-            log += $"[{DateTime.Now.ToLongTimeString()}] " + text + "\r\n";
+            log += $"[{DateTime.Now.ToLongTimeString()}] " + text + Ce.Br;
             OnLoged(text);
         }
         /// <summary>
         /// Добавить в лог с префиксом [Client]
         /// </summary>
         public void Client(string logMessage, params object[] args)
-         => Log(SRL.Client + logMessage, args);
+         => Log(Srl.Client + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [Server]
         /// </summary>
         public void Server(string logMessage, params object[] args)
-         => Log(SRL.Server + logMessage, args);
+         => Log(Srl.Server + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [ERROR]
         /// </summary>
         public void Error(string logMessage, params object[] args)
-            => Log(SRL.Error + logMessage, args);
+            => Log(Srl.Error + logMessage, args);
         /// <summary>
         /// Добавить в лог с префиксом [ERROR]
         /// </summary>
         public void Error(Exception e)
         {
             e = GetException(e);
-            Log(SRL.ErrorException, e.Source, e.Message, e.StackTrace);
+            Log(Srl.ErrorException, e.Source, e.Message, e.StackTrace);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Vge.Util
                 {
                     return dateTime.CompareTo(fileSort.dateTime);
                 }
-                throw new ArgumentException(SR.IncorrectParameterValue);
+                throw new ArgumentException(Sr.IncorrectParameterValue);
             }
         }
 
@@ -217,9 +217,9 @@ namespace Vge.Util
             string prefix = "";
             if (logMessage != "")
             {
-                prefix = string.Format(logMessage, args) + "\r\n";
+                prefix = string.Format(logMessage, args) + Ce.Br;
             }
-            logger.Error(prefix + "{0}: {1}\r\n------\r\n{2}", e.Source, e.Message, e.StackTrace);
+            logger.Error(prefix + "{0}: {1}{3}------{3}{2}", e.Source, e.Message, e.StackTrace, Ce.Br);
             logger.Save();
         }
 

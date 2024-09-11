@@ -13,15 +13,6 @@ namespace Vge.Games
     public class Server
     {
         /// <summary>
-        /// Количество тактов в секунду, в minecraft 20
-        /// </summary>
-        private const int speedTps = 20;
-        /// <summary>
-        /// Время в мс на такт, в minecraft 50
-        /// </summary>
-        private const int speedMs = 1000 / speedTps;
-
-        /// <summary>
         /// Объект лога
         /// </summary>
         public readonly Logger Log;
@@ -117,7 +108,7 @@ namespace Vge.Games
         {
             byte slot = 1;
             int indexVersion = 1;
-            Log.Server(SRL.Starting, slot, indexVersion);
+            Log.Server(Srl.Starting, slot, indexVersion);
             Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
@@ -175,10 +166,10 @@ namespace Vge.Games
         }
 
         private void SocketServer_UserJoined(object sender, StringEventArgs e)
-            => Log.Server(SRL.ConnectedToTheServer, e.Text);
+            => Log.Server(Srl.ConnectedToTheServer, e.Text);
 
         private void SocketServer_UserLeft(object sender, StringEventArgs e)
-            => Log.Server(SRL.DisconnectedFromServer, e.Text, e.Tag.ToString());
+            => Log.Server(Srl.DisconnectedFromServer, e.Text, e.Tag.ToString());
 
         private void SocketServer_Error(object sender, ErrorEventArgs e)
         {
@@ -190,7 +181,7 @@ namespace Vge.Games
         private void SocketServer_Runned(object sender, EventArgs e)
         {
             isGamePaused = false;
-            Log.Server(SRL.NetworkModeIsEnabled);
+            Log.Server(Srl.NetworkModeIsEnabled);
         }
 
         private void SocketServer_Stopped(object sender, EventArgs e)
@@ -296,7 +287,7 @@ namespace Vge.Games
             try
             {
                 ToLoop();
-                Log.Server(SRL.Go);
+                Log.Server(Srl.Go);
 
                 // Текущее время для расчёта сна потока
                 long currentTime = stopwatchTps.ElapsedMilliseconds;
@@ -326,7 +317,7 @@ namespace Vge.Games
                     {
                         // Не успеваю!Изменилось ли системное время, или сервер перегружен?
                         // Отставание на {differenceTime} мс, пропуск тиков({differenceTime / 50}) 
-                        Log.Server(SRL.LaggingBehind, differenceTime, differenceTime / 50);
+                        Log.Server(Srl.LaggingBehind, differenceTime, differenceTime / 50);
                         differenceTime = 2000;
                         timeOfLastWarning = currentTime;
                     }
@@ -334,9 +325,9 @@ namespace Vge.Games
                     accumulatedTime += differenceTime;
                     currentTime = beginTime;
 
-                    while (accumulatedTime > speedMs)
+                    while (accumulatedTime > Ce.Tick​​Time)
                     {
-                        accumulatedTime -= speedMs;
+                        accumulatedTime -= Ce.Tick​​Time;
                         if (!isGamePaused)
                         {
                             // фиксируем начальное время такта
@@ -355,7 +346,7 @@ namespace Vge.Games
                             endTimeTakt = currentTimeTakt;
                         }
                     }
-                    timeSleep = speedMs - (int)accumulatedTime;
+                    timeSleep = Ce.Tick​​Time - (int)accumulatedTime;
                     Thread.Sleep(timeSleep > 0 ? timeSleep : 1);
                 }
             }
@@ -374,7 +365,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoping()
         {
-            Log.Server(SRL.Stopping);
+            Log.Server(Srl.Stopping);
             //World.WorldStoping();
             // Тут надо сохранить мир
             packets.Clear();
@@ -393,7 +384,7 @@ namespace Vge.Games
         /// </summary>
         private void Stoped()
         {
-            Log.Server(SRL.StoppedServer);
+            Log.Server(Srl.StoppedServer);
             OnCloseded();
         }
 
@@ -411,7 +402,7 @@ namespace Vge.Games
 
            // ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
             // Прошла секунда
-            if (TickCounter % speedTps == 0)
+            if (TickCounter % Ce.Tps == 0)
             {
                 UpCountClients();
 
@@ -453,8 +444,8 @@ namespace Vge.Games
             // Среднее время выполнения 4 тактов, должно быть меньше 50
             float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
-            float tps = averageTime > speedMs ? speedMs / averageTime * speedTps : speedTps;
-            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} {4}{5}\r\n{6}",
+            float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
+            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} {4}{5}" + Ce.Br + "{6}",
                 tps, averageTime, rxPrev, txPrev, strNet, isGamePaused ? " PAUSE" : "", debugText);
         }
 

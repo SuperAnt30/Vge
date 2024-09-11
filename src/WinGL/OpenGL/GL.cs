@@ -29,7 +29,7 @@ namespace WinGL.OpenGL
             IntPtr proc = wglGetProcAddress(delegateType.Name);
             if (proc == IntPtr.Zero)
             {
-                throw new Exception(SR.GetString(SR.ExtensionFunctionIsNotSupported, delegateType.Name));
+                throw new Exception(Sr.GetString(Sr.ExtensionFunctionIsNotSupported, delegateType.Name));
             }
             return Marshal.GetDelegateForFunctionPointer(proc, delegateType);
         }
@@ -657,7 +657,7 @@ namespace WinGL.OpenGL
             hRC = wglCreateContext(hDC);
             if (hRC == IntPtr.Zero)
             {
-                throw new Exception(SR.CantCreateAOpenGLRenderingContext);
+                throw new Exception(Sr.CantCreateAOpenGLRenderingContext);
             }
 
             // Активировать контекст рендеринга
@@ -683,14 +683,14 @@ namespace WinGL.OpenGL
                     }
                     else
                     {
-                        throw new Exception(SR.GetString(SR.CantActivateTheOpenGLRenderingContext,
+                        throw new Exception(Sr.GetString(Sr.CantActivateTheOpenGLRenderingContext,
                             version == OpenGLVersion.OpenGL3_3 ? "3.3." : "4.6"));
                     }
                 }
             }
             else
             {
-                throw new Exception(SR.GetString(SR.CantActivateTheOpenGLRenderingContext, "2.1"));
+                throw new Exception(Sr.GetString(Sr.CantActivateTheOpenGLRenderingContext, "2.1"));
             }
         }
 

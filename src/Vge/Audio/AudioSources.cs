@@ -30,7 +30,7 @@ namespace Vge.Audio
             IntPtr device = Al.alcOpenDevice("");
             if (device == IntPtr.Zero)
             {
-                throw new Exception(SR.TheOpenALSoundLibraryFailedToInitialize);
+                throw new Exception(Sr.TheOpenALSoundLibraryFailedToInitialize);
             }
             List<AudioSource> list = new List<AudioSource>();
             bool error = false;
@@ -50,7 +50,7 @@ namespace Vge.Audio
             }
             if (count <= 0)
             {
-                throw new Exception(SR.TheOpenALSoundLibraryHasCollectedManyChannels);
+                throw new Exception(Sr.TheOpenALSoundLibraryHasCollectedManyChannels);
             }
             sources = list.ToArray();
             CountAll = list.Count;

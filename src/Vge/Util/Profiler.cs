@@ -54,7 +54,7 @@ namespace Vge.Util
                 long time = stopwatch.ElapsedTicks / timerFrequency;
                 if (time > stepTime)
                 {
-                    log.Log(SRL.SomethingIsTooLong, prefix, profilingSection, time);
+                    log.Log(Srl.SomethingIsTooLong, prefix, profilingSection, time);
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace Vge.Util
             if (profilingEnabled)
             {
                 profilingEnabled = false;
-                log.Log(SRL.EndSectionTime, prefix,
+                log.Log(Srl.EndSectionTime, prefix,
                     profilingSection, stopwatch.ElapsedTicks / (float)timerFrequency);
             }
         }

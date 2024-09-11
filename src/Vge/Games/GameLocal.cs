@@ -42,7 +42,7 @@ namespace Vge.Games
         public override void GameStarting()
         {
             base.GameStarting();
-            Log.Client(SRL.StartingSingle);
+            Log.Client(Srl.StartingSingle);
             Log.Save();
             server.Starting();
             // TODO::2024-08-27 Временно включил сеть

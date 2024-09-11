@@ -63,7 +63,7 @@ namespace Vge.Network
             }
             catch (Exception e)
             {
-                OnWarningString(SR.ErrorWhileStartingTheNetwork + e.Message);
+                OnWarningString(Sr.ErrorWhileStartingTheNetwork + e.Message);
                 if (socket != null)
                 {
                     if (socket.Connected)
@@ -87,7 +87,7 @@ namespace Vge.Network
             {
                 for (int i = clients.Count - 1; i >= 0; i--)
                 {
-                    DisconnectHandler(clients[i], SR.ThrownOut);
+                    DisconnectHandler(clients[i], Sr.ThrownOut);
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace Vge.Network
                     {
                         for (int i = clients.Count - 1; i >= 0; i--)
                         {
-                            DisconnectHandler(clients[i], SR.StopServer);
+                            DisconnectHandler(clients[i], Sr.StopServer);
                         }
                     }
                     socket.Close();

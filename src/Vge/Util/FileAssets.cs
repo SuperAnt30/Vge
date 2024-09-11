@@ -12,7 +12,7 @@ namespace Vge.Util
         {
             if (!File.Exists(fileName))
             {
-                throw new Exception(SR.GetString(SR.FileMissing, fileName));
+                throw new Exception(Sr.GetString(Sr.FileMissing, fileName));
             }
             
             StreamReader sr = new StreamReader(fileName);
