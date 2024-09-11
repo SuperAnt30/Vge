@@ -72,7 +72,7 @@ namespace Vge.Renderer
         {
             // Задать количество текстур
             TextureSetCount();
-            SetTexture(Options.PathTextures + "Splash.png", 0);
+            SetTextureSplash(Options.PathTextures + "Splash.png");
 
             string[] vs = GetFileNameTextures();
             FontMain = new FontBase(gl, SetTexture(vs[0], 1), 1);
@@ -137,15 +137,19 @@ namespace Vge.Renderer
         /// <summary>
         /// Запустить текстуру заставки
         /// </summary>
-        public void BindTexutreSplash() => textureMap.BindTexture(0);
+        public void BindTextureSplash() => textureMap.BindSplash();
+        /// <summary>
+        /// Удалить текстуру заставки
+        /// </summary>
+        public void DeleteTextureSplash() => textureMap.DeleteSplash();
         /// <summary>
         /// Запустить текстуру основного шрифта
         /// </summary>
-        public void BindTexutreFontMain() => textureMap.BindTexture(1);
+        public void BindTextureFontMain() => textureMap.BindTexture(1);
         /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
-        public void BindTexutreWidgets() => textureMap.BindTexture(2);
+        public void BindTextureWidgets() => textureMap.BindTexture(2);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
@@ -161,6 +165,16 @@ namespace Vge.Renderer
             BufferedImage image = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
             textureMap.SetTexture(index, image);
             return image;
+        }
+
+        /// <summary>
+        /// Задать текстуру заставки
+        /// </summary>
+        private void SetTextureSplash(string fileName)
+        {
+            Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
+            BufferedImage image = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
+            textureMap.SetSplash(image);
         }
 
         /// <summary>

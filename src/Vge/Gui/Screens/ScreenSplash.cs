@@ -61,6 +61,7 @@ namespace Vge.Gui.Screens
         {
             if (isFinish)
             {
+                window.Render.DeleteTextureSplash();
                 window.ScreenMainMenu();
             }
             else

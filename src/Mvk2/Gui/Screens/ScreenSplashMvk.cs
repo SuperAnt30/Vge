@@ -12,7 +12,7 @@ namespace Mvk2.Gui.Screens
     {
         private readonly MeshGuiColor meshLogo;
         private readonly MeshGuiColor meshProcess;
-        private readonly ListFast<float> list = new ListFast<float>();
+        private readonly ListFlout list = new ListFlout();
         private int max;
 
         public ScreenSplashMvk(WindowMvk window) : base(window)
@@ -48,10 +48,10 @@ namespace Mvk2.Gui.Screens
             int w = window.Width / 2;
             int h = (window.Height - 608) / 2 + 512;
             list.Clear();
-            list.AddRange(MeshGuiColor.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f), 4);
-            list.AddRange(MeshGuiColor.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1), 4);
+            list.AddRange(MeshGuiColor.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
+            list.AddRange(MeshGuiColor.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
             int wcl = countDraw * 600 / max;
-            list.AddRange(MeshGuiColor.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f), 4);
+            list.AddRange(MeshGuiColor.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
 
             meshProcess.Reload(list.GetBufferAll(), list.Count);
         }
@@ -64,7 +64,7 @@ namespace Mvk2.Gui.Screens
         {
             gl.ClearColor(1, 1, 1, 1);
             window.Render.ShaderBindGuiColor();
-            window.Render.BindTexutreSplash();
+            window.Render.BindTextureSplash();
             meshLogo.Draw();
             window.Render.Texture2DDisable();
             meshProcess.Draw();

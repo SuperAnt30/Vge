@@ -108,7 +108,7 @@ namespace Vge.Gui.Controls
                 window.Render.ShaderBindGuiColor();
             }
             // Рисуем текст кнопки
-            window.Render.BindTexutreFontMain();
+            window.Render.BindTextureFontMain();
             meshTxt.Draw();
         }
 

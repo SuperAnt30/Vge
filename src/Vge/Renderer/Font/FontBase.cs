@@ -36,7 +36,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Буфер сетки данного шрифта
         /// </summary>
-        private readonly ListFast<float> buffer = new ListFast<float>();
+        private readonly ListFlout buffer = new ListFlout();
         /// <summary>
         /// Сетка шрифта
         /// </summary>
@@ -65,11 +65,6 @@ namespace Vge.Renderer.Font
         /// Эффекты к шрифту
         /// </summary>
         private EnumFontFX fontFX = EnumFontFX.None;
-        /// <summary>
-        /// Размер float в байтах
-        /// </summary>
-        private readonly int sizeFloat = sizeof(float);
-        
 
         /// <summary>
         /// Класс шрифта
@@ -247,7 +242,7 @@ namespace Vge.Renderer.Font
             // Текст готов, пробую сделать фон на основании текущего буффера
             int count = buffer.Count;
             // Делаем копию
-            buffer.AddCopy(0, count, sizeFloat);
+            buffer.AddCopy(0, count);
             // Делаем смещение в сторону, и центральный последний меняем цвет
             for (int i = 0; i < count; i += 7)
             {
@@ -270,7 +265,7 @@ namespace Vge.Renderer.Font
             int count4 = count * 4;
 
             // Делаем финишную копию
-            buffer.AddCopy(0, count, count4, sizeFloat);
+            buffer.AddCopy(0, count, count4);
             // Красим первый контур в затемнёный цвет
             for (int i = 0; i < count; i += 7)
             {
@@ -279,9 +274,9 @@ namespace Vge.Renderer.Font
                 buffer[i + 6] = buffer[i + count4 + 6] / 4f;
             }
             // Делаем ещё 3 копии контура
-            buffer.AddCopy(0, count, count, sizeFloat);
-            buffer.AddCopy(0, count, count2, sizeFloat);
-            buffer.AddCopy(0, count, count3, sizeFloat);
+            buffer.AddCopy(0, count, count);
+            buffer.AddCopy(0, count, count2);
+            buffer.AddCopy(0, count, count3);
 
             // Делаем смещение в 4 стороны
             for (int i = 0; i < count; i += 7)
@@ -370,19 +365,19 @@ namespace Vge.Renderer.Font
                 b = colorB;
             }
             
-            buffer.AddRange(Rectangle(x1, y1, x2, y2, v1, u1, v2, u2, r, g, b), sizeFloat);
+            buffer.AddRange(Rectangle(x1, y1, x2, y2, v1, u1, v2, u2, r, g, b));
             if (style.IsBolb())
             {
-                buffer.AddRange(Rectangle(x1 + si, y1, x2 + si, y2, v1, u1, v2, u2, r, g, b), sizeFloat);
+                buffer.AddRange(Rectangle(x1 + si, y1, x2 + si, y2, v1, u1, v2, u2, r, g, b));
             }
             if (style.IsUnderline())
             {
-                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b), sizeFloat);
+                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
             if (style.IsStrikethrough())
             {
                 y2 -= (y2 - y1) / 2;
-                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b), sizeFloat);
+                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
         }
 

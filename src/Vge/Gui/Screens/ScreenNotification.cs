@@ -78,7 +78,7 @@ namespace Vge.Gui.Screens
                 render.FontMain.Reload(mesh);
             }
 
-            render.BindTexutreFontMain();
+            render.BindTextureFontMain();
             mesh.Draw();
         }
 

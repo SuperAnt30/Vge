@@ -13,9 +13,14 @@ namespace WinGL.OpenGL
         protected GL gl;
 
         /// <summary>
+        /// Текстур заставки
+        /// </summary>
+        private uint splash = 0;
+
+        /// <summary>
         /// Массив текстур
         /// </summary>
-        protected uint[] textures;
+        private uint[] textures;
 
         /// <summary>
         /// Создать объект текстур
@@ -27,6 +32,46 @@ namespace WinGL.OpenGL
         /// Указать количество текстур
         /// </summary>
         public void SetCount(int count) => textures = new uint[count];
+
+        #region Splash
+
+        /// <summary>
+        /// Запустить текстуру заставки
+        /// </summary>
+        public void BindSplash()
+        {
+            if (splash != 0)
+            {
+                gl.ActiveTexture(GL.GL_TEXTURE0);
+                gl.BindTexture(GL.GL_TEXTURE_2D, splash);
+            }
+        }
+
+        /// <summary>
+        /// Удалить текстуру заставки
+        /// </summary>
+        public void DeleteSplash()
+        {
+            if (splash != 0)
+            {
+                gl.DeleteTextures(1, new uint[] { splash });
+            }
+        }
+
+        /// <summary>
+        /// Внесение в кеш текстур заставки
+        /// </summary>
+        /// <param name="image">рисунок</param>
+        public void SetSplash(BufferedImage image)
+        {
+            uint key = SetTexture(splash, image);
+            if (splash == 0)
+            {
+                splash = key;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
@@ -46,32 +91,43 @@ namespace WinGL.OpenGL
         /// </summary>
         /// <param name="index">индекс текстуры массива</param>
         /// <param name="image">рисунок</param>
-        public uint SetTexture(int index, BufferedImage image)
+        public void SetTexture(int index, BufferedImage image)
         {
             if (index < textures.Length)
             {
-                uint key = textures[index];
-                if (key == 0)
+                uint key = SetTexture(textures[index], image);
+                if (textures[index] == 0)
                 {
-                    uint[] id = new uint[1];
-                    gl.GenTextures(1, id);
-                    key = id[0];
                     textures[index] = key;
                 }
-                //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
-                gl.BindTexture(GL.GL_TEXTURE_2D, key);
-                
-
-                gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.width, image.height,
-                    0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.buffer);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-
-                return key;
             }
-            return 0;
         }
+
+        /// <summary>
+        /// Внесение в кеш текстур
+        /// </summary>
+        private uint SetTexture(uint key, BufferedImage image)
+        {
+            if (key == 0)
+            {
+                uint[] id = new uint[1];
+                gl.GenTextures(1, id);
+                key = id[0];
+            }
+            //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
+            gl.BindTexture(GL.GL_TEXTURE_2D, key);
+
+
+            gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.width, image.height,
+                0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.buffer);
+            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
+            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
+            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+
+            return key;
+        }
+
+
     }
 }

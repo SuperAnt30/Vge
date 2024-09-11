@@ -140,7 +140,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         public void DrawTextDebug()
         {
-            window.Render.BindTexutreFontMain();
+            window.Render.BindTextureFontMain();
             meshTextDebug.Draw();
         }
 
@@ -233,7 +233,7 @@ namespace Mvk2.Gui.Screens
                 render.BindTexture(AssetsTexture.FontSmall);
                 render.FontSmall.RenderFX();
                 render.FontSmall.ReloadDraw();
-                render.BindTexutreFontMain();
+                render.BindTextureFontMain();
                 render.FontMain.RenderFX();
                 render.FontMain.ReloadDraw();
                 render.BindTexture(AssetsTexture.FontLarge);

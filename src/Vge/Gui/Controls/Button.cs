@@ -49,7 +49,7 @@ namespace Vge.Gui.Controls
         public override void Draw(float timeIndex)
         {
             // Рисуем фон кнопки
-            window.Render.BindTexutreWidgets();
+            window.Render.BindTextureWidgets();
             meshBg.Draw();
             // Рисуем текст кнопки
             base.Draw(timeIndex);

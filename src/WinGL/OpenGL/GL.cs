@@ -388,6 +388,14 @@ namespace WinGL.OpenGL
             => glBindTexture(target, texture);
 
         /// <summary>
+		/// This function deletes a set of Texture objects.
+		/// </summary>
+		/// <param name="n">Number of textures to delete.</param>
+		/// <param name="textures">The array containing the names of the textures to delete.</param>
+		public void DeleteTextures(int n, uint[] textures)
+            => glDeleteTextures(n, textures);
+
+        /// <summary>
 		/// This function sets the current blending function.
 		/// </summary>
 		/// <param name="sfactor">Source factor.</param>
