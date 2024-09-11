@@ -72,10 +72,11 @@ namespace Vge.Renderer
         {
             // Задать количество текстур
             TextureSetCount();
+            SetTexture(Options.PathTextures + "Splash.png", 0);
 
             string[] vs = GetFileNameTextures();
-            FontMain = new FontBase(gl, SetTexture(vs[0], 0), 1);
-            SetTexture(vs[1], 1);
+            FontMain = new FontBase(gl, SetTexture(vs[0], 1), 1);
+            SetTexture(vs[1], 2);
         }
 
         public override void Dispose()
@@ -90,6 +91,7 @@ namespace Vge.Renderer
         /// 1 - Widgets
         /// </summary>
         protected virtual string[] GetFileNameTextures() => new string[] {
+            //Options.PathTextures + "Splash.png",
             Options.PathTextures + "FontMain.png",
             Options.PathTextures + "Widgets.png"
         };
@@ -130,16 +132,20 @@ namespace Vge.Renderer
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected virtual void TextureSetCount() => textureMap.SetCount(2);
+        protected virtual void TextureSetCount() => textureMap.SetCount(3);
 
+        /// <summary>
+        /// Запустить текстуру заставки
+        /// </summary>
+        public void BindTexutreSplash() => textureMap.BindTexture(0);
         /// <summary>
         /// Запустить текстуру основного шрифта
         /// </summary>
-        public void BindTexutreFontMain() => textureMap.BindTexture(0);
+        public void BindTexutreFontMain() => textureMap.BindTexture(1);
         /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
-        public void BindTexutreWidgets() => textureMap.BindTexture(1);
+        public void BindTexutreWidgets() => textureMap.BindTexture(2);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива

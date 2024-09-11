@@ -25,7 +25,7 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Объект окна малювек
         /// </summary>
-        protected readonly WindowMvk windowMvk;
+        private readonly WindowMvk windowMvk;
 
         public RenderMvk(WindowMvk window) : base(window)
         {
@@ -51,6 +51,7 @@ namespace Mvk2.Renderer
         /// 2 - Widgets
         /// </summary>
         protected override string[] GetFileNameTextures() => new string[] {
+          //  Options.PathTextures + "Splash.png",
             Options.PathTextures + "FontMain.png",
             OptionsMvk.PathTextures + "WidgetsMvk.png"
         };

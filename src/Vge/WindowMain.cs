@@ -302,7 +302,7 @@ namespace Vge
         /// <summary>
         /// Запущено окно
         /// </summary>
-        public override void Begined() => ScreenCreate(new ScreenSplash(this));
+        public override void Begined() => ScreenSplash();
 
         /// <summary>
         /// Инициализаця объекта рендера

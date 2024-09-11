@@ -60,11 +60,12 @@ namespace Vge.Gui.Screens
 
         public void AddControls(WidgetBase control) => controls.Add(control);
 
+        /// <summary>
+        /// Метод для прорисовки кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            base.Draw(timeIndex);
-
-            // TODO:: это можно подумать как заменить для 2д т.е. GUI
             window.Render.ShaderBindGuiColor();
 
             foreach (WidgetBase control in controls)

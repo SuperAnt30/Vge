@@ -179,12 +179,17 @@ namespace Mvk2
         {
             Render = renderMvk = new RenderMvk(this);
             renderMvk.InitializeFirst();
+            gl.ClearColor(1, 1, 1, 1);
         }
 
         #endregion
 
         #region Screen
 
+        /// <summary>
+        /// Создать скрин заставки
+        /// </summary>
+        public override void ScreenSplash() => ScreenCreate(new ScreenSplashMvk(this));
         /// <summary>
         /// Создать скрин главного меню
         /// </summary>
