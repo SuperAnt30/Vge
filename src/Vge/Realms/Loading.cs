@@ -51,11 +51,9 @@ namespace Vge.Realms
             string[] vs = GetFileNameTextures();
             // Основной шрифт
             window.Render.CreateTextureFontMain(FileToBufferedImage(vs[0]));
-            Thread.Sleep(100);
             OnStep();
             // Виджет Gui
             FileToBufferedImage(vs[1]);
-            Thread.Sleep(100);
             OnStep();
         }
 

@@ -76,15 +76,18 @@ namespace Vge.Audio
         /// </summary>
         public void AudioTick()
         {
-            int count = 0;
-            foreach (AudioSource audio in sources)
+            if (sources != null)
             {
-                if (audio.CheckProcessing())
+                int count = 0;
+                foreach (AudioSource audio in sources)
                 {
-                    count++;
+                    if (audio.CheckProcessing())
+                    {
+                        count++;
+                    }
                 }
+                CountProcessing = count;
             }
-            CountProcessing = count;
         }
     }
 }

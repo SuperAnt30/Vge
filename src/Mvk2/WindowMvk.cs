@@ -33,11 +33,8 @@ namespace Mvk2
 
             // Загружаем опции
             new OptionsFileMvk().Load();
-
+            // Объявление объекта звуков, загрузка семплов в loadinge
             audio = new AudioMvk();
-            // Инициализация звука и загрузка семплов
-            audio.Initialize(2);
-            audio.InitializeSample();
         }
 
         #endregion
@@ -179,6 +176,7 @@ namespace Mvk2
         {
             Render = renderMvk = new RenderMvk(this);
             renderMvk.InitializeFirst();
+            // Цвет белы, фон загрузчика
             gl.ClearColor(1, 1, 1, 1);
         }
 
@@ -210,6 +208,11 @@ namespace Mvk2
         #endregion
 
         #region Sound
+
+        /// <summary>
+        /// Получить объект звука
+        /// </summary>
+        public AudioMvk GetAudio() => (AudioMvk)audio;
 
         /// <summary>
         /// Звук клика

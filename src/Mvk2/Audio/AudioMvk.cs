@@ -1,4 +1,5 @@
 ﻿using Mvk2.Util;
+using System;
 using Vge.Audio;
 
 namespace Mvk2.Audio
@@ -16,9 +17,29 @@ namespace Mvk2.Audio
             AudioSample sample = new AudioSample();
             sample.LoadWave(OptionsMvk.PathSounds + "say1.wav");
             items[0] = sample;
+            OnStep();
             sample = new AudioSample();
             sample.LoadOgg(OptionsMvk.PathSounds + "Click.ogg");
             items[1] = sample;
+            OnStep();
         }
+
+        /// <summary>
+        /// Получить количество шагов для загрузки
+        /// </summary>
+        public int GetCountStep() => 2;
+
+        #region Event
+
+        /// <summary>
+        /// Событие шаг
+        /// </summary>
+        public event EventHandler Step;
+        /// <summary>
+        /// Событие шаг
+        /// </summary>
+        protected void OnStep() => Step?.Invoke(this, new EventArgs());
+
+        #endregion
     }
 }

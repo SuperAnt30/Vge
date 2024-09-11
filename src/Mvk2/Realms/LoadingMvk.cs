@@ -15,13 +15,26 @@ namespace Mvk2.Realms
         /// </summary>
         private readonly WindowMvk window;
 
-        public LoadingMvk(WindowMvk window) : base(window) 
-            => this.window = window;
+        /// <summary>
+        /// Количество текстур
+        /// </summary>
+        private readonly int countTexture;
+        /// <summary>
+        /// Количество звуков
+        /// </summary>
+        private readonly int countSample;
+
+        public LoadingMvk(WindowMvk window) : base(window)
+        {
+            this.window = window;
+            countTexture = 2;
+            countSample = window.GetAudio().GetCountStep();
+        }
 
         /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public override int GetMaxCountSteps() => base.GetMaxCountSteps() + 2;
+        public override int GetMaxCountSteps() => base.GetMaxCountSteps() + countTexture + countSample;
 
         // <summary>
         /// Получить массив имён файл текстур,
@@ -40,24 +53,38 @@ namespace Mvk2.Realms
         {
             // Загружаем  по умолчанию
             base.Steps();
+            StepsTextures();
+            StepsSample();
+        }
 
+        /// <summary>
+        /// Шаги текстур
+        /// </summary>
+        private void StepsTextures()
+        {
             RenderMvk renderMvk = window.Render as RenderMvk;
-
+            // Шрифты
             renderMvk.CreateTextureFontSmall(
                 FileToBufferedImage(OptionsMvk.PathTextures + "FontSmall.png"));
-            System.Threading.Thread.Sleep(100);
+            //System.Threading.Thread.Sleep(100);
             OnStep();
 
             renderMvk.CreateTextureFontLarge(
                 FileToBufferedImage(OptionsMvk.PathTextures + "FontLarge.png"));
-            System.Threading.Thread.Sleep(100);
+           // System.Threading.Thread.Sleep(100);
             OnStep();
 
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    System.Threading.Thread.Sleep(5);
-            //    OnStep();
-            //}
+            // Текстуры
+        }
+
+        /// <summary>
+        /// Шаги звуков
+        /// </summary>
+        private void StepsSample()
+        {
+            window.GetAudio().Initialize(countSample);
+            window.GetAudio().Step += (sender, e) => OnStep();
+            window.GetAudio().InitializeSample();
         }
     }
 }
