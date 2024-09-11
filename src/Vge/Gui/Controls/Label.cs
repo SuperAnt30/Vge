@@ -99,12 +99,12 @@ namespace Vge.Gui.Controls
             if (meshLine != null)
             {
                 // Для контура надо перекулючится без текстуры
-                window.Render.Texture2DDisable();
+                window.Render.TextureDisable();
                 // И заменить шейдёр
                 window.Render.ShaderBindGuiLine();
                 meshLine.Draw();
                 // После прорисовки возращаем шейдер и текстуру
-                window.Render.Texture2DEnable();
+                window.Render.TextureEnable();
                 window.Render.ShaderBindGuiColor();
             }
             // Рисуем текст кнопки

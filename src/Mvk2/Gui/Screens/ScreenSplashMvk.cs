@@ -66,9 +66,9 @@ namespace Mvk2.Gui.Screens
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();
             meshLogo.Draw();
-            window.Render.Texture2DDisable();
+            window.Render.TextureDisable();
             meshProcess.Draw();
-            window.Render.Texture2DEnable();
+            window.Render.TextureEnable();
         }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Util;
@@ -68,15 +65,9 @@ namespace Vge.Renderer
         /// <summary>
         /// Стартовая инициализация до загрузчика
         /// </summary>
-        public virtual void InitializeFirst()
+        public void InitializeFirst()
         {
-            // Задать количество текстур
-            TextureSetCount();
             SetTextureSplash(Options.PathTextures + "Splash.png");
-
-            string[] vs = GetFileNameTextures();
-            FontMain = new FontBase(gl, SetTexture(vs[0], 1), 1);
-            SetTexture(vs[1], 2);
         }
 
         public override void Dispose()
@@ -84,17 +75,6 @@ namespace Vge.Renderer
             shaderGuiColor.Delete(gl);
             shaderGuiLine.Delete(gl);
         }
-
-        /// <summary>
-        /// Получить массив имён файл текстур,
-        /// 0 - FontMain основной шрифт
-        /// 1 - Widgets
-        /// </summary>
-        protected virtual string[] GetFileNameTextures() => new string[] {
-            //Options.PathTextures + "Splash.png",
-            Options.PathTextures + "FontMain.png",
-            Options.PathTextures + "Widgets.png"
-        };
 
         #region ShaderBind
 
@@ -123,16 +103,11 @@ namespace Vge.Renderer
         /// <summary>
         /// Включить текстуру
         /// </summary>
-        public void Texture2DEnable() => gl.Enable(GL.GL_TEXTURE_2D);
+        public void TextureEnable() => gl.Enable(GL.GL_TEXTURE_2D);
         /// <summary>
         /// Выключить текстуру
         /// </summary>
-        public void Texture2DDisable() => gl.Disable(GL.GL_TEXTURE_2D);
-
-        /// <summary>
-        /// Задать количество текстур
-        /// </summary>
-        protected virtual void TextureSetCount() => textureMap.SetCount(3);
+        public void TextureDisable() => gl.Disable(GL.GL_TEXTURE_2D);
 
         /// <summary>
         /// Запустить текстуру заставки
@@ -145,11 +120,11 @@ namespace Vge.Renderer
         /// <summary>
         /// Запустить текстуру основного шрифта
         /// </summary>
-        public void BindTextureFontMain() => textureMap.BindTexture(1);
+        public void BindTextureFontMain() => textureMap.BindTexture(0);
         /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
-        public void BindTextureWidgets() => textureMap.BindTexture(2);
+        public void BindTextureWidgets() => textureMap.BindTexture(1);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
@@ -157,51 +132,31 @@ namespace Vge.Renderer
         public void BindTexture(int index, uint texture = 0) => textureMap.BindTexture(index, texture);
 
         /// <summary>
-        /// Задать текстуру
+        /// Создать текстуру основного шрифта
         /// </summary>
-        protected BufferedImage SetTexture(string fileName, int index)
-        {
-            Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
-            BufferedImage image = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            textureMap.SetTexture(index, image);
-            return image;
-        }
+        public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1);
 
         /// <summary>
         /// Задать текстуру заставки
         /// </summary>
         private void SetTextureSplash(string fileName)
-        {
-            Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
-            BufferedImage image = new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
-            textureMap.SetSplash(image);
-        }
-
-        /// <summary>
-        /// Конвертация из Bitmap в объект BufferedImage
-        /// </summary>
-        private byte[] BitmapToByteArray(Bitmap bitmap)
-        {
-            BitmapData bmpdata = null;
-            try
-            {
-                bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                int numbytes = bmpdata.Stride * bitmap.Height;
-                byte[] bytedata = new byte[numbytes];
-                IntPtr ptr = bmpdata.Scan0;
-
-                Marshal.Copy(ptr, bytedata, 0, numbytes);
-
-                return bytedata;
-            }
-            finally
-            {
-                if (bmpdata != null)
-                    bitmap.UnlockBits(bmpdata);
-            }
-        }
+            => textureMap.SetSplash(BufferedFileImage.FileToBufferedImage(fileName));
 
         #endregion
+
+        /// <summary>
+        /// На финише загрузка в основном потоке
+        /// </summary>
+        /// <param name="buffereds">буфер всех текстур для биндинга</param>
+        public virtual void AtFinishLoading(BufferedImage[] buffereds)
+        {
+            textureMap.SetCount(buffereds.Length);
+            for (int i = 0; i < buffereds.Length; i++)
+            {
+                textureMap.SetTexture(i, buffereds[i]);
+            }
+            FontMain.CreateMesh(gl);
+        }
 
         #region Draw
 

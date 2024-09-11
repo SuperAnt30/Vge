@@ -46,7 +46,7 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Объвление объекта загрузки
         /// </summary>
-        protected virtual void LoadingCreate() => loading = new Loading();
+        protected virtual void LoadingCreate() => loading = new Loading(window);
 
         private void Loading_Finish(object sender, EventArgs e)
             => isFinish = true;
@@ -61,7 +61,10 @@ namespace Vge.Gui.Screens
         {
             if (isFinish)
             {
+                window.Render.AtFinishLoading(loading.buffereds.ToArray());
+                loading.buffereds.Clear();
                 window.Render.DeleteTextureSplash();
+
                 window.ScreenMainMenu();
             }
             else

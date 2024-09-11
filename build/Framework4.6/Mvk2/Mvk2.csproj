@@ -44,8 +44,10 @@
     <Compile Include="Audio\AudioMvk.cs" />
     <Compile Include="Gui\Screens\ScreenGameDebug.cs" />
     <Compile Include="Gui\Screens\ScreenDebug.cs" />
+    <Compile Include="Gui\Screens\ScreenSplashMvk.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Realms\LoadingMvk.cs" />
     <Compile Include="Renderer\AssetsTexture.cs" />
     <Compile Include="Renderer\RenderMvk.cs" />
     <Compile Include="Util\OptionsFileMvk.cs" />

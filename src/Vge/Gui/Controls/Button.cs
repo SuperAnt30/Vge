@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Vge.Renderer;
+﻿using Vge.Renderer;
 
 namespace Vge.Gui.Controls
 {

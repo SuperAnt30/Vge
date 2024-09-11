@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.Realms
 {
@@ -8,7 +11,14 @@ namespace Vge.Realms
     /// </summary>
     public class Loading
     {
-        public Loading() { }
+        /// <summary>
+        /// Объект окна малювек
+        /// </summary>
+        private readonly WindowMain window;
+
+        public List<BufferedImage> buffereds = new List<BufferedImage>();
+
+        public Loading(WindowMain window) => this.window = window;
 
         /// <summary>
         /// Запустить загрузку в отдельном потоке
@@ -29,14 +39,46 @@ namespace Vge.Realms
         }
 
         /// <summary>
-        /// Этот метод как раз и реализует список загрузок
-        /// </summary>
-        protected virtual void Steps() { }
-
-        /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public virtual int GetMaxCountSteps() => 0;
+        public virtual int GetMaxCountSteps() => 2;
+
+        /// <summary>
+        /// Этот метод как раз и реализует список загрузок
+        /// </summary>
+        protected virtual void Steps()
+        {
+            string[] vs = GetFileNameTextures();
+            // Основной шрифт
+            window.Render.CreateTextureFontMain(FileToBufferedImage(vs[0]));
+            Thread.Sleep(100);
+            OnStep();
+            // Виджет Gui
+            FileToBufferedImage(vs[1]);
+            Thread.Sleep(100);
+            OnStep();
+        }
+
+        /// <summary>
+        /// Получить массив имён файл текстур,
+        /// 0 - FontMain основной шрифт
+        /// 1 - Widgets
+        /// </summary>
+        protected virtual string[] GetFileNameTextures() => new string[] {
+            Options.PathTextures + "FontMain.png",
+            Options.PathTextures + "Widgets.png"
+        };
+
+        /// <summary>
+        /// Конвертировать картинку в структуру BufferedImage
+        /// и занести в массиф буферов
+        /// </summary>
+        protected BufferedImage FileToBufferedImage(string fileName)
+        {
+            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
+            buffereds.Add(buffered);
+            return buffered;
+        }
 
         #region Event
 

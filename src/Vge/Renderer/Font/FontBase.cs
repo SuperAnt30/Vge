@@ -40,7 +40,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Сетка шрифта
         /// </summary>
-        private readonly Mesh mesh;
+        private Mesh mesh;
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа с учётом размера интерфейса
         /// </summary>
@@ -72,13 +72,8 @@ namespace Vge.Renderer.Font
         /// <param name="textureFont">Объект изображения</param>
         /// <param name="stepFont">растояние между буквами в пикселях</param>
         /// <param name="isMesh">нужен ли меш</param>
-        public FontBase(GL gl, BufferedImage textureFont, byte stepFont, bool isMesh = true)
+        public FontBase(BufferedImage textureFont, byte stepFont)
         {
-            if (isMesh)
-            {
-                mesh = new MeshGuiColor(gl);
-            }
-
             horiAdvance = textureFont.width >> 4;
             vertAdvance = textureFont.height >> 4;
             this.stepFont = stepFont;
@@ -105,6 +100,11 @@ namespace Vge.Renderer.Font
             }
             UpdateSizeInterface();
         }
+
+        /// <summary>
+        /// Создать меш если это надо
+        /// </summary>
+        public void CreateMesh(GL gl) => mesh = new MeshGuiColor(gl);
 
         /// <summary>
         /// Обновить размер инерфейса
@@ -418,7 +418,6 @@ namespace Vge.Renderer.Font
             if (mesh != null)
             {
                 mesh.Reload(buffer.GetBufferAll(), buffer.Count);
-                //mesh.Reload(buffer.ToArray());
                 mesh.Draw();
             }
         }

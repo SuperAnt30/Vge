@@ -43,7 +43,7 @@
     <Compile Include="OpenGL\ShaderCompilationException.cs" />
     <Compile Include="OpenGL\ShaderProgram.cs" />
     <Compile Include="OpenGL\OpenGLVersion.cs" />
-    <Compile Include="SR.cs" />
+    <Compile Include="Sr.cs" />
     <Compile Include="Util\Glm\GlmTrigonometric.cs" />
     <Compile Include="Util\Glm\Vector2l.cs" />
     <Compile Include="Util\Glm\Vector2i.cs" />

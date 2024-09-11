@@ -1,9 +1,5 @@
-﻿using Mvk2.Util;
-using System.Numerics;
-using Vge.Renderer;
+﻿using Vge.Renderer;
 using Vge.Renderer.Font;
-using Vge.Util;
-using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Mvk2.Renderer
@@ -27,41 +23,18 @@ namespace Mvk2.Renderer
         /// </summary>
         private readonly WindowMvk windowMvk;
 
-        public RenderMvk(WindowMvk window) : base(window)
-        {
-            windowMvk = window;
-        }
-
-        /// <summary>
-        /// Стартовая инициализация до загрузчика
-        /// </summary>
-        public override void InitializeFirst()
-        {
-            base.InitializeFirst();
-
-            FontSmall = new FontBase(gl, 
-                SetTexture(OptionsMvk.PathTextures + "FontSmall.png", AssetsTexture.FontSmall), 1);
-            FontLarge = new FontBase(gl, 
-                SetTexture(OptionsMvk.PathTextures + "FontLarge.png", AssetsTexture.FontLarge), 2);
-        }
-
-        /// <summary>
-        /// Получить массив имён файл текстур,
-        /// 0 - FontMain основной шрифт
-        /// 2 - Widgets
-        /// </summary>
-        protected override string[] GetFileNameTextures() => new string[] {
-          //  Options.PathTextures + "Splash.png",
-            Options.PathTextures + "FontMain.png",
-            OptionsMvk.PathTextures + "WidgetsMvk.png"
-        };
+        public RenderMvk(WindowMvk window) : base(window) => windowMvk = window;
 
         #region Texture
 
         /// <summary>
-        /// Задать количество текстур
+        /// Создать текстуру Мелкий шрифт
         /// </summary>
-        protected override void TextureSetCount() => textureMap.SetCount(5);
+        public void CreateTextureFontSmall(BufferedImage buffered) => FontSmall = new FontBase(buffered, 1);
+        /// <summary>
+        /// Создать текстуру Крупный шрифт
+        /// </summary>
+        public void CreateTextureFontLarge(BufferedImage buffered) => FontLarge = new FontBase(buffered, 2);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
@@ -69,17 +42,17 @@ namespace Mvk2.Renderer
         public void BindTexture(AssetsTexture index, uint texture = 0) 
             => textureMap.BindTexture((int)index, texture);
 
-        /// <summary>
-        /// Задать текстуру
-        /// </summary>
-        protected BufferedImage SetTexture(string fileName, AssetsTexture index)
-            => SetTexture(fileName, (int)index);
-
         #endregion
 
-        
-
-
-        
+        /// <summary>
+        /// На финише загрущика в основном потоке
+        /// </summary>
+        /// <param name="buffereds">буфер всех текстур для биндинга</param>
+        public override void AtFinishLoading(BufferedImage[] buffereds)
+        {
+            base.AtFinishLoading(buffereds);
+            FontSmall.CreateMesh(gl);
+            FontLarge.CreateMesh(gl);
+        }
     }
 }
