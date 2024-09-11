@@ -13,15 +13,6 @@ namespace Vge.Renderer.Font
     public class FontBase
     {
         /// <summary>
-        /// Цвет по умолчанию текста
-        /// </summary>
-        private readonly static Vector3 colorDefText = new Vector3(1);
-        /// <summary>
-        /// Цвет по умолчанию фона 
-        /// </summary>
-        private readonly static Vector3 colorDefBg = new Vector3(.25f);
-
-        /// <summary>
         /// Разбитие строк
         /// </summary>
         public readonly TransferText Transfer;
@@ -69,11 +60,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Цвет по умолчанию
         /// </summary>
-        private Vector3 colorText = colorDefText;
-        /// <summary>
-        /// Цвет по умолчанию
-        /// </summary>
-        private Vector3 colorBg = colorDefBg;
+        private Vector3 colorText = Gi.ColorText;
         /// <summary>
         /// Эффекты к шрифту
         /// </summary>
@@ -94,7 +81,7 @@ namespace Vge.Renderer.Font
         {
             if (isMesh)
             {
-                mesh = new Mesh2d(gl);
+                mesh = new MeshGuiColor(gl);
             }
 
             horiAdvance = textureFont.width >> 4;
@@ -463,8 +450,7 @@ namespace Vge.Renderer.Font
         {
             buffer.Clear();
             style.Reset();
-            colorText = colorDefText;
-            colorBg = colorDefText;
+            colorText = Gi.ColorText;
         }
         /// <summary>
         /// Получить сетку буфера
@@ -486,26 +472,9 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Задать цвет по умолчпнию, если не будет выбран стилем
         /// </summary>
-        public FontBase SetColor(Vector3 colorText, Vector3 colorBg)
+        public FontBase SetColor(Vector3 colorText)
         {
             this.colorText = colorText;
-            this.colorBg = colorBg;
-            return this;
-        }
-        /// <summary>
-        /// Задать цвет текста по умолчпнию, если не будет выбран стилем
-        /// </summary>
-        public FontBase SetColorText(Vector3 color)
-        {
-            colorText = color;
-            return this;
-        }
-        /// <summary>
-        /// Задать цвет фона по умолчпнию, если не будет выбран стилем
-        /// </summary>
-        public FontBase SetColorBg(Vector3 color)
-        {
-            colorBg = color;
             return this;
         }
         /// <summary>

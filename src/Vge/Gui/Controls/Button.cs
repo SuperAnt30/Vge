@@ -5,7 +5,7 @@ namespace Vge.Gui.Controls
 {
     public class Button : Label
     {
-        private Mesh2d meshBg;
+        private readonly MeshGuiColor meshBg;
 
         /// <summary>
         /// Коэфициент смещения вертикали для текстуры
@@ -15,13 +15,8 @@ namespace Vge.Gui.Controls
         public Button(WindowMain window, int width, int height, string text)
             : base(window, width, height, text)
         {
+            meshBg = new MeshGuiColor(gl);
             vk = height / 512f;
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-            meshBg = new Mesh2d(gl);
         }
 
         #region Draw

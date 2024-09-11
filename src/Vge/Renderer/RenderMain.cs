@@ -25,13 +25,13 @@ namespace Vge.Renderer
         /// </summary>
         public readonly TextureMap textureMap;
         /// <summary>
-        /// Шейдоры для 2д
+        /// Шейдоры для GUI цветных текстур без смещения
         /// </summary>
-        public readonly Shader2d shader2D;
+        public readonly ShaderGuiColor shaderGuiColor;
         /// <summary>
-        /// Шейдоры для текста
+        /// Шейдоры для GUI линий с альфа цветом
         /// </summary>
-        public readonly ShaderText shaderText;
+        public readonly ShaderGuiLine shaderGuiLine;
 
         /// <summary>
         /// Время выполнения кадра
@@ -61,8 +61,8 @@ namespace Vge.Renderer
         public RenderMain(WindowMain window) : base(window)
         {
             textureMap = new TextureMap(gl);
-            shader2D = new Shader2d(gl);
-            shaderText = new ShaderText(gl);
+            shaderGuiColor = new ShaderGuiColor(gl);
+            shaderGuiLine = new ShaderGuiLine(gl);
         }
 
         /// <summary>
@@ -78,6 +78,12 @@ namespace Vge.Renderer
             SetTexture(vs[1], 1);
         }
 
+        public override void Dispose()
+        {
+            shaderGuiColor.Delete(gl);
+            shaderGuiLine.Delete(gl);
+        }
+
         /// <summary>
         /// Получить массив имён файл текстур,
         /// 0 - FontMain основной шрифт
@@ -88,7 +94,38 @@ namespace Vge.Renderer
             Options.PathTextures + "Widgets.png"
         };
 
+        #region ShaderBind
+
+        /// <summary>
+        /// Связать шейдер GuiLine
+        /// </summary>
+        public void ShaderBindGuiLine()
+        {
+            shaderGuiLine.Bind(gl);
+            shaderGuiLine.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+        }
+
+        /// <summary>
+        /// Связать шейдер GuiColor
+        /// </summary>
+        public void ShaderBindGuiColor()
+        {
+            shaderGuiColor.Bind(gl);
+            shaderGuiColor.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+        }
+
+        #endregion
+
         #region Texture
+
+        /// <summary>
+        /// Включить текстуру
+        /// </summary>
+        public void Texture2DEnable() => gl.Enable(GL.GL_TEXTURE_2D);
+        /// <summary>
+        /// Выключить текстуру
+        /// </summary>
+        public void Texture2DDisable() => gl.Disable(GL.GL_TEXTURE_2D);
 
         /// <summary>
         /// Задать количество текстур

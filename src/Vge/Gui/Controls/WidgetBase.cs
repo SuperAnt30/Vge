@@ -53,11 +53,13 @@ namespace Vge.Gui.Controls
         /// </summary>
         protected int si = 1;
 
-        protected WidgetBase(WindowMain window) : base(window) => si = Gi.Si;
+        protected readonly ScreenBase screen;
 
-        protected ScreenBase screen;
-
-        public virtual void Initialize() => screen = window.Screen;
+        protected WidgetBase(WindowMain window) : base(window)
+        {
+            si = Gi.Si;
+            screen = window.Screen;
+        }
 
         /// <summary>
         /// Изменён размер окна

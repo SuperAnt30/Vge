@@ -10,7 +10,7 @@ namespace Vge.Gui.Screens
     public class ScreenNotification : ScreenBase
     {
         private readonly string notification;
-        private Mesh2d mesh;
+        private MeshGuiColor mesh;
         private int si = -1;
         private int count;
 
@@ -63,17 +63,16 @@ namespace Vge.Gui.Screens
 
             render.FontMain.Clear();
 
-            render.shaderText.Bind(gl);
-            render.shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            render.ShaderBindGuiColor();
 
             if (si != Gi.Si)
             {
                 si = Gi.Si;
                 if (mesh == null)
                 {
-                    mesh = new Mesh2d(gl);
+                    mesh = new MeshGuiColor(gl);
                 }
-                render.FontMain.SetColor(new Vector3(.9f, .9f, .9f), new Vector3(.2f, .2f, .2f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
+                render.FontMain.SetColor(new Vector3(.9f, .9f, .9f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
                 render.FontMain.RenderText(10 * si, 10 * si, notification);
                 render.FontMain.RenderFX();
                 render.FontMain.Reload(mesh);

@@ -13,10 +13,6 @@
         /// <summary>
         /// Крупный шрифт (16 пиксель)
         /// </summary>
-        FontLarge = 4,
-        /// <summary>
-        /// Курсор
-        /// </summary>
-        Cursor = 5
+        FontLarge = 4
     }
 }

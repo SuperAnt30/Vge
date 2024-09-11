@@ -413,6 +413,7 @@ namespace WinGL
         /// </summary>
         private void CleanUp()
         {
+            CleanWindow();
             gl.Destroy();
             if (hDC != IntPtr.Zero)
             {
@@ -425,6 +426,11 @@ namespace WinGL
             hInstance = IntPtr.Zero;
             lpfnWndProcMain = null;
         }
+
+        /// <summary>
+        /// Вызывается перед очисткой окна
+        /// </summary>
+        protected virtual void CleanWindow() { }
 
         /// <summary>
         /// Тик в лупе

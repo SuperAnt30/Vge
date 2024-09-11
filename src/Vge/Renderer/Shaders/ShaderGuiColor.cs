@@ -4,12 +4,12 @@ using WinGL.OpenGL;
 
 namespace Vge.Renderer.Shaders
 {
-    public class ShaderText : ShaderProgram
+    public class ShaderGuiColor : ShaderProgram
     {
-        public ShaderText(GL gl)
+        public ShaderGuiColor(GL gl)
         {
-            string vsh = FileAssets.ReadString(Options.PathShaders + "Text.vsh");
-            string fsh = FileAssets.ReadString(Options.PathShaders + "Text.fsh");
+            string vsh = FileAssets.ReadString(Options.PathShaders + "GuiColor.vsh");
+            string fsh = FileAssets.ReadString(Options.PathShaders + "GuiColor.fsh");
 
             Create(gl, vsh, fsh,
                 new Dictionary<uint, string> {

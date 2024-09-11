@@ -107,6 +107,11 @@ namespace Vge
         }
 
         /// <summary>
+        /// Вызывается перед очисткой окна
+        /// </summary>
+        protected override void CleanWindow() => Render.Dispose();
+
+        /// <summary>
         /// Получить объект OpenGL
         /// </summary>
         public GL GetOpenGL() => gl;

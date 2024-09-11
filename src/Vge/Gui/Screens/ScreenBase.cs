@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Vge.Gui.Controls;
-using Vge.Renderer;
 using WinGL.Actions;
 using WinGL.OpenGL;
 
@@ -59,19 +58,14 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected virtual void OnResized() { }
 
-        public void AddControls(WidgetBase control)
-        {
-            control.Initialize();
-            controls.Add(control);
-        }
+        public void AddControls(WidgetBase control) => controls.Add(control);
 
         public override void Draw(float timeIndex)
         {
             base.Draw(timeIndex);
 
             // TODO:: это можно подумать как заменить для 2д т.е. GUI
-            window.Render.shaderText.Bind(gl);
-            window.Render.shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            window.Render.ShaderBindGuiColor();
 
             foreach (WidgetBase control in controls)
             {

@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Numerics;
+using Vge.Util;
 
 /// <summary>
 /// GraphicalInterface
@@ -29,16 +30,29 @@ public sealed class Gi
     }
 
     /// <summary>
+    /// Цвет текста
+    /// </summary>
+    public readonly static Vector3 ColorText = new Vector3(.8f);
+    /// <summary>
+    /// Цвет текста где наведена мышка
+    /// </summary>
+    public readonly static Vector3 ColorTextEnter = new Vector3(.9f, .9f, .5f);
+    /// <summary>
+    /// Цвет неактивного текста
+    /// </summary>
+    public readonly static Vector3 ColorTextInactive = new Vector3(.5f);
+
+    /// <summary>
     /// Перечень 16-ти цветов Красного как в майне
     /// </summary>
-    public static float[] ColorReg = new float[] { 0, 0, 0, 0, .67f, .67f, 1, .67f, .33f, .33f, .33f, .33f, 1, 1, 1, 1 };
+    public readonly static float[] ColorReg = new float[] { 0, 0, 0, 0, .67f, .67f, 1, .67f, .33f, .33f, .33f, .33f, 1, 1, 1, 1 };
     /// <summary>
     /// Перечень 16-ти цветов Зелёного как в майне
     /// </summary>
-    public static float[] ColorGreen = new float[] { 0, 0, .67f, .67f, 0, 0, .67f, .67f, .33f, .33f, 1, 1, .33f, .33f, 1, 1 };
+    public readonly static float[] ColorGreen = new float[] { 0, 0, .67f, .67f, 0, 0, .67f, .67f, .33f, .33f, 1, 1, .33f, .33f, 1, 1 };
     /// <summary>
     /// Перечень 16-ти цветов Синего как в майне
     /// </summary>
-    public static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
+    public readonly static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
 
 }

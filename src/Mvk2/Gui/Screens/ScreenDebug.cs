@@ -5,7 +5,6 @@ using Vge.Gui.Screens;
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Renderer.Font;
-using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Mvk2.Gui.Screens
@@ -15,11 +14,6 @@ namespace Mvk2.Gui.Screens
     /// </summary>
     public class ScreenDebug : ScreenBase
     {
-        /// <summary>
-        /// Объект сетки курсора, временно
-        /// </summary>
-        private Mesh cursorVBO;
-
         private Label label;
         private Button button;
         private Button button2;
@@ -27,7 +21,7 @@ namespace Mvk2.Gui.Screens
 
         public ScreenDebug(WindowMvk window) : base(window)
         {
-            label = new Label(window, 400, 40, "&nhttp://superant.by/mkv");
+            label = new Label(window, 400, 40, "&nhttp://superant.by/mkv", true);
             label.Click += Label_Click;
             button = new Button(window, 360, 40, "Кнопка супер Tag");
             button2 = new Button(window, 800, 40, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
@@ -53,7 +47,7 @@ namespace Mvk2.Gui.Screens
 
             for (int i = 0; i < labels.Length; i++)
             {
-                labels[i] = new Label(window, 300, 200, textDebug);
+                labels[i] = new Label(window, 280, 28, textDebug, true);
             }
         }
 
@@ -68,8 +62,7 @@ namespace Mvk2.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            cursorVBO = new Mesh(gl, new float[0], new int[] { 2, 2 });
-            meshTextDebug = new Mesh2d(gl);
+            meshTextDebug = new MeshGuiColor(gl);
             AddControls(label);
             AddControls(button);
             AddControls(button2);
@@ -93,7 +86,7 @@ namespace Mvk2.Gui.Screens
 
             for (int i = 0; i < labels.Length; i++)
             {
-                labels[i].SetPosition(i * 300, 220);
+                labels[i].SetPosition(i * 300 + 10, 250);
             }
         }
 
@@ -112,7 +105,6 @@ namespace Mvk2.Gui.Screens
 
             if (((WindowMvk)window).cursorShow)
             {
-                cursorVBO.Reload(RenderFigure.Rectangle2d(0, 0, 24 * Gi.Si, 24 * Gi.Si, 0, 0, 1, 1));
             }
         }
 
@@ -120,7 +112,7 @@ namespace Mvk2.Gui.Screens
 
         private string textDebug = "";
         private bool isTextDebug = false;
-        private Mesh2d meshTextDebug;
+        private MeshGuiColor meshTextDebug;
 
         /// <summary>
         /// Рендер текста отладки
@@ -131,7 +123,7 @@ namespace Mvk2.Gui.Screens
             {
                 isTextDebug = false;
                 window.Render.FontMain.Clear();
-                window.Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new Vector3(.9f, .9f, .9f), new Vector3(.2f, .2f, .2f));
+                window.Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new Vector3(.9f, .9f, .9f));
                 window.Render.FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug);
                 window.Render.FontMain.RenderFX();
                 meshTextDebug.Reload(window.Render.FontMain.ToBuffer());
@@ -177,16 +169,14 @@ namespace Mvk2.Gui.Screens
                 render.FontMain.Clear();
                 render.FontLarge.Clear();
 
-                render.shaderText.Bind(gl);
-                render.shaderText.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+                render.ShaderBindGuiColor();
 
                 RenderTextDebug();
                 DrawTextDebug();
 
-                Vector3 bg = new Vector3(.2f, .2f, .2f);
                 Vector3 cw = new Vector3(.9f, .9f, .9f);
 
-                render.FontSmall.SetColor(cw, bg).SetFontFX(EnumFontFX.Shadow);
+                render.FontSmall.SetColor(cw).SetFontFX(EnumFontFX.Shadow);
                 render.FontSmall.RenderString(xx, 200 * si, "-C-");
 
                 if (++xx > 900) xx = 0;
@@ -199,7 +189,7 @@ namespace Mvk2.Gui.Screens
                 int height = window.Height;
 
                 // Version
-                render.FontLarge.SetColor(new Vector3(0.6f, 0.9f, .9f), bg).SetFontFX(EnumFontFX.Outline);
+                render.FontLarge.SetColor(new Vector3(0.6f, 0.9f, .9f)).SetFontFX(EnumFontFX.Outline);
                 int w = render.FontLarge.WidthString(window.Version) * si;
                 render.FontLarge.RenderString(width - w - 10 * si, height - 19 * si, window.Version);
 
@@ -214,7 +204,7 @@ namespace Mvk2.Gui.Screens
                 w = 190 * si;
                 str = window.Width + " " + window.Height;
                 if (window.VSync) str += " VSync";
-                render.FontMain.SetColor(cw, bg).SetFontFX(EnumFontFX.Shadow);
+                render.FontMain.SetColor(cw).SetFontFX(EnumFontFX.Shadow);
                 //render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
                 render.FontMain.RenderString(w, height - 19 * si, str);
 
@@ -252,13 +242,7 @@ namespace Mvk2.Gui.Screens
 
                 if (windowMvk.cursorShow)
                 {
-                    render.BindTexture(AssetsTexture.Cursor);
-                    render.shader2D.Bind(gl);
-                    render.shader2D.SetUniformMatrix4(gl, "projview", window.Ortho2D);
-                    render.shader2D.SetUniform1(gl, "biasX", window.MouseX);
-                    render.shader2D.SetUniform1(gl, "biasY", window.MouseY);
-                    render.shader2D.SetUniform4(gl, "color", 1, 1, 1, 1);
-                    cursorVBO.Draw();
+                   
                 }
             }
         }
@@ -266,7 +250,6 @@ namespace Mvk2.Gui.Screens
         public override void Dispose()
         {
             base.Dispose();
-            cursorVBO.Dispose();
             meshTextDebug.Dispose();
         }
     }

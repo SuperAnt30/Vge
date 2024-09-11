@@ -1,25 +1,31 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Numerics;
 using Vge.Renderer;
 using WinGL.Actions;
 
 namespace Vge.Gui.Controls
 {
+    /// <summary>
+    /// Текстовая метка, на которую можно нажать
+    /// </summary>
     public class Label : WidgetBase
     {
-        private Mesh2d meshTxt;
+        private readonly MeshGuiColor meshTxt;
+        private readonly MeshGuiLine meshLine;
 
-        public Label(WindowMain window, int width, int height, string text) : base(window)
+        /// <summary>
+        /// Текстовая метка, на которую можно нажать
+        /// </summary>
+        /// <param name="isLine">Нужен ли контур, для отладки</param>
+        public Label(WindowMain window, int width, int height, string text, bool isLine = false) : base(window)
         {
+            meshTxt = new MeshGuiColor(gl);
+            if (isLine)
+            {
+                meshLine = new MeshGuiLine(gl);
+            }
             SetText(text);
             SetSize(width, height);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-            meshTxt = new Mesh2d(gl);
         }
 
         #region OnMouse
@@ -41,15 +47,6 @@ namespace Vge.Gui.Controls
             }
         }
 
-        public override void OnMouseMove(int x, int y)
-        {
-            base.OnMouseMove(x, y);
-            if (enter)
-            {
-                IsRender = true;
-            }
-        }
-
         #endregion
 
         #region Draw
@@ -67,41 +64,45 @@ namespace Vge.Gui.Controls
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected virtual void RenderInside(RenderMain render, int x, int y)
         {
-            Vector3 color = Enabled ? enter ? new Vector3(.9f, .9f, .5f) : new Vector3(.8f) : new Vector3(.5f);
-            Vector3 colorBg = new Vector3(0);
-
-            //Stopwatch stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
-            //for (int i = 0; i < 100; i++)
-            {
-
-                render.FontMain.Clear();
-
-                string text = window.Render.FontMain.TransferString(Text, Width);
-
-                int biasX = (Width - render.FontMain.WidthString(text)) / 2 * si;
-                //int biasX = 0;
-
-                render.FontMain.SetColor(color, colorBg).SetFontFX(Renderer.Font.EnumFontFX.Outline);
-                render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, text);
-                render.FontMain.RenderFX();
-
-            }
-
-            //stopwatch.Stop();
-            //string s = ((float)(stopwatch.ElapsedTicks / (Stopwatch.Frequency / 1000f))).ToString("0.000");
-            //render.FontWidget.Clear();
-            //render.FontWidget.SetColor(color, colorBg).SetFontFX(Renderer.Font.EnumFontFX.Outline);
-            //render.FontWidget.RenderText(x, y + (Height - 16) / 2 * si, Text + " " + s);
-            //render.FontWidget.RenderFX();
+            // Определяем цвет текста
+            Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
+            // Чистим буфер
+            render.FontMain.Clear();
+            // Обрезка текста согласно ширины
+            string text = window.Render.FontMain.TransferString(Text, Width);
+            // Определяем смещение
+            int biasX = (Width - render.FontMain.WidthString(text)) / 2 * si;
+            // Указываем опции
+            render.FontMain.SetColor(color).SetFontFX(Renderer.Font.EnumFontFX.Outline);
+            // Готовим рендер текста
+            render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, text);
+            // Имеется Outline значит рендерим FX
+            render.FontMain.RenderFX();
+            // Вносим сетку
             render.FontMain.Reload(meshTxt);
-            
-            return;
+
+            // Если нужен контур, то рендерим сетку
+            if (meshLine != null)
+            {
+                meshLine.Reload(MeshGuiLine.RectangleLine(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
+                    0, 0, 0, .5f));
+            }
         }
 
         public override void Draw(float timeIndex)
         {
+            // Рисуем контур если имеется
+            if (meshLine != null)
+            {
+                // Для контура надо перекулючится без текстуры
+                window.Render.Texture2DDisable();
+                // И заменить шейдёр
+                window.Render.ShaderBindGuiLine();
+                meshLine.Draw();
+                // После прорисовки возращаем шейдер и текстуру
+                window.Render.Texture2DEnable();
+                window.Render.ShaderBindGuiColor();
+            }
             // Рисуем текст кнопки
             window.Render.BindTexutreFontMain();
             meshTxt.Draw();

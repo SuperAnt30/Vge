@@ -80,13 +80,13 @@ namespace Mvk2
             {
                 // Включить сервер по сети
                 GameNetRun(OptionsMvk.IpAddress, 32021);
-                ScreenCreate(new ScreenGameDebug(this));
+                ScreenCreate(new ScreenDebug(this));
             }
             if (keys == Keys.F3)
             {
                 // Включить сервер локальный
                 GameLocalRun();
-                ScreenCreate(new ScreenGameDebug(this));
+                ScreenCreate(new ScreenDebug(this));
             }
             else if (keys == Keys.F4)
             {
@@ -196,7 +196,7 @@ namespace Mvk2
 
         protected override void Game_Tick(object sender, EventArgs e)
         {
-            if (Screen != null && Screen is ScreenGameDebug screenDebug)
+            if (Screen != null && Screen is ScreenDebug screenDebug)
             {
                 if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
             }

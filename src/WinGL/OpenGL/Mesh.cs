@@ -5,22 +5,22 @@ namespace WinGL.OpenGL
     /// <summary>
     /// Объект буфера сетки через VAO
     /// </summary>
-    public class Mesh : IDisposable
+    public abstract class Mesh : IDisposable
     {
-        private readonly uint ebo = 0;
-        private readonly uint vao = 0;
-        private readonly uint vbo = 0;
+        private readonly uint ebo;
+        protected readonly uint vao;
+        protected readonly uint vbo;
         private readonly int[] attrs;
-        private readonly GL gl;
-        private int countVertices;
+        protected readonly GL gl;
+        protected int countVertices;
         private int countIndices;
-        private readonly int vertexSize;
+        protected readonly int vertexSize;
         /// <summary>
         /// Количество float в буфере на один полигон
         /// </summary>
         public readonly int PoligonFloat;
 
-        public Mesh(GL gl, int[] attrs)
+        public Mesh(GL gl, int[] attrs, bool isQuad = true)
         {
             this.gl = gl;
             for (int i = 0; i < attrs.Length; i++)
@@ -37,10 +37,11 @@ namespace WinGL.OpenGL
             gl.GenBuffers(1, id);
             vbo = id[0];
             gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.GenBuffers(1, id);
-            ebo = id[0];
-          //  gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            
+            if (isQuad)
+            {
+                gl.GenBuffers(1, id);
+                ebo = id[0];
+            }
 
             // attributes
             int stride = vertexSize * sizeof(float);
@@ -54,15 +55,16 @@ namespace WinGL.OpenGL
                 gl.EnableVertexAttribArray(i);
                 offset += size;
             }
-            //gl.BindVertexArray(0);
-            // TODO::2024-09-05 при фул экран слетает/ бага
-            //Reload(new float[0]);
+            gl.BindVertexArray(0); // ?
         }
 
         public Mesh(GL gl, float[] vertices, int[] attrs) : this(gl, attrs)
             => Reload(vertices);
 
-        private int[] Indices()
+        /// <summary>
+        /// Генерация массива вершин, для построения квада
+        /// </summary>
+        private int[] QuadIndices()
         {
             countIndices = countVertices / 4 * 6;
             int[] indices = new int[countIndices];
@@ -88,43 +90,36 @@ namespace WinGL.OpenGL
         {
             gl.DeleteVertexArrays(1, new uint[] { vao });
             gl.DeleteBuffers(1, new uint[] { vbo });
-            gl.DeleteBuffers(1, new uint[] { ebo });
+            if (ebo != 0)
+            {
+                gl.DeleteBuffers(1, new uint[] { ebo });
+            }
         }
 
+        public void Dispose() => Delete();
+
         /// <summary>
-        /// Прорисовать меш с треугольными полигоvoa нами
+        /// Прорисовать меш с треугольными полигонами через EBO
         /// </summary>
-        public void Draw()
+        public virtual void Draw()
         {
             gl.BindVertexArray(vao);
-            //gl.DrawArrays(GL.GL_TRIANGLES, 0, countVertices);
             gl.DrawElements(GL.GL_TRIANGLES, countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
-            gl.BindVertexArray(0);
         }
-
-        /// <summary>
-        /// Прорисовать меш с линиями
-        /// </summary>
-        //public void DrawLine()
-        //{
-        //    gl.BindVertexArray(vao);
-        //    gl.DrawArrays(GL.GL_LINES, 0, countVertices);
-        //    gl.BindVertexArray(0);
-        //}
 
         #region Reload
 
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
         /// </summary>
-        public void Reload(float[] vertices)
+        public virtual void Reload(float[] vertices)
         {
             countVertices = vertices.Length / vertexSize;
             gl.BindVertexArray(vao);
             gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
             gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
             gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
+            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         /// <summary>
@@ -137,24 +132,9 @@ namespace WinGL.OpenGL
             gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
             gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
             gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
-        }
-
-        /// <summary>
-        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
-        /// </summary>
-        public void Reload(IntPtr intPtr, int count)
-        {
-            countVertices = count / vertexSize;
-            gl.BindVertexArray(vao);
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, count * 4, intPtr, GL.GL_STATIC_DRAW);
-            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Indices(), GL.GL_STREAM_DRAW);
+            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         #endregion
-
-        public void Dispose() => Delete();
     }
 }

@@ -39,8 +39,6 @@ namespace Mvk2.Renderer
         {
             base.InitializeFirst();
 
-            SetTexture(OptionsMvk.PathTextures + "Cursor.png", AssetsTexture.Cursor);
-
             FontSmall = new FontBase(gl, 
                 SetTexture(OptionsMvk.PathTextures + "FontSmall.png", AssetsTexture.FontSmall), 1);
             FontLarge = new FontBase(gl, 
@@ -62,7 +60,7 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Задать количество текстур
         /// </summary>
-        protected override void TextureSetCount() => textureMap.SetCount(6);
+        protected override void TextureSetCount() => textureMap.SetCount(5);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
