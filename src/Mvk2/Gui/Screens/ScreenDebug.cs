@@ -21,34 +21,40 @@ namespace Mvk2.Gui.Screens
 
         public ScreenDebug(WindowMvk window) : base(window)
         {
-            label = new Label(window, 400, 40, "&nhttp://superant.by/mkv", true);
+            FontBase font = window.Render.FontMain;
+            label = new Label(window, ((RenderMvk)window.Render).FontLarge, 400, 40, "&nhttp://superant.by/mkv", true);
             label.Click += Label_Click;
-            button = new Button(window, 360, 40, "Кнопка супер Tag");
-            button2 = new Button(window, 800, 40, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
+            label.SetTextAlight(EnumAlight.Right, EnumAlightVert.Bottom);
+            button = new Button(window, font, 360, 40, "Кнопка супер Tag");
+            button2 = new Button(window, font, 800, 40, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
 
             string textDebug =
-            "&lЗанесло меня на остров,\r\n" +
+            "&lЗанесло&r меня на остров, . Тут надо добавить длинее строку, чтоб она была подлинее, причём очень.\r\n" +
             "&r&oОжидало много бед.\r\n" +
             "&nЖить на нём совсем не просто,\r\n" +
             "&rА прошло не мало лет.\r\n\r\n" +
             "&9Почти вымерли все звери,\r\n" +
             "&cЯ остался лишь живой.\r\n" +
-            "&mИ ходил я всё и думал,\r\n" +
-            "&nКак попасть же мне домой.\r\n\r\n" +
-            "&rЗанесло меня на остров,\r\n" +
-            "Ожидало много бед.\r\n" +
-            "&nЖить на &6нём совсем&r не просто,\r\n" +
-            "А прошло не мало лет.\r\n\r\n" +
-            "Почти вымерли все звери,\r\n" +
-            "Я остался лишь живой.\r\n" +
-            "И ходил я всё и думал,\r\n" +
+            //"&mИ ходил я всё и думал,\r\n" +
+            //"&nКак попасть же мне домой.\r\n\r\n" +
+            //"&rЗанесло меня на остров,\r\n" +
+            //"Ожидало много бед.\r\n" +
+            //"&nЖить на &6нём совсем&r не просто,\r\n" +
+            //"А прошло не мало лет.\r\n\r\n" +
+            //"Почти вымерли все звери,\r\n" +
+            //"Я остался лишь живой.\r\n" +
+            //"И ходил я всё и думал,\r\n" +
             "Как попасть же мне домой.\r\n\r\n" +
             "Тут строка" + ChatStyle.Br + "перенеслась";
 
             for (int i = 0; i < labels.Length; i++)
             {
-                labels[i] = new Label(window, 280, 28, textDebug, true);
+                labels[i] = new Label(window, font, 280, 28, textDebug, true);
+                labels[i].SetTextAlight(EnumAlight.Right, EnumAlightVert.Bottom);
             }
+
+            labels[1].Multiline().SetSize(280, 256);
+            labels[2].Multiline().SetSize(280, 0);
         }
 
         private void Label_Click(object sender, System.EventArgs e)
@@ -140,7 +146,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         public void DrawTextDebug()
         {
-            window.Render.BindTextureFontMain();
+            window.Render.FontMain.BindTexture();
             meshTextDebug.Draw();
         }
 
@@ -230,13 +236,14 @@ namespace Mvk2.Gui.Screens
                 //}
 
                 // Draw
-                render.BindTexture(AssetsTexture.FontSmall);
+
+                render.FontSmall.BindTexture();
                 render.FontSmall.RenderFX();
                 render.FontSmall.ReloadDraw();
-                render.BindTextureFontMain();
+                render.FontMain.BindTexture();
                 render.FontMain.RenderFX();
                 render.FontMain.ReloadDraw();
-                render.BindTexture(AssetsTexture.FontLarge);
+                render.FontLarge.BindTexture();
                 render.FontLarge.RenderFX();
                 render.FontLarge.ReloadDraw();
 

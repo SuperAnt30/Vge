@@ -30,11 +30,13 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Создать текстуру Мелкий шрифт
         /// </summary>
-        public void CreateTextureFontSmall(BufferedImage buffered) => FontSmall = new FontBase(buffered, 1);
+        public void CreateTextureFontSmall(BufferedImage buffered) 
+            => FontSmall = new FontBase(buffered, 1, this, (int)AssetsTexture.FontSmall);
         /// <summary>
         /// Создать текстуру Крупный шрифт
         /// </summary>
-        public void CreateTextureFontLarge(BufferedImage buffered) => FontLarge = new FontBase(buffered, 2);
+        public void CreateTextureFontLarge(BufferedImage buffered) 
+            => FontLarge = new FontBase(buffered, 2, this, (int)AssetsTexture.FontLarge);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива

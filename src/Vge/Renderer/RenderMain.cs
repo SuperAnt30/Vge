@@ -118,10 +118,6 @@ namespace Vge.Renderer
         /// </summary>
         public void DeleteTextureSplash() => textureMap.DeleteSplash();
         /// <summary>
-        /// Запустить текстуру основного шрифта
-        /// </summary>
-        public void BindTextureFontMain() => textureMap.BindTexture(0);
-        /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
         public void BindTextureWidgets() => textureMap.BindTexture(1);
@@ -134,7 +130,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Создать текстуру основного шрифта
         /// </summary>
-        public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1);
+        public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1, this, 0);
 
         /// <summary>
         /// Задать текстуру заставки

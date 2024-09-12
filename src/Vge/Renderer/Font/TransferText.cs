@@ -89,5 +89,16 @@ namespace Vge.Renderer.Font
             OutText = text;
             OutWidth /= si;
         }
+
+        /// <summary>
+        /// Сгенерировать строки по OutText
+        /// </summary>
+        public string[] GetStrings()
+            => OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
+
+        /// <summary>
+        /// Сгенерировать количество строк по OutText
+        /// </summary>
+        public int GetStringsCount() => GetStrings().Length;
     }
 }

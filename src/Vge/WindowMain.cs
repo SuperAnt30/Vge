@@ -357,8 +357,7 @@ namespace Vge
         /// <summary>
         /// Создать скрин главного меню
         /// </summary>
-        public virtual void ScreenMainMenu() 
-            => ScreenCreate(new ScreenMainMenu(this));
+        public virtual void ScreenMainMenu() => ScreenCreate(new ScreenMainMenu(this));
         /// <summary>
         /// Создать скрин оповещения, после которого выйдем в меню
         /// </summary>

@@ -1,6 +1,5 @@
-﻿using System.Numerics;
-using Vge.Gui.Controls;
-using Vge.Renderer;
+﻿using Vge.Gui.Controls;
+using Vge.Renderer.Font;
 
 namespace Vge.Gui.Screens
 {
@@ -9,17 +8,15 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenNotification : ScreenBase
     {
-        private readonly string notification;
-        private MeshGuiColor mesh;
-        private int si = -1;
-        private int count;
-
-        private Button button;
+        private readonly Label label;
+        private readonly Button button;
 
         public ScreenNotification(WindowMain window, string notification) : base(window)
         {
-            this.notification = notification;
-            button = new Button(window, 200, 40, "Кнопка супер Tag");
+            FontBase font = window.Render.FontMain;
+            label = new Label(window, font, window.Width - 100, 200, notification, true);
+            label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
+            button = new Button(window, font, 200, 40, "Кнопка супер Tag");
             button.Click += Button_Click;
         }
 
@@ -35,6 +32,7 @@ namespace Vge.Gui.Screens
         {
             base.OnInitialize();
             AddControls(button);
+            AddControls(label);
         }
 
         /// <summary>
@@ -42,49 +40,42 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            button.SetPosition(Gi.Width / 2 - 200 * Gi.Si, Gi.Height / 4 + 44 * Gi.Si);
-        }
-
-        public override void OnTick(float deltaTime)
-        {
-            //if (count++ > 30)
-            //{
-            //    window.ScreenMainMenu();
-            //}
+            button.SetPosition((window.Width / si - button.Width) / 2, window.Height / (si * 2) + 20);
+            label.SetSize(window.Width / si - 100, label.Height);
+            label.SetPosition(50, window.Height / (si * 2) - label.Height);
         }
 
         public override void Draw(float timeIndex)
         {
+            gl.ClearColor(.5f, .2f, .2f, 1f);
             base.Draw(timeIndex);
 
-            gl.ClearColor(.5f, .2f, .2f, 1f);
+            //RenderMain render = window.Render;
 
-            RenderMain render = window.Render;
+            //render.FontMain.Clear();
 
-            render.FontMain.Clear();
+            //render.ShaderBindGuiColor();
 
-            render.ShaderBindGuiColor();
+            //if (si != Gi.Si)
+            //{
+            //    si = Gi.Si;
+            //    if (mesh == null)
+            //    {
+            //        mesh = new MeshGuiColor(gl);
+            //    }
+            //    render.FontMain.SetColor(new Vector3(.9f, .9f, .9f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
+            //    render.FontMain.RenderText(10 * si, 10 * si, notification);
+            //    render.FontMain.RenderFX();
+            //    render.FontMain.Reload(mesh);
+            //}
 
-            if (si != Gi.Si)
-            {
-                si = Gi.Si;
-                if (mesh == null)
-                {
-                    mesh = new MeshGuiColor(gl);
-                }
-                render.FontMain.SetColor(new Vector3(.9f, .9f, .9f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
-                render.FontMain.RenderText(10 * si, 10 * si, notification);
-                render.FontMain.RenderFX();
-                render.FontMain.Reload(mesh);
-            }
-
-            render.BindTextureFontMain();
-            mesh.Draw();
+            //render.BindTextureFontMain();
+            //mesh.Draw();
         }
 
-        public override void Dispose()
-        {
-            mesh.Dispose();
-        }
+        //public override void Dispose()
+        //{
+        //    mesh.Dispose();
+        //}
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Vge.Gui.Controls;
 using Vge.Realms;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -65,15 +66,26 @@ namespace Vge.Renderer.Font
         /// Эффекты к шрифту
         /// </summary>
         private EnumFontFX fontFX = EnumFontFX.None;
+        /// <summary>
+        /// Объект рендера
+        /// </summary>
+        private readonly RenderMain render;
+        /// <summary>
+        /// Индест текстурки
+        /// </summary>
+        private readonly int texture;
 
         /// <summary>
         /// Класс шрифта
         /// </summary>
         /// <param name="textureFont">Объект изображения</param>
         /// <param name="stepFont">растояние между буквами в пикселях</param>
-        /// <param name="isMesh">нужен ли меш</param>
-        public FontBase(BufferedImage textureFont, byte stepFont)
+        /// <param name="render">объект рендера, только для основного потока</param>
+        /// <param name="texture">индест текстурки</param>
+        public FontBase(BufferedImage textureFont, byte stepFont, RenderMain render, int texture)
         {
+            this.render = render;
+            this.texture = texture;
             horiAdvance = textureFont.width >> 4;
             vertAdvance = textureFont.height >> 4;
             this.stepFont = stepFont;
@@ -115,6 +127,11 @@ namespace Vge.Renderer.Font
             hori = horiAdvance * si;
             vert = vertAdvance * si;
         }
+
+        /// <summary>
+        /// Забиндить текстуру шрифта
+        /// </summary>
+        public void BindTexture() => render.BindTexture(texture);
 
         /// <summary>
         /// Получить объект символа
@@ -183,12 +200,17 @@ namespace Vge.Renderer.Font
                 symbol = Get(vc[i]);
                 if (symbol.IsAmpersand() && i < check)
                 {
-                    i++;
+                    // Этап определения стиля шрифта
+                    symbol = Get(vc[++i]);
+                    style.SetSymbol(symbol);
                 }
                 else
                 {
                     w0 = symbol.Width;
-                    if (w0 > 0) w += w0 + GetStepFont();
+                    if (w0 > 0)
+                    {
+                        w += w0 + GetStepFont();
+                    }
                 }
             }
             return w;
@@ -199,10 +221,12 @@ namespace Vge.Renderer.Font
         /// </summary>
         public string TransferString(string text, int width)
         {
-            Transfer.Run(text, width, si);
+            string dots = "...";
+            int width3dot = WidthString(dots);
+            Transfer.Run(text, width - width3dot, si);
             string[] strs = Transfer.OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
             if (strs.Length > 0) text = strs[0];
-            if (strs.Length > 1) text += "...";
+            if (strs.Length > 1) text += dots;
             return text;
         }
 
@@ -290,6 +314,16 @@ namespace Vge.Renderer.Font
 
         #endregion
 
+        /// <summary>
+        /// Шаг смещения вертикали с учётом интерфейса
+        /// </summary>
+        public int GetVertStep() => vert + 4 * si;
+
+        /// <summary>
+        /// Вертикальное смещение начала следующего глифа с учётом размера интерфейса 
+        /// </summary>
+        public int GetVert() => vert;
+
         #region Render
 
         /// <summary>
@@ -303,7 +337,7 @@ namespace Vge.Renderer.Font
             foreach (string str in strs)
             {
                 RenderString(x, y, str);
-                y += vert + 4 * si;
+                y += GetVertStep();
             }
         }
 

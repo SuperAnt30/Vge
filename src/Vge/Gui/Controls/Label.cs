@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Vge.Renderer;
+using Vge.Renderer.Font;
 using WinGL.Actions;
 
 namespace Vge.Gui.Controls
@@ -12,13 +13,18 @@ namespace Vge.Gui.Controls
     {
         private readonly MeshGuiColor meshTxt;
         private readonly MeshGuiLine meshLine;
+        /// <summary>
+        /// Объект шрифта
+        /// </summary>
+        private readonly FontBase font;
 
         /// <summary>
         /// Текстовая метка, на которую можно нажать
         /// </summary>
         /// <param name="isLine">Нужен ли контур, для отладки</param>
-        public Label(WindowMain window, int width, int height, string text, bool isLine = false) : base(window)
+        public Label(WindowMain window, FontBase font, int width, int height, string text, bool isLine = false) : base(window)
         {
+            this.font = font;
             meshTxt = new MeshGuiColor(gl);
             if (isLine)
             {
@@ -67,19 +73,85 @@ namespace Vge.Gui.Controls
             // Определяем цвет текста
             Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
             // Чистим буфер
-            render.FontMain.Clear();
-            // Обрезка текста согласно ширины
-            string text = window.Render.FontMain.TransferString(Text, Width);
-            // Определяем смещение
-            int biasX = (Width - render.FontMain.WidthString(text)) / 2 * si;
+            font.Clear();
             // Указываем опции
-            render.FontMain.SetColor(color).SetFontFX(Renderer.Font.EnumFontFX.Outline);
-            // Готовим рендер текста
-            render.FontMain.RenderString(x + biasX, y + (Height - 16) / 2 * si, text);
+            font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+
+            int biasX = 0;
+            int biasY = 0;
+
+            if (multiline)
+            {
+                // Обрезка текста согласно ширины
+                string text = font.TransferWidth(Text, Width);
+                // Определяем смещение
+                if (TextAlight == EnumAlight.Left)
+                {
+                    // Определяем смещение BiasY
+                    if (TextAlightVert == EnumAlightVert.Middle)
+                    {
+                        biasY = (Height * si - (font.Transfer.GetStringsCount() * font.GetVertStep())) / 2;
+                    }
+                    else if (TextAlightVert == EnumAlightVert.Bottom)
+                    {
+                        biasY = Height * si - (font.Transfer.GetStringsCount() * font.GetVertStep());
+                    }
+                    // Готовим рендер текста
+                    font.RenderText(x + biasX, y + si + biasY, text);
+                }
+                else
+                {
+                    // Готовим рендер текста
+                    // Кажду строку отдельно перепроверять по смещению
+                    string[] vs = font.Transfer.GetStrings();
+                    if (TextAlightVert == EnumAlightVert.Middle)
+                    {
+                        biasY = (Height * si - (vs.Length * font.GetVertStep())) / 2;
+                    }
+                    else if (TextAlightVert == EnumAlightVert.Bottom)
+                    {
+                        biasY = Height * si - (vs.Length * font.GetVertStep());
+                    }
+                    int center = TextAlight == EnumAlight.Center ? 2 : 1;
+                    foreach (string s in vs)
+                    {
+                        biasX = (Width - font.WidthString(s)) * si / center;
+                        // Готовим рендер текста
+                        font.RenderString(x + biasX, y + biasY, s);
+                        y += font.GetVertStep();
+                    }
+                }
+            }
+            else
+            {
+                // Обрезка текста согласно ширины
+                string text = font.TransferString(Text, Width);
+                // Определяем смещение BiasX
+                if (TextAlight == EnumAlight.Center)
+                {
+                    biasX = (Width - font.WidthString(text)) / 2 * si;
+                }
+                else if (TextAlight == EnumAlight.Right)
+                {
+                    biasX = (Width - font.WidthString(text)) * si;
+                }
+                // Определяем смещение BiasY
+                if (TextAlightVert == EnumAlightVert.Middle)
+                {
+                    biasY = (Height * si - font.GetVert()) / 2;
+                }
+                else if (TextAlightVert == EnumAlightVert.Bottom)
+                {
+                    biasY = Height * si - font.GetVert();
+                }
+                // Готовим рендер текста
+                font.RenderString(x + biasX, y + biasY, text);
+            }
+
             // Имеется Outline значит рендерим FX
-            render.FontMain.RenderFX();
+            font.RenderFX();
             // Вносим сетку
-            render.FontMain.Reload(meshTxt);
+            font.Reload(meshTxt);
 
             // Если нужен контур, то рендерим сетку
             if (meshLine != null)
@@ -107,8 +179,8 @@ namespace Vge.Gui.Controls
                 window.Render.TextureEnable();
                 window.Render.ShaderBindGuiColor();
             }
-            // Рисуем текст кнопки
-            window.Render.BindTextureFontMain();
+            // Рисуем текст
+            font.BindTexture();
             meshTxt.Draw();
         }
 

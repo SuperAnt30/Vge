@@ -1,4 +1,5 @@
 ﻿using Vge.Renderer;
+using Vge.Renderer.Font;
 
 namespace Vge.Gui.Controls
 {
@@ -11,8 +12,8 @@ namespace Vge.Gui.Controls
         /// </summary>
         private readonly float vk;
 
-        public Button(WindowMain window, int width, int height, string text)
-            : base(window, width, height, text)
+        public Button(WindowMain window, FontBase font, int width, int height, string text)
+            : base(window, font, width, height, text)
         {
             meshBg = new MeshGuiColor(gl);
             vk = height / 512f;
