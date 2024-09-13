@@ -40,23 +40,10 @@ namespace Vge.Gui.Controls
         /// </summary>
         public string Text { get; private set; }
         /// <summary>
-        /// Выравнивания текста по горизонтали
-        /// </summary>
-        public EnumAlight TextAlight { get; private set; } = EnumAlight.Center;
-        /// <summary>
-        /// Выравнивания текста по вертикали
-        /// </summary>
-        public EnumAlightVert TextAlightVert { get; private set; } = EnumAlightVert.Middle;
-
-        /// <summary>
         /// Дополнительный объект
         /// </summary>
         public object Tag { get; set; }
 
-        /// <summary>
-        /// Может ли быть несколько строк 
-        /// </summary>
-        protected bool multiline = false;
         /// <summary>
         /// Когда мышь находится на элементе
         /// </summary>
@@ -145,26 +132,6 @@ namespace Vge.Gui.Controls
             Text = text;
             IsRender = true;
             
-            return this;
-        }
-
-        /// <summary>
-        /// Задать выравнивание текста
-        /// </summary>
-        public WidgetBase SetTextAlight(EnumAlight alight, EnumAlightVert alightVert)
-        {
-            TextAlight = alight;
-            TextAlightVert = alightVert;
-            IsRender = true;
-            return this;
-        }
-
-        /// <summary>
-        /// Включить поддержу несколько строк 
-        /// </summary>
-        public WidgetBase Multiline()
-        {
-            multiline = true;
             return this;
         }
 

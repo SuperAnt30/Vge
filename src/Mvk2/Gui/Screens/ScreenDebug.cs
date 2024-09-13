@@ -35,26 +35,26 @@ namespace Mvk2.Gui.Screens
             "&rА прошло не мало лет.\r\n\r\n" +
             "&9Почти вымерли все звери,\r\n" +
             "&cЯ остался лишь живой.\r\n" +
-            //"&mИ ходил я всё и думал,\r\n" +
-            //"&nКак попасть же мне домой.\r\n\r\n" +
-            //"&rЗанесло меня на остров,\r\n" +
-            //"Ожидало много бед.\r\n" +
-            //"&nЖить на &6нём совсем&r не просто,\r\n" +
-            //"А прошло не мало лет.\r\n\r\n" +
-            //"Почти вымерли все звери,\r\n" +
-            //"Я остался лишь живой.\r\n" +
-            //"И ходил я всё и думал,\r\n" +
+            "&mИ ходил я всё и думал,\r\n" +
+            "&nКак попасть же мне домой.\r\n\r\n" +
+            "&rЗанесло меня на остров,\r\n" +
+            "Ожидало много бед.\r\n" +
+            "&nЖить на &6нём совсем&r не просто,\r\n" +
+            "А прошло не мало лет.\r\n\r\n" +
+            "Почти вымерли все звери,\r\n" +
+            "Я остался лишь живой.\r\n" +
+            "И ходил я всё и думал,\r\n" +
             "Как попасть же мне домой.\r\n\r\n" +
             "Тут строка" + ChatStyle.Br + "перенеслась";
 
             for (int i = 0; i < labels.Length; i++)
             {
                 labels[i] = new Label(window, font, 280, 28, textDebug, true);
-                labels[i].SetTextAlight(EnumAlight.Right, EnumAlightVert.Bottom);
+                labels[i].SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
             }
 
-            labels[1].Multiline().SetSize(280, 256);
-            labels[2].Multiline().SetSize(280, 0);
+            labels[1].Multiline().LimitationHeight().SetSize(280, 256);
+            labels[2].Multiline().LimitationHeight().SetSize(280, 50);
         }
 
         private void Label_Click(object sender, System.EventArgs e)

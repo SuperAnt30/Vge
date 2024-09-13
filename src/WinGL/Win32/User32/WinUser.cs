@@ -258,6 +258,24 @@ namespace WinGL.Win32.User32
             return MessageBox(IntPtr.Zero, text, caption, type);
         }
 
+        #region Clipboard
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseClipboard();
+
+        [DllImport(User32, SetLastError = true)]
+        public static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
+
+        [DllImport(User32)]
+        public static extern bool EmptyClipboard();
+
+        #endregion
+
         #region Windows Messages
 
         public const int MB_OK = 0x0000;

@@ -56,5 +56,13 @@ namespace Vge.Gui.Controls
         }
 
         #endregion
+
+        protected override void OnClick()
+        {
+            base.OnClick();
+            // Звук клика
+            window.SoundClick(.3f);
+        }
+
     }
 }

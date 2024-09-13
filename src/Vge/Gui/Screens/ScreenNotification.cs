@@ -1,5 +1,6 @@
 ﻿using Vge.Gui.Controls;
 using Vge.Renderer.Font;
+using WinGL.Util;
 
 namespace Vge.Gui.Screens
 {
@@ -16,8 +17,14 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             label = new Label(window, font, window.Width - 100, 200, notification, true);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
+            label.Click += Label_Click;
             button = new Button(window, font, 200, 40, "Кнопка супер Tag");
             button.Click += Button_Click;
+        }
+
+        private void Label_Click(object sender, System.EventArgs e)
+        {
+            Clipboard.SetText(label.Text);
         }
 
         private void Button_Click(object sender, System.EventArgs e)

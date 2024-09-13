@@ -36,6 +36,13 @@ namespace WinGL.Win32
         [DllImport(Kernel32, SetLastError = true)]
         public static extern IntPtr GetModuleHandle(IntPtr hWnd);
 
+        [DllImport(Kernel32, SetLastError = true)]
+        public static extern IntPtr GlobalLock(IntPtr hMem);
+
+        [DllImport(Kernel32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GlobalUnlock(IntPtr hMem);
+
         #endregion
 
         #region TimePeriod

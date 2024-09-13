@@ -11,6 +11,23 @@ namespace Vge.Gui.Controls
     /// </summary>
     public class Label : WidgetBase
     {
+        /// <summary>
+        /// Выравнивания текста по горизонтали
+        /// </summary>
+        public EnumAlight TextAlight { get; private set; } = EnumAlight.Center;
+        /// <summary>
+        /// Выравнивания текста по вертикали
+        /// </summary>
+        public EnumAlightVert TextAlightVert { get; private set; } = EnumAlightVert.Middle;
+        /// <summary>
+        /// Может ли быть несколько строк 
+        /// </summary>
+        protected bool multiline = false;
+        /// <summary>
+        /// Ограничение по высоте, если включено, текст за рамку не выйдет
+        /// </summary>
+        protected bool limitationHeight = false;
+
         private readonly MeshGuiColor meshTxt;
         private readonly MeshGuiLine meshLine;
         /// <summary>
@@ -46,8 +63,6 @@ namespace Vge.Gui.Controls
                 OnMouseMove(x, y);
                 if (enter)
                 {
-                    // Звук клика
-                    window.SoundClick(.3f);
                     OnClick();
                 }
             }
@@ -85,7 +100,7 @@ namespace Vge.Gui.Controls
                 // Обрезка текста согласно ширины
                 string text = font.TransferWidth(Text, Width);
                 // Определяем смещение
-                if (TextAlight == EnumAlight.Left)
+                if (TextAlight == EnumAlight.Left & !limitationHeight)
                 {
                     // Определяем смещение BiasY
                     if (TextAlightVert == EnumAlightVert.Middle)
@@ -104,18 +119,33 @@ namespace Vge.Gui.Controls
                     // Готовим рендер текста
                     // Кажду строку отдельно перепроверять по смещению
                     string[] vs = font.Transfer.GetStrings();
+                    int count = vs.Length;
+                    if (limitationHeight)
+                    {
+                        // Если есть ограничение по высоте, надо отрезать часть строк
+                        int max = (Height - font.GetVert()) / font.GetVertStep() + 1;
+                        if (max < count)
+                        {
+                            count = max;
+                            if (count < 1) count = 1;
+                            vs[count - 1] = font.TransferString(vs[count - 1], Width, false) + Ce.Ellipsis;
+                        }
+                    }
                     if (TextAlightVert == EnumAlightVert.Middle)
                     {
-                        biasY = (Height * si - (vs.Length * font.GetVertStep())) / 2;
+                        biasY = (Height * si - (count * font.GetVertStep())) / 2;
                     }
                     else if (TextAlightVert == EnumAlightVert.Bottom)
                     {
-                        biasY = Height * si - (vs.Length * font.GetVertStep());
+                        biasY = Height * si - (count * font.GetVertStep());
                     }
                     int center = TextAlight == EnumAlight.Center ? 2 : 1;
-                    foreach (string s in vs)
+                    bool left = TextAlight == EnumAlight.Left;
+                    string s;
+                    for (int i = 0; i < count; i++)
                     {
-                        biasX = (Width - font.WidthString(s)) * si / center;
+                        s = vs[i];
+                        biasX = left ? 0 : (Width - font.WidthString(s)) * si / center;
                         // Готовим рендер текста
                         font.RenderString(x + biasX, y + biasY, s);
                         y += font.GetVertStep();
@@ -182,6 +212,39 @@ namespace Vge.Gui.Controls
             // Рисуем текст
             font.BindTexture();
             meshTxt.Draw();
+        }
+
+        #endregion
+
+        #region Set...
+
+        /// <summary>
+        /// Задать выравнивание текста
+        /// </summary>
+        public Label SetTextAlight(EnumAlight alight, EnumAlightVert alightVert)
+        {
+            TextAlight = alight;
+            TextAlightVert = alightVert;
+            IsRender = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Включить поддержу несколько строк 
+        /// </summary>
+        public Label Multiline()
+        {
+            multiline = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Ограничение по высоте, текст за рамку не выйдет
+        /// </summary>
+        public Label LimitationHeight()
+        {
+            limitationHeight = true;
+            return this;
         }
 
         #endregion

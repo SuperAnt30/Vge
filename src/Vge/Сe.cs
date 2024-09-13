@@ -10,6 +10,10 @@ public sealed class Ce
     /// Перенос коретки в тексте
     /// </summary>
     public const string Br = "\r\n";
+    /// <summary>
+    /// Многоточие
+    /// </summary>
+    public const string Ellipsis = "...";
 
     #endregion
 

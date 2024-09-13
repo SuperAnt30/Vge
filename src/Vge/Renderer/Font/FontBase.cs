@@ -219,14 +219,14 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Обрезка строки и ставится ... если не влазит в ширину
         /// </summary>
-        public string TransferString(string text, int width)
+        /// <param name="ellipsis">Надо ставить многоточие, false не ставим, но ширину учитываем</param>
+        public string TransferString(string text, int width, bool ellipsis = true)
         {
-            string dots = "...";
-            int width3dot = WidthString(dots);
+            int width3dot = WidthString(Ce.Ellipsis);
             Transfer.Run(text, width - width3dot, si);
             string[] strs = Transfer.OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
             if (strs.Length > 0) text = strs[0];
-            if (strs.Length > 1) text += dots;
+            if (ellipsis && strs.Length > 1) text += Ce.Ellipsis;
             return text;
         }
 
