@@ -49,12 +49,14 @@ namespace Mvk2.Gui.Screens
 
             for (int i = 0; i < labels.Length; i++)
             {
-                labels[i] = new Label(window, font, 280, 28, textDebug, true);
-                labels[i].SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
+                labels[i] = new Label(window, font, 280, 256, textDebug, true);
+                labels[i].Multiline();
             }
 
-            labels[1].Multiline().LimitationHeight().SetSize(280, 256);
-            labels[2].Multiline().LimitationHeight().SetSize(280, 50);
+            labels[0].SetTextAlight(EnumAlight.Center, EnumAlightVert.Top);
+            labels[1].LimitationHeight().SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
+            labels[2].LimitationHeight().SetTextAlight(EnumAlight.Center, EnumAlightVert.Top);
+            labels[3].LimitationHeight().SetTextAlight(EnumAlight.Right, EnumAlightVert.Top);
         }
 
         private void Label_Click(object sender, System.EventArgs e)

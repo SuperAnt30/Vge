@@ -258,10 +258,10 @@ namespace Vge
 
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
            // gl.ClearColor(.7f, .4f, .4f, 1f);
-            //gl.Enable(GL.GL_DEPTH_TEST);
+            gl.Enable(GL.GL_DEPTH_TEST);
             // группа для сглаживания, но может жутко тормазить
-            //gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            //gl.Enable(GL.GL_BLEND);
+            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.Enable(GL.GL_BLEND);
 
             Render.Draw(ticker.Interpolation);
             //renderMvk.Draw();
@@ -315,6 +315,11 @@ namespace Vge
         /// <summary>
         /// Закрыть приложение
         /// </summary>
+        public void Exit() => Close();
+
+        /// <summary>
+        /// Закрыть приложение
+        /// </summary>
         protected override void Close()
         {
             if (Game != null)
@@ -359,6 +364,10 @@ namespace Vge
         /// </summary>
         public virtual void ScreenMainMenu() => ScreenCreate(new ScreenMainMenu(this));
         /// <summary>
+        /// Создать скрин опций
+        /// </summary>
+        public virtual void ScreenOptions() => ScreenCreate(new ScreenOptions(this));
+        /// <summary>
         /// Создать скрин оповещения, после которого выйдем в меню
         /// </summary>
         public virtual void ScreenNotification(string notification) 
@@ -389,8 +398,9 @@ namespace Vge
         /// <summary>
         /// Запустить игру по сети
         /// </summary>
-        protected void GameNetRun(string ipAddress, int port)
+        public void GameNetRun(string ipAddress, int port)
         {
+            ScreenClose();
             if (Game == null)
             {
                 Game = new GameNet(this, ipAddress, port);
@@ -401,8 +411,9 @@ namespace Vge
         /// <summary>
         /// Запустить локальную игру
         /// </summary>
-        protected void GameLocalRun()
+        public void GameLocalRun()
         {
+            ScreenClose();
             if (Game == null)
             {
                 Game = new GameLocal(this);

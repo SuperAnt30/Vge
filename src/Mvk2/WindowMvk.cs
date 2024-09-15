@@ -8,6 +8,7 @@ using Mvk2.Audio;
 using Mvk2.Renderer;
 using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
+using Vge.Util;
 
 namespace Mvk2
 {
@@ -76,7 +77,7 @@ namespace Mvk2
             if (keys == Keys.F2)
             {
                 // Включить сервер по сети
-                GameNetRun(OptionsMvk.IpAddress, 32021);
+                GameNetRun(Options.IpAddress, 32021);
                 ScreenCreate(new ScreenDebug(this));
             }
             if (keys == Keys.F3)
@@ -191,7 +192,7 @@ namespace Mvk2
         /// <summary>
         /// Создать скрин главного меню
         /// </summary>
-        public override void ScreenMainMenu() => ScreenCreate(new ScreenDebug(this));
+       // public override void ScreenMainMenu() => ScreenCreate(new ScreenDebug(this));
 
         #endregion
 

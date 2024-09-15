@@ -78,6 +78,7 @@ namespace Vge.Util
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
+                case "IpAddress": Options.IpAddress = value.ToString(); return true;
             }
             return false;
         }
@@ -92,6 +93,7 @@ namespace Vge.Util
             file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
             file.WriteLine("Fps: " + Options.Fps.ToString());
             file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());
+            file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
         }
     }
 }

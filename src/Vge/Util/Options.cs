@@ -50,6 +50,11 @@ namespace Vge.Util
         public static float MouseSensitivityFloat { get; private set; } = 50;
 
         /// <summary>
+        /// IP адрес сервера
+        /// </summary>
+        public static string IpAddress { get; set; } = "127.0.0.1";
+
+        /// <summary>
         /// Обновить данные переменных
         /// </summary>
         public static void UpData()

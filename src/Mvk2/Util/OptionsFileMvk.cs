@@ -29,7 +29,6 @@ namespace Mvk2.Util
                     case "MusicVolume": OptionsMvk.MusicVolume = int.Parse(value); return true;
                     case "OverviewChunk": OptionsMvk.OverviewChunk = int.Parse(value); return true;
                     case "Nickname": OptionsMvk.Nickname = value.ToString(); return true;
-                    case "IpAddress": OptionsMvk.IpAddress = value.ToString(); return true;
                     case "SmoothLighting": OptionsMvk.SmoothLighting = int.Parse(value) == 1; return true;
                 }
                 return false;
@@ -45,7 +44,6 @@ namespace Mvk2.Util
             file.WriteLine("MusicVolume: " + OptionsMvk.MusicVolume.ToString());
             file.WriteLine("OverviewChunk: " + OptionsMvk.OverviewChunk.ToString());
             file.WriteLine("Nickname: " + OptionsMvk.Nickname.ToString());
-            file.WriteLine("IpAddress: " + OptionsMvk.IpAddress.ToString());
             file.WriteLine("SmoothLighting: " + (OptionsMvk.SmoothLighting ? "1" : "0"));
         }
     }

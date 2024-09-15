@@ -18,7 +18,7 @@ namespace Vge.Gui.Screens
             label = new Label(window, font, window.Width - 100, 200, notification, true);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
-            button = new Button(window, font, 200, 40, "Кнопка супер Tag");
+            button = new Button(window, font, 200, 40, L.T("Menu"));
             button.Click += Button_Click;
         }
 
