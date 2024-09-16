@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Vge.Gui;
 
 namespace Vge.Util
 {
@@ -20,6 +19,10 @@ namespace Vge.Util
         /// Путь к папке текстур
         /// </summary>
         public static string PathTextures { get; private set; }
+        /// <summary>
+        /// Путь к игра сохранения
+        /// </summary>
+        public static string PathGames { get; set; } = "Games" + Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Размер интерфеса с учётом размера окна

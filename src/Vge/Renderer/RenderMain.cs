@@ -156,38 +156,6 @@ namespace Vge.Renderer
 
         #region Draw
 
-        /// <summary>
-        /// Метод для прорисовки кадра
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public override void Draw(float timeIndex) 
-        {
-            DrawBegin();
-            if (window.Game == null)
-            {
-                // Нет игры
-                if (window.Screen == null)
-                {
-                    // Отсутствует прорисовка
-                    throw new Exception(Sr.ThereIsNoDrawing);
-                }
-                else
-                {
-                    window.Screen.Draw(timeIndex);
-                }
-            }
-            else
-            {
-                // Есть игра
-                window.Game.Draw(timeIndex);
-                if (window.Screen != null)
-                {
-                    window.Screen.Draw(timeIndex);
-                }
-            }
-            DrawEnd();
-        }
-
         public virtual void DrawBegin()
         {
             fps++;

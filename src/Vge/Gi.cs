@@ -26,7 +26,7 @@ public sealed class Gi
     /// </summary>
     public static void UpdateSizeInterface()
     {
-        Si = (Options.SizeInterface > 1 && Height < 880) ? 1 : Options.SizeInterface;
+        Si = (Options.SizeInterface > 1 && Height < 960) ? 1 : Options.SizeInterface;
     }
 
     /// <summary>

@@ -12,11 +12,11 @@ namespace Vge.Gui.Controls
         /// </summary>
         private readonly float vk;
 
-        public Button(WindowMain window, FontBase font, int width, int height, string text)
-            : base(window, font, width, height, text)
+        public Button(WindowMain window, FontBase font, int width, string text)
+            : base(window, font, width, 40, text)
         {
             meshBg = new MeshGuiColor(gl);
-            vk = height / 512f;
+            vk = .078125f; // 40 / 512f;
         }
 
         #region Draw

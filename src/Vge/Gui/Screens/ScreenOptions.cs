@@ -15,9 +15,9 @@ namespace Vge.Gui.Screens
         {
             FontBase font = window.Render.FontMain;
             
-            buttonDone = new Button(window, font, 300, 40, "Done");
+            buttonDone = new Button(window, font, 300, L.T("Done"));
             buttonDone.Click += ButtonDone_Click;
-            buttonCancel = new Button(window, font, 300, 40, "Cancel");
+            buttonCancel = new Button(window, font, 300, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
         }
 
@@ -25,12 +25,23 @@ namespace Vge.Gui.Screens
 
         private void ButtonDone_Click(object sender, System.EventArgs e)
         {
-            window.ScreenMainMenu();
+            string s = "&r &oОжидало много бед.\r\n" +
+            "&nЖить на нём совсем не просто,\r\n" +
+            "&rА прошло не мало лет.\r\n\r\n" +
+            "&9Почти вымерли все звери,\r\n" +
+            "&cЯ остался лишь живой.\r\n" +
+            "&mИ ходил я всё и думал,\r\n" +
+            "&nКак попасть же мне домой.\r\n\r\n" +
+            "&rЗанесло меня на остров,\r\n" +
+            "Ожидало много бед.";
+
+            window.LScreen.YesNo(this, s);
+            // Ответ ловим в методе LaunchFromParent
         }
 
         private void ButtonCancel_Click(object sender, System.EventArgs e)
         {
-            window.ScreenMainMenu();
+            window.LScreen.MainMenu();
         }
 
         #endregion
@@ -46,14 +57,26 @@ namespace Vge.Gui.Screens
         }
 
         /// <summary>
+        /// Запуск от родителя
+        /// </summary>
+        public override void LaunchFromParent(EnumScreenParent enumParent)
+        {
+            // Тут проверка парента
+            if (enumParent != EnumScreenParent.None)
+            {
+                buttonDone.SetText(buttonDone.Text + enumParent.ToString());
+            }
+        }
+
+        /// <summary>
         /// Изменён размер окна
         /// </summary>
         protected override void OnResized()
         {
-            buttonDone.SetPosition(window.Width / (si * 2) - (buttonDone.Width + 2),
-                window.Height / (si * 2) + 92);
-            buttonCancel.SetPosition(window.Width / (si * 2) + 2,
-                window.Height / (si * 2) + 92);
+            int w = Width / 2;
+            int h = Height / 2;
+            buttonDone.SetPosition(w - buttonDone.Width + 2, h + 92);
+            buttonCancel.SetPosition(w + 2, h + 92);
         }
 
         public override void Draw(float timeIndex)

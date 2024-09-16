@@ -25,8 +25,8 @@ namespace Mvk2.Gui.Screens
             label = new Label(window, ((RenderMvk)window.Render).FontLarge, 400, 40, "&nhttp://superant.by/mkv", true);
             label.Click += Label_Click;
             label.SetTextAlight(EnumAlight.Right, EnumAlightVert.Bottom);
-            button = new Button(window, font, 360, 40, "Кнопка супер Tag");
-            button2 = new Button(window, font, 800, 40, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
+            button = new Button(window, font, 360, "Кнопка супер Tag");
+            button2 = new Button(window, font, 800, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
 
             string textDebug =
             "&lЗанесло&r меня на остров, . Тут надо добавить длинее строку, чтоб она была подлинее, причём очень.\r\n" +

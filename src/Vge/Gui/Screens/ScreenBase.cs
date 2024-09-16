@@ -41,6 +41,11 @@ namespace Vge.Gui.Screens
         protected virtual void OnInitialize() { }
 
         /// <summary>
+        /// Запуск от родителя
+        /// </summary>
+        public virtual void LaunchFromParent(EnumScreenParent enumParent) { }
+
+        /// <summary>
         /// Изменён размер окна
         /// </summary>
         public void Resized()
@@ -77,6 +82,15 @@ namespace Vge.Gui.Screens
                 control.Draw(timeIndex);
             }
         }
+
+        /// <summary>
+        /// Получить ширину, с перерасчётом для инерфейса
+        /// </summary>
+        public int Width => window.Width / si;
+        /// <summary>
+        /// Получить высоту, с перерасчётом для инерфейса
+        /// </summary>
+        public int Height => window.Height / si;
 
         public override void Dispose()
         {

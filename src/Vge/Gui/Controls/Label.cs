@@ -33,7 +33,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Объект шрифта
         /// </summary>
-        private readonly FontBase font;
+        private FontBase font;
 
         /// <summary>
         /// Текстовая метка, на которую можно нажать
@@ -217,6 +217,16 @@ namespace Vge.Gui.Controls
         #endregion
 
         #region Set...
+
+        /// <summary>
+        /// Заменить шрифт
+        /// </summary>
+        public Label SetFont(FontBase font)
+        {
+            this.font = font;
+            IsRender = true;
+            return this;
+        }
 
         /// <summary>
         /// Задать выравнивание текста

@@ -9,6 +9,7 @@ using Mvk2.Renderer;
 using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
 using Vge.Util;
+using Mvk2.Gui;
 
 namespace Mvk2
 {
@@ -31,6 +32,7 @@ namespace Mvk2
         protected override void Initialized()
         {
             Version = "Test Малювек2 by SuperAnt ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            LScreen = new LaunchScreenMvk(this);
 
             // Загружаем опции
             new OptionsFileMvk().Load();
@@ -39,6 +41,11 @@ namespace Mvk2
         }
 
         #endregion
+
+        /// <summary>
+        /// Получить объект рендера Млювек
+        /// </summary>
+        public RenderMvk GetRender() => renderMvk;
 
         #region OnMouse
 
@@ -183,27 +190,14 @@ namespace Mvk2
 
         #endregion
 
-        #region Screen
-
-        /// <summary>
-        /// Создать скрин заставки
-        /// </summary>
-        public override void ScreenSplash() => ScreenCreate(new ScreenSplashMvk(this));
-        /// <summary>
-        /// Создать скрин главного меню
-        /// </summary>
-       // public override void ScreenMainMenu() => ScreenCreate(new ScreenDebug(this));
-
-        #endregion
-
         #region Game
 
         protected override void Game_Tick(object sender, EventArgs e)
         {
-            if (Screen != null && Screen is ScreenDebug screenDebug)
-            {
-                if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
-            }
+            //if (Screen != null && Screen is ScreenDebug screenDebug)
+            //{
+            //    if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
+            //}
         }
 
         #endregion

@@ -53,12 +53,9 @@ namespace Vge.Gui.Controls
         /// </summary>
         protected int si = 1;
 
-        protected readonly ScreenBase screen;
-
         protected WidgetBase(WindowMain window) : base(window)
         {
             si = Gi.Si;
-            screen = window.Screen;
         }
 
         /// <summary>
@@ -131,7 +128,16 @@ namespace Vge.Gui.Controls
         {
             Text = text;
             IsRender = true;
-            
+            return this;
+        }
+
+        /// <summary>
+        /// Изменить активность
+        /// </summary>
+        public WidgetBase SetEnable(bool enable)
+        {
+            Enabled = enable;
+            IsRender = true;
             return this;
         }
 

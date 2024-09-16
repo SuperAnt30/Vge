@@ -1,36 +1,33 @@
-﻿using Vge.Gui.Controls;
+﻿using System;
+using Vge.Gui.Controls;
 using Vge.Renderer.Font;
 using WinGL.Util;
 
 namespace Vge.Gui.Screens
 {
     /// <summary>
-    /// Экран основного меню 
+    /// Экран оповещения, ошибки
     /// </summary>
     public class ScreenNotification : ScreenBase
     {
-        private readonly Label label;
-        private readonly Button button;
+        protected readonly Label label;
+        protected readonly Button button;
 
         public ScreenNotification(WindowMain window, string notification) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width - 100, 200, notification, true);
+            label = new Label(window, font, window.Width - 100, 0, notification);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
-            button = new Button(window, font, 200, 40, L.T("Menu"));
+            button = new Button(window, font, 200, L.T("Menu"));
             button.Click += Button_Click;
         }
 
-        private void Label_Click(object sender, System.EventArgs e)
-        {
-            Clipboard.SetText(label.Text);
-        }
+        private void Label_Click(object sender, EventArgs e)
+            => Clipboard.SetText(label.Text);
 
-        private void Button_Click(object sender, System.EventArgs e)
-        {
-            window.ScreenMainMenu();
-        }
+        private void Button_Click(object sender, EventArgs e)
+            => window.LScreen.MainMenu();
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
@@ -47,42 +44,17 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            button.SetPosition((window.Width / si - button.Width) / 2, window.Height / (si * 2) + 20);
-            label.SetSize(window.Width / si - 100, label.Height);
-            label.SetPosition(50, window.Height / (si * 2) - label.Height);
+            int h = Height / 2;
+            int w = Width; 
+            button.SetPosition((w - button.Width) / 2, h);
+            label.SetSize(w - 100, 0);
+            label.SetPosition(50, h - 20);
         }
 
         public override void Draw(float timeIndex)
         {
             gl.ClearColor(.5f, .2f, .2f, 1f);
             base.Draw(timeIndex);
-
-            //RenderMain render = window.Render;
-
-            //render.FontMain.Clear();
-
-            //render.ShaderBindGuiColor();
-
-            //if (si != Gi.Si)
-            //{
-            //    si = Gi.Si;
-            //    if (mesh == null)
-            //    {
-            //        mesh = new MeshGuiColor(gl);
-            //    }
-            //    render.FontMain.SetColor(new Vector3(.9f, .9f, .9f)).SetFontFX(Renderer.Font.EnumFontFX.Shadow);
-            //    render.FontMain.RenderText(10 * si, 10 * si, notification);
-            //    render.FontMain.RenderFX();
-            //    render.FontMain.Reload(mesh);
-            //}
-
-            //render.BindTextureFontMain();
-            //mesh.Draw();
         }
-
-        //public override void Dispose()
-        //{
-        //    mesh.Dispose();
-        //}
     }
 }

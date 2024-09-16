@@ -65,7 +65,7 @@ namespace Vge.Gui.Screens
                 loading.buffereds.Clear();
                 window.Render.DeleteTextureSplash();
 
-                window.ScreenMainMenu();
+                window.LScreen.MainMenu();
             }
             else
             {

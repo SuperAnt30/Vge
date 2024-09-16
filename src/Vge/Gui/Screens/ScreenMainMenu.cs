@@ -17,13 +17,13 @@ namespace Vge.Gui.Screens
         public ScreenMainMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonSingle = new Button(window, font, 300, 40, L.T("Single"));
+            buttonSingle = new Button(window, font, 300, L.T("Single"));
             buttonSingle.Click += ButtonSingle_Click;
-            buttonMultiplayer = new Button(window, font, 300, 40, L.T("Multiplayer"));
+            buttonMultiplayer = new Button(window, font, 300, L.T("Multiplayer"));
             buttonMultiplayer.Click += ButtonMultiplayer_Click;
-            buttonOptions = new Button(window, font, 300, 40, L.T("Options"));
+            buttonOptions = new Button(window, font, 300, L.T("Options"));
             buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button(window, font, 300, 40, L.T("Exit"));
+            buttonExit = new Button(window, font, 300, L.T("Exit"));
             buttonExit.Click += ButtonExit_Click;
         }
 
@@ -31,7 +31,8 @@ namespace Vge.Gui.Screens
 
         private void ButtonSingle_Click(object sender, System.EventArgs e)
         {
-            window.GameLocalRun();
+            window.LScreen.Single();
+            //window.GameLocalRun();
         }
 
         private void ButtonMultiplayer_Click(object sender, System.EventArgs e)
@@ -40,14 +41,10 @@ namespace Vge.Gui.Screens
         }
 
         private void ButtonOptions_Click(object sender, System.EventArgs e)
-        {
-            window.ScreenOptions();
-        }
+            => window.LScreen.Options();
 
         private void ButtonExit_Click(object sender, System.EventArgs e)
-        {
-            window.Exit();
-        }
+            => window.Exit();
 
         #endregion
 
@@ -68,15 +65,12 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            buttonSingle.SetPosition((window.Width / si - buttonSingle.Width) / 2,
-                window.Height / (si * 2) - 40);
-            buttonMultiplayer.SetPosition((window.Width / si - buttonMultiplayer.Width) / 2,
-                window.Height / (si * 2) + 4);
-            buttonOptions.SetPosition((window.Width / si - buttonOptions.Width) / 2,
-                window.Height / (si * 2) + 48);
-            buttonExit.SetPosition((window.Width / si - buttonExit.Width) / 2,
-                window.Height / (si * 2) + 92);
-
+            int w = Width / 2;
+            int h = Height / 2;
+            buttonSingle.SetPosition(w - buttonSingle.Width / 2, h - 40);
+            buttonMultiplayer.SetPosition(w - buttonMultiplayer.Width / 2, h + 4);
+            buttonOptions.SetPosition(w - buttonOptions.Width / 2, h + 48);
+            buttonExit.SetPosition(w - buttonExit.Width / 2, h + 92);
         }
 
         public override void Draw(float timeIndex)
