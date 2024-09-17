@@ -1,6 +1,7 @@
 ﻿using System;
+using WinGL.OpenGL;
 
-namespace WinGL.OpenGL
+namespace Vge.Renderer
 {
     /// <summary>
     /// Объект буфера сетки через VAO
@@ -42,6 +43,8 @@ namespace WinGL.OpenGL
                 gl.GenBuffers(1, id);
                 ebo = id[0];
             }
+
+            Debug.meshId = vao;
 
             // attributes
             int stride = vertexSize * sizeof(float);

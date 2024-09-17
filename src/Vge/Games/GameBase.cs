@@ -61,6 +61,10 @@ namespace Vge.Games
         /// Остановка из потока
         /// </summary>
         protected bool isStop = false;
+        /// <summary>
+        /// Флаг, можно ли уже использовать тик
+        /// </summary>
+        protected bool flagTick = false;
 
         /// <summary>
         /// Объект времени с момента запуска проекта
@@ -90,6 +94,8 @@ namespace Vge.Games
             packets = new ProcessClientPackets(this);
         }
 
+        #region StartStopPause
+
         /// <summary>
         /// Запуск игры
         /// </summary>
@@ -106,6 +112,22 @@ namespace Vge.Games
         public virtual void SetGamePauseSingle(bool value) { }
 
         /// <summary>
+        /// Игрок на сервере
+        /// </summary>
+        public void PlayerOnTheServer(int id, string uuid)
+        {
+            window.LScreen.Close();
+            flagTick = true;
+        }
+
+        /// <summary>
+        /// Получили пакет загрузки от сервера
+        /// </summary>
+        public virtual void PacketLoadingGame(bool begin, int value) { }
+
+        #endregion
+
+        /// <summary>
         /// Отправить пакет на сервер
         /// </summary>
         public virtual void TrancivePacket(IPacket packet) { }
@@ -117,26 +139,28 @@ namespace Vge.Games
         /// </summary>
         public override void OnTick(float deltaTime)
         {
-            tickCounterClient++;
-            TickCounter++;
-
             // почерёдно получаем пакеты с сервера
             packets.Update();
 
-            // Тут надо указать 60 секунд
-            // Прошла минута, или 1200 тактов
-            if (tickCounterClient % 1200 == 0)
+            if (flagTick)
             {
-                Log.Save();
-            }
+                tickCounterClient++;
+                TickCounter++;
 
-            // Тут надо указать 10 секунд
-            if (tickCounterClient % 20 == 0)
-            {
-                // Раз в 10 секунды перепинговка
-                TrancivePacket(new Packet00PingPong(Time()));
-            }
+                // Тут надо указать 60 секунд
+                // Прошла минута, или 1200 тактов
+                if (tickCounterClient % 1200 == 0)
+                {
+                    Log.Save();
+                }
 
+                // Тут надо указать 10 секунд
+                if (tickCounterClient % 20 == 0)
+                {
+                    // Раз в 10 секунды перепинговка
+                    TrancivePacket(new Packet00PingPong(Time()));
+                }
+            }
             // Тест
          //   TrancivePacket(new PacketC04PlayerPosition(new System.Numerics.Vector3(1, 2.5f, 3.5f), true, false, true));
         }

@@ -58,6 +58,14 @@ namespace Vge
         /// Список одиночных игр
         /// </summary>
         public ListSingleGame ListSingle { get; private set; }
+        /// <summary>
+        /// Готово ли окно для графики и прочего, меняется статус после Splash
+        /// </summary>
+        public bool Ready { get; private set; } = false;
+        /// <summary>
+        /// Объект экрана
+        /// </summary>
+        public ScreenBase Screen { get; private set; }
 
         #endregion
 
@@ -71,11 +79,6 @@ namespace Vge
         /// Объект звуков
         /// </summary>
         protected AudioBase audio;
-
-        /// <summary>
-        /// Объект экрана
-        /// </summary>
-        private ScreenBase screen;
 
         /// <summary>
         /// Флаг на удаление, ждём когда закроется сервер
@@ -104,6 +107,7 @@ namespace Vge
             LScreen = new LaunchScreen(this);
             ListSingle = new ListSingleGame(this);
             Initialized();
+            FullScreen = Options.FullScreen;
 
             openGLVersion = OpenGLVersion.OpenGL3_3;
 
@@ -119,14 +123,35 @@ namespace Vge
         }
 
         /// <summary>
+        /// Готово окно для графики и прочего, меняем статус после Splash
+        /// </summary>
+        public void Readed() => Ready = true;
+
+        /// <summary>
         /// Вызывается перед очисткой окна
         /// </summary>
-        protected override void CleanWindow() => Render.Dispose();
+        protected override void CleanWindow()
+        {
+            Ready = false;
+            if (Screen != null) Screen.Dispose();
+            if (Game != null) Game.Dispose();
+            Render.Dispose();
+            audio.Clear();
+        }
 
         /// <summary>
         /// Получить объект OpenGL
         /// </summary>
         public GL GetOpenGL() => gl;
+
+        /// <summary>
+        /// Прочесть настройки
+        /// </summary>
+        protected virtual void OptionsLoad() => new OptionsFile().Load();
+        /// <summary>
+        /// Записать настройки
+        /// </summary>
+        protected virtual void OptionsSave() => new OptionsFile().Save();
 
         #endregion
 
@@ -139,7 +164,7 @@ namespace Vge
         {
             MouseX = x;
             MouseY = y;
-            if (screen != null) screen.OnMouseMove(x, y);
+            if (Screen != null) Screen.OnMouseMove(x, y);
             if (Game != null) Game.OnMouseMove(x, y);
         }
 
@@ -150,7 +175,7 @@ namespace Vge
         {
             MouseX = x;
             MouseY = y;
-            if (screen != null) screen.OnMouseDown(button, x, y);
+            if (Screen != null) Screen.OnMouseDown(button, x, y);
             if (Game != null) Game.OnMouseDown(button, x, y);
         }
 
@@ -161,7 +186,7 @@ namespace Vge
         {
             MouseX = x;
             MouseY = y;
-            if (screen != null) screen.OnMouseUp(button, x, y);
+            if (Screen != null) Screen.OnMouseUp(button, x, y);
             if (Game != null) Game.OnMouseUp(button, x, y);
         }
 
@@ -172,7 +197,7 @@ namespace Vge
         {
             MouseX = x;
             MouseY = y;
-            if (screen != null) screen.OnMouseWheel(delta, x, y);
+            if (Screen != null) Screen.OnMouseWheel(delta, x, y);
             if (Game != null) Game.OnMouseWheel(delta, x, y);
         }
 
@@ -185,13 +210,14 @@ namespace Vge
         /// </summary>
         protected override void OnKeyDown(Keys keys)
         {
-            if (screen != null) screen.OnKeyDown(keys);
+            if (Screen != null) Screen.OnKeyDown(keys);
             if (Game != null) Game.OnKeyDown(keys);
 
             if (keys == Keys.F11)
             {
-                FullScreen = !FullScreen;
-                ReloadGLWindow();
+                Options.FullScreen = !Options.FullScreen;
+                OptionsSave();
+                Restart();
             }
             else if (keys == Keys.F12)
             {
@@ -216,7 +242,7 @@ namespace Vge
         /// </summary>
         protected override void OnKeyUp(Keys keys)
         {
-            if (screen != null) screen.OnKeyUp(keys);
+            if (Screen != null) Screen.OnKeyUp(keys);
             if (Game != null) Game.OnKeyUp(keys);
         }
 
@@ -225,7 +251,7 @@ namespace Vge
         /// </summary>
         protected override void OnKeyPress(char key)
         {
-            if (screen != null) screen.OnKeyPress(key);
+            if (Screen != null) Screen.OnKeyPress(key);
         }
 
         #endregion
@@ -251,17 +277,6 @@ namespace Vge
         }
 
         /// <summary>
-        /// После перезапуска FullScreen происходит
-        /// </summary>
-        protected override void OnReloadGLWindow()
-        {
-            if (screen != null)
-            {
-                screen.Initialize();
-            }
-        }
-
-        /// <summary>
         /// Прорисовка кадра
         /// </summary>
         protected override void OnOpenGlDraw()
@@ -279,27 +294,36 @@ namespace Vge
             if (Game == null)
             {
                 // Нет игры
-                if (screen == null)
+                if (Screen == null)
                 {
                     // Отсутствует прорисовка
-                    throw new Exception(Sr.ThereIsNoDrawing);
+                    if (IsRunning())
+                    {
+                        throw new Exception(Sr.ThereIsNoDrawing);
+                    }
                 }
                 else
                 {
-                    screen.Draw(ticker.Interpolation);
+                    Screen.Draw(ticker.Interpolation);
                 }
             }
             else
             {
                 // Есть игра
                 Game.Draw(ticker.Interpolation);
-                if (screen != null)
+                if (Screen != null)
                 {
-                    screen.Draw(ticker.Interpolation);
+                    Screen.Draw(ticker.Interpolation);
                 }
             }
+            DrawDebug();
             Render.DrawEnd();
         }
+
+        /// <summary>
+        /// Отладка на экране
+        /// </summary>
+        protected virtual void DrawDebug() { }
 
         /// <summary>
         /// Изменён размер окна
@@ -314,9 +338,9 @@ namespace Vge
             {
                 Render.FontMain.UpdateSizeInterface();
             }
-            if (screen != null) 
+            if (Screen != null) 
             {
-                screen.Resized();
+                Screen.Resized();
             }
         }
 
@@ -341,10 +365,7 @@ namespace Vge
         /// <summary>
         /// Инициализаця объекта рендера
         /// </summary>
-        protected virtual void RenderInitialized()
-        {
-            Render = new RenderMain(this);
-        }
+        protected virtual void RenderInitialized() => Render = new RenderMain(this);
 
         /// <summary>
         /// Закрыть приложение
@@ -394,26 +415,27 @@ namespace Vge
         /// </summary>
         public void ScreenCreate(ScreenBase screen, bool dispose = true)
         {
-            if (dispose && this.screen != null) this.screen.Dispose();
-            this.screen = screen;
-            this.screen.Initialize();
+            if (dispose && this.Screen != null) this.Screen.Dispose();
+            this.Screen = screen;
+            this.Screen.Initialize();
         }
         /// <summary>
         /// Запуск от родителя с параметром
         /// </summary>
         public void ScreenLaunchFromParent(ScreenBase screen, EnumScreenParent enumParent = EnumScreenParent.None)
         {
-            this.screen = screen;
-            this.screen.LaunchFromParent(enumParent);
-            this.screen.Resized();
+            if (this.Screen != null) this.Screen.Dispose();
+            this.Screen = screen;
+            this.Screen.LaunchFromParent(enumParent);
+            this.Screen.Resized();
         }
         /// <summary>
         /// Закрыть скрин
         /// </summary>
         public void ScreenClose()
         {
-            if (screen != null) screen.Dispose();
-            screen = null;
+            if (Screen != null) Screen.Dispose();
+            Screen = null;
         }
 
         #endregion
@@ -425,7 +447,7 @@ namespace Vge
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
         {
-            LScreen.Close();
+            LScreen.Connection();
             if (Game == null)
             {
                 Game = new GameNet(this, ipAddress, port);
@@ -436,9 +458,9 @@ namespace Vge
         /// <summary>
         /// Запустить локальную игру
         /// </summary>
-        public void GameLocalRun()
-        {
-            LScreen.Close();
+        public void GameLocalRun(int slot, bool load, long seed = -1)
+        { 
+            LScreen.Working();
             if (Game == null)
             {
                 Game = new GameLocal(this);
@@ -536,9 +558,9 @@ namespace Vge
             audio.Tick();
             debug.audio = audio.StrDebug;
             
-            if (screen != null)
+            if (Screen != null)
             {
-                screen.OnTick(DeltaTime);
+                Screen.OnTick(DeltaTime);
             }
 
             if (Game == null)

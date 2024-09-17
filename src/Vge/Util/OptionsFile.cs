@@ -76,6 +76,7 @@ namespace Vge.Util
                 case "PathAssets": Options.PathAssets = value; return true;
                 case "PathGames": Options.PathGames = value; return true;
                 case "SizeInterface": Options.SizeInterface = int.Parse(value); return true;
+                case "FullScreen": Options.FullScreen = value == "1"; return true;
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
@@ -92,6 +93,7 @@ namespace Vge.Util
             file.WriteLine("PathAssets: " + Options.PathAssets);
             file.WriteLine("PathGames: " + Options.PathGames);
             file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());
+            file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));
             file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
             file.WriteLine("Fps: " + Options.Fps.ToString());
             file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());

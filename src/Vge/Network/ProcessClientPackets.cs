@@ -49,6 +49,9 @@ namespace Vge.Network
                 case 0x01:
                     Handle01KeepAlive((Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
                     break;
+                case 0x02:
+                    Handle02LoadingGame((PacketS02LoadingGame)readPacket.Receive(buffer, new PacketS02LoadingGame()));
+                    break;
                 default:
                     // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
                     packets.Add(buffer);
@@ -64,7 +67,10 @@ namespace Vge.Network
             switch (buffer[0])
             {
                 case 0x03:
-                    Handle03TimeUpdate((PacketS03TimeUpdate)readPacketUp.Receive(buffer, new PacketS03TimeUpdate()));
+                    Handle03JoinGame((PacketS03JoinGame)readPacketUp.Receive(buffer, new PacketS03JoinGame()));
+                    break;
+                case 0x04:
+                    Handle04TimeUpdate((PacketS04TimeUpdate)readPacketUp.Receive(buffer, new PacketS04TimeUpdate()));
                     break;
             }
         }
@@ -103,9 +109,21 @@ namespace Vge.Network
         }
 
         /// <summary>
+        /// Загрузка игры
+        /// </summary>
+        private void Handle02LoadingGame(PacketS02LoadingGame packet)
+            => Game.PacketLoadingGame(packet.IsBegin(), packet.GetValue());
+
+        /// <summary>
+        /// Пакет соединения игрока с сервером
+        /// </summary>
+        private void Handle03JoinGame(PacketS03JoinGame packet)
+            => Game.PlayerOnTheServer(packet.GetIndex(), packet.GetUuid());
+        
+        /// <summary>
         /// Пакет синхронизации времени с сервером
         /// </summary>
-        private void Handle03TimeUpdate(PacketS03TimeUpdate packet)
+        private void Handle04TimeUpdate(PacketS04TimeUpdate packet)
         {
             Game.SetTickCounter(packet.GetTime());
         }

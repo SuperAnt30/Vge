@@ -6,36 +6,41 @@ using WinGL.Util;
 namespace Vge.Gui.Screens
 {
     /// <summary>
-    /// Экран условия, где надо принять решения и вернутся в предыдущий экран
+    /// Экран создания игры
     /// </summary>
-    public class ScreenYesNo : ScreenBase
+    public class ScreenCreateGame : ScreenBase
     {
-        private readonly ScreenBase parent;
+        private readonly int slot;
         private readonly Label label;
-        private readonly Button buttonYes;
-        private readonly Button buttonNo;
+        private readonly Button buttonCreate;
+        private readonly Button buttonCancel;
 
-        public ScreenYesNo(WindowMain window, ScreenBase parent, string text) : base(window)
+        public ScreenCreateGame(WindowMain window, int slot) : base(window)
         {
+            // TODO::добавить контрол зерна
+            this.slot = slot;
             FontBase font = window.Render.FontMain;
-            this.parent = parent;
-            label = new Label(window, font, window.Width - 100, 0, text);
+            label = new Label(window, font, window.Width - 100, 0, "SingleCreate #" + slot);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
-            buttonYes = new Button(window, font, 200, L.T("Yes"));
-            buttonYes.Click += ButtonYes_Click;
-            buttonNo = new Button(window, font, 200, L.T("No"));
-            buttonNo.Click += ButtonNo_Click;
+            buttonCreate = new Button(window, font, 200, L.T("Create"));
+            buttonCreate.Click += ButtonCreate_Click;
+            buttonCancel = new Button(window, font, 200, L.T("Cancel"));
+            buttonCancel.Click += ButtonCancel_Click;
         }
 
         private void Label_Click(object sender, EventArgs e)
             => Clipboard.SetText(label.Text);
 
-        private void ButtonYes_Click(object sender, EventArgs e)
-            => window.LScreen.Parent(parent, EnumScreenParent.Yes);
+        private void ButtonCreate_Click(object sender, EventArgs e)
+        {
+            // Создаём игру 
+            long seed = 4;
+            window.GameLocalRun(slot, false, seed);
+        }
 
-        private void ButtonNo_Click(object sender, EventArgs e)
-            => window.LScreen.Parent(parent, EnumScreenParent.No);
+        private void ButtonCancel_Click(object sender, EventArgs e)
+            => window.LScreen.Single();
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
@@ -43,8 +48,8 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            AddControls(buttonYes);
-            AddControls(buttonNo);
+            AddControls(buttonCreate);
+            AddControls(buttonCancel);
             AddControls(label);
         }
 
@@ -55,8 +60,8 @@ namespace Vge.Gui.Screens
         {
             int h = Height / 2;
             int w = Width / 2;
-            buttonYes.SetPosition(w - buttonYes.Width + 2, h);
-            buttonNo.SetPosition(w + 2, h);
+            buttonCreate.SetPosition(w - buttonCreate.Width + 2, h);
+            buttonCancel.SetPosition(w + 2, h);
             label.SetSize(Width - 100, label.Height);
             label.SetPosition(50, h - label.Height - 20);
         }

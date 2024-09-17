@@ -28,6 +28,10 @@ namespace Vge.Util
         /// Размер интерфеса с учётом размера окна
         /// </summary>
         public static int SizeInterface { get; set; } = 1;
+        /// <summary>
+        /// Полноэкранные окно или нет
+        /// </summary>
+        public static bool FullScreen { get; set; } = false;
 
         /// <summary>
         /// Общая громкость

@@ -4,8 +4,10 @@ namespace Mvk2
 {
     class Program
     {
+        
         static void Main(string[] args)
         {
+            
             Window.Run(new WindowMvk());
 
             //double t = 0;

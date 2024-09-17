@@ -5,15 +5,17 @@
      *  |
      *  +-ScreenMainMenu *
      *     |  
-     *     +-ScreenSingle .
+     *     +-ScreenSingle *
      *     |  |
-     *     |  +-ScreenWorldLoading
+     *     |  +-ScreenCreateGame *
+     *     |  |
+     *     |  +-ScreenWorking *
      *     |  |
      *     |  +-ScreenWorldSaving
      *     |
      *     +-ScreenMultiplayer .
      *     |  |
-     *     |  +-ScreenConnecting
+     *     |  +-ScreenConnection
      *     |
      *     +-ScreenOptions .
      *     
@@ -57,6 +59,18 @@
         /// Создать скрин выбора одиночной игры
         /// </summary>
         public virtual void Single() => window.ScreenCreate(new ScreenSingle(window));
+        /// <summary>
+        /// Создать скрин создания одиночной игры
+        /// </summary>
+        public virtual void CreateGame(int slot) => window.ScreenCreate(new ScreenCreateGame(window, slot));
+        /// <summary>
+        /// Создание скрина выполнение работы
+        /// </summary>
+        public virtual void Working() => window.ScreenCreate(new ScreenWorking(window));
+        /// <summary>
+        /// Создание скрина подключение по сети
+        /// </summary>
+        public virtual void Connection() => window.ScreenCreate(new ScreenConnection(window));
         /// <summary>
         /// Создать скрин опций
         /// </summary>

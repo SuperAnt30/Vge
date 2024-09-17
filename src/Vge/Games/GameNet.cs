@@ -152,7 +152,7 @@ namespace Vge.Games
         public override void OnTick(float deltaTime)
         {
             // Проверка на разрыв долгий сервера (нет связи)
-            if (TimeOut())
+            if (flagTick && TimeOut())
             {
                 GameStoping(Srl.TheServerIsNotResponding, true);
             }

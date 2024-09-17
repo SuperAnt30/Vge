@@ -26,7 +26,7 @@ namespace Vge.Gui.Screens
         {
             window.ListSingle.Initialize();
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width, 0, L.T("Single"), true);
+            label = new Label(window, font, window.Width, 0, L.T("Single"));
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
             buttonMenu = new Button(window, font, 200, L.T("Menu"));
             buttonMenu.Click += Button_Click;
@@ -108,7 +108,16 @@ namespace Vge.Gui.Screens
         private void ButtonSlots_Click(object sender, EventArgs e)
         {
             slot = (int)((Button)sender).Tag;
-            //OnFinished(new ScreenEventArgs(EnumScreenKey.WorldBegin, EnumScreenKey.SinglePlayer, slot));
+            if (window.ListSingle.EmptyWorlds[slot])
+            {
+                // Если пустой, создаём
+                window.LScreen.CreateGame(slot);
+            }
+            else
+            {
+                // Если имеется загружаем
+                window.GameLocalRun(slot, true);
+            }
         }
 
         private void ButtonSlotsDel_Click(object sender, EventArgs e)

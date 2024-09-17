@@ -47,8 +47,7 @@ namespace Vge.Gui.Screens
             int h = Height / 2;
             int w = Width; 
             button.SetPosition((w - button.Width) / 2, h);
-            label.SetSize(w - 100, 0);
-            label.SetPosition(50, h - 20);
+            label.SetSize(w - 100, 0).SetPosition(50, h - 20);
         }
 
         public override void Draw(float timeIndex)

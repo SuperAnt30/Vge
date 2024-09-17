@@ -64,5 +64,11 @@ namespace Vge.Gui.Controls
             base.OnClick();
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (meshBg != null) meshBg.Dispose();
+        }
+
     }
 }

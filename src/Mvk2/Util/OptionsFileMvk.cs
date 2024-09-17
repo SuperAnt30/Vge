@@ -29,7 +29,7 @@ namespace Mvk2.Util
                     case "MusicVolume": OptionsMvk.MusicVolume = int.Parse(value); return true;
                     case "OverviewChunk": OptionsMvk.OverviewChunk = int.Parse(value); return true;
                     case "Nickname": OptionsMvk.Nickname = value.ToString(); return true;
-                    case "SmoothLighting": OptionsMvk.SmoothLighting = int.Parse(value) == 1; return true;
+                    case "SmoothLighting": OptionsMvk.SmoothLighting = value == "1"; return true;
                 }
                 return false;
             }

@@ -6,6 +6,7 @@ using WinGL.OpenGL;
 using WinGL.Win32.User32;
 using WinGL.Actions;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace WinGL
 {
@@ -115,6 +116,10 @@ namespace WinGL
         /// Работает ли глобальный loop
         /// </summary>
         private bool running = false;
+        /// <summary>
+        /// Флаг перезапуска программы
+        /// </summary>
+        private bool flagRestart = false;
 
         protected Window()
         {
@@ -198,6 +203,12 @@ namespace WinGL
                 if (timePeriodRun)
                 {
                     WinApi.TimeEndPeriod(1);
+                }
+                if (flagRestart)
+                {
+                    // Если имеется флаг перезапуска, запускаем новый процесс
+                    string name = Process.GetCurrentProcess().MainModule.FileName;
+                    Process.Start(name);
                 }
             }
         }
@@ -352,22 +363,6 @@ namespace WinGL
         }
 
         /// <summary>
-        /// Перезапустить окно, смена режима FullScreen
-        /// </summary>
-        protected void ReloadGLWindow()
-        {
-            CleanUp();
-            CreateGLWindow();
-            Begined();
-            OnReloadGLWindow();
-        }
-
-        /// <summary>
-        /// После перезапуска OpenGL происходит
-        /// </summary>
-        protected virtual void OnReloadGLWindow() { }
-
-        /// <summary>
         /// Основной цикл окна
         /// </summary>
         private void Loop()
@@ -452,6 +447,18 @@ namespace WinGL
         /// Закрыть приложение
         /// </summary>
         protected virtual void Close() => running = false;
+        /// <summary>
+        /// Работает ли луп
+        /// </summary>
+        protected bool IsRunning() => running;
+        /// <summary>
+        /// Перезапустить приложение
+        /// </summary>
+        protected void Restart()
+        {
+            flagRestart = true;
+            Close();
+        }
 
         #endregion
 
@@ -718,5 +725,7 @@ namespace WinGL
                 gl.SwapIntervalEXT(VSync ? 1 : 0);
             }
         }
+
+        
     }
 }

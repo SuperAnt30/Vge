@@ -56,6 +56,10 @@ namespace Vge.Games
         /// Пауза в игре, только для одиночной версии
         /// </summary>
         private bool isGamePaused = false;
+        /// <summary>
+        /// Флаг уже в loopе сервера, false - елё ещё не дошли до loop
+        /// </summary>
+        private bool flagInLoop = false;
 
         /// <summary>
         /// Принято пакетов за секунду
@@ -165,8 +169,24 @@ namespace Vge.Games
             OnRecieveMessage(e.Text);
         }
 
-        private void SocketServer_UserJoined(object sender, StringEventArgs e)
-            => Log.Server(Srl.ConnectedToTheServer, e.Text);
+        /// <summary>
+        /// Пользователь присоединился
+        /// </summary>
+        private void SocketServer_UserJoined(object sender, PacketStringEventArgs e)
+        {
+            Log.Server(Srl.ConnectedToTheServer, e.Text);
+            if (flagInLoop)
+            {
+                // Отправляем ему его id и uuid
+                Thread.Sleep(1000);
+                ResponsePacket(e.Side, new PacketS03JoinGame(2, "sdgsdg2"));
+            }
+            else
+            {
+                // Если мы не дошли до loop то предлагаем разорвать сокет, для повторного соединения
+                socketServer.PlayerDisconnect(e.Side);
+            }
+        }
 
         private void SocketServer_UserLeft(object sender, StringEventArgs e)
             => Log.Server(Srl.DisconnectedFromServer, e.Text, e.Tag.ToString());
@@ -220,7 +240,7 @@ namespace Vge.Games
         public void UpCountClients() => strNet = IsRunNet() ? "net[" + socketServer.SocketCount() + "]" : "";
 
         /// <summary>
-        /// Отправить пакет клиенту
+        /// Отправить пакет сетевому клиенту
         /// </summary>
         public void ResponsePacket(SocketSide socketClient, IPacket packet)
         {
@@ -238,11 +258,16 @@ namespace Vge.Games
         }
 
         /// <summary>
+        /// Отправить пакет владельцу
+        /// </summary>
+        public void ResponsePacketOwner(IPacket packet) => ResponsePacket(null, packet);
+
+        /// <summary>
         /// Отправить пакет всем клиентам
         /// </summary>
         public void ResponsePacketAll(IPacket packet)
         {
-            ResponsePacket(null, packet);
+            ResponsePacketOwner(packet);
             if (socketServer != null)
             {
                 SocketSide[] sockets = socketServer.GetSocketClients();
@@ -276,7 +301,16 @@ namespace Vge.Games
         private void ToLoop()
         {
             // Запуск игрока
+            ResponsePacketOwner(new PacketS02LoadingGame(625));
             // Запуск чанков 
+            for (int i = 0; i < 625; i++)
+            {
+                ResponsePacketOwner(new PacketS02LoadingGame(false));
+                Thread.Sleep(5);
+            }
+            ResponsePacketOwner(new PacketS03JoinGame(1, "sdgsdg"));
+            
+          //  ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Finish));
         }
 
         /// <summary>
@@ -303,6 +337,8 @@ namespace Vge.Games
                 long endTimeTakt = currentTime;
                 // Начальное время такта
                 long beginTime;
+                // Меняем флаг
+                flagInLoop = true;
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)
@@ -409,7 +445,7 @@ namespace Vge.Games
                 if (TickCounter % 600 == 0)
                 {
                     // раз в 30 секунд обновляем тик с клиентом
-                    ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
+                    ResponsePacketAll(new PacketS04TimeUpdate(TickCounter));
                 }
 
                 rxPrev = rx;

@@ -10,6 +10,8 @@ using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
 using Vge.Util;
 using Mvk2.Gui;
+using Vge.Renderer.Font;
+using Vge.Renderer;
 
 namespace Mvk2
 {
@@ -35,10 +37,19 @@ namespace Mvk2
             LScreen = new LaunchScreenMvk(this);
 
             // Загружаем опции
-            new OptionsFileMvk().Load();
+            OptionsLoad();
             // Объявление объекта звуков, загрузка семплов в loadinge
             audio = new AudioMvk();
         }
+
+        /// <summary>
+        /// Прочесть настройки
+        /// </summary>
+        protected override void OptionsLoad() => new OptionsFileMvk().Load();
+        /// <summary>
+        /// Записать настройки
+        /// </summary>
+        protected override void OptionsSave() => new OptionsFileMvk().Save();
 
         #endregion
 
@@ -46,6 +57,43 @@ namespace Mvk2
         /// Получить объект рендера Млювек
         /// </summary>
         public RenderMvk GetRender() => renderMvk;
+
+        #region Debug
+
+        private string textDebug = "";
+        private bool isTextDebug = false;
+        private MeshGuiColor meshTextDebug;
+
+        protected override void DrawDebug()
+        {
+            if (Ready)
+            {
+                if (isTextDebug)
+                {
+                    isTextDebug = false;
+                    Render.FontMain.Clear();
+                    Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new System.Numerics.Vector3(.9f, .9f, .9f));
+                    Render.FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug);
+                    Render.FontMain.RenderFX();
+                    meshTextDebug.Reload(Render.FontMain.ToBuffer());
+                    Render.FontMain.Clear();
+                }
+                // Прорисовка отладки
+                Render.ShaderBindGuiColor();
+                Render.FontMain.BindTexture();
+                meshTextDebug.Draw();
+            }
+        }
+
+        protected override void OnTick()
+        {
+            base.OnTick();
+            // Отладка на экране
+            textDebug = debug.ToText();
+            isTextDebug = true;
+        }
+
+        #endregion
 
         #region OnMouse
 
@@ -90,7 +138,7 @@ namespace Mvk2
             if (keys == Keys.F3)
             {
                 // Включить сервер локальный
-                GameLocalRun();
+                GameLocalRun(1, true);
                 ScreenCreate(new ScreenDebug(this));
             }
             else if (keys == Keys.F4)
@@ -150,6 +198,8 @@ namespace Mvk2
         protected override void OnOpenGLInitialized()
         {
             base.OnOpenGLInitialized();
+
+            meshTextDebug = new MeshGuiColor(gl);
 
             //gl.ShadeModel(GL.GL_SMOOTH);
             //gl.ClearColor(0.0f, .5f, 0.0f, 1f);

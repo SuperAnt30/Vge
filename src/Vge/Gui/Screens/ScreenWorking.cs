@@ -1,14 +1,12 @@
-﻿using System;
-using Vge.Realms;
-using Vge.Renderer;
+﻿using Vge.Renderer;
 using Vge.Util;
 
 namespace Vge.Gui.Screens
 {
     /// <summary>
-    /// Заставка
+    /// Экран выполнения работы
     /// </summary>
-    public class ScreenSplash : ScreenBase
+    public class ScreenWorking : ScreenBase
     {
         /// <summary>
         /// Шагов выполнено и прорисованно
@@ -17,28 +15,15 @@ namespace Vge.Gui.Screens
 
         private readonly MeshGuiColor meshProcess;
         private readonly ListFlout list = new ListFlout();
-        private readonly int max;
+        private int max = -1;
 
-        /// <summary>
-        /// Объект загрузчика
-        /// </summary>
-        protected Loading loading;
         /// <summary>
         /// Шагов выполнено
         /// </summary>
         private int countStep = 0;
-        /// <summary>
-        /// Был ли финиш
-        /// </summary>
-        private bool isFinish = false;
 
-        public ScreenSplash(WindowMain window) : base(window)
+        public ScreenWorking(WindowMain window) : base(window)
         {
-            LoadingCreate();
-            max = loading.GetMaxCountSteps();
-            loading.Step += Loading_Step;
-            loading.Finish += Loading_Finish;
-            loading.Starting();
             meshProcess = new MeshGuiColor(window.GetOpenGL());
         }
 
@@ -52,37 +37,15 @@ namespace Vge.Gui.Screens
         }
 
         /// <summary>
-        /// Объвление объекта загрузки
-        /// </summary>
-        protected virtual void LoadingCreate() => loading = new Loading(window);
-
-        private void Loading_Finish(object sender, EventArgs e)
-            => isFinish = true;
-
-        private void Loading_Step(object sender, EventArgs e)
-            => countStep++;
-
-        /// <summary>
         /// Игровой такт
         /// </summary>
         public override void OnTick(float deltaTime)
         {
-            if (isFinish)
+            if (countStep != countDraw)
             {
-                window.Render.AtFinishLoading(loading.buffereds.ToArray());
-                loading.buffereds.Clear();
-                window.Render.DeleteTextureSplash();
-                window.Readed();
-                window.LScreen.MainMenu();
-            }
-            else
-            {
-                if (countStep != countDraw)
-                {
-                    countDraw = countStep;
-                    // Тут рендер ползунка
-                    RenderStep();
-                }
+                countDraw = countStep;
+                // Тут рендер ползунка
+                RenderStep();
             }
         }
 
@@ -101,8 +64,11 @@ namespace Vge.Gui.Screens
             list.Clear();
             list.AddRange(MeshGuiColor.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
             list.AddRange(MeshGuiColor.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
-            int wcl = countDraw * 600 / max;
-            list.AddRange(MeshGuiColor.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
+            if (max > 0)
+            {
+                int wcl = countDraw * 600 / max;
+                list.AddRange(MeshGuiColor.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
+            }
 
             meshProcess.Reload(list.GetBufferAll(), list.Count);
         }
@@ -118,7 +84,7 @@ namespace Vge.Gui.Screens
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            gl.ClearColor(1, 1, 1, 1);
+          //  gl.ClearColor(1, 1, 1, 1);
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();
             DrawLogo();
@@ -132,5 +98,19 @@ namespace Vge.Gui.Screens
             base.Dispose();
             meshProcess.Dispose();
         }
+
+        #region Server
+
+        /// <summary>
+        /// Начало загрузки, получаем количество шагов
+        /// </summary>
+        public void ServerBegin(int count) => max = count;
+
+        /// <summary>
+        /// Шаг загрузки
+        /// </summary>
+        public void ServerStep() => countStep++;
+
+        #endregion
     }
 }

@@ -30,10 +30,7 @@ namespace Vge.Gui.Screens
         #region Clicks
 
         private void ButtonSingle_Click(object sender, System.EventArgs e)
-        {
-            window.LScreen.Single();
-            //window.GameLocalRun();
-        }
+            => window.LScreen.Single();
 
         private void ButtonMultiplayer_Click(object sender, System.EventArgs e)
         {

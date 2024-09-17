@@ -1,6 +1,4 @@
-﻿using Vge.Gui.Screens;
-
-namespace Vge.Gui.Controls
+﻿namespace Vge.Gui.Controls
 {
     /// <summary>
     /// Виджет для GUI

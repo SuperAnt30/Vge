@@ -259,6 +259,12 @@ namespace Vge.Gui.Controls
 
         #endregion
 
+        public override void Dispose()
+        {
+            if (meshLine != null) meshLine.Dispose();
+            if (meshTxt != null) meshTxt.Dispose();
+        }
+
         #region Event
 
         /// <summary>

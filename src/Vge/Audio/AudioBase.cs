@@ -72,5 +72,16 @@ namespace Vge.Audio
                 }
             }
         }
+
+        /// <summary>
+        /// Очистить весь буфер
+        /// </summary>
+        public void Clear()
+        {
+            foreach(AudioSample audio in items)
+            {
+                audio.Clear();
+            }
+        }
     }
 }

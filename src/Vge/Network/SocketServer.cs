@@ -93,6 +93,12 @@ namespace Vge.Network
         }
 
         /// <summary>
+        /// Разорвать соединение с игроком
+        /// </summary>
+        public void PlayerDisconnect(SocketSide socketSide)
+            => DisconnectHandler(socketSide, Sr.ThrownOut);
+
+        /// <summary>
         /// Остановить сервер
         /// </summary>
         public void Stop()
@@ -163,7 +169,7 @@ namespace Vge.Network
             socketSide.Connected += SocketSide_Connected;
             socketSide.Disconnected += SocketSide_Disconnected;
 
-            OnUserJoined(socketSide.ToString());
+           // OnUserJoined(socketSide.ToString(), socketSide);
 
             // Запуск поток для синхронной связи по сокету
             Thread myThread = new Thread(NetThread) { Name = "ServerNetwork" };
@@ -200,7 +206,11 @@ namespace Vge.Network
         #region SocketSide
 
         private void SocketSide_Connected(object sender, EventArgs e)
-            => clients.Add((SocketSide)sender);
+        {
+            SocketSide socketSide = sender as SocketSide;
+            clients.Add(socketSide);
+            OnUserJoined(socketSide.ToString(), socketSide);
+        }
 
         private void SocketSide_Disconnected(object sender, StringEventArgs e)
             => DisconnectHandler((SocketSide)sender, e.Text);
@@ -251,12 +261,12 @@ namespace Vge.Network
         /// <summary>
         /// Событие пользователь присоединился
         /// </summary>
-        public event StringEventHandler UserJoined;
+        public event PacketStringEventHandler UserJoined;
         /// <summary>
         /// Событие пользователь присоединился
         /// </summary>
-        private void OnUserJoined(string text)
-            => UserJoined?.Invoke(this, new StringEventArgs(text));
+        private void OnUserJoined(string text, SocketSide socketSide)
+            => UserJoined?.Invoke(this, new PacketStringEventArgs(text, socketSide));
 
         /// <summary>
         /// Событие пользователь вышел

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Vge.Event;
+using Vge.Gui.Screens;
 using Vge.Network;
 
 namespace Vge.Games
@@ -66,6 +67,24 @@ namespace Vge.Games
             {
                 packets.Clear();
                 OnStoped(notification, isWarning);
+            }
+        }
+
+        /// <summary>
+        /// Получили пакет загрузки от сервера
+        /// </summary>
+        public override void PacketLoadingGame(bool begin, int value)
+        {
+            if (window.Screen != null && window.Screen is ScreenWorking screen)
+            {
+                if (begin)
+                {
+                    screen.ServerBegin(value);
+                }
+                else
+                {
+                    screen.ServerStep();
+                }
             }
         }
 
