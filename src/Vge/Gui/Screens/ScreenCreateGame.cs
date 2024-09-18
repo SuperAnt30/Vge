@@ -1,7 +1,6 @@
 ﻿using System;
 using Vge.Gui.Controls;
 using Vge.Renderer.Font;
-using WinGL.Util;
 
 namespace Vge.Gui.Screens
 {
@@ -11,31 +10,45 @@ namespace Vge.Gui.Screens
     public class ScreenCreateGame : ScreenBase
     {
         private readonly int slot;
-        private readonly Label label;
-        private readonly Button buttonCreate;
-        private readonly Button buttonCancel;
+        protected readonly Label label;
+        protected readonly Label labelSeed;
+        protected readonly TextBox textBoxSeed;
+        protected readonly Button buttonCreate;
+        protected readonly Button buttonCancel;
 
         public ScreenCreateGame(WindowMain window, int slot) : base(window)
         {
-            // TODO::добавить контрол зерна
             this.slot = slot;
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width - 100, 0, "SingleCreate #" + slot);
-            label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
-            label.Click += Label_Click;
+            label = new Label(window, font, window.Width - 100, 0, L.T("SingleCreate{0}", slot));
+            label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
+
+            labelSeed = new Label(window, font, 300, 40, L.T("Seed"));
+            textBoxSeed = new TextBox(window, font, 300, 40, "",
+                TextBox.EnumRestrictions.Number);
+
             buttonCreate = new Button(window, font, 200, L.T("Create"));
             buttonCreate.Click += ButtonCreate_Click;
             buttonCancel = new Button(window, font, 200, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
         }
 
-        private void Label_Click(object sender, EventArgs e)
-            => Clipboard.SetText(label.Text);
-
         private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            // Создаём игру 
-            long seed = 4;
+            // Создаём игру
+            long seed;
+            try
+            {
+                seed = textBoxSeed.Text != "" ? long.Parse(textBoxSeed.Text) : 0;
+            }
+            catch
+            {
+                seed = 0;
+            }
+            if (seed == 0)
+            {
+                // Тут надо сгенерировать сид самому
+            }
             window.GameLocalRun(slot, false, seed);
         }
 
@@ -48,9 +61,11 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
+            AddControls(label);
+            AddControls(labelSeed);
+            AddControls(textBoxSeed);
             AddControls(buttonCreate);
             AddControls(buttonCancel);
-            AddControls(label);
         }
 
         /// <summary>
@@ -60,10 +75,13 @@ namespace Vge.Gui.Screens
         {
             int h = Height / 2;
             int w = Width / 2;
-            buttonCreate.SetPosition(w - buttonCreate.Width + 2, h);
+            int wl = w - labelSeed.Width / 2;
+            label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 200);
+            labelSeed.SetPosition(wl, h - 132);
+            textBoxSeed.SetPosition(wl, h - 92);
+
+            buttonCreate.SetPosition(w - buttonCreate.Width - 2, h);
             buttonCancel.SetPosition(w + 2, h);
-            label.SetSize(Width - 100, label.Height);
-            label.SetPosition(50, h - label.Height - 20);
         }
 
         public override void Draw(float timeIndex)

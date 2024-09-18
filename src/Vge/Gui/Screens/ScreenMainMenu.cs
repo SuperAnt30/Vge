@@ -33,9 +33,7 @@ namespace Vge.Gui.Screens
             => window.LScreen.Single();
 
         private void ButtonMultiplayer_Click(object sender, System.EventArgs e)
-        {
-            window.GameNetRun(Options.IpAddress, 32021);
-        }
+            => window.LScreen.Multiplayer();
 
         private void ButtonOptions_Click(object sender, System.EventArgs e)
             => window.LScreen.Options();

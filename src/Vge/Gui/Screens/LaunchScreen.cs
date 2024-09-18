@@ -13,9 +13,9 @@
      *     |  |
      *     |  +-ScreenWorldSaving
      *     |
-     *     +-ScreenMultiplayer .
+     *     +-ScreenMultiplayer *
      *     |  |
-     *     |  +-ScreenConnection
+     *     |  +-ScreenConnection *
      *     |
      *     +-ScreenOptions .
      *     
@@ -67,6 +67,10 @@
         /// Создание скрина выполнение работы
         /// </summary>
         public virtual void Working() => window.ScreenCreate(new ScreenWorking(window));
+        /// <summary>
+        /// Создание скрина многопользовательской игры
+        /// </summary>
+        public virtual void Multiplayer() => window.ScreenCreate(new ScreenMultiplayer(window));
         /// <summary>
         /// Создание скрина подключение по сети
         /// </summary>

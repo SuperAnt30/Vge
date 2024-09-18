@@ -26,6 +26,10 @@
         /// </summary>
         public bool Visible { get; private set; } = true;
         /// <summary>
+        /// Фокус
+        /// </summary>
+        public bool Focus { get; protected set; } = false;
+        /// <summary>
         /// Позиция X
         /// </summary>
         public int PosX { get; private set; }

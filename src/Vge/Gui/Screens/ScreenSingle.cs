@@ -26,7 +26,7 @@ namespace Vge.Gui.Screens
         {
             window.ListSingle.Initialize();
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width, 0, L.T("Single"));
+            label = new Label(window, font, window.Width, 0, L.T("Singleplayer"));
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
             buttonMenu = new Button(window, font, 200, L.T("Menu"));
             buttonMenu.Click += Button_Click;

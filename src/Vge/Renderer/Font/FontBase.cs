@@ -149,6 +149,11 @@ namespace Vge.Renderer.Font
             }
         }
 
+        /// <summary>
+        /// Проверить, присутствует ли такой символ
+        /// </summary>
+        public bool IsPresent(char key) => !Get(key).Equals(items[0]);
+
         #region Width
 
         /// <summary>

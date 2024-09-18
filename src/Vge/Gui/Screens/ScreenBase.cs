@@ -83,6 +83,21 @@ namespace Vge.Gui.Screens
             }
         }
 
+        #region Tick
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        public override void OnTick(float deltaTime)
+        {
+            foreach (WidgetBase control in controls)
+            {
+                if (control.Visible && control.Enabled) control.OnTick(deltaTime);
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Получить ширину, с перерасчётом для инерфейса
         /// </summary>
@@ -149,5 +164,41 @@ namespace Vge.Gui.Screens
 
         #endregion
 
+        #region OnKey
+
+        /// <summary>
+        /// Клавиша нажата
+        /// </summary>
+        public override void OnKeyDown(Keys keys)
+        {
+            foreach (WidgetBase control in controls)
+            {
+                if (control.Visible && control.Enabled && control.Focus) control.OnKeyDown(keys);
+            }
+        }
+
+        /// <summary>
+        /// Клавиша отпущена
+        /// </summary>
+        public override void OnKeyUp(Keys keys)
+        {
+            foreach (WidgetBase control in controls)
+            {
+                if (control.Visible && control.Enabled && control.Focus) control.OnKeyUp(keys);
+            }
+        }
+
+        /// <summary>
+        /// Нажата клавиша в char формате
+        /// </summary>
+        public override void OnKeyPress(char key)
+        {
+            foreach (WidgetBase control in controls)
+            {
+                if (control.Visible && control.Enabled && control.Focus) control.OnKeyPress(key);
+            }
+        }
+
+        #endregion
     }
 }

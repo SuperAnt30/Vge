@@ -5,8 +5,10 @@ namespace Vge.Gui.Controls
 {
     public class Button : Label
     {
+        /// <summary>
+        /// Сетка фона
+        /// </summary>
         private readonly MeshGuiColor meshBg;
-
         /// <summary>
         /// Коэфициент смещения вертикали для текстуры
         /// </summary>

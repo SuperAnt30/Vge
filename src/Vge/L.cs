@@ -60,11 +60,25 @@ public sealed class L
     /// </summary>
     public static string T(string key) => listGui.ContainsKey(key) ? listGui[key] : key;
     /// <summary>
+    /// Получить строку перевода для GUI
+    /// </summary>
+    public static string T(string key, params object[] args) => string.Format(T(key), args);
+    
+    /// <summary>
     /// Получить строку перевода для Server
     /// </summary>
     public static string S(string key) => listServer.ContainsKey(key) ? listServer[key] : key;
     /// <summary>
+    /// Получить строку перевода для Server
+    /// </summary>
+    public static string S(string key, params object[] args) => string.Format(S(key), args);
+    
+    /// <summary>
     /// Получить строку перевода для Items
     /// </summary>
     public static string I(string key) => listItems.ContainsKey(key) ? listItems[key] : key;
+    /// <summary>
+    /// Получить строку перевода для Items
+    /// </summary>
+    public static string I(string key, params object[] args) => string.Format(I(key), args);
 }

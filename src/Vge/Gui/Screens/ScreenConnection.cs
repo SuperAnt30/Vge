@@ -11,7 +11,7 @@ namespace Vge.Gui.Screens
 
         public ScreenConnection(WindowMain window) : base(window)
         {
-            label = new Label(window, window.Render.FontMain, 0, 0, "Connection...");
+            label = new Label(window, window.Render.FontMain, 0, 0, L.T("Connection") + Ce.Ellipsis);
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
         }
 

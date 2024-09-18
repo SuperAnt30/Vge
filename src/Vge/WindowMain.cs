@@ -97,7 +97,6 @@ namespace Vge
         /// </summary>
         private long currentTime;
 
-
         #endregion
 
         #region Initialized
@@ -151,7 +150,7 @@ namespace Vge
         /// <summary>
         /// Записать настройки
         /// </summary>
-        protected virtual void OptionsSave() => new OptionsFile().Save();
+        public virtual void OptionsSave() => new OptionsFile().Save();
 
         #endregion
 

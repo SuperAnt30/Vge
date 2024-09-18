@@ -39,7 +39,7 @@ namespace Vge.Gui.Controls
         /// Текстовая метка, на которую можно нажать
         /// </summary>
         /// <param name="isLine">Нужен ли контур, для отладки</param>
-        public Label(WindowMain window, FontBase font, int width, int height, string text, bool isLine = false) : base(window)
+        public Label(WindowMain window, FontBase font, bool isLine = false) : base(window)
         {
             this.font = font;
             meshTxt = new MeshGuiColor(gl);
@@ -47,9 +47,20 @@ namespace Vge.Gui.Controls
             {
                 meshLine = new MeshGuiLine(gl);
             }
-            SetText(text);
-            SetSize(width, height);
         }
+        /// <summary>
+        /// Текстовая метка, на которую можно нажать
+        /// </summary>
+        /// <param name="isLine">Нужен ли контур, для отладки</param>
+        public Label(WindowMain window, FontBase font, string text, bool isLine = false)
+            : this(window, font, isLine) => SetText(text);
+
+        /// <summary>
+        /// Текстовая метка, на которую можно нажать
+        /// </summary>
+        /// <param name="isLine">Нужен ли контур, для отладки</param>
+        public Label(WindowMain window, FontBase font, int width, int height, string text, bool isLine = false) 
+            : this(window, font, text, isLine) => SetSize(width, height);
 
         #region OnMouse
 

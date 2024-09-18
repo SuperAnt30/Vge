@@ -49,7 +49,7 @@ namespace Mvk2
         /// <summary>
         /// Записать настройки
         /// </summary>
-        protected override void OptionsSave() => new OptionsFileMvk().Save();
+        public override void OptionsSave() => new OptionsFileMvk().Save();
 
         #endregion
 
@@ -170,25 +170,6 @@ namespace Mvk2
 
             //map.ContainsKey(keys);
             //textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
-        }
-
-        protected override void OnKeyUp(Keys keys)
-        {
-            base.OnKeyUp(keys);
-            //textDb = "up " + keys.ToString();
-        }
-
-        protected override void OnKeyPress(char key)
-        {
-            try
-            {
-                //textDb += key;
-                return;
-            }
-            catch (Exception ex)
-            {
-                return;
-            }
         }
 
         #endregion
