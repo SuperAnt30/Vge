@@ -52,6 +52,10 @@ namespace Vge.Network
         /// Объект-событие
         /// </summary>
         private AutoResetEvent waitHandler;
+        /// <summary>
+        /// Объект для запаковки пакетов в массив для отправки владельца
+        /// </summary>
+        private readonly WritePacket streamPacket= new WritePacket();
 
         /// <summary>
         /// Создать сокет на стороне клиента
@@ -160,6 +164,18 @@ namespace Vge.Network
                 packets.Add(ret);
                 // Сигнализируем, что waitHandler в сигнальном состоянии
                 waitHandler.Set();
+            }
+        }
+
+        /// <summary>
+        /// Отправить пакет
+        /// </summary>
+        public void SendPacket(IPacket packet)
+        {
+            if (IsConnect())
+            {
+                streamPacket.Trancive(packet);
+                SendPacket(streamPacket.ToArray());
             }
         }
 

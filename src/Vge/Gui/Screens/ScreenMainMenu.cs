@@ -1,6 +1,5 @@
 ﻿using Vge.Gui.Controls;
 using Vge.Renderer.Font;
-using Vge.Util;
 
 namespace Vge.Gui.Screens
 {
@@ -36,7 +35,7 @@ namespace Vge.Gui.Screens
             => window.LScreen.Multiplayer();
 
         private void ButtonOptions_Click(object sender, System.EventArgs e)
-            => window.LScreen.Options();
+            => window.LScreen.Options(this, false);
 
         private void ButtonExit_Click(object sender, System.EventArgs e)
             => window.Exit();

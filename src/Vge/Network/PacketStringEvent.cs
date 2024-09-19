@@ -13,7 +13,7 @@
         public string Text { get; private set; }
         public SocketSide Side { get; private set; }
 
-        public PacketStringEventArgs(string text, SocketSide socketSide)
+        public PacketStringEventArgs(SocketSide socketSide, string text = "")
         {
             Text = text;
             Side = socketSide;

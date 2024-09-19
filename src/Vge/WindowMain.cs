@@ -210,7 +210,7 @@ namespace Vge
         protected override void OnKeyDown(Keys keys)
         {
             if (Screen != null) Screen.OnKeyDown(keys);
-            if (Game != null) Game.OnKeyDown(keys);
+            else if (Game != null) Game.OnKeyDown(keys);
 
             if (keys == Keys.F11)
             {
@@ -242,7 +242,7 @@ namespace Vge
         protected override void OnKeyUp(Keys keys)
         {
             if (Screen != null) Screen.OnKeyUp(keys);
-            if (Game != null) Game.OnKeyUp(keys);
+            else if (Game != null) Game.OnKeyUp(keys);
         }
 
         /// <summary>
@@ -414,19 +414,19 @@ namespace Vge
         /// </summary>
         public void ScreenCreate(ScreenBase screen, bool dispose = true)
         {
-            if (dispose && this.Screen != null) this.Screen.Dispose();
-            this.Screen = screen;
-            this.Screen.Initialize();
+            if (dispose && Screen != null) Screen.Dispose();
+            Screen = screen;
+            Screen.Initialize();
         }
         /// <summary>
         /// Запуск от родителя с параметром
         /// </summary>
         public void ScreenLaunchFromParent(ScreenBase screen, EnumScreenParent enumParent = EnumScreenParent.None)
         {
-            if (this.Screen != null) this.Screen.Dispose();
-            this.Screen = screen;
-            this.Screen.LaunchFromParent(enumParent);
-            this.Screen.Resized();
+            if (Screen != null) Screen.Dispose();
+            Screen = screen;
+            Screen.LaunchFromParent(enumParent);
+            Screen.Resized();
         }
         /// <summary>
         /// Закрыть скрин
@@ -446,7 +446,7 @@ namespace Vge
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
         {
-            LScreen.Connection();
+            LScreen.Process(L.T("Connection") + Ce.Ellipsis);
             if (Game == null)
             {
                 Game = new GameNet(this, ipAddress, port);
@@ -474,6 +474,17 @@ namespace Vge
             Game.ServerTextDebug += Game_ServerTextDebug;
             Game.Tick += Game_Tick;
             Game.GameStarting();
+        }
+
+        /// <summary>
+        /// Остановить игру
+        /// </summary>
+        public void GameStoping()
+        {
+            if (Game != null)
+            {
+                Game.GameStoping(Srl.TheUserStoppedTheGame, false);
+            }
         }
 
         protected virtual void Game_Tick(object sender, EventArgs e) { }
@@ -516,17 +527,6 @@ namespace Vge
         {
             Logger.Crash(e.Exception, "WindowMain");
             MessageBoxCrash(e.Exception);
-        }
-
-        /// <summary>
-        /// Остановить игру
-        /// </summary>
-        protected void GameStoping()
-        {
-            if (Game != null)
-            {
-                Game.GameStoping(Srl.TheUserStoppedTheGame, false);
-            }
         }
 
         #endregion

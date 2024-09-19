@@ -30,10 +30,7 @@ namespace Vge.Games
         /// Задать паузу для одиночной игры
         /// </summary>
         public override void SetGamePauseSingle(bool value)
-        {
-            IsGamePaused = server.SetGamePauseSingle(value);
-            server.TestUserAllKill();
-        }
+            => IsGamePaused = server.SetGamePauseSingle(value);
 
         #region Server
 
@@ -58,6 +55,7 @@ namespace Vge.Games
         /// </summary>
         public override void GameStoping(string notification, bool isWarning)
         {
+            window.LScreen.Process(L.T("Saving") + Ce.Ellipsis);
             if (server != null)
             {
                 stopNotification = notification;

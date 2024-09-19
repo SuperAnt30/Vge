@@ -104,7 +104,7 @@ namespace Vge.Network
         /// </summary>
         private void Handle01KeepAlive(Packet01KeepAlive packet)
         {
-            Game.TrancivePacket(packet);// new PacketC01KeepAlive(packet.GetTime()));
+            Game.TrancivePacket(packet);
             Game.OnTick2();
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -22,11 +21,6 @@ namespace Vge.Network
         /// </summary>
         public readonly int Port;
 
-        /// <summary>
-        /// Колекция сокетов клиентов
-        /// </summary>
-        private List<SocketSide> clients = new List<SocketSide>();
-
         public SocketServer(int port) => Port = port;
 
         /// <summary>
@@ -45,9 +39,6 @@ namespace Vge.Network
 
             try
             {
-                // очистили список клиентов
-                clients.Clear();
-
                 // Создание сокета сервера
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 // Связываем сокет с конечной точкой
@@ -79,26 +70,6 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// TODO::TestUserAllKill
-        /// </summary>
-        public void TestUserAllKill()
-        {
-            if (clients.Count > 0)
-            {
-                for (int i = clients.Count - 1; i >= 0; i--)
-                {
-                    DisconnectHandler(clients[i], Sr.ThrownOut);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Разорвать соединение с игроком
-        /// </summary>
-        public void PlayerDisconnect(SocketSide socketSide)
-            => DisconnectHandler(socketSide, Sr.ThrownOut);
-
-        /// <summary>
         /// Остановить сервер
         /// </summary>
         public void Stop()
@@ -111,13 +82,6 @@ namespace Vge.Network
             {
                 try
                 {
-                    if (clients.Count > 0)
-                    {
-                        for (int i = clients.Count - 1; i >= 0; i--)
-                        {
-                            DisconnectHandler(clients[i], Sr.StopServer);
-                        }
-                    }
                     socket.Close();
                     socket = null;
                 }
@@ -169,8 +133,6 @@ namespace Vge.Network
             socketSide.Connected += SocketSide_Connected;
             socketSide.Disconnected += SocketSide_Disconnected;
 
-           // OnUserJoined(socketSide.ToString(), socketSide);
-
             // Запуск поток для синхронной связи по сокету
             Thread myThread = new Thread(NetThread) { Name = "ServerNetwork" };
             myThread.Start(socketSide);
@@ -208,8 +170,7 @@ namespace Vge.Network
         private void SocketSide_Connected(object sender, EventArgs e)
         {
             SocketSide socketSide = sender as SocketSide;
-            clients.Add(socketSide);
-            OnUserJoined(socketSide.ToString(), socketSide);
+            OnUserJoined(socketSide);
         }
 
         private void SocketSide_Disconnected(object sender, StringEventArgs e)
@@ -229,31 +190,10 @@ namespace Vge.Network
         /// <summary>
         /// Разрываем соединение с текущим обработчиком
         /// </summary>
-        private void DisconnectHandler(SocketSide socketClient, string text)
+        public void DisconnectHandler(SocketSide socketClient, string cause = Sr.ThrownOut)
         {
-            OnUserLeft(socketClient.ToString(), text);
-            clients.Remove(socketClient);
+            OnUserLeft(socketClient, cause);
             socketClient.DisconnectFromServer();
-        }
-
-        /// <summary>
-        /// Отправить пакет
-        /// </summary>
-        public void SendPacket(SocketSide socketClient, byte[] bytes) 
-            => socketClient.SendPacket(bytes);
-
-        /// <summary>
-        /// Количество сокет клиентов
-        /// </summary>
-        public int SocketCount() => clients.Count;
-
-        /// <summary>
-        /// Получить всех клиентов
-        /// </summary>
-        public SocketSide[] GetSocketClients()
-        {
-            //TODO::2024-08-26 SocketSide[] временно
-            return clients.ToArray();
         }
 
         #region Event
@@ -265,18 +205,18 @@ namespace Vge.Network
         /// <summary>
         /// Событие пользователь присоединился
         /// </summary>
-        private void OnUserJoined(string text, SocketSide socketSide)
-            => UserJoined?.Invoke(this, new PacketStringEventArgs(text, socketSide));
+        private void OnUserJoined(SocketSide socketSide)
+            => UserJoined?.Invoke(this, new PacketStringEventArgs(socketSide));
 
         /// <summary>
         /// Событие пользователь вышел
         /// </summary>
-        public event StringEventHandler UserLeft;
+        public event PacketStringEventHandler UserLeft;
         /// <summary>
         /// Событие пользователь вышел
         /// </summary>
-        private void OnUserLeft(string ipName, string text)
-            => UserLeft?.Invoke(this, new StringEventArgs(ipName, text));
+        private void OnUserLeft(SocketSide socketSide, string cause)
+            => UserLeft?.Invoke(this, new PacketStringEventArgs(socketSide, cause));
 
         /// <summary>
         /// Событие предупреждающая строка

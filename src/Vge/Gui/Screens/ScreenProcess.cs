@@ -3,15 +3,15 @@
 namespace Vge.Gui.Screens
 {
     /// <summary>
-    /// Экран соединения
+    /// Экран процесс выполнения
     /// </summary>
-    public class ScreenConnection : ScreenBase
+    public class ScreenProcess : ScreenBase
     {
         protected readonly Label label;
 
-        public ScreenConnection(WindowMain window) : base(window)
+        public ScreenProcess(WindowMain window, string text) : base(window)
         {
-            label = new Label(window, window.Render.FontMain, 0, 0, L.T("Connection") + Ce.Ellipsis);
+            label = new Label(window, window.Render.FontMain, text);
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
         }
 
@@ -29,7 +29,13 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            label.SetSize(Width, Height).SetPosition(0, 0);
+            label.SetSize(Width, Height);
+        }
+
+        public override void Draw(float timeIndex)
+        {
+            gl.ClearColor(.5f, .3f, .02f, 1f);
+            base.Draw(timeIndex);
         }
     }
 }

@@ -10,12 +10,8 @@
      *     |  +-ScreenCreateGame *
      *     |  |
      *     |  +-ScreenWorking *
-     *     |  |
-     *     |  +-ScreenWorldSaving
      *     |
      *     +-ScreenMultiplayer *
-     *     |  |
-     *     |  +-ScreenConnection *
      *     |
      *     +-ScreenOptions .
      *     
@@ -25,7 +21,9 @@
      *  |
      *  +-ScreenYesNo * (Надо принять решения и вернутся в предыдущий экран)
      *  |
-     *  +-ScreenInGameMenu
+     *  +-ScreenInGameMenu *
+     *  |
+     *  +-ScreenProcess *
      *  
      */
 
@@ -56,6 +54,10 @@
         /// </summary>
         public virtual void MainMenu() => window.ScreenCreate(new ScreenMainMenu(window));
         /// <summary>
+        /// Создать скрин меню во время игры
+        /// </summary>
+        public virtual void InGameMenu() => window.ScreenCreate(new ScreenInGameMenu(window));
+        /// <summary>
         /// Создать скрин выбора одиночной игры
         /// </summary>
         public virtual void Single() => window.ScreenCreate(new ScreenSingle(window));
@@ -72,13 +74,13 @@
         /// </summary>
         public virtual void Multiplayer() => window.ScreenCreate(new ScreenMultiplayer(window));
         /// <summary>
-        /// Создание скрина подключение по сети
+        /// Создание скрина процесс выполнения
         /// </summary>
-        public virtual void Connection() => window.ScreenCreate(new ScreenConnection(window));
+        public virtual void Process(string text) => window.ScreenCreate(new ScreenProcess(window, text));
         /// <summary>
         /// Создать скрин опций
         /// </summary>
-        public virtual void Options() => window.ScreenCreate(new ScreenOptions(window));
+        public virtual void Options(ScreenBase parent, bool inGame) => window.ScreenCreate(new ScreenOptions(window, parent, inGame), false);
         /// <summary>
         /// Создать скрин оповещения, после которого выйдем в меню
         /// </summary>

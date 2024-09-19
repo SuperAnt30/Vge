@@ -75,6 +75,7 @@ namespace Vge.Games
 
         public override void GameStoping(string notification, bool isWarning)
         {
+            window.LScreen.Process(L.T("Leaving") + Ce.Ellipsis);
             stopIsWarning = isWarning;
             stopNotification = notification;
             if (socket != null)

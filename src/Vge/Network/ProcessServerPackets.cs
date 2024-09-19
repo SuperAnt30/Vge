@@ -113,7 +113,7 @@ namespace Vge.Network
                 lastSentPingPacket = server.TickCounter;
                 lastPingTime = server.Time();
                 pingKeySend = (uint)lastPingTime;
-                server.ResponsePacketAll(new Packet01KeepAlive(pingKeySend));
+                server.Players.SendToAll(new Packet01KeepAlive(pingKeySend));
             }
             packets.Step();
             int count = packets.CountBackward;
@@ -139,6 +139,7 @@ namespace Vge.Network
         /// </summary>
         private void Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
+            // TODO::2024-09-18 надо сделать мендежер игроков! Пора!
             //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
             //if (packet.GetTime() == pingKeySend && entityPlayer != null)
             //{

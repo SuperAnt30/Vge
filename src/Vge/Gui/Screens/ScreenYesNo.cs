@@ -11,9 +11,9 @@ namespace Vge.Gui.Screens
     public class ScreenYesNo : ScreenBase
     {
         private readonly ScreenBase parent;
-        private readonly Label label;
-        private readonly Button buttonYes;
-        private readonly Button buttonNo;
+        protected readonly Label label;
+        protected readonly Button buttonYes;
+        protected readonly Button buttonNo;
 
         public ScreenYesNo(WindowMain window, ScreenBase parent, string text) : base(window)
         {

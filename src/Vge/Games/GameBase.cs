@@ -6,6 +6,7 @@ using Vge.Gui.Huds;
 using Vge.Network;
 using Vge.Network.Packets;
 using Vge.Util;
+using WinGL.Actions;
 
 namespace Vge.Games
 {
@@ -127,6 +128,33 @@ namespace Vge.Games
 
         #endregion
 
+        #region OnKey
+
+        /// <summary>
+        /// Клавиша нажата
+        /// </summary>
+        public override void OnKeyDown(Keys keys)
+        {
+            // Скрина быть не должно коль клавиши тут работают
+            if (keys == Keys.Escape)
+            {
+                SetGamePauseSingle(true);
+                window.LScreen.InGameMenu();
+            }
+        }
+
+        /// <summary>
+        /// Клавиша отпущена
+        /// </summary>
+        public override void OnKeyUp(Keys keys) { }
+
+        /// <summary>
+        /// Нажата клавиша в char формате
+        /// </summary>
+        public override void OnKeyPress(char key) { }
+
+        #endregion
+
         /// <summary>
         /// Отправить пакет на сервер
         /// </summary>
@@ -142,7 +170,7 @@ namespace Vge.Games
             // почерёдно получаем пакеты с сервера
             packets.Update();
 
-            if (flagTick)
+            if (flagTick && !IsGamePaused)
             {
                 tickCounterClient++;
                 TickCounter++;

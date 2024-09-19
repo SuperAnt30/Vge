@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Vge.Event;
+using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.Util;
@@ -20,6 +21,10 @@ namespace Vge.Games
         /// Объект сыщик
         /// </summary>
         public readonly Profiler Filer;
+        /// <summary>
+        /// Объект управления пользователями на сервере
+        /// </summary>
+        public readonly PlayerManager Players;
 
         /// <summary>
         /// Указывает, запущен сервер или нет. Установите значение false, 
@@ -90,15 +95,16 @@ namespace Vge.Games
         /// </summary>
         private ProcessServerPackets packets;
         /// <summary>
-        /// Объект для запаковки пакетов в массив для отправки
+        /// Объект для запаковки пакетов в массив для отправки владельца
         /// </summary>
-        //private readonly WritePacket streamPacket = new WritePacket();
+        private readonly WritePacket streamPacketOwner = new WritePacket();
 
         public Server(Logger log)
         {
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
             packets = new ProcessServerPackets(this);
+            Players = new PlayerManager(this);
             frequencyMs = Stopwatch.Frequency / 1000;
             stopwatchTps.Start();
         }
@@ -174,22 +180,27 @@ namespace Vge.Games
         /// </summary>
         private void SocketServer_UserJoined(object sender, PacketStringEventArgs e)
         {
-            Log.Server(Srl.ConnectedToTheServer, e.Text);
+            Players.PlayerAdd(e.Side);
+            Log.Server(Srl.ConnectedToTheServer, e.Side.ToString());
             if (flagInLoop)
             {
                 // Отправляем ему его id и uuid
-                Thread.Sleep(1000);
+                Thread.Sleep(1000); //TODO::Thread.Sleep
                 ResponsePacket(e.Side, new PacketS03JoinGame(2, "sdgsdg2"));
             }
             else
             {
                 // Если мы не дошли до loop то предлагаем разорвать сокет, для повторного соединения
-                socketServer.PlayerDisconnect(e.Side);
+                socketServer.DisconnectHandler(e.Side);
             }
         }
 
-        private void SocketServer_UserLeft(object sender, StringEventArgs e)
-            => Log.Server(Srl.DisconnectedFromServer, e.Text, e.Tag.ToString());
+        private void SocketServer_UserLeft(object sender, PacketStringEventArgs e)
+        {
+            Players.PlayerRemove(e.Side);
+            Log.Server(Srl.DisconnectedFromServer, e.Text, e.Side.ToString());
+        }
+            
 
         private void SocketServer_Error(object sender, ErrorEventArgs e)
         {
@@ -237,59 +248,40 @@ namespace Vge.Games
         /// <summary>
         /// Обновить количество клиентов
         /// </summary>
-        public void UpCountClients() => strNet = IsRunNet() ? "net[" + socketServer.SocketCount() + "]" : "";
+        public void UpCountClients() => strNet = IsRunNet() ? "net[" + Players.PlayerNetCount() + "]" : "";
 
         /// <summary>
-        /// Отправить пакет сетевому клиенту
+        /// Отправить пакет сетевому клиенту,
+        /// Если SocketSide null то владельцу
         /// </summary>
         public void ResponsePacket(SocketSide socketClient, IPacket packet)
         {
-            WritePacket streamPacket = new WritePacket();
-            streamPacket.Trancive(packet);
-            tx++;
-            if (socketClient != null)
+            if (socketClient == null)
             {
-                socketServer.SendPacket(socketClient, streamPacket.ToArray());
+                ResponsePacketOwner(packet);
             }
             else
             {
-                OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(streamPacket.ToArray()), null));
+                tx++;
+                socketClient.SendPacket(packet);
             }
         }
 
         /// <summary>
         /// Отправить пакет владельцу
         /// </summary>
-        public void ResponsePacketOwner(IPacket packet) => ResponsePacket(null, packet);
-
-        /// <summary>
-        /// Отправить пакет всем клиентам
-        /// </summary>
-        public void ResponsePacketAll(IPacket packet)
+        public void ResponsePacketOwner(IPacket packet)
         {
-            ResponsePacketOwner(packet);
-            if (socketServer != null)
-            {
-                SocketSide[] sockets = socketServer.GetSocketClients();
-                for (int i = 0; i < sockets.Length; i++)
-                {
-                    //  System.Threading.Thread.Sleep(40);
-                    if (sockets[i].IsConnect())
-                    {
-                        ResponsePacket(sockets[i], packet);
-                    }
-                }
-            }
-            //if (World != null)
-            //{
-            //    World.Players.SendToAll(packet);
-            //}
+            tx++;
+            streamPacketOwner.Trancive(packet);
+            OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(streamPacketOwner.ToArray()), null));
         }
 
         /// <summary>
-        /// Разорвать соединение с игроком по сокету
+        /// Разорвать соединение с игроком
         /// </summary>
-        //public void DisconnectPlayer(Socket socket) => socketServer.DisconnectPlayer(socket);
+        public void PlayerDisconnect(SocketSide socketSide, string cause)
+            => socketServer.DisconnectHandler(socketSide, cause);
 
         #endregion
 
@@ -301,16 +293,18 @@ namespace Vge.Games
         private void ToLoop()
         {
             // Запуск игрока
-            ResponsePacketOwner(new PacketS02LoadingGame(625));
-            // Запуск чанков 
-            for (int i = 0; i < 625; i++)
+            // Тут должен знать его Ник, и место спавна
+            // Отправляем количество шагов на загрузку
+            ushort step = 100;// 625;
+            ResponsePacketOwner(new PacketS02LoadingGame(step));
+            // Запуск чанков (шагов)
+            for (int i = 0; i < step; i++)
             {
                 ResponsePacketOwner(new PacketS02LoadingGame(false));
-                Thread.Sleep(5);
+                Thread.Sleep(1); //TODO::Thread.Sleep
             }
+            // Загрузка закончена, последний штрих передаём id игрока и его uuid
             ResponsePacketOwner(new PacketS03JoinGame(1, "sdgsdg"));
-            
-          //  ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Finish));
         }
 
         /// <summary>
@@ -403,10 +397,14 @@ namespace Vge.Games
         {
             Log.Server(Srl.Stopping);
             //World.WorldStoping();
+            Thread.Sleep(500);//TODO::Thread.Sleep
             // Тут надо сохранить мир
             packets.Clear();
-            if (socketServer != null)
+            if (socketServer != null && socketServer.IsConnected())
             {
+                // Выкидываем всех игроков
+                Players.AllNetPlayersDisconnect(Sr.StopServer);
+                // Останавливаем сокет
                 socketServer.Stop();
             }
             else
@@ -445,7 +443,7 @@ namespace Vge.Games
                 if (TickCounter % 600 == 0)
                 {
                     // раз в 30 секунд обновляем тик с клиентом
-                    ResponsePacketAll(new PacketS04TimeUpdate(TickCounter));
+                    Players.SendToAll(new PacketS04TimeUpdate(TickCounter));
                 }
 
                 rxPrev = rx;
@@ -489,7 +487,7 @@ namespace Vge.Games
         {
             if (IsRunNet())
             {
-                socketServer.TestUserAllKill();
+                Players.TestUserAllKill();
             }
         }
 
