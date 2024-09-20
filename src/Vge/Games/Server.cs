@@ -99,6 +99,11 @@ namespace Vge.Games
         /// </summary>
         private readonly WritePacket streamPacketOwner = new WritePacket();
 
+        /// <summary>
+        /// Счётчик зарегистрированных сущностей с начала запуска игры
+        /// </summary>
+        private int lastEntityId = 0;
+
         public Server(Logger log)
         {
             Log = log;
@@ -114,11 +119,14 @@ namespace Vge.Games
         /// <summary>
         /// Запустить сервер в отдельном потоке
         /// </summary>
-        public void Starting()
+        public void Starting(string login, string token)
         {
             byte slot = 1;
-            int indexVersion = 1;
-            Log.Server(Srl.Starting, slot, indexVersion);
+            if (login != "") // TODO::2024-09-20 Сделать шибку если имя пустое
+            {
+                Players.PlayerOwnerAdd(login, token);
+            }
+            Log.Server(Srl.Starting, slot, Ce.IndexVersion);
             Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
@@ -180,13 +188,13 @@ namespace Vge.Games
         /// </summary>
         private void SocketServer_UserJoined(object sender, PacketStringEventArgs e)
         {
-            Players.PlayerAdd(e.Side);
             Log.Server(Srl.ConnectedToTheServer, e.Side.ToString());
             if (flagInLoop)
             {
                 // Отправляем ему его id и uuid
-                Thread.Sleep(1000); //TODO::Thread.Sleep
-                ResponsePacket(e.Side, new PacketS03JoinGame(2, "sdgsdg2"));
+                Thread.Sleep(500); //TODO::Thread.Sleep
+                ResponsePacket(e.Side, new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.BeginNet));
+                //ResponsePacket(e.Side, new PacketS03JoinGame(2, "sdgsdg2"));
             }
             else
             {
@@ -300,7 +308,7 @@ namespace Vge.Games
             // Запуск чанков (шагов)
             for (int i = 0; i < step; i++)
             {
-                ResponsePacketOwner(new PacketS02LoadingGame(false));
+                ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                 Thread.Sleep(1); //TODO::Thread.Sleep
             }
             // Загрузка закончена, последний штрих передаём id игрока и его uuid
@@ -467,6 +475,15 @@ namespace Vge.Games
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
         public long Time() => stopwatchTps.ElapsedMilliseconds;
+
+        #endregion
+
+        #region Get
+
+        /// <summary>
+        /// Счётчик зарегистрированных сущностей с начала запуска игры
+        /// </summary>
+        public int LastEntityId() => ++lastEntityId;
 
         #endregion
 

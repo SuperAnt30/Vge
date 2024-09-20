@@ -20,6 +20,10 @@ public sealed class Ce
     #region Server
 
     /// <summary>
+    /// Индекс версии, покуда 1
+    /// </summary>
+    public const int IndexVersion = 1;
+    /// <summary>
     /// Количество тактов в секунду, в minecraft 20
     /// </summary>
     public const int Tps = 30;
@@ -29,5 +33,6 @@ public sealed class Ce
     public const int Tick​​Time = 1000 / Tps;
 
     #endregion
+
 }
 

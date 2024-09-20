@@ -3,6 +3,7 @@ using System.Threading;
 using Vge.Event;
 using Vge.Gui.Screens;
 using Vge.Network;
+using Vge.Network.Packets.Server;
 
 namespace Vge.Games
 {
@@ -27,10 +28,23 @@ namespace Vge.Games
         }
 
         /// <summary>
+        /// Псевдоним игрока
+        /// </summary>
+        public override string ToLoginPlayer() => "AntLocal";
+        /// <summary>
+        /// токен игрока
+        /// </summary>
+        public override string ToTokenPlayer() => "F1";
+
+        #region StartStopPause
+
+        /// <summary>
         /// Задать паузу для одиночной игры
         /// </summary>
         public override void SetGamePauseSingle(bool value)
             => IsGamePaused = server.SetGamePauseSingle(value);
+
+        #endregion
 
         #region Server
 
@@ -42,7 +56,7 @@ namespace Vge.Games
             base.GameStarting();
             Log.Client(Srl.StartingSingle);
             Log.Save();
-            server.Starting();
+            server.Starting(ToLoginPlayer(), ToTokenPlayer());
             // TODO::2024-08-27 Временно включил сеть
             server.RunNet(32021);
 
@@ -65,24 +79,6 @@ namespace Vge.Games
             {
                 packets.Clear();
                 OnStoped(notification, isWarning);
-            }
-        }
-
-        /// <summary>
-        /// Получили пакет загрузки от сервера
-        /// </summary>
-        public override void PacketLoadingGame(bool begin, int value)
-        {
-            if (window.Screen != null && window.Screen is ScreenWorking screen)
-            {
-                if (begin)
-                {
-                    screen.ServerBegin(value);
-                }
-                else
-                {
-                    screen.ServerStep();
-                }
             }
         }
 
@@ -116,17 +112,7 @@ namespace Vge.Games
 
         #endregion
 
-        /// <summary>
-        /// Отправить пакет на сервер
-        /// </summary>
-        public override void TrancivePacket(IPacket packet)
-        {
-            if (IsServerRunning())
-            {
-                streamPacket.Trancive(packet);
-                server.LocalReceivePacket(null, streamPacket.ToArray());
-            }
-        }
+        #region TickDraw
 
         /// <summary>
         /// Игровой такт
@@ -141,6 +127,42 @@ namespace Vge.Games
                 isStop = false;
             }
         }
+
+        #endregion
+
+        #region Packets
+
+        /// <summary>
+        /// Получили пакет загрузки от сервера
+        /// </summary>
+        public override void PacketLoadingGame(PacketS02LoadingGame packet)
+        {
+            if (window.Screen != null && window.Screen is ScreenWorking screen)
+            {
+                if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.Begin)
+                {
+                    screen.ServerBegin(packet.GetValue());
+                }
+                else if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.Step)
+                {
+                    screen.ServerStep();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Отправить пакет на сервер
+        /// </summary>
+        public override void TrancivePacket(IPacket packet)
+        {
+            if (IsServerRunning())
+            {
+                streamPacket.Trancive(packet);
+                server.LocalReceivePacket(null, streamPacket.ToArray());
+            }
+        }
+
+        #endregion
 
         public override void Dispose()
         {

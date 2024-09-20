@@ -7,28 +7,28 @@
     {
         public byte GetId() => 0x02;
 
-        private bool begin;
+        private EnumStatus status;
         private ushort value;
 
-        public bool IsBegin() => begin;
+        public EnumStatus GetStatus() => status;
         public ushort GetValue() => value;
 
-        public PacketS02LoadingGame(bool begin)
+        public PacketS02LoadingGame(EnumStatus status)
         {
-            this.begin = begin;
+            this.status = status;
             value = 0;
         }
 
         public PacketS02LoadingGame(ushort value)
         {
-            begin = true;
+            status = EnumStatus.Begin;
             this.value = value;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            begin = stream.Bool();
-            if (begin)
+            status = (EnumStatus)stream.Byte();
+            if (status == EnumStatus.Begin)
             {
                 value = stream.UShort();
             }
@@ -36,11 +36,39 @@
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Bool(begin);
-            if (begin)
+            stream.Byte((byte)status);
+            if (status == EnumStatus.Begin)
             {
                 stream.UShort(value);
             }
+        }
+
+        public enum EnumStatus
+        {
+            /// <summary>
+            /// Начальный запуск для ответа сколько шагов (local)
+            /// </summary>
+            Begin = 1,
+            /// <summary>
+            /// Шаг загрузки (local)
+            /// </summary>
+            Step = 2,
+            /// <summary>
+            /// Начальный запуск по сети (net)
+            /// </summary>
+            BeginNet = 3,
+            /// <summary>
+            /// Отказ версия сервера иная (net)
+            /// </summary>
+            VersionAnother = 4,
+            /// <summary>
+            /// Отказ по дубликате никнейма (net) 
+            /// </summary>
+            LoginDuplicate = 5,
+            /// <summary>
+            /// Отказ по некорректности никнейма (net) 
+            /// </summary>
+            LoginIncorrect = 6
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading;
 using Vge.Event;
 using Vge.Network;
+using Vge.Network.Packets.Client;
+using Vge.Network.Packets.Server;
 
 namespace Vge.Games
 {
@@ -37,6 +39,22 @@ namespace Vge.Games
             this.ipAddress = ipAddress;
             this.port = port;
         }
+
+        /// <summary>
+        /// Псевдоним игрока
+        /// </summary>
+        public override string ToLoginPlayer() => "AntNet";
+        /// <summary>
+        /// токен игрока
+        /// </summary>
+        public override string ToTokenPlayer() => "F0";
+
+        /// <summary>
+        /// Имеется ли связь с сервером
+        /// </summary>
+        private bool IsConnect() => socket != null && socket.IsConnect();
+
+        #region StartStopPause
 
         /// <summary>
         /// Запуск игры
@@ -135,17 +153,9 @@ namespace Vge.Games
             isStop = true;
         }
 
-        /// <summary>
-        /// Отправить пакет на сервер
-        /// </summary>
-        public override void TrancivePacket(IPacket packet)
-        {
-            if (isWorkGame)
-            {
-                streamPacket.Trancive(packet);
-                socket.SendPacket(streamPacket.ToArray());
-            }
-        }
+        #endregion
+
+        #region TickDraw
 
         /// <summary>
         /// Игровой такт
@@ -165,5 +175,50 @@ namespace Vge.Games
                 isStop = false;
             }
         }
+
+        #endregion
+
+        #region Packets
+
+        /// <summary>
+        /// Получили пакет загрузки от сервера
+        /// </summary>
+        public override void PacketLoadingGame(PacketS02LoadingGame packet)
+        {
+            if (IsConnect())
+            {
+                PacketS02LoadingGame.EnumStatus status = packet.GetStatus();
+                if (status == PacketS02LoadingGame.EnumStatus.BeginNet)
+                {
+                    socket.SendPacket(new PacketC02LoginStart(ToLoginPlayer(), ToTokenPlayer(), Ce.IndexVersion));
+                }
+                else if (status == PacketS02LoadingGame.EnumStatus.VersionAnother)
+                {
+                    socket.DisconnectFromClient(L.T("VersionAnother"));
+                }
+                else if (status == PacketS02LoadingGame.EnumStatus.LoginDuplicate)
+                {
+                    socket.DisconnectFromClient(L.T("LoginDuplicate"));
+                }
+                else if (status == PacketS02LoadingGame.EnumStatus.LoginIncorrect)
+                {
+                    socket.DisconnectFromClient(L.T("LoginIncorrect"));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Отправить пакет на сервер
+        /// </summary>
+        public override void TrancivePacket(IPacket packet)
+        {
+            if (isWorkGame)
+            {
+                streamPacket.Trancive(packet);
+                socket.SendPacket(streamPacket.ToArray());
+            }
+        }
+
+        #endregion
     }
 }

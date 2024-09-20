@@ -112,7 +112,7 @@ namespace Vge.Network
         /// Загрузка игры
         /// </summary>
         private void Handle02LoadingGame(PacketS02LoadingGame packet)
-            => Game.PacketLoadingGame(packet.IsBegin(), packet.GetValue());
+            => Game.PacketLoadingGame(packet);
 
         /// <summary>
         /// Пакет соединения игрока с сервером

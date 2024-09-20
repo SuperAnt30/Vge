@@ -48,6 +48,7 @@ internal sealed class Srl
     internal const string LaggingBehind = "Не успеваю! Отставание на {0} мс, пропуск тиков {1}";
     internal const string Stopping = "Останавливаем...";
     internal const string StoppedServer = "Остановлен.";
+    internal const string ServerVersionAnother = "Версия [{1}] клиента [{0}] другая.";
 
     #endregion
 

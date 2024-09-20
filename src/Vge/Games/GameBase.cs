@@ -5,6 +5,7 @@ using Vge.Event;
 using Vge.Gui.Huds;
 using Vge.Network;
 using Vge.Network.Packets;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Actions;
 
@@ -95,6 +96,15 @@ namespace Vge.Games
             packets = new ProcessClientPackets(this);
         }
 
+        /// <summary>
+        /// Псевдоним игрока
+        /// </summary>
+        public virtual string ToLoginPlayer() => "";
+        /// <summary>
+        /// токен игрока
+        /// </summary>
+        public virtual string ToTokenPlayer() => "";
+
         #region StartStopPause
 
         /// <summary>
@@ -124,7 +134,7 @@ namespace Vge.Games
         /// <summary>
         /// Получили пакет загрузки от сервера
         /// </summary>
-        public virtual void PacketLoadingGame(bool begin, int value) { }
+        public virtual void PacketLoadingGame(PacketS02LoadingGame packet) { }
 
         #endregion
 
@@ -154,11 +164,6 @@ namespace Vge.Games
         public override void OnKeyPress(char key) { }
 
         #endregion
-
-        /// <summary>
-        /// Отправить пакет на сервер
-        /// </summary>
-        public virtual void TrancivePacket(IPacket packet) { }
 
         #region TickDraw
 
@@ -236,7 +241,14 @@ namespace Vge.Games
 
         #endregion
 
+        #region Packets
 
+        /// <summary>
+        /// Отправить пакет на сервер
+        /// </summary>
+        public virtual void TrancivePacket(IPacket packet) { }
+
+        #endregion
 
         public override string ToString()
         {

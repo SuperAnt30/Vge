@@ -1,6 +1,7 @@
 ﻿using Vge.Games;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 
 namespace Vge.Network
@@ -91,6 +92,9 @@ namespace Vge.Network
             {
                 switch (sb.Buffer[0])
                 {
+                    case 0x02:
+                        Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacketUp.Receive(sb.Buffer, new PacketC02LoginStart()));
+                        break;
                     case 0x04:
                         Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacketUp.Receive(sb.Buffer, new PacketC04PlayerPosition()));
                         break;
@@ -135,7 +139,7 @@ namespace Vge.Network
             => server.ResponsePacket(socketSide, packet);// new PacketS00Pong(packet.GetClientTime()));
 
         /// <summary>
-        /// KeepAlive
+        /// Сохранить жизнь
         /// </summary>
         private void Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
@@ -146,6 +150,12 @@ namespace Vge.Network
             //    entityPlayer.SetPing(lastPingTime);
             //}
         }
+
+        /// <summary>
+        /// Пакет проверки логина
+        /// </summary>
+        private void Handle02LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
+            => server.Players.LoginStart(socketSide, packet);
 
         /// <summary>
         /// Пакет позиции игрока
