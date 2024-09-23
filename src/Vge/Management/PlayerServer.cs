@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Vge.Games;
+using Vge.NBT;
 using Vge.Network;
 
 namespace Vge.Management
@@ -26,7 +28,7 @@ namespace Vge.Management
         /// <summary>
         /// Хэш пароль игрока
         /// </summary>
-        public readonly string Token;
+        public string Token { get; private set; }
         /// <summary>
         /// Сетевой сокет
         /// </summary>
@@ -76,5 +78,34 @@ namespace Vge.Management
             byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
+
+        #region WriteRead
+
+        /// <summary>
+        /// Прочесть данные игрока с файла, возращает true если файл существола
+        /// </summary>
+        public bool ReadFromFile()
+        {
+            if (File.Exists(UUID))
+            {
+                TagCompound nbt = NBTTools.ReadFromFile(UUID, true);
+                Token = nbt.GetString("Token");
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Записать данные игрока
+        /// </summary>
+        public void WriteFromFile()
+        {
+            TagCompound nbt = new TagCompound();
+            nbt.SetString("Token", Token);
+            nbt.SetString("Login", Login);
+            NBTTools.WriteToFile(nbt, UUID, true);
+        }
+
+        #endregion
     }
 }

@@ -41,7 +41,11 @@ namespace Vge.Management
         /// Добавить игрока владельца
         /// </summary>
         public void PlayerOwnerAdd(string login, string token)
-            => playerOwner = new PlayerServer(login, token, server);
+        {
+            playerOwner = new PlayerServer(login, token, server);
+            // Проверка токена не важна для владельца
+            GetPlayerData(playerOwner);
+        }
 
         public bool PlayerRemove(SocketSide socketSide)
         {
@@ -118,7 +122,8 @@ namespace Vge.Management
                 return;
             }
             string login = packet.GetLogin();
-            // Проверяем некорректность никнейма
+
+            // Проверяем корректность никнейма
             if (login == "")
             {
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.LoginIncorrect));
@@ -136,11 +141,27 @@ namespace Vge.Management
                 }
             }
 
-            // Все проверки прошли, создаём Игрока и даём ответ
+            // Создаём объект Игрока
             PlayerServer playerServer = new PlayerServer(login, packet.GetToken(), socketSide, server);
+
+            // Загружаем данные игрока если имеются
+            if (!GetPlayerData(playerServer))
+            {
+                // Проверка токена не прошла
+                socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.InvalidToken));
+                return;
+            }
+
+            // Все проверки прошли, создаём Игрока и даём ответ
             players.Add(playerServer);
             socketSide.SendPacket(new PacketS03JoinGame(playerServer.Id, playerServer.UUID));
         }
+
+        /// <summary>
+        /// Соединение игрока владельца
+        /// </summary>
+        public void JoinGameOwner()
+            => playerOwner.SendPacket(new PacketS03JoinGame(playerOwner.Id, playerOwner.UUID));
 
         #endregion
 
@@ -150,7 +171,43 @@ namespace Vge.Management
         public void TestUserAllKill()
             => AllNetPlayersDisconnect(Sr.ThrownOut);
 
-        
 
+        #region WriteReadSpawn
+
+        /// <summary>
+        /// Получить данные игрока, возращает false если токены разные
+        /// </summary>
+        private bool GetPlayerData(PlayerServer entityPlayer)
+        {
+            string token = entityPlayer.Token;
+            if (!entityPlayer.ReadFromFile())
+            {
+                // Игрок впервые зашёл, создаём
+                CreatePlayer(entityPlayer);
+                // И тут же записываем данные
+                entityPlayer.WriteFromFile();
+                return true;
+            }
+            // Проверка токенов
+            return token.Equals(entityPlayer.Token);
+        }
+
+        /// <summary>
+        /// Прочесть данные игрока с файла, возращает true если файл существола
+        /// </summary>
+        private bool ReadPlayerFromFile(PlayerServer entityPlayer)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Создать игрока, тут первый спавн игрока
+        /// </summary>
+        private void CreatePlayer(PlayerServer entityPlayer)
+        {
+
+        }
+
+        #endregion
     }
 }

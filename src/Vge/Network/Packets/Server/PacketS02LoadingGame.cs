@@ -68,7 +68,11 @@
             /// <summary>
             /// Отказ по некорректности никнейма (net) 
             /// </summary>
-            LoginIncorrect = 6
+            LoginIncorrect = 6,
+            /// <summary>
+            /// Не верный токен
+            /// </summary>
+            InvalidToken = 7
         }
     }
 }

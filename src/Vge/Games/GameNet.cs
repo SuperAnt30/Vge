@@ -204,6 +204,10 @@ namespace Vge.Games
                 {
                     socket.DisconnectFromClient(L.T("LoginIncorrect"));
                 }
+                else if (status == PacketS02LoadingGame.EnumStatus.InvalidToken)
+                {
+                    socket.DisconnectFromClient(L.T("InvalidToken"));
+                }
             }
         }
 

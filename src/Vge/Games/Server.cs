@@ -312,7 +312,7 @@ namespace Vge.Games
                 Thread.Sleep(1); //TODO::Thread.Sleep
             }
             // Загрузка закончена, последний штрих передаём id игрока и его uuid
-            ResponsePacketOwner(new PacketS03JoinGame(1, "sdgsdg"));
+            Players.JoinGameOwner();
         }
 
         /// <summary>

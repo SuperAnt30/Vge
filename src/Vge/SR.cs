@@ -36,4 +36,12 @@ internal sealed class Sr
     internal const string IncorrectParameterValue = "Некорректное значение параметра";
 
     #endregion
+
+    #region NBT
+
+    internal const string AddingInappropriateTagTypesToList = "Добавление несоответствующих типов тегов в список тегов";
+    internal const string IndexOutOfBoundsToSetTagInTagList = "Индекс выходит за пределы, чтобы установить тег в списке тегов";
+    internal const string EmptyStringIsNotAllowed = "Пустая строка не разрешена";
+
+    #endregion
 }
