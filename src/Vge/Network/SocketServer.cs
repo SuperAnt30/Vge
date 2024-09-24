@@ -16,6 +16,8 @@ namespace Vge.Network
         /// Сокет сервера
         /// </summary>
         private Socket socket;
+
+        private Socket socketUdp;
         /// <summary>
         /// Порт сервера
         /// </summary>
@@ -40,7 +42,10 @@ namespace Vge.Network
             try
             {
                 // Создание сокета сервера
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                {
+                    NoDelay = Ce.NoDelay
+                };
                 // Связываем сокет с конечной точкой
                 socket.Bind(new IPEndPoint(IPAddress.Any, Port));
                 // Начинаем слушать входящие соединения

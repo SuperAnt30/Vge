@@ -99,7 +99,10 @@ namespace Vge.Network
             {
                 if (socket == null)
                 {
-                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                    {
+                        NoDelay = Ce.NoDelay
+                    };
                     socket.Connect(ip, port);
                 }
             }

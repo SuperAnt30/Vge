@@ -40,7 +40,7 @@ namespace Vge.Network
         /// </summary>
         public void ReceiveBuffer(byte[] buffer)
         {
-            Traffic += buffer.Length;
+            Traffic += buffer.Length + Ce.SizeHeaderTCP;
             switch (buffer[0])
             {
                 case 0x00: 

@@ -252,13 +252,25 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            long traffic = packets.Traffic;
-            return string.Format("{0} ping: {1} ms Traffic: {3:0.00} mb{2} Tick {4}",
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}",
                 IsLoacl ? "Local" : "Net",
                 Ping,
                 IsGamePaused ? " Pause" : "",
-                traffic / 1048576f,
+                ToTraffic(),
                 TickCounter);
+        }
+
+        private string ToTraffic()
+        {
+            long traffic = packets.Traffic;
+            if (traffic < 1048576)
+            {
+                return (traffic / 1024f).ToString("{0.0}") + " kb";
+            }
+            else
+            {
+                return (traffic / 1048576f).ToString("{0.0}") + " mb";
+            }
         }
 
         #region Event

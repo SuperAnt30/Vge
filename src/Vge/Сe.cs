@@ -34,5 +34,20 @@ public sealed class Ce
 
     #endregion
 
+    #region Soket
+
+    /// <summary>
+    /// Указывающее, используется ли поток Socket в алгоритме Nagle.
+    /// Значение false, если объект Socket использует алгоритм Nagle.
+    /// https://learn.microsoft.com/ru-ru/dotnet/api/system.net.sockets.socket.nodelay?view=net-8.0
+    /// </summary>
+    public const bool NoDelay = true;
+    /// <summary>
+    /// Размер заголовка TCP пакета для подсчёта трафика
+    /// </summary>
+    public const byte SizeHeaderTCP = 40;
+
+    #endregion
+
 }
 
