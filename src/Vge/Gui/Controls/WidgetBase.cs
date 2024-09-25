@@ -153,13 +153,27 @@
         public virtual void Render() => IsRender = false;
 
         /// <summary>
+        /// Прямоугольник
+        /// </summary>
+        protected float[] Rectangle(int x1, float y1, int x2, int y2, float u1, float v1, float u2, float v2, float r, float g, float b)
+        {
+            return new float[]
+            {
+                x1, y1, u1, v1, r, g, b,
+                x1, y2, u1, v2, r, g, b,
+                x2, y1, u2, v1, r, g, b,
+                x2, y2, u2, v2, r, g, b,
+            };
+        }
+
+        /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
-        protected float[] RectangleTwo(int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
+        protected float[] RectangleTwo(int width, int height, int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
         {
-            int w = Width * si / 2;
-            float wf = Width / 1024f;
-            float h = Height * si;
+            int w = width * si / 2;
+            float wf = width / 1024f;
+            float h = height * si;
 
             float y2 = y1 + h;
             float v2 = v1 + vk;
@@ -168,7 +182,6 @@
             float u2 = wf;
             float u4 = 1;
             float u3 = u4 - wf;
-
 
             return new float[]
             {
@@ -183,6 +196,12 @@
                 x3, y2, u4, v2, r, g, b,
             };
         }
+
+        /// <summary>
+        /// Двойной прямоугольник, в ширину по полам
+        /// </summary>
+        protected float[] RectangleTwo(int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
+            => RectangleTwo(Width, Height, x1, y1, u1, v1, vk, r, g, b);
 
         #endregion
     }

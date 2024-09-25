@@ -14,6 +14,12 @@ namespace Vge.Gui.Screens
         /// </summary>
         private readonly bool inGame;
 
+        protected readonly Label label;
+        protected readonly Slider sliderFps;
+        protected readonly Slider sliderChunk;
+        protected readonly CheckBox checkBox;
+        protected readonly CheckBox checkBox2;
+
         protected readonly Button buttonDone;
         protected readonly Button buttonCancel;
 
@@ -22,10 +28,20 @@ namespace Vge.Gui.Screens
             this.inGame = inGame;
             this.parent = parent;
             FontBase font = window.Render.FontMain;
+
+            label = new Label(window, font, L.T("Op&4tio&3ns"));
+            label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             buttonDone = new Button(window, font, 300, L.T("Done"));
             buttonDone.Click += ButtonDone_Click;
             buttonCancel = new Button(window, font, 300, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
+
+            sliderFps = new Slider(window, font, 300, 10, 260, 10, L.T("Fps")) { Value = 60 };
+            sliderFps.AddParam(260, L.T("MaxFps"));
+            sliderChunk = new Slider(window, font, 300, 2, 32, 1, L.T("Ove&3rviewChunks")) { Value = 16 };
+            checkBox = new CheckBox(window, font, 300, "Check");
+            checkBox2 = new CheckBox(window, font, 300, "Check2");
+            checkBox2.SetCheck(true).SetEnable(false);
         }
 
         #region Clicks
@@ -59,8 +75,14 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
+            AddControls(label);
             AddControls(buttonDone);
             AddControls(buttonCancel);
+
+            AddControls(sliderFps);
+            AddControls(sliderChunk);
+            AddControls(checkBox);
+            AddControls(checkBox2);
         }
 
         /// <summary>
@@ -70,8 +92,16 @@ namespace Vge.Gui.Screens
         {
             int w = Width / 2;
             int h = Height / 2;
+            label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 200);
+
             buttonDone.SetPosition(w - buttonDone.Width - 2, h + 92);
             buttonCancel.SetPosition(w + 2, h + 92);
+
+            sliderFps.SetPosition(w - sliderFps.Width - 2, h + 42);
+            sliderChunk.SetPosition(w + 2, h + 42);
+
+            checkBox.SetPosition(w - checkBox.Width - 2, h);
+            checkBox2.SetPosition(w + 2, h);
         }
 
         public override void Draw(float timeIndex)

@@ -3,22 +3,20 @@ using Vge.Renderer.Font;
 
 namespace Vge.Gui.Controls
 {
+    /// <summary>
+    /// Контрол кнопки
+    /// </summary>
     public class Button : Label
     {
         /// <summary>
         /// Сетка фона
         /// </summary>
         private readonly MeshGuiColor meshBg;
-        /// <summary>
-        /// Коэфициент смещения вертикали для текстуры
-        /// </summary>
-        private readonly float vk;
 
         public Button(WindowMain window, FontBase font, int width, string text)
             : base(window, font, width, 40, text)
         {
             meshBg = new MeshGuiColor(gl);
-            vk = .078125f; // 40 / 512f;
         }
 
         #region Draw

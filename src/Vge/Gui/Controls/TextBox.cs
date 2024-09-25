@@ -223,8 +223,8 @@ namespace Vge.Gui.Controls
 
         public override void Render()
         {
-            IsRender = false;
             RenderInside(window.Render, PosX * si, PosY * si);
+            IsRender = false;
         }
 
         /// <summary>
@@ -319,6 +319,13 @@ namespace Vge.Gui.Controls
                     }
                 }
             }
+        }
+
+        public override void Dispose()
+        {
+            if (meshTxt != null) meshTxt.Dispose();
+            if (meshBg != null) meshBg.Dispose();
+            if (meshCursor != null) meshCursor.Dispose();
         }
 
         /// <summary>

@@ -479,12 +479,16 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Очистить буфер сетки и прочие настройки
         /// </summary>
-        public void Clear()
+        public void Clear(bool isColorDefault = true)
         {
             buffer.Clear();
             style.Reset();
-            colorText = Gi.ColorText;
+            if (isColorDefault)
+            {
+                colorText = Gi.ColorText;
+            }
         }
+
         /// <summary>
         /// Получить сетку буфера
         /// </summary>

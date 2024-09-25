@@ -33,7 +33,12 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Объект шрифта
         /// </summary>
-        private FontBase font;
+        protected FontBase font;
+
+        /// <summary>
+        /// Коэфициент смещения вертикали для текстуры
+        /// </summary>
+        protected readonly float vk = .078125f; // 40 / 512f;
 
         /// <summary>
         /// Текстовая метка, на которую можно нажать
@@ -59,8 +64,12 @@ namespace Vge.Gui.Controls
         /// Текстовая метка, на которую можно нажать
         /// </summary>
         /// <param name="isLine">Нужен ли контур, для отладки</param>
-        public Label(WindowMain window, FontBase font, int width, int height, string text, bool isLine = false) 
-            : this(window, font, text, isLine) => SetSize(width, height);
+        public Label(WindowMain window, FontBase font, int width, int height, string text, bool isLine = false)
+            : this(window, font, text, isLine)
+        {
+            SetSize(width, height);
+            //vk = height / 512f;
+        }
 
         #region OnMouse
 
@@ -85,8 +94,8 @@ namespace Vge.Gui.Controls
 
         public override void Render()
         {
-            IsRender = false;
             RenderInside(window.Render, PosX * si, PosY * si);
+            IsRender = false;
         }
 
         /// <summary>
@@ -95,6 +104,9 @@ namespace Vge.Gui.Controls
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected virtual void RenderInside(RenderMain render, int x, int y)
+            => RenderInside(render, x, y, Text);
+
+        protected void RenderInside(RenderMain render, int x, int y, string text)
         {
             // Определяем цвет текста
             Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
@@ -109,7 +121,7 @@ namespace Vge.Gui.Controls
             if (multiline)
             {
                 // Обрезка текста согласно ширины
-                string text = font.TransferWidth(Text, Width);
+                text = font.TransferWidth(text, Width);
                 // Определяем смещение
                 if (TextAlight == EnumAlight.Left & !limitationHeight)
                 {
@@ -166,7 +178,7 @@ namespace Vge.Gui.Controls
             else
             {
                 // Обрезка текста согласно ширины
-                string text = font.TransferString(Text, Width);
+                text = font.TransferString(text, Width);
                 // Определяем смещение BiasX
                 if (TextAlight == EnumAlight.Center)
                 {
@@ -186,6 +198,7 @@ namespace Vge.Gui.Controls
                     biasY = Height * si - font.GetVert();
                 }
                 // Готовим рендер текста
+                font.StyleReset();
                 font.RenderString(x + biasX, y + biasY, text);
             }
 

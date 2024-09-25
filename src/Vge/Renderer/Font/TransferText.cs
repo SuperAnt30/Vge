@@ -54,7 +54,7 @@ namespace Vge.Renderer.Font
             NumberLines = 1;
             string[] strs = inText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
 
-            font.Clear();
+            font.Clear(false);
             // Ширина пробела
             int wspase = font.WidthString(" ") * si;
             int w;
