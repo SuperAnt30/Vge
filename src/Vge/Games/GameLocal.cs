@@ -17,9 +17,9 @@ namespace Vge.Games
         /// </summary>
         private readonly Server server;
 
-        public GameLocal(WindowMain window) : base(window)
+        public GameLocal(WindowMain window, int slot, bool load, long seed) : base(window)
         {
-            server = new Server(Log);
+            server = new Server(Log, slot, load, seed);
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;

@@ -98,14 +98,34 @@ namespace Vge.Games
         /// Объект для запаковки пакетов в массив для отправки владельца
         /// </summary>
         private readonly WritePacket streamPacketOwner = new WritePacket();
+        /// <summary>
+        /// Номер слота игры в списке
+        /// </summary>
+        private readonly int slot;
+        /// <summary>
+        /// Загружаем - true или создаём - false
+        /// </summary>
+        private readonly bool load;
+        /// <summary>
+        /// Номер зерна если создаём
+        /// </summary>
+        private readonly long seed;
 
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
         private int lastEntityId = 0;
 
-        public Server(Logger log)
+        public Server(Logger log, int slot, bool load, long seed)
         {
+            this.slot = slot;
+            this.load = load;
+            this.seed = seed;
+            if (!load && seed == 0)
+            {
+                // Генерация нового сида
+                this.seed = DateTime.Now.Ticks;
+            }
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
             packets = new ProcessServerPackets(this);
@@ -121,7 +141,6 @@ namespace Vge.Games
         /// </summary>
         public void Starting(string login, string token)
         {
-            byte slot = 1;
             if (login != "") // TODO::2024-09-20 Сделать шибку если имя пустое
             {
                 Players.PlayerOwnerAdd(login, token);

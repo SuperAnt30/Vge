@@ -467,12 +467,12 @@ namespace Vge
         /// <summary>
         /// Запустить локальную игру
         /// </summary>
-        public void GameLocalRun(int slot, bool load, long seed = -1)
+        public void GameLocalRun(int slot, bool load, long seed = 0)
         { 
             LScreen.Working();
             if (Game == null)
             {
-                Game = new GameLocal(this);
+                Game = new GameLocal(this, slot, load, seed);
                 GameRun();
             }
         }

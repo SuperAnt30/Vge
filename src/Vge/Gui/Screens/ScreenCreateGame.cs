@@ -45,10 +45,6 @@ namespace Vge.Gui.Screens
             {
                 seed = 0;
             }
-            if (seed == 0)
-            {
-                // Тут надо сгенерировать сид самому
-            }
             window.GameLocalRun(slot, false, seed);
         }
 
