@@ -34,9 +34,9 @@
         #region Style
 
         /// <summary>
-        /// Является ли символ Амперсанд 
+        /// Является ли символ Амперсанд § (Alt+21)
         /// </summary>
-        public bool IsAmpersand() => Symb == '&';
+        public bool IsAmpersand() => Symb == '§';
         /// <summary>
         /// Ресет
         /// </summary>

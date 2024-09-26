@@ -26,9 +26,7 @@ namespace Mvk2.Util
             {
                 switch (key)
                 {
-                    case "MusicVolume": OptionsMvk.MusicVolume = int.Parse(value); return true;
                     case "OverviewChunk": OptionsMvk.OverviewChunk = int.Parse(value); return true;
-                    case "Nickname": OptionsMvk.Nickname = value.ToString(); return true;
                     case "SmoothLighting": OptionsMvk.SmoothLighting = value == "1"; return true;
                 }
                 return false;
@@ -41,9 +39,9 @@ namespace Mvk2.Util
         protected override void SaveLine(StreamWriter file)
         {
             base.SaveLine(file);
-            file.WriteLine("MusicVolume: " + OptionsMvk.MusicVolume.ToString());
+
+            file.WriteLine("\r\n# Mvk");
             file.WriteLine("OverviewChunk: " + OptionsMvk.OverviewChunk.ToString());
-            file.WriteLine("Nickname: " + OptionsMvk.Nickname.ToString());
             file.WriteLine("SmoothLighting: " + (OptionsMvk.SmoothLighting ? "1" : "0"));
         }
     }

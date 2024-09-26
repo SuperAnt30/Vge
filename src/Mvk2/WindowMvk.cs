@@ -192,11 +192,11 @@ namespace Mvk2
         }
 
         /// <summary>
-        /// Изменён размер окна
+        /// Изменить размер интерфейса
         /// </summary>
-        protected override void OnResized(int width, int height)
+        public override void UpdateSizeInterface()
         {
-            base.OnResized(width, height);
+            base.UpdateSizeInterface();
             if (renderMvk != null)
             {
                 renderMvk.FontLarge.UpdateSizeInterface();

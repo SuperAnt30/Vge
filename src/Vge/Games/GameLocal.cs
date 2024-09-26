@@ -49,6 +49,11 @@ namespace Vge.Games
         #region Server
 
         /// <summary>
+        /// Включить сетевую игру
+        /// </summary>
+        public void OpenNet() => server.RunNet(32021);
+
+        /// <summary>
         /// Запуск игры
         /// </summary>
         public override void GameStarting()
@@ -58,10 +63,7 @@ namespace Vge.Games
             Log.Save();
             server.Starting(ToLoginPlayer(), ToTokenPlayer());
             // TODO::2024-08-27 Временно включил сеть
-            server.RunNet(32021);
-
-            // Тест краша
-            //int i = 0; int j = 5 / i;
+            //OpenNet();
         }
 
         /// <summary>

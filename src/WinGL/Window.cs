@@ -45,10 +45,6 @@ namespace WinGL
         /// </summary>
         public string NameClass { get; private set; } = "FormOpenGL";
         /// <summary>
-        /// Использовать ли вертикальную сенхронизацию
-        /// </summary>
-        public bool VSync { get; private set; } = true;
-        /// <summary>
         /// Массив матрицы для проецирования двумерных координат на экран
         /// </summary>
         public float[] Ortho2D { get; private set; }
@@ -120,6 +116,10 @@ namespace WinGL
         /// Флаг перезапуска программы
         /// </summary>
         private bool flagRestart = false;
+        /// <summary>
+        /// Использовать ли вертикальную сенхронизацию
+        /// </summary>
+        protected bool vSync = true;
 
         protected Window()
         {
@@ -349,7 +349,7 @@ namespace WinGL
             WinUser.SetFocus(hWnd);
 
             // Включать/выключать vsync
-            if (!VSync)
+            if (!vSync)
             {
                 gl.SwapIntervalEXT(0);
             }
@@ -454,7 +454,7 @@ namespace WinGL
         /// <summary>
         /// Перезапустить приложение
         /// </summary>
-        protected void Restart()
+        public void Restart()
         {
             flagRestart = true;
             Close();
@@ -717,15 +717,13 @@ namespace WinGL
         /// <summary>
         /// Включить или выключить вертикальную сенхронизацию
         /// </summary>
-        protected virtual void SetVSync(bool on)
+        public virtual void SetVSync(bool on)
         {
-            if (VSync != on)
+            if (vSync != on)
             {
-                VSync = on;
-                gl.SwapIntervalEXT(VSync ? 1 : 0);
+                vSync = on;
+                gl.SwapIntervalEXT(vSync ? 1 : 0);
             }
         }
-
-        
     }
 }

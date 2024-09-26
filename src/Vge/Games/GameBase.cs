@@ -265,11 +265,11 @@ namespace Vge.Games
             long traffic = packets.Traffic;
             if (traffic < 1048576)
             {
-                return (traffic / 1024f).ToString("{0.0}") + " kb";
+                return (traffic / 1024f).ToString("0.0") + " kb";
             }
             else
             {
-                return (traffic / 1048576f).ToString("{0.0}") + " mb";
+                return (traffic / 1048576f).ToString("0.0") + " mb";
             }
         }
 

@@ -106,6 +106,7 @@ namespace Vge
             LScreen = new LaunchScreen(this);
             ListSingle = new ListSingleGame(this);
             Initialized();
+            vSync = Options.VSync;
             FullScreen = Options.FullScreen;
 
             openGLVersion = OpenGLVersion.OpenGL3_3;
@@ -113,7 +114,7 @@ namespace Vge
             ticker = new Ticker();
             ticker.Tick += Ticker_Tick;
             ticker.Frame += Ticker_Frame;
-            ticker.SetWishFrame(60);
+            ticker.SetWishFrame(Options.Fps);
         }
 
         protected virtual void Initialized()
@@ -212,17 +213,18 @@ namespace Vge
             if (Screen != null) Screen.OnKeyDown(keys);
             else if (Game != null) Game.OnKeyDown(keys);
 
-            if (keys == Keys.F11)
-            {
-                Options.FullScreen = !Options.FullScreen;
-                OptionsSave();
-                Restart();
-            }
-            else if (keys == Keys.F12)
-            {
-                SetVSync(!VSync);
-            }
-            else if (keys == Keys.F8)
+            //if (keys == Keys.F11)
+            //{
+            //    Options.FullScreen = !Options.FullScreen;
+            //    OptionsSave();
+            //    Restart();
+            //}
+            //else if (keys == Keys.F12)
+            //{
+            //    SetVSync(!vSync);
+            //}
+            //else 
+            if (keys == Keys.F8)
             {
                 ticker.SetWishFrame(120);
             }
@@ -332,11 +334,7 @@ namespace Vge
             base.OnResized(width, height);
             Gi.Width = Width;
             Gi.Height = Height;
-            Gi.UpdateSizeInterface();
-            if (Render != null)
-            {
-                Render.FontMain.UpdateSizeInterface();
-            }
+            UpdateSizeInterface();
             if (Screen != null) 
             {
                 Screen.Resized();
@@ -345,12 +343,24 @@ namespace Vge
 
         #endregion
 
+        /// <summary>
+        /// Изменить размер интерфейса
+        /// </summary>
+        public virtual void UpdateSizeInterface()
+        {
+            Gi.UpdateSizeInterface();
+            if (Render != null)
+            {
+                Render.FontMain.UpdateSizeInterface();
+            }
+        }
+
         #region WindowOverride
 
         /// <summary>
         /// Включить или выключить вертикальную сенхронизацию
         /// </summary>
-        protected override void SetVSync(bool on)
+        public override void SetVSync(bool on)
         {
             base.SetVSync(on);
             ticker.ResetTimeFrame();
@@ -532,6 +542,11 @@ namespace Vge
         #endregion
 
         #region Ticker
+
+        /// <summary>
+        /// Задать желаемый фпс
+        /// </summary>
+        public void SetWishFrame(int frame) => ticker.SetWishFrame(frame);
 
         protected virtual void Ticker_Frame(object sender, EventArgs e) => DrawFrame();
 

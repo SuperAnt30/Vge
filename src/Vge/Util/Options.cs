@@ -32,6 +32,14 @@ namespace Vge.Util
         /// Полноэкранные окно или нет
         /// </summary>
         public static bool FullScreen { get; set; } = false;
+        /// <summary>
+        /// Вертикальная синхронизация
+        /// </summary>
+        public static bool VSync { get; set; } = true;
+        /// <summary>
+        /// Желаемый FPS
+        /// </summary>
+        public static int Fps { get; set; } = 60;
 
         /// <summary>
         /// Общая громкость
@@ -41,11 +49,19 @@ namespace Vge.Util
         /// Получить громкость звуковых эффектов
         /// </summary>
         public static float SoundVolumeFloat { get; private set; }
+        /// <summary>
+        /// Громкость музыки
+        /// </summary>
+        public static int MusicVolume { get; set; } = 100;
+        /// <summary>
+        /// Получить громкость музыки
+        /// </summary>
+        public static float MusicVolumeFloat { get; private set; }
 
         /// <summary>
-        /// Желаемый FPS
+        /// Имя игрока
         /// </summary>
-        public static int Fps { get; set; } = 60;
+        public static string Nickname { get; set; } = "Nickname";
 
         /// <summary>
         /// Чувствительность мышки, 0 - 100, где 0 это минимум, 100 максимум, 50 середина
@@ -67,6 +83,8 @@ namespace Vge.Util
         public static void UpData()
         {
             SoundVolumeFloat = SoundVolume / 100f;
+            MusicVolumeFloat = MusicVolume / 100f;
+
             if (MouseSensitivity > 50)
             {
                 MouseSensitivityFloat = 3f + (MouseSensitivity - 50) / 7f;

@@ -23,5 +23,10 @@ namespace Mvk2.Gui.Screens
         /// Создать скрин выбора одиночной игры
         /// </summary>
         public override void Single() => window.ScreenCreate(new ScreenSingleMvk(windowMvk));
+        /// <summary>
+        /// Создать скрин опций
+        /// </summary>
+        public override void Options(ScreenBase parent, bool inGame) 
+            => window.ScreenCreate(new ScreenOptionsMvk(windowMvk, parent, inGame), false);
     }
 }

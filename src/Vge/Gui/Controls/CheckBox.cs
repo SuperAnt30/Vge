@@ -46,7 +46,10 @@ namespace Vge.Gui.Controls
             SetTextAlight(EnumAlight.Left, EnumAlightVert.Middle);
         }
 
-        public CheckBox SetCheck(bool check)
+        /// <summary>
+        /// Задать значение
+        /// </summary>
+        public CheckBox SetChecked(bool check)
         {
             Checked = check;
             IsRender = true;
@@ -95,7 +98,7 @@ namespace Vge.Gui.Controls
         {
             // Звук клика
             window.SoundClick(.3f);
-            SetCheck(!Checked);
+            SetChecked(!Checked);
             base.OnClick();
         }
 

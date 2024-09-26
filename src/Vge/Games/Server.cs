@@ -390,6 +390,7 @@ namespace Vge.Games
             }
             catch (Exception ex)
             {
+                IsServerRunning = false;
                 OnError(ex);
             }
             finally

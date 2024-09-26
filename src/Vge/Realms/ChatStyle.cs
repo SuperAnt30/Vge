@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Статический класс констант стиля чата
+    /// § (Alt+21)
     /// </summary>
     public static class ChatStyle
     {

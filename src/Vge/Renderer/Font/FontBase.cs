@@ -21,7 +21,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Массив символов
         /// </summary>
-        private readonly Symbol[] items = new Symbol[177];
+        private readonly Symbol[] items = new Symbol[162];
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа
         /// </summary>
@@ -91,7 +91,7 @@ namespace Vge.Renderer.Font
             this.stepFont = stepFont;
             Transfer = new TransferText(this);
 
-            string keys = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзиклмнопрстуфхцчшщъыьэюяЁёЙй";
+            string keys = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзиклмнопрстуфхцчшщъыьэюяЁёЙй§";
             char[] vc = keys.ToCharArray();
             int key;
             int index;
@@ -108,9 +108,41 @@ namespace Vge.Renderer.Font
                 width = GetWidth(textureFont, index);
                 Symbol symbol = new Symbol(symb, index, width);
                 key = symb;
-                items[key - (key > 1000 ? 929 : 32)] = symbol;
+                items[Convert(key)] = symbol;
+
+                //index = keys.IndexOf(symb) + 32;
+                //if (index == -1)
+                //{
+                //    throw new Exception(Sr.GetString(Sr.TheSymbolIsNotInTheList, vc[i]));
+                //}
+                //width = GetWidth(textureFont, index);
+                //Symbol symbol = new Symbol(symb, index, width);
+                //key = symb;
+                //if (key == 167) key = 100;
+                //items[key - (key > 1000 ? 929 : 32)] = symbol;
             }
             UpdateSizeInterface();
+        }
+
+        /// <summary>
+        /// Конвертируем index символа, на наш символ для хранения в кэше
+        /// </summary>
+        private int Convert(int key)
+        {
+            if (key < 32) return 0;
+            if (key == 167) return 95; // § (Alt+21)
+            if (key == 1025) return 96; // Ё
+            if (key == 1105) return 97; // ё
+            if (key > 1103)
+            {
+                throw new Exception(Sr.GetString(Sr.TheSymbolIsNotInTheList, (char)key));
+            }
+            if (key > 1039) return key - 942;
+            if (key > 126)
+            {
+                throw new Exception(Sr.GetString(Sr.TheSymbolIsNotInTheList, (char)key));
+            }
+            return key - 32;
         }
 
         /// <summary>
@@ -140,8 +172,9 @@ namespace Vge.Renderer.Font
         {
             try
             {
-                if (key < 32) return items[0];
-                return items[key - (key > 1000 ? 929 : 32)];
+                return items[Convert(key)];
+                //if (key < 32) return items[0];
+                //return items[key - (key > 1000 ? 929 : 32)];
             }
             catch
             {

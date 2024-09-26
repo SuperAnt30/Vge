@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Класс стиля шрифта
+    /// § (Alt+21)
     /// </summary>
     public class FontStyle
     {

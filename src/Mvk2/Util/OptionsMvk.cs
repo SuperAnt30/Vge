@@ -19,23 +19,9 @@ namespace Mvk2.Util
         public static string PathTextures { get; private set; }
 
         /// <summary>
-        /// Громкость музыки
-        /// </summary>
-        public static int MusicVolume { get; set; } = 100;
-        /// <summary>
-        /// Получить громкость музыки
-        /// </summary>
-        public static float MusicVolumeFloat { get; private set; }
-
-        /// <summary>
         /// Обзор чанков
         /// </summary>
         public static int OverviewChunk { get; set; } = 16;
-
-        /// <summary>
-        /// Имя игрока
-        /// </summary>
-        public static string Nickname { get; set; } = "Nickname";
 
         /// <summary>
         /// Плавное освещение
@@ -47,8 +33,6 @@ namespace Mvk2.Util
         /// </summary>
         public static void UpDataMvk()
         {
-            MusicVolumeFloat = MusicVolume / 100f;
-
             string path = Options.PathAssets;
             PathShaders = path + "Mvk2Shaders" + Path.DirectorySeparatorChar;
             PathSounds = path + "Mvk2Sounds" + Path.DirectorySeparatorChar;

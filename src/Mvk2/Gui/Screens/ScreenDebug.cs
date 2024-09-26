@@ -22,24 +22,24 @@ namespace Mvk2.Gui.Screens
         public ScreenDebug(WindowMvk window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            label = new Label(window, ((RenderMvk)window.Render).FontLarge, 400, 40, "&nhttp://superant.by/mkv", true);
+            label = new Label(window, ((RenderMvk)window.Render).FontLarge, 400, 40, "§nhttp://superant.by/mkv", true);
             label.Click += Label_Click;
             label.SetTextAlight(EnumAlight.Right, EnumAlightVert.Bottom);
             button = new Button(window, font, 360, "Кнопка супер Tag");
-            button2 = new Button(window, font, 800, "Test &0Black &6Gold &cRed &9Blue &fWhile &rReset &mStrike&r &lBold &r&oItalic &r&nUnderline");
+            button2 = new Button(window, font, 800, "Test §0Black §6Gold §cRed §9Blue §fWhile §rReset §mStrike§r §lBold §r§oItalic §r§nUnderline");
 
             string textDebug =
-            "&lЗанесло&r меня на остров, . Тут надо добавить длинее строку, чтоб она была подлинее, причём очень.\r\n" +
-            "&r&oОжидало много бед.\r\n" +
-            "&nЖить на нём совсем не просто,\r\n" +
-            "&rА прошло не мало лет.\r\n\r\n" +
-            "&9Почти вымерли все звери,\r\n" +
-            "&cЯ остался лишь живой.\r\n" +
-            "&mИ ходил я всё и думал,\r\n" +
-            "&nКак попасть же мне домой.\r\n\r\n" +
-            "&rЗанесло меня на остров,\r\n" +
+            "§lЗанесло§r меня на остров, . Тут надо добавить длинее строку, чтоб она была подлинее, причём очень.\r\n" +
+            "§r§oОжидало много бед.\r\n" +
+            "§nЖить на нём совсем не просто,\r\n" +
+            "§rА прошло не мало лет.\r\n\r\n" +
+            "§9Почти вымерли все звери,\r\n" +
+            "§cЯ остался лишь живой.\r\n" +
+            "§mИ ходил я всё и думал,\r\n" +
+            "§nКак попасть же мне домой.\r\n\r\n" +
+            "§rЗанесло меня на остров,\r\n" +
             "Ожидало много бед.\r\n" +
-            "&nЖить на &6нём совсем&r не просто,\r\n" +
+            "§nЖить на &6нём совсем§r не просто,\r\n" +
             "А прошло не мало лет.\r\n\r\n" +
             "Почти вымерли все звери,\r\n" +
             "Я остался лишь живой.\r\n" +
@@ -211,7 +211,7 @@ namespace Mvk2.Gui.Screens
                 // XYZ
                 w = 190 * si;
                 str = window.Width + " " + window.Height;
-                if (window.VSync) str += " VSync";
+                //if (window.vSync) str += " VSync";
                 render.FontMain.SetColor(cw).SetFontFX(EnumFontFX.Shadow);
                 //render.FontMain.RenderString(w + 1 * si, height - 18 * si, str, bg);
                 render.FontMain.RenderString(w, height - 19 * si, str);

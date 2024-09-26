@@ -35,7 +35,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Значение
         /// </summary>
-        public int Value { get; set; }
+        public int Value { get; private set; }
         /// <summary>
         /// Минимальное значение
         /// </summary>
@@ -75,6 +75,16 @@ namespace Vge.Gui.Controls
             Min = min;
             Max = max;
             Step = step;
+        }
+
+        /// <summary>
+        /// Задать значение
+        /// </summary>
+        public Slider SetValue(int value)
+        {
+            Value = value;
+            IsRender = true;
+            return this;
         }
 
         /// <summary>
