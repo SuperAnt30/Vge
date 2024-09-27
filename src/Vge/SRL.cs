@@ -49,6 +49,7 @@ internal sealed class Srl
     internal const string Stopping = "Останавливаем...";
     internal const string StoppedServer = "Остановлен.";
     internal const string ServerVersionAnother = "Версия [{1}] клиента [{0}] другая.";
+    internal const string ServerSavingGame = "Сохранение игры на сервере.";
 
     #endregion
 

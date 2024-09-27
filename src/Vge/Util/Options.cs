@@ -20,9 +20,13 @@ namespace Vge.Util
         /// </summary>
         public static string PathTextures { get; private set; }
         /// <summary>
-        /// Путь к игра сохранения
+        /// Путь к сохранении игр
         /// </summary>
         public static string PathGames { get; set; } = "Games" + Path.DirectorySeparatorChar;
+        /// <summary>
+        /// Путь к сохранении игроков в игре
+        /// </summary>
+        public static string PathPlayers { get; private set; }
 
         /// <summary>
         /// Размер интерфеса с учётом размера окна
@@ -96,6 +100,7 @@ namespace Vge.Util
 
             PathShaders = PathAssets + "Shaders" + Path.DirectorySeparatorChar;
             PathTextures = PathAssets + "Textures" + Path.DirectorySeparatorChar;
+            PathPlayers = PathGames + "Players" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
             // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()

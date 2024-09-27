@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Games;
 using Vge.Gui.Controls;
 using Vge.Renderer.Font;
 
@@ -45,7 +46,7 @@ namespace Vge.Gui.Screens
             {
                 seed = 0;
             }
-            window.GameLocalRun(slot, false, seed);
+            window.GameLocalRun(new GameSettings(slot, seed));
         }
 
         private void ButtonCancel_Click(object sender, EventArgs e)

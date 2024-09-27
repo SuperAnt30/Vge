@@ -22,33 +22,23 @@ namespace Vge.Games
         /// </summary>
         public readonly bool[] EmptyWorlds = new bool[CountSlot];
 
-        protected WindowMain window;
-
-
-       // private WorldFile worldFile;
-
-
-        public ListSingleGame(WindowMain window)
-        {
-            this.window = window;
-            //worldFile = new WorldFile();
-        }
-
         /// <summary>
         /// Загрузка миров
         /// </summary>
         public void Initialize()
         {
+            string path;
             for (int i = 0; i < CountSlot; i++)
             {
-                if (Directory.Exists(Options.PathGames + (i + 1).ToString()))
+                path = Options.PathGames + (i + 1).ToString();
+                if (Directory.Exists(path))
                 {
-                    NameWorlds[i] = "Мир типа есть";// worldFile.NameWorldData(path);
+                    NameWorlds[i] = GameFile.NameGameData(path);
                     EmptyWorlds[i] = false;
                 }
                 else
                 {
-                    NameWorlds[i] = "Мир пустой";
+                    NameWorlds[i] = L.T("GameEmpty");
                     EmptyWorlds[i] = true;
                 }
             }
@@ -61,7 +51,7 @@ namespace Vge.Games
         {
             DeleteDirectory(Options.PathGames + (slot + 1).ToString());
             EmptyWorlds[slot] = true;
-            NameWorlds[slot] = "Kick";
+            NameWorlds[slot] = L.T("GameKicked");
         }
 
 

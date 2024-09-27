@@ -16,15 +16,20 @@ namespace Vge.Games
         /// Объект сервера
         /// </summary>
         private readonly Server server;
+        /// <summary>
+        /// Флаг разрешение на запуск
+        /// </summary>
+        private readonly bool flagRun = true;
 
-        public GameLocal(WindowMain window, int slot, bool load, long seed) : base(window)
+        public GameLocal(WindowMain window, GameSettings gameSettings) : base(window)
         {
-            server = new Server(Log, slot, load, seed);
+            server = new Server(Log, gameSettings);
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;
             server.RecievePacket += Server_RecievePacket;
             server.RecieveMessage += Server_RecieveMessage;
+            flagRun = gameSettings.Init(server);
         }
 
         /// <summary>
@@ -61,9 +66,15 @@ namespace Vge.Games
             base.GameStarting();
             Log.Client(Srl.StartingSingle);
             Log.Save();
-            server.Starting(ToLoginPlayer(), ToTokenPlayer());
-            // TODO::2024-08-27 Временно включил сеть
-            //OpenNet();
+            if (flagRun)
+            {
+                server.Starting(ToLoginPlayer(), ToTokenPlayer());
+            }
+            else
+            {
+                packets.Clear();
+                OnStoped(L.T("ErrorWhileLoadingFile"), true);
+            }
         }
 
         /// <summary>

@@ -129,32 +129,7 @@ namespace Mvk2
         protected override void OnKeyDown(Keys keys)
         {
             base.OnKeyDown(keys);
-            if (keys == Keys.F2)
-            {
-                // Включить сервер по сети
-                GameNetRun(Options.IpAddress, 32021);
-                ScreenCreate(new ScreenDebug(this));
-            }
-            if (keys == Keys.F3)
-            {
-                // Включить сервер локальный
-                GameLocalRun(1, true);
-                ScreenCreate(new ScreenDebug(this));
-            }
-            else if (keys == Keys.F4)
-            {
-                // Пауза
-                if (Game != null)
-                {
-                    Game.SetGamePauseSingle(!Game.IsGamePaused);
-                }
-            }
-            else if (keys == Keys.F5)
-            {
-                // Остановить сервер
-                GameStoping();
-            }
-            else if (keys == Keys.Space)
+            if (keys == Keys.Space)
             {
                 audio.PlaySound(0, 0, 0, 0, 1, 1);
             }

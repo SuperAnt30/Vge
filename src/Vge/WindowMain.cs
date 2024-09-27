@@ -54,10 +54,7 @@ namespace Vge
         /// Дельта последнего тика в mc
         /// </summary>
         public float DeltaTime { get; private set; }
-        /// <summary>
-        /// Список одиночных игр
-        /// </summary>
-        public ListSingleGame ListSingle { get; private set; }
+       
         /// <summary>
         /// Готово ли окно для графики и прочего, меняется статус после Splash
         /// </summary>
@@ -104,7 +101,6 @@ namespace Vge
         public WindowMain() : base()
         {
             LScreen = new LaunchScreen(this);
-            ListSingle = new ListSingleGame(this);
             Initialized();
             vSync = Options.VSync;
             FullScreen = Options.FullScreen;
@@ -467,12 +463,12 @@ namespace Vge
         /// <summary>
         /// Запустить локальную игру
         /// </summary>
-        public void GameLocalRun(int slot, bool load, long seed = 0)
+        public void GameLocalRun(GameSettings gameSettings)
         { 
             LScreen.Working();
             if (Game == null)
             {
-                Game = new GameLocal(this, slot, load, seed);
+                Game = new GameLocal(this, gameSettings);
                 GameRun();
             }
         }

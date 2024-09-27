@@ -11,7 +11,11 @@ namespace Vge.Gui.Screens
     public class ScreenSingle : ScreenBase
     {
         private const int countSlot = ListSingleGame.CountSlot;
-        
+        /// <summary>
+        /// Список одиночных игр
+        /// </summary>
+        private readonly ListSingleGame listSingle = new ListSingleGame();
+
         /// <summary>
         /// Выбранный слот
         /// </summary>
@@ -24,7 +28,7 @@ namespace Vge.Gui.Screens
 
         public ScreenSingle(WindowMain window) : base(window)
         {
-            window.ListSingle.Initialize();
+            listSingle.Initialize();
             FontBase font = window.Render.FontMain;
             label = new Label(window, font, window.Width, 0, L.T("Singleplayer"));
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
@@ -45,8 +49,8 @@ namespace Vge.Gui.Screens
 
         private void SlotInit(int slot)
         {
-            buttonSlots[slot].SetText(window.ListSingle.NameWorlds[slot]);
-            buttonSlotsDel[slot].SetEnable(!window.ListSingle.EmptyWorlds[slot]);
+            buttonSlots[slot].SetText(listSingle.NameWorlds[slot]);
+            buttonSlotsDel[slot].SetEnable(!listSingle.EmptyWorlds[slot]);
         }
 
         private void Button_Click(object sender, EventArgs e)
@@ -108,7 +112,7 @@ namespace Vge.Gui.Screens
         private void ButtonSlots_Click(object sender, EventArgs e)
         {
             slot = (int)((Button)sender).Tag;
-            if (window.ListSingle.EmptyWorlds[slot])
+            if (listSingle.EmptyWorlds[slot])
             {
                 // Если пустой, создаём
                 window.LScreen.CreateGame(slot);
@@ -116,7 +120,7 @@ namespace Vge.Gui.Screens
             else
             {
                 // Если имеется загружаем
-                window.GameLocalRun(slot, true);
+                window.GameLocalRun(new GameSettings(slot));
             }
         }
 
@@ -134,7 +138,7 @@ namespace Vge.Gui.Screens
             if (enumParent == EnumScreenParent.Yes && slot != -1)
             {
                 // Удаление слота
-                window.ListSingle.GameRemove(slot);
+                listSingle.GameRemove(slot);
                 SlotInit(slot);
             }
         }

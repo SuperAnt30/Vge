@@ -99,33 +99,18 @@ namespace Vge.Games
         /// </summary>
         private ProcessServerPackets packets;
         /// <summary>
-        /// Номер слота игры в списке
+        /// Настройки игры
         /// </summary>
-        private readonly int slot;
-        /// <summary>
-        /// Загружаем - true или создаём - false
-        /// </summary>
-        private readonly bool load;
-        /// <summary>
-        /// Номер зерна если создаём
-        /// </summary>
-        private readonly long seed;
+        private readonly GameSettings gameSettings;
 
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
         private int lastEntityId = 0;
 
-        public Server(Logger log, int slot, bool load, long seed)
+        public Server(Logger log, GameSettings gameSettings)
         {
-            this.slot = slot;
-            this.load = load;
-            this.seed = seed;
-            if (!load && seed == 0)
-            {
-                // Генерация нового сида
-                this.seed = DateTime.Now.Ticks;
-            }
+            this.gameSettings = gameSettings;
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
             packets = new ProcessServerPackets(this);
@@ -145,7 +130,7 @@ namespace Vge.Games
             {
                 Players.PlayerOwnerAdd(login, token);
             }
-            Log.Server(Srl.Starting, slot, Ce.IndexVersion);
+            Log.Server(Srl.Starting, gameSettings.Seed, Ce.IndexVersion);
             Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
@@ -440,6 +425,10 @@ namespace Vge.Games
         private void Stoping()
         {
             Log.Server(Srl.Stopping);
+
+            // Сохранить игру
+            GameFile.Write(gameSettings, this);
+            
             //World.WorldStoping();
             Thread.Sleep(500);//TODO::Thread.Sleep
             // Тут надо сохранить мир
@@ -516,6 +505,19 @@ namespace Vge.Games
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
         public int LastEntityId() => ++lastEntityId;
+
+        #endregion
+
+        #region Set
+
+        /// <summary>
+        /// Задать время с загрузки файла
+        /// </summary>
+        public void SetDataFile(long time, uint tick)
+        {
+            TickCounter = tick;
+            TimeCounter = time;
+        }
 
         #endregion
 

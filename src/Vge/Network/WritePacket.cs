@@ -23,7 +23,7 @@ namespace Vge.Network
         /// </summary>
         private int size;
 
-        private WritePacket(int size = 256)
+        private WritePacket(int size = 64)
         {
             this.size = size;
             buffer = new byte[size];
