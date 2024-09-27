@@ -84,10 +84,6 @@ namespace Vge.Games
         /// Объект работы с пакетами
         /// </summary>
         protected readonly ProcessClientPackets packets;
-        /// <summary>
-        /// Объект для запаковки пакетов в массив для отправки
-        /// </summary>
-        protected readonly WritePacket streamPacket = new WritePacket();
 
         public GameBase(WindowMain window) : base(window)
         {
@@ -188,7 +184,7 @@ namespace Vge.Games
                 }
 
                 // Тут надо указать 10 секунд
-                if (tickCounterClient % 20 == 0)
+               // if (tickCounterClient % 20 == 0)
                 {
                     // Раз в 10 секунды перепинговка
                     TrancivePacket(new Packet00PingPong(Time()));

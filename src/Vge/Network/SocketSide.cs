@@ -15,10 +15,6 @@ namespace Vge.Network
     public class SocketSide
     {
         /// <summary>
-        /// Объект сериализации в пакет
-        /// </summary>
-        public ReadPacket Read { get; private set; } = new ReadPacket();
-        /// <summary>
         /// IP адрес сервера
         /// </summary>
         private readonly IPAddress ip;
@@ -52,10 +48,6 @@ namespace Vge.Network
         /// Объект-событие
         /// </summary>
         private AutoResetEvent waitHandler;
-        /// <summary>
-        /// Объект для запаковки пакетов в массив для отправки владельца
-        /// </summary>
-        private readonly WritePacket streamPacket= new WritePacket();
 
         /// <summary>
         /// Создать сокет на стороне клиента
@@ -119,9 +111,9 @@ namespace Vge.Network
             myThread.Start();
 
             OnConnected();
-            
+
             // Ждём ответ
-            WaitingReceive();
+            while (WaitingReceive()) { }
         }
 
         
@@ -177,8 +169,7 @@ namespace Vge.Network
         {
             if (IsConnect())
             {
-                streamPacket.Trancive(packet);
-                SendPacket(streamPacket.ToArray());
+                SendPacket(WritePacket.TranciveToArray(packet));
             }
         }
 
@@ -241,7 +232,7 @@ namespace Vge.Network
         /// <summary>
         /// Ждём ответ
         /// </summary>
-        private void WaitingReceive()
+        private bool WaitingReceive()
         {
             // Чтение данных из клиентского сокета. 
             int bytesRead;
@@ -265,7 +256,7 @@ namespace Vge.Network
                     // Запуск ожидание следующего ответа от клиента
                     if (socket != null && socket.Connected)
                     {
-                        WaitingReceive();
+                        return true;
                     }
                 }
                 else
@@ -282,6 +273,7 @@ namespace Vge.Network
                 // Подробную инфу ошибки в краш файл
                 Logger.Crash(e, ToString());
             }
+            return false;
         }
 
         public override string ToString() => ip.ToString() + ":" + port;

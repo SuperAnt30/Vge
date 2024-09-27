@@ -218,8 +218,7 @@ namespace Vge.Games
         {
             if (isWorkGame)
             {
-                streamPacket.Trancive(packet);
-                socket.SendPacket(streamPacket.ToArray());
+                socket.SendPacket(WritePacket.TranciveToArray(packet));
             }
         }
 

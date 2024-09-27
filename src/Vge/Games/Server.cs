@@ -32,9 +32,13 @@ namespace Vge.Games
         /// </summary>
         public bool IsServerRunning { get; private set; } = true;
         /// <summary>
-        /// Увеличивается каждый тик 
+        /// Увеличивается каждый такт 
         /// </summary>
         public uint TickCounter { get; private set; }
+        /// <summary>
+        /// Увеличивается время каждый такт, время в мс
+        /// </summary>
+        public long TimeCounter { get; private set; }
         /// <summary>
         /// Дельта последнего тика в mc
         /// </summary>
@@ -94,10 +98,6 @@ namespace Vge.Games
         /// Объект работы с пакетами
         /// </summary>
         private ProcessServerPackets packets;
-        /// <summary>
-        /// Объект для запаковки пакетов в массив для отправки владельца
-        /// </summary>
-        private readonly WritePacket streamPacketOwner = new WritePacket();
         /// <summary>
         /// Номер слота игры в списке
         /// </summary>
@@ -300,8 +300,7 @@ namespace Vge.Games
         public void ResponsePacketOwner(IPacket packet)
         {
             tx++;
-            streamPacketOwner.Trancive(packet);
-            OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(streamPacketOwner.ToArray()), null));
+            OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(WritePacket.TranciveToArray(packet)), null));
         }
 
         /// <summary>
@@ -356,8 +355,13 @@ namespace Vge.Games
                 long currentTimeTakt;
                 // Конечное время такта
                 long endTimeTakt = currentTime;
-                // Начальное время такта
+                // Начальное время мс
                 long beginTime;
+                // Начальное время такта
+                long beginTakt;
+                // Разница времени для счётчика времени
+                long differenceCounterTime = currentTime;
+
                 // Меняем флаг
                 flagInLoop = true;
 
@@ -385,23 +389,35 @@ namespace Vge.Games
                     while (accumulatedTime > Ce.Tick​​Time)
                     {
                         accumulatedTime -= Ce.Tick​​Time;
+                        // Счётчик реального времени
+                        beginTime = stopwatchTps.ElapsedMilliseconds;
+
                         if (!isGamePaused)
                         {
                             // фиксируем начальное время такта
-                            beginTime = stopwatchTps.ElapsedTicks;
+                            beginTakt = stopwatchTps.ElapsedTicks;
+                            // Счётчик тиков
+                            TickCounter++;
+                            // Добавить время сколько прошло с прошлого шага в мс
+                            TimeCounter += beginTime - differenceCounterTime;
+
                             // =======
                             OnTick();
                             // =======
+
                             // фиксируем текущее время такта
                             currentTimeTakt = stopwatchTps.ElapsedTicks;
+                             
                             // Находим дельту времени между тактами
                             DeltaTime = (currentTimeTakt - endTimeTakt) / (float)frequencyMs;
                             //tickTimeArray[TickCounter % 4] = currentTimeTakt - endTimeTakt;
                             // фиксируем время выполнения такта
-                            tickTimeArray[TickCounter % 4] = currentTimeTakt - beginTime;
+                            tickTimeArray[TickCounter % 4] = currentTimeTakt - beginTakt;
                             // фиксируем конечное время
                             endTimeTakt = currentTimeTakt;
                         }
+                        // Разница времени для счётчика времени обновляем, даже если пауза
+                        differenceCounterTime = beginTime;
                     }
                     timeSleep = Ce.Tick​​Time - (int)accumulatedTime;
                     Thread.Sleep(timeSleep > 0 ? timeSleep : 1);
@@ -455,10 +471,6 @@ namespace Vge.Games
         /// </summary>
         private void OnTick()
         {
-            TickCounter++;
-
-            //DeltaTime
-
             // Сетевые пакеты
             packets.Update();
 
@@ -516,8 +528,9 @@ namespace Vge.Games
             float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} {4}{5}" + Ce.Br + "{6}",
-                tps, averageTime, rxPrev, txPrev, strNet, isGamePaused ? " PAUSE" : "", debugText);
+            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}{7}" + Ce.Br + "{8}",
+                tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f,
+                strNet, isGamePaused ? " PAUSE" : "", debugText);
         }
 
         public void TestUserAllKill()

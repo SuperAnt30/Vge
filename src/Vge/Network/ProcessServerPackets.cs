@@ -31,14 +31,6 @@ namespace Vge.Network
         /// </summary>
         private readonly Server server;
         /// <summary>
-        /// Объект который из буфера данных склеивает пакеты для локального игрока
-        /// </summary>
-        private readonly ReadPacket readPacketLocal = new ReadPacket();
-        /// <summary>
-        /// Объект который из буфера данных склеивает пакеты в Update
-        /// </summary>
-        private readonly ReadPacket readPacketUp = new ReadPacket();
-        /// <summary>
         /// Массив очередей пакетов
         /// </summary>
         private readonly DoubleList<SocketBuffer> packets = new DoubleList<SocketBuffer>();
@@ -62,19 +54,28 @@ namespace Vge.Network
         /// </summary>
         public void ReceiveBuffer(SocketSide socketSide, byte[] buffer)
         {
-            ReadPacket readPacket = socketSide == null ? readPacketLocal : socketSide.Read;
-            switch (buffer[0])
+            if (buffer[0] < 2)
             {
-                case 0x00:
-                    Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
-                    break;
-                case 0x01:
-                    Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
-                    break;
-                default:
-                    // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                    packets.Add(new SocketBuffer(socketSide, buffer));
-                    break;
+                // Объект который из буфера данных склеивает пакеты
+                ReadPacket readPacket = new ReadPacket();
+                switch (buffer[0])
+                {
+                    case 0x00:
+                        Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
+                        break;
+                    case 0x01:
+                        Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
+                        break;
+                    default:
+                        // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
+                        packets.Add(new SocketBuffer(socketSide, buffer));
+                        break;
+                }
+            }
+            else
+            {
+                // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
+                packets.Add(new SocketBuffer(socketSide, buffer));
             }
         }
 
@@ -90,13 +91,15 @@ namespace Vge.Network
             }
             try
             {
+                // Объект который из буфера данных склеивает пакеты
+                ReadPacket readPacket = new ReadPacket();
                 switch (sb.Buffer[0])
                 {
                     case 0x02:
-                        Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacketUp.Receive(sb.Buffer, new PacketC02LoginStart()));
+                        Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacket.Receive(sb.Buffer, new PacketC02LoginStart()));
                         break;
                     case 0x04:
-                        Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacketUp.Receive(sb.Buffer, new PacketC04PlayerPosition()));
+                        Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacket.Receive(sb.Buffer, new PacketC04PlayerPosition()));
                         break;
                 }
             }

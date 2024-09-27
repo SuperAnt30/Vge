@@ -159,8 +159,7 @@ namespace Vge.Games
         {
             if (IsServerRunning())
             {
-                streamPacket.Trancive(packet);
-                server.LocalReceivePacket(null, streamPacket.ToArray());
+                server.LocalReceivePacket(null, WritePacket.TranciveToArray(packet));
             }
         }
 

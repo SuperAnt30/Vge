@@ -21,14 +21,6 @@ namespace Vge.Network
         public long Traffic { get; private set; } = 0;
 
         /// <summary>
-        /// Объект который из буфера данных склеивает пакеты
-        /// </summary>
-        private readonly ReadPacket readPacket = new ReadPacket();
-        /// <summary>
-        /// Объект который из буфера данных склеивает пакеты в Update
-        /// </summary>
-        private readonly ReadPacket readPacketUp = new ReadPacket();
-        /// <summary>
         /// Массив очередей пакетов
         /// </summary>
         private readonly DoubleList<byte[]> packets = new DoubleList<byte[]>();
@@ -41,21 +33,27 @@ namespace Vge.Network
         public void ReceiveBuffer(byte[] buffer)
         {
             Traffic += buffer.Length + Ce.SizeHeaderTCP;
-            switch (buffer[0])
+            if (buffer[0] <= 2)
             {
-                case 0x00: 
-                    Handle00Pong((Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
-                    break;
-                case 0x01:
-                    Handle01KeepAlive((Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
-                    break;
-                case 0x02:
-                    Handle02LoadingGame((PacketS02LoadingGame)readPacket.Receive(buffer, new PacketS02LoadingGame()));
-                    break;
-                default:
-                    // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                    packets.Add(buffer);
-                    break;
+                // Объект который из буфера данных склеивает пакеты
+                ReadPacket readPacket = new ReadPacket();
+                switch (buffer[0])
+                {
+                    case 0x00:
+                        Handle00Pong((Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
+                        break;
+                    case 0x01:
+                        Handle01KeepAlive((Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
+                        break;
+                    case 0x02:
+                        Handle02LoadingGame((PacketS02LoadingGame)readPacket.Receive(buffer, new PacketS02LoadingGame()));
+                        break;
+                }
+            }
+            else
+            {
+                // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
+                packets.Add(buffer);
             }
         }
 
@@ -64,13 +62,15 @@ namespace Vge.Network
         /// </summary>
         private void UpdateReceivePacket(byte[] buffer)
         {
+            // Объект который из буфера данных склеивает пакеты
+            ReadPacket readPacket = new ReadPacket();
             switch (buffer[0])
             {
                 case 0x03:
-                    Handle03JoinGame((PacketS03JoinGame)readPacketUp.Receive(buffer, new PacketS03JoinGame()));
+                    Handle03JoinGame((PacketS03JoinGame)readPacket.Receive(buffer, new PacketS03JoinGame()));
                     break;
                 case 0x04:
-                    Handle04TimeUpdate((PacketS04TimeUpdate)readPacketUp.Receive(buffer, new PacketS04TimeUpdate()));
+                    Handle04TimeUpdate((PacketS04TimeUpdate)readPacket.Receive(buffer, new PacketS04TimeUpdate()));
                     break;
             }
         }

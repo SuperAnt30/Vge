@@ -8,7 +8,7 @@ namespace Vge.Network
     /// <summary>
     /// Объект который из буфера данных склеивает пакеты
     /// </summary>
-    public class ReadPacket
+    public struct ReadPacket
     {
         /// <summary>
         /// Массив

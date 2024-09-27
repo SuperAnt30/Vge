@@ -23,16 +23,23 @@ namespace Vge.Network
         /// </summary>
         private int size;
 
-        public WritePacket(int size = 1000)
+        private WritePacket(int size = 256)
         {
             this.size = size;
             buffer = new byte[size];
         }
 
+        public static byte[] TranciveToArray(IPacket packet)
+        {
+            WritePacket writePacket = new WritePacket();
+            writePacket.Trancive(packet);
+            return writePacket.ToArray();
+        }
+
         /// <summary>
         /// Внести загрузку пакета
         /// </summary>
-        public void Trancive(IPacket packet)
+        private void Trancive(IPacket packet)
         {
             count = 0;
             Byte(packet.GetId());
@@ -42,7 +49,7 @@ namespace Vge.Network
         /// <summary>
         /// Сгенерировать массив
         /// </summary>
-        public byte[] ToArray()
+        private byte[] ToArray()
         {
             byte[] result = new byte[count];
             Array.Copy(buffer, result, count);
@@ -56,7 +63,7 @@ namespace Vge.Network
         {
             if (size <= count)
             {
-                size = (int)(size * 1.5f);
+                size = (int)(size * 2f);
                 Array.Resize(ref buffer, size);
             }
             buffer[count++] = item;
@@ -70,7 +77,7 @@ namespace Vge.Network
             int c = items.Length;
             if (size <= count + c)
             {
-                size = (int)(size + c + (size * 0.3f));
+                size = (int)(size + c + (size * 0.5f));
                 Array.Resize(ref buffer, size);
             }
             Buffer.BlockCopy(items, 0, buffer, count, c);
