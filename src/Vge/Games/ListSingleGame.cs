@@ -30,10 +30,11 @@ namespace Vge.Games
             string path;
             for (int i = 0; i < CountSlot; i++)
             {
-                path = Options.PathGames + (i + 1).ToString();
+                int slot = i + 1;
+                path = Options.PathGames + slot.ToString();
                 if (Directory.Exists(path))
                 {
-                    NameWorlds[i] = GameFile.NameGameData(path);
+                    NameWorlds[i] = GameFile.NameGameData(path, slot);
                     EmptyWorlds[i] = false;
                 }
                 else

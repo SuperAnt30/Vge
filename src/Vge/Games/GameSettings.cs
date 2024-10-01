@@ -23,6 +23,19 @@ namespace Vge.Games
         /// </summary>
         public string FileName { get; private set; }
 
+        #region PathFile
+
+        /// <summary>
+        /// Путь к сохранении игр
+        /// </summary>
+        public readonly string PathGames;
+        /// <summary>
+        /// Путь к сохранении игроков в игре
+        /// </summary>
+        public readonly string PathPlayers;
+
+        #endregion
+
         private readonly bool isLoad;
 
         /// <summary>
@@ -33,6 +46,9 @@ namespace Vge.Games
             isLoad = true;
             Slot = (byte)slot;
             FileName = (slot + 1).ToString();
+
+            PathGames = Options.PathGames + FileName + Path.DirectorySeparatorChar;
+            PathPlayers = PathGames + "Players" + Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -53,7 +69,7 @@ namespace Vge.Games
         {
             if (isLoad)
             {
-                TagCompound nbt = GameFile.ReadGame(GetPathGame());
+                TagCompound nbt = GameFile.ReadGame(PathGames);
                 if (nbt == null)
                 {
                     return false;
@@ -63,11 +79,5 @@ namespace Vge.Games
             }
             return true;
         }
-
-
-        /// <summary>
-        /// Получить адрес сохранённой игры
-        /// </summary>
-        public string GetPathGame() => Options.PathGames + FileName + Path.DirectorySeparatorChar;
     }
 }

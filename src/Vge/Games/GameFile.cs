@@ -18,11 +18,16 @@ namespace Vge.Games
         /// <summary>
         /// Получить название сохранённой игры
         /// </summary>
-        public static string NameGameData(string path)
+        public static string NameGameData(string path, int slot)
         {
             string pf = path + Path.DirectorySeparatorChar + NameFaileGame;
             if (File.Exists(pf))
             {
+                // Дата последнего редактирования
+                DateTime dateTime = File.GetLastWriteTime(pf);
+                // Размер папки игры
+                string size = (new SizeDirectory(path)).ToString();
+
                 TagCompound nbt = NBTTools.ReadFromFile(pf, true);
 
                 if (nbt.GetShort("Version") != Ce.IndexVersion)
@@ -30,7 +35,15 @@ namespace Vge.Games
                     //Разная версия
                     return L.T("GameDifferentVersion");
                 }
-                return nbt.GetString("LevelName");
+                // Определяем сколько времени играет
+                long time = nbt.GetLong("TimeCounter");
+                long m = time / 60000;
+                long h = time / 3600000;
+                m = m - h * 60;
+                return string.Format("#{0} {1:dd.MM.yyyy} {2} " + L.T("Time") + " {3}:{4}", 
+                    slot, dateTime, size,
+                    h, m < 10 ? "0" + m : m.ToString()
+                    );
             }
             // Сломан
             return L.T("GameBroken");
@@ -54,8 +67,7 @@ namespace Vge.Games
         {
             try
             {
-                string pathGame = gameSettings.GetPathGame();
-                CheckPath(Options.PathGames);
+                string pathGame = gameSettings.PathGames;
                 CheckPath(pathGame);
 
                 TagCompound nbt = new TagCompound();
