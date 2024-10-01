@@ -26,7 +26,7 @@ namespace Vge.Games
                 // Дата последнего редактирования
                 DateTime dateTime = File.GetLastWriteTime(pf);
                 // Размер папки игры
-                string size = (new SizeDirectory(path)).ToString();
+                string size = new SizeDirectory(path).ToString();
 
                 TagCompound nbt = NBTTools.ReadFromFile(pf, true);
 
