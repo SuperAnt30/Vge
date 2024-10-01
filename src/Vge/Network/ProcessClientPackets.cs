@@ -80,11 +80,14 @@ namespace Vge.Network
         /// </summary>
         public void Update()
         {
-            packets.Step();
-            int count = packets.CountBackward;
-            for (int i = 0; i < count; i++)
+            if (!packets.Empty())
             {
-                UpdateReceivePacket(packets.GetNext());
+                packets.Step();
+                int count = packets.CountBackward;
+                for (int i = 0; i < count; i++)
+                {
+                    UpdateReceivePacket(packets.GetNext());
+                }
             }
         }
 
@@ -103,10 +106,7 @@ namespace Vge.Network
         /// KeepAlive
         /// </summary>
         private void Handle01KeepAlive(Packet01KeepAlive packet)
-        {
-            Game.TrancivePacket(packet);
-            Game.OnTick2();
-        }
+            => Game.TrancivePacket(packet);
 
         /// <summary>
         /// Загрузка игры

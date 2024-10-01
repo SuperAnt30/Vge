@@ -1,4 +1,5 @@
 ﻿using Vge.Games;
+using Vge.Management;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -122,11 +123,14 @@ namespace Vge.Network
                 pingKeySend = (uint)lastPingTime;
                 server.Players.SendToAll(new Packet01KeepAlive(pingKeySend));
             }
-            packets.Step();
-            int count = packets.CountBackward;
-            for (int i = 0; i < count; i++)
+            if (!packets.Empty())
             {
-                UpdateReceivePacket(packets.GetNext());
+                packets.Step();
+                int count = packets.CountBackward;
+                for (int i = 0; i < count; i++)
+                {
+                    UpdateReceivePacket(packets.GetNext());
+                }
             }
         }
 
@@ -146,12 +150,14 @@ namespace Vge.Network
         /// </summary>
         private void Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
-            // TODO::2024-09-18 надо сделать мендежер игроков! Пора!
-            //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
-            //if (packet.GetTime() == pingKeySend && entityPlayer != null)
-            //{
-            //    entityPlayer.SetPing(lastPingTime);
-            //}
+            if (pingKeySend == packet.GetTime())
+            {
+                PlayerServer playerServer = server.Players.FindPlayerBySocket(socketSide);
+                if (playerServer != null)
+                {
+                    playerServer.SetPing(lastPingTime);
+                }
+            }
         }
 
         /// <summary>

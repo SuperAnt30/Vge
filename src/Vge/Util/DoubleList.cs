@@ -36,6 +36,11 @@
         /// </summary>
         public int CountForward => vsForward.Count;
         /// <summary>
+        /// Пустой ли буфера данных
+        /// </summary>
+        public bool Empty() => (vsForward.Count + vsBackward.Count) == 0;
+
+        /// <summary>
         /// Получить следующее значение из списка
         /// </summary>
         public T GetNext() => vsBackward[index++];

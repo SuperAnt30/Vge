@@ -301,13 +301,6 @@ namespace Vge.Games
         protected virtual void OnServerTextDebug(string text) 
             => ServerTextDebug?.Invoke(this, new StringEventArgs(text));
 
-        /// <summary>
-        /// Событие одного игрового такта
-        /// </summary>
-        public event EventHandler Tick;
-        // TODO::2024-08-27 OnTick2 временно
-        public void OnTick2() => Tick?.Invoke(this, new EventArgs());
-
         #endregion
     }
 }

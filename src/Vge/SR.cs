@@ -18,8 +18,10 @@ internal sealed class Sr
 
     internal const string ErrorInGluingNetworkData = "Ошибка в склейке сетевых данных";
     internal const string ErrorWhileStartingTheNetwork = "Ошибка в момент запуска сети. ";
-    internal const string ThrownOut = "Выкинут";
+    internal const string ThrownOut = "Выброшен";
+    internal const string TimeOut = "Тайм-аут";
     internal const string StopServer = "Стоп сервер";
+    internal const string TheGameHasntStartedYet = "Игра еще не началась";
 
     #endregion
 

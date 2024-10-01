@@ -195,7 +195,7 @@ namespace Vge.Network
         /// <summary>
         /// Разрываем соединение с текущим обработчиком
         /// </summary>
-        public void DisconnectHandler(SocketSide socketClient, string cause = Sr.ThrownOut)
+        public void DisconnectHandler(SocketSide socketClient, string cause)
         {
             OnUserLeft(socketClient, cause);
             socketClient.DisconnectFromServer();

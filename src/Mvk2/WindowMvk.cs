@@ -198,13 +198,6 @@ namespace Mvk2
 
         #region Game
 
-        protected override void Game_Tick(object sender, EventArgs e)
-        {
-            //if (Screen != null && Screen is ScreenDebug screenDebug)
-            //{
-            //    if (screenDebug.xx2++ > 900) screenDebug.xx2 = 0;
-            //}
-        }
 
         #endregion
 

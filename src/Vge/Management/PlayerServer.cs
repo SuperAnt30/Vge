@@ -5,6 +5,7 @@ using System.Text;
 using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
+using Vge.Network.Packets.Server;
 
 namespace Vge.Management
 {
@@ -37,11 +38,28 @@ namespace Vge.Management
         /// Флаг является ли этот игрок владельцем
         /// </summary>
         public readonly bool Owner;
+        /// <summary>
+        /// Пинг клиента в мс
+        /// </summary>
+        public int Ping { get; private set; } = -1;
+        /// <summary>
+        /// Указать причину удаления
+        /// </summary>
+        public string causeRemove = "";
+
+        /// <summary>
+        /// Последнее время пинга в милисекундах
+        /// </summary>
+        private long lastTimeServer;
 
         /// <summary>
         /// Основной сервер
         /// </summary>
         private readonly Server server;
+        /// <summary>
+        /// Имя пути игрока
+        /// </summary>
+        private readonly string pathName;
 
         /// <summary>
         /// Создать сетевого
@@ -53,8 +71,10 @@ namespace Vge.Management
             Socket = socket;
             this.server = server;
             UUID = GetHash(login);
+            pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
             Id = server.LastEntityId();
+            lastTimeServer = server.Time();
         }
 
         /// <summary>
@@ -63,11 +83,47 @@ namespace Vge.Management
         public PlayerServer(string login, string token, Server server)
             : this(login, token, null, server) { }
 
+        #region Ping
+
+        /// <summary>
+        /// Задать время пинга
+        /// </summary>
+        public void SetPing(long time)
+        {
+            lastTimeServer = server.Time();
+            Ping = (Ping * 3 + (int)(lastTimeServer - time)) / 4;
+        }
+
+        /// <summary>
+        /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
+        /// </summary>
+        public bool TimeOut() => (server.Time() - lastTimeServer) > 100;// 30000;
+
+        #endregion
+
         /// <summary>
         /// Отправить сетевой пакет этому игроку
         /// </summary>
         public void SendPacket(IPacket packet)
             => server.ResponsePacket(Socket, packet);
+
+        /// <summary>
+        /// Пройдены все проверки, отправляем нужные пакеты игроку
+        /// </summary>
+        public void JoinGame()
+        {
+            SendPacket(new PacketS03JoinGame(Id, UUID));
+            // И другие пакеты, такие как позиция и инвентарь и прочее
+        }
+
+        /// <summary>
+        /// Игрок покидает игру
+        /// </summary>
+        public void LeftGame()
+        {
+            // Сохраняем
+            WriteFromFile();
+        }
 
         /// <summary>
         /// Получить хэш по строке
@@ -86,9 +142,9 @@ namespace Vge.Management
         /// </summary>
         public bool ReadFromFile()
         {
-            if (File.Exists(UUID))
+            if (File.Exists(pathName))
             {
-                TagCompound nbt = NBTTools.ReadFromFile(UUID, true);
+                TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
                 Token = nbt.GetString("Token");
                 return true;
             }
@@ -100,10 +156,11 @@ namespace Vge.Management
         /// </summary>
         public void WriteFromFile()
         {
+            GameFile.CheckPath(server.Settings.PathPlayers);
             TagCompound nbt = new TagCompound();
             nbt.SetString("Token", Token);
             nbt.SetString("Login", Login);
-            NBTTools.WriteToFile(nbt, UUID, true);
+            NBTTools.WriteToFile(nbt, pathName, true);
         }
 
         #endregion

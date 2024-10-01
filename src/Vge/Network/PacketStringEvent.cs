@@ -10,12 +10,15 @@
     /// </summary>
     public class PacketStringEventArgs
     {
-        public string Text { get; private set; }
+        /// <summary>
+        /// Причина
+        /// </summary>
+        public string Cause { get; private set; }
         public SocketSide Side { get; private set; }
 
-        public PacketStringEventArgs(SocketSide socketSide, string text = "")
+        public PacketStringEventArgs(SocketSide socketSide, string cause = "")
         {
-            Text = text;
+            Cause = cause;
             Side = socketSide;
         }
    }

@@ -43,6 +43,10 @@ namespace Vge.Games
         /// Дельта последнего тика в mc
         /// </summary>
         public float DeltaTime { get; private set; }
+        /// <summary>
+        /// Настройки игры
+        /// </summary>
+        public readonly GameSettings Settings;
 
         /// <summary>
         /// Часы для Tps
@@ -98,10 +102,6 @@ namespace Vge.Games
         /// Объект работы с пакетами
         /// </summary>
         private ProcessServerPackets packets;
-        /// <summary>
-        /// Настройки игры
-        /// </summary>
-        private readonly GameSettings gameSettings;
 
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
@@ -110,7 +110,7 @@ namespace Vge.Games
 
         public Server(Logger log, GameSettings gameSettings)
         {
-            this.gameSettings = gameSettings;
+            this.Settings = gameSettings;
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
             packets = new ProcessServerPackets(this);
@@ -130,7 +130,7 @@ namespace Vge.Games
             {
                 Players.PlayerOwnerAdd(login, token);
             }
-            Log.Server(Srl.Starting, gameSettings.Seed, Ce.IndexVersion);
+            Log.Server(Srl.Starting, Settings.Seed, Ce.IndexVersion);
             Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
@@ -196,21 +196,20 @@ namespace Vge.Games
             if (flagInLoop)
             {
                 // Отправляем ему его id и uuid
-                Thread.Sleep(500); //TODO::Thread.Sleep
+                Thread.Sleep(100); //TODO::Thread.Sleep
                 ResponsePacket(e.Side, new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.BeginNet));
-                //ResponsePacket(e.Side, new PacketS03JoinGame(2, "sdgsdg2"));
             }
             else
             {
                 // Если мы не дошли до loop то предлагаем разорвать сокет, для повторного соединения
-                socketServer.DisconnectHandler(e.Side);
+                PlayerDisconnect(e.Side, Sr.TheGameHasntStartedYet);
             }
         }
 
         private void SocketServer_UserLeft(object sender, PacketStringEventArgs e)
         {
-            Players.PlayerRemove(e.Side);
-            Log.Server(Srl.DisconnectedFromServer, e.Text, e.Side.ToString());
+            Players.PlayerRemove(e.Side, e.Cause);
+            Log.Server(Srl.DisconnectedFromServer, e.Cause, e.Side.ToString());
         }
             
 
@@ -426,17 +425,18 @@ namespace Vge.Games
         {
             Log.Server(Srl.Stopping);
 
-            // Сохранить игру
-            GameFile.Write(gameSettings, this);
-            
             //World.WorldStoping();
-            Thread.Sleep(500);//TODO::Thread.Sleep
+            Thread.Sleep(100);//TODO::Thread.Sleep
             // Тут надо сохранить мир
             packets.Clear();
+            // Выкидываем всех игроков
+            Players.PlayersRemoveStopingServer();
+
+            // Сохранить игру
+            GameFile.Write(Settings, this);
+
             if (socketServer != null && socketServer.IsConnected())
             {
-                // Выкидываем всех игроков
-                Players.AllNetPlayersDisconnect(Sr.StopServer);
                 // Останавливаем сокет
                 socketServer.Stop();
             }
@@ -481,6 +481,10 @@ namespace Vge.Games
                 tx = 0;
             }
 
+            // Тики менеджера игроков
+            Filer.StartSection("PlayersTick");
+            Players.Update();
+            Filer.EndSection();
             //Thread.Sleep(10);
             // Тут игровые мировые тики
 
@@ -533,14 +537,6 @@ namespace Vge.Games
             return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}{7}" + Ce.Br + "{8}",
                 tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f,
                 strNet, isGamePaused ? " PAUSE" : "", debugText);
-        }
-
-        public void TestUserAllKill()
-        {
-            if (IsRunNet())
-            {
-                Players.TestUserAllKill();
-            }
         }
 
         public string debugText = "";

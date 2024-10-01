@@ -478,7 +478,6 @@ namespace Vge
             Game.Stoped += Game_Stoped;
             Game.Error += Game_Error;
             Game.ServerTextDebug += Game_ServerTextDebug;
-            Game.Tick += Game_Tick;
             Game.GameStarting();
             SetWishFrame(Options.Fps);
         }
@@ -493,8 +492,6 @@ namespace Vge
                 Game.GameStoping(Srl.TheUserStoppedTheGame, false);
             }
         }
-
-        protected virtual void Game_Tick(object sender, EventArgs e) { }
 
         private void Game_ServerTextDebug(object sender, StringEventArgs e)
             => debug.server = e.Text;

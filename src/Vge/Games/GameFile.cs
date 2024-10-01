@@ -52,7 +52,7 @@ namespace Vge.Games
         /// <summary>
         /// Проверка пути, если нет, то создаём
         /// </summary>
-        private static void CheckPath(string path)
+        public static void CheckPath(string path)
         {
             if (!Directory.Exists(path))
             {
