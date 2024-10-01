@@ -24,6 +24,7 @@ namespace Vge.Gui.Screens
         protected readonly Label label;
         protected readonly Slider sliderFps;
         protected readonly Slider sliderSoundVolume;
+        protected readonly Slider sliderMusicVolume;
         protected readonly Slider sliderMouseSensitivity;
         protected readonly CheckBox checkBoxBigInterface;
         protected readonly CheckBox checkBoxVSinc;
@@ -54,7 +55,10 @@ namespace Vge.Gui.Screens
 
             sliderSoundVolume = new Slider(window, font, 300, 0, 100, 1, L.T("SoundVolume"));
             sliderSoundVolume.SetValue(Options.SoundVolume)
-                .AddParam(0, L.T("VolumeOff")).AddParam(100, L.T("VolumeMax"));
+                .AddParam(0, L.T("SoundVolumeOff")).AddParam(100, L.T("SoundVolumeMax"));
+            sliderMusicVolume = new Slider(window, font, 300, 0, 100, 1, L.T("MusicVolume"));
+            sliderMusicVolume.SetValue(Options.MusicVolume)
+                .AddParam(0, L.T("MusicVolumeOff")).AddParam(100, L.T("MusicVolumeMax"));
 
             sliderMouseSensitivity = new Slider(window, font, 300, 0, 100, 1, L.T("MouseSensitivity"));
             sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
@@ -106,12 +110,13 @@ namespace Vge.Gui.Screens
             {
                 window.SetVSync(checkBoxVSinc.Checked);
             }
-            if (Options.Fps != sliderFps.Value)
+            if (inGame && Options.Fps != sliderFps.Value)
             {
                 window.SetWishFrame(sliderFps.Value);
             }
             Options.Fps = sliderFps.Value;
             Options.SoundVolume = sliderSoundVolume.Value;
+            Options.MusicVolume = sliderMusicVolume.Value;
             Options.MouseSensitivity = sliderMouseSensitivity.Value;
             Options.SizeInterface = si;
             Options.VSync = checkBoxVSinc.Checked;
@@ -139,6 +144,7 @@ namespace Vge.Gui.Screens
 
             AddControls(sliderFps);
             AddControls(sliderSoundVolume);
+            AddControls(sliderMusicVolume);
             AddControls(sliderMouseSensitivity);
 
             AddControls(checkBoxBigInterface);
@@ -161,19 +167,20 @@ namespace Vge.Gui.Screens
         {
             int w = Width / 2;
             int h = Height / 2;
-            label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 200);
+            label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 220);
 
-            buttonDone.SetPosition(w - buttonDone.Width - 2, h + 170);
-            buttonCancel.SetPosition(w + 2, h + 170);
+            buttonDone.SetPosition(w - buttonDone.Width - 2, h + 180);
+            buttonCancel.SetPosition(w + 2, h + 180);
 
-            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width / 2, h - 150);
-            sliderFps.SetPosition(w - sliderFps.Width / 2, h - 100);
-            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width / 2, h - 50);
+            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width / 2, h - 190);
+            sliderMusicVolume.SetPosition(w - sliderMusicVolume.Width / 2, h - 140);
+            sliderFps.SetPosition(w - sliderFps.Width / 2, h - 80);
+            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width / 2, h - 40);
 
-            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width / 2, h);
-            checkBoxVSinc.SetPosition(w - checkBoxVSinc.Width / 2, h + 50);
-            checkBoxFullScreen.SetPosition(w - checkBoxFullScreen.Width / 2, h + 100);
-            buttonNet.SetPosition(w - buttonNet.Width / 2, h + 100);
+            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width / 2, h + 10);
+            checkBoxVSinc.SetPosition(w - checkBoxVSinc.Width / 2, h + 60);
+            checkBoxFullScreen.SetPosition(w - checkBoxFullScreen.Width / 2, h + 110);
+            buttonNet.SetPosition(w - buttonNet.Width / 2, h + 110);
         }
 
         public override void Draw(float timeIndex)

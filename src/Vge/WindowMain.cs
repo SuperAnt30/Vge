@@ -110,7 +110,7 @@ namespace Vge
             ticker = new Ticker();
             ticker.Tick += Ticker_Tick;
             ticker.Frame += Ticker_Frame;
-            ticker.SetWishFrame(Options.Fps);
+            ticker.SetWishFrame(Ce.FpsOffside);
         }
 
         protected virtual void Initialized()
@@ -480,6 +480,7 @@ namespace Vge
             Game.ServerTextDebug += Game_ServerTextDebug;
             Game.Tick += Game_Tick;
             Game.GameStarting();
+            SetWishFrame(Options.Fps);
         }
 
         /// <summary>
@@ -505,6 +506,7 @@ namespace Vge
         {
             Game.Dispose();
             Game = null;
+            SetWishFrame(Ce.FpsOffside);
             debug.server = e.Notification;
             if (flagClose)
             {

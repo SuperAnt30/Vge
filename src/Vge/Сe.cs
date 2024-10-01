@@ -4,6 +4,15 @@
 /// </summary>
 public sealed class Ce
 {
+    #region Game
+
+    /// <summary>
+    /// Какой FPS вне игры, для уменьшения нагрузки на комп
+    /// </summary>
+    public const int FpsOffside = 30;
+
+    #endregion
+
     #region Text
 
     /// <summary>
