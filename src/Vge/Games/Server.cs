@@ -126,10 +126,7 @@ namespace Vge.Games
         /// </summary>
         public void Starting(string login, string token)
         {
-            if (login != "") // TODO::2024-09-20 Сделать шибку если имя пустое
-            {
-                Players.PlayerOwnerAdd(login, token);
-            }
+            Players.PlayerOwnerAdd(login, token);
             Log.Server(Srl.Starting, Settings.Seed, Ce.IndexVersion);
             Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
             myThread.Start();
@@ -196,7 +193,6 @@ namespace Vge.Games
             if (flagInLoop)
             {
                 // Отправляем ему его id и uuid
-                Thread.Sleep(100); //TODO::Thread.Sleep
                 ResponsePacket(e.Side, new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.BeginNet));
             }
             else
@@ -311,7 +307,6 @@ namespace Vge.Games
             for (int i = 0; i < step; i++)
             {
                 ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
-                Thread.Sleep(1); //TODO::Thread.Sleep
             }
             // Загрузка закончена, последний штрих передаём id игрока и его uuid
             Players.JoinGameOwner();
@@ -426,7 +421,6 @@ namespace Vge.Games
             Log.Server(Srl.Stopping);
 
             //World.WorldStoping();
-            Thread.Sleep(100);//TODO::Thread.Sleep
             // Тут надо сохранить мир
             packets.Clear();
             // Выкидываем всех игроков

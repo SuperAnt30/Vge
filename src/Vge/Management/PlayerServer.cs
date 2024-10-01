@@ -97,7 +97,7 @@ namespace Vge.Management
         /// <summary>
         /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
         /// </summary>
-        public bool TimeOut() => (server.Time() - lastTimeServer) > 100;// 30000;
+        public bool TimeOut() => (server.Time() - lastTimeServer) > 30000;
 
         #endregion
 
@@ -144,9 +144,16 @@ namespace Vge.Management
         {
             if (File.Exists(pathName))
             {
-                TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
-                Token = nbt.GetString("Token");
-                return true;
+                try
+                {
+                    TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
+                    Token = nbt.GetString("Token");
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
             return false;
         }

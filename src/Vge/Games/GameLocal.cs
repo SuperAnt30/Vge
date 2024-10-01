@@ -68,7 +68,16 @@ namespace Vge.Games
             Log.Save();
             if (flagRun)
             {
-                server.Starting(ToLoginPlayer(), ToTokenPlayer());
+                string login = ToLoginPlayer();
+                if (login != "")
+                {
+                    server.Starting(login, ToTokenPlayer());
+                }
+                else
+                {
+                    packets.Clear();
+                    OnStoped(L.T("PlayerNameMustNotBeEmpty"), true);
+                }
             }
             else
             {

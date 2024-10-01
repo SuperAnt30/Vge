@@ -75,10 +75,11 @@ namespace Vge.Management
             {
                 playerServer.causeRemove = cause;
                 playerRemoveList.Add(playerServer.Id);
-                //if (playerServer.Owner)
-                //{
-                //    // TODO::2024-10-01 Что делать если владелец тут появился?!
-                //}
+                if (playerServer.Owner)
+                {
+                    PlayerLeftGame(playerServer);
+                    server.Stop();
+                }
             }
         }
 
@@ -140,7 +141,7 @@ namespace Vge.Management
                 }
             }
             PlayerRemove(playerOwner, Sr.StopServer);
-            Update();
+            UpdateRemovingPlayers();
         }
 
         /// <summary>
@@ -221,19 +222,7 @@ namespace Vge.Management
         public void Update()
         {
             // Удаляем игроков
-            if (!playerRemoveList.Empty())
-            {
-                playerRemoveList.Step();
-                int id;
-                int count = playerRemoveList.CountBackward;
-                cachePlayerRemoveList.Clear();
-                for (int i = 0; i < count; i++)
-                {
-                    id = playerRemoveList.GetNext();
-                    cachePlayerRemoveList.Add(id);
-                    PlayerLeftGame(FindPlayerById(id));
-                }
-            }
+            UpdateRemovingPlayers();
 
             // Добавляем игроков
             if (!playerStartList.Empty())
@@ -269,6 +258,26 @@ namespace Vge.Management
         }
 
         /// <summary>
+        ///  Удаляем игроков в тике
+        /// </summary>
+        private void UpdateRemovingPlayers()
+        {
+            if (!playerRemoveList.Empty())
+            {
+                playerRemoveList.Step();
+                int id;
+                int count = playerRemoveList.CountBackward;
+                cachePlayerRemoveList.Clear();
+                for (int i = 0; i < count; i++)
+                {
+                    id = playerRemoveList.GetNext();
+                    cachePlayerRemoveList.Add(id);
+                    PlayerLeftGame(FindPlayerById(id));
+                }
+            }
+        }
+
+        /// <summary>
         /// Подключаем игрока в игру, прошли все проверки на игрока
         /// </summary>
         private void PlayerJoinGame(PlayerServer player)
@@ -295,8 +304,12 @@ namespace Vge.Management
                 {
                     // Если это не владелец то добавляем в массив сетевых игроков
                     players.Remove(player);
-                    // TODO::2024-10-01 тут можно отправить строковое сообщение игроку до его разрыва связи с его причиной
-                    server.PlayerDisconnect(player.Socket, player.causeRemove);
+                    if (player.Socket.IsConnect())
+                    {
+                        // Сокет не закрыт, значит закрытие на стороне сервера, надо отправить сообщение
+                        // TODO::2024-10-01 тут можно отправить строковое сообщение игроку до его разрыва связи с его причиной
+                        server.PlayerDisconnect(player.Socket, player.causeRemove);
+                    }
                 }
                 player.LeftGame();
             }
