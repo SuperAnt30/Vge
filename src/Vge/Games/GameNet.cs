@@ -6,6 +6,7 @@ using Vge.Event;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Util;
 
 namespace Vge.Games
 {
@@ -40,14 +41,14 @@ namespace Vge.Games
             this.port = port;
         }
 
+#if DEBUG
+
         /// <summary>
         /// Псевдоним игрока
         /// </summary>
-        public override string ToLoginPlayer() => "AntNet";
-        /// <summary>
-        /// токен игрока
-        /// </summary>
-        public override string ToTokenPlayer() => "F0";
+        public override string ToLoginPlayer() => Options.Nickname + "Net";
+
+#endif
 
         /// <summary>
         /// Имеется ли связь с сервером

@@ -76,6 +76,7 @@ namespace Vge.Util
                 case "PathAssets": Options.PathAssets = value; return true;
                 case "PathGames": Options.PathGames = value; return true;
                 case "Nickname": Options.Nickname = value; return true;
+                case "Token": Options.Token = value; return true;
                 case "IpAddress": Options.IpAddress = value.ToString(); return true;
                 case "FullScreen": Options.FullScreen = value == "1"; return true;
                 case "VSync": Options.VSync = value == "1"; return true;
@@ -97,6 +98,7 @@ namespace Vge.Util
             file.WriteLine("PathGames: " + Options.PathGames);
             file.WriteLine("\r\n# General");
             file.WriteLine("Nickname: " + Options.Nickname);
+            file.WriteLine("Token: " + Options.Token);
             file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
             file.WriteLine("\r\n# Graphics");
             file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));

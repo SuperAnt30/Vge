@@ -25,8 +25,7 @@ namespace Vge.Gui.Screens
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
 
             labelSeed = new Label(window, font, 300, 40, L.T("Seed"));
-            textBoxSeed = new TextBox(window, font, 300, 40, "",
-                TextBox.EnumRestrictions.Number);
+            textBoxSeed = new TextBox(window, font, 300, "", TextBox.EnumRestrictions.Number);
 
             buttonCreate = new Button(window, font, 200, L.T("Create"));
             buttonCreate.Click += ButtonCreate_Click;

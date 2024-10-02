@@ -95,11 +95,11 @@ namespace Vge.Games
         /// <summary>
         /// Псевдоним игрока
         /// </summary>
-        public virtual string ToLoginPlayer() => "";
+        public virtual string ToLoginPlayer() => Options.Nickname;
         /// <summary>
         /// токен игрока
         /// </summary>
-        public virtual string ToTokenPlayer() => "";
+        public virtual string ToTokenPlayer() => Options.Token;
 
         #region StartStopPause
 

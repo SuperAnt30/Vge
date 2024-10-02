@@ -22,6 +22,7 @@ namespace Vge.Gui.Screens
         private readonly bool isGameLocal;
 
         protected readonly Label label;
+        protected readonly TextBox textBoxNikame;
         protected readonly Slider sliderFps;
         protected readonly Slider sliderSoundVolume;
         protected readonly Slider sliderMusicVolume;
@@ -49,6 +50,9 @@ namespace Vge.Gui.Screens
             buttonDone.Click += ButtonDone_Click;
             buttonCancel = new Button(window, font, 300, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
+
+            textBoxNikame = new TextBox(window, font, 300, Options.Nickname, TextBox.EnumRestrictions.Name, 16);
+            textBoxNikame.SetEnable(!inGame);
 
             sliderFps = new Slider(window, font, 300, 10, 260, 10, L.T("Fps"));
             sliderFps.SetValue(Options.Fps).AddParam(260, L.T("MaxFps"));
@@ -121,6 +125,7 @@ namespace Vge.Gui.Screens
             Options.SizeInterface = si;
             Options.VSync = checkBoxVSinc.Checked;
             Options.FullScreen = checkBoxFullScreen.Checked;
+            Options.Nickname = textBoxNikame.Text;
             window.OptionsSave();
             if (isFullScreen)
             {
@@ -142,6 +147,7 @@ namespace Vge.Gui.Screens
             AddControls(buttonDone);
             AddControls(buttonCancel);
 
+            AddControls(textBoxNikame);
             AddControls(sliderFps);
             AddControls(sliderSoundVolume);
             AddControls(sliderMusicVolume);
@@ -169,18 +175,19 @@ namespace Vge.Gui.Screens
             int h = Height / 2;
             label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 220);
 
+            textBoxNikame.SetPosition(w - textBoxNikame.Width / 2, h - 200);
+            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width / 2, h - 156);
+            sliderMusicVolume.SetPosition(w - sliderMusicVolume.Width / 2, h - 112);
+            sliderFps.SetPosition(w - sliderFps.Width / 2, h - 68);
+            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width / 2, h - 24);
+
+            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width / 2, h + 20);
+            checkBoxVSinc.SetPosition(w - checkBoxVSinc.Width / 2, h + 64);
+            checkBoxFullScreen.SetPosition(w - checkBoxFullScreen.Width / 2, h + 108);
+            buttonNet.SetPosition(w - buttonNet.Width / 2, h + 108);
+
             buttonDone.SetPosition(w - buttonDone.Width - 2, h + 180);
             buttonCancel.SetPosition(w + 2, h + 180);
-
-            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width / 2, h - 190);
-            sliderMusicVolume.SetPosition(w - sliderMusicVolume.Width / 2, h - 140);
-            sliderFps.SetPosition(w - sliderFps.Width / 2, h - 80);
-            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width / 2, h - 40);
-
-            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width / 2, h + 10);
-            checkBoxVSinc.SetPosition(w - checkBoxVSinc.Width / 2, h + 60);
-            checkBoxFullScreen.SetPosition(w - checkBoxFullScreen.Width / 2, h + 110);
-            buttonNet.SetPosition(w - buttonNet.Width / 2, h + 110);
         }
 
         public override void Draw(float timeIndex)

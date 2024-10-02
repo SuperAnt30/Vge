@@ -11,8 +11,11 @@ namespace Vge.Gui.Screens
     public class ScreenMultiplayer : ScreenBase
     {
         protected readonly Label label;
+        protected readonly Label labelNikname;
         protected readonly Label labelAddress;
+        protected readonly Label labelToken;
         protected readonly TextBox textBoxAddress;
+        protected readonly TextBox textBoxToken;
         protected readonly Button buttonConnect;
         protected readonly Button buttonMenu;
 
@@ -21,12 +24,18 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             label = new Label(window, font, L.T("Multiplayer"));
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
+            labelNikname = new Label(window, font, 300, 40, L.T("Nikname") + ": " + Options.Nickname);
+            labelNikname.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
+            labelToken = new Label(window, font, 200, 40, L.T("Token"));
+            labelToken.SetTextAlight(EnumAlight.Right, EnumAlightVert.Middle);
             labelAddress = new Label(window, font, 200, 40, L.T("IpAddress"));
             labelAddress.SetTextAlight(EnumAlight.Right, EnumAlightVert.Middle);
 
-            textBoxAddress = new TextBox(window, font, 200, 40, Options.IpAddress, 
+            textBoxToken = new TextBox(window, font, 200, Options.Token,
+               TextBox.EnumRestrictions.Name);
+            textBoxAddress = new TextBox(window, font, 200, Options.IpAddress, 
                 TextBox.EnumRestrictions.IpPort, 15);
-
+           
             buttonConnect = new Button(window, font, 200, L.T("Connect"));
             buttonConnect.Click += ButtonConnect_Click;
             buttonMenu = new Button(window, font, 200, L.T("Menu"));
@@ -36,6 +45,7 @@ namespace Vge.Gui.Screens
         private void ButtonConnect_Click(object sender, EventArgs e)
         {
             Options.IpAddress = textBoxAddress.Text;
+            Options.Token = textBoxToken.Text;
             window.OptionsSave();
             window.GameNetRun(Options.IpAddress, 32021);
         }
@@ -50,7 +60,10 @@ namespace Vge.Gui.Screens
         {
             base.OnInitialize();
             AddControls(label);
+            AddControls(labelNikname);
+            AddControls(labelToken);
             AddControls(labelAddress);
+            AddControls(textBoxToken);
             AddControls(textBoxAddress);
             AddControls(buttonConnect);
             AddControls(buttonMenu);
@@ -64,12 +77,14 @@ namespace Vge.Gui.Screens
             int h = Height / 2;
             int w = Width / 2;
             label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 200);
-            labelAddress.SetPosition(w - labelAddress.Width - 2, h - 92);
-            textBoxAddress.SetPosition(w + 2, h - 92);
+
+            labelNikname.SetPosition(w - labelNikname.Width / 2, h - 160);
+            labelToken.SetPosition(w - labelToken.Width - 2, h - 116);
+            textBoxToken.SetPosition(w + 2, h - 116);
+            labelAddress.SetPosition(w - labelAddress.Width - 2, h - 72);
+            textBoxAddress.SetPosition(w + 2, h - 72);
             buttonConnect.SetPosition(w - buttonConnect.Width - 2, h);
             buttonMenu.SetPosition(w + 2, h);
-            
-            
         }
 
         public override void Draw(float timeIndex)

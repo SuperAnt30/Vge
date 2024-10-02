@@ -32,15 +32,6 @@ namespace Vge.Games
             flagRun = gameSettings.Init(server);
         }
 
-        /// <summary>
-        /// Псевдоним игрока
-        /// </summary>
-        public override string ToLoginPlayer() => "AntLocal";
-        /// <summary>
-        /// токен игрока
-        /// </summary>
-        public override string ToTokenPlayer() => "F1";
-
         #region StartStopPause
 
         /// <summary>

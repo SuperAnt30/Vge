@@ -62,6 +62,10 @@ namespace Vge.Util
         /// Имя игрока
         /// </summary>
         public static string Nickname { get; set; } = "Nickname";
+        /// <summary>
+        /// Токен игрока, для сети
+        /// </summary>
+        public static string Token { get; set; } = "Token";
 
         /// <summary>
         /// Чувствительность мышки, 0 - 100, где 0 это минимум, 100 максимум, 50 середина

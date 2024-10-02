@@ -58,7 +58,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         private bool isVisibleCursor;
 
-        public TextBox(WindowMain window, FontBase font, int width, int height, string text,
+        public TextBox(WindowMain window, FontBase font, int width, string text,
             EnumRestrictions restrictions, int limit = 24) : base(window)
         {
             this.limit = limit;
@@ -69,7 +69,7 @@ namespace Vge.Gui.Controls
             meshCursor = new MeshGuiColor(gl);
             vk = .078125f; // 40 / 512f;
             SetText(text);
-            SetSize(width, height);
+            SetSize(width, 40);
         }
 
         #region OnMouse
