@@ -1,5 +1,4 @@
-﻿using System;
-using WinGL.OpenGL;
+﻿using WinGL.OpenGL;
 using WinGL.Actions;
 using System.Reflection;
 using Vge;
@@ -8,10 +7,10 @@ using Mvk2.Audio;
 using Mvk2.Renderer;
 using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
-using Vge.Util;
-using Mvk2.Gui;
 using Vge.Renderer.Font;
 using Vge.Renderer;
+using Vge.World;
+using Mvk2.World;
 
 namespace Mvk2
 {
@@ -198,6 +197,10 @@ namespace Mvk2
 
         #region Game
 
+        /// <summary>
+        /// Создание миров
+        /// </summary>
+        protected override AllWorlds CreateAllWorlds() => new AllWorldsMvk();
 
         #endregion
 

@@ -159,6 +159,7 @@ namespace Vge.Renderer
         public virtual void DrawBegin()
         {
             fps++;
+            Debug.meshCount = 0;
             timeBegin = window.TimeTicks();
         }
 

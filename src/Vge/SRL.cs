@@ -18,7 +18,7 @@ internal sealed class Srl
 
     #region Profiler
 
-    internal const string SomethingIsTooLong = "{0}Что-то слишком долго! {1} заняло приблизительно {2} мс";
+    internal const string SomethingIsTooLong = "{0}Долго! {1} заняло ~{2} мс";
     internal const string EndSectionTime = "{0}{1} {2:0.00} мс";
 
     #endregion

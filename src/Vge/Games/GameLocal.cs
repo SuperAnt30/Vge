@@ -4,6 +4,7 @@ using Vge.Event;
 using Vge.Gui.Screens;
 using Vge.Network;
 using Vge.Network.Packets.Server;
+using Vge.World;
 
 namespace Vge.Games
 {
@@ -21,9 +22,9 @@ namespace Vge.Games
         /// </summary>
         private readonly bool flagRun = true;
 
-        public GameLocal(WindowMain window, GameSettings gameSettings) : base(window)
+        public GameLocal(WindowMain window, GameSettings gameSettings, AllWorlds worlds) : base(window)
         {
-            server = new Server(Log, gameSettings, new World.AllWorlds());
+            server = new Server(Log, gameSettings, worlds);
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;

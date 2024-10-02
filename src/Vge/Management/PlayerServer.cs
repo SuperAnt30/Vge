@@ -131,7 +131,7 @@ namespace Vge.Management
         public void LeftGame()
         {
             // Сохраняем
-            WriteFromFile();
+            WriteToFile();
         }
 
         /// <summary>
@@ -171,9 +171,9 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Записать данные игрока
+        /// Записать данные игрока в файл
         /// </summary>
-        public void WriteFromFile()
+        public void WriteToFile()
         {
             GameFile.CheckPath(server.Settings.PathPlayers);
             TagCompound nbt = new TagCompound();

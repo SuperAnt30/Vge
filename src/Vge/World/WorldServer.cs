@@ -39,5 +39,17 @@ namespace Vge.World
         {
             //System.Threading.Thread.Sleep(50);
         }
+
+        #region WriteRead
+
+        /// <summary>
+        /// Записать данные мира
+        /// </summary>
+        public void WriteToFile()
+        {
+            GameFile.CheckPath(PathWorld);
+        }
+
+        #endregion
     }
 }

@@ -8,24 +8,30 @@ namespace Vge.World
     public class AllWorlds
     {
         /// <summary>
-        /// Миры игры
-        /// </summary>
-        public readonly WorldServer[] worldServers;
-
-        /// <summary>
         /// Сервер
         /// </summary>
         protected Server server;
-
-        private const int count = 2;
+        /// <summary>
+        /// Миры игры
+        /// </summary>
+        protected WorldServer[] worldServers;
+        /// <summary>
+        /// Количество миров
+        /// </summary>
+        protected int count = 1;
 
         public AllWorlds() => worldServers = new WorldServer[count];
 
-        public void Init(Server server)
+        /// <summary>
+        /// Инициализация миров после создания сервера
+        /// </summary>
+        public virtual void Init(Server server)
         {
             this.server = server;
-            worldServers[0] = new WorldServer(server, 0, new WorldSettings());
-            worldServers[1] = new WorldServer(server, 1, new WorldSettings());
+            for (byte i = 0; i < count; i++)
+            {
+                worldServers[i] = new WorldServer(server, i, new WorldSettings());
+            }
         }
 
         /// <summary>
@@ -33,11 +39,25 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            for (int i = 0; i < count; i++)
+            server.Filer.StartSection("World");
+            worldServers[0].Update();
+            for (byte i = 1; i < count; i++)
             {
-                server.Filer.StartSection("World-" + i);
+                server.Filer.EndStartSection("World-" + i);
                 worldServers[i].Update();
-                server.Filer.EndSection();
+            }
+            server.Filer.EndSection();
+        }
+
+        /// <summary>
+        /// Останавливается сервер, остановить миры
+        /// </summary>
+        public virtual void Stoping()
+        {
+            // Сохраняем все миры
+            for (byte i = 0; i < count; i++)
+            {
+                worldServers[i].WriteToFile();
             }
         }
     }

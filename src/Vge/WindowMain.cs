@@ -10,6 +10,7 @@ using Vge.Games;
 using Vge.Audio;
 using Vge.Event;
 using Vge.Gui.Screens;
+using Vge.World;
 
 namespace Vge
 {
@@ -450,6 +451,11 @@ namespace Vge
         #region Game
 
         /// <summary>
+        /// Создание миров
+        /// </summary>
+        protected virtual AllWorlds CreateAllWorlds() => new AllWorlds();
+
+        /// <summary>
         /// Запустить игру по сети
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
@@ -470,7 +476,7 @@ namespace Vge
             LScreen.Working();
             if (Game == null)
             {
-                Game = new GameLocal(this, gameSettings);
+                Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();
             }
         }

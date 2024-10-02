@@ -85,8 +85,10 @@ namespace Vge.Gui.Screens
             {
                 buttonNet = new Button(window, font, 300, L.T("Net"));
             }
-
             buttonNet.Click += ButtonNet_Click;
+
+            if (!isGameLocal) buttonNet.SetVisible(false);
+            if (inGame) checkBoxFullScreen.SetVisible(false);
         }
 
         #region Clicks
@@ -166,14 +168,8 @@ namespace Vge.Gui.Screens
             AddControls(checkBoxBigInterface);
             AddControls(checkBoxVSinc);
 
-            if (isGameLocal)
-            {
-                AddControls(buttonNet);
-            }
-            if (!inGame)
-            {
-                AddControls(checkBoxFullScreen);
-            }
+            AddControls(buttonNet);
+            AddControls(checkBoxFullScreen);
         }
 
         /// <summary>

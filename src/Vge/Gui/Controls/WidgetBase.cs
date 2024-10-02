@@ -143,6 +143,16 @@
             return this;
         }
 
+        /// <summary>
+        /// Изменить видимость
+        /// </summary>
+        public WidgetBase SetVisible(bool visible)
+        {
+            Visible = visible;
+            IsRender = true;
+            return this;
+        }
+
         #endregion
 
         #region Draw

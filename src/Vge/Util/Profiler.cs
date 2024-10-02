@@ -46,12 +46,12 @@ namespace Vge.Util
         /// <summary>
         /// Закрыть проверку по времени
         /// </summary>
-        public void EndSection(int stepTime = 20)
+        public void EndSection(int stepTime = 15)
         {
             if (profilingEnabled)
             {
                 profilingEnabled = false;
-                long time = stopwatch.ElapsedTicks / timerFrequency;
+                long time = stopwatch.ElapsedMilliseconds;
                 if (time > stepTime)
                 {
                     log.Log(Srl.SomethingIsTooLong, prefix, profilingSection, time);

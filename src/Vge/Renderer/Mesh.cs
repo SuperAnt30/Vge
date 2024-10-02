@@ -106,6 +106,7 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void Draw()
         {
+            Debug.meshCount++;
             gl.BindVertexArray(vao);
             gl.DrawElements(GL.GL_TRIANGLES, countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
         }

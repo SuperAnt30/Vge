@@ -60,7 +60,10 @@ namespace Vge.Games
         /// Получить путь к папке мира по его id
         /// </summary>
         public string GetPathWorld(byte idWorld)
-            => pathWorld + (idWorld > 1 ? idWorld.ToString() : "") + Path.DirectorySeparatorChar;
+        {
+            idWorld++;
+            return pathWorld + (idWorld > 1 ? idWorld.ToString() : "") + Path.DirectorySeparatorChar;
+        }
 
         /// <summary>
         /// Создать мир

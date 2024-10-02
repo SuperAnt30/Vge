@@ -75,11 +75,14 @@ namespace Vge.Gui.Screens
 
             foreach (WidgetBase control in controls)
             {
-                if (control.IsRender)
+                if (control.Visible)
                 {
-                    control.Render();
+                    if (control.IsRender)
+                    {
+                        control.Render();
+                    }
+                    control.Draw(timeIndex);
                 }
-                control.Draw(timeIndex);
             }
         }
 

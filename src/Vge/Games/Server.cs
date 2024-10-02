@@ -464,12 +464,12 @@ namespace Vge.Games
         {
             Log.Server(Srl.Stopping);
 
-            //World.WorldStoping();
-            // Тут надо сохранить мир
+            // Надо сохранить мир
+            Worlds.Stoping();
+            // Чистим все пакеты, так-как уже обрабатывать не будем
             packets.Clear();
             // Выкидываем всех игроков
             Players.PlayersRemoveStopingServer();
-
             // Сохранить игру
             GameFile.Write(Settings, this);
 
