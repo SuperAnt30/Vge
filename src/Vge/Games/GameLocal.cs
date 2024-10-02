@@ -48,6 +48,10 @@ namespace Vge.Games
         /// Включить сетевую игру
         /// </summary>
         public void OpenNet() => server.RunNet(32021);
+        /// <summary>
+        /// Получить истину запущена ли сеть
+        /// </summary>
+        public bool IsRunNet() => server.IsRunNet();
 
         /// <summary>
         /// Запуск игры

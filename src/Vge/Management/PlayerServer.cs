@@ -67,7 +67,7 @@ namespace Vge.Management
         public PlayerServer(string login, string token, SocketSide socket, Server server)
         {
             Login = login;
-            Token = token;
+            Token = GetHash(token);
             Socket = socket;
             this.server = server;
             UUID = GetHash(login);

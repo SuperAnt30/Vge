@@ -75,7 +75,17 @@ namespace Vge.Gui.Screens
             checkBoxFullScreen = new CheckBox(window, font, 300, L.T("FullScreenReset"));
             checkBoxFullScreen.SetChecked(Options.FullScreen);
 
-            buttonNet = new Button(window, font, 300, L.T("Net"));
+            if (isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
+                && gameLocal.IsRunNet())
+            {
+                buttonNet = new Button(window, font, 300, L.T("NetOn"));
+                buttonNet.SetEnable(false);
+            }
+            else
+            {
+                buttonNet = new Button(window, font, 300, L.T("Net"));
+            }
+
             buttonNet.Click += ButtonNet_Click;
         }
 

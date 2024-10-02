@@ -56,6 +56,8 @@ namespace Vge.Management
         public void PlayerOwnerAdd(string login, string token)
         {
             playerOwner = new PlayerServer(login, token, server);
+
+            server.Log.Server(Srl.ServerLoginStartOwner, login);
             // Проверка токена не важна для владельца
             GetPlayerData(playerOwner);
         }
@@ -165,18 +167,19 @@ namespace Vge.Management
         /// </summary>
         public void LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
         {
+            string login = packet.GetLogin();
             if (packet.GetVersion() != Ce.IndexVersion)
             {
                 // Клиент другой версии
-                server.Log.Server(Srl.ServerVersionAnother, packet.GetLogin(), packet.GetVersion());
+                server.Log.Server(Srl.ServerVersionAnother, login, packet.GetVersion());
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.VersionAnother));
                 return;
             }
-            string login = packet.GetLogin();
 
             // Проверяем корректность никнейма
-            if (login == "")
+            if (login == "") // Тут можно указать перечень не корректных ников
             {
+                server.Log.Server(Srl.ServerLoginIncorrect, login);
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.LoginIncorrect));
                 return;
             }
@@ -187,6 +190,7 @@ namespace Vge.Management
             {
                 if (uuid.Equals(player.UUID))
                 {
+                    server.Log.Server(Srl.ServerLoginDuplicate, login);
                     socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.LoginDuplicate));
                     return;
                 }
@@ -199,10 +203,12 @@ namespace Vge.Management
             if (!GetPlayerData(playerServer))
             {
                 // Проверка токена не прошла
+                server.Log.Server(Srl.ServerInvalidToken, login, playerServer.Token);
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.InvalidToken));
                 return;
             }
 
+            server.Log.Server(Srl.ServerLoginStart, login, playerServer.Socket);
             // Поставить в очередь на cоединение сетевого игрока
             playerStartList.Add(playerServer);
         }
