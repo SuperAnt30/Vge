@@ -72,7 +72,11 @@
             /// <summary>
             /// Не верный токен
             /// </summary>
-            InvalidToken = 7
+            InvalidToken = 7,
+            /// <summary>
+            /// Для серверной части, сервер запущен
+            /// </summary>
+            ServerGo = 8
         }
     }
 }

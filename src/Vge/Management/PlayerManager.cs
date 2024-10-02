@@ -13,6 +13,11 @@ namespace Vge.Management
     public class PlayerManager
     {
         /// <summary>
+        /// Объект игрока владельца
+        /// </summary>
+        public PlayerServer PlayerOwner { get; private set; }
+
+        /// <summary>
         /// Основной сервер
         /// </summary>
         private readonly Server server;
@@ -21,10 +26,6 @@ namespace Vge.Management
         /// Колекция сетевых игроков
         /// </summary>
         private readonly List<PlayerServer> players = new List<PlayerServer>();
-        /// <summary>
-        /// объект игрока владельца
-        /// </summary>
-        private PlayerServer playerOwner;
         /// <summary>
         /// Список игроков которые надо запустить в ближайшем такте
         /// </summary>
@@ -51,15 +52,20 @@ namespace Vge.Management
         public int PlayerNetCount() => players.Count;
 
         /// <summary>
+        /// Получить строку всех сетевых игроков
+        /// </summary>
+        public string ToStringPlayersNet() => string.Join("; ", players);
+
+        /// <summary>
         /// Добавить игрока владельца
         /// </summary>
         public void PlayerOwnerAdd(string login, string token)
         {
-            playerOwner = new PlayerServer(login, token, server);
+            PlayerOwner = new PlayerServer(login, token, server);
 
             server.Log.Server(Srl.ServerLoginStartOwner, login);
             // Проверка токена не важна для владельца
-            GetPlayerData(playerOwner);
+            GetPlayerData(PlayerOwner);
         }
 
         /// <summary>
@@ -93,7 +99,7 @@ namespace Vge.Management
             if (socketSide == null)
             {
                 // Если нет сокета, то это владелец
-                return playerOwner;
+                return PlayerOwner;
             }
             foreach (PlayerServer player in players)
             {
@@ -110,10 +116,10 @@ namespace Vge.Management
         /// </summary>
         public PlayerServer FindPlayerById(int id)
         {
-            if (playerOwner.Id == id)
+            if (PlayerOwner != null && PlayerOwner.Id == id)
             {
                 // Это владелец
-                return playerOwner;
+                return PlayerOwner;
             }
             // Проверка сетевых
             foreach (PlayerServer player in players)
@@ -142,7 +148,10 @@ namespace Vge.Management
                     PlayerRemove(players[i], Sr.StopServer);
                 }
             }
-            PlayerRemove(playerOwner, Sr.StopServer);
+            if (PlayerOwner != null)
+            {
+                PlayerRemove(PlayerOwner, Sr.StopServer);
+            }
             UpdateRemovingPlayers();
         }
 
@@ -216,7 +225,7 @@ namespace Vge.Management
         /// <summary>
         /// Поставить в очередь на cоединение игрока владельца
         /// </summary>
-        public void JoinGameOwner() => playerStartList.Add(playerOwner);
+        public void JoinGameOwner() => playerStartList.Add(PlayerOwner);
 
         #endregion
 
@@ -243,12 +252,14 @@ namespace Vge.Management
             }
 
             // Обновление игроков
-            PlayerServerUpdate(playerOwner);
+            if (PlayerOwner != null)
+            {
+                PlayerServerUpdate(PlayerOwner);
+            }
             for (int i = 0; i < players.Count; i++)
             {
                 PlayerServerUpdate(players[i]);
             }
-
         }
 
         /// <summary>
@@ -256,11 +267,13 @@ namespace Vge.Management
         /// </summary>
         private void PlayerServerUpdate(PlayerServer entityPlayer)
         {
+            // Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
             if (!entityPlayer.Owner && entityPlayer.TimeOut())
             {
                 // На сервере пометка убрать
                 PlayerRemove(entityPlayer, Sr.TimeOut);
             }
+            entityPlayer.AddDeltaTime();
         }
 
         /// <summary>

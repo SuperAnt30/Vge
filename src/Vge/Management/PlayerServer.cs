@@ -46,6 +46,10 @@ namespace Vge.Management
         /// Указать причину удаления
         /// </summary>
         public string causeRemove = "";
+        /// <summary>
+        /// Сколько мили секунд эта сущность прожила
+        /// </summary>
+        public double TimesExisted { get; private set; } = 0;
 
         /// <summary>
         /// Последнее время пинга в милисекундах
@@ -99,6 +103,11 @@ namespace Vge.Management
         /// </summary>
         public bool TimeOut() => (server.Time() - lastTimeServer) > 30000;
 
+        /// <summary>
+        /// Добавить время к игроку
+        /// </summary>
+        public void AddDeltaTime() => TimesExisted += server.DeltaTime;
+
         #endregion
 
         /// <summary>
@@ -135,6 +144,8 @@ namespace Vge.Management
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
+        public override string ToString() => Login;
+
         #region WriteRead
 
         /// <summary>
@@ -148,6 +159,7 @@ namespace Vge.Management
                 {
                     TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
                     Token = nbt.GetString("Token");
+                    TimesExisted = nbt.GetLong("TimesExisted");
                     return true;
                 }
                 catch
@@ -166,7 +178,7 @@ namespace Vge.Management
             GameFile.CheckPath(server.Settings.PathPlayers);
             TagCompound nbt = new TagCompound();
             nbt.SetString("Token", Token);
-            nbt.SetString("Login", Login);
+            nbt.SetLong("TimesExisted", (long)TimesExisted);
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 

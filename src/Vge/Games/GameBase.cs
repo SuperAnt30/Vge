@@ -176,15 +176,13 @@ namespace Vge.Games
                 tickCounterClient++;
                 TickCounter++;
 
-                // Тут надо указать 60 секунд
-                // Прошла минута, или 1200 тактов
-                if (tickCounterClient % 1200 == 0)
+                // Прошла минута, или 1800 тактов
+                if (tickCounterClient % 1800 == 0)
                 {
                     Log.Save();
                 }
 
-                // Тут надо указать 10 секунд
-               // if (tickCounterClient % 20 == 0)
+                if (tickCounterClient % 600 == 0)
                 {
                     // Раз в 10 секунды перепинговка
                     TrancivePacket(new Packet00PingPong(Time()));
@@ -211,7 +209,7 @@ namespace Vge.Games
         /// <summary>
         /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
         /// </summary>
-        public bool TimeOut() => (Time() - lastTimeServer) > 3000;//30000;
+        public bool TimeOut() => (Time() - lastTimeServer) > 30000;
 
         /// <summary>
         /// Задать время с сервера

@@ -33,6 +33,10 @@ namespace Vge.Games
         /// Путь к сохранении игроков в игре
         /// </summary>
         public readonly string PathPlayers;
+        /// <summary>
+        /// Путь к сохранении миров в игре
+        /// </summary>
+        private readonly string pathWorld;
 
         #endregion
 
@@ -49,7 +53,14 @@ namespace Vge.Games
 
             PathGames = Options.PathGames + FileName + Path.DirectorySeparatorChar;
             PathPlayers = PathGames + "Players" + Path.DirectorySeparatorChar;
+            pathWorld = PathGames + "World";
         }
+
+        /// <summary>
+        /// Получить путь к папке мира по его id
+        /// </summary>
+        public string GetPathWorld(byte idWorld)
+            => pathWorld + (idWorld > 1 ? idWorld.ToString() : "") + Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Создать мир

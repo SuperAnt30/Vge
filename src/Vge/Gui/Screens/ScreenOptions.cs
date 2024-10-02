@@ -95,7 +95,7 @@ namespace Vge.Gui.Screens
         {
             if (window.Game != null && window.Game is GameLocal gameLocal)
             {
-                gameLocal.OpenNet();
+                gameLocal.OpenNet(32021);
                 buttonNet.SetText(L.T("NetOn")).SetEnable(false);
             }
         }

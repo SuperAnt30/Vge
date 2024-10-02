@@ -23,7 +23,7 @@ namespace Vge.Games
 
         public GameLocal(WindowMain window, GameSettings gameSettings) : base(window)
         {
-            server = new Server(Log, gameSettings);
+            server = new Server(Log, gameSettings, new World.AllWorlds());
             server.Closeded += Server_Closeded;
             server.Error += Server_Error;
             server.TextDebug += Server_TextDebug;
@@ -47,7 +47,7 @@ namespace Vge.Games
         /// <summary>
         /// Включить сетевую игру
         /// </summary>
-        public void OpenNet() => server.RunNet(32021);
+        public void OpenNet(int port) => server.RunNet(port);
         /// <summary>
         /// Получить истину запущена ли сеть
         /// </summary>
@@ -66,6 +66,7 @@ namespace Vge.Games
                 string login = ToLoginPlayer();
                 if (login != "")
                 {
+                    //server.Starting(32021);
                     server.Starting(login, ToTokenPlayer());
                 }
                 else
@@ -163,6 +164,10 @@ namespace Vge.Games
                 else if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.Step)
                 {
                     screen.ServerStep();
+                }
+                else if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.ServerGo)
+                {
+                    window.ScreenClose();
                 }
             }
         }

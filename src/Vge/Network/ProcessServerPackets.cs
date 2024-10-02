@@ -115,7 +115,7 @@ namespace Vge.Network
         /// </summary>
         public void Update()
         {
-        //    if (server.TickCounter - lastSentPingPacket > 200)
+            if (server.TickCounter - lastSentPingPacket > 300)
             {
                 // Раз в 10 секунд
                 lastSentPingPacket = server.TickCounter;
@@ -143,7 +143,7 @@ namespace Vge.Network
         /// Ping-pong
         /// </summary>
         private void Handle00Ping(SocketSide socketSide, Packet00PingPong packet)
-            => server.ResponsePacket(socketSide, packet);// new PacketS00Pong(packet.GetClientTime()));
+            => server.ResponsePacket(socketSide, packet);
 
         /// <summary>
         /// Сохранить жизнь

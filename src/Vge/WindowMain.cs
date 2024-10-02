@@ -313,7 +313,9 @@ namespace Vge
                     Screen.Draw(ticker.Interpolation);
                 }
             }
+#if DEBUG
             DrawDebug();
+#endif
             Render.DrawEnd();
         }
 

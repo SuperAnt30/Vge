@@ -7,6 +7,7 @@ using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Games
@@ -42,11 +43,15 @@ namespace Vge.Games
         /// <summary>
         /// Дельта последнего тика в mc
         /// </summary>
-        public float DeltaTime { get; private set; }
+        public double DeltaTime { get; private set; }
         /// <summary>
         /// Настройки игры
         /// </summary>
         public readonly GameSettings Settings;
+        /// <summary>
+        /// Миры игры
+        /// </summary>
+        public readonly AllWorlds Worlds;
 
         /// <summary>
         /// Часы для Tps
@@ -64,7 +69,7 @@ namespace Vge.Games
         /// <summary>
         /// Хранение тактов за 1/5 секунды игры, для статистики определения среднего времени такта
         /// </summary>
-        private readonly long[] tickTimeArray = new long[4];
+        private readonly long[] tickTimeArray = new long[Ce.Tps];
         /// <summary>
         /// Пауза в игре, только для одиночной версии
         /// </summary>
@@ -73,6 +78,10 @@ namespace Vge.Games
         /// Флаг уже в loopе сервера, false - елё ещё не дошли до loop
         /// </summary>
         private bool flagInLoop = false;
+        /// <summary>
+        /// Порт для режима сервера без владельца
+        /// </summary>
+        private int portToServer = 32021;
 
         /// <summary>
         /// Принято пакетов за секунду
@@ -108,13 +117,15 @@ namespace Vge.Games
         /// </summary>
         private int lastEntityId = 0;
 
-        public Server(Logger log, GameSettings gameSettings)
+        public Server(Logger log, GameSettings gameSettings, AllWorlds worlds)
         {
-            this.Settings = gameSettings;
+            Settings = gameSettings;
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
             packets = new ProcessServerPackets(this);
             Players = new PlayerManager(this);
+            Worlds = worlds;
+            Worlds.Init(this);
             frequencyMs = Stopwatch.Frequency / 1000;
             stopwatchTps.Start();
         }
@@ -122,7 +133,18 @@ namespace Vge.Games
         #region StartStopPause
 
         /// <summary>
-        /// Запустить сервер в отдельном потоке
+        /// Запустить сервер в отдельном потоке для сервера без владельца игрока
+        /// </summary>
+        public void Starting(int port)
+        {
+            portToServer = port;
+            Log.Server(Srl.Starting, Settings.Seed, Ce.IndexVersion);
+            Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
+            myThread.Start();
+        }
+
+        /// <summary>
+        /// Запустить сервер в отдельном потоке с игроком владельцем
         /// </summary>
         public void Starting(string login, string token)
         {
@@ -255,7 +277,14 @@ namespace Vge.Games
         /// <summary>
         /// Обновить количество клиентов
         /// </summary>
-        public void UpCountClients() => strNet = IsRunNet() ? "net[" + Players.PlayerNetCount() + "]" : "";
+        public void UpCountClients()
+        {
+            strNet = Players.PlayerOwner == null ? "<S>" : Players.PlayerOwner.Login;
+            if (IsRunNet())
+            {
+                strNet += " net[" + Players.PlayerNetCount() + "] " + Players.ToStringPlayersNet();
+            }
+        }
 
         /// <summary>
         /// Отправить пакет сетевому клиенту,
@@ -298,18 +327,29 @@ namespace Vge.Games
         /// </summary>
         private void ToLoop()
         {
-            // Запуск игрока
-            // Тут должен знать его Ник, и место спавна
-            // Отправляем количество шагов на загрузку
-            ushort step = 100;// 625;
-            ResponsePacketOwner(new PacketS02LoadingGame(step));
-            // Запуск чанков (шагов)
-            for (int i = 0; i < step; i++)
+            if (Players.PlayerOwner != null)
             {
-                ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
+                // Если игрок владелец имеется, то грузим мир под него
+                // Тут должен знать его Ник, и место спавна
+                // Отправляем количество шагов на загрузку
+                ushort step = 100;// 625;
+                ResponsePacketOwner(new PacketS02LoadingGame(step));
+                // Запуск чанков (шагов)
+                for (int i = 0; i < step; i++)
+                {
+                    ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
+                }
+                // Загрузка закончена, последний штрих передаём id игрока и его uuid
+                Players.JoinGameOwner();
             }
-            // Загрузка закончена, последний штрих передаём id игрока и его uuid
-            Players.JoinGameOwner();
+            else
+            {
+                // Это для сервера без игроков, запускаемся
+                // Убираем скрин загрузки
+                ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.ServerGo));
+                // Сразу включаем порт сети
+                RunNet(portToServer);
+            }
         }
 
         /// <summary>
@@ -322,24 +362,29 @@ namespace Vge.Games
                 ToLoop();
                 Log.Server(Srl.Go);
 
+                // Начальное время мс
+                long beginTime;
                 // Текущее время для расчёта сна потока
-                long currentTime = stopwatchTps.ElapsedMilliseconds;
+                long currentTime;
                 // Накопленное время для определении сна
                 long accumulatedTime = 0;
                 // Время сна потока, в мс
                 int timeSleep;
                 // Разница времени для такта
                 long differenceTime;
-                // Текущее время такта
-                long currentTimeTakt;
-                // Конечное время такта
-                long endTimeTakt = currentTime;
-                // Начальное время мс
-                long beginTime;
+
                 // Начальное время такта
-                long beginTakt;
-                // Разница времени для счётчика времени
-                long differenceCounterTime = currentTime;
+                long beginTicks;
+                // время выполнения такта
+                long timeExecutionTicks;
+
+                // Для фиксации конца времени в тактах
+                long endTicks;
+                // Для фиксации конца времени а мс
+                long endTime;
+
+                currentTime = endTime = stopwatchTps.ElapsedMilliseconds;
+                endTicks = stopwatchTps.ElapsedTicks;
 
                 // Меняем флаг
                 flagInLoop = true;
@@ -365,38 +410,37 @@ namespace Vge.Games
                     accumulatedTime += differenceTime;
                     currentTime = beginTime;
 
-                    while (accumulatedTime > Ce.Tick​​Time)
+                    while (IsServerRunning && accumulatedTime > Ce.Tick​​Time)
                     {
                         accumulatedTime -= Ce.Tick​​Time;
                         // Счётчик реального времени
                         beginTime = stopwatchTps.ElapsedMilliseconds;
+                        // фиксируем начальное время такта
+                        beginTicks = stopwatchTps.ElapsedTicks;
 
                         if (!isGamePaused)
                         {
-                            // фиксируем начальное время такта
-                            beginTakt = stopwatchTps.ElapsedTicks;
                             // Счётчик тиков
                             TickCounter++;
+                            // Находим дельту времени между тактами
+                            DeltaTime = (beginTicks - endTicks) / (double)frequencyMs;
                             // Добавить время сколько прошло с прошлого шага в мс
-                            TimeCounter += beginTime - differenceCounterTime;
+                            TimeCounter += beginTime - endTime;
 
                             // =======
                             OnTick();
                             // =======
 
-                            // фиксируем текущее время такта
-                            currentTimeTakt = stopwatchTps.ElapsedTicks;
-                             
-                            // Находим дельту времени между тактами
-                            DeltaTime = (currentTimeTakt - endTimeTakt) / (float)frequencyMs;
-                            //tickTimeArray[TickCounter % 4] = currentTimeTakt - endTimeTakt;
                             // фиксируем время выполнения такта
-                            tickTimeArray[TickCounter % 4] = currentTimeTakt - beginTakt;
-                            // фиксируем конечное время
-                            endTimeTakt = currentTimeTakt;
+                            timeExecutionTicks = stopwatchTps.ElapsedTicks - beginTicks;
+                            // фиксируем время выполнения такта
+                            tickTimeArray[TickCounter % Ce.Tps] = timeExecutionTicks;
                         }
+
                         // Разница времени для счётчика времени обновляем, даже если пауза
-                        differenceCounterTime = beginTime;
+                        endTime = beginTime;
+                        // фиксируем конечное время
+                        endTicks = beginTicks;
                     }
                     timeSleep = Ce.Tick​​Time - (int)accumulatedTime;
                     Thread.Sleep(timeSleep > 0 ? timeSleep : 1);
@@ -457,7 +501,6 @@ namespace Vge.Games
             // Сетевые пакеты
             packets.Update();
 
-           // ResponsePacketAll(new PacketS03TimeUpdate(TickCounter));
             // Прошла секунда
             if (TickCounter % Ce.Tps == 0)
             {
@@ -478,12 +521,15 @@ namespace Vge.Games
             // Тики менеджера игроков
             Filer.StartSection("PlayersTick");
             Players.Update();
+
             Filer.EndSection();
+            
             //Thread.Sleep(10);
             // Тут игровые мировые тики
+            Worlds.Update();
 
-            // Прошла 1/5 секунда, или 4 такта
-            if (TickCounter % 4 == 0)
+            // Прошла 1/3 секунда, или 10 тактов
+            if (TickCounter % 10 == 0)
             {
                 // лог статистика за это время
                 OnTextDebug();
@@ -519,6 +565,8 @@ namespace Vge.Games
 
         #endregion
 
+        #region Debug
+
         /// <summary>
         /// Строка для дебага, формируется по запросу
         /// </summary>
@@ -528,12 +576,17 @@ namespace Vge.Games
             float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}{7}" + Ce.Br + "{8}",
-                tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f,
-                strNet, isGamePaused ? " PAUSE" : "", debugText);
+            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {7}" 
+                + Ce.Br + "{6}" 
+                + Ce.Br + "{8}",
+                tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f, // 0-5
+                strNet, isGamePaused ? " PAUSE" : "", // 6-7
+                debugText); // 8
         }
 
         public string debugText = "";
+
+        #endregion
 
         #region Event
 
