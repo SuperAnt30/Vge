@@ -251,14 +251,30 @@ namespace Vge.Management
                 cachePlayerRemoveList.Clear();
             }
 
+            int countPl = 0;
             // Обновление игроков
             if (PlayerOwner != null)
             {
+                countPl++;
                 PlayerServerUpdate(PlayerOwner);
             }
             for (int i = 0; i < players.Count; i++)
             {
+                countPl++;
                 PlayerServerUpdate(players[i]);
+            }
+
+            // Отладка
+            Debug.players = new WinGL.Util.Vector2i[countPl];
+
+            countPl = 0;
+            if (PlayerOwner != null)
+            {
+                Debug.players[countPl++] = PlayerOwner.chPos;
+            }
+            for (int i = 0; i < players.Count; i++)
+            {
+                Debug.players[countPl++] = players[i].chPos;
             }
         }
 

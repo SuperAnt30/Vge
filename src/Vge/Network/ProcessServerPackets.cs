@@ -36,10 +36,6 @@ namespace Vge.Network
         /// </summary>
         private readonly DoubleList<SocketBuffer> packets = new DoubleList<SocketBuffer>();
         /// <summary>
-        /// Задержка времени для перепинговки всех игроков
-        /// </summary>
-        private long lastSentPingPacket;
-        /// <summary>
         /// Зафиксированное время для проверки пинга, у игроках
         /// </summary>
         private long lastPingTime;
@@ -115,10 +111,9 @@ namespace Vge.Network
         /// </summary>
         public void Update()
         {
-            if (server.TickCounter - lastSentPingPacket > 300)
+            if (server.TickCounter % 150 == 0)
             {
-                // Раз в 10 секунд
-                lastSentPingPacket = server.TickCounter;
+                // Раз в 5 секунд
                 lastPingTime = server.Time();
                 pingKeySend = (uint)lastPingTime;
                 server.Players.SendToAll(new Packet01KeepAlive(pingKeySend));
@@ -171,7 +166,13 @@ namespace Vge.Network
         /// </summary>
         private void Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
         {
-            server.debugText = packet.GetKey();
+            PlayerServer playerServer = server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null)
+            {
+                playerServer.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
+               
+            }
+
             //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
             //if (entityPlayer != null)
             //{

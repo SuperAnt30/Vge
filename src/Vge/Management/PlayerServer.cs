@@ -6,30 +6,15 @@ using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Server;
+using WinGL.Util;
 
 namespace Vge.Management
 {
     /// <summary>
     /// Объект игрока, как локального так и сетевого, не сущность
     /// </summary>
-    public class PlayerServer
+    public class PlayerServer : PlayerBase
     {
-        /// <summary>
-        /// Уникальный порядковый номер игрока
-        /// </summary>
-        public readonly int Id;
-        /// <summary>
-        /// Псевдоним игрока
-        /// </summary>
-        public readonly string Login;
-        /// <summary>
-        /// Хэш игрока по псевдониму
-        /// </summary>
-        public readonly string UUID;
-        /// <summary>
-        /// Хэш пароль игрока
-        /// </summary>
-        public string Token { get; private set; }
         /// <summary>
         /// Сетевой сокет
         /// </summary>
@@ -38,10 +23,6 @@ namespace Vge.Management
         /// Флаг является ли этот игрок владельцем
         /// </summary>
         public readonly bool Owner;
-        /// <summary>
-        /// Пинг клиента в мс
-        /// </summary>
-        public int Ping { get; private set; } = -1;
         /// <summary>
         /// Указать причину удаления
         /// </summary>
@@ -52,16 +33,11 @@ namespace Vge.Management
         public double TimesExisted { get; private set; } = 0;
 
         /// <summary>
-        /// Последнее время пинга в милисекундах
-        /// </summary>
-        private long lastTimeServer;
-
-        /// <summary>
         /// Основной сервер
         /// </summary>
         private readonly Server server;
         /// <summary>
-        /// Имя пути игрока
+        /// Имя пути к папке игрока
         /// </summary>
         private readonly string pathName;
 
@@ -87,21 +63,13 @@ namespace Vge.Management
         public PlayerServer(string login, string token, Server server)
             : this(login, token, null, server) { }
 
+
+        /// <summary>
+        /// Получить время в милисекундах с сервера
+        /// </summary>
+        protected override long Time() => server.Time();
+
         #region Ping
-
-        /// <summary>
-        /// Задать время пинга
-        /// </summary>
-        public void SetPing(long time)
-        {
-            lastTimeServer = server.Time();
-            Ping = (Ping * 3 + (int)(lastTimeServer - time)) / 4;
-        }
-
-        /// <summary>
-        /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
-        /// </summary>
-        public bool TimeOut() => (server.Time() - lastTimeServer) > 30000;
 
         /// <summary>
         /// Добавить время к игроку
@@ -122,6 +90,8 @@ namespace Vge.Management
         public void JoinGame()
         {
             SendPacket(new PacketS03JoinGame(Id, UUID));
+            SendPacket(new PacketS04TimeUpdate(server.TickCounter));
+            SendPacket(new PacketS08PlayerPosLook(new System.Numerics.Vector3(chPos.X, chPos.Y, 0), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
         }
 
@@ -160,6 +130,7 @@ namespace Vge.Management
                     TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
                     Token = nbt.GetString("Token");
                     TimesExisted = nbt.GetLong("TimesExisted");
+                    chPos = new Vector2i(nbt.GetInt("ChX"), nbt.GetInt("ChY"));
                     return true;
                 }
                 catch
@@ -179,6 +150,8 @@ namespace Vge.Management
             TagCompound nbt = new TagCompound();
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
+            nbt.SetInt("ChX", chPos.X);
+            nbt.SetInt("ChY", chPos.Y);
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 

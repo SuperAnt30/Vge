@@ -576,7 +576,7 @@ namespace Vge.Games
             float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("{0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {7}" 
+            return string.Format("Server: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {7}" 
                 + Ce.Br + "{6}" 
                 + Ce.Br + "{8}",
                 tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f, // 0-5

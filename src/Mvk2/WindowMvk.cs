@@ -11,6 +11,7 @@ using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge.World;
 using Mvk2.World;
+using WinGL.Util;
 
 namespace Mvk2
 {
@@ -139,7 +140,34 @@ namespace Mvk2
 
             if (Game != null)
             {
-                Game.TrancivePacket(new PacketC04PlayerPosition(keys.ToString()));
+                bool b = false;
+                if (keys == Keys.Left)
+                {
+                    Game.Player.chPos.X--;
+                    b = true;
+                }
+                else if (keys == Keys.Right)
+                {
+                    Game.Player.chPos.X++;
+                    b = true;
+                }
+                else if (keys == Keys.Up)
+                {
+                    Game.Player.chPos.Y--;
+                    b = true;
+                }
+                else if (keys == Keys.Down)
+                {
+                    Game.Player.chPos.Y++;
+                    b = true;
+                }
+                if (b)
+                {
+                    Game.TrancivePacket(new PacketC04PlayerPosition(
+                        new System.Numerics.Vector3(Game.Player.chPos.X, Game.Player.chPos.Y, 0),
+                        false, false, false));
+                    Debug.player = Game.Player.chPos;
+                }
             }
 
             //map.ContainsKey(keys);

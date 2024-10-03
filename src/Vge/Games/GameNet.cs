@@ -164,7 +164,7 @@ namespace Vge.Games
         public override void OnTick(float deltaTime)
         {
             // Проверка на разрыв долгий сервера (нет связи)
-            if (flagTick && TimeOut())
+            if (flagTick && Player.TimeOut())
             {
                 GameStoping(Srl.TheServerIsNotResponding, true);
             }
@@ -191,7 +191,7 @@ namespace Vge.Games
                 PacketS02LoadingGame.EnumStatus status = packet.GetStatus();
                 if (status == PacketS02LoadingGame.EnumStatus.BeginNet)
                 {
-                    socket.SendPacket(new PacketC02LoginStart(ToLoginPlayer(), ToTokenPlayer(), Ce.IndexVersion));
+                    socket.SendPacket(new PacketC02LoginStart(Player.Login, Player.Token, Ce.IndexVersion));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.VersionAnother)
                 {

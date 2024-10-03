@@ -72,6 +72,10 @@ namespace Vge.Network
                 case 0x04:
                     Handle04TimeUpdate((PacketS04TimeUpdate)readPacket.Receive(buffer, new PacketS04TimeUpdate()));
                     break;
+                case 0x08:
+                    Handle08PlayerPosLook((PacketS08PlayerPosLook)readPacket.Receive(buffer, new PacketS08PlayerPosLook()));
+                    break;
+                    
             }
         }
 
@@ -100,7 +104,7 @@ namespace Vge.Network
         /// Пакет связи
         /// </summary>
         private void Handle00Pong(Packet00PingPong packet) 
-            => Game.SetPing(packet.GetClientTime());
+            => Game.Player.SetPing(packet.GetClientTime());
 
         /// <summary>
         /// KeepAlive
@@ -126,6 +130,15 @@ namespace Vge.Network
         private void Handle04TimeUpdate(PacketS04TimeUpdate packet)
         {
             Game.SetTickCounter(packet.GetTime());
+        }
+
+        /// <summary>
+        /// Пакет расположения игрока, при старте, телепорт, рестарте и тп
+        /// </summary>
+        private void Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
+        {
+            Game.Player.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
+            Debug.player = Game.Player.chPos;
         }
 
         #region ConnectionDisconnect

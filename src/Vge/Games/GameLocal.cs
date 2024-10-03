@@ -64,11 +64,10 @@ namespace Vge.Games
             Log.Save();
             if (flagRun)
             {
-                string login = ToLoginPlayer();
-                if (login != "")
+                if (Player.Login != "")
                 {
                     //server.Starting(32021);
-                    server.Starting(login, ToTokenPlayer());
+                    server.Starting(Player.Login, Player.Token);
                 }
                 else
                 {

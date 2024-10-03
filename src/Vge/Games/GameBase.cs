@@ -3,11 +3,13 @@ using System.Diagnostics;
 using System.Threading;
 using Vge.Event;
 using Vge.Gui.Huds;
+using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Actions;
+using WinGL.Util;
 
 namespace Vge.Games
 {
@@ -34,13 +36,13 @@ namespace Vge.Games
         /// </summary>
         public bool IsGamePaused { get; protected set; } = false;
         /// <summary>
-        /// Пинг к серверу
-        /// </summary>
-        public int Ping { get; private set; } = -1;
-        /// <summary>
         /// Объект индикация
         /// </summary>
         public HudBase Hud { get; protected set; }
+        /// <summary>
+        /// Объект игрока для клиента
+        /// </summary>
+        public PlayerClient Player { get; private set; }
 
         /// <summary>
         /// Увеличивается каждый тик 
@@ -72,10 +74,7 @@ namespace Vge.Games
         /// Объект времени с момента запуска проекта
         /// </summary>
         private readonly Stopwatch stopwatch = new Stopwatch();
-        /// <summary>
-        /// Последнее время пинга в милисекундах
-        /// </summary>
-        private long lastTimeServer;
+       
         /// <summary>
         /// Флаг было ли уже остановление
         /// </summary>
@@ -90,6 +89,7 @@ namespace Vge.Games
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
             packets = new ProcessClientPackets(this);
+            Player = new PlayerClient(this);
         }
 
         /// <summary>
@@ -123,6 +123,7 @@ namespace Vge.Games
         /// </summary>
         public void PlayerOnTheServer(int id, string uuid)
         {
+            Player.PlayerOnTheServer(id, uuid);
             window.LScreen.Close();
             flagTick = true;
         }
@@ -182,9 +183,9 @@ namespace Vge.Games
                     Log.Save();
                 }
 
-                if (tickCounterClient % 600 == 0)
+                if (tickCounterClient % 150 == 0)
                 {
-                    // Раз в 10 секунды перепинговка
+                    // Раз в 5 секунды перепинговка
                     TrancivePacket(new Packet00PingPong(Time()));
                 }
             }
@@ -196,20 +197,6 @@ namespace Vge.Games
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
         public long Time() => stopwatch.ElapsedMilliseconds;
-
-        /// <summary>
-        /// Задать время пинга
-        /// </summary>
-        public void SetPing(long time)
-        {
-            lastTimeServer = Time();
-            Ping = (Ping * 3 + (int)(lastTimeServer - time)) / 4;
-        }
-
-        /// <summary>
-        /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
-        /// </summary>
-        public bool TimeOut() => (Time() - lastTimeServer) > 30000;
 
         /// <summary>
         /// Задать время с сервера
@@ -231,6 +218,8 @@ namespace Vge.Games
             {
                 Hud.Draw();
             }
+
+            Debug.DrawChunks(window);
         }
 
         #endregion
@@ -246,12 +235,13 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}",
-                IsLoacl ? "Local" : "Net",
-                Ping,
-                IsGamePaused ? " Pause" : "",
-                ToTraffic(),
-                TickCounter);
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6}",
+                IsLoacl ? "Local" : "Net", // 0
+                Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
+                ToTraffic(),TickCounter, // 3-4
+                Player.Login,
+                new Vector2i(0)
+                );
         }
 
         private string ToTraffic()
