@@ -19,7 +19,7 @@ namespace Vge.Management
         /// <summary>
         /// Основной сервер
         /// </summary>
-        public readonly GameServer @Server;
+        public readonly GameServer Server;
 
         /// <summary>
         /// Колекция сетевых игроков
