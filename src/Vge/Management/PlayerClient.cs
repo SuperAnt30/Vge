@@ -10,11 +10,11 @@ namespace Vge.Management
         /// <summary>
         /// Класс  игры
         /// </summary>
-        private readonly GameBase game;
+        private readonly GameBase _game;
 
         public PlayerClient(GameBase game)
         {
-            this.game = game;
+            _game = game;
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
         }
@@ -22,6 +22,6 @@ namespace Vge.Management
         /// <summary>
         /// Получить время в милисекундах
         /// </summary>
-        protected override long Time() => game.Time();
+        protected override long _Time() => _game.Time();
     }
 }

@@ -30,7 +30,7 @@ namespace Vge.Network
         /// <summary>
         /// Основной сервер
         /// </summary>
-        private readonly Server server;
+        private readonly GameServer server;
         /// <summary>
         /// Массив очередей пакетов
         /// </summary>
@@ -44,7 +44,7 @@ namespace Vge.Network
         /// </summary>
         private uint pingKeySend;
 
-        public ProcessServerPackets(Server server) => this.server = server;
+        public ProcessServerPackets(GameServer server) => this.server = server;
 
         /// <summary>
         /// Передача данных для сервера

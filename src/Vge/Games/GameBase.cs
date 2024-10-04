@@ -52,43 +52,43 @@ namespace Vge.Games
         /// <summary>
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
         /// </summary>
-        protected uint tickCounterClient = 0;
+        protected uint _tickCounterClient = 0;
         /// <summary>
         /// Оповещение остановки, если "" её ещё не было
         /// </summary>
-        protected string stopNotification = "";
+        protected string _stopNotification = "";
         /// <summary>
         /// Надо ли выводить окно оповещении 
         /// </summary>
-        protected bool stopIsWarning = false;
+        protected bool _stopIsWarning = false;
         /// <summary>
         /// Остановка из потока
         /// </summary>
-        protected bool isStop = false;
+        protected bool _isStop = false;
         /// <summary>
         /// Флаг, можно ли уже использовать тик
         /// </summary>
-        protected bool flagTick = false;
+        protected bool _flagTick = false;
 
         /// <summary>
         /// Объект времени с момента запуска проекта
         /// </summary>
-        private readonly Stopwatch stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
        
         /// <summary>
         /// Флаг было ли уже остановление
         /// </summary>
-        private bool flagStoped = false;
+        private bool _flagStoped = false;
         /// <summary>
         /// Объект работы с пакетами
         /// </summary>
-        protected readonly ProcessClientPackets packets;
+        protected readonly ProcessClientPackets _packets;
 
         public GameBase(WindowMain window) : base(window)
         {
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
-            packets = new ProcessClientPackets(this);
+            _packets = new ProcessClientPackets(this);
             Player = new PlayerClient(this);
         }
 
@@ -106,7 +106,7 @@ namespace Vge.Games
         /// <summary>
         /// Запуск игры
         /// </summary>
-        public virtual void GameStarting() => stopwatch.Start();
+        public virtual void GameStarting() => _stopwatch.Start();
 
         /// <summary>
         /// Остановка игры
@@ -125,7 +125,7 @@ namespace Vge.Games
         {
             Player.PlayerOnTheServer(id, uuid);
             window.LScreen.Close();
-            flagTick = true;
+            _flagTick = true;
         }
 
         /// <summary>
@@ -170,20 +170,20 @@ namespace Vge.Games
         public override void OnTick(float deltaTime)
         {
             // почерёдно получаем пакеты с сервера
-            packets.Update();
+            _packets.Update();
 
-            if (flagTick && !IsGamePaused)
+            if (_flagTick && !IsGamePaused)
             {
-                tickCounterClient++;
+                _tickCounterClient++;
                 TickCounter++;
 
                 // Прошла минута, или 1800 тактов
-                if (tickCounterClient % 1800 == 0)
+                if (_tickCounterClient % 1800 == 0)
                 {
                     Log.Save();
                 }
 
-                if (tickCounterClient % 150 == 0)
+                if (_tickCounterClient % 150 == 0)
                 {
                     // Раз в 5 секунды перепинговка
                     TrancivePacket(new Packet00PingPong(Time()));
@@ -196,7 +196,7 @@ namespace Vge.Games
         /// <summary>
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
-        public long Time() => stopwatch.ElapsedMilliseconds;
+        public long Time() => _stopwatch.ElapsedMilliseconds;
 
         /// <summary>
         /// Задать время с сервера
@@ -238,15 +238,15 @@ namespace Vge.Games
             return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
-                ToTraffic(),TickCounter, // 3-4
+                _ToTraffic(),TickCounter, // 3-4
                 Player.Login,
                 new Vector2i(0)
                 );
         }
 
-        private string ToTraffic()
+        private string _ToTraffic()
         {
-            long traffic = packets.Traffic;
+            long traffic = _packets.Traffic;
             if (traffic < 1048576)
             {
                 return (traffic / 1024f).ToString("0.0") + " kb";
@@ -263,12 +263,12 @@ namespace Vge.Games
         /// Событие остановлена игра
         /// </summary>
         public event GameStopEventHandler Stoped;
-        protected void OnStoped(string notification, bool isWarning)
+        protected void _OnStoped(string notification, bool isWarning)
         {
-            if (!flagStoped)
+            if (!_flagStoped)
             {
                 // флаг нужен, так-как можно попасть сюда много раз, из-за разрыва сети.
-                flagStoped = true;
+                _flagStoped = true;
                 Log.Client(Srl.StoppedClient, notification == "" ? "" : " [" + notification + "]");
                 Log.Save();
                 Stoped?.Invoke(this, new GameStopEventArgs(notification, isWarning));
@@ -279,14 +279,14 @@ namespace Vge.Games
         /// Событие ошибки на сервере
         /// </summary>
         public event ThreadExceptionEventHandler Error;
-        protected void OnError(Exception ex)
+        protected void _OnError(Exception ex)
             => Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
 
         /// <summary>
         /// Событие текст отладки сервера
         /// </summary>
         public event StringEventHandler ServerTextDebug;
-        protected virtual void OnServerTextDebug(string text) 
+        protected virtual void _OnServerTextDebug(string text) 
             => ServerTextDebug?.Invoke(this, new StringEventArgs(text));
 
         #endregion

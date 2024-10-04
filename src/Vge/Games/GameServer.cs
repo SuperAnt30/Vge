@@ -12,7 +12,10 @@ using WinGL.Util;
 
 namespace Vge.Games
 {
-    public class Server
+    /// <summary>
+    /// Объект игрового сервера
+    /// </summary>
+    public class GameServer
     {
         /// <summary>
         /// Объект лога
@@ -56,78 +59,88 @@ namespace Vge.Games
         /// <summary>
         /// Часы для Tps
         /// </summary>
-        private readonly Stopwatch stopwatchTps = new Stopwatch();
+        private readonly Stopwatch _stopwatchTps = new Stopwatch();
         /// <summary>
         /// Для перевода тактов в мили секунды Stopwatch.Frequency / 1000;
         /// </summary>
-        private readonly long frequencyMs;
+        private readonly long _frequencyMs;
         /// <summary>
         /// Устанавливается при появлении предупреждения «Не могу угнаться», 
         /// которое срабатывает снова через 15 секунд. 
         /// </summary>
-        private long timeOfLastWarning;
+        private long _timeOfLastWarning;
         /// <summary>
         /// Хранение тактов за 1/5 секунды игры, для статистики определения среднего времени такта
         /// </summary>
-        private readonly long[] tickTimeArray = new long[Ce.Tps];
+        private readonly long[] _tickTimeArray = new long[Ce.Tps];
         /// <summary>
         /// Пауза в игре, только для одиночной версии
         /// </summary>
-        private bool isGamePaused = false;
+        private bool _isGamePaused = false;
         /// <summary>
         /// Флаг уже в loopе сервера, false - елё ещё не дошли до loop
         /// </summary>
-        private bool flagInLoop = false;
+        private bool _flagInLoop = false;
         /// <summary>
         /// Порт для режима сервера без владельца
         /// </summary>
-        private int portToServer = 32021;
+        private int _portToServer = 32021;
 
         /// <summary>
         /// Принято пакетов за секунду
         /// </summary>
-        private int rx = 0;
+        private int _rx = 0;
         /// <summary>
         /// Передано пакетов за секунду
         /// </summary>
-        private int tx = 0;
+        private int _tx = 0;
         /// <summary>
         /// Принято пакетов за предыдущую секунду
         /// </summary>
-        private int rxPrev = 0;
+        private int _rxPrev = 0;
         /// <summary>
         /// Передано пакетов за предыдущую секунду
         /// </summary>
-        private int txPrev = 0;
+        private int _txPrev = 0;
         /// <summary>
         /// статус запуска сервера
         /// </summary>
-        private string strNet = "";
+        private string _strNet = "";
         /// <summary>
         /// Сокет для сети
         /// </summary>
-        private SocketServer socketServer;
+        private SocketServer _socketServer;
         /// <summary>
         /// Объект работы с пакетами
         /// </summary>
-        private ProcessServerPackets packets;
+        private ProcessServerPackets _packets;
 
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
-        private int lastEntityId = 0;
+        private int _lastEntityId = 0;
 
-        public Server(Logger log, GameSettings gameSettings, AllWorlds worlds)
+        public GameServer(Logger log, GameSettings gameSettings, AllWorlds worlds)
         {
             Settings = gameSettings;
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
-            packets = new ProcessServerPackets(this);
+            _packets = new ProcessServerPackets(this);
             Players = new PlayerManager(this);
             Worlds = worlds;
+            
+            _frequencyMs = Stopwatch.Frequency / 1000;
+            _stopwatchTps.Start();
+        }
+
+        /// <summary>
+        /// Инициализация, если true то разрешение на запуск
+        /// </summary>
+        public bool Init()
+        {
+            bool flag = Settings.Init(this);
             Worlds.Init(this);
-            frequencyMs = Stopwatch.Frequency / 1000;
-            stopwatchTps.Start();
+            return flag;
         }
 
         #region StartStopPause
@@ -137,9 +150,9 @@ namespace Vge.Games
         /// </summary>
         public void Starting(int port)
         {
-            portToServer = port;
-            Log.Server(Srl.Starting, Settings.Seed, Ce.IndexVersion);
-            Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
+            _portToServer = port;
+            Log.Server(Srl.Starting, Settings.Slot, Ce.IndexVersion);
+            Thread myThread = new Thread(_Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
 
@@ -149,8 +162,8 @@ namespace Vge.Games
         public void Starting(string login, string token)
         {
             Players.PlayerOwnerAdd(login, token);
-            Log.Server(Srl.Starting, Settings.Seed, Ce.IndexVersion);
-            Thread myThread = new Thread(Loop) { Name = "ServerLoop" };
+            Log.Server(Srl.Starting, Settings.Slot, Ce.IndexVersion);
+            Thread myThread = new Thread(_Loop) { Name = "ServerLoop" };
             myThread.Start();
         }
 
@@ -164,9 +177,9 @@ namespace Vge.Games
         /// </summary>
         public bool SetGamePauseSingle(bool value)
         {
-            isGamePaused = !IsRunNet() && value;
-            OnTextDebug();
-            return isGamePaused;
+            _isGamePaused = !IsRunNet() && value;
+            _OnTextDebug();
+            return _isGamePaused;
         }
 
         #endregion
@@ -176,7 +189,7 @@ namespace Vge.Games
         /// <summary>
         /// Получить истину запущена ли сеть
         /// </summary>
-        public bool IsRunNet() => socketServer != null && socketServer.IsConnected();
+        public bool IsRunNet() => _socketServer != null && _socketServer.IsConnected();
 
         /// <summary>
         /// Запустить на сервере сеть
@@ -185,34 +198,34 @@ namespace Vge.Games
         {
             if (!IsRunNet())
             {
-                socketServer = new SocketServer(port);
-                socketServer.ReceivePacket += SocketServer_ReceivePacket;
-                socketServer.Stopped += SocketServer_Stopped;
-                socketServer.Runned += SocketServer_Runned;
-                socketServer.Error += SocketServer_Error;
-                socketServer.UserJoined += SocketServer_UserJoined;
-                socketServer.UserLeft += SocketServer_UserLeft;
-                socketServer.WarningString += SocketServer_WarningString;
-                if (!socketServer.Run())
+                _socketServer = new SocketServer(port);
+                _socketServer.ReceivePacket += _SocketServer_ReceivePacket;
+                _socketServer.Stopped += _SocketServer_Stopped;
+                _socketServer.Runned += _SocketServer_Runned;
+                _socketServer.Error += _SocketServer_Error;
+                _socketServer.UserJoined += _SocketServer_UserJoined;
+                _socketServer.UserLeft += _SocketServer_UserLeft;
+                _socketServer.WarningString += _SocketServer_WarningString;
+                if (!_socketServer.Run())
                 {
-                    socketServer = null;
+                    _socketServer = null;
                 }
             }
         }
 
-        private void SocketServer_WarningString(object sender, StringEventArgs e)
+        private void _SocketServer_WarningString(object sender, StringEventArgs e)
         {
             Log.Server(e.Text);
-            OnRecieveMessage(e.Text);
+            _OnRecieveMessage(e.Text);
         }
 
         /// <summary>
         /// Пользователь присоединился
         /// </summary>
-        private void SocketServer_UserJoined(object sender, PacketStringEventArgs e)
+        private void _SocketServer_UserJoined(object sender, PacketStringEventArgs e)
         {
             Log.Server(Srl.ConnectedToTheServer, e.Side.ToString());
-            if (flagInLoop)
+            if (_flagInLoop)
             {
                 // Отправляем ему его id и uuid
                 ResponsePacket(e.Side, new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.BeginNet));
@@ -224,29 +237,29 @@ namespace Vge.Games
             }
         }
 
-        private void SocketServer_UserLeft(object sender, PacketStringEventArgs e)
+        private void _SocketServer_UserLeft(object sender, PacketStringEventArgs e)
         {
             Players.PlayerRemove(e.Side, e.Cause);
             Log.Server(Srl.DisconnectedFromServer, e.Cause, e.Side.ToString());
         }
             
 
-        private void SocketServer_Error(object sender, ErrorEventArgs e)
+        private void _SocketServer_Error(object sender, ErrorEventArgs e)
         {
             Log.Error(e.GetException());
             // В краш улетит
-            OnError(e.GetException());
+            _OnError(e.GetException());
         }
 
-        private void SocketServer_Runned(object sender, EventArgs e)
+        private void _SocketServer_Runned(object sender, EventArgs e)
         {
-            isGamePaused = false;
+            _isGamePaused = false;
             Log.Server(Srl.NetworkModeIsEnabled);
         }
 
-        private void SocketServer_Stopped(object sender, EventArgs e)
+        private void _SocketServer_Stopped(object sender, EventArgs e)
         {
-            socketServer = null;
+            _socketServer = null;
             if (IsServerRunning)
             {
                 // Если сеть остановилась, а луп нет, 
@@ -256,11 +269,11 @@ namespace Vge.Games
             else
             {
                 // Если луп уже остановлен, то сразу к закрытию
-                Stoped();
+                _Stoped();
             }
         }
 
-        private void SocketServer_ReceivePacket(object sender, PacketBufferEventArgs e)
+        private void _SocketServer_ReceivePacket(object sender, PacketBufferEventArgs e)
         {
             LocalReceivePacket(e.Side, e.Buffer.bytes);
         }
@@ -270,8 +283,8 @@ namespace Vge.Games
         /// </summary>
         public void LocalReceivePacket(SocketSide socketClient, byte[] buffer)
         {
-            rx++;
-            packets.ReceiveBuffer(socketClient, buffer);
+            _rx++;
+            _packets.ReceiveBuffer(socketClient, buffer);
         }
 
         /// <summary>
@@ -279,10 +292,10 @@ namespace Vge.Games
         /// </summary>
         public void UpCountClients()
         {
-            strNet = Players.PlayerOwner == null ? "<S>" : Players.PlayerOwner.Login;
+            _strNet = Players.PlayerOwner == null ? "<S>" : Players.PlayerOwner.Login;
             if (IsRunNet())
             {
-                strNet += " net[" + Players.PlayerNetCount() + "] " + Players.ToStringPlayersNet();
+                _strNet += " net[" + Players.PlayerNetCount() + "] " + Players.ToStringPlayersNet();
             }
         }
 
@@ -298,7 +311,7 @@ namespace Vge.Games
             }
             else
             {
-                tx++;
+                _tx++;
                 socketClient.SendPacket(packet);
             }
         }
@@ -308,15 +321,15 @@ namespace Vge.Games
         /// </summary>
         public void ResponsePacketOwner(IPacket packet)
         {
-            tx++;
-            OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(WritePacket.TranciveToArray(packet)), null));
+            _tx++;
+            _OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(WritePacket.TranciveToArray(packet)), null));
         }
 
         /// <summary>
         /// Разорвать соединение с игроком
         /// </summary>
         public void PlayerDisconnect(SocketSide socketSide, string cause)
-            => socketServer.DisconnectHandler(socketSide, cause);
+            => _socketServer.DisconnectHandler(socketSide, cause);
 
         #endregion
 
@@ -325,7 +338,7 @@ namespace Vge.Games
         /// <summary>
         /// До игрового цикла
         /// </summary>
-        private void ToLoop()
+        private void _ToLoop()
         {
             if (Players.PlayerOwner != null)
             {
@@ -348,18 +361,18 @@ namespace Vge.Games
                 // Убираем скрин загрузки
                 ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.ServerGo));
                 // Сразу включаем порт сети
-                RunNet(portToServer);
+                RunNet(_portToServer);
             }
         }
 
         /// <summary>
         /// Метод должен работать в отдельном потоке
         /// </summary>
-        private void Loop()
+        private void _Loop()
         {
             try
             {
-                ToLoop();
+                _ToLoop();
                 Log.Server(Srl.Go);
 
                 // Начальное время мс
@@ -383,28 +396,28 @@ namespace Vge.Games
                 // Для фиксации конца времени а мс
                 long endTime;
 
-                currentTime = endTime = stopwatchTps.ElapsedMilliseconds;
-                endTicks = stopwatchTps.ElapsedTicks;
+                currentTime = endTime = _stopwatchTps.ElapsedMilliseconds;
+                endTicks = _stopwatchTps.ElapsedTicks;
 
                 // Меняем флаг
-                flagInLoop = true;
+                _flagInLoop = true;
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)
                 {
-                    beginTime = stopwatchTps.ElapsedMilliseconds;
+                    beginTime = _stopwatchTps.ElapsedMilliseconds;
                     // Разница в милсекунда с прошлого такта
                     differenceTime = beginTime - currentTime;
                     if (differenceTime < 0) differenceTime = 0;
 
                     // Если выше 2 секунд задержка
-                    if (differenceTime > 2000 && currentTime - timeOfLastWarning >= 15000)
+                    if (differenceTime > 2000 && currentTime - _timeOfLastWarning >= 15000)
                     {
                         // Не успеваю!Изменилось ли системное время, или сервер перегружен?
                         // Отставание на {differenceTime} мс, пропуск тиков({differenceTime / 50}) 
                         Log.Server(Srl.LaggingBehind, differenceTime, differenceTime / 50);
                         differenceTime = 2000;
-                        timeOfLastWarning = currentTime;
+                        _timeOfLastWarning = currentTime;
                     }
 
                     accumulatedTime += differenceTime;
@@ -414,27 +427,27 @@ namespace Vge.Games
                     {
                         accumulatedTime -= Ce.Tick​​Time;
                         // Счётчик реального времени
-                        beginTime = stopwatchTps.ElapsedMilliseconds;
+                        beginTime = _stopwatchTps.ElapsedMilliseconds;
                         // фиксируем начальное время такта
-                        beginTicks = stopwatchTps.ElapsedTicks;
+                        beginTicks = _stopwatchTps.ElapsedTicks;
 
-                        if (!isGamePaused)
+                        if (!_isGamePaused)
                         {
                             // Счётчик тиков
                             TickCounter++;
                             // Находим дельту времени между тактами
-                            DeltaTime = (beginTicks - endTicks) / (double)frequencyMs;
+                            DeltaTime = (beginTicks - endTicks) / (double)_frequencyMs;
                             // Добавить время сколько прошло с прошлого шага в мс
                             TimeCounter += beginTime - endTime;
 
                             // =======
-                            OnTick();
+                            _OnTick();
                             // =======
 
                             // фиксируем время выполнения такта
-                            timeExecutionTicks = stopwatchTps.ElapsedTicks - beginTicks;
+                            timeExecutionTicks = _stopwatchTps.ElapsedTicks - beginTicks;
                             // фиксируем время выполнения такта
-                            tickTimeArray[TickCounter % Ce.Tps] = timeExecutionTicks;
+                            _tickTimeArray[TickCounter % Ce.Tps] = timeExecutionTicks;
                         }
 
                         // Разница времени для счётчика времени обновляем, даже если пауза
@@ -449,57 +462,57 @@ namespace Vge.Games
             catch (Exception ex)
             {
                 IsServerRunning = false;
-                OnError(ex);
+                _OnError(ex);
             }
             finally
             {
-                Stoping();
+                _Stoping();
             }
         }
 
         /// <summary>
         /// Сохраняет все необходимые данные для подготовки к остановке сервера
         /// </summary>
-        private void Stoping()
+        private void _Stoping()
         {
             Log.Server(Srl.Stopping);
 
             // Надо сохранить мир
             Worlds.Stoping();
             // Чистим все пакеты, так-как уже обрабатывать не будем
-            packets.Clear();
+            _packets.Clear();
             // Выкидываем всех игроков
             Players.PlayersRemoveStopingServer();
             // Сохранить игру
             GameFile.Write(Settings, this);
 
-            if (socketServer != null && socketServer.IsConnected())
+            if (_socketServer != null && _socketServer.IsConnected())
             {
                 // Останавливаем сокет
-                socketServer.Stop();
+                _socketServer.Stop();
             }
             else
             {
-                Stoped();
+                _Stoped();
             }
         }
 
         /// <summary>
         /// Закрыт луп и сокет
         /// </summary>
-        private void Stoped()
+        private void _Stoped()
         {
             Log.Server(Srl.StoppedServer);
-            OnCloseded();
+            _OnCloseded();
         }
 
         /// <summary>
         /// Игровой тик
         /// </summary>
-        private void OnTick()
+        private void _OnTick()
         {
             // Сетевые пакеты
-            packets.Update();
+            _packets.Update();
 
             // Прошла секунда
             if (TickCounter % Ce.Tps == 0)
@@ -512,10 +525,10 @@ namespace Vge.Games
                     Players.SendToAll(new PacketS04TimeUpdate(TickCounter));
                 }
 
-                rxPrev = rx;
-                txPrev = tx;
-                rx = 0;
-                tx = 0;
+                _rxPrev = _rx;
+                _txPrev = _tx;
+                _rx = 0;
+                _tx = 0;
             }
 
             // Тики менеджера игроков
@@ -532,14 +545,14 @@ namespace Vge.Games
             if (TickCounter % 10 == 0)
             {
                 // лог статистика за это время
-                OnTextDebug();
+                _OnTextDebug();
             }
         }
 
         /// <summary>
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
-        public long Time() => stopwatchTps.ElapsedMilliseconds;
+        public long Time() => _stopwatchTps.ElapsedMilliseconds;
 
         #endregion
 
@@ -548,7 +561,7 @@ namespace Vge.Games
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
-        public int LastEntityId() => ++lastEntityId;
+        public int LastEntityId() => ++_lastEntityId;
 
         #endregion
 
@@ -570,17 +583,17 @@ namespace Vge.Games
         /// <summary>
         /// Строка для дебага, формируется по запросу
         /// </summary>
-        private string ToStringDebugTps()
+        private string _ToStringDebugTps()
         {
             // Среднее время выполнения 4 тактов, должно быть меньше 50
-            float averageTime = Mth.Average(tickTimeArray) / frequencyMs;
+            float averageTime = Mth.Average(_tickTimeArray) / _frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
             return string.Format("Server: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {7}" 
                 + Ce.Br + "{6}" 
                 + Ce.Br + "{8}",
-                tps, averageTime, rxPrev, txPrev, TickCounter, TimeCounter / 1000f, // 0-5
-                strNet, isGamePaused ? " PAUSE" : "", // 6-7
+                tps, averageTime, _rxPrev, _txPrev, TickCounter, TimeCounter / 1000f, // 0-5
+                _strNet, _isGamePaused ? " PAUSE" : "", // 6-7
                 debugText); // 8
         }
 
@@ -594,34 +607,34 @@ namespace Vge.Games
         /// Событие ошибки на сервере
         /// </summary>
         public event ThreadExceptionEventHandler Error;
-        private void OnError(Exception ex)
+        private void _OnError(Exception ex)
             => Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
 
         /// <summary>
         /// Событие закрыть
         /// </summary>
         public event EventHandler Closeded;
-        private void OnCloseded() => Closeded?.Invoke(this, new EventArgs());
+        private void _OnCloseded() => Closeded?.Invoke(this, new EventArgs());
 
         /// <summary>
         /// Событие текст для отладки
         /// </summary>
         public event StringEventHandler TextDebug;
-        private void OnTextDebug() 
-            => TextDebug?.Invoke(this, new StringEventArgs(ToStringDebugTps()));
+        private void _OnTextDebug() 
+            => TextDebug?.Invoke(this, new StringEventArgs(_ToStringDebugTps()));
 
         /// <summary>
         /// Событие получить от сервера пакет
         /// </summary>
         public event PacketBufferEventHandler RecievePacket;
-        private void OnRecievePacket(PacketBufferEventArgs e) 
+        private void _OnRecievePacket(PacketBufferEventArgs e) 
             => RecievePacket?.Invoke(this, e);
 
         /// <summary>
         /// Событие получить от сервера сообщение
         /// </summary>
         public event StringEventHandler RecieveMessage;
-        private void OnRecieveMessage(string message)
+        private void _OnRecieveMessage(string message)
             => RecieveMessage?.Invoke(this, new StringEventArgs(message));
 
         #endregion

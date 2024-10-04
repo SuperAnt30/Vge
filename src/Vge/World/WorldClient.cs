@@ -11,6 +11,7 @@ namespace Vge.World
         public WorldClient(GameBase game)
         {
             IsRemote = true;
+            Rnd = new Rand();
             Filer = new Profiler(game.Log, "[Client] ");
         }
     }

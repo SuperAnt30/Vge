@@ -1,4 +1,5 @@
 ﻿using Vge.Util;
+using Vge.World.Chunk;
 
 namespace Vge.World
 {
@@ -27,5 +28,14 @@ namespace Vge.World
         {
 
         }
+
+        #region Chunk
+
+        /// <summary>
+        /// Получить чанк по координатам чанка
+        /// </summary>
+        public ChunkBase GetChunk(int chunkPosX, int chunkPosY) => null;
+
+        #endregion
     }
 }

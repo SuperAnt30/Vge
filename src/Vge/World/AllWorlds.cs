@@ -10,27 +10,28 @@ namespace Vge.World
         /// <summary>
         /// Сервер
         /// </summary>
-        protected Server server;
+        public GameServer @Server { get; protected set; }
+
         /// <summary>
         /// Миры игры
         /// </summary>
-        protected WorldServer[] worldServers;
+        protected WorldServer[] _worldServers;
         /// <summary>
         /// Количество миров
         /// </summary>
-        protected int count = 1;
+        protected int _count = 1;
 
-        public AllWorlds() => worldServers = new WorldServer[count];
+        public AllWorlds() => _worldServers = new WorldServer[_count];
 
         /// <summary>
         /// Инициализация миров после создания сервера
         /// </summary>
-        public virtual void Init(Server server)
+        public virtual void Init(GameServer server)
         {
-            this.server = server;
-            for (byte i = 0; i < count; i++)
+            Server = server;
+            for (byte i = 0; i < _count; i++)
             {
-                worldServers[i] = new WorldServer(server, i, new WorldSettings());
+                _worldServers[i] = new WorldServer(server, i, new WorldSettings());
             }
         }
 
@@ -39,14 +40,14 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            server.Filer.StartSection("World");
-            worldServers[0].Update();
-            for (byte i = 1; i < count; i++)
+            Server.Filer.StartSection("World");
+            _worldServers[0].Update();
+            for (byte i = 1; i < _count; i++)
             {
-                server.Filer.EndStartSection("World-" + i);
-                worldServers[i].Update();
+                Server.Filer.EndStartSection("World-" + i);
+                _worldServers[i].Update();
             }
-            server.Filer.EndSection();
+            Server.Filer.EndSection();
         }
 
         /// <summary>
@@ -55,9 +56,9 @@ namespace Vge.World
         public virtual void Stoping()
         {
             // Сохраняем все миры
-            for (byte i = 0; i < count; i++)
+            for (byte i = 0; i < _count; i++)
             {
-                worldServers[i].WriteToFile();
+                _worldServers[i].WriteToFile();
             }
         }
     }

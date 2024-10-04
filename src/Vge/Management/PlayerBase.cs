@@ -31,7 +31,7 @@ namespace Vge.Management
         /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
-        protected long lastTimeServer;
+        protected long _lastTimeServer;
 
 
         #region Debug
@@ -43,7 +43,7 @@ namespace Vge.Management
         /// <summary>
         /// Получить время в милисекундах
         /// </summary>
-        protected virtual long Time() => 0;
+        protected virtual long _Time() => 0;
 
         /// <summary>
         /// Игрок на сервере, получить данные
@@ -61,14 +61,14 @@ namespace Vge.Management
         /// </summary>
         public void SetPing(long time)
         {
-            lastTimeServer = Time();
-            Ping = (Ping * 3 + (int)(lastTimeServer - time)) / 4;
+            _lastTimeServer = _Time();
+            Ping = (Ping * 3 + (int)(_lastTimeServer - time)) / 4;
         }
 
         /// <summary>
         /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
         /// </summary>
-        public bool TimeOut() => (Time() - lastTimeServer) > 30000;
+        public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
     }

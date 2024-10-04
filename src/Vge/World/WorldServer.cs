@@ -20,18 +20,18 @@ namespace Vge.World
         /// Настройки мира
         /// </summary>
         public readonly WorldSettings Settings;
-
         /// <summary>
         /// Основной сервер
         /// </summary>
-        private readonly Server server;
+        public readonly GameServer Server;
 
-        public WorldServer(Server server, byte idWorld, WorldSettings worldSettings)
+        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
         {
-            this.server = server;
+            Server = server;
             IdWorld = idWorld;
             PathWorld = server.Settings.GetPathWorld(IdWorld);
             Settings = worldSettings;
+            Rnd = new Rand(server.Settings.Seed);
             Filer = new Profiler(server.Log, "[Server] ");
         }
 

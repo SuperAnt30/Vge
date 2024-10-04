@@ -1,0 +1,11 @@
+С 04.10.2024 г перехожу на стиль написания кода:
+1. Переменные объявленные в методах camelCase.
+2. Переменные private и protected _camelCase.
+3. Методы и константы private и protected _PascalCasing.
+4. Всё остальное PascalCasing.
+
+Ранее был:
+1. Переменные объявленные в методах camelCase.
+2. Переменные private и protected camelCase.
+3. Переменные public по разному было camelCase или PascalCasing.
+4. Всё остальное PascalCasing.

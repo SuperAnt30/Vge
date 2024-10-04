@@ -6,8 +6,8 @@ namespace Mvk2.World
     {
         public AllWorldsMvk()
         {
-            count = 2;
-            worldServers = new WorldServer[count];
+            _count = 2;
+            _worldServers = new WorldServer[_count];
         }
     }
 }

@@ -36,24 +36,24 @@ namespace Vge.Games
         /// <summary>
         /// Путь к сохранении миров в игре
         /// </summary>
-        private readonly string pathWorld;
+        private readonly string _pathWorld;
 
         #endregion
 
-        private readonly bool isLoad;
+        private readonly bool _isLoad;
 
         /// <summary>
         /// Получить настройки по загрузке мира
         /// </summary>
         public GameSettings(int slot)
         {
-            isLoad = true;
+            _isLoad = true;
             Slot = (byte)slot;
             FileName = (slot + 1).ToString();
 
             PathGames = Options.PathGames + FileName + Path.DirectorySeparatorChar;
             PathPlayers = PathGames + "Players" + Path.DirectorySeparatorChar;
-            pathWorld = PathGames + "World";
+            _pathWorld = PathGames + "World";
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Vge.Games
         public string GetPathWorld(byte idWorld)
         {
             idWorld++;
-            return pathWorld + (idWorld > 1 ? idWorld.ToString() : "") + Path.DirectorySeparatorChar;
+            return _pathWorld + (idWorld > 1 ? idWorld.ToString() : "") + Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Vge.Games
         /// </summary>
         public GameSettings(int slot, long seed) : this(slot)
         {
-            isLoad = false;
+            _isLoad = false;
             if (seed == 0)
             {
                 // Генерация нового сида
@@ -79,9 +79,9 @@ namespace Vge.Games
             Seed = seed;
         }
 
-        public bool Init(Server server)
+        public bool Init(GameServer server)
         {
-            if (isLoad)
+            if (_isLoad)
             {
                 TagCompound nbt = GameFile.ReadGame(PathGames);
                 if (nbt == null)

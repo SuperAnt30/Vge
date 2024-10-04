@@ -8,21 +8,21 @@ namespace Vge.Util
         /// <summary>
         /// Заголовок файла
         /// </summary>
-        protected string title = "Vge Project - (c)2024";
+        protected string _title = "Vge Project - (c)2024";
         /// <summary>
         /// Имя файла настроек по умолчанию "options.ini"
         /// </summary>
-        protected string fileName = "options.ini";
+        protected string _fileName = "options.ini";
 
         /// <summary>
         /// Загрузить настройки, true вернёт если файл был, false если файла настроек нет
         /// </summary>
         public void Load()
         {
-            if (File.Exists(fileName))
+            if (File.Exists(_fileName))
             {
                 //получить доступ к  существующему либо создать новый
-                using (StreamReader file = new StreamReader(fileName))
+                using (StreamReader file = new StreamReader(_fileName))
                 {
                     while (true)
                     {
@@ -37,10 +37,10 @@ namespace Vge.Util
 
                         string[] vs = strLine.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries);
 
-                        if (vs.Length == 2) ReadLine(vs[0], vs[1]);
+                        if (vs.Length == 2) _ReadLine(vs[0], vs[1]);
                     }
                 }
-                UpData();
+                _UpData();
             }
             else
             {
@@ -54,22 +54,22 @@ namespace Vge.Util
         /// </summary>
         public void Save()
         {
-            using (StreamWriter file = new StreamWriter(fileName))
+            using (StreamWriter file = new StreamWriter(_fileName))
             {
-                file.WriteLine("# " + title);
+                file.WriteLine("# " + _title);
                 file.WriteLine("# File Created: {0:dd.MM.yyyy HH:mm.ss}" + Ce.Br, DateTime.Now);
-                SaveLine(file);
+                _SaveLine(file);
                 file.Close();
             }
-            UpData();
+            _UpData();
         }
 
-        protected virtual void UpData() => Options.UpData();
+        protected virtual void _UpData() => Options.UpData();
 
         /// <summary>
         /// Загрузить настройки
         /// </summary>
-        protected virtual bool ReadLine(string key, string value)
+        protected virtual bool _ReadLine(string key, string value)
         {
             switch(key)
             {
@@ -92,7 +92,7 @@ namespace Vge.Util
         /// <summary>
         /// Загрузить построчно опции
         /// </summary>
-        protected virtual void SaveLine(StreamWriter file)
+        protected virtual void _SaveLine(StreamWriter file)
         {
             file.WriteLine("PathAssets: " + Options.PathAssets);
             file.WriteLine("PathGames: " + Options.PathGames);

@@ -13,7 +13,7 @@ namespace Vge.Management
     /// <summary>
     /// Объект игрока, как локального так и сетевого, не сущность
     /// </summary>
-    public class PlayerServer : PlayerBase
+    public class PlayerServer : PlayerBase, IAnchor
     {
         /// <summary>
         /// Сетевой сокет
@@ -35,7 +35,7 @@ namespace Vge.Management
         /// <summary>
         /// Основной сервер
         /// </summary>
-        private readonly Server server;
+        private readonly GameServer server;
         /// <summary>
         /// Имя пути к папке игрока
         /// </summary>
@@ -44,7 +44,7 @@ namespace Vge.Management
         /// <summary>
         /// Создать сетевого
         /// </summary>
-        public PlayerServer(string login, string token, SocketSide socket, Server server)
+        public PlayerServer(string login, string token, SocketSide socket, GameServer server)
         {
             Login = login;
             Token = GetHash(token);
@@ -54,20 +54,20 @@ namespace Vge.Management
             pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
             Id = server.LastEntityId();
-            lastTimeServer = server.Time();
+            _lastTimeServer = server.Time();
         }
 
         /// <summary>
         /// Создать владельца
         /// </summary>
-        public PlayerServer(string login, string token, Server server)
+        public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
 
 
         /// <summary>
         /// Получить время в милисекундах с сервера
         /// </summary>
-        protected override long Time() => server.Time();
+        protected override long _Time() => server.Time();
 
         #region Ping
 

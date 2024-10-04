@@ -5,20 +5,20 @@ namespace Mvk2.Util
 {
     public class OptionsFileMvk : OptionsFile
     {
-        public OptionsFileMvk() => title = "Mvk2 Project - (c)2024";
+        public OptionsFileMvk() => _title = "Mvk2 Project - (c)2024";
 
-        protected override void UpData()
+        protected override void _UpData()
         {
-            base.UpData();
+            base._UpData();
             OptionsMvk.UpDataMvk();
         }
 
         /// <summary>
         /// Загрузить настройки
         /// </summary>
-        protected override bool ReadLine(string key, string value)
+        protected override bool _ReadLine(string key, string value)
         {
-            if (base.ReadLine(key, value))
+            if (base._ReadLine(key, value))
             {
                 return true;
             }
@@ -36,9 +36,9 @@ namespace Mvk2.Util
         /// <summary>
         /// Загрузить построчно опции
         /// </summary>
-        protected override void SaveLine(StreamWriter file)
+        protected override void _SaveLine(StreamWriter file)
         {
-            base.SaveLine(file);
+            base._SaveLine(file);
 
             file.WriteLine("\r\n# Mvk");
             file.WriteLine("OverviewChunk: " + OptionsMvk.OverviewChunk.ToString());

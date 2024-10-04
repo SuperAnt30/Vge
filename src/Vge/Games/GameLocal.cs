@@ -16,21 +16,21 @@ namespace Vge.Games
         /// <summary>
         /// Объект сервера
         /// </summary>
-        private readonly Server server;
+        private readonly GameServer _server;
         /// <summary>
         /// Флаг разрешение на запуск
         /// </summary>
-        private readonly bool flagRun = true;
+        private readonly bool _flagRun = true;
 
         public GameLocal(WindowMain window, GameSettings gameSettings, AllWorlds worlds) : base(window)
         {
-            server = new Server(Log, gameSettings, worlds);
-            server.Closeded += Server_Closeded;
-            server.Error += Server_Error;
-            server.TextDebug += Server_TextDebug;
-            server.RecievePacket += Server_RecievePacket;
-            server.RecieveMessage += Server_RecieveMessage;
-            flagRun = gameSettings.Init(server);
+            _server = new GameServer(Log, gameSettings, worlds);
+            _server.Closeded += _Server_Closeded;
+            _server.Error += _Server_Error;
+            _server.TextDebug += _Server_TextDebug;
+            _server.RecievePacket += _Server_RecievePacket;
+            _server.RecieveMessage += _Server_RecieveMessage;
+            _flagRun = _server.Init();
         }
 
         #region StartStopPause
@@ -39,7 +39,7 @@ namespace Vge.Games
         /// Задать паузу для одиночной игры
         /// </summary>
         public override void SetGamePauseSingle(bool value)
-            => IsGamePaused = server.SetGamePauseSingle(value);
+            => IsGamePaused = _server.SetGamePauseSingle(value);
 
         #endregion
 
@@ -48,11 +48,11 @@ namespace Vge.Games
         /// <summary>
         /// Включить сетевую игру
         /// </summary>
-        public void OpenNet(int port) => server.RunNet(port);
+        public void OpenNet(int port) => _server.RunNet(port);
         /// <summary>
         /// Получить истину запущена ли сеть
         /// </summary>
-        public bool IsRunNet() => server.IsRunNet();
+        public bool IsRunNet() => _server.IsRunNet();
 
         /// <summary>
         /// Запуск игры
@@ -62,23 +62,23 @@ namespace Vge.Games
             base.GameStarting();
             Log.Client(Srl.StartingSingle);
             Log.Save();
-            if (flagRun)
+            if (_flagRun)
             {
                 if (Player.Login != "")
                 {
                     //server.Starting(32021);
-                    server.Starting(Player.Login, Player.Token);
+                    _server.Starting(Player.Login, Player.Token);
                 }
                 else
                 {
-                    packets.Clear();
-                    OnStoped(L.T("PlayerNameMustNotBeEmpty"), true);
+                    _packets.Clear();
+                    _OnStoped(L.T("PlayerNameMustNotBeEmpty"), true);
                 }
             }
             else
             {
-                packets.Clear();
-                OnStoped(L.T("ErrorWhileLoadingFile"), true);
+                _packets.Clear();
+                _OnStoped(L.T("ErrorWhileLoadingFile"), true);
             }
         }
 
@@ -88,41 +88,41 @@ namespace Vge.Games
         public override void GameStoping(string notification, bool isWarning)
         {
             window.LScreen.Process(L.T("Saving") + Ce.Ellipsis);
-            if (server != null)
+            if (_server != null)
             {
-                stopNotification = notification;
-                server.Stop();
+                _stopNotification = notification;
+                _server.Stop();
             }
             else
             {
-                packets.Clear();
-                OnStoped(notification, isWarning);
+                _packets.Clear();
+                _OnStoped(notification, isWarning);
             }
         }
 
         /// <summary>
         /// Запущен ли сервер
         /// </summary>
-        public bool IsServerRunning() => server != null && server.IsServerRunning;
+        public bool IsServerRunning() => _server != null && _server.IsServerRunning;
 
-        private void Server_Error(object sender, ThreadExceptionEventArgs e)
-            => OnError(e.Exception);
+        private void _Server_Error(object sender, ThreadExceptionEventArgs e)
+            => _OnError(e.Exception);
 
-        private void Server_TextDebug(object sender, StringEventArgs e) 
-            => OnServerTextDebug(e.Text);
+        private void _Server_TextDebug(object sender, StringEventArgs e) 
+            => _OnServerTextDebug(e.Text);
 
-        private void Server_Closeded(object sender, EventArgs e)
+        private void _Server_Closeded(object sender, EventArgs e)
         {
-            packets.Clear();
+            _packets.Clear();
             // Сюда прилетаем из друго-го потока, ставим пометку на остановку
             // В ближайшем тике произойдёт остановка
-            isStop = true;
+            _isStop = true;
         }
 
-        private void Server_RecievePacket(object sender, PacketBufferEventArgs e)
-            => packets.ReceiveBuffer(e.Buffer.bytes);
+        private void _Server_RecievePacket(object sender, PacketBufferEventArgs e)
+            => _packets.ReceiveBuffer(e.Buffer.bytes);
 
-        private void Server_RecieveMessage(object sender, StringEventArgs e)
+        private void _Server_RecieveMessage(object sender, StringEventArgs e)
         {
             // TODO::2024-08-27 сообщение основному клиенту от сервера
             // Надо учесть потокобезопастность, прилетает из другого потока
@@ -139,10 +139,10 @@ namespace Vge.Games
         {
             base.OnTick(deltaTime);
 
-            if (isStop)
+            if (_isStop)
             {
-                OnStoped(stopNotification, stopIsWarning);
-                isStop = false;
+                _OnStoped(_stopNotification, _stopIsWarning);
+                _isStop = false;
             }
         }
 
@@ -179,7 +179,7 @@ namespace Vge.Games
         {
             if (IsServerRunning())
             {
-                server.LocalReceivePacket(null, WritePacket.TranciveToArray(packet));
+                _server.LocalReceivePacket(null, WritePacket.TranciveToArray(packet));
             }
         }
 
@@ -187,9 +187,9 @@ namespace Vge.Games
 
         public override void Dispose()
         {
-            if (server != null)
+            if (_server != null)
             {
-                server.Stop();
+                _server.Stop();
             }
         }
     }

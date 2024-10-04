@@ -63,7 +63,7 @@ namespace Vge.Games
         /// <summary>
         /// Сохранить игру
         /// </summary>
-        public static void Write(GameSettings gameSettings, Server server)
+        public static void Write(GameSettings gameSettings, GameServer server)
         {
             try
             {

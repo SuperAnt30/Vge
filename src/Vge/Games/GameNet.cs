@@ -15,30 +15,31 @@ namespace Vge.Games
     /// </summary>
     public class GameNet : GameBase
     {
-        private SocketSide socket;
+        private SocketSide _socket;
         
         /// <summary>
         /// IP адрес сервера
         /// </summary>
-        private readonly string ipAddress;
+        private readonly string _ipAddress;
         /// <summary>
         /// Portс сервера
         /// </summary>
-        private readonly int port;
+        private readonly int _port;
+        /// <summary>
+        /// Флаг подключен ли к серверу
+        /// </summary>
+        private bool _isConnected = false;
 
-        private bool isWorkGame = false;
-
-        
         /// <summary>
         /// Оповещение если был стоп из потока
         /// </summary>
-        private string stopText;
+        private string _stopText;
 
         public GameNet(WindowMain window, string ipAddress, int port) : base(window)
         {
             IsLoacl = false;
-            this.ipAddress = ipAddress;
-            this.port = port;
+            _ipAddress = ipAddress;
+            _port = port;
         }
 
 #if DEBUG
@@ -53,7 +54,7 @@ namespace Vge.Games
         /// <summary>
         /// Имеется ли связь с сервером
         /// </summary>
-        private bool IsConnect() => socket != null && socket.IsConnect();
+        private bool _IsConnect() => _socket != null && _socket.IsConnect();
 
         #region StartStopPause
 
@@ -66,47 +67,47 @@ namespace Vge.Games
             Log.Client(Srl.StartingMultiplayer);
             Log.Save();
 
-            socket = new SocketSide(IPAddress.Parse(ipAddress), port);
-            socket.ReceivePacket += Socket_ReceivePacket;
-            socket.Error += Socket_Error;
-            socket.Connected += Socket_Connected;
-            socket.Disconnected += Socket_Disconnected;
+            _socket = new SocketSide(IPAddress.Parse(_ipAddress), _port);
+            _socket.ReceivePacket += _Socket_ReceivePacket;
+            _socket.Error += _Socket_Error;
+            _socket.Connected += _Socket_Connected;
+            _socket.Disconnected += _Socket_Disconnected;
 
             // Запуск поток для синхронной связи по сокету
-            Thread myThread = new Thread(NetThread) { Name = "GameNetwork" };
+            Thread myThread = new Thread(_NetThread) { Name = "GameNetwork" };
             myThread.Start();
         }
 
         /// <summary>
         /// Сетевой поток, работает покуда имеется связь
         /// </summary>
-        private void NetThread()
+        private void _NetThread()
         {
             try
             {
-                socket.Connect();
+                _socket.Connect();
             }
             catch(Exception e)
             {
-                Socket_Error(socket, new ErrorEventArgs(e));
+                _Socket_Error(_socket, new ErrorEventArgs(e));
             }
         }
 
         public override void GameStoping(string notification, bool isWarning)
         {
             window.LScreen.Process(L.T("Leaving") + Ce.Ellipsis);
-            stopIsWarning = isWarning;
-            stopNotification = notification;
-            if (socket != null)
+            _stopIsWarning = isWarning;
+            _stopNotification = notification;
+            if (_socket != null)
             {
                 // Игра по сети
-                socket.DisconnectFromClient(notification);
+                _socket.DisconnectFromClient(notification);
                 // отправляем событие остановки
                 //  ThreadServerStoped(errorNet);
             }
             else
             {
-                Stop(notification, isWarning);
+                _Stop(notification, isWarning);
             }
         }
 
@@ -114,44 +115,44 @@ namespace Vge.Games
         /// Остановка сервера и игры
         /// </summary>
         /// <param name="notification">Уведомление причины</param>
-        private void Stop(string notification, bool isWarning)
+        private void _Stop(string notification, bool isWarning)
         {
             // Останавливаем поток
-            packets.Clear();
-            if (stopNotification == "")
+            _packets.Clear();
+            if (_stopNotification == "")
             {
-                OnStoped(notification , isWarning);
+                _OnStoped(notification , isWarning);
             }
             else
             {
-                OnStoped(stopNotification, stopIsWarning);
+                _OnStoped(_stopNotification, _stopIsWarning);
             }
         }
 
-        private void Socket_Connected(object sender, EventArgs e)
-            => isWorkGame = true;
+        private void _Socket_Connected(object sender, EventArgs e)
+            => _isConnected = true;
 
-        private void Socket_Disconnected(object sender, StringEventArgs e)
+        private void _Socket_Disconnected(object sender, StringEventArgs e)
         {
-            isWorkGame = false;
-            StopAfterTick(e.Text);
+            _isConnected = false;
+            _StopAfterTick(e.Text);
         }
 
-        private void Socket_Error(object sender, ErrorEventArgs e)
-            => StopAfterTick("Error: " + e.GetException().Message);
+        private void _Socket_Error(object sender, ErrorEventArgs e)
+            => _StopAfterTick("Error: " + e.GetException().Message);
 
-        private void Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
-            => packets.ReceiveBuffer(e.Buffer.bytes);
+        private void _Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
+            => _packets.ReceiveBuffer(e.Buffer.bytes);
 
         /// <summary>
         /// Остановить через тик
         /// </summary>
-        private void StopAfterTick(string text)
+        private void _StopAfterTick(string text)
         {
             // Сюда прилетаем из друго-го потока, ставим пометку на остановку
             // В ближайшем тике произойдёт остановка
-            stopText = text;
-            isStop = true;
+            _stopText = text;
+            _isStop = true;
         }
 
         #endregion
@@ -164,16 +165,16 @@ namespace Vge.Games
         public override void OnTick(float deltaTime)
         {
             // Проверка на разрыв долгий сервера (нет связи)
-            if (flagTick && Player.TimeOut())
+            if (_flagTick && Player.TimeOut())
             {
                 GameStoping(Srl.TheServerIsNotResponding, true);
             }
             base.OnTick(deltaTime);
 
-            if (isStop)
+            if (_isStop)
             {
-                Stop(stopText, true);
-                isStop = false;
+                _Stop(_stopText, true);
+                _isStop = false;
             }
         }
 
@@ -186,28 +187,28 @@ namespace Vge.Games
         /// </summary>
         public override void PacketLoadingGame(PacketS02LoadingGame packet)
         {
-            if (IsConnect())
+            if (_IsConnect())
             {
                 PacketS02LoadingGame.EnumStatus status = packet.GetStatus();
                 if (status == PacketS02LoadingGame.EnumStatus.BeginNet)
                 {
-                    socket.SendPacket(new PacketC02LoginStart(Player.Login, Player.Token, Ce.IndexVersion));
+                    _socket.SendPacket(new PacketC02LoginStart(Player.Login, Player.Token, Ce.IndexVersion));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.VersionAnother)
                 {
-                    socket.DisconnectFromClient(L.T("VersionAnother"));
+                    _socket.DisconnectFromClient(L.T("VersionAnother"));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.LoginDuplicate)
                 {
-                    socket.DisconnectFromClient(L.T("LoginDuplicate"));
+                    _socket.DisconnectFromClient(L.T("LoginDuplicate"));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.LoginIncorrect)
                 {
-                    socket.DisconnectFromClient(L.T("LoginIncorrect"));
+                    _socket.DisconnectFromClient(L.T("LoginIncorrect"));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.InvalidToken)
                 {
-                    socket.DisconnectFromClient(L.T("InvalidToken"));
+                    _socket.DisconnectFromClient(L.T("InvalidToken"));
                 }
             }
         }
@@ -217,9 +218,9 @@ namespace Vge.Games
         /// </summary>
         public override void TrancivePacket(IPacket packet)
         {
-            if (isWorkGame)
+            if (_isConnected)
             {
-                socket.SendPacket(WritePacket.TranciveToArray(packet));
+                _socket.SendPacket(WritePacket.TranciveToArray(packet));
             }
         }
 
