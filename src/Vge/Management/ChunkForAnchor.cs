@@ -8,16 +8,16 @@ namespace Vge.Management
     /// Чанк для якоря
     /// В малювеки 1 был аналог PlayerInstance
     /// </summary>
-    public class ChunkForAnchor
+    public class ChunkForAnchor : IChunkPosition
     {
         /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
-        public readonly int CurrentChunkX;
+        public int CurrentChunkX { get; private set; }
         /// <summary>
         /// Позиция Y текущего чанка
         /// </summary>
-        public readonly int CurrentChunkY;
+        public int CurrentChunkY { get; private set; }
         /// <summary>
         /// Серверный мир к которому принадлежит чанк
         /// </summary>
@@ -71,8 +71,7 @@ namespace Vge.Management
             {
                 if (_anchors.Count == 0) _previousGameTakt = World.Server.TickCounter;
                 _anchors.Add(anchor);
-                //if (isLoaded) player.LoadedChunks.Add(CurrentChunk);
-                //player.LoadingChunks.Add(CurrentChunk);
+                anchor.AddChunk(CurrentChunkX, CurrentChunkY, isLoaded);
             }
             // Добавить игрока если якорь является игроком
             if (anchor is PlayerServer player)
@@ -80,8 +79,6 @@ namespace Vge.Management
                 if (!_players.Contains(player))
                 {
                     _players.Add(player);
-                    //if (isLoaded) player.LoadedChunks.Add(CurrentChunk);
-                    //player.LoadingChunks.Add(CurrentChunk);
                 }
             }
         }

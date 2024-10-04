@@ -1,4 +1,5 @@
 ﻿using Vge.Games;
+using Vge.Management;
 using Vge.Util;
 
 namespace Vge.World
@@ -24,6 +25,10 @@ namespace Vge.World
         /// Основной сервер
         /// </summary>
         public readonly GameServer Server;
+        /// <summary>
+        /// Объект управляет всеми чанками которые надо загрузить или выгрузить
+        /// </summary>
+        public readonly FragmentManager Fragment;
 
         public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
         {
@@ -33,10 +38,14 @@ namespace Vge.World
             Settings = worldSettings;
             Rnd = new Rand(server.Settings.Seed);
             Filer = new Profiler(server.Log, "[Server] ");
+            Fragment = new FragmentManager(this);
         }
 
         public override void Update()
         {
+            Filer.StartSection("Fragment");
+            Fragment.Update();
+            Filer.EndSection();
             //System.Threading.Thread.Sleep(50);
         }
 

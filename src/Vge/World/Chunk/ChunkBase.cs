@@ -3,16 +3,16 @@
     /// <summary>
     /// Базовый объект чанка
     /// </summary>
-    public class ChunkBase
+    public class ChunkBase : IChunkPosition
     {
         /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
-        public readonly int CurrentChunkX;
+        public int CurrentChunkX { get; private set; }
         /// <summary>
         /// Позиция Y текущего чанка
         /// </summary>
-        public readonly int CurrentChunkY;
+        public int CurrentChunkY { get; private set; }
         /// <summary>
         /// Сылка на объект мира
         /// </summary>
