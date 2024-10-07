@@ -29,6 +29,15 @@ namespace Vge.Management
         public int Ping { get; protected set; } = -1;
 
         /// <summary>
+        /// Обзор сколько видит якорь чанков вокруг себя
+        /// </summary>
+        public byte OverviewChunk { get; private set; } = 1;
+        /// <summary>
+        /// Обзор чанков прошлого такта
+        /// </summary>
+        public byte OverviewChunkPrev { get; private set; } = 0;
+
+        /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
         protected long _lastTimeServer;
@@ -37,6 +46,22 @@ namespace Vge.Management
         #region Debug
 
         public Vector2i chPos = new Vector2i(0);
+        public byte idWorld = 0;
+        public bool isPos = false;
+
+        #endregion
+
+        #region Overview
+
+        /// <summary>
+        /// Обновить обзор прошлого такта
+        /// </summary>
+        public virtual void UpOverviewChunkPrev() => OverviewChunkPrev = OverviewChunk;
+
+        /// <summary>
+        /// Задать обзор чанков у клиента
+        /// </summary>
+        public virtual void SetOverviewChunk(byte overviewChunk) => OverviewChunk = overviewChunk;
 
         #endregion
 
@@ -71,5 +96,10 @@ namespace Vge.Management
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        public virtual void Update() { }
     }
 }

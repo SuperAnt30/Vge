@@ -61,5 +61,7 @@ namespace Vge.World
                 _worldServers[i].WriteToFile();
             }
         }
+
+        public WorldServer GetWorld(int index) => _worldServers[index];
     }
 }

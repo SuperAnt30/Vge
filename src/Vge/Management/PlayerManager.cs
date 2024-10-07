@@ -278,7 +278,7 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Обновление раз в тик
+        /// Обновление раз в тик на сервере
         /// </summary>
         private void _PlayerServerUpdate(PlayerServer entityPlayer)
         {
@@ -288,7 +288,10 @@ namespace Vge.Management
                 // На сервере пометка убрать
                 PlayerRemove(entityPlayer, Sr.TimeOut);
             }
-            entityPlayer.AddDeltaTime();
+            else
+            {
+                entityPlayer.Update();
+            }
         }
 
         /// <summary>

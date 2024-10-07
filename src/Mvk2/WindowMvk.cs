@@ -12,6 +12,7 @@ using Vge.Renderer;
 using Vge.World;
 using Mvk2.World;
 using WinGL.Util;
+using Vge.Games;
 
 namespace Mvk2
 {
@@ -143,22 +144,22 @@ namespace Mvk2
                 bool b = false;
                 if (keys == Keys.Left)
                 {
-                    Game.Player.chPos.X--;
+                    Game.Player.chPos.X-=1;
                     b = true;
                 }
                 else if (keys == Keys.Right)
                 {
-                    Game.Player.chPos.X++;
+                    Game.Player.chPos.X+=2;
                     b = true;
                 }
                 else if (keys == Keys.Up)
                 {
-                    Game.Player.chPos.Y--;
+                    Game.Player.chPos.Y-=1;
                     b = true;
                 }
                 else if (keys == Keys.Down)
                 {
-                    Game.Player.chPos.Y++;
+                    Game.Player.chPos.Y+=1;
                     b = true;
                 }
                 if (b)
@@ -167,6 +168,23 @@ namespace Mvk2
                         new System.Numerics.Vector3(Game.Player.chPos.X, Game.Player.chPos.Y, 0),
                         false, false, false));
                     Debug.player = Game.Player.chPos;
+                }
+
+                if (keys == Keys.PageUp)
+                {
+                    if (Game.Player.OverviewChunk < 49)
+                    {
+                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk + 1));
+                        Game.TrancivePacket(new PacketC15PlayerSetting(Game.Player.OverviewChunk));
+                    }
+                }
+                else if (keys == Keys.PageDown)
+                {
+                    if (Game.Player.OverviewChunk > 2)
+                    {
+                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 1));
+                        Game.TrancivePacket(new PacketC15PlayerSetting(Game.Player.OverviewChunk));
+                    }
                 }
             }
 

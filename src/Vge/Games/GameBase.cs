@@ -6,6 +6,7 @@ using Vge.Gui.Huds;
 using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets;
+using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Actions;
@@ -86,6 +87,7 @@ namespace Vge.Games
 
         public GameBase(WindowMain window) : base(window)
         {
+            Ce.InitClient();
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
@@ -124,6 +126,9 @@ namespace Vge.Games
         public void PlayerOnTheServer(int id, string uuid)
         {
             Player.PlayerOnTheServer(id, uuid);
+            // Отправим обзор 
+            TrancivePacket(new PacketC15PlayerSetting(16));
+            // Закрываем скрин загрузки
             window.LScreen.Close();
             _flagTick = true;
         }
@@ -288,6 +293,13 @@ namespace Vge.Games
         public event StringEventHandler ServerTextDebug;
         protected virtual void _OnServerTextDebug(string text) 
             => ServerTextDebug?.Invoke(this, new StringEventArgs(text));
+
+        /// <summary>
+        /// Событие tag отладки сервера
+        /// </summary>
+        public event StringEventHandler ServerTagDebug;
+        protected virtual void _OnServerTagDebug(StringEventArgs e)
+            => ServerTagDebug?.Invoke(this, e);
 
         #endregion
     }

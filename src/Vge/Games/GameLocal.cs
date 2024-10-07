@@ -28,6 +28,7 @@ namespace Vge.Games
             _server.Closeded += _Server_Closeded;
             _server.Error += _Server_Error;
             _server.TextDebug += _Server_TextDebug;
+            _server.TagDebug += _Server_TagDebug;
             _server.RecievePacket += _Server_RecievePacket;
             _server.RecieveMessage += _Server_RecieveMessage;
             _flagRun = _server.Init();
@@ -110,6 +111,9 @@ namespace Vge.Games
 
         private void _Server_TextDebug(object sender, StringEventArgs e) 
             => _OnServerTextDebug(e.Text);
+
+        private void _Server_TagDebug(object sender, StringEventArgs e)
+            => _OnServerTagDebug(e);
 
         private void _Server_Closeded(object sender, EventArgs e)
         {

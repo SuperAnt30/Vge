@@ -30,21 +30,21 @@ namespace Vge.Network
         /// <summary>
         /// Основной сервер
         /// </summary>
-        private readonly GameServer server;
+        private readonly GameServer _server;
         /// <summary>
         /// Массив очередей пакетов
         /// </summary>
-        private readonly DoubleList<SocketBuffer> packets = new DoubleList<SocketBuffer>();
+        private readonly DoubleList<SocketBuffer> _packets = new DoubleList<SocketBuffer>();
         /// <summary>
         /// Зафиксированное время для проверки пинга, у игроках
         /// </summary>
-        private long lastPingTime;
+        private long _lastPingTime;
         /// <summary>
         /// Зафиксированное урезанное время для проверки пинга, у игроках
         /// </summary>
-        private uint pingKeySend;
+        private uint _pingKeySend;
 
-        public ProcessServerPackets(GameServer server) => this.server = server;
+        public ProcessServerPackets(GameServer server) => _server = server;
 
         /// <summary>
         /// Передача данных для сервера
@@ -58,21 +58,21 @@ namespace Vge.Network
                 switch (buffer[0])
                 {
                     case 0x00:
-                        Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
+                        _Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
                         break;
                     case 0x01:
-                        Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
+                        _Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
                         break;
                     default:
                         // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                        packets.Add(new SocketBuffer(socketSide, buffer));
+                        _packets.Add(new SocketBuffer(socketSide, buffer));
                         break;
                 }
             }
             else
             {
                 // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                packets.Add(new SocketBuffer(socketSide, buffer));
+                _packets.Add(new SocketBuffer(socketSide, buffer));
             }
         }
 
@@ -93,11 +93,15 @@ namespace Vge.Network
                 switch (sb.Buffer[0])
                 {
                     case 0x02:
-                        Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacket.Receive(sb.Buffer, new PacketC02LoginStart()));
+                        _Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacket.Receive(sb.Buffer, new PacketC02LoginStart()));
                         break;
                     case 0x04:
-                        Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacket.Receive(sb.Buffer, new PacketC04PlayerPosition()));
+                        _Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacket.Receive(sb.Buffer, new PacketC04PlayerPosition()));
                         break;
+                    case 0x15:
+                        _Handle15PlayerSetting(sb.Side, (PacketC15PlayerSetting)readPacket.Receive(sb.Buffer, new PacketC15PlayerSetting()));
+                        break;
+                        
                 }
             }
             catch
@@ -111,20 +115,20 @@ namespace Vge.Network
         /// </summary>
         public void Update()
         {
-            if (server.TickCounter % 150 == 0)
+            if (_server.TickCounter % 150 == 0)
             {
                 // Раз в 5 секунд
-                lastPingTime = server.Time();
-                pingKeySend = (uint)lastPingTime;
-                server.Players.SendToAll(new Packet01KeepAlive(pingKeySend));
+                _lastPingTime = _server.Time();
+                _pingKeySend = (uint)_lastPingTime;
+                _server.Players.SendToAll(new Packet01KeepAlive(_pingKeySend));
             }
-            if (!packets.Empty())
+            if (!_packets.Empty())
             {
-                packets.Step();
-                int count = packets.CountBackward;
+                _packets.Step();
+                int count = _packets.CountBackward;
                 for (int i = 0; i < count; i++)
                 {
-                    UpdateReceivePacket(packets.GetNext());
+                    UpdateReceivePacket(_packets.GetNext());
                 }
             }
         }
@@ -132,25 +136,25 @@ namespace Vge.Network
         /// <summary>
         /// Очистить пакеты в двойной буферизации
         /// </summary>
-        public void Clear() => packets.Clear();
+        public void Clear() => _packets.Clear();
 
         /// <summary>
         /// Ping-pong
         /// </summary>
-        private void Handle00Ping(SocketSide socketSide, Packet00PingPong packet)
-            => server.ResponsePacket(socketSide, packet);
+        private void _Handle00Ping(SocketSide socketSide, Packet00PingPong packet)
+            => _server.ResponsePacket(socketSide, packet);
 
         /// <summary>
         /// Сохранить жизнь
         /// </summary>
-        private void Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
+        private void _Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
-            if (pingKeySend == packet.GetTime())
+            if (_pingKeySend == packet.GetTime())
             {
-                PlayerServer playerServer = server.Players.FindPlayerBySocket(socketSide);
+                PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
                 if (playerServer != null)
                 {
-                    playerServer.SetPing(lastPingTime);
+                    playerServer.SetPing(_lastPingTime);
                 }
             }
         }
@@ -158,19 +162,19 @@ namespace Vge.Network
         /// <summary>
         /// Пакет проверки логина
         /// </summary>
-        private void Handle02LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
-            => server.Players.LoginStart(socketSide, packet);
+        private void _Handle02LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
+            => _server.Players.LoginStart(socketSide, packet);
 
         /// <summary>
         /// Пакет позиции игрока
         /// </summary>
-        private void Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
+        private void _Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
         {
-            PlayerServer playerServer = server.Players.FindPlayerBySocket(socketSide);
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
                 playerServer.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
-               
+                playerServer.isPos = true;
             }
 
             //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
@@ -182,5 +186,19 @@ namespace Vge.Network
             //    entityPlayer.MarkPlayerActive();
             //}
         }
+
+        /// <summary>
+        /// Пакет настроек клиента
+        /// </summary>
+        private void _Handle15PlayerSetting(SocketSide socketSide, PacketC15PlayerSetting packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null)
+            {
+                playerServer.SetOverviewChunk(packet.GetOverviewChunk());
+                playerServer.isPos = true;
+            }
+        }
+           // => ServerMain.World.Players.ClientSetting(socket, packet);//, ServerMain.World.Players.);
     }
 }

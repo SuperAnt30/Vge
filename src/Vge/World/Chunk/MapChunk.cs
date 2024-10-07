@@ -7,18 +7,26 @@ namespace Vge.World.Chunk
     /// </summary>
     public class MapChunk
     {
-        private readonly Dictionary<long, Region> _map = new Dictionary<long, Region>();
-        private readonly List<IChunkPosition> _list = new List<IChunkPosition>();
+        // ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+        // new Vector2i((int)((xy & 0xFFFFFFFF00000000) >> 27), (int)xy << 5);
 
         /// <summary>
-        /// Добавить или изменить
+        /// Оптимизированный поиск чанка, служит для быстрого поиска чанка
         /// </summary>
-        public void Set(IChunkPosition value)
+        private readonly Dictionary<ulong, Region> _map = new Dictionary<ulong, Region>();
+        /// <summary>
+        /// Список всех чанков, служит для получения полного списка
+        /// </summary>
+        private readonly List<IChunkPosition> _list = new List<IChunkPosition>();
+        
+        /// <summary>
+        /// Добавить
+        /// </summary>
+        public void Add(IChunkPosition value)
         {
             int x = value.CurrentChunkX;
             int y = value.CurrentChunkY;
-            Remove(x, y);
-            long xy = _Index(x, y);
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
             if (!_map.ContainsKey(xy))
             {
                 _map.Add(xy, new Region());
@@ -36,8 +44,11 @@ namespace Vge.World.Chunk
             if (chunk != null)
             {
                 _list.Remove(chunk);
-                long xy = _Index(x, y);
-                _map[xy].Remove(x, y);
+                ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+                if (_map[xy].Remove(x, y))
+                {
+                    _map.Remove(xy);
+                }
             }
         }
 
@@ -46,7 +57,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public IChunkPosition Get(int x, int y)
         {
-            long xy = _Index(x, y);
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
             if (_map.ContainsKey(xy))
             {
                 return _map[xy].Get(x, y);
@@ -65,7 +76,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public bool Contains(int x, int y)
         {
-            long xy = _Index(x, y);
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
             if (_map.ContainsKey(xy))
             {
                 return _map[xy].Get(x, y) != null;
@@ -92,16 +103,6 @@ namespace Vge.World.Chunk
         /// </summary>
         public List<IChunkPosition> GetList() => _list;
 
-        /// <summary>
-        /// Индекс для региона
-        /// </summary>
-        private long _Index(int x, int y)
-        {
-            long x1 = ((long)x >> 5) << 32;
-            long y1 = y >> 5;
-            return x1 + y1;
-        }
-
         private class Region
         {
             private readonly IChunkPosition[] _ar = new IChunkPosition[1024];
@@ -115,7 +116,9 @@ namespace Vge.World.Chunk
                 if (_ar[index] == null) _count++;
                 _ar[index] = value;
             }
-
+            /// <summary>
+            /// Удалить, вернём true если ничего не осталось
+            /// </summary>
             public bool Remove(int x, int y)
             {
                 int index = (y & 31) << 5 | (x & 31);

@@ -37,7 +37,8 @@ internal sealed class Sr
     internal const string FileMissing = "Файл {0} отсутствует";
     internal const string IncorrectParameterValue = "Некорректное значение параметра";
     internal const string TheValueMustBeGreaterThanZero = "Значение должно быть больше нуля";
-
+    internal const string ItIsImpossibleToCompareTwoObjects = "Невозможно сравнить два объекта";
+    
     #endregion
 
     #region NBT

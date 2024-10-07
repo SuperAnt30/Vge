@@ -64,14 +64,13 @@ namespace Vge.Management
         /// <summary>
         /// Добавить якорь в конкретный чанк
         /// </summary>
-        /// <param name="isLoaded">Нужно ли добавить в список загруженых чанков, для обзора чанка для клиента</param>
-        public void AddAnchor(IAnchor anchor, bool isLoaded)
+        public void AddAnchor(IAnchor anchor)
         {
             if (!_anchors.Contains(anchor))
             {
                 if (_anchors.Count == 0) _previousGameTakt = World.Server.TickCounter;
                 _anchors.Add(anchor);
-                anchor.AddChunk(CurrentChunkX, CurrentChunkY, isLoaded);
+                anchor.AddChunk(CurrentChunkX, CurrentChunkY);
             }
             // Добавить игрока если якорь является игроком
             if (anchor is PlayerServer player)
@@ -84,19 +83,10 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Убрать якорь с конкретного чанка
+        /// Убрать якорь с конкретного чанка, вернёт true если больше нет якорей в чанке
         /// </summary>
-        public void RemoveAnchor(IAnchor anchor)
+        public bool RemoveAnchor(IAnchor anchor)
         {
-            if (_anchors.Contains(anchor))
-            {
-                _anchors.Remove(anchor);
-                if (_anchors.Count == 0)
-                {
-                    // Если удалили последний якорь
-                    _IncreaseInhabitedTime();
-                }
-            }
             // Удалить игрока если якорь является игроком
             if (anchor is PlayerServer player)
             {
@@ -105,6 +95,18 @@ namespace Vge.Management
                     _players.Remove(player);
                 }
             }
+
+            if (_anchors.Contains(anchor))
+            {
+                _anchors.Remove(anchor);
+                if (_anchors.Count == 0)
+                {
+                    // Если удалили последний якорь
+                    _IncreaseInhabitedTime();
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -121,6 +123,6 @@ namespace Vge.Management
             }
         }
 
-        public override string ToString() => CurrentChunkX + ":" + CurrentChunkY;
+        public override string ToString() => CurrentChunkX + ":" + CurrentChunkY + " " + _anchors.Count;
     }
 }

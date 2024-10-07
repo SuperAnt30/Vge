@@ -122,6 +122,7 @@ namespace Vge.Games
 
         public GameServer(Logger log, GameSettings gameSettings, AllWorlds worlds)
         {
+            Ce.InitServer();
             Settings = gameSettings;
             Log = log;
             Filer = new Profiler(Log, "[Server] ");
@@ -622,6 +623,13 @@ namespace Vge.Games
         public event StringEventHandler TextDebug;
         private void _OnTextDebug() 
             => TextDebug?.Invoke(this, new StringEventArgs(_ToStringDebugTps()));
+
+        /// <summary>
+        /// Событие любого объекта с сервера для отладки
+        /// </summary>
+        public event StringEventHandler TagDebug;
+        public void OnTagDebug(string title, object tag)
+            => TagDebug?.Invoke(this, new StringEventArgs(title, tag));
 
         /// <summary>
         /// Событие получить от сервера пакет

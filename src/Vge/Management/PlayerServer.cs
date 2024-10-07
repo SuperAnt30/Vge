@@ -6,6 +6,8 @@ using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Server;
+using Vge.Util;
+using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Management
@@ -30,7 +32,40 @@ namespace Vge.Management
         /// <summary>
         /// Сколько мили секунд эта сущность прожила
         /// </summary>
-        public double TimesExisted { get; private set; } = 0;
+        public double TimesExisted { get; private set; }
+
+        #region Anchor 
+
+        /// <summary>
+        /// Является ли якорь игроком
+        /// </summary>
+        public bool IsPlayer => true;
+
+        /// <summary>
+        /// Координату X в каком чанке находится
+        /// </summary>
+        public int ChunkPositionX => chPos.X;
+        /// <summary>
+        /// Координата Y в каком чанке находится
+        /// </summary>
+        public int ChunkPositionY => chPos.Y;
+
+        /// <summary>
+        ///  В какой позиции X чанка было обработка видимых чанков
+        /// </summary>
+        public int ChunkPosManagedX { get; private set; }
+        /// <summary>
+        ///  В какой позиции Y чанка было обработка видимых чанков
+        /// </summary>
+        public int ChunkPosManagedY { get; private set; }
+
+        /// <summary>
+        /// Список чанкоы нужно проверить на загрузку или генерацию,
+        /// должен формироваться по дистанции от игрока.
+        /// </summary>
+        public ListFast<ulong> LoadingChunks { get; private set; } = new ListFast<ulong>();
+
+        #endregion
 
         /// <summary>
         /// Основной сервер
@@ -69,14 +104,21 @@ namespace Vge.Management
         /// </summary>
         protected override long _Time() => server.Time();
 
-        #region Ping
-
         /// <summary>
-        /// Добавить время к игроку
+        /// Игровой такт
         /// </summary>
-        public void AddDeltaTime() => TimesExisted += server.DeltaTime;
+        public override void Update()
+        {
+            // Добавить время к игроку
+            TimesExisted += server.DeltaTime;
 
-        #endregion
+            // Тут надо анализ сделать было ли перемещение
+            if (isPos)
+            {
+                server.Worlds.GetWorld(idWorld).Fragment.UpdateMountedMovingAnchor(this);
+                isPos = false;
+            }
+        }
 
         /// <summary>
         /// Отправить сетевой пакет этому игроку
@@ -93,6 +135,19 @@ namespace Vge.Management
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));
             SendPacket(new PacketS08PlayerPosLook(new System.Numerics.Vector3(chPos.X, chPos.Y, 0), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
+
+            // Определяем в каком мире
+            idWorld = 0;
+
+            // Обновляем чанк обработки
+            UpChunkPosManaged();
+            // Обновляем обзор прошлого такта
+            UpOverviewChunkPrev();
+
+            // Вносим в менеджер фрагментов игрока
+            GetWorld().Fragment.AddAnchor(this);
+            
+            isPos = true;
         }
 
         /// <summary>
@@ -100,9 +155,15 @@ namespace Vge.Management
         /// </summary>
         public void LeftGame()
         {
+            GetWorld().Fragment.RemoveAnchor(this);
             // Сохраняем
             WriteToFile();
         }
+
+        /// <summary>
+        /// Получить мир в котором находится игрок
+        /// </summary>
+        public WorldServer GetWorld() => server.Worlds.GetWorld(idWorld);
 
         /// <summary>
         /// Получить хэш по строке
@@ -164,13 +225,33 @@ namespace Vge.Management
         /// </summary>
         /// <param name="chunkPosX">Позиция X чанка</param>
         /// <param name="chunkPosY">Позиция Y чанка</param>
-        /// <param name="isLoaded">Нужно ли добавить в список загруженых чанков, надо для спавна якоря</param>
-        public void AddChunk(int chunkPosX, int chunkPosY, bool isLoaded)
+        public void AddChunk(int chunkPosX, int chunkPosY)
         {
             //if (isLoaded) LoadedChunks.Add(CurrentChunk);
-            //LoadingChunks.Add(CurrentChunk);
+           // LoadingChunks.Add(Conv.ChunkXyToIndex(chunkPosX, chunkPosY));
+        }
+
+        /// <summary>
+        /// Обновить обзор прошлого такта
+        /// </summary>
+        public override void UpOverviewChunkPrev()
+        {
+            base.UpOverviewChunkPrev();
+            //int overviewChunk = OverviewChunk;
+            //if (overviewChunk < PlayerManager.minRadius) overviewChunk = PlayerManager.minRadius;
+            //DistSqrt = MvkStatic.DistSqrtTwo2d[overviewChunk + PlayerManager.addServer];
+        }
+
+        /// <summary>
+        /// Задать чанк обработки
+        /// </summary>
+        public void UpChunkPosManaged()
+        {
+            ChunkPosManagedX = ChunkPositionX;
+            ChunkPosManagedY = ChunkPositionY;
         }
 
         #endregion
+
     }
 }
