@@ -7,6 +7,15 @@ using WinGL.Util;
 /// </summary>
 public sealed class Ce
 {
+    #region Debug
+
+    /// <summary>
+    /// Отладка чанков в 2д
+    /// </summary>
+    public const bool FlagDebugDrawChunks = true;
+
+    #endregion
+
     #region Game
 
     /// <summary>

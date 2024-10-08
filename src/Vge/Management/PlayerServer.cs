@@ -60,7 +60,7 @@ namespace Vge.Management
         public int ChunkPosManagedY { get; private set; }
 
         /// <summary>
-        /// Список чанкоы нужно проверить на загрузку или генерацию,
+        /// Список чанков нужно проверить на загрузку или генерацию,
         /// должен формироваться по дистанции от игрока.
         /// </summary>
         public ListFast<ulong> LoadingChunks { get; private set; } = new ListFast<ulong>();
@@ -115,7 +115,9 @@ namespace Vge.Management
             // Тут надо анализ сделать было ли перемещение
             if (isPos)
             {
+               // server.Filer.StartSection("Fragment" + OverviewChunk);
                 server.Worlds.GetWorld(idWorld).Fragment.UpdateMountedMovingAnchor(this);
+               // server.Filer.EndSectionLog();
                 isPos = false;
             }
         }

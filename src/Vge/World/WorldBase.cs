@@ -20,6 +20,10 @@ namespace Vge.World
         /// Объект сыщик
         /// </summary>
         public Profiler Filer { get; protected set; }
+        /// <summary>
+        /// Посредник чанков
+        /// </summary>
+        public ChunkProvider ChunkPr { get; protected set; }
 
         /// <summary>
         /// Такт сервера

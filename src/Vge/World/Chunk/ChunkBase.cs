@@ -21,6 +21,10 @@
         /// Совокупное количество тиков, которые якори провели в этом чанке 
         /// </summary>
         public uint InhabitedTakt { get; private set; }
+        /// <summary>
+        /// Присутствует, этап загрузки или начальная генерация #1 1*1
+        /// </summary>
+        public bool IsChunkPresent { get; private set; }
 
         public ChunkBase(WorldBase world, int chunkPosX, int chunkPosY)
         {
@@ -33,5 +37,24 @@
         /// Задать совокупное количество тактов, которые якоря провели в этом чанке 
         /// </summary>
         public void SetInhabitedTime(uint takt) => InhabitedTakt = takt;
+
+        /// <summary>
+        /// Загрузили чанк
+        /// </summary>
+        public void OnChunkLoad()
+        {
+            IsChunkPresent = true;
+        }
+
+        /// <summary>
+        /// Выгрузили чанк
+        /// </summary>
+        public void OnChunkUnload()
+        {
+            IsChunkPresent = false;
+        }
+
+
+        public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
     }
 }

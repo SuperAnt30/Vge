@@ -126,8 +126,11 @@ namespace Vge.Games
         public void PlayerOnTheServer(int id, string uuid)
         {
             Player.PlayerOnTheServer(id, uuid);
+
+            // TODO::2024-10-08 добавить обзор с опций
+            Player.SetOverviewChunk(16);
             // Отправим обзор 
-            TrancivePacket(new PacketC15PlayerSetting(16));
+            TrancivePacket(new PacketC15PlayerSetting(Player.OverviewChunk));
             // Закрываем скрин загрузки
             window.LScreen.Close();
             _flagTick = true;
@@ -224,7 +227,10 @@ namespace Vge.Games
                 Hud.Draw();
             }
 
-            Debug.DrawChunks(window);
+            if (Ce.FlagDebugDrawChunks)
+            {
+                Debug.DrawChunks(window);
+            }
         }
 
         #endregion
@@ -240,12 +246,11 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6}",
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6} O:{7}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
                 _ToTraffic(),TickCounter, // 3-4
-                Player.Login,
-                new Vector2i(0)
+                Player.Login, Player.chPos, Player.OverviewChunk // 5-7
                 );
         }
 

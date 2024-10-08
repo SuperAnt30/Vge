@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 namespace Vge.Util
 {
     /// <summary>
-    /// Усовершенствованный лист от Мефистофель, работы без мусора, чтоб не пересоздавать
+    /// Беспорядочный список, не придерживается очерёдности при удалении
     /// </summary>
-    public class ListFast<T>
+    public class ListMessy<T>
     {
         /// <summary>
         /// Количество элементов
@@ -22,7 +22,7 @@ namespace Vge.Util
         /// </summary>
         private int _size;
 
-        public ListFast(int size = 100)
+        public ListMessy(int size = 100)
         {
             _size = size;
             _buffer = new T[size];
@@ -35,7 +35,7 @@ namespace Vge.Util
         /// </summary>
         public void Add(T item)
         {
-            if (_size <= Count)
+            if (_size < Count + 1)
             {
                 _size = (int)(_size * 1.5f);
                 Array.Resize(ref _buffer, _size);
@@ -44,15 +44,18 @@ namespace Vge.Util
         }
 
         /// <summary>
-        /// Найти имеется ли такое значение
+        /// Добавить массив
         /// </summary>
-        public bool Contains(T item)
+        public void AddRange(T[] items)
         {
-            for (int i = 0; i < Count; i++)
+            int count = items.Length;
+            if (_size < Count + count)
             {
-                if (_buffer[i].Equals(item)) return true;
+                _size = (int)(_size + count + (_size * 0.3f));
+                Array.Resize(ref _buffer, _size);
             }
-            return false;
+            Array.Copy(items, _buffer, Count);
+            Count += count;
         }
 
         /// <summary>
@@ -66,9 +69,33 @@ namespace Vge.Util
         }
 
         /// <summary>
-        /// Получить целый буфер
+        /// Удалить значение если имеется
         /// </summary>
-        public T[] GetBufferAll() => _buffer;
+        public bool Remove(T item)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (_buffer[i].Equals(item))
+                {
+                    int last = Count - 1;
+                    if (last != i)
+                    {
+                        _buffer[i] = _buffer[last];
+                    }
+                    Count--;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Удалить последнее значение
+        /// </summary>
+        public void RemoveLast()
+        {
+            if (Count > 0) Count--;
+        }
 
         /// <summary>
         /// Очистить

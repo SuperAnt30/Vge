@@ -43,7 +43,7 @@ namespace Vge
         /// </summary>
         public void SetTag(StringEventArgs e)
         {
-            if (e.Text == "ListChunkAction")
+            if (e.Text == "ChunksActive")
             {
                 _flagBlockDraw = true;
                 ulong[] ar = (ulong[])e.Tag;
@@ -59,22 +59,22 @@ namespace Vge
             {
                 _flagBlockDraw = true;
                 IChunkPosition[] ar = (IChunkPosition[])e.Tag;
-                _chunksServer = new Vector2i[ar.Length];
+                _chunksForAnchors = new Vector2i[ar.Length];
                 for (int i = 0; i < ar.Length; i++)
                 {
-                    _chunksServer[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
+                    _chunksForAnchors[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
                 }
                 _flagBlockDraw = false;
                 _renderChunks = true;
             }
-            else if (e.Text == "ChunkAnchors")
+            else if (e.Text == "ChunkReady")
             {
                 _flagBlockDraw = true;
-                ulong[] ar = (ulong[])e.Tag;
-                _chunksClient = new Vector2i[ar.Length];
+                IChunkPosition[] ar = (IChunkPosition[])e.Tag;
+                _chunksReady = new Vector2i[ar.Length];
                 for (int i = 0; i < ar.Length; i++)
                 {
-                    _chunksClient[i] = Conv.IndexToChunkVector2i(ar[i]);
+                    _chunksReady[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
                 }
                 _flagBlockDraw = false;
                 _renderChunks = true;
@@ -92,17 +92,22 @@ namespace Vge
         /// </summary>
         public static Vector2i player = new Vector2i();
         /// <summary>
-        /// Чанки на сервере которые пренадлежат якорям, которые могут отправлять якорям изменения
-        /// </summary>
-        private static Vector2i[] _chunksServer = new Vector2i[0];
-        /// <summary>
         /// Чанки на сервере которые активные, т.е. тикают
+        /// Синий
         /// </summary>
         private static Vector2i[] _chunksActive = new Vector2i[0];
         /// <summary>
-        /// Чанки на сервере для клиента ****
+        /// Готовые чанкина на сервере
+        /// Зелёный
         /// </summary>
-        private static Vector2i[] _chunksClient = new Vector2i[0];
+        private static Vector2i[] _chunksReady = new Vector2i[0];
+        /// <summary>
+        /// Чанки на сервере которые пренадлежат якорям, которые могут отправлять якорям изменения
+        /// Белый
+        /// </summary>
+        private static Vector2i[] _chunksForAnchors = new Vector2i[0];
+        
+        
 
         private static bool _flagBlockDraw = false;
 
@@ -127,41 +132,43 @@ namespace Vge
                     int yc = 500;
                     int x, y;
 
-                    for (int i = 0; i < _chunksServer.Length; i++)
-                    {
-                        if (_flagBlockDraw) return;
-                        x = xc + _chunksServer[i].X * 8;
-                        y = yc + _chunksServer[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 8, y + 8, 0, 1, 0));
-                    }
-
+                    // Синий
                     for (int i = 0; i < _chunksActive.Length; i++)
                     {
                         if (_flagBlockDraw) return;
                         x = xc + _chunksActive[i].X * 8;
                         y = yc + _chunksActive[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, 1, 1));
+                        vs.AddRange(MeshGuiColor.Rectangle(x, y, x + 8, y + 8, 0, 0, .7f));
                     }
-
-                    for (int i = 0; i < _chunksClient.Length; i++)
+                    // Зелёный
+                    for (int i = 0; i < _chunksReady.Length; i++)
                     {
                         if (_flagBlockDraw) return;
-                        x = xc + _chunksClient[i].X * 8;
-                        y = yc + _chunksClient[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 7, y + 7, 0, 0, 1));
+                        x = xc + _chunksReady[i].X * 8;
+                        y = yc + _chunksReady[i].Y * 8;
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 8, y + 8, 0, 1, 0));
                     }
-
+                    // Красный
                     for (int i = 0; i < players.Length; i++)
                     {
                         x = xc + players[i].X * 8;
                         y = yc + players[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 6, y + 6, 1, 1, 0));
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 1, x + 7, y + 8, 1, 0, 0));
+                    }
+                    // Белый
+                    for (int i = 0; i < _chunksForAnchors.Length; i++)
+                    {
+                        if (_flagBlockDraw) return;
+                        x = xc + _chunksForAnchors[i].X * 8;
+                        y = yc + _chunksForAnchors[i].Y * 8;
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 7, y + 7, 1, 1, 1));
                     }
 
+                    
                     // Игрок
                     x = xc + player.X * 8;
                     y = yc + player.Y * 8;
-                    vs.AddRange(MeshGuiColor.Rectangle(x + 4, y + 4, x + 6, y + 6, .5f, 0, .5f));
+                    vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 6, y + 6, .5f, 0, .5f));
                     meshChunks.Reload(vs.ToArray());
                 }
             }

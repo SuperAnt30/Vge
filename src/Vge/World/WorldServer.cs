@@ -1,6 +1,7 @@
 ﻿using Vge.Games;
 using Vge.Management;
 using Vge.Util;
+using Vge.World.Chunk;
 
 namespace Vge.World
 {
@@ -29,6 +30,10 @@ namespace Vge.World
         /// Объект управляет всеми чанками которые надо загрузить или выгрузить
         /// </summary>
         public readonly FragmentManager Fragment;
+        /// <summary>
+        /// Посредник серверного чанка
+        /// </summary>
+        public readonly ChunkProviderServer ChunkPrServ;
 
         public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
         {
@@ -37,6 +42,7 @@ namespace Vge.World
             PathWorld = server.Settings.GetPathWorld(IdWorld);
             Settings = worldSettings;
             Rnd = new Rand(server.Settings.Seed);
+            ChunkPr = ChunkPrServ = new ChunkProviderServer(this);
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
         }
@@ -45,8 +51,18 @@ namespace Vge.World
         {
             Filer.StartSection("Fragment");
             Fragment.Update();
+            Filer.EndStartSection("UnloadQueuedChunks");
+            ChunkPrServ.UnloadQueuedChunks();
             Filer.EndSection();
             //System.Threading.Thread.Sleep(50);
+
+            //if (Server.TickCounter % 10 == 0)
+            //{
+            //    if (IdWorld == 0)
+            //    {
+            //        Server.OnTagDebug("ChunkReady", ChunkPr.GetListDebug());
+            //    }
+            //}
         }
 
         #region WriteRead
