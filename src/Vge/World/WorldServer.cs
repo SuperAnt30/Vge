@@ -55,14 +55,6 @@ namespace Vge.World
             ChunkPrServ.UnloadQueuedChunks();
             Filer.EndSection();
             //System.Threading.Thread.Sleep(50);
-
-            //if (Server.TickCounter % 10 == 0)
-            //{
-            //    if (IdWorld == 0)
-            //    {
-            //        Server.OnTagDebug("ChunkReady", ChunkPr.GetListDebug());
-            //    }
-            //}
         }
 
         #region WriteRead
@@ -76,5 +68,8 @@ namespace Vge.World
         }
 
         #endregion
+
+        public override string ToString() => string.Format("{0} {1}",
+            Fragment.ToString(), ChunkPrServ.ToString());
     }
 }

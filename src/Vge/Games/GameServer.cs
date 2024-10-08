@@ -535,7 +535,6 @@ namespace Vge.Games
             // Тики менеджера игроков
             Filer.StartSection("PlayersTick");
             Players.Update();
-
             Filer.EndSection();
             
             //Thread.Sleep(10);
@@ -590,12 +589,13 @@ namespace Vge.Games
             float averageTime = Mth.Average(_tickTimeArray) / _frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("Server: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {7}" 
-                + Ce.Br + "{6}" 
-                + Ce.Br + "{8}",
+            return string.Format("Server: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
+                + Ce.Br + Worlds.ToString()
+                + Ce.Br + _strNet
+                + Ce.Br + debugText,
                 tps, averageTime, _rxPrev, _txPrev, TickCounter, TimeCounter / 1000f, // 0-5
-                _strNet, _isGamePaused ? " PAUSE" : "", // 6-7
-                debugText); // 8
+                _isGamePaused ? " PAUSE" : "" // 6
+                );
         }
 
         public string debugText = "";

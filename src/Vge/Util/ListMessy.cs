@@ -59,6 +59,18 @@ namespace Vge.Util
         }
 
         /// <summary>
+        /// Найти имеется ли такое значение
+        /// </summary>
+        public bool Contains(T item)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (_buffer[i].Equals(item)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Сделать копию в массив
         /// </summary>
         public T[] ToArray()
@@ -85,6 +97,24 @@ namespace Vge.Util
                     Count--;
                     return true;
                 }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Удалить значение по индексу
+        /// </summary>
+        public bool RemoveAt(int index)
+        {
+            if (index < Count)
+            {
+                int last = Count - 1;
+                if (last != index)
+                {
+                    _buffer[index] = _buffer[last];
+                }
+                Count--;
+                return true;
             }
             return false;
         }

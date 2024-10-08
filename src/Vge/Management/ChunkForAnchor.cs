@@ -28,6 +28,10 @@ namespace Vge.Management
         /// </summary>
         private readonly List<IAnchor> _anchors = new List<IAnchor>();
         /// <summary>
+        /// Список мировых якорей которые имеют этот чанк в обзоре
+        /// </summary>
+        private readonly List<WorldAnchor> _worldAnchors = new List<WorldAnchor>();
+        /// <summary>
         /// Список игроков которые имеют этот чанк в обзоре
         /// </summary>
         private readonly List<PlayerServer> _players = new List<PlayerServer>();
@@ -48,6 +52,10 @@ namespace Vge.Management
         /// </summary>
         public bool Contains(IAnchor anchor) => _anchors.Contains(anchor);
         /// <summary>
+        /// Проверить имеется ли мировой якорь в этом чанке
+        /// </summary>
+        public bool ContainsWorld(WorldAnchor worldAnchor) => _worldAnchors.Contains(worldAnchor);
+        /// <summary>
         /// Проверить имеется ли такой игрок в этом чанке
         /// </summary>
         public bool ContainsPlayer(PlayerServer player) => _players.Contains(player);
@@ -56,6 +64,10 @@ namespace Vge.Management
         /// Количество якорей в этом чанке
         /// </summary>
         public int CountAnchor() => _anchors.Count;
+        /// <summary>
+        /// Количество мировых якорей в этом чанке
+        /// </summary>
+        public int CountWorld() => _worldAnchors.Count;
         /// <summary>
         /// Количество игроков в этом чанке
         /// </summary>
@@ -72,12 +84,20 @@ namespace Vge.Management
                 _anchors.Add(anchor);
                 anchor.AddChunk(CurrentChunkX, CurrentChunkY);
             }
-            // Добавить игрока если якорь является игроком
+            // Добавить игрока если является
             if (anchor is PlayerServer player)
             {
                 if (!_players.Contains(player))
                 {
                     _players.Add(player);
+                }
+            }
+            // Добавить мировой якорь если является
+            else if (anchor is WorldAnchor worldAnchor)
+            {
+                if (!_worldAnchors.Contains(worldAnchor))
+                {
+                    _worldAnchors.Add(worldAnchor);
                 }
             }
         }
@@ -90,10 +110,12 @@ namespace Vge.Management
             // Удалить игрока если якорь является игроком
             if (anchor is PlayerServer player)
             {
-                if (_players.Contains(player))
-                {
-                    _players.Remove(player);
-                }
+                _players.Remove(player);
+            }
+            // Удалить мировой якорь если является
+            else if (anchor is WorldAnchor worldAnchor)
+            {
+                _worldAnchors.Remove(worldAnchor);
             }
 
             if (_anchors.Contains(anchor))
@@ -105,8 +127,20 @@ namespace Vge.Management
                     _IncreaseInhabitedTime();
                     return true;
                 }
+                anchor.RemoveChunk(CurrentChunkX, CurrentChunkY);
             }
             return false;
+        }
+
+        /// <summary>
+        /// Продлить жизнь если один мировой якорь 
+        /// </summary>
+        public void ProlongLife()
+        {
+            if (_anchors.Count == 1 && _worldAnchors.Count == 1)
+            {
+                _worldAnchors[0].ProlongLife();
+            }
         }
 
         /// <summary>

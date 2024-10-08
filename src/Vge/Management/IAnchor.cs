@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Collections.Generic;
+using Vge.Util;
 
 namespace Vge.Management
 {
@@ -8,9 +9,9 @@ namespace Vge.Management
     public interface IAnchor
     {
         /// <summary>
-        /// Является ли якорь игроком
+        /// Является ли якорь активным
         /// </summary>
-        bool IsPlayer { get; }
+        bool IsActive { get; }
 
         /// <summary>
         /// Обзор сколько видит якорь чанков вокруг себя
@@ -51,17 +52,26 @@ namespace Vge.Management
         /// <param name="chunkPosX">Позиция X чанка</param>
         /// <param name="chunkPosY">Позиция Y чанка</param>
         void AddChunk(int chunkPosX, int chunkPosY);
+        /// <summary>
+        /// Удалить якорь из конкретного чанка
+        /// </summary>
+        /// <param name="chunkPosX">Позиция X чанка</param>
+        /// <param name="chunkPosY">Позиция Y чанка</param>
+        void RemoveChunk(int chunkPosX, int chunkPosY);
 
         /// <summary>
-        /// Обновить обзор прошлого такта
+        /// Установленный перемещенный якорь
         /// </summary>
-        void UpOverviewChunkPrev();
+        void MountedMovedAnchor();
 
         /// <summary>
-        /// Обновить чанк обработки
+        /// Изменение обзора,
         /// </summary>
-        void UpChunkPosManaged();
-
+        bool IsChangeOverview();
         
+        /// <summary>
+        /// Необходимо ли смещение?
+        /// </summary>
+        bool IsAnOffsetNecessary();
     }
 }

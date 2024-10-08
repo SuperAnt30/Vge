@@ -25,6 +25,10 @@
         /// Присутствует, этап загрузки или начальная генерация #1 1*1
         /// </summary>
         public bool IsChunkPresent { get; private set; }
+        /// <summary>
+        /// Было ли декорация чанка #2 3*3
+        /// </summary>
+        public bool IsPopulated { get; private set; }
 
         public ChunkBase(WorldBase world, int chunkPosX, int chunkPosY)
         {
@@ -44,6 +48,13 @@
         public void OnChunkLoad()
         {
             IsChunkPresent = true;
+            //if (!World.IsRemote && World is WorldServer worldServer)
+            //{
+            //    if (CurrentChunkX < 200)
+            //    {
+            //        worldServer.Fragment.AddWorldAnchorChunk(CurrentChunkX + 5, CurrentChunkY);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -52,6 +63,15 @@
         public void OnChunkUnload()
         {
             IsChunkPresent = false;
+        }
+
+
+        /// <summary>
+        /// Заполнение чанка населённостью
+        /// </summary>
+        private void _Populate()
+        {
+
         }
 
 

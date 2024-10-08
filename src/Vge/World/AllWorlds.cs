@@ -63,5 +63,7 @@ namespace Vge.World
         }
 
         public WorldServer GetWorld(int index) => _worldServers[index];
+
+        public override string ToString() => _worldServers[0].ToString();
     }
 }

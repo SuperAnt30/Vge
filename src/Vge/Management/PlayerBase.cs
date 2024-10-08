@@ -31,11 +31,11 @@ namespace Vge.Management
         /// <summary>
         /// Обзор сколько видит якорь чанков вокруг себя
         /// </summary>
-        public byte OverviewChunk { get; private set; } = 1;
+        public byte OverviewChunk { get; private set; }
         /// <summary>
         /// Обзор чанков прошлого такта
         /// </summary>
-        public byte OverviewChunkPrev { get; private set; } = 0;
+        public byte OverviewChunkPrev { get; private set; }
 
         /// <summary>
         /// Последнее время пинга в милисекундах
@@ -56,7 +56,7 @@ namespace Vge.Management
         /// <summary>
         /// Обновить обзор прошлого такта
         /// </summary>
-        public virtual void UpOverviewChunkPrev() => OverviewChunkPrev = OverviewChunk;
+        protected void _UpOverviewChunkPrev() => OverviewChunkPrev = OverviewChunk;
 
         /// <summary>
         /// Задать обзор чанков у клиента

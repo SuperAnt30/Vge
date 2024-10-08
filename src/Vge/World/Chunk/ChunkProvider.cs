@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Vge.World.Chunk
+﻿namespace Vge.World.Chunk
 {
     /// <summary>
     /// Объект который хранит и отвечает за кэш чанков конкретного мира

@@ -53,7 +53,7 @@ namespace Vge
                     _chunksActive[i] = Conv.IndexToChunkVector2i(ar[i]);
                 }
                 _flagBlockDraw = false;
-                _renderChunks = true;
+                _renderChunks = 2;
             }
             else if (e.Text == "ChunkForAnchors")
             {
@@ -65,7 +65,7 @@ namespace Vge
                     _chunksForAnchors[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
                 }
                 _flagBlockDraw = false;
-                _renderChunks = true;
+                _renderChunks = 2;
             }
             else if (e.Text == "ChunkReady")
             {
@@ -77,7 +77,7 @@ namespace Vge
                     _chunksReady[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
                 }
                 _flagBlockDraw = false;
-                _renderChunks = true;
+                _renderChunks = 2;
             }
         }
 
@@ -111,7 +111,7 @@ namespace Vge
 
         private static bool _flagBlockDraw = false;
 
-        private static bool _renderChunks = false;
+        private static byte _renderChunks = 0;
 
         private static MeshGuiColor meshChunks;
 
@@ -121,11 +121,11 @@ namespace Vge
             {
                 meshChunks = new MeshGuiColor(window.GetOpenGL());
             }
-            if (_renderChunks)
+            if (_renderChunks > 0)
             {
                 if (!_flagBlockDraw)
                 {
-                    _renderChunks = false;
+                    _renderChunks--;
                     List<float> vs = new List<float>();
 
                     int xc = 800;

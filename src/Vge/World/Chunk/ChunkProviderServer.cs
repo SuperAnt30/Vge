@@ -23,13 +23,24 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Нужен чанк, вернёт true если чанк был
+        /// </summary>
+        public bool NeededChunk(int x, int y)
+        {
+            if (IsChunkLoaded(x, y)) return true;
+            _LoadGenAdd(x, y);
+            return false;
+        }
+
+        /// <summary>
         /// Загрузка или генерация чанка, с пополнением его в карту чанков
         /// </summary>
-        public void LoadGenAdd(int x, int y)
+        private void _LoadGenAdd(int x, int y)
         {
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _chunkMapping.Add(chunk);
             //LoadOrGen(chunk);
+            //System.Threading.Thread.Sleep(1);
             chunk.OnChunkLoad();
         }
 
@@ -63,8 +74,13 @@ namespace Vge.World.Chunk
                     //Тут сохраняем чанк
                     //SaveChunkData(chunk);
                     _chunkMapping.Remove(x, y);
+                    // Для дебага
+                    _worldServer.Fragment.flagDebugChunkProvider = true;
                 }
             }
         }
+
+        public override string ToString() => string.Format("Ch:{0} Dr:{1}",
+               _chunkMapping.Count, _droppedChunks.Count);
     }
 }

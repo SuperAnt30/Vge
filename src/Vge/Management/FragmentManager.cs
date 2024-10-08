@@ -13,10 +13,9 @@ namespace Vge.Management
     public class FragmentManager
     {
         /// <summary>
-        /// Минимальный радиус обзора для сервера, нужен для спавна и тиков блоков
+        /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
         /// </summary>
-        public static int minRadius = 8;
-
+        public readonly byte ActiveRadius;
         /// <summary>
         /// Сетевой мир
         /// </summary>
@@ -35,6 +34,14 @@ namespace Vge.Management
         /// Список всех якорей
         /// </summary>
         private readonly List<IAnchor> _anchors = new List<IAnchor>();
+        /// <summary>
+        /// Список всех активных якорей
+        /// </summary>
+        private readonly List<IAnchor> _actionAnchors = new List<IAnchor>();
+        /// <summary>
+        /// Список всех мировх якорей 
+        /// </summary>
+        private readonly List<WorldAnchor> _worldAnchors = new List<WorldAnchor>();
 
         /// <summary>
         /// Чанки игроков она же выступает в роли маски какие нельзя выгружать и какие может видеть игрок
@@ -42,25 +49,44 @@ namespace Vge.Management
         private MapChunk _chunkForAnchors = new MapChunk();
         
         /// <summary>
-        /// Смещение чанка у якоря
+        /// флаг для обновления активных чанков
         /// </summary>
-        private bool _flagAnchorChunkOffset = true;
+        private bool _flagUpListChunkAction = true;
 
-        /// <summary>
-        /// Массив активных колец обзора
-        /// </summary>
-        private readonly Vector2i[] _overviewCirclesActive;
         /// <summary>
         /// Объект сыщик
         /// </summary>
         private readonly Profiler _filer;
 
-
         public FragmentManager(WorldServer world)
         {
             World = world;
+            ActiveRadius = World.Settings.ActiveRadius;
             _filer = new Profiler(World.Server.Log, "[Server] ");
-            _overviewCirclesActive = Ce.OverviewCircles[minRadius];
+        }
+
+        /// <summary>
+        /// Создать мировой якорь на чанк
+        /// </summary>
+        public void AddWorldAnchorChunk(int x, int y)
+        {
+            // Сразу пробуем найти в том же чанке
+            int count = _worldAnchors.Count;
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (_worldAnchors[i].ChunkPositionX == x
+                        && _worldAnchors[i].ChunkPositionY == y)
+                    {
+                        // Найден мировой якор в том же чанке, значит продлемаем ему просто жизнь
+                        _worldAnchors[i].ProlongLife();
+                        return;
+                    }
+                }
+            }
+            AddAnchor(new WorldAnchor(World, x, y));
+            _flagDebugAnchorChunkOffset = true;
         }
 
         /// <summary>
@@ -68,6 +94,15 @@ namespace Vge.Management
         /// </summary>
         public void AddAnchor(IAnchor anchor)
         {
+            if (anchor is WorldAnchor worldAnchor)
+            {
+                _worldAnchors.Add(worldAnchor);
+            }
+            if (anchor.IsActive)
+            {
+                _actionAnchors.Add(anchor);
+                _flagUpListChunkAction = true;
+            }
             _anchors.Add(anchor);
             // Добавить все чанки вокруг якоря
             _OverviewChunkAddAnchor(anchor);
@@ -82,45 +117,51 @@ namespace Vge.Management
             _OverviewChunkPutAwayAnchor(anchor);
             // Убрать из списка якорей
             _anchors.Remove(anchor);
+            if (anchor.IsActive)
+            {
+                _actionAnchors.Remove(anchor);
+                _flagUpListChunkAction = true;
+            }
+            if (anchor is WorldAnchor worldAnchor)
+            {
+                _worldAnchors.Remove(worldAnchor);
+            }
         }
 
         public void Update()
         {
-            // Обновить список активных чанков
-            if (_flagAnchorChunkOffset)
+            // Обновление жизни мировых чанков 1/5 в секунду
+            if (World.Server.TickCounter % 6 == 0)
             {
-                _flagAnchorChunkOffset = false;
+                if (World.Server.TickCounter % 12 == 0)
+                {
+                    _filer.StartSection("AddChunkAction");
+                    _AddChunkAction();
+                    _filer.EndSection();
+                }
+                else
+                {
+                    _filer.StartSection("UpdateWorldAnchors");
+                    _UpdateWorldAnchors();
+                    _filer.EndSection();
+                }
+            }
+
+            // Обновить список активных чанков
+            if (_flagUpListChunkAction)
+            {
+                _flagUpListChunkAction = false;
                 // Обновить список активных чанков
                 _filer.StartSection("UpListChunkAction");
                 _UpListChunkAction();
                 _filer.EndSection();
-                if (Ce.FlagDebugDrawChunks)
-                {
-                    if (World.IdWorld == 0)
-                    {
-                        World.Server.OnTagDebug("ChunksActive", ListChunkAction.ToArray());
-                        World.Server.OnTagDebug("ChunkForAnchors", _chunkForAnchors.GetList().ToArray());
-                        //if (_anchors.Count > 0)
-                        //{
-                        //    World.Server.OnTagDebug("ChunkAnchors", _anchors[0].LoadingChunks.ToArray());
-                        //}
-                        //World.Server.OnTagDebug("1", null);
-                    }
-                }
+                _flagDebugAnchorChunkOffset = true;
             }
 
             _filer.StartSection("LoadingChunks");
-            if (Ce.FlagDebugDrawChunks)
-            {
-                if (_UpdateLoadingChunks() && World.IdWorld == 0)
-                {
-                    World.Server.OnTagDebug("ChunkReady", World.ChunkPr.GetListDebug());
-                }
-            }
-            else
-            {
-                _UpdateLoadingChunks();
-            }
+            if (_UpdateLoadingChunks()) flagDebugChunkProvider = true;
+            _filer.EndStartSection("FragmentManagerDebug");
+            _UpdateDebug();
             _filer.EndSection();
         }
 
@@ -130,33 +171,46 @@ namespace Vge.Management
         private bool _UpdateLoadingChunks()
         {
             bool load = false;
-            int i, count, number, x, y;
+            int a, number, x, y;
             ulong index;
 
             try
             {
                 // TODO::2024-10-08 эту загрузку чанков продумать от времени, и по очереди для каждого якоря
-                foreach(IAnchor anchor in _anchors)
+                int countAnchor = _anchors.Count;
+                for (a = 0; a < countAnchor; a++)
                 {
                     number = 0;
-                    count = anchor.LoadingChunks.Count;
-                    for (i = 0; i < count; i++)
+                    while (_anchors[a].LoadingChunks.Count > 0 && number < 100)
                     {
-                        index = anchor.LoadingChunks[i];
+                        index = _anchors[a].LoadingChunks[_anchors[a].LoadingChunks.Count - 1];
+                        _anchors[a].LoadingChunks.RemoveLast();
                         x = Conv.IndexToChunkX(index);
                         y = Conv.IndexToChunkY(index);
-                        if (!World.ChunkPrServ.IsChunkLoaded(x, y))
+                        if (!World.ChunkPrServ.NeededChunk(x, y))
                         {
-                            // Чанк отсутствует
-                            World.ChunkPrServ.LoadGenAdd(x, y);
+                            // Чанк отсутствовал
                             if (!load) load = true;
-                            if (++number > 12)
-                            {
-                                // Больше 12 за такт нельзя, ибо просадка
-                                break;
-                            }
+                            number++;
                         }
                     }
+                    //count = _anchors[a].LoadingChunks.Count;
+                    //for (i = 0; i < count; i++)
+                    //{
+                    //    index = _anchors[a].LoadingChunks[i];
+                    //    x = Conv.IndexToChunkX(index);
+                    //    y = Conv.IndexToChunkY(index);
+                    //    if (!World.ChunkPrServ.NeededChunk(x, y))
+                    //    {
+                    //        // Чанк отсутствовал
+                    //        if (!load) load = true;
+                    //        if (++number > 20)
+                    //        {
+                    //            // Больше 12 за такт нельзя, ибо просадка
+                    //            break;
+                    //        }
+                    //    }
+                    //}
                 }
             }
             catch (Exception ex)
@@ -166,6 +220,58 @@ namespace Vge.Management
                 throw;
             }
             return load;
+        }
+
+        /// <summary>
+        /// Обновление жизни мировых чанков
+        /// </summary>
+        private void _UpdateWorldAnchors()
+        {
+            int count = _worldAnchors.Count - 1;
+            int number = 0;
+            bool removed = true;
+            for (int i = count; i >= 0; i--)
+            {
+                if (_worldAnchors[i].UpdateAndCheck() && removed)
+                {
+                    RemoveAnchor(_worldAnchors[i]);
+                    // За раз больше 100 нельзя выгружать
+                    if (++number > 100)
+                    {
+                        removed = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Дабваить активные чанки если это нужно
+        /// </summary>
+        private void _AddChunkAction()
+        {
+            int i, x, y;
+            ulong index;
+            int count = ListChunkAction.Count;
+            ChunkForAnchor chunkForAnchor;
+            for (i = 0; i < count; i++)
+            {
+                index = ListChunkAction[i];
+                x = Conv.IndexToChunkX(index);
+                y = Conv.IndexToChunkY(index);
+                chunkForAnchor = _chunkForAnchors.Get(x, y) as ChunkForAnchor;
+                if (chunkForAnchor == null)
+                {
+                    // Тут надо добавить мировой якорь
+                    AddWorldAnchorChunk(x, y);
+                }
+                else
+                {
+                    // Продлить жизнь если один мировой якорь 
+                    chunkForAnchor.ProlongLife();
+                }
+            }
+
         }
 
         #region ChunkForAnchor
@@ -203,110 +309,56 @@ namespace Vge.Management
                     // Удалить чанк
                     World.ChunkPrServ.DropChunk(x, y);
                     _chunkForAnchors.Remove(x, y);
+                    _flagDebugAnchorChunkOffset = true;
+                    flagDebugChunkProvider = true;
                 }
             }
         }
 
         #endregion
 
+        #region Обновление фрагментов
+
         /// <summary>
         /// Обновлять фрагменты чанков вокруг якоря, перемещаемого логикой сервера
         /// </summary>
         public void UpdateMountedMovingAnchor(IAnchor anchor)
         {
-            bool isFilter = false;
-            int radius = anchor.OverviewChunk;
-            
+            bool change = false;
             // Проверяем изменение обзора чанка
-            if (radius != anchor.OverviewChunkPrev)
+            if (anchor.IsChangeOverview())
             {
                 int radiusPrev = anchor.OverviewChunkPrev;
                 int chx = anchor.ChunkPosManagedX;
                 int chz = anchor.ChunkPosManagedY;
 
                 _UpdateMountedMovingAnchorOverviewChunk(anchor, chx, chz, 
-                    Mth.Max(radius, radiusPrev), radiusPrev, radius);
-
-                anchor.UpOverviewChunkPrev();
-                isFilter = true;
+                    Mth.Max(anchor.OverviewChunk, radiusPrev), radiusPrev, anchor.OverviewChunk);
+                change = true;
             }
 
             // Проверяем смещение чанка на выбранный параметр, если есть начинаем обработку
             int chunkX = anchor.ChunkPositionX;
             int chunkY = anchor.ChunkPositionY;
             // Активация смещения при смещении количество чанков
-            int bias = radius > 12 ? 2 : 1;
-            if (Mth.Abs(chunkX - anchor.ChunkPosManagedX) >= bias || Mth.Abs(chunkY - anchor.ChunkPosManagedX) >= bias)
+            if (anchor.IsAnOffsetNecessary())
+            //int bias = radius > 12 ? 2 : 1;
+            //if (Mth.Abs(chunkX - anchor.ChunkPosManagedX) >= bias || Mth.Abs(chunkY - anchor.ChunkPosManagedX) >= bias)
             {
                 // Смещение чанка
-                _flagAnchorChunkOffset = true;
-                int radiusPlay = anchor.OverviewChunk;
-                // TODO::2024-10-07 OverviewChunk продумать как жить с игроками у кого обзор маленький, а тики должны быть больше
-                radius = radiusPlay;
-                if (radius < minRadius) radius = minRadius;
-                
                 int chmx = anchor.ChunkPosManagedX;
                 int chmz = anchor.ChunkPosManagedY;
 
                 // Проверка перемещения обзора чанков у клиента
-                _UpdateMountedMovingAnchorRadius(anchor, chunkX, chunkY, chmx, chmz, radiusPlay);
-
-                anchor.UpChunkPosManaged();
-                isFilter = true;
+                _UpdateMountedMovingAnchorRadius(anchor, chunkX, chunkY, chmx, chmz, anchor.OverviewChunk);
+                change = true;
             }
 
-            if (isFilter)
+            if (change)
             {
-                _FilterChunkLoadQueue(anchor);
-            }
-        }
-
-        /// <summary>
-        /// Удаляет все фрагменты из очереди загрузки фрагментов данного проигрывателя, которые не находятся в зоне видимости проигрывателя. 
-        /// Обновляет список координат чанков и сортирует их с центра в даль для игрока entityPlayer
-        /// </summary>
-        private void _FilterChunkLoadQueue(IAnchor anchor)
-        {
-            //GetPlayerInstance(anchor.GetChunkPos(), true);
-            
-            // c кругом чанки иногда бывают пустые чанки, не догружены клиенту!!!
-            // хотя с квадратом на увеличении и уменьшении обзора тоже получил пустые чанки
-            // 24.03.2023
-
-            //Hashtable mapLoaded = anchor.LoadedChunks.CloneMap();
-            //Hashtable mapLoading = anchor.LoadingChunks.CloneMap();
-            //anchor.LoadedChunks.Clear();
-            anchor.LoadingChunks.Clear();
-
-            //if (anchor..DistSqrt != null)
-            {
-                // +4 а не addServer, так как при радиусе, в краях радиуса, 4 мало, 6 норм.
-                // Но тут надо срезать, чтоб круга не было, типа квадрат со срезаными углами, 
-                // чтоб сократить память.
-                int overviewChunk = anchor.OverviewChunk;
-                if (overviewChunk < minRadius) overviewChunk = minRadius;
-                int radius = overviewChunk;// + 4;
-                Vector2i[] overviewCircles = Ce.OverviewCircles[radius]; // overviewChunk + addServer
-                int count = overviewCircles.Length;
-                //anchor.ChunkPosManagedX
-                //vec2i chunkPosManaged = anchor.ChunkPosManaged;
-                Vector2i vec;
-                int chx = anchor.ChunkPosManagedX;
-                int chy = anchor.ChunkPosManagedY;
-                //vec2i pos;
-                for (int d = 0; d < count; d++)
-                {
-                    vec = overviewCircles[d];
-                    if (vec.X >= -radius && vec.X <= radius && vec.Y >= -radius && vec.Y <= radius)
-                    {
-                        //pos = vec + chunkPosManaged;
-                        //if (mapLoaded.ContainsKey(pos))
-                        //{
-                        //    anchor.LoadedChunks.Add(pos);
-                        //}
-                        anchor.LoadingChunks.Add(Conv.ChunkXyToIndex(vec.X + chx, vec.Y + chy));
-                    }
-                }
+                anchor.MountedMovedAnchor();
+                _flagDebugAnchorChunkOffset = true;
+                _flagUpListChunkAction = true;
             }
         }
 
@@ -317,24 +369,23 @@ namespace Vge.Management
         {
             ListChunkPlayer.Clear();
             ListChunkAction.Clear();
-            if (_anchors.Count > 0)
+            int count = _anchors.Count;
+            if (count > 0)
             {
-                int chX, chY, ch2X;
-                Vector2i pos;
+                int chX, chY, ch2X, x, y, i;
                 ulong index;
-                int count = _overviewCirclesActive.Length;
-                for (int i = 0; i < _anchors.Count; i++)
+                for (i = 0; i < count; i++)
                 {
-                    chX = _anchors[i].ChunkPositionX;
-                    chY = _anchors[i].ChunkPositionY;
-
                     // Собираем чанки где есть игроки, тикущий и по соседнему
-                    if (_anchors[i].IsPlayer)
+                    if (_anchors[i].IsActive)
                     {
-                        for (int x = -1; x <= 1; x++)
+                        chX = _anchors[i].ChunkPositionX;
+                        chY = _anchors[i].ChunkPositionY;
+
+                        for (x = -1; x <= 1; x++)
                         {
                             ch2X = chX + x;
-                            for (int y = -1; y <= 1; y++)
+                            for (y = -1; y <= 1; y++)
                             {
                                 index = Conv.ChunkXyToIndex(ch2X, chY + y);
                                 if (!ListChunkPlayer.Contains(index))
@@ -343,15 +394,19 @@ namespace Vge.Management
                                 }
                             }
                         }
-                    }
-                    // Собираем все активные чанки для будущих тиков
-                    for (int j = 0; j < count; j++)
-                    {
-                        pos = _overviewCirclesActive[j];
-                        index = Conv.ChunkXyToIndex(pos.X + chX, pos.Y + chY);
-                        if (!ListChunkAction.Contains(index))
+
+                        // Собираем все активные чанки для будущих тиков
+                        for (x = -ActiveRadius; x <= ActiveRadius; x++)
                         {
-                            ListChunkAction.Add(index);
+                            ch2X = chX + x;
+                            for (y = -ActiveRadius; y <= ActiveRadius; y++)
+                            {
+                                index = Conv.ChunkXyToIndex(ch2X, chY + y);
+                                if (!ListChunkAction.Contains(index))
+                                {
+                                    ListChunkAction.Add(index);
+                                }
+                            }
                         }
                     }
                 }
@@ -414,7 +469,9 @@ namespace Vge.Management
                 xmin, xmax + 1, zmin, zmax + 1);
         }
 
-        #region _Overview
+        #endregion
+
+        #region Overview
 
         /// <summary>
         /// Добавить чанки обзора при необходимости
@@ -556,5 +613,42 @@ namespace Vge.Management
         }
 
         #endregion
+
+        #region Debug
+
+        /// <summary>
+        /// Флаг для дебага, когда смещались чанки или менялся обзор
+        /// </summary>
+        private bool _flagDebugAnchorChunkOffset;
+        /// <summary>
+        /// Флаг для дебага, изменены чанки в ChunkProvider
+        /// </summary>
+        public bool flagDebugChunkProvider;
+
+        /// <summary>
+        /// В тике обновляем
+        /// </summary>
+        private void _UpdateDebug()
+        {
+            if (Ce.FlagDebugDrawChunks && World.IdWorld == 0)
+            {
+                if (_flagDebugAnchorChunkOffset)
+                {
+                    _flagDebugAnchorChunkOffset = false;
+                    World.Server.OnTagDebug("ChunksActive", ListChunkAction.ToArray());
+                    World.Server.OnTagDebug("ChunkForAnchors", _chunkForAnchors.GetList().ToArray());
+                }
+                if (flagDebugChunkProvider)
+                {
+                    flagDebugChunkProvider = false;
+                    World.Server.OnTagDebug("ChunkReady", World.ChunkPr.GetListDebug());
+                }
+            }
+        }
+
+        #endregion
+
+        public override string ToString() => string.Format("A:{0} Wa:{1} ChA:{2}", 
+                _anchors.Count, _worldAnchors.Count, _chunkForAnchors.Count);
     }
 }

@@ -71,6 +71,14 @@ namespace Vge.Util
         public T[] GetBufferAll() => _buffer;
 
         /// <summary>
+        /// Удалить последнее значение
+        /// </summary>
+        public void RemoveLast()
+        {
+            if (Count > 0) Count--;
+        }
+
+        /// <summary>
         /// Очистить
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -175,6 +175,7 @@ namespace Vge.Network
             {
                 playerServer.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
                 playerServer.isPos = true;
+              //  _server.Worlds.GetWorld(0).Fragment.AddWorldAnchorChunk(playerServer.chPos.X + 25, playerServer.chPos.Y);
             }
 
             //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
