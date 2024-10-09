@@ -69,7 +69,6 @@ namespace Vge.World
 
         #endregion
 
-        public override string ToString() => string.Format("{0} {1}",
-            Fragment.ToString(), ChunkPrServ.ToString());
+        public override string ToString() => Fragment.ToString() + " " + ChunkPrServ.ToString();
     }
 }

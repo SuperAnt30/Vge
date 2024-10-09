@@ -75,7 +75,9 @@ namespace Vge.Network
                 case 0x08:
                     Handle08PlayerPosLook((PacketS08PlayerPosLook)readPacket.Receive(buffer, new PacketS08PlayerPosLook()));
                     break;
-                    
+                case 0x21:
+                    Handle21ChunkData((PacketS21ChunkData)readPacket.Receive(buffer, new PacketS21ChunkData()));
+                    break;
             }
         }
 
@@ -140,6 +142,12 @@ namespace Vge.Network
             Game.Player.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
             Debug.player = Game.Player.chPos;
         }
+
+        /// <summary>
+        /// Пакет изменённые псевдо чанки
+        /// </summary>
+        private void Handle21ChunkData(PacketS21ChunkData packet)
+            => Game.World.ChunkPrClient.PacketChunckData(packet);
 
         #region ConnectionDisconnect
 

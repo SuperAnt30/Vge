@@ -10,7 +10,7 @@ namespace Vge.World
         /// <summary>
         /// Сервер
         /// </summary>
-        public GameServer @Server { get; protected set; }
+        public GameServer Server { get; protected set; }
 
         /// <summary>
         /// Миры игры

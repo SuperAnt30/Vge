@@ -38,7 +38,8 @@ namespace Vge.World
         /// <summary>
         /// Получить чанк по координатам чанка
         /// </summary>
-        public ChunkBase GetChunk(int chunkPosX, int chunkPosY) => null;
+        public ChunkBase GetChunk(int chunkPosX, int chunkPosY) 
+            => ChunkPr.GetChunk(chunkPosX, chunkPosY);
 
         #endregion
     }

@@ -113,7 +113,7 @@ namespace Vge.Games
             => _OnServerTextDebug(e.Text);
 
         private void _Server_TagDebug(object sender, StringEventArgs e)
-            => _OnServerTagDebug(e);
+            => _OnTagDebug(e);
 
         private void _Server_Closeded(object sender, EventArgs e)
         {

@@ -9,6 +9,7 @@ using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using Vge.World;
 using WinGL.Actions;
 using WinGL.Util;
 
@@ -44,6 +45,10 @@ namespace Vge.Games
         /// Объект игрока для клиента
         /// </summary>
         public PlayerClient Player { get; private set; }
+        /// <summary>
+        /// Клиентский объект мира
+        /// </summary>
+        public WorldClient World { get; private set; }
 
         /// <summary>
         /// Увеличивается каждый тик 
@@ -108,7 +113,14 @@ namespace Vge.Games
         /// <summary>
         /// Запуск игры
         /// </summary>
-        public virtual void GameStarting() => _stopwatch.Start();
+        public virtual void GameStarting()
+        {
+            World = new WorldClient(this);
+            World.TagDebug += World_TagDebug;
+            _stopwatch.Start();
+        }
+
+        private void World_TagDebug(object sender, StringEventArgs e) => _OnTagDebug(e);
 
         /// <summary>
         /// Остановка игры
@@ -185,6 +197,8 @@ namespace Vge.Games
                 _tickCounterClient++;
                 TickCounter++;
 
+                World.Update();
+
                 // Прошла минута, или 1800 тактов
                 if (_tickCounterClient % 1800 == 0)
                 {
@@ -246,11 +260,12 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6} O:{7}",
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6} O:{7}\r\n{8}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
                 _ToTraffic(),TickCounter, // 3-4
-                Player.Login, Player.chPos, Player.OverviewChunk // 5-7
+                Player.Login, Player.chPos, Player.OverviewChunk, // 5-7
+                World.ToString() // 8
                 );
         }
 
@@ -302,9 +317,9 @@ namespace Vge.Games
         /// <summary>
         /// Событие tag отладки сервера
         /// </summary>
-        public event StringEventHandler ServerTagDebug;
-        protected virtual void _OnServerTagDebug(StringEventArgs e)
-            => ServerTagDebug?.Invoke(this, e);
+        public event StringEventHandler TagDebug;
+        protected virtual void _OnTagDebug(StringEventArgs e)
+            => TagDebug?.Invoke(this, e);
 
         #endregion
     }

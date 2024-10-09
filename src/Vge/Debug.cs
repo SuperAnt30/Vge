@@ -79,6 +79,18 @@ namespace Vge
                 _flagBlockDraw = false;
                 _renderChunks = 2;
             }
+            else if (e.Text == "ChunkClient")
+            {
+                _flagBlockDraw = true;
+                IChunkPosition[] ar = (IChunkPosition[])e.Tag;
+                _chunksСlient = new Vector2i[ar.Length];
+                for (int i = 0; i < ar.Length; i++)
+                {
+                    _chunksСlient[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
+                }
+                _flagBlockDraw = false;
+                _renderChunks = 2;
+            }
         }
 
         #region Chunk
@@ -106,8 +118,11 @@ namespace Vge
         /// Белый
         /// </summary>
         private static Vector2i[] _chunksForAnchors = new Vector2i[0];
-        
-        
+        /// <summary>
+        /// Готовые чанкина на клиенте
+        /// Черные
+        /// </summary>
+        private static Vector2i[] _chunksСlient = new Vector2i[0];
 
         private static bool _flagBlockDraw = false;
 
@@ -146,14 +161,14 @@ namespace Vge
                         if (_flagBlockDraw) return;
                         x = xc + _chunksReady[i].X * 8;
                         y = yc + _chunksReady[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 8, y + 8, 0, 1, 0));
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, .9f, 0));
                     }
                     // Красный
                     for (int i = 0; i < players.Length; i++)
                     {
                         x = xc + players[i].X * 8;
                         y = yc + players[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 1, x + 7, y + 8, 1, 0, 0));
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, .9f, 0, 0));
                     }
                     // Белый
                     for (int i = 0; i < _chunksForAnchors.Length; i++)
@@ -161,10 +176,17 @@ namespace Vge
                         if (_flagBlockDraw) return;
                         x = xc + _chunksForAnchors[i].X * 8;
                         y = yc + _chunksForAnchors[i].Y * 8;
-                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 7, y + 7, 1, 1, 1));
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 6, y + 6, .9f, .9f, .9f));
+                    }
+                    // Черный
+                    for (int i = 0; i < _chunksСlient.Length; i++)
+                    {
+                        if (_flagBlockDraw) return;
+                        x = xc + _chunksСlient[i].X * 8;
+                        y = yc + _chunksСlient[i].Y * 8;
+                        vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 5, y + 5, 0, 0, .6f));
                     }
 
-                    
                     // Игрок
                     x = xc + player.X * 8;
                     y = yc + player.Y * 8;

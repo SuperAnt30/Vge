@@ -486,7 +486,7 @@ namespace Vge
             Game.Stoped += Game_Stoped;
             Game.Error += Game_Error;
             Game.ServerTextDebug += Game_ServerTextDebug;
-            Game.ServerTagDebug += Game_ServerTagDebug;
+            Game.TagDebug += Game_TagDebug;
             Game.GameStarting();
             SetWishFrame(Options.Fps);
         }
@@ -505,7 +505,7 @@ namespace Vge
         private void Game_ServerTextDebug(object sender, StringEventArgs e)
             => debug.server = e.Text;
 
-        private void Game_ServerTagDebug(object sender, StringEventArgs e)
+        private void Game_TagDebug(object sender, StringEventArgs e)
             => debug.SetTag(e);
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Chunk;
@@ -159,7 +160,7 @@ namespace Vge.Management
             }
 
             _filer.StartSection("LoadingChunks");
-            if (_UpdateLoadingChunks()) flagDebugChunkProvider = true;
+            if (_UpdateLoadingChunks()) flagDebugChunkProviderServer = true;
             _filer.EndStartSection("FragmentManagerDebug");
             _UpdateDebug();
             _filer.EndSection();
@@ -178,10 +179,12 @@ namespace Vge.Management
             {
                 // TODO::2024-10-08 эту загрузку чанков продумать от времени, и по очереди для каждого якоря
                 int countAnchor = _anchors.Count;
+                bool isPlayer;
                 for (a = 0; a < countAnchor; a++)
                 {
+                    isPlayer = _anchors[a].GetType() == typeof(PlayerServer);
                     number = 0;
-                    while (_anchors[a].LoadingChunks.Count > 0 && number < 100)
+                    while (_anchors[a].LoadingChunks.Count > 0 && number < 20)
                     {
                         index = _anchors[a].LoadingChunks[_anchors[a].LoadingChunks.Count - 1];
                         _anchors[a].LoadingChunks.RemoveLast();
@@ -193,6 +196,13 @@ namespace Vge.Management
                             if (!load) load = true;
                             number++;
                         }
+
+                        if (isPlayer)
+                        {
+                            ChunkBase chunk = World.GetChunk(x, y);
+                            ((PlayerServer)_anchors[a]).SendPacket(new PacketS21ChunkData(chunk, 65535));
+                        }
+
                     }
                     //count = _anchors[a].LoadingChunks.Count;
                     //for (i = 0; i < count; i++)
@@ -304,13 +314,17 @@ namespace Vge.Management
             IChunkPosition chunkPosition = _chunkForAnchors.Get(x, y);
             if (chunkPosition != null && chunkPosition is ChunkForAnchor chunkForAnchor)
             {
+                if (anchor is PlayerServer playerServer)
+                {
+                    playerServer.SendPacket(new PacketS21ChunkData(x, y));
+                }
                 if (chunkForAnchor.RemoveAnchor(anchor))
                 {
                     // Удалить чанк
                     World.ChunkPrServ.DropChunk(x, y);
                     _chunkForAnchors.Remove(x, y);
                     _flagDebugAnchorChunkOffset = true;
-                    flagDebugChunkProvider = true;
+                    flagDebugChunkProviderServer = true;
                 }
             }
         }
@@ -621,9 +635,9 @@ namespace Vge.Management
         /// </summary>
         private bool _flagDebugAnchorChunkOffset;
         /// <summary>
-        /// Флаг для дебага, изменены чанки в ChunkProvider
+        /// Флаг для дебага, изменены чанки в ChunkProviderServer
         /// </summary>
-        public bool flagDebugChunkProvider;
+        public bool flagDebugChunkProviderServer;
 
         /// <summary>
         /// В тике обновляем
@@ -638,9 +652,9 @@ namespace Vge.Management
                     World.Server.OnTagDebug("ChunksActive", ListChunkAction.ToArray());
                     World.Server.OnTagDebug("ChunkForAnchors", _chunkForAnchors.GetList().ToArray());
                 }
-                if (flagDebugChunkProvider)
+                if (flagDebugChunkProviderServer)
                 {
-                    flagDebugChunkProvider = false;
+                    flagDebugChunkProviderServer = false;
                     World.Server.OnTagDebug("ChunkReady", World.ChunkPr.GetListDebug());
                 }
             }

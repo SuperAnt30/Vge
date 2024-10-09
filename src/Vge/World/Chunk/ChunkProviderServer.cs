@@ -75,7 +75,7 @@ namespace Vge.World.Chunk
                     //SaveChunkData(chunk);
                     _chunkMapping.Remove(x, y);
                     // Для дебага
-                    _worldServer.Fragment.flagDebugChunkProvider = true;
+                    _worldServer.Fragment.flagDebugChunkProviderServer = true;
                 }
             }
         }

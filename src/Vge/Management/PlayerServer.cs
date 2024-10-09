@@ -64,6 +64,7 @@ namespace Vge.Management
         /// <summary>
         /// Список чанков нужно проверить на загрузку или генерацию,
         /// должен формироваться по дистанции от игрока.
+        /// Список пополняется при перемещении и уменьшается при проверке, что чанк загружен
         /// </summary>
         public ListFast<ulong> LoadingChunks { get; private set; } = new ListFast<ulong>();
 
@@ -72,6 +73,11 @@ namespace Vge.Management
         /// должен формироваться по дистанции от игрока.
         /// </summary>
         private readonly MapChunk _loadingChunks = new MapChunk();
+
+        /// <summary>
+        /// Отправить пакет чанка игроку
+        /// </summary>
+      //  public ListFast<ulong> SendPacketChunks { get; private set; } = new ListFast<ulong>();
 
         #endregion
 
