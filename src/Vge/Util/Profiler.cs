@@ -46,7 +46,7 @@ namespace Vge.Util
         /// <summary>
         /// Закрыть проверку по времени
         /// </summary>
-        public void EndSection(int stepTime = 15)
+        public void EndSection(int stepTime = 10)
         {
             if (profilingEnabled)
             {
@@ -76,9 +76,9 @@ namespace Vge.Util
         /// Закрыть секцию и тут же открыть
         /// </summary>
         /// <param name="name">Название секции</param>
-        public void EndStartSection(string name)
+        public void EndStartSection(string name, int stepTime = 10)
         {
-            EndSection();
+            EndSection(stepTime);
             StartSection(name);
         }
     }

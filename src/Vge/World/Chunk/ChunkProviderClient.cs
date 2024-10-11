@@ -45,8 +45,8 @@ namespace Vge.World.Chunk
             _OnChunkMappingChanged();
         }
 
-        public override string ToString() => string.Format("Ch:{0} Dr:{1}",
-               _chunkMapping.Count, -1);
+        public override string ToString() => string.Format("Ch:{0}|{1} Dr:{2}",
+               _chunkMapping.Count, _chunkMapping.RegionCount, -1);
 
         #region Event
 

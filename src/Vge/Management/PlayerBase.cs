@@ -31,11 +31,11 @@ namespace Vge.Management
         /// <summary>
         /// Обзор сколько видит якорь чанков вокруг себя
         /// </summary>
-        public byte OverviewChunk { get; private set; }
+        public byte OverviewChunk { get; private set; } = 1;
         /// <summary>
         /// Обзор чанков прошлого такта
         /// </summary>
-        public byte OverviewChunkPrev { get; private set; }
+        public byte OverviewChunkPrev { get; private set; } = 1;
 
         /// <summary>
         /// Последнее время пинга в милисекундах

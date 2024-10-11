@@ -31,6 +31,11 @@ namespace Vge.Util
         public T this[int index] => _buffer[index];
 
         /// <summary>
+        /// Добавить значение без проверки размера
+        /// </summary>
+        public void AddNotCheckSize(T item) => _buffer[Count++] = item;
+
+        /// <summary>
         /// Добавить значение
         /// </summary>
         public void Add(T item)

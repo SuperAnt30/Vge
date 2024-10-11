@@ -161,9 +161,16 @@ namespace Vge.Util
                 Array.Sort(files);
 
                 // Старые удаляем
-                for (int i = count - MaxCountFile; i >= 0; i--)
+                try
                 {
-                    File.Delete(files[i].fileName);
+                    for (int i = count - MaxCountFile; i >= 0; i--)
+                    {
+                        File.Delete(files[i].fileName);
+                    }
+                }
+                catch
+                {
+                    // Если нет возможности удалить, просто игнорируем
                 }
             }
         }

@@ -79,6 +79,11 @@ namespace Vge.Util
         }
 
         /// <summary>
+        /// Вернуть последнее значение
+        /// </summary>
+        public T GetLast() => _buffer[Count - 1];
+
+        /// <summary>
         /// Очистить
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

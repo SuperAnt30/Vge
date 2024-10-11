@@ -12,6 +12,14 @@ namespace Vge.Management
         /// Является ли якорь активным
         /// </summary>
         bool IsActive { get; }
+        /// <summary>
+        /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
+        /// </summary>
+        byte ActiveRadius { get; }
+        /// <summary>
+        /// Является ли якорь игроком
+        /// </summary>
+        bool IsPlayer { get; }
 
         /// <summary>
         /// Обзор сколько видит якорь чанков вокруг себя
@@ -41,10 +49,14 @@ namespace Vge.Management
         int ChunkPosManagedY { get; }
 
         /// <summary>
-        /// Список чанкоы нужно проверить на загрузку или генерацию,
-        /// должен формироваться по дистанции от игрока.
+        /// Возвращает имеется ли хоть один чанк для загрузки
         /// </summary>
-        ListFast<ulong> LoadingChunks { get; }
+        bool CheckLoadingChunks();
+
+        /// <summary>
+        /// Вернуть координаты чанка для загрузки
+        /// </summary>
+        ulong ReturnChunkForLoading();
 
         /// <summary>
         /// Добавить якорь в конкретный чанк

@@ -44,10 +44,10 @@ namespace Vge.World
             _worldServers[0].Update();
             for (byte i = 1; i < _count; i++)
             {
-                Server.Filer.EndStartSection("World-" + i);
+                Server.Filer.EndStartSection("World-" + i, 15);
                 _worldServers[i].Update();
             }
-            Server.Filer.EndSection();
+            Server.Filer.EndSection(15);
         }
 
         /// <summary>

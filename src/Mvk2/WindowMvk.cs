@@ -180,11 +180,16 @@ namespace Mvk2
                 }
                 else if (keys == Keys.PageDown)
                 {
-                    if (Game.Player.OverviewChunk > 2)
+                    if (Game.Player.OverviewChunk > 0)
                     {
-                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 1));
+                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 2));
                         Game.TrancivePacket(new PacketC15PlayerSetting(Game.Player.OverviewChunk));
                     }
+                }
+
+                if (keys == Keys.F3)
+                {
+                    Ce.FlagDebugDrawChunks = !Ce.FlagDebugDrawChunks;
                 }
             }
 

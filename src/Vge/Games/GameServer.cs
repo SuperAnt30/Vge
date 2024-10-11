@@ -346,12 +346,25 @@ namespace Vge.Games
                 // Если игрок владелец имеется, то грузим мир под него
                 // Тут должен знать его Ник, и место спавна
                 // Отправляем количество шагов на загрузку
-                ushort step = 100;// 625;
-                ResponsePacketOwner(new PacketS02LoadingGame(step));
+
+                WorldServer world = Players.PlayerOwner.GetWorld();
+                int cpx = Players.PlayerOwner.ChunkPositionX;
+                int cpy = Players.PlayerOwner.ChunkPositionY;
+                int radius = Players.PlayerOwner.ActiveRadius + FragmentManager.AddOverviewChunkServer;
+                int step = (radius + radius + 1) * (radius + radius + 1);
+                ResponsePacketOwner(new PacketS02LoadingGame((ushort)step));
                 // Запуск чанков (шагов)
-                for (int i = 0; i < step; i++)
+                for (int x = -radius; x <= radius; x++)
                 {
-                    ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
+                    for (int y = -radius; y <= radius; y++)
+                    {
+                        world.ChunkPrServ.NeededChunk(cpx + x, cpy + y);
+                        ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
+                    }
+                }
+                if (Ce.FlagDebugDrawChunks)
+                {
+                    OnTagDebug(Debug.Key.ChunkReady.ToString(), world.ChunkPr.GetListDebug());
                 }
                 // Загрузка закончена, последний штрих передаём id игрока и его uuid
                 Players.JoinGameOwner();
@@ -589,8 +602,9 @@ namespace Vge.Games
             float averageTime = Mth.Average(_tickTimeArray) / _frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("Server: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
+            return string.Format("[Server]: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
                 + Ce.Br + Worlds.ToString()
+                + Ce.Br + "Owner: " + Players.PlayerOwner.ToString()
                 + Ce.Br + _strNet
                 + Ce.Br + debugText,
                 tps, averageTime, _rxPrev, _txPrev, TickCounter, TimeCounter / 1000f, // 0-5

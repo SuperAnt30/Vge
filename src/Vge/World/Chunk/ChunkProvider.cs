@@ -46,6 +46,6 @@
         /// <summary>
         /// Список чанков только для отладки
         /// </summary>
-        public IChunkPosition[] GetListDebug() => _chunkMapping.GetList().ToArray();
+        public IChunkPosition[] GetListDebug() => _chunkMapping.ToArrayDebug();
     }
 }

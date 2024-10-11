@@ -12,7 +12,7 @@ public sealed class Ce
     /// <summary>
     /// Отладка чанков в 2д
     /// </summary>
-    public const bool FlagDebugDrawChunks = true;
+    public static bool FlagDebugDrawChunks = true;
 
     #endregion
 

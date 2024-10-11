@@ -140,7 +140,7 @@ namespace Vge.Games
             Player.PlayerOnTheServer(id, uuid);
 
             // TODO::2024-10-08 добавить обзор с опций
-            Player.SetOverviewChunk(16);
+            Player.SetOverviewChunk(8);
             // Отправим обзор 
             TrancivePacket(new PacketC15PlayerSetting(Player.OverviewChunk));
             // Закрываем скрин загрузки

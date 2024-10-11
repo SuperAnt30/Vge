@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Vge.World.Chunk
 {
@@ -11,28 +12,46 @@ namespace Vge.World.Chunk
         // new Vector2i((int)((xy & 0xFFFFFFFF00000000) >> 27), (int)xy << 5);
 
         /// <summary>
+        /// Общекк количество элементов
+        /// </summary>
+        public int Count { get; private set; } = 0;
+
+        /// <summary>
         /// Оптимизированный поиск чанка, служит для быстрого поиска чанка
         /// </summary>
         private readonly Dictionary<ulong, Region> _map = new Dictionary<ulong, Region>();
+
+        private int _x, _y;
+        private ulong _xy;
+
         /// <summary>
-        /// Список всех чанков, служит для получения полного списка
+        /// Перерасчитать количество
         /// </summary>
-        private readonly List<IChunkPosition> _list = new List<IChunkPosition>();
-        
+        public void RecalculateCount()
+        {
+            Count = 0;
+            foreach (Region region in _map.Values)
+            {
+                Count += region.Count;
+            }
+        }
+
         /// <summary>
         /// Добавить
         /// </summary>
         public void Add(IChunkPosition value)
         {
-            int x = value.CurrentChunkX;
-            int y = value.CurrentChunkY;
-            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-            if (!_map.ContainsKey(xy))
+            _x = value.CurrentChunkX;
+            _y = value.CurrentChunkY;
+            _xy = ((ulong)((uint)_x >> 5) << 32) | ((uint)_y >> 5);
+            if (!_map.ContainsKey(_xy))
             {
-                _map.Add(xy, new Region());
+                _map.Add(_xy, new Region());
             }
-            _map[xy].Set(x, y, value);
-            _list.Add(value);
+            if (_map[_xy].Set(_x, _y, value))
+            {
+                Count++;
+            }
         }
 
         /// <summary>
@@ -43,11 +62,14 @@ namespace Vge.World.Chunk
             IChunkPosition chunk = Get(x, y);
             if (chunk != null)
             {
-                _list.Remove(chunk);
-                ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-                if (_map[xy].Remove(x, y))
+                _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+                if (_map[_xy].Remove(x, y))
                 {
-                    _map.Remove(xy);
+                    Count--;
+                    if (_map[_xy].Count == 0)
+                    {
+                        _map.Remove(_xy);
+                    }
                 }
             }
         }
@@ -57,10 +79,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public IChunkPosition Get(int x, int y)
         {
-            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-            if (_map.ContainsKey(xy))
+            _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+            if (_map.ContainsKey(_xy))
             {
-                return _map[xy].Get(x, y);
+                return _map[_xy].Get(x, y);
             }
             return null;
         }
@@ -76,10 +98,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public bool Contains(int x, int y)
         {
-            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-            if (_map.ContainsKey(xy))
+            _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+            if (_map.ContainsKey(_xy))
             {
-                return _map[xy].Get(x, y) != null;
+                return _map[_xy].Contains(x, y);
             }
             return false;
         }
@@ -90,48 +112,105 @@ namespace Vge.World.Chunk
         public void Clear()
         {
             _map.Clear();
-            _list.Clear();
+            Count = 0;
         }
 
         /// <summary>
-        /// Получить количество
+        /// Получить количество регионов
         /// </summary>
-        public int Count => _list.Count;
+        public int RegionCount => _map.Count;
 
         /// <summary>
-        /// Получить коллекцию чанков
+        /// Сгенерировать массив для отладки
         /// </summary>
-        public List<IChunkPosition> GetList() => _list;
+        public IChunkPosition[] ToArrayDebug()
+        {
+            IChunkPosition[] destinationArray = new IChunkPosition[Count];
+            int destinationIndex = 0;
+            foreach (Region region in _map.Values)
+            {
+                Array.Copy(region.ToArrayDebug(), 0, destinationArray, destinationIndex, region.Count);
+                destinationIndex += region.Count;
+            }
+            return destinationArray;
+        }
 
+        public override string ToString() => Count + "|" + RegionCount;
+
+        /// <summary>
+        /// Отдельные объект с массивом 1024 элемента
+        /// </summary>
         private class Region
         {
-            private readonly IChunkPosition[] _ar = new IChunkPosition[1024];
-            private int _count = 0;
-
-            public IChunkPosition Get(int x, int y) => _ar[(y & 31) << 5 | (x & 31)];
-
-            public void Set(int x, int y, IChunkPosition value)
-            {
-                int index = (y & 31) << 5 | (x & 31);
-                if (_ar[index] == null) _count++;
-                _ar[index] = value;
-            }
             /// <summary>
-            /// Удалить, вернём true если ничего не осталось
+            /// Количество значений
             /// </summary>
-            public bool Remove(int x, int y)
+            public int Count { get; private set; } = 0;
+
+            private readonly IChunkPosition[] _buffer = new IChunkPosition[1024];
+
+            private int _index;
+
+            /// <summary>
+            /// Проверить наличие чанка
+            /// </summary>
+            public bool Contains(int x, int y) => _buffer[(y & 31) << 5 | (x & 31)] != null;
+
+            /// <summary>
+            /// Получить чанк
+            /// </summary>
+            public IChunkPosition Get(int x, int y) => _buffer[(y & 31) << 5 | (x & 31)];
+
+            /// <summary>
+            /// Добавить чанк, вернёт true если новый
+            /// </summary>
+            public bool Set(int x, int y, IChunkPosition value)
             {
-                int index = (y & 31) << 5 | (x & 31);
-                if (_ar[index] != null)
+                _index = (y & 31) << 5 | (x & 31);
+                if (_buffer[_index] == null)
                 {
-                    _ar[index] = null;
-                    _count--;
+                    // Создаём
+                    Count++;
+                    _buffer[_index] = value;
+                    return true;
                 }
-                if (_count <= 0) return true;
+                // Перезаписываем
+                _buffer[_index] = value;
                 return false;
             }
 
-            public override string ToString() => _count.ToString();
+            /// <summary>
+            /// Удалить, вернём true если было удаление
+            /// </summary>
+            public bool Remove(int x, int y)
+            {
+                _index = (y & 31) << 5 | (x & 31);
+                if (_buffer[_index] != null)
+                {
+                    // Удаляем
+                    _buffer[_index] = null;
+                    Count--;
+                    return true;
+                }
+                // Нечего удалять
+                return false;
+            }
+
+            /// <summary>
+            /// Сгенерировать массив для отладки
+            /// </summary>
+            public IChunkPosition[] ToArrayDebug()
+            {
+                IChunkPosition[] ar = new IChunkPosition[Count];
+                _index = 0;
+                for (int i = 0; i < 1024; i++)
+                {
+                    if (_buffer[i] != null) ar[_index++] = _buffer[i];
+                }
+                return ar;
+            }
+
+            public override string ToString() => Count.ToString();
         }
     }
 }

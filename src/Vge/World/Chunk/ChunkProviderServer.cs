@@ -40,7 +40,7 @@ namespace Vge.World.Chunk
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _chunkMapping.Add(chunk);
             //LoadOrGen(chunk);
-            //System.Threading.Thread.Sleep(1);
+            System.Threading.Thread.Sleep(3);
             chunk.OnChunkLoad();
         }
 
@@ -80,7 +80,7 @@ namespace Vge.World.Chunk
             }
         }
 
-        public override string ToString() => string.Format("Ch:{0} Dr:{1}",
-               _chunkMapping.Count, _droppedChunks.Count);
+        public override string ToString() => "Ch:" + _chunkMapping.ToString()
+            + " Dr:" + _droppedChunks.Count;
     }
 }

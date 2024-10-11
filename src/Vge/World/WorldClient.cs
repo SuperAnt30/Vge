@@ -39,7 +39,7 @@ namespace Vge.World
             if (Ce.FlagDebugDrawChunks && flagDebugChunkMappingChanged)
             {
                 flagDebugChunkMappingChanged = false;
-                OnTagDebug("ChunkClient", ChunkPr.GetListDebug());
+                OnTagDebug(Debug.Key.ChunkClient.ToString(), ChunkPr.GetListDebug());
             }
         }
 

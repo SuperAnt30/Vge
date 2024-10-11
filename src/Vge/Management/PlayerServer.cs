@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -42,6 +41,14 @@ namespace Vge.Management
         /// Является ли якорь активным
         /// </summary>
         public bool IsActive => true;
+        /// <summary>
+        /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
+        /// </summary>
+        public byte ActiveRadius => 8;
+        /// <summary>
+        /// Является ли якорь игроком
+        /// </summary>
+        public bool IsPlayer => true;
 
         /// <summary>
         /// Координату X в каком чанке находится
@@ -62,22 +69,36 @@ namespace Vge.Management
         public int ChunkPosManagedY { get; private set; }
 
         /// <summary>
-        /// Список чанков нужно проверить на загрузку или генерацию,
-        /// должен формироваться по дистанции от игрока.
-        /// Список пополняется при перемещении и уменьшается при проверке, что чанк загружен
+        /// Список координат чанков для загрузки, формируется по дистанции к игроку.
+        /// Список пополняется при перемещении и уменьшается при проверке, что чанк загружен.
+        /// Когда все загружены должно быть 0.
         /// </summary>
-        public ListFast<ulong> LoadingChunks { get; private set; } = new ListFast<ulong>();
-
+        private ListFast<ulong> _loadingChunksSort = new ListFast<ulong>();
         /// <summary>
-        /// Список чанков нужно проверить на загрузку или генерацию,
-        /// должен формироваться по дистанции от игрока.
+        /// Список всех ChunkPosition которые сервер должен загрузить возле игрока,
+        /// Корректируется от перемещения, используется до сортировки.
+        /// После сортирует в _loadingChunksSort.
+        /// Когда все загружены должно быть 0
         /// </summary>
         private readonly MapChunk _loadingChunks = new MapChunk();
 
         /// <summary>
-        /// Отправить пакет чанка игроку
+        /// Список координат видимых чанков для игрока, формируется по дистанции к игроку.
+        /// Список пополняется при перемещении и уменьшается при проверке, что чанк загружен.
+        /// Когда все отправлены должно быть 0
         /// </summary>
-      //  public ListFast<ulong> SendPacketChunks { get; private set; } = new ListFast<ulong>();
+        public ListFast<ulong> _clientChunksSort { get; private set; } = new ListFast<ulong>();
+        /// <summary>
+        /// Список всех ChunkPosition которые видит игрок, сервер отправляет через пакеты.
+        /// Корректируется от перемещения, должен быть на 5 по обзору меньше _loadingChunks.
+        /// После сортирует в _clientChunksSort.
+        /// </summary>
+        private readonly MapChunk _clientChunks = new MapChunk();
+
+        /// <summary>
+        /// Массив для перезаписи
+        /// </summary>
+        private ListFast<ulong> _loadedNull = new ListFast<ulong>(10);
 
         #endregion
 
@@ -129,11 +150,13 @@ namespace Vge.Management
             // Тут надо анализ сделать было ли перемещение
             if (isPos)
             {
-               // server.Filer.StartSection("Fragment" + OverviewChunk);
+                //server.Filer.StartSection("Fragment" + OverviewChunk);
                 server.Worlds.GetWorld(idWorld).Fragment.UpdateMountedMovingAnchor(this);
-               // server.Filer.EndSectionLog();
+                //server.Filer.EndSectionLog();
                 isPos = false;
             }
+
+            _UpdatePlayer();
         }
 
         /// <summary>
@@ -189,7 +212,7 @@ namespace Vge.Management
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
-        public override string ToString() => Login;
+        
 
         #region WriteRead
 
@@ -232,7 +255,41 @@ namespace Vge.Management
 
         #endregion
 
+        /// <summary>
+        /// Добавить игрока в конкретный чанк для клиента
+        /// </summary>
+        public void AddChunkClient(int chunkPosX, int chunkPosY)
+            => _clientChunks.Add(new ChunkPosition(chunkPosX, chunkPosY));
+
+        /// <summary>
+        /// Удалить игрока из конкретного чанка для клиента
+        /// </summary>
+        public void RemoveChunkClient(int chunkPosX, int chunkPosY)
+        {
+            _clientChunks.Remove(chunkPosX, chunkPosY);
+            cde++;
+            SendPacket(new PacketS21ChunkData(chunkPosX, chunkPosY));
+        }
+
         #region Anchor
+
+        /// <summary>
+        /// Возвращает имеется ли хоть один чанк для загрузки
+        /// </summary>
+        public bool CheckLoadingChunks() => _loadingChunksSort.Count > 0;
+
+        /// <summary>
+        /// Вернуть координаты чанка для загрузки
+        /// </summary>
+        public ulong ReturnChunkForLoading()
+        {
+            ulong index = _loadingChunksSort.GetLast();
+            _loadingChunksSort.RemoveLast();
+            int x = Conv.IndexToChunkX(index);
+            int y = Conv.IndexToChunkY(index);
+            _loadingChunks.Remove(x, y);
+            return index;
+        }
 
         /// <summary>
         /// Добавить якорь в конкретный чанк
@@ -240,11 +297,7 @@ namespace Vge.Management
         /// <param name="chunkPosX">Позиция X чанка</param>
         /// <param name="chunkPosY">Позиция Y чанка</param>
         public void AddChunk(int chunkPosX, int chunkPosY)
-        {
-            _loadingChunks.Add(new ChunkPosition(chunkPosX, chunkPosY));
-            //if (isLoaded) LoadedChunks.Add(CurrentChunk);
-            // LoadingChunks.Add(Conv.ChunkXyToIndex(chunkPosX, chunkPosY));
-        }
+            => _loadingChunks.Add(new ChunkPosition(chunkPosX, chunkPosY));
 
         /// <summary>
         /// Удалить якорь из конкретного чанка
@@ -252,9 +305,7 @@ namespace Vge.Management
         /// <param name="chunkPosX">Позиция X чанка</param>
         /// <param name="chunkPosY">Позиция Y чанка</param>
         public void RemoveChunk(int chunkPosX, int chunkPosY)
-        {
-            _loadingChunks.Remove(chunkPosX, chunkPosY);
-        }
+         => _loadingChunks.Remove(chunkPosX, chunkPosY);
 
         /// <summary>
         /// Фильтрация очереди загрузки фрагментов от центра к краю (реверс)
@@ -262,95 +313,105 @@ namespace Vge.Management
         private void _FilterChunkLoadQueueRevers()
         {
             // Реверс спирали
-            LoadingChunks.Clear();
+            _loadingChunksSort.Clear();
+            _clientChunksSort.Clear();
             int x, y, i, i2, i3;
+            bool isClient = false;
+            int overviewClient = OverviewChunk;
+            int overview = FragmentManager.GetActiveRadiusAddServer(OverviewChunk, this);
 
-            for (i = OverviewChunk; i > 0; i--)
+            for (i = overview; i > 0; i--)
             {
+                if (!isClient && i <= overviewClient)
+                {
+                    isClient = true;
+                }
                 i2 = ChunkPosManagedX - i;
                 i3 = ChunkPosManagedX + i;
                 y = i + ChunkPosManagedY;
                 for (x = i2; x <= i3; x++)
                 {
-                    if (_loadingChunks.Contains(x, y)) LoadingChunks.Add(Conv.ChunkXyToIndex(x, y));
+                    if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
+                    if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
                 y = ChunkPosManagedY - i;
                 for (x = i2; x <= i3; x++)
                 {
-                    if (_loadingChunks.Contains(x, y)) LoadingChunks.Add(Conv.ChunkXyToIndex(x, y));
+                    if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
+                    if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
                 i2 = ChunkPosManagedY - i + 1;
                 i3 = ChunkPosManagedY + i - 1;
                 x = i + ChunkPosManagedX;
                 for (y = i2; y <= i3; y++)
                 {
-                    if (_loadingChunks.Contains(x, y)) LoadingChunks.Add(Conv.ChunkXyToIndex(x, y));
+                    if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
+                    if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
                 x = ChunkPosManagedX - i;
                 for (y = i2; y <= i3; y++)
                 {
-                    if (_loadingChunks.Contains(x, y)) LoadingChunks.Add(Conv.ChunkXyToIndex(x, y));
+                    if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
+                    if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
             }
             // Позиция где стоит игрок
             if (_loadingChunks.Contains(ChunkPosManagedX, ChunkPosManagedY))
             {
-                LoadingChunks.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
+                _loadingChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
+            }
+            if (isClient && _clientChunks.Contains(ChunkPosManagedX, ChunkPosManagedY))
+            {
+                _clientChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
             }
         }
 
-        /*
-        private static readonly int[][] xzDirectionsConst
-            = new int[][] { new int[] { 1, 0 }, new int[] { 0, 1 }, new int[] { -1, 0 }, new int[] { 0, -1 } };
+        private int cdn = 0;
+        private int cde = 0;
 
         /// <summary>
-        /// Фильтрация очереди загрузки фрагментов от центра к краю
+        /// Вызывается только на сервере у игроков для передачи перемещения
         /// </summary>
-        private void _FilterChunkLoadQueue()
+        private void _UpdatePlayer()
         {
-            // Алгоритм метода взят с minecraft 1.8
-
-            LoadingChunks.Clear();
-            int counter = 0;
-            int chx = ChunkPosManagedX;
-            int chy = ChunkPosManagedY;
-            int x = 0;
-            int y = 0;
-            int overview = OverviewChunk;
-            int i, i2, i3;
-            int[] vec;
             ulong index;
-
-            // Позиция где стоит игрок
-            index = Conv.ChunkXyToIndex(chx, chy);
-            if (_loadingChunks.Contains(index)) LoadingChunks.Add(index);
-            // Пропегаемся по спирали квадратной
-            for (i = 1; i <= overview * 2; i++)
+            int x, y;
+            int number = 0;
+            ChunkBase chunk;
+            _loadedNull.Clear();
+            // TODO::2024-10-11 количество пакетов чанков в такт
+            while (_clientChunksSort.Count > 0 && number < 10)
             {
-                for (i2 = 0; i2 < 2; ++i2)
+                index = _clientChunksSort.GetLast();
+                _clientChunksSort.RemoveLast();
+                x = Conv.IndexToChunkX(index);
+                y = Conv.IndexToChunkY(index);
+                
+                chunk = GetWorld().GetChunk(x, y);
+                // NULL по сути не должен быть!!!
+                if (chunk != null)// && chunk.IsSendChunk)
                 {
-                    vec = xzDirectionsConst[counter++ % 4];
-                    for (i3 = 0; i3 < i; i3++)
-                    {
-                        x += vec[0];
-                        y += vec[1];
-                        index = Conv.ChunkXyToIndex(x + chx, y + chy);
-                        if (_loadingChunks.Contains(index)) LoadingChunks.Add(index);
-                    }
+                    _clientChunks.Remove(x, y);
+                    cdn++;
+                    SendPacket(new PacketS21ChunkData(chunk, 65535));
+                    number++;
+                }
+                else
+                {
+                    _loadedNull.Add(index);
                 }
             }
-
-            // Добиваем последнюю сторону
-            vec = xzDirectionsConst[counter++ % 4];
-            for (i = 0; i < overview * 2; i++)
+            int count = _loadedNull.Count;
+            if (count > 0)
             {
-                x += vec[0];
-                y += vec[1];
-                index = Conv.ChunkXyToIndex(x + chx, y + chy);
-                if (_loadingChunks.Contains(index)) LoadingChunks.Add(index);
+                for (int i = 0; i < count; i++)
+                {
+                    _clientChunksSort.Add(_loadedNull[i]);
+                }
+                // Запрос на пересортировку ClientChunks
             }
-        }*/
-
+        }
+     
         /// <summary>
         /// Установленный перемещенный якорь
         /// </summary>
@@ -374,5 +435,8 @@ namespace Vge.Management
 
         #endregion
 
+        public override string ToString() => Login + " Lc:" 
+            + _loadingChunks.ToString() + " Cc:" + _clientChunks.ToString() 
+            + " cdn:" + cdn + " cde:" + cde + " cdd:" + (cdn - cde);
     }
 }
