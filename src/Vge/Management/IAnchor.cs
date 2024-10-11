@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Vge.Util;
-
-namespace Vge.Management
+﻿namespace Vge.Management
 {
     /// <summary>
     /// Интерфейс для якоря который может загружать чанки

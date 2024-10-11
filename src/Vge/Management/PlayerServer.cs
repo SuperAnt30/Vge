@@ -305,7 +305,31 @@ namespace Vge.Management
         /// <param name="chunkPosX">Позиция X чанка</param>
         /// <param name="chunkPosY">Позиция Y чанка</param>
         public void RemoveChunk(int chunkPosX, int chunkPosY)
-         => _loadingChunks.Remove(chunkPosX, chunkPosY);
+            => _loadingChunks.Remove(chunkPosX, chunkPosY);
+
+        /// <summary>
+        /// Установленный перемещенный якорь
+        /// </summary>
+        public void MountedMovedAnchor()
+        {
+            _UpOverviewChunkPrev();
+            ChunkPosManagedX = ChunkPositionX;
+            ChunkPosManagedY = ChunkPositionY;
+            _FilterChunkLoadQueueRevers();
+        }
+
+        /// <summary>
+        /// Изменение обзора,
+        /// </summary>
+        public bool IsChangeOverview() => OverviewChunk != OverviewChunkPrev;
+
+        /// <summary>
+        /// Необходимо ли смещение?
+        /// </summary>
+        public bool IsAnOffsetNecessary() 
+            => ChunkPositionX != ChunkPosManagedX || ChunkPositionY != ChunkPosManagedY;
+
+        #endregion
 
         /// <summary>
         /// Фильтрация очереди загрузки фрагментов от центра к краю (реверс)
@@ -386,7 +410,7 @@ namespace Vge.Management
                 _clientChunksSort.RemoveLast();
                 x = Conv.IndexToChunkX(index);
                 y = Conv.IndexToChunkY(index);
-                
+
                 chunk = GetWorld().GetChunk(x, y);
                 // NULL по сути не должен быть!!!
                 if (chunk != null)// && chunk.IsSendChunk)
@@ -411,29 +435,6 @@ namespace Vge.Management
                 // Запрос на пересортировку ClientChunks
             }
         }
-     
-        /// <summary>
-        /// Установленный перемещенный якорь
-        /// </summary>
-        public void MountedMovedAnchor()
-        {
-            _UpOverviewChunkPrev();
-            ChunkPosManagedX = ChunkPositionX;
-            ChunkPosManagedY = ChunkPositionY;
-            _FilterChunkLoadQueueRevers();
-        }
-
-        /// <summary>
-        /// Изменение обзора,
-        /// </summary>
-        public bool IsChangeOverview() => OverviewChunk != OverviewChunkPrev;
-
-        /// <summary>
-        /// Необходимо ли смещение?
-        /// </summary>
-        public bool IsAnOffsetNecessary() => ChunkPositionX != ChunkPosManagedX || ChunkPositionY != ChunkPosManagedY;
-
-        #endregion
 
         public override string ToString() => Login + " Lc:" 
             + _loadingChunks.ToString() + " Cc:" + _clientChunks.ToString() 

@@ -35,6 +35,8 @@ namespace Vge.World
         /// </summary>
         public readonly ChunkProviderServer ChunkPrServ;
 
+        private readonly TestAnchor _testAnchor;
+
         public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
         {
             Server = server;
@@ -45,10 +47,16 @@ namespace Vge.World
             ChunkPr = ChunkPrServ = new ChunkProviderServer(this);
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
+            _testAnchor = new TestAnchor(this);
+            if (idWorld == 0)
+            {
+                Fragment.AddAnchor(_testAnchor);
+            }
         }
 
         public override void Update()
         {
+            _testAnchor.Update();
             Filer.StartSection("Fragment");
             Fragment.Update();
             Filer.EndStartSection("UnloadQueuedChunks");

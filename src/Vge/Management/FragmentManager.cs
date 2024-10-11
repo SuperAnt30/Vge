@@ -122,7 +122,7 @@ namespace Vge.Management
                 _filer.StartSection("UpListChunkAction");
                 _UpListChunkAction();
                 _filer.EndSection();
-                _flagDebugAnchorChunkOffset = true;
+                flagDebugAnchorChunkOffset = true;
             }
 
             _filer.StartSection("LoadingChunks");
@@ -223,7 +223,7 @@ namespace Vge.Management
                         // Удалить чанк
                         World.ChunkPrServ.DropChunk(x, y);
                         _chunkForAnchors.Remove(x, y);
-                        _flagDebugAnchorChunkOffset = true;
+                        flagDebugAnchorChunkOffset = true;
                         flagDebugChunkProviderServer = true;
                     }
                 }
@@ -294,7 +294,7 @@ namespace Vge.Management
             if (change)
             {
                 anchor.MountedMovedAnchor();
-                _flagDebugAnchorChunkOffset = true;
+                flagDebugAnchorChunkOffset = true;
                 _flagUpListChunkAction = true;
             }
         }
@@ -729,7 +729,7 @@ namespace Vge.Management
         /// <summary>
         /// Флаг для дебага, когда смещались чанки или менялся обзор
         /// </summary>
-        private bool _flagDebugAnchorChunkOffset;
+        public bool flagDebugAnchorChunkOffset;
         /// <summary>
         /// Флаг для дебага, изменены чанки в ChunkProviderServer
         /// </summary>
@@ -742,9 +742,9 @@ namespace Vge.Management
         {
             if (Ce.FlagDebugDrawChunks && World.IdWorld == 0)
             {
-                if (_flagDebugAnchorChunkOffset)
+                if (flagDebugAnchorChunkOffset)
                 {
-                    _flagDebugAnchorChunkOffset = false;
+                    flagDebugAnchorChunkOffset = false;
                     World.Server.OnTagDebug(Debug.Key.ChunksActive.ToString(), ListChunkAction.ToArray());
                     World.Server.OnTagDebug(Debug.Key.ChunkForAnchors.ToString(), _chunkForAnchors.ToArrayDebug());
                 }
