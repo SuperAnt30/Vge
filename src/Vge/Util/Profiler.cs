@@ -7,29 +7,35 @@ namespace Vge.Util
     /// </summary>
     public class Profiler
     {
+
+#if DEBUG
+        private const int _stepTime = 10;
+#else
+        private const int _stepTime = 50;
+#endif
         /// <summary>
         /// Объект лога
         /// </summary>
-        private readonly Logger log;
+        private readonly Logger _log;
         /// <summary>
         /// Получает частоту таймера в виде количества тактов в милисекунду
         /// </summary>
-        private readonly long timerFrequency;
+        private readonly long _timerFrequency;
         /// <summary>
         /// Оглавление перед сообщением
         /// </summary>
-        private readonly string prefix;
+        private readonly string _prefix;
 
-        private readonly Stopwatch stopwatch = new Stopwatch();
-        private string profilingSection;
-        private bool profilingEnabled = false;
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private string _profilingSection;
+        private bool _profilingEnabled = false;
 
         public Profiler(Logger log, string prefix = "")
         {
-            this.log = log;
-            this.prefix = prefix;
-            timerFrequency = Stopwatch.Frequency / 1000;
-            stopwatch.Start();
+            _log = log;
+            _prefix = prefix;
+            _timerFrequency = Stopwatch.Frequency / 1000;
+            _stopwatch.Start();
         }
 
         /// <summary>
@@ -38,23 +44,23 @@ namespace Vge.Util
         /// <param name="name">Название секции</param>
         public void StartSection(string name)
         {
-            profilingSection = name;
-            profilingEnabled = true;
-            stopwatch.Restart();
+            _profilingSection = name;
+            _profilingEnabled = true;
+            _stopwatch.Restart();
         }
 
         /// <summary>
         /// Закрыть проверку по времени
         /// </summary>
-        public void EndSection(int stepTime = 10)
+        public void EndSection(int stepTime = _stepTime)
         {
-            if (profilingEnabled)
+            if (_profilingEnabled)
             {
-                profilingEnabled = false;
-                long time = stopwatch.ElapsedMilliseconds;
+                _profilingEnabled = false;
+                long time = _stopwatch.ElapsedMilliseconds;
                 if (time > stepTime)
                 {
-                    log.Log(Srl.SomethingIsTooLong, prefix, profilingSection, time);
+                    _log.Log(Srl.SomethingIsTooLong, _prefix, _profilingSection, time);
                 }
             }
         }
@@ -64,11 +70,11 @@ namespace Vge.Util
         /// </summary>
         public void EndSectionLog()
         {
-            if (profilingEnabled)
+            if (_profilingEnabled)
             {
-                profilingEnabled = false;
-                log.Log(Srl.EndSectionTime, prefix,
-                    profilingSection, stopwatch.ElapsedTicks / (float)timerFrequency);
+                _profilingEnabled = false;
+                _log.Log(Srl.EndSectionTime, _prefix,
+                    _profilingSection, _stopwatch.ElapsedTicks / (float)_timerFrequency);
             }
         }
 
@@ -76,7 +82,7 @@ namespace Vge.Util
         /// Закрыть секцию и тут же открыть
         /// </summary>
         /// <param name="name">Название секции</param>
-        public void EndStartSection(string name, int stepTime = 10)
+        public void EndStartSection(string name, int stepTime = _stepTime)
         {
             EndSection(stepTime);
             StartSection(name);
