@@ -77,6 +77,11 @@ namespace Vge.Util
         public static float MouseSensitivityFloat { get; private set; } = 50;
 
         /// <summary>
+        /// Обзор чанков
+        /// </summary>
+        public static byte OverviewChunk { get; set; } = 16;
+
+        /// <summary>
         /// IP адрес сервера
         /// </summary>
         public static string IpAddress { get; set; } = "127.0.0.1";

@@ -27,6 +27,7 @@ namespace Vge.Gui.Screens
         protected readonly Slider sliderSoundVolume;
         protected readonly Slider sliderMusicVolume;
         protected readonly Slider sliderMouseSensitivity;
+        protected readonly Slider sliderOverviewChunk;
         protected readonly CheckBox checkBoxBigInterface;
         protected readonly CheckBox checkBoxVSinc;
         protected readonly CheckBox checkBoxFullScreen;
@@ -67,6 +68,9 @@ namespace Vge.Gui.Screens
             sliderMouseSensitivity = new Slider(window, font, 300, 0, 100, 1, L.T("MouseSensitivity"));
             sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
                 .AddParam(0, L.T("SensitivityMin")).AddParam(100, L.T("SensitivityMax"));
+
+            sliderOverviewChunk = new Slider(window, font, 300, 2, 64, 1, L.T("OverviewChunk"));
+            sliderOverviewChunk.SetValue(Options.OverviewChunk);
 
             checkBoxBigInterface = new CheckBox(window, font, 300, L.T("BigInterface"));
             checkBoxBigInterface.SetChecked(Options.SizeInterface != 1);
@@ -122,6 +126,7 @@ namespace Vge.Gui.Screens
             bool isFullScreen = Options.FullScreen != checkBoxFullScreen.Checked;
             int si = checkBoxBigInterface.Checked ? 2 : 1;
             bool isSizeInterface = Options.SizeInterface != si;
+            bool isOverviewChunk = Options.OverviewChunk != sliderOverviewChunk.Value;
             if (Options.VSync != checkBoxVSinc.Checked)
             {
                 window.SetVSync(checkBoxVSinc.Checked);
@@ -138,6 +143,7 @@ namespace Vge.Gui.Screens
             Options.VSync = checkBoxVSinc.Checked;
             Options.FullScreen = checkBoxFullScreen.Checked;
             Options.Nickname = textBoxNikame.Text;
+            Options.OverviewChunk = (byte)sliderOverviewChunk.Value;
             window.OptionsSave();
             if (isFullScreen)
             {
@@ -146,6 +152,11 @@ namespace Vge.Gui.Screens
             else if (isSizeInterface)
             {
                 window.UpdateSizeInterface();
+            }
+
+            if (isOverviewChunk && window.Game != null)
+            {
+                window.Game.Player.SetOverviewChunk(Options.OverviewChunk, false);
             }
         }
 
@@ -164,6 +175,7 @@ namespace Vge.Gui.Screens
             AddControls(sliderSoundVolume);
             AddControls(sliderMusicVolume);
             AddControls(sliderMouseSensitivity);
+            AddControls(sliderOverviewChunk);
 
             AddControls(checkBoxBigInterface);
             AddControls(checkBoxVSinc);
@@ -182,14 +194,21 @@ namespace Vge.Gui.Screens
             label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 220);
 
             textBoxNikame.SetPosition(w - textBoxNikame.Width / 2, h - 200);
-            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width / 2, h - 156);
-            sliderMusicVolume.SetPosition(w - sliderMusicVolume.Width / 2, h - 112);
-            sliderFps.SetPosition(w - sliderFps.Width / 2, h - 68);
-            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width / 2, h - 24);
+            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width - 2, h - 156);
+            sliderMusicVolume.SetPosition(w + 2, h - 156);//112
+            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width - 2, h - 112);
+            sliderOverviewChunk.SetPosition(w + 2, h - 112);
+            sliderFps.SetPosition(w - sliderFps.Width - 2, h - 68);
+            checkBoxFullScreen.SetPosition(w + 2, h - 68);
+            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width - 2, h - 24);
+            checkBoxVSinc.SetPosition(w + 2, h - 24);
 
-            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width / 2, h + 20);
-            checkBoxVSinc.SetPosition(w - checkBoxVSinc.Width / 2, h + 64);
-            checkBoxFullScreen.SetPosition(w - checkBoxFullScreen.Width / 2, h + 108);
+            //-24
+            // +20
+            //+64 +108
+
+
+
             buttonNet.SetPosition(w - buttonNet.Width / 2, h + 108);
 
             buttonDone.SetPosition(w - buttonDone.Width - 2, h + 180);

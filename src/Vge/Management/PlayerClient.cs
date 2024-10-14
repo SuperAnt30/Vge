@@ -1,6 +1,7 @@
 ﻿using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Util;
 
 namespace Vge.Management
 {
@@ -37,6 +38,24 @@ namespace Vge.Management
         /// Получить время в милисекундах
         /// </summary>
         protected override long _Time() => _game.Time();
+
+        /// <summary>
+        /// Задать обзор чанков у клиента
+        /// </summary>
+        public void SetOverviewChunk(byte overviewChunk, bool isSaveOptions)
+        {
+            if (OverviewChunk != overviewChunk)
+            {
+                SetOverviewChunk(overviewChunk);
+                // Отправим обзор 
+                _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
+                if (isSaveOptions)
+                {
+                    Options.OverviewChunk = OverviewChunk;
+                    new OptionsFile().Save();
+                }
+            }
+        }
 
         #region Packet
 

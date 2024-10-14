@@ -26,7 +26,6 @@ namespace Mvk2.Util
             {
                 switch (key)
                 {
-                    case "OverviewChunk": OptionsMvk.OverviewChunk = int.Parse(value); return true;
                     case "SmoothLighting": OptionsMvk.SmoothLighting = value == "1"; return true;
                 }
                 return false;
@@ -41,7 +40,6 @@ namespace Mvk2.Util
             base._SaveLine(file);
 
             file.WriteLine("\r\n# Mvk");
-            file.WriteLine("OverviewChunk: " + OptionsMvk.OverviewChunk.ToString());
             file.WriteLine("SmoothLighting: " + (OptionsMvk.SmoothLighting ? "1" : "0"));
         }
     }

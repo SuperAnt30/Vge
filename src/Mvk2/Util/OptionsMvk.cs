@@ -19,11 +19,6 @@ namespace Mvk2.Util
         public static string PathTextures { get; private set; }
 
         /// <summary>
-        /// Обзор чанков
-        /// </summary>
-        public static int OverviewChunk { get; set; } = 16;
-
-        /// <summary>
         /// Плавное освещение
         /// </summary>
         public static bool SmoothLighting { get; set; } = true;

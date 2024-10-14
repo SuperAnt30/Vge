@@ -139,10 +139,8 @@ namespace Vge.Games
         {
             Player.PlayerOnTheServer(id, uuid);
 
-            // TODO::2024-10-08 добавить обзор с опций
-            Player.SetOverviewChunk(12);
             // Отправим обзор 
-            TrancivePacket(new PacketC15PlayerSetting(Player.OverviewChunk));
+            Player.SetOverviewChunk(Options.OverviewChunk, false);
             // Закрываем скрин загрузки
             window.LScreen.Close();
             _flagTick = true;

@@ -174,16 +174,14 @@ namespace Mvk2
                 {
                     if (Game.Player.OverviewChunk < 49)
                     {
-                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk + 1));
-                        Game.TrancivePacket(new PacketC15PlayerSetting(Game.Player.OverviewChunk));
+                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk + 1), true);
                     }
                 }
                 else if (keys == Keys.PageDown)
                 {
                     if (Game.Player.OverviewChunk > 0)
                     {
-                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 2));
-                        Game.TrancivePacket(new PacketC15PlayerSetting(Game.Player.OverviewChunk));
+                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 1), true);
                     }
                 }
 

@@ -85,6 +85,7 @@ namespace Vge.Util
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "MusicVolume": Options.MusicVolume = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
+                case "OverviewChunk": Options.OverviewChunk = byte.Parse(value); return true;
             }
             return false;
         }
@@ -110,6 +111,8 @@ namespace Vge.Util
             file.WriteLine("MusicVolume: " + Options.MusicVolume.ToString());
             file.WriteLine("\r\n# Controls");
             file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());
+            file.WriteLine("\r\n# Game");
+            file.WriteLine("OverviewChunk: " + Options.OverviewChunk.ToString());
         }
     }
 }
