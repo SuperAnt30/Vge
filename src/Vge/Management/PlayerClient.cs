@@ -1,4 +1,6 @@
 ﻿using Vge.Games;
+using Vge.Network.Packets.Client;
+using Vge.Network.Packets.Server;
 
 namespace Vge.Management
 {
@@ -11,6 +13,18 @@ namespace Vge.Management
         /// Класс  игры
         /// </summary>
         private readonly GameBase _game;
+        /// <summary>
+        /// Время запуска партии кусков
+        /// </summary>
+        private long _timeStartBatchChunks;
+        /// <summary>
+        /// Время мс на загрузку чанков
+        /// </summary>
+        private int _batchChunksTime;
+        /// <summary>
+        /// Количество на загрузку чанков
+        /// </summary>
+        private byte _batchChunksQuantity;
 
         public PlayerClient(GameBase game)
         {
@@ -23,5 +37,34 @@ namespace Vge.Management
         /// Получить время в милисекундах
         /// </summary>
         protected override long _Time() => _game.Time();
+
+        #region Packet
+
+        /// <summary>
+        /// Замер скорости закачки чанков
+        /// </summary>
+        public void PacketChunckSend(PacketS20ChunkSend packet)
+        {
+            if (packet.Start)
+            {
+                // Начало замера
+                _timeStartBatchChunks = _Time();
+            }
+            else
+            {
+                // Закончили замер
+                _batchChunksTime = (int)(_Time() - _timeStartBatchChunks);
+                _batchChunksQuantity = packet.Quantity;
+                _game.TrancivePacket(new PacketC20AcknowledgeChunks(_batchChunksTime, _batchChunksQuantity));
+            }
+        }
+
+        #endregion
+
+        public override string ToString()
+        {
+            return Login + " " + chPos + " O:" + OverviewChunk 
+                + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc";
+        }
     }
 }

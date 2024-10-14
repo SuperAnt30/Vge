@@ -79,7 +79,7 @@ namespace Vge.Network
         /// <summary>
         /// Передача данных для сервера в последовотельности игрового такта
         /// </summary>
-        private void UpdateReceivePacket(SocketBuffer sb)
+        private void _UpdateReceivePacket(SocketBuffer sb)
         {
             if (sb.Side != null && !sb.Side.IsConnect())
             {
@@ -101,7 +101,10 @@ namespace Vge.Network
                     case 0x15:
                         _Handle15PlayerSetting(sb.Side, (PacketC15PlayerSetting)readPacket.Receive(sb.Buffer, new PacketC15PlayerSetting()));
                         break;
-                        
+                    case 0x20:
+                        _Handle20AcknowledgeChunks(sb.Side, (PacketC20AcknowledgeChunks)readPacket.Receive(sb.Buffer, new PacketC20AcknowledgeChunks()));
+                        break;
+
                 }
             }
             catch
@@ -128,7 +131,7 @@ namespace Vge.Network
                 int count = _packets.CountBackward;
                 for (int i = 0; i < count; i++)
                 {
-                    UpdateReceivePacket(_packets.GetNext());
+                    _UpdateReceivePacket(_packets.GetNext());
                 }
             }
         }
@@ -137,6 +140,8 @@ namespace Vge.Network
         /// Очистить пакеты в двойной буферизации
         /// </summary>
         public void Clear() => _packets.Clear();
+
+        #region Handles
 
         /// <summary>
         /// Ping-pong
@@ -196,10 +201,22 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
-                playerServer.SetOverviewChunk(packet.GetOverviewChunk());
-                playerServer.isPos = true;
+                playerServer.PacketPlayerSetting(packet);
             }
         }
-           // => ServerMain.World.Players.ClientSetting(socket, packet);//, ServerMain.World.Players.);
+
+        /// <summary>
+        /// Пакет подтверждение фрагментов
+        /// </summary>
+        private void _Handle20AcknowledgeChunks(SocketSide socketSide, PacketC20AcknowledgeChunks packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null)
+            {
+                playerServer.PacketAcknowledgeChunks(packet);
+            }
+        }
+
+        #endregion
     }
 }

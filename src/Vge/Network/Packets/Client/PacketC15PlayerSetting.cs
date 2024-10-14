@@ -10,13 +10,11 @@
         /// <summary>
         /// Обзор чанков
         /// </summary>
-        private byte _overviewChunk;
+        public byte OverviewChunk { get; private set; }
 
-        public byte GetOverviewChunk() => _overviewChunk;
+        public PacketC15PlayerSetting(byte overviewChunk) => OverviewChunk = overviewChunk;
 
-        public PacketC15PlayerSetting(byte overviewChunk) => _overviewChunk = overviewChunk;
-
-        public void ReadPacket(ReadPacket stream) => _overviewChunk = stream.Byte();
-        public void WritePacket(WritePacket stream) => stream.Byte(_overviewChunk);
+        public void ReadPacket(ReadPacket stream) => OverviewChunk = stream.Byte();
+        public void WritePacket(WritePacket stream) => stream.Byte(OverviewChunk);
     }
 }

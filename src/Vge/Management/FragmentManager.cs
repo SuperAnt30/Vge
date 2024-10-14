@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Games;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Chunk;
@@ -20,6 +21,10 @@ namespace Vge.Management
         /// Сетевой мир
         /// </summary>
         public readonly WorldServer World;
+        /// <summary>
+        /// Основной сервер
+        /// </summary>
+        public readonly GameServer Server;
 
         /// <summary>
         /// Спикок чанков где есть игроки
@@ -53,11 +58,13 @@ namespace Vge.Management
         /// Объект сыщик
         /// </summary>
         private readonly Profiler _filer;
+        
 
         public FragmentManager(WorldServer world)
         {
             World = world;
-            _filer = new Profiler(World.Server.Log, "[Server] ");
+            Server = World.Server;
+            _filer = new Profiler(Server.Log, "[Server] ");
         }
 
         /// <summary>
@@ -137,38 +144,50 @@ namespace Vge.Management
         /// </summary>
         private bool _UpdateLoadingChunks()
         {
+            int countAnchor = _anchors.Count;
             bool load = false;
-            int a, number, x, y;
-            ulong index;
-
-            try
+            if (countAnchor > 0)
             {
-                // TODO::2024-10-08 эту загрузку чанков продумать от времени, и по очереди для каждого якоря
-                int countAnchor = _anchors.Count;
-                bool isPlayer;
-                for (a = 0; a < countAnchor; a++)
+                int a, x, y;
+                ulong index;
+                long timeBegin;
+                bool present = true;
+                // Обязательное количество шагов для загрузки чанков
+                int step = Ce.MinCountLoadingChunks;
+
+                try
                 {
-                    isPlayer = _anchors[a].GetType() == typeof(PlayerServer);
-                    number = 0;
-                    while (_anchors[a].CheckLoadingChunks() && number < 2)
+                    timeBegin = Server.Time();
+                    while (present)
                     {
-                        index = _anchors[a].ReturnChunkForLoading();
-                        x = Conv.IndexToChunkX(index);
-                        y = Conv.IndexToChunkY(index);
-                        if (!World.ChunkPrServ.NeededChunk(x, y))
+                        present = false;
+                        for (a = 0; a < countAnchor; a++)
                         {
-                            // Чанк отсутствовал
-                            if (!load) load = true;
-                            number++;
+                            if (_anchors[a].CheckLoadingChunks())
+                            {
+                                present = true;
+                                index = _anchors[a].ReturnChunkForLoading();
+                                x = Conv.IndexToChunkX(index);
+                                y = Conv.IndexToChunkY(index);
+                                if (!World.ChunkPrServ.NeededChunk(x, y, false))
+                                {
+                                    // Чанк отсутствовал
+                                    if (!load) load = true;
+                                }
+                            }
+                        }
+                        if (present && --step <= 0 && Server.Time() - timeBegin > Ce.TimeLoadChunksAnchors)
+                        {
+                            present = false;
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                World.Server.Log.Error("LoadingChunks");
-                Logger.Crash(ex, "LoadingChunks");
-                throw;
+                catch (Exception ex)
+                {
+                    Server.Log.Error("LoadingChunks");
+                    Logger.Crash(ex, "LoadingChunks");
+                    throw;
+                }
             }
             return load;
         }
@@ -745,13 +764,13 @@ namespace Vge.Management
                 if (flagDebugAnchorChunkOffset)
                 {
                     flagDebugAnchorChunkOffset = false;
-                    World.Server.OnTagDebug(Debug.Key.ChunksActive.ToString(), ListChunkAction.ToArray());
-                    World.Server.OnTagDebug(Debug.Key.ChunkForAnchors.ToString(), _chunkForAnchors.ToArrayDebug());
+                    Server.OnTagDebug(Debug.Key.ChunksActive.ToString(), ListChunkAction.ToArray());
+                    Server.OnTagDebug(Debug.Key.ChunkForAnchors.ToString(), _chunkForAnchors.ToArrayDebug());
                 }
                 if (flagDebugChunkProviderServer)
                 {
                     flagDebugChunkProviderServer = false;
-                    World.Server.OnTagDebug(Debug.Key.ChunkReady.ToString(), World.ChunkPr.GetListDebug());
+                    Server.OnTagDebug(Debug.Key.ChunkReady.ToString(), World.ChunkPr.GetListDebug());
                 }
             }
         }

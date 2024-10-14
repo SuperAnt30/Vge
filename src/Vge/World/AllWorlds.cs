@@ -7,6 +7,11 @@ namespace Vge.World
     /// </summary>
     public class AllWorlds
     {
+#if DEBUG
+        private const int _stepTime = 25;
+#else
+        private const int _stepTime = 60;
+#endif
         /// <summary>
         /// Сервер
         /// </summary>
@@ -44,10 +49,10 @@ namespace Vge.World
             _worldServers[0].Update();
             for (byte i = 1; i < _count; i++)
             {
-                Server.Filer.EndStartSection("World-" + i, 15);
+                Server.Filer.EndStartSection("World-" + i, _stepTime);
                 _worldServers[i].Update();
             }
-            Server.Filer.EndSection(15);
+            Server.Filer.EndSection(_stepTime);
         }
 
         /// <summary>

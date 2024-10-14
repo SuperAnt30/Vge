@@ -5,6 +5,7 @@ using System.Text;
 using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
+using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World;
@@ -99,6 +100,10 @@ namespace Vge.Management
         /// Массив для перезаписи
         /// </summary>
         private ListFast<ulong> _loadedNull = new ListFast<ulong>(10);
+        /// <summary>
+        /// Желаемый размер партии закачки чанков
+        /// </summary>
+        private byte _desiredBatchSize = Ce.MinDesiredBatchSize;
 
         #endregion
 
@@ -164,6 +169,51 @@ namespace Vge.Management
         /// </summary>
         public void SendPacket(IPacket packet)
             => server.ResponsePacket(Socket, packet);
+
+        #region Packet
+
+        /// <summary>
+        /// Пакет: Параметры игрока
+        /// </summary>
+        public void PacketPlayerSetting(PacketC15PlayerSetting packet)
+        {
+            SetOverviewChunk(packet.OverviewChunk);
+            isPos = true;
+        }
+        
+        /// <summary>
+        /// Пакет: Подтверждение фрагментов
+        /// </summary>
+        public void PacketAcknowledgeChunks(PacketC20AcknowledgeChunks packet)
+        {
+            int time = packet.Time;
+            byte quantity = packet.Quantity;
+            if (time == 0)
+            {
+                if (quantity < Ce.MaxDesiredBatchSize)
+                {
+                    _desiredBatchSize = (byte)(quantity * 2);
+                    if (_desiredBatchSize > Ce.MaxDesiredBatchSize)
+                    {
+                        // Максималка!
+                        _desiredBatchSize = Ce.MaxDesiredBatchSize;
+                    }
+                }
+                else if (_desiredBatchSize != Ce.MaxDesiredBatchSize)
+                {
+                    _desiredBatchSize = Ce.MaxDesiredBatchSize;
+                }
+            }
+            else
+            {
+                int i = Ce.MaxBatchChunksTime * quantity / time;
+                if (i > Ce.MaxDesiredBatchSize) i = Ce.MaxDesiredBatchSize;
+                if (i < Ce.MinDesiredBatchSize) i = Ce.MinDesiredBatchSize;
+                _desiredBatchSize = (byte)i;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Пройдены все проверки, отправляем нужные пакеты игроку
@@ -400,11 +450,12 @@ namespace Vge.Management
         {
             ulong index;
             int x, y;
-            int number = 0;
             ChunkBase chunk;
             _loadedNull.Clear();
+            byte quantityBatch = 0;
             // TODO::2024-10-11 количество пакетов чанков в такт
-            while (_clientChunksSort.Count > 0 && number < 10)
+
+            while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
             {
                 index = _clientChunksSort.GetLast();
                 _clientChunksSort.RemoveLast();
@@ -413,18 +464,29 @@ namespace Vge.Management
 
                 chunk = GetWorld().GetChunk(x, y);
                 // NULL по сути не должен быть!!!
-                if (chunk != null)// && chunk.IsSendChunk)
+                if (chunk != null && chunk.IsSendChunk)
                 {
                     _clientChunks.Remove(x, y);
                     cdn++;
+                    if (quantityBatch == 0)
+                    {
+                        // Отправляем перед партией закачки чанков
+                        SendPacket(new PacketS20ChunkSend());
+                    }
+                    quantityBatch++;
                     SendPacket(new PacketS21ChunkData(chunk, 65535));
-                    number++;
                 }
                 else
                 {
                     _loadedNull.Add(index);
                 }
             }
+            if (quantityBatch > 0)
+            {
+                // Отправляем в конце партии закачки чанков
+                SendPacket(new PacketS20ChunkSend(quantityBatch));
+            }
+
             int count = _loadedNull.Count;
             if (count > 0)
             {
@@ -438,6 +500,7 @@ namespace Vge.Management
 
         public override string ToString() => Login + " Lc:" 
             + _loadingChunks.ToString() + " Cc:" + _clientChunks.ToString() 
+            + " dbs:" + _desiredBatchSize
             + " cdn:" + cdn + " cde:" + cde + " cdd:" + (cdn - cde);
     }
 }

@@ -22,6 +22,26 @@ public sealed class Ce
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
     /// </summary>
     public const int FpsOffside = 30;
+    /// <summary>
+    /// Минимальное обязательное количество загружаемых чанков для якоря за один такт
+    /// </summary>
+    public const int MinCountLoadingChunks = 2;
+    /// <summary>
+    /// Минимальный желаемый размер партии закачки чанков
+    /// </summary>
+    public const int MinDesiredBatchSize = 1;
+    /// <summary>
+    /// Максимальный желаемый размер партии закачки чанков
+    /// </summary>
+    public const int MaxDesiredBatchSize = 64;
+    /// <summary>
+    /// Максимальный время для артии закачки чанков
+    /// </summary>
+    public const int MaxBatchChunksTime = 20;
+    /// <summary>
+    /// Сколько выделено времени на загрузку чанков всех якоре за такт в мс
+    /// </summary>
+    public const int TimeLoadChunksAnchors = 10;
 
     #endregion
 

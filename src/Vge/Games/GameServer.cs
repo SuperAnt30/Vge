@@ -358,7 +358,7 @@ namespace Vge.Games
                 {
                     for (int y = -radius; y <= radius; y++)
                     {
-                        world.ChunkPrServ.NeededChunk(cpx + x, cpy + y);
+                        world.ChunkPrServ.NeededChunk(cpx + x, cpy + y, false);
                         ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                     }
                 }

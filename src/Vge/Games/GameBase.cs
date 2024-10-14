@@ -140,7 +140,7 @@ namespace Vge.Games
             Player.PlayerOnTheServer(id, uuid);
 
             // TODO::2024-10-08 добавить обзор с опций
-            Player.SetOverviewChunk(8);
+            Player.SetOverviewChunk(12);
             // Отправим обзор 
             TrancivePacket(new PacketC15PlayerSetting(Player.OverviewChunk));
             // Закрываем скрин загрузки
@@ -260,12 +260,12 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5} {6} O:{7}\r\n{8}",
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5}\r\n{6}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
                 _ToTraffic(),TickCounter, // 3-4
-                Player.Login, Player.chPos, Player.OverviewChunk, // 5-7
-                World.ToString() // 8
+                Player, // 5
+                World.ToString() // 6
                 );
         }
 

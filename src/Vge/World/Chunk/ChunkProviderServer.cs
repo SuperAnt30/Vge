@@ -25,22 +25,24 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Нужен чанк, вернёт true если чанк был
         /// </summary>
-        public bool NeededChunk(int x, int y)
+        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
+        public bool NeededChunk(int x, int y, bool imStrom = true)
         {
             if (IsChunkLoaded(x, y)) return true;
-            _LoadGenAdd(x, y);
+            _LoadGenAdd(x, y, imStrom);
             return false;
         }
 
         /// <summary>
         /// Загрузка или генерация чанка, с пополнением его в карту чанков
         /// </summary>
-        private void _LoadGenAdd(int x, int y)
+        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
+        private void _LoadGenAdd(int x, int y, bool imStrom)
         {
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _chunkMapping.Add(chunk);
-            //LoadOrGen(chunk);
-            System.Threading.Thread.Sleep(3);
+            _LoadOrGen(chunk, imStrom);
+            //System.Threading.Thread.Sleep(1);
             chunk.OnChunkLoad();
         }
 
@@ -79,6 +81,43 @@ namespace Vge.World.Chunk
                 }
             }
         }
+
+        /// <summary>
+        /// Загружаем, если нет чанка то генерируем
+        /// </summary>
+        /// <param name="chunk">Объект чанка не null</param>
+        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
+        private void _LoadOrGen(ChunkBase chunk, bool imStrom)
+        {
+            if (!chunk.IsChunkPresent)
+            {
+                // Пробуем загрузить с файла
+                if (imStrom)
+                {
+                    System.Threading.Tasks.Task.Factory.StartNew(_Thread);
+                }
+                else
+                {
+                    //  _Thread();
+                }
+            }
+        }
+
+        private void _Thread()
+        {
+            float f, d;
+            f = d = .5f;
+
+            // World.Filer.StartSection("Reg");
+            // for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 1000; i++)
+            {
+                f *= d + i;
+            }
+            //   World.Filer.EndSectionLog();
+            //Thread.Sleep(50);
+        }
+
 
         public override string ToString() => "Ch:" + _chunkMapping.ToString()
             + " Dr:" + _droppedChunks.Count;

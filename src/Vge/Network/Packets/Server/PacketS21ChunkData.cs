@@ -22,13 +22,6 @@ namespace Vge.Network.Packets.Server
         /// </summary>
         public ushort FlagsYAreas { get; private set; }
 
-        public PacketS21ChunkData(ChunkBase chunk, ushort flagsYAreas)
-        {
-            CurrentChunkX = chunk.CurrentChunkX;
-            CurrentChunkY = chunk.CurrentChunkY;
-            FlagsYAreas = flagsYAreas;
-        }
-
         /// <summary>
         /// Выгрузить чанк у игрока
         /// </summary>
@@ -38,11 +31,25 @@ namespace Vge.Network.Packets.Server
             CurrentChunkY = chunkPosY;
             FlagsYAreas = 0;
         }
+        /// <summary>
+        /// Загрузка данных чанка
+        /// </summary>
+        public PacketS21ChunkData(ChunkBase chunk, ushort flagsYAreas)
+        {
+            CurrentChunkX = chunk.CurrentChunkX;
+            CurrentChunkY = chunk.CurrentChunkY;
+            FlagsYAreas = flagsYAreas;
+        }
 
         /// <summary>
         /// Удалить чанк
         /// </summary>
         public bool IsRemoved() => FlagsYAreas == 0;
+
+        /// <summary>
+        /// Количество замеряемых чанков, нужен для Finish
+        /// </summary>
+        public int GetQuantity() => FlagsYAreas;
 
         public void ReadPacket(ReadPacket stream)
         {

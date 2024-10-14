@@ -74,15 +74,15 @@ namespace Vge.Management
                 i = 0;
                 if (i2 < 10)
                 {
-                    ChunkPositionX++;
+                    ChunkPositionX += 1;
                     _worldServer.Fragment.UpdateMountedMovingAnchor(this);
                 }
                 else
                 {
-                    ChunkPositionX--;
+                    ChunkPositionX -= 1;
                     _worldServer.Fragment.UpdateMountedMovingAnchor(this);
                 }
-                if (i2 > 20)
+                if (i2 >= 20)
                 {
                     i2 = 0;
                 }

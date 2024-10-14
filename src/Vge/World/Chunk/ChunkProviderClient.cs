@@ -18,6 +18,8 @@ namespace Vge.World.Chunk
             _worldClient = world;
         }
 
+        #region Packet
+
         /// <summary>
         /// Заносим данные с пакета сервера
         /// </summary>
@@ -40,10 +42,13 @@ namespace Vge.World.Chunk
                     _chunkMapping.Add(chunkBase);
                 }
                 // Далее тут манипулации с чанком chunkBase
+                //System.Threading.Thread.Sleep(20);
 
             }
             _OnChunkMappingChanged();
         }
+
+        #endregion
 
         public override string ToString() => string.Format("Ch:{0}|{1} Dr:{2}",
                _chunkMapping.Count, _chunkMapping.RegionCount, -1);

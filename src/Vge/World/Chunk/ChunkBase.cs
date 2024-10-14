@@ -1,4 +1,7 @@
-﻿namespace Vge.World.Chunk
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Vge.World.Chunk
 {
     /// <summary>
     /// Базовый объект чанка
@@ -29,6 +32,18 @@
         /// Было ли декорация чанка #2 3*3
         /// </summary>
         public bool IsPopulated { get; private set; }
+        /// <summary>
+        /// Было ли карта высот с небесным освещением #3 5*5
+        /// </summary>
+        public bool IsHeightMapSky { get; private set; }
+        /// <summary>
+        /// Было ли боковое небесное освещение и блочное освещение #4 7*7
+        /// </summary>
+        public bool IsSideLightSky { get; private set; }
+        /// <summary>
+        /// Готов ли чанк для отправки клиентам #5 9*9
+        /// </summary>
+        public bool IsSendChunk { get; private set; }
 
         public ChunkBase(WorldBase world, int chunkPosX, int chunkPosY)
         {
@@ -48,6 +63,7 @@
         public void OnChunkLoad()
         {
             IsChunkPresent = true;
+            IsSendChunk = true;
             //if (!World.IsRemote && World is WorldServer worldServer)
             //{
             //    if (CurrentChunkX < 200)
