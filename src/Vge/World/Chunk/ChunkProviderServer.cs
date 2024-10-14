@@ -94,12 +94,14 @@ namespace Vge.World.Chunk
                 // Пробуем загрузить с файла
                 if (imStrom)
                 {
-                    System.Threading.Tasks.Task.Factory.StartNew(_Thread);
+                    //System.Threading.Tasks.Task.Factory.StartNew(_Thread);
+                    _Thread();
                 }
                 else
                 {
                     //  _Thread();
                 }
+                
             }
         }
 
@@ -108,14 +110,14 @@ namespace Vge.World.Chunk
             float f, d;
             f = d = .5f;
 
-            // World.Filer.StartSection("Reg");
-            // for (int i = 0; i < 1000000; i++)
-            for (int i = 0; i < 1000; i++)
+          //  _worldServer.Filer.StartSection("Reg");
+            // 1.2-2.1 мс
+            for (int i = 0; i < 500000; i++)
             {
                 f *= d + i;
             }
-            //   World.Filer.EndSectionLog();
-            //Thread.Sleep(50);
+            //_worldServer.Filer.EndSectionLog();
+            
         }
 
 

@@ -10,8 +10,10 @@ namespace Vge.Util
 
 #if DEBUG
         private const int _stepTime = 10;
+        public const int StepTime = 25;
 #else
         private const int _stepTime = 50;
+        public const int StepTime = 60;
 #endif
         /// <summary>
         /// Объект лога

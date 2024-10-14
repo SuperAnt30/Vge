@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using System.Threading;
+using Vge.Games;
 using Vge.Management;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -34,6 +35,20 @@ namespace Vge.World
         /// Посредник серверного чанка
         /// </summary>
         public readonly ChunkProviderServer ChunkPrServ;
+        /// <summary>
+        /// Флаг выполненого такта
+        /// </summary>
+        public bool FlagExecutionTackt { get; private set; }
+
+        /// <summary>
+        /// Флаг разрешающий запустить такт
+        /// </summary>
+        private bool _flagRunUpdate;
+        /// <summary>
+        /// Запущен ли мир
+        /// </summary>
+        private bool _isRuning = true;
+        
 
         private readonly TestAnchor _testAnchor;
 
@@ -48,21 +63,73 @@ namespace Vge.World
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
             _testAnchor = new TestAnchor(this);
+            
             if (idWorld == 0)
             {
                 Fragment.AddAnchor(_testAnchor);
             }
+
+            if (idWorld != 0 || Ce.OneWorldRunInFlow)
+            {
+                // Запускаем отдельный поток для всех дополнительных миров
+                Thread myThread = new Thread(_ThreadUpdate) { Name = "World" + idWorld };
+                myThread.Start();
+            }
         }
 
-        public override void Update()
+        #region В потоке
+
+        /// <summary>
+        /// Отдельный поток для дополнительного мира
+        /// </summary>
+        private void _ThreadUpdate()
+        {
+            while (_isRuning && Server.IsServerRunning)
+            {
+                if (_flagRunUpdate)
+                {
+                    _flagRunUpdate = false;
+                    Update();
+                    FlagExecutionTackt = true;
+                }
+                else
+                {
+                    Thread.Sleep(1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Запуск в потоке
+        /// </summary>
+        public void UpdateRunInFlow()
+        {
+            _flagRunUpdate = true;
+            FlagExecutionTackt = false;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Такт выполнения
+        /// </summary>
+        public void Update()
         {
             _testAnchor.Update();
             Filer.StartSection("Fragment");
             Fragment.Update();
-            Filer.EndStartSection("UnloadQueuedChunks");
+            Filer.EndStartSection("UnloadQueuedChunks", Profiler.StepTime);
             ChunkPrServ.UnloadQueuedChunks();
             Filer.EndSection();
-            //System.Threading.Thread.Sleep(50);
+        }
+
+        /// <summary>
+        /// Останавливаем мир
+        /// </summary>
+        public void Stoping()
+        {
+            _isRuning = false;
+            _WriteToFile();
         }
 
         #region WriteRead
@@ -70,7 +137,7 @@ namespace Vge.World
         /// <summary>
         /// Записать данные мира
         /// </summary>
-        public void WriteToFile()
+        private void _WriteToFile()
         {
             GameFile.CheckPath(PathWorld);
         }

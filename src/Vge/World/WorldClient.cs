@@ -32,10 +32,11 @@ namespace Vge.World
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
             => flagDebugChunkMappingChanged = true;
 
-        public override void Update()
+        /// <summary>
+        /// Такт выполнения
+        /// </summary>
+        public void Update()
         {
-            base.Update();
-
             if (Ce.FlagDebugDrawChunks && flagDebugChunkMappingChanged)
             {
                 flagDebugChunkMappingChanged = false;

@@ -1,4 +1,6 @@
-﻿using Vge.Games;
+﻿using System;
+using System.Threading;
+using Vge.Games;
 
 namespace Vge.World
 {
@@ -26,7 +28,10 @@ namespace Vge.World
         /// </summary>
         protected int _count = 1;
 
-        public AllWorlds() => _worldServers = new WorldServer[_count];
+        public AllWorlds()
+        {
+            _worldServers = new WorldServer[_count];
+        }
 
         /// <summary>
         /// Инициализация миров после создания сервера
@@ -45,14 +50,57 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            Server.Filer.StartSection("World");
-            _worldServers[0].Update();
+            if (Ce.OneWorldRunInFlow)
+            {
+                _worldServers[0].UpdateRunInFlow();
+            }
+            else
+            {
+                _worldServers[0].Update();
+            }
             for (byte i = 1; i < _count; i++)
             {
-                Server.Filer.EndStartSection("World-" + i, _stepTime);
-                _worldServers[i].Update();
+                _worldServers[i].UpdateRunInFlow();
             }
-            Server.Filer.EndSection(_stepTime);
+
+            if (_count > 1 || Ce.OneWorldRunInFlow)
+            {
+                bool flag;
+                // Если мир отрабатываем в потоке
+                while (Server.IsServerRunning)
+                {
+                    // Ждём когда отработает первый мир
+                    if (!Ce.OneWorldRunInFlow || _worldServers[0].FlagExecutionTackt)
+                    {
+                        flag = true;
+                        // Далее ждём когда отработают все остальные миры
+                        for (byte i = 1; i < _count; i++)
+                        {
+                            if (!_worldServers[i].FlagExecutionTackt)
+                            {
+                                flag = false;
+                                Thread.Sleep(1);
+                                break;
+                            }
+                        }
+                        if (flag)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
+            }
+
+            if (Ce.FlagDebugDrawChunks)
+            {
+                Server.Filer.StartSection("FragmentManagerDebug");
+                _worldServers[0].Fragment.UpdateDebug();
+                Server.Filer.EndSection();
+            }
         }
 
         /// <summary>
@@ -63,7 +111,7 @@ namespace Vge.World
             // Сохраняем все миры
             for (byte i = 0; i < _count; i++)
             {
-                _worldServers[i].WriteToFile();
+                _worldServers[i].Stoping();
             }
         }
 

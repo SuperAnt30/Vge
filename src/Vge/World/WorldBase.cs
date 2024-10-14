@@ -25,14 +25,6 @@ namespace Vge.World
         /// </summary>
         public ChunkProvider ChunkPr { get; protected set; }
 
-        /// <summary>
-        /// Такт сервера
-        /// </summary>
-        public virtual void Update()
-        {
-
-        }
-
         #region Chunk
 
         /// <summary>
