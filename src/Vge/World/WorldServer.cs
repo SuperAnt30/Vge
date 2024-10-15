@@ -48,6 +48,10 @@ namespace Vge.World
         /// Запущен ли мир
         /// </summary>
         private bool _isRuning = true;
+        /// <summary>
+        /// Время затраченое за такт
+        /// </summary>
+        private short _timeTick = 0;
         
 
         private readonly TestAnchor _testAnchor;
@@ -115,12 +119,17 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            _testAnchor.Update();
+            long timeBegin = Server.Time();
+            if (IdWorld == 0)
+            {
+                _testAnchor.Update();
+            }
             Filer.StartSection("Fragment");
             Fragment.Update();
             Filer.EndStartSection("UnloadQueuedChunks", Profiler.StepTime);
             ChunkPrServ.UnloadQueuedChunks();
             Filer.EndSection();
+            _timeTick = (short)((_timeTick * 3 + (Server.Time() - timeBegin)) / 4);
         }
 
         /// <summary>
@@ -144,6 +153,7 @@ namespace Vge.World
 
         #endregion
 
-        public override string ToString() => Fragment.ToString() + " " + ChunkPrServ.ToString();
+        public override string ToString() => "World-" + IdWorld 
+            + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString();
     }
 }

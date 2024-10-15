@@ -117,6 +117,14 @@ namespace Vge.World
 
         public WorldServer GetWorld(int index) => _worldServers[index];
 
-        public override string ToString() => _worldServers[0].ToString();
+        public override string ToString()
+        {
+            string s = "";
+            for (byte i = 0; i < _count; i++)
+            {
+                s += _worldServers[i].ToString() + "\r\n";
+            }
+            return s;
+        }
     }
 }
