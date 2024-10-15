@@ -5,14 +5,11 @@ using Vge;
 using Mvk2.Util;
 using Mvk2.Audio;
 using Mvk2.Renderer;
-using Vge.Network.Packets.Client;
 using Mvk2.Gui.Screens;
 using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge.World;
 using Mvk2.World;
-using WinGL.Util;
-using Vge.Games;
 
 namespace Mvk2
 {
@@ -90,8 +87,11 @@ namespace Mvk2
         {
             base.OnTick();
             // Отладка на экране
-            textDebug = debug.ToText();
-            isTextDebug = true;
+            if (Ce.IsDebugDraw)
+            {
+                textDebug = debug.ToText();
+                isTextDebug = true;
+            }
         }
 
         #endregion
@@ -130,69 +130,14 @@ namespace Mvk2
         protected override void OnKeyDown(Keys keys)
         {
             base.OnKeyDown(keys);
-            if (keys == Keys.Space)
-            {
-                audio.PlaySound(0, 0, 0, 0, 1, 1);
-            }
-            else if (keys == Keys.Enter)
-            {
-                SoundClick(1);
-            }
-
-            if (Game != null)
-            {
-                bool b = false;
-                if (keys == Keys.Left)
-                {
-                    Game.Player.chPos.X-=1;
-                    b = true;
-                }
-                else if (keys == Keys.Right)
-                {
-                    Game.Player.chPos.X+=2;
-                    b = true;
-                }
-                else if (keys == Keys.Up)
-                {
-                    Game.Player.chPos.Y-=1;
-                    b = true;
-                }
-                else if (keys == Keys.Down)
-                {
-                    Game.Player.chPos.Y+=1;
-                    b = true;
-                }
-                if (b)
-                {
-                    Game.TrancivePacket(new PacketC04PlayerPosition(
-                        new System.Numerics.Vector3(Game.Player.chPos.X, Game.Player.chPos.Y, 0),
-                        false, false, false));
-                    Debug.player = Game.Player.chPos;
-                }
-
-                if (keys == Keys.PageUp)
-                {
-                    if (Game.Player.OverviewChunk < 49)
-                    {
-                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk + 1), true);
-                    }
-                }
-                else if (keys == Keys.PageDown)
-                {
-                    if (Game.Player.OverviewChunk > 0)
-                    {
-                        Game.Player.SetOverviewChunk((byte)(Game.Player.OverviewChunk - 1), true);
-                    }
-                }
-
-                if (keys == Keys.F3)
-                {
-                    Ce.FlagDebugDrawChunks = !Ce.FlagDebugDrawChunks;
-                }
-            }
-
-            //map.ContainsKey(keys);
-            //textDb = "d* " + keys.ToString();// + " " + Convert.ToString(lParam.ToInt32(), 2);
+            //if (keys == Keys.Space)
+            //{
+            //    audio.PlaySound(0, 0, 0, 0, 1, 1);
+            //}
+            //else if (keys == Keys.Enter)
+            //{
+            //    SoundClick(1);
+            //}
         }
 
         #endregion

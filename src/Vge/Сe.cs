@@ -10,9 +10,13 @@ public sealed class Ce
     #region Debug
 
     /// <summary>
+    /// Отладка на экране
+    /// </summary>
+    public static bool IsDebugDraw = false;
+    /// <summary>
     /// Отладка чанков в 2д
     /// </summary>
-    public static bool FlagDebugDrawChunks = true;
+    public static bool IsDebugDrawChunks = false;
 
     #endregion
 

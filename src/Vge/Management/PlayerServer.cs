@@ -317,7 +317,6 @@ namespace Vge.Management
         public void RemoveChunkClient(int chunkPosX, int chunkPosY)
         {
             _clientChunks.Remove(chunkPosX, chunkPosY);
-            cde++;
             SendPacket(new PacketS21ChunkData(chunkPosX, chunkPosY));
         }
 
@@ -440,9 +439,6 @@ namespace Vge.Management
             }
         }
 
-        private int cdn = 0;
-        private int cde = 0;
-
         /// <summary>
         /// Вызывается только на сервере у игроков для передачи перемещения
         /// </summary>
@@ -453,7 +449,6 @@ namespace Vge.Management
             ChunkBase chunk;
             _loadedNull.Clear();
             byte quantityBatch = 0;
-            // TODO::2024-10-11 количество пакетов чанков в такт
 
             while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
             {
@@ -467,7 +462,6 @@ namespace Vge.Management
                 if (chunk != null && chunk.IsSendChunk)
                 {
                     _clientChunks.Remove(x, y);
-                    cdn++;
                     if (quantityBatch == 0)
                     {
                         // Отправляем перед партией закачки чанков
@@ -500,7 +494,6 @@ namespace Vge.Management
 
         public override string ToString() => Login + " Lc:" 
             + _loadingChunks.ToString() + " Cc:" + _clientChunks.ToString() 
-            + " dbs:" + _desiredBatchSize
-            + " cdn:" + cdn + " cde:" + cde + " cdd:" + (cdn - cde);
+            + " dbs:" + _desiredBatchSize;
     }
 }

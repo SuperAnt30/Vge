@@ -179,7 +179,7 @@ namespace Vge.Games
         public bool SetGamePauseSingle(bool value)
         {
             _isGamePaused = !IsRunNet() && value;
-            _OnTextDebug();
+            if (Ce.IsDebugDraw) _OnTextDebug();
             return _isGamePaused;
         }
 
@@ -362,7 +362,7 @@ namespace Vge.Games
                         ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                     }
                 }
-                if (Ce.FlagDebugDrawChunks)
+                if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks)
                 {
                     OnTagDebug(Debug.Key.ChunkReady.ToString(), world.ChunkPr.GetListDebug());
                 }
@@ -555,7 +555,7 @@ namespace Vge.Games
             Worlds.Update();
 
             // Прошла 1/3 секунда, или 10 тактов
-            if (TickCounter % 10 == 0)
+            if (Ce.IsDebugDraw && TickCounter % 10 == 0)
             {
                 // лог статистика за это время
                 _OnTextDebug();
@@ -604,7 +604,7 @@ namespace Vge.Games
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
             return string.Format("[Server]: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
                 + Ce.Br + Worlds.ToString()
-                + Ce.Br + "Owner: " + Players.PlayerOwner.ToString()
+                + "Owner: " + Players.PlayerOwner.ToString()
                 + Ce.Br + _strNet
                 + Ce.Br + debugText,
                 tps, averageTime, _rxPrev, _txPrev, TickCounter, TimeCounter / 1000f, // 0-5

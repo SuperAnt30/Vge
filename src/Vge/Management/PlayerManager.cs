@@ -264,16 +264,16 @@ namespace Vge.Management
             }
 
             // Отладка
-            Debug.players = new WinGL.Util.Vector2i[countPl];
+            Debug.Players = new WinGL.Util.Vector2i[countPl];
 
             countPl = 0;
             if (PlayerOwner != null)
             {
-                Debug.players[countPl++] = PlayerOwner.chPos;
+                Debug.Players[countPl++] = PlayerOwner.chPos;
             }
             for (int i = 0; i < _players.Count; i++)
             {
-                Debug.players[countPl++] = _players[i].chPos;
+                Debug.Players[countPl++] = _players[i].chPos;
             }
         }
 

@@ -40,7 +40,7 @@ namespace Vge.Gui.Screens
         public override void OnKeyDown(Keys keys)
         {
             //base.OnKeyDown(keys);
-            if (keys == Keys.Escape)
+            if (keys == Keys.Escape || keys == Keys.Menu)
             {
                 CloseMenu();
             }

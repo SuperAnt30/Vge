@@ -209,30 +209,6 @@ namespace Vge
         {
             if (Screen != null) Screen.OnKeyDown(keys);
             else if (Game != null) Game.OnKeyDown(keys);
-
-            //if (keys == Keys.F11)
-            //{
-            //    Options.FullScreen = !Options.FullScreen;
-            //    OptionsSave();
-            //    Restart();
-            //}
-            //else if (keys == Keys.F12)
-            //{
-            //    SetVSync(!vSync);
-            //}
-            //else 
-            if (keys == Keys.F8)
-            {
-                ticker.SetWishFrame(120);
-            }
-            else if (keys == Keys.F7)
-            {
-                ticker.SetWishFrame(20);
-            }
-            else if (keys == Keys.F6)
-            {
-                ticker.SetWishFrame(280);
-            }
         }
 
         /// <summary>
@@ -314,9 +290,10 @@ namespace Vge
                     Screen.Draw(ticker.Interpolation);
                 }
             }
-//#if DEBUG
-            DrawDebug();
-//#endif
+            if (Ce.IsDebugDraw)
+            {
+                DrawDebug();
+            }
             Render.DrawEnd();
         }
 
@@ -503,7 +480,7 @@ namespace Vge
         }
 
         private void Game_ServerTextDebug(object sender, StringEventArgs e)
-            => debug.server = e.Text;
+            => debug.Server = e.Text;
 
         private void Game_TagDebug(object sender, StringEventArgs e)
             => debug.SetTag(e);
@@ -516,7 +493,7 @@ namespace Vge
             Game.Dispose();
             Game = null;
             SetWishFrame(Ce.FpsOffside);
-            debug.server = e.Notification;
+            debug.Server = e.Notification;
             if (flagClose)
             {
                 // Если закрытие игры из-за закритии приложения, 
@@ -577,7 +554,7 @@ namespace Vge
         protected virtual void OnTick()
         {
             audio.Tick();
-            debug.audio = audio.StrDebug;
+            debug.Audio = audio.StrDebug;
             
             if (Screen != null)
             {
@@ -586,11 +563,11 @@ namespace Vge
 
             if (Game == null)
             {
-                debug.client = "null";
+                debug.Client = "null";
             }
             else
             {
-                debug.client = Game.ToString();
+                debug.Client = Game.ToString();
                 Game.OnTick(DeltaTime);
             }
         }

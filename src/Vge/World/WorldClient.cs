@@ -37,7 +37,7 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            if (Ce.FlagDebugDrawChunks && flagDebugChunkMappingChanged)
+            if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks && flagDebugChunkMappingChanged)
             {
                 flagDebugChunkMappingChanged = false;
                 OnTagDebug(Debug.Key.ChunkClient.ToString(), ChunkPr.GetListDebug());

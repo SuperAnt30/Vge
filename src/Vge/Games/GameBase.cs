@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Vge.Actions;
 using Vge.Event;
 using Vge.Gui.Huds;
 using Vge.Management;
@@ -28,6 +29,10 @@ namespace Vge.Games
         /// Объект сыщик
         /// </summary>
         public readonly Profiler Filer;
+        /// <summary>
+        /// Объект нажатия клавиатуры
+        /// </summary>
+        public readonly Keyboard Key;
 
         /// <summary>
         /// Локальная игра
@@ -97,6 +102,17 @@ namespace Vge.Games
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
             Player = new PlayerClient(this);
+            Key = new Keyboard(this);
+            Key.InGameMenu += _Key_InGameMenu;
+        }
+
+        /// <summary>
+        /// Активация окна меню
+        /// </summary>
+        private void _Key_InGameMenu(object sender, EventArgs e)
+        {
+            SetGamePauseSingle(true);
+            window.LScreen.InGameMenu();
         }
 
         /// <summary>
@@ -158,25 +174,17 @@ namespace Vge.Games
         /// <summary>
         /// Клавиша нажата
         /// </summary>
-        public override void OnKeyDown(Keys keys)
-        {
-            // Скрина быть не должно коль клавиши тут работают
-            if (keys == Keys.Escape)
-            {
-                SetGamePauseSingle(true);
-                window.LScreen.InGameMenu();
-            }
-        }
+        public override void OnKeyDown(Keys keys) => Key.OnKeyDown(keys);
 
         /// <summary>
         /// Клавиша отпущена
         /// </summary>
-        public override void OnKeyUp(Keys keys) { }
+        public override void OnKeyUp(Keys keys) => Key.OnKeyUp(keys);
 
         /// <summary>
         /// Нажата клавиша в char формате
         /// </summary>
-        public override void OnKeyPress(char key) { }
+        public override void OnKeyPress(char key) => Key.OnKeyPress(key);
 
         #endregion
 
@@ -239,7 +247,7 @@ namespace Vge.Games
                 Hud.Draw();
             }
 
-            if (Ce.FlagDebugDrawChunks)
+            if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks)
             {
                 Debug.DrawChunks(window);
             }
@@ -290,6 +298,7 @@ namespace Vge.Games
         {
             if (!_flagStoped)
             {
+                Ce.IsDebugDrawChunks = Ce.IsDebugDraw = false;
                 // флаг нужен, так-как можно попасть сюда много раз, из-за разрыва сети.
                 _flagStoped = true;
                 Log.Client(Srl.StoppedClient, notification == "" ? "" : " [" + notification + "]");

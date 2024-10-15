@@ -95,7 +95,7 @@ namespace Vge.World
                 }
             }
 
-            if (Ce.FlagDebugDrawChunks)
+            if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks)
             {
                 Server.Filer.StartSection("FragmentManagerDebug");
                 _worldServers[0].Fragment.UpdateDebug();

@@ -12,33 +12,32 @@ namespace Vge
     /// </summary>
     public class Debug
     {
-        public string strTpsFps = "";
-        public string audio = "";
-        public string client = "";
-        public string server = "";
+        public string StrTpsFps = "";
+        public string Audio = "";
+        public string Client = "";
+        public string Server = "";
 
-        public static uint meshId = 0;
-        public static int meshCount = 0;
+        public static string Text = "";
+        public static uint MeshId = 0;
+        public static int MeshCount = 0;
 
         public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick)
         {
-            strTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00} ms",
+            StrTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00} ms",
                 fps, speedFrame, tps, speedTick);
         }
 
         public string ToText()
         {
-            return string.Format("{0}\r\nAudio: {1}\r\nMesh Id: {2} C: {3}\r\n[Client]: {4}\r\n{5}",
-                strTpsFps,
-                audio,
-                meshId,
-                meshCount,
-                client,
-                server
-            );
+            return StrTpsFps
+                + "\r\nAudio: " + Audio
+                + "\r\nMesh Id: " + MeshId + " C: " + MeshCount
+                + "\r\n" + Server
+                + "[Client]: " + Client
+                + "\r\n" + Text;
         }
 
-       
+        #region Chunk
 
         /// <summary>
         /// Прилёт объектов с локального сервера для отладки
@@ -95,8 +94,6 @@ namespace Vge
             }
         }
 
-        #region Chunk
-
         public enum Key
         {
             /// <summary>
@@ -124,11 +121,11 @@ namespace Vge
         /// <summary>
         /// Игроки на сервере
         /// </summary>
-        public static Vector2i[] players = new Vector2i[0];
+        public static Vector2i[] Players = new Vector2i[0];
         /// <summary>
         /// Игрок локальный
         /// </summary>
-        public static Vector2i player = new Vector2i();
+        public static Vector2i Player = new Vector2i();
         /// <summary>
         /// Чанки на сервере которые активные, т.е. тикают
         /// Синий
@@ -154,13 +151,13 @@ namespace Vge
 
         private static bool _renderChunks;
 
-        private static MeshGuiColor meshChunks;
+        private static MeshGuiColor _meshChunks;
 
         public static void DrawChunks(WindowMain window)
         {
-            if (meshChunks == null)
+            if (_meshChunks == null)
             {
-                meshChunks = new MeshGuiColor(window.GetOpenGL());
+                _meshChunks = new MeshGuiColor(window.GetOpenGL());
             }
             if (_renderChunks)
             {
@@ -170,12 +167,12 @@ namespace Vge
                     if (_RenderChuks(vs))
                     {
                         _renderChunks = false;
-                        meshChunks.Reload(vs.ToArray());
+                        _meshChunks.Reload(vs.ToArray());
                     }
                 }
             }
             window.Render.TextureDisable();
-            meshChunks.Draw();
+            _meshChunks.Draw();
             window.Render.TextureEnable();
         }
 
@@ -202,11 +199,11 @@ namespace Vge
                 vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, .9f, 0));
             }
             // Красный
-            for (int i = 0; i < players.Length; i++)
+            for (int i = 0; i < Players.Length; i++)
             {
                 if (_flagBlockDraw) return false;
-                x = xc + players[i].X * 8;
-                y = yc + players[i].Y * 8;
+                x = xc + Players[i].X * 8;
+                y = yc + Players[i].Y * 8;
                 vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, .9f, 0, 0));
             }
             // Белый
@@ -227,8 +224,8 @@ namespace Vge
             }
 
             // Игрок
-            x = xc + player.X * 8;
-            y = yc + player.Y * 8;
+            x = xc + Player.X * 8;
+            y = yc + Player.Y * 8;
             vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 6, y + 6, .5f, 0, .5f));
             return true;
         }

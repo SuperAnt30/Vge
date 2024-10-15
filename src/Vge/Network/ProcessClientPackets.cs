@@ -145,7 +145,7 @@ namespace Vge.Network
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
             Game.Player.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
-            Debug.player = Game.Player.chPos;
+            Debug.Player = Game.Player.chPos;
         }
 
         /// <summary>

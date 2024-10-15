@@ -44,7 +44,7 @@ namespace Vge.Renderer
                 ebo = id[0];
             }
 
-            Debug.meshId = vao;
+            Debug.MeshId = vao;
 
             // attributes
             int stride = vertexSize * sizeof(float);
@@ -106,7 +106,7 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void Draw()
         {
-            Debug.meshCount++;
+            Debug.MeshCount++;
             gl.BindVertexArray(vao);
             gl.DrawElements(GL.GL_TRIANGLES, countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
         }

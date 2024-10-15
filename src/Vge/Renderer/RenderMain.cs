@@ -159,7 +159,7 @@ namespace Vge.Renderer
         public virtual void DrawBegin()
         {
             fps++;
-            Debug.meshCount = 0;
+            Debug.MeshCount = 0;
             timeBegin = window.TimeTicks();
         }
 
@@ -169,20 +169,22 @@ namespace Vge.Renderer
         public virtual void DrawEnd()
         {
             // Перерасчёт кадров раз в секунду, и среднее время прорисовки кадра
-            if (window.Time() >= timeSecond)
+            if (Ce.IsDebugDraw)
             {
-                float speedTick = 0;
-                if (tps > 0) speedTick = speedTickAll / tps;
-                window.debug.SetTpsFps(fps, speedFrameAll / fps, tps, speedTick);
+                if (window.Time() >= timeSecond)
+                {
+                    float speedTick = 0;
+                    if (tps > 0) speedTick = speedTickAll / tps;
+                    window.debug.SetTpsFps(fps, speedFrameAll / fps, tps, speedTick);
 
-                timeSecond += 1000;
-                speedFrameAll = 0;
-                speedTickAll = 0;
-                fps = 0;
-                tps = 0;
+                    timeSecond += 1000;
+                    speedFrameAll = 0;
+                    speedTickAll = 0;
+                    fps = 0;
+                    tps = 0;
+                }
+                speedFrameAll += (float)(window.TimeTicks() - timeBegin) / Ticker.TimerFrequency;
             }
-
-            speedFrameAll += (float)(window.TimeTicks() - timeBegin) / Ticker.TimerFrequency;
         }
 
         /// <summary>
