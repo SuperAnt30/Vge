@@ -231,13 +231,12 @@ namespace Vge.Management
         #region Updates
 
         /// <summary>
-        /// Тик на сервере
+        /// В тике на сервере подключаем и выкидываем игроков
         /// </summary>
-        public void Update()
+        public void UpdateJoinLeftPlayers()
         {
             // Удаляем игроков
             _UpdateRemovingPlayers();
-
             // Добавляем игроков
             if (!_playerStartList.Empty())
             {
@@ -249,7 +248,13 @@ namespace Vge.Management
                 }
                 _cachePlayerRemoveList.Clear();
             }
+        }
 
+        /// <summary>
+        /// Тик на сервере
+        /// </summary>
+        public void Update()
+        {
             int countPl = 0;
             // Обновление игроков
             if (PlayerOwner != null)
@@ -262,18 +267,19 @@ namespace Vge.Management
                 countPl++;
                 _PlayerServerUpdate(_players[i]);
             }
-
             // Отладка
-            Debug.Players = new WinGL.Util.Vector2i[countPl];
-
-            countPl = 0;
-            if (PlayerOwner != null)
+            if (Ce.IsDebugDrawChunks)
             {
-                Debug.Players[countPl++] = PlayerOwner.chPos;
-            }
-            for (int i = 0; i < _players.Count; i++)
-            {
-                Debug.Players[countPl++] = _players[i].chPos;
+                Debug.Players = new WinGL.Util.Vector2i[countPl];
+                countPl = 0;
+                if (PlayerOwner != null)
+                {
+                    Debug.Players[countPl++] = PlayerOwner.chPos;
+                }
+                for (int i = 0; i < _players.Count; i++)
+                {
+                    Debug.Players[countPl++] = _players[i].chPos;
+                }
             }
         }
 

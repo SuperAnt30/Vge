@@ -58,15 +58,6 @@ namespace Vge.World.Chunk
         public void SetInhabitedTime(uint takt) => InhabitedTakt = takt;
 
         /// <summary>
-        /// Загрузили чанк
-        /// </summary>
-        public void OnChunkLoad()
-        {
-            IsChunkPresent = true;
-            IsSendChunk = true;
-        }
-
-        /// <summary>
         /// Выгрузили чанк
         /// </summary>
         public void OnChunkUnload()
@@ -74,13 +65,75 @@ namespace Vge.World.Chunk
             IsChunkPresent = false;
         }
 
+        /// <summary>
+        /// Загрузка или генерация
+        /// </summary>
+        public void LoadingOrGen()
+        {
+            if (!IsChunkPresent)
+            {
+                // Пробуем загрузить с файла
+                //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
+                Debug.Burden(.6f);
+                //World.Filer.EndSectionLog();
+            }
+
+            _OnChunkLoad();
+        }
+
+        /// <summary>
+        /// Загрузили чанк
+        /// </summary>
+        private void _OnChunkLoad()
+        {
+            IsChunkPresent = true;
+
+            if (!World.IsRemote && World is WorldServer worldServer)
+            {
+                // После генерации проверяем все близлежащие чанки для декорации
+                ChunkBase chunk;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        chunk = worldServer.ChunkPrServ.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
+                        if (chunk != null && chunk.IsChunkPresent)
+                        {
+                            chunk._Populate(worldServer.ChunkPrServ);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Заполнение чанка населённостью
         /// </summary>
-        private void _Populate()
+        private void _Populate(ChunkProviderServer provider)
         {
+            if (!IsPopulated)
+            {
+                // Если его в чанке нет проверяем чтоб у всех чанков близлежащих была генерация
+                ChunkBase chunk;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
+                        if (chunk == null || !chunk.IsChunkPresent)
+                        {
+                            return;
+                        }
+                    }
+                }
 
+                IsPopulated = true;
+                IsSendChunk = true;
+                // Пробуем загрузить с файла
+                //World.Filer.StartSection("Pop " + CurrentChunkX + "," + CurrentChunkY);
+                Debug.Burden(1.5f);
+                //World.Filer.EndSectionLog();
+            }
         }
 
 

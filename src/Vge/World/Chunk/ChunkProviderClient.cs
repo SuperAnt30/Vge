@@ -18,6 +18,21 @@ namespace Vge.World.Chunk
             _worldClient = world;
         }
 
+        /// <summary>
+        /// Выгрузить чанк
+        /// </summary>
+        public void UnloadChunk(ChunkBase chunk)
+        {
+            if (chunk != null)
+            {
+                if (chunk.IsChunkPresent)
+                {
+                    chunk.OnChunkUnload();
+                }
+                _chunkMapping.Remove(chunk.CurrentChunkX, chunk.CurrentChunkY);
+            }
+        }
+
         #region Packet
 
         /// <summary>
@@ -30,16 +45,16 @@ namespace Vge.World.Chunk
             if (packet.IsRemoved())
             {
                 // Выгружаем чанк
-                _chunkMapping.Remove(chx, chy);
+                UnloadChunk(_chunkMapping.Get(chx, chy) as ChunkBase);
             }
             else
             {
                 // Вносим данные в чанк
-                ChunkBase chunkBase = _chunkMapping.Get(chx, chy) as ChunkBase;
-                if (chunkBase == null)
+                ChunkBase chunk = _chunkMapping.Get(chx, chy) as ChunkBase;
+                if (chunk == null)
                 {
-                    chunkBase = new ChunkBase(_worldClient, chx, chy);
-                    _chunkMapping.Add(chunkBase);
+                    chunk = new ChunkBase(_worldClient, chx, chy);
+                    _chunkMapping.Add(chunk);
                 }
                 // Далее тут манипулации с чанком chunkBase
                 //System.Threading.Thread.Sleep(20);

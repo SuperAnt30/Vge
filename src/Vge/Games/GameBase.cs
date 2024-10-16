@@ -134,6 +134,7 @@ namespace Vge.Games
             World = new WorldClient(this);
             World.TagDebug += World_TagDebug;
             _stopwatch.Start();
+            Ce.IsDebugDrawChunks = Ce.IsDebugDraw = true;
         }
 
         private void World_TagDebug(object sender, StringEventArgs e) => _OnTagDebug(e);

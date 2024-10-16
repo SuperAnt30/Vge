@@ -11,7 +11,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Размер партии закачки чанков
         /// </summary>
-        public byte LoadingBatchSize { get; private set; } = Ce.MinDesiredBatchSize;
+        public byte LoadingBatchSize { get; private set; } = Ce.MaxDesiredBatchSize;
         /// <summary>
         /// Флаг выполненого такта
         /// </summary>
@@ -30,6 +30,10 @@ namespace Vge.World.Chunk
         /// Список чанков которые надо загрузить
         /// </summary>
         private readonly ListMessy<ChunkBase> _loadingChunks = new ListMessy<ChunkBase>();
+        /// <summary>
+        /// Карта чанков которые надо загрузить
+        /// </summary>
+        private readonly MapChunk _loadingChunkMapping = new MapChunk();
 
         /// <summary>
         /// Флаг разрешающий запустить такт
@@ -51,8 +55,7 @@ namespace Vge.World.Chunk
         {
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _chunkMapping.Add(chunk);
-            _LoadOrGen(chunk);
-            chunk.OnChunkLoad();
+            chunk.LoadingOrGen();
         }
 
         /// <summary>
@@ -63,8 +66,22 @@ namespace Vge.World.Chunk
             if (IsChunkLoaded(x, y)) return true;
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _loadingChunks.Add(chunk);
+            _loadingChunkMapping.Add(chunk);
             return false;
         }
+
+        /// <summary>
+        /// Получить чанк по координатам чанка плюс проверка в загрузке
+        /// </summary>
+        public ChunkBase GetChunkPlus(int x, int y)
+        {
+            if (!(_chunkMapping.Get(x, y) is ChunkBase chunk))
+            {
+                return _loadingChunkMapping.Get(x, y) as ChunkBase;
+            }
+            return chunk;
+        }
+            
 
         /// <summary>
         /// Добавить чанк на удаление
@@ -86,8 +103,7 @@ namespace Vge.World.Chunk
                 for (i = 0; i < count; i++)
                 {
                     chunk = _loadingChunks[i];
-                    _LoadOrGen(chunk);
-                    chunk.OnChunkLoad();
+                    chunk.LoadingOrGen();
                 }
                 LoadingBatchSize = Sundry.RecommendedQuantityBatch(
                     (int)(_worldServer.Server.Time() - timeBegin),
@@ -100,16 +116,20 @@ namespace Vge.World.Chunk
         /// </summary>
         public void UnloadingRequiredChunksFromQueue()
         {
-            
-            int i;
             int count = _loadingChunks.Count;
-            ChunkBase chunk;
-            count--;
-            for (i = count; i >= 0; i--)
+            if (count > 0)
             {
-                chunk = _loadingChunks[i];
-                _loadingChunks.RemoveLast();
-                _chunkMapping.Add(chunk);
+                int i;
+                ChunkBase chunk;
+
+                for (i = 0; i < count; i++)
+                {
+                    chunk = _loadingChunks[i];
+                    _chunkMapping.Add(chunk);
+                }
+
+                _loadingChunkMapping.Clear();
+                _loadingChunks.Clear();
             }
         }
 
@@ -144,27 +164,6 @@ namespace Vge.World.Chunk
             }
         }
 
-        /// <summary>
-        /// Загружаем, если нет чанка то генерируем
-        /// </summary>
-        /// <param name="chunk">Объект чанка не null</param>
-        private void _LoadOrGen(ChunkBase chunk)
-        {
-            if (!chunk.IsChunkPresent)
-            {
-                // Пробуем загрузить с файла
-                float f, d;
-                f = d = .5f;
-
-                //  _worldServer.Filer.StartSection("Reg");
-                // 1.2-2.1 мс
-                for (int i = 0; i < 500000; i++)
-                {
-                    f *= d + i;
-                }
-            }
-        }
-
         #region В потоке
 
         /// <summary>
@@ -194,6 +193,8 @@ namespace Vge.World.Chunk
         {
             _flagRunUpdate = true;
             FlagExecutionTackt = false;
+            //_LoadQueuedChunks();
+            //FlagExecutionTackt = true;
         }
 
         #endregion

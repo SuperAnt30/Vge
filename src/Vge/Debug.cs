@@ -231,5 +231,22 @@ namespace Vge
         }
 
         #endregion
+
+        /// <summary>
+        /// Нагрузка, без слипа, чтоб чувствоать CPU, задать в мс для debug на моём компе. Примерно
+        /// </summary>
+        public static void Burden(float ms)
+        {
+            // Пробуем загрузить с файла
+            float f, d;
+            f = d = .5f;
+            int count = (int)(420000 * ms);
+            // 1.2-2.1 мс = 500тыс
+            // 0.55-0.61 мс = 250тыс
+            for (int i = 0; i < count; i++)
+            {
+                f *= d + i;
+            }
+        }
     }
 }

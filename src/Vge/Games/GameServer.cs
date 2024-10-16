@@ -545,8 +545,10 @@ namespace Vge.Games
                 _tx = 0;
             }
 
+            Filer.StartSection("JoinLeftPlayers");
+            Players.UpdateJoinLeftPlayers();
+            Filer.EndStartSection("PlayersTick");
             // Тики менеджера игроков
-            Filer.StartSection("PlayersTick");
             Players.Update();
             Filer.EndSection();
             
