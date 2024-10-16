@@ -45,7 +45,10 @@ namespace Vge.World.Chunk
                 //System.Threading.Thread.Sleep(20);
 
             }
-            _OnChunkMappingChanged();
+            if (Ce.IsDebugDrawChunks)
+            {
+                _OnChunkMappingChanged();
+            }
         }
 
         #endregion

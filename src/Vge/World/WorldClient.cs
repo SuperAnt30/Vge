@@ -18,7 +18,7 @@ namespace Vge.World
         /// <summary>
         /// Флаг на изминение количество чанков
         /// </summary>
-        private bool flagDebugChunkMappingChanged;
+        private bool _flagDebugChunkMappingChanged;
 
         public WorldClient(GameBase game)
         {
@@ -30,16 +30,16 @@ namespace Vge.World
         }
 
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
-            => flagDebugChunkMappingChanged = true;
+            => _flagDebugChunkMappingChanged = true;
 
         /// <summary>
         /// Такт выполнения
         /// </summary>
         public void Update()
         {
-            if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks && flagDebugChunkMappingChanged)
+            if (Ce.IsDebugDrawChunks && _flagDebugChunkMappingChanged)
             {
-                flagDebugChunkMappingChanged = false;
+                _flagDebugChunkMappingChanged = false;
                 OnTagDebug(Debug.Key.ChunkClient.ToString(), ChunkPr.GetListDebug());
             }
         }

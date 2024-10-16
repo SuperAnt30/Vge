@@ -126,14 +126,15 @@ namespace Vge.Management
             {
                 _flagUpListChunkAction = false;
                 // Обновить список активных чанков
-                _filer.StartSection("UpListChunkAction");
+                _filer.StartSection("Fragment.UpListChunkAction");
                 _UpListChunkAction();
                 _filer.EndSection();
                 flagDebugAnchorChunkOffset = true;
             }
 
-            _filer.StartSection("LoadingChunks");
+            _filer.StartSection("Fragment.LoadingChunks");
             if (_UpdateLoadingChunks()) flagDebugChunkProviderServer = true;
+            _filer.EndSection();
         }
 
         /// <summary>
@@ -147,14 +148,12 @@ namespace Vge.Management
             {
                 int a, x, y;
                 ulong index;
-                long timeBegin;
                 bool present = true;
-                // Обязательное количество шагов для загрузки чанков
-                int step = Ce.MinCountLoadingChunks;
-
+                // Размер партии закачки чанков
+                int loadingBatchSize = World.ChunkPrServ.LoadingBatchSize;
+                
                 try
                 {
-                    timeBegin = Server.Time();
                     while (present)
                     {
                         present = false;
@@ -173,7 +172,7 @@ namespace Vge.Management
                                 }
                             }
                         }
-                        if (present && --step <= 0 && Server.Time() - timeBegin > Ce.TimeLoadChunksAnchors)
+                        if (present && --loadingBatchSize <= 0)
                         {
                             present = false;
                         }

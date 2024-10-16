@@ -39,20 +39,19 @@ namespace Vge.World
         /// Флаг выполненого такта
         /// </summary>
         public bool FlagExecutionTackt { get; private set; }
+        /// <summary>
+        /// Запущен ли мир
+        /// </summary>
+        public bool IsRuning { get; private set; } = true;
 
         /// <summary>
         /// Флаг разрешающий запустить такт
         /// </summary>
         private bool _flagRunUpdate;
         /// <summary>
-        /// Запущен ли мир
-        /// </summary>
-        private bool _isRuning = true;
-        /// <summary>
         /// Время затраченое за такт
         /// </summary>
         private short _timeTick = 0;
-        
 
         private readonly TestAnchor _testAnchor;
 
@@ -88,7 +87,7 @@ namespace Vge.World
         /// </summary>
         private void _ThreadUpdate()
         {
-            while (_isRuning && Server.IsServerRunning)
+            while (IsRuning && Server.IsServerRunning)
             {
                 if (_flagRunUpdate)
                 {
@@ -120,15 +119,19 @@ namespace Vge.World
         public void Update()
         {
             long timeBegin = Server.Time();
+
+            // Обработка фрагментов в начале такта
+            _FragmentBegin();
+
+            // Тут начинается все действия с блоками АИ мобов и всё такое....
             if (IdWorld == 0)
             {
                 _testAnchor.Update();
             }
-            Filer.StartSection("Fragment");
-            Fragment.Update();
-            Filer.EndStartSection("UnloadQueuedChunks", Profiler.StepTime);
-            ChunkPrServ.UnloadQueuedChunks();
-            Filer.EndSection();
+
+            // Обработка фрагментов в конце такта
+            _FragmentEnd();
+
             _timeTick = (short)((_timeTick * 3 + (Server.Time() - timeBegin)) / 4);
         }
 
@@ -137,9 +140,56 @@ namespace Vge.World
         /// </summary>
         public void Stoping()
         {
-            _isRuning = false;
+            IsRuning = false;
             _WriteToFile();
         }
+
+        #region Fragments (Chunks)
+
+        /// <summary>
+        /// Обработка фрагментов в начале такта
+        /// </summary>
+        private void _FragmentBegin()
+        {
+            // Запускаем фрагмент, тут определение какие чанки выгрузить, какие загрузить, 
+            // определение активных чанков.
+            Filer.StartSection("Fragment");
+            Fragment.Update();
+            // Выгрузка ненужных чанков из очереди
+            Filer.StartSection("UnloadingUnnecessaryChunksFromQueue");
+            ChunkPrServ.UnloadingUnnecessaryChunksFromQueue();
+            Filer.EndSection();
+
+            // Этап запуска чанков в отдельном потоке
+            ChunkPrServ.UpdateRunInFlow();
+        }
+
+        /// <summary>
+        /// Обработка фрагментов в конце такта
+        /// </summary>
+        private void _FragmentEnd()
+        {
+            // Дожидаемся Загрузки чанков
+            while(IsRuning)
+            {
+                // Ждём когда отработает поток чанков
+                if (!ChunkPrServ.FlagExecutionTackt)
+                {
+                    Thread.Sleep(1);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // Выгрузка требуемых чанков из очереди которые отработали в отдельном потоке
+            Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
+            ChunkPrServ.UnloadingRequiredChunksFromQueue();
+            Filer.EndSection();
+        }
+
+        #endregion
 
         #region WriteRead
 

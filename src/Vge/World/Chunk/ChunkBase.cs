@@ -64,13 +64,6 @@ namespace Vge.World.Chunk
         {
             IsChunkPresent = true;
             IsSendChunk = true;
-            //if (!World.IsRemote && World is WorldServer worldServer)
-            //{
-            //    if (CurrentChunkX < 200)
-            //    {
-            //        worldServer.Fragment.AddWorldAnchorChunk(CurrentChunkX + 5, CurrentChunkY);
-            //    }
-            //}
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Threading;
+using Vge.Util;
 
 namespace Vge.World.Chunk
 {
@@ -8,6 +9,15 @@ namespace Vge.World.Chunk
     public class ChunkProviderServer : ChunkProvider
     {
         /// <summary>
+        /// Размер партии закачки чанков
+        /// </summary>
+        public byte LoadingBatchSize { get; private set; } = Ce.MinDesiredBatchSize;
+        /// <summary>
+        /// Флаг выполненого такта
+        /// </summary>
+        public bool FlagExecutionTackt { get; private set; }
+
+        /// <summary>
         /// Посредник серверного чанка
         /// </summary>
         private readonly WorldServer _worldServer;
@@ -16,34 +26,44 @@ namespace Vge.World.Chunk
         /// Список чанков которые надо выгрузить
         /// </summary>
         private readonly ListMessy<ulong> _droppedChunks = new ListMessy<ulong>();
+        /// <summary>
+        /// Список чанков которые надо загрузить
+        /// </summary>
+        private readonly ListMessy<ChunkBase> _loadingChunks = new ListMessy<ChunkBase>();
+
+        /// <summary>
+        /// Флаг разрешающий запустить такт
+        /// </summary>
+        private bool _flagRunUpdate;
 
         public ChunkProviderServer(WorldServer world) : base(world)
         {
             _worldServer = world;
+            // Запускаем отдельный поток для загрузки и генерации чанков
+            Thread myThread = new Thread(_ThreadUpdate) { Name = "Chunk" + world.IdWorld };
+            myThread.Start();
+        }
+
+        /// <summary>
+        /// Стартовая загрузка чанка в лоадинге
+        /// </summary>
+        public void InitialLoadingChunk(int x, int y)
+        {
+            ChunkBase chunk = new ChunkBase(_worldServer, x, y);
+            _chunkMapping.Add(chunk);
+            _LoadOrGen(chunk);
+            chunk.OnChunkLoad();
         }
 
         /// <summary>
         /// Нужен чанк, вернёт true если чанк был
         /// </summary>
-        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
-        public bool NeededChunk(int x, int y, bool imStrom = true)
+        public bool NeededChunk(int x, int y)
         {
             if (IsChunkLoaded(x, y)) return true;
-            _LoadGenAdd(x, y, imStrom);
-            return false;
-        }
-
-        /// <summary>
-        /// Загрузка или генерация чанка, с пополнением его в карту чанков
-        /// </summary>
-        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
-        private void _LoadGenAdd(int x, int y, bool imStrom)
-        {
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
-            _chunkMapping.Add(chunk);
-            _LoadOrGen(chunk, imStrom);
-            //System.Threading.Thread.Sleep(1);
-            chunk.OnChunkLoad();
+            _loadingChunks.Add(chunk);
+            return false;
         }
 
         /// <summary>
@@ -52,13 +72,55 @@ namespace Vge.World.Chunk
         public void DropChunk(int x, int y) => _droppedChunks.Add(Conv.ChunkXyToIndex(x, y));
 
         /// <summary>
-        /// Выгрузка ненужных чанков Для сервера
+        /// Загрузка поставленных в очередь чанков
         /// </summary>
-        public void UnloadQueuedChunks()
+        private void _LoadQueuedChunks()
+        {
+            int count = _loadingChunks.Count;
+            if (count > 0)
+            {
+                ChunkBase chunk;
+                int i;
+
+                long timeBegin = _worldServer.Server.Time();
+                for (i = 0; i < count; i++)
+                {
+                    chunk = _loadingChunks[i];
+                    _LoadOrGen(chunk);
+                    chunk.OnChunkLoad();
+                }
+                LoadingBatchSize = Sundry.RecommendedQuantityBatch(
+                    (int)(_worldServer.Server.Time() - timeBegin),
+                    count, LoadingBatchSize);
+            }
+        }
+
+        /// <summary>
+        /// Выгрузка требуемых чанков из очереди
+        /// </summary>
+        public void UnloadingRequiredChunksFromQueue()
+        {
+            
+            int i;
+            int count = _loadingChunks.Count;
+            ChunkBase chunk;
+            count--;
+            for (i = count; i >= 0; i--)
+            {
+                chunk = _loadingChunks[i];
+                _loadingChunks.RemoveLast();
+                _chunkMapping.Add(chunk);
+            }
+        }
+
+        /// <summary>
+        /// Выгрузка ненужных чанков из очереди
+        /// </summary>
+        public void UnloadingUnnecessaryChunksFromQueue()
         {
             int i, x, y;
             int count = _droppedChunks.Count;
-            int first = count - 100;
+            int first = count - Ce.MaxCountDroppedChunks;
             if (first < 0) first = 0;
             ulong index;
             ChunkBase chunk;
@@ -86,42 +148,58 @@ namespace Vge.World.Chunk
         /// Загружаем, если нет чанка то генерируем
         /// </summary>
         /// <param name="chunk">Объект чанка не null</param>
-        /// <param name="imStrom">В отдельном потоке генерируем или загружаем чанк</param>
-        private void _LoadOrGen(ChunkBase chunk, bool imStrom)
+        private void _LoadOrGen(ChunkBase chunk)
         {
             if (!chunk.IsChunkPresent)
             {
                 // Пробуем загрузить с файла
-                if (imStrom)
+                float f, d;
+                f = d = .5f;
+
+                //  _worldServer.Filer.StartSection("Reg");
+                // 1.2-2.1 мс
+                for (int i = 0; i < 500000; i++)
                 {
-                    //System.Threading.Tasks.Task.Factory.StartNew(_Thread);
-                    _Thread();
+                    f *= d + i;
+                }
+            }
+        }
+
+        #region В потоке
+
+        /// <summary>
+        /// Отдельный поток для дополнительного мира
+        /// </summary>
+        private void _ThreadUpdate()
+        {
+            while (_worldServer.IsRuning)
+            {
+                if (_flagRunUpdate)
+                {
+                    _flagRunUpdate = false;
+                    _LoadQueuedChunks();
+                    FlagExecutionTackt = true;
                 }
                 else
                 {
-                    //  _Thread();
+                    Thread.Sleep(1);
                 }
-                
             }
         }
 
-        private void _Thread()
+        /// <summary>
+        /// Запуск в потоке
+        /// </summary>
+        public void UpdateRunInFlow()
         {
-            float f, d;
-            f = d = .5f;
-
-          //  _worldServer.Filer.StartSection("Reg");
-            // 1.2-2.1 мс
-            for (int i = 0; i < 500000; i++)
-            {
-                f *= d + i;
-            }
-            //_worldServer.Filer.EndSectionLog();
-            
+            _flagRunUpdate = true;
+            FlagExecutionTackt = false;
         }
 
+        #endregion
 
         public override string ToString() => "Ch:" + _chunkMapping.ToString()
+            + " LBS:" + LoadingBatchSize
             + " Dr:" + _droppedChunks.Count;
     }
 }

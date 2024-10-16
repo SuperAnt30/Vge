@@ -27,21 +27,21 @@ public sealed class Ce
     /// </summary>
     public const int FpsOffside = 30;
     /// <summary>
-    /// Минимальное обязательное количество загружаемых чанков для якоря за один такт
+    /// Максимальное количество выгрузки чанков за такт
     /// </summary>
-    public const int MinCountLoadingChunks = 2;
+    public const int MaxCountDroppedChunks = 100;
     /// <summary>
     /// Минимальный желаемый размер партии закачки чанков
     /// </summary>
-    public const int MinDesiredBatchSize = 1;
+    public const byte MinDesiredBatchSize = 2;
     /// <summary>
     /// Максимальный желаемый размер партии закачки чанков
     /// </summary>
-    public const int MaxDesiredBatchSize = 64;
+    public const byte MaxDesiredBatchSize = 128;
     /// <summary>
     /// Максимальный время для закачки чанков
     /// </summary>
-    public const int MaxBatchChunksTime = 20;
+    public const int MaxBatchChunksTime = Tick​​Time * 2 / 3;
     /// <summary>
     /// Сколько выделено времени на загрузку чанков всех якоре за такт в мс
     /// </summary>

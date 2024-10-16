@@ -358,11 +358,11 @@ namespace Vge.Games
                 {
                     for (int y = -radius; y <= radius; y++)
                     {
-                        world.ChunkPrServ.NeededChunk(cpx + x, cpy + y, false);
+                        world.ChunkPrServ.InitialLoadingChunk(cpx + x, cpy + y);
                         ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                     }
                 }
-                if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks)
+                if (Ce.IsDebugDrawChunks)
                 {
                     OnTagDebug(Debug.Key.ChunkReady.ToString(), world.ChunkPr.GetListDebug());
                 }

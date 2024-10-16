@@ -103,7 +103,7 @@ namespace Vge.Management
         /// <summary>
         /// Желаемый размер партии закачки чанков
         /// </summary>
-        private byte _desiredBatchSize = Ce.MinDesiredBatchSize;
+        private byte _desiredBatchSize;
 
         #endregion
 
@@ -128,6 +128,7 @@ namespace Vge.Management
             UUID = GetHash(login);
             pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
+            _desiredBatchSize = Owner ? Ce.MaxDesiredBatchSize : Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
         }
@@ -186,31 +187,7 @@ namespace Vge.Management
         /// </summary>
         public void PacketAcknowledgeChunks(PacketC20AcknowledgeChunks packet)
         {
-            int time = packet.Time;
-            byte quantity = packet.Quantity;
-            if (time == 0)
-            {
-                if (quantity < Ce.MaxDesiredBatchSize)
-                {
-                    _desiredBatchSize = (byte)(quantity * 2);
-                    if (_desiredBatchSize > Ce.MaxDesiredBatchSize)
-                    {
-                        // Максималка!
-                        _desiredBatchSize = Ce.MaxDesiredBatchSize;
-                    }
-                }
-                else if (_desiredBatchSize != Ce.MaxDesiredBatchSize)
-                {
-                    _desiredBatchSize = Ce.MaxDesiredBatchSize;
-                }
-            }
-            else
-            {
-                int i = Ce.MaxBatchChunksTime * quantity / time;
-                if (i > Ce.MaxDesiredBatchSize) i = Ce.MaxDesiredBatchSize;
-                if (i < Ce.MinDesiredBatchSize) i = Ce.MinDesiredBatchSize;
-                _desiredBatchSize = (byte)i;
-            }
+            _desiredBatchSize = Sundry.RecommendedQuantityBatch(packet.Time, packet.Quantity, _desiredBatchSize);
         }
 
         #endregion
@@ -449,7 +426,6 @@ namespace Vge.Management
             ChunkBase chunk;
             _loadedNull.Clear();
             byte quantityBatch = 0;
-
             while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
             {
                 index = _clientChunksSort.GetLast();
@@ -478,7 +454,8 @@ namespace Vge.Management
             if (quantityBatch > 0)
             {
                 // Отправляем в конце партии закачки чанков
-                SendPacket(new PacketS20ChunkSend(quantityBatch));
+                SendPacket(new PacketS20ChunkSend(_clientChunksSort.Count == 0 
+                    ? _desiredBatchSize : quantityBatch));
             }
 
             int count = _loadedNull.Count;

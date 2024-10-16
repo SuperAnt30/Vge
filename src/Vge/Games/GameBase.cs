@@ -247,7 +247,7 @@ namespace Vge.Games
                 Hud.Draw();
             }
 
-            if (Ce.IsDebugDraw && Ce.IsDebugDrawChunks)
+            if (Ce.IsDebugDrawChunks)
             {
                 Debug.DrawChunks(window);
             }
