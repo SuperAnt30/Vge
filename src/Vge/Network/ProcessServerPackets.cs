@@ -178,8 +178,16 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
-                playerServer.chPos = new WinGL.Util.Vector2i((int)packet.GetPos().X, (int)packet.GetPos().Y);
+                playerServer.chPos = new WinGL.Util.Vector2i((int)packet.Position.X, (int)packet.Position.Y);
+                
                 playerServer.isPos = true;
+
+
+                if (playerServer.idWorld != packet.World)
+                {
+                    // Смена мира
+                    playerServer.ChangeWorld(packet.World);
+                }
               //  _server.Worlds.GetWorld(0).Fragment.AddWorldAnchorChunk(playerServer.chPos.X + 25, playerServer.chPos.Y);
             }
 

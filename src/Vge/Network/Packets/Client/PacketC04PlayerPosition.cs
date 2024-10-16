@@ -9,42 +9,39 @@ namespace Vge.Network.Packets.Client
     {
         public byte GetId() => 0x04;
 
-        private Vector3 pos;
-        private bool sneaking;
-        private bool sprinting;
-        private bool onGround;
+        public byte World { get; private set; }
+        public Vector3 Position { get; private set; }
+        public bool IsSneaking { get; private set; }
+        public bool IsSprinting { get; private set; }
+        public bool OnGround { get; private set; }
 
-        public Vector3 GetPos() => pos;
-        public bool IsSneaking() => sneaking;
-        public bool IsSprinting() => sprinting;
-        public bool OnGround() => onGround;
-
-        public PacketC04PlayerPosition(Vector3 pos, bool sneaking, bool sprinting, bool onGround)
+        public PacketC04PlayerPosition(Vector3 pos, bool sneaking, bool sprinting, bool onGround, byte world)
         {
-            this.pos = pos;
-            this.sneaking = sneaking;
-            this.sprinting = sprinting;
-            this.onGround = onGround;
+            Position = pos;
+            IsSneaking = sneaking;
+            IsSprinting = sprinting;
+            OnGround = onGround;
+            World = world;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            pos = new Vector3(stream.Float(), stream.Float(), stream.Float());
-            byte b = stream.Byte();
-            //sneaking = stream.Bool();
-            //sprinting = stream.Bool();
-            //onGround = stream.Bool();
+            Position = new Vector3(stream.Float(), stream.Float(), stream.Float());
+            World = stream.Byte();
+            //IsSneaking = stream.Bool();
+            //IsSprinting = stream.Bool();
+            //OnGround = stream.Bool();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Float(pos.X);
-            stream.Float(pos.Y);
-            stream.Float(pos.Z);
-            stream.Byte(0);
-            //stream.Bool(sneaking);
-            //stream.Bool(sprinting);
-            //stream.Bool(onGround);
+            stream.Float(Position.X);
+            stream.Float(Position.Y);
+            stream.Float(Position.Z);
+            stream.Byte(World);
+            //stream.Bool(IsSneaking);
+            //stream.Bool(IsSprinting);
+            //stream.Bool(OnGround);
         }
     }
 }

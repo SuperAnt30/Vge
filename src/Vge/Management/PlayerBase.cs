@@ -46,7 +46,7 @@ namespace Vge.Management
         #region Debug
 
         public Vector2i chPos = new Vector2i(0);
-        public byte idWorld = 0;
+        public byte idWorld = 1;
         public bool isPos = false;
 
         #endregion

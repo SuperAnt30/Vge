@@ -71,7 +71,7 @@ namespace Vge.Actions
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
                         new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
-                        false, false, false));
+                        false, false, false, _game.Player.idWorld));
                     Debug.Player = _game.Player.chPos;
                 }
 
@@ -88,6 +88,20 @@ namespace Vge.Actions
                     {
                         _game.Player.SetOverviewChunk((byte)(_game.Player.OverviewChunk - 1), true);
                     }
+                }
+                else if (keys == Keys.NumPad0)
+                {
+                    _game.Player.idWorld = 0;
+                    _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
+                        new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        false, false, false, _game.Player.idWorld));
+                }
+                else if (keys == Keys.NumPad1)
+                {
+                    _game.Player.idWorld = 1;
+                    _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
+                        new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        false, false, false, _game.Player.idWorld));
                 }
             }
         }

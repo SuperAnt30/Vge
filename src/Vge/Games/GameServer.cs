@@ -362,7 +362,7 @@ namespace Vge.Games
                         ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                     }
                 }
-                if (Ce.IsDebugDrawChunks)
+                if (Ce.IsDebugDrawChunks && world.IdWorld == 0)
                 {
                     OnTagDebug(Debug.Key.ChunkReady.ToString(), world.ChunkPr.GetListDebug());
                 }

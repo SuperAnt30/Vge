@@ -157,7 +157,7 @@ namespace Vge.Management
             if (isPos)
             {
                 //server.Filer.StartSection("Fragment" + OverviewChunk);
-                server.Worlds.GetWorld(idWorld).Fragment.UpdateMountedMovingAnchor(this);
+                GetWorld().Fragment.UpdateMountedMovingAnchor(this);
                 //server.Filer.EndSectionLog();
                 isPos = false;
             }
@@ -203,7 +203,7 @@ namespace Vge.Management
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
             // Определяем в каком мире
-            idWorld = 0;
+            idWorld = 1;
 
             // Установленный перемещенный якорь
             MountedMovedAnchor();
@@ -230,6 +230,20 @@ namespace Vge.Management
         public WorldServer GetWorld() => server.Worlds.GetWorld(idWorld);
 
         /// <summary>
+        /// Смена мира, передаём новый id мира
+        /// </summary>
+        public void ChangeWorld(byte newIdWorld)
+        {
+            GetWorld().Fragment.RemoveAnchor(this);
+            // Смена id мира
+            idWorld = newIdWorld;
+            // Вносим в менеджер фрагментов игрока
+            GetWorld().Fragment.AddAnchor(this);
+            // Установленный перемещенный якорь
+            MountedMovedAnchor();
+        }
+
+        /// <summary>
         /// Получить хэш по строке
         /// </summary>
         public static string GetHash(string input)
@@ -238,8 +252,6 @@ namespace Vge.Management
             byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
-
-        
 
         #region WriteRead
 
