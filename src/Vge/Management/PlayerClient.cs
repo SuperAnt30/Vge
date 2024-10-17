@@ -60,6 +60,15 @@ namespace Vge.Management
         #region Packet
 
         /// <summary>
+        /// Пакет Возраждение в мире
+        /// </summary>
+        public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
+        {
+            IdWorld = packet.IdWorld;
+            _game.World.ChunkPr.SetHeightChunks(packet.NumberChunkSections);
+        }
+
+        /// <summary>
         /// Замер скорости закачки чанков
         /// </summary>
         public void PacketChunckSend(PacketS20ChunkSend packet)

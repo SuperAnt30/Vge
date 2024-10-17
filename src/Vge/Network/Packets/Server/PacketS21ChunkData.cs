@@ -7,7 +7,7 @@ namespace Vge.Network.Packets.Server
     /// </summary>
     public struct PacketS21ChunkData : IPacket
     {
-        public byte GetId() => 0x21;
+        public byte Id => 0x21;
 
         /// <summary>
         /// Позиция X текущего чанка

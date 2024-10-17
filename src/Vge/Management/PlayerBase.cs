@@ -36,17 +36,20 @@ namespace Vge.Management
         /// Обзор чанков прошлого такта
         /// </summary>
         public byte OverviewChunkPrev { get; private set; } = 1;
-
+        /// <summary>
+        /// Индекс мира, где находится игрок
+        /// </summary>
+        public byte IdWorld { get; protected set; } = 0;
+        
         /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
         protected long _lastTimeServer;
 
-
         #region Debug
 
         public Vector2i chPos = new Vector2i(0);
-        public byte idWorld = 1;
+        
         public bool isPos = false;
 
         #endregion

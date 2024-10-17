@@ -175,11 +175,11 @@ namespace Vge.Management
         /// </summary>
         public void LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
         {
-            string login = packet.GetLogin();
-            if (packet.GetVersion() != Ce.IndexVersion)
+            string login = packet.Login;
+            if (packet.Version != Ce.IndexVersion)
             {
                 // Клиент другой версии
-                Server.Log.Server(Srl.ServerVersionAnother, login, packet.GetVersion());
+                Server.Log.Server(Srl.ServerVersionAnother, login, packet.Version);
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.VersionAnother));
                 return;
             }
@@ -205,7 +205,7 @@ namespace Vge.Management
             }
 
             // Создаём объект Игрока
-            PlayerServer playerServer = new PlayerServer(login, packet.GetToken(), socketSide, Server);
+            PlayerServer playerServer = new PlayerServer(login, packet.Token, socketSide, Server);
 
             // Загружаем данные игрока если имеются
             if (!_GetPlayerData(playerServer))

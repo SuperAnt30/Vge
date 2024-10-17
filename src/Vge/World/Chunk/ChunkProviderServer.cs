@@ -39,10 +39,19 @@ namespace Vge.World.Chunk
         /// Флаг разрешающий запустить такт
         /// </summary>
         private bool _flagRunUpdate;
+        /// <summary>
+        /// Счётчик для партии закачки чанков прошлой секунды
+        /// </summary>
+        private int _counterLBSprev;
+        /// <summary>
+        /// Счётчик для партии закачки чанков в секунду
+        /// </summary>
+        private int _counterLBS;
 
         public ChunkProviderServer(WorldServer world) : base(world)
         {
             _worldServer = world;
+            SetHeightChunks(world.Settings.NumberChunkSections);
             // Запускаем отдельный поток для загрузки и генерации чанков
             Thread myThread = new Thread(_ThreadUpdate) { Name = "Chunk" + world.IdWorld };
             myThread.Start();
@@ -81,7 +90,6 @@ namespace Vge.World.Chunk
             }
             return chunk;
         }
-            
 
         /// <summary>
         /// Добавить чанк на удаление
@@ -105,6 +113,8 @@ namespace Vge.World.Chunk
                     chunk = _loadingChunks[i];
                     chunk.LoadingOrGen();
                 }
+
+                _counterLBS += count;
                 LoadingBatchSize = Sundry.RecommendedQuantityBatch(
                     (int)(_worldServer.Server.Time() - timeBegin),
                     count, LoadingBatchSize);
@@ -121,13 +131,11 @@ namespace Vge.World.Chunk
             {
                 int i;
                 ChunkBase chunk;
-
                 for (i = 0; i < count; i++)
                 {
                     chunk = _loadingChunks[i];
                     _chunkMapping.Add(chunk);
                 }
-
                 _loadingChunkMapping.Clear();
                 _loadingChunks.Clear();
             }
@@ -164,6 +172,15 @@ namespace Vge.World.Chunk
             }
         }
 
+        /// <summary>
+        /// Обнулить счётчик
+        /// </summary>
+        public void ClearCounter()
+        {
+            _counterLBSprev = _counterLBS;
+            _counterLBS = 0;
+        }
+
         #region В потоке
 
         /// <summary>
@@ -193,14 +210,13 @@ namespace Vge.World.Chunk
         {
             _flagRunUpdate = true;
             FlagExecutionTackt = false;
-            //_LoadQueuedChunks();
-            //FlagExecutionTackt = true;
         }
 
         #endregion
 
         public override string ToString() => "Ch:" + _chunkMapping.ToString()
-            + " LBS:" + LoadingBatchSize
+            + " Lbs:" + LoadingBatchSize + "|" + _counterLBSprev
             + " Dr:" + _droppedChunks.Count;
+            
     }
 }

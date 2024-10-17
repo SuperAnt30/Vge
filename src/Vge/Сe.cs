@@ -45,7 +45,7 @@ public sealed class Ce
     /// <summary>
     /// Сколько выделено времени на загрузку чанков всех якоре за такт в мс
     /// </summary>
-    public const int TimeLoadChunksAnchors = 15;
+    //public const int TimeLoadChunksAnchors = 15;
 
     #endregion
 
@@ -79,7 +79,7 @@ public sealed class Ce
     /// <summary>
     /// Запускается ли первый мир в отдельном потоке
     /// </summary>
-    public const bool OneWorldRunInFlow = true;
+    public const bool OneWorldRunInFlow = false;
 
     /// <summary>
     /// Двумерный массив обзорных кругио от ближних колец к дальним.

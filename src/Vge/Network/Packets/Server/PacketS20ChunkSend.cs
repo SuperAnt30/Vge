@@ -5,7 +5,7 @@
     /// </summary>
     public struct PacketS20ChunkSend : IPacket
     {
-        public byte GetId() => 0x20;
+        public byte Id => 0x20;
 
         /// <summary>
         /// Начальный флаг, перед отправкой чанков, false по окончанию отправки

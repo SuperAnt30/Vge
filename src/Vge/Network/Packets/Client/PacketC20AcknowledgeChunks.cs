@@ -5,7 +5,7 @@
     /// </summary>
     public struct PacketC20AcknowledgeChunks : IPacket
     {
-        public byte GetId() => 0x20;
+        public byte Id => 0x20;
 
         /// <summary>
         /// Количество чанков отправлено

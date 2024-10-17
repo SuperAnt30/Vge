@@ -7,7 +7,7 @@ namespace Vge.Network.Packets.Server
     /// </summary>
     public struct PacketS08PlayerPosLook : IPacket
     {
-        public byte GetId() => 0x08;
+        public byte Id => 0x08;
 
         private Vector3 pos;
         private float yaw;

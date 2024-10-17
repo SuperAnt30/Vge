@@ -5,30 +5,27 @@
     /// </summary>
     public struct PacketS03JoinGame : IPacket
     {
-        public byte GetId() => 0x03;
+        public byte Id => 0x03;
 
-        private int index;
-        private string uuid;
-
-        public int GetIndex() => index;
-        public string GetUuid() => uuid;
+        public int Index { get; private set; }
+        public string Uuid { get; private set; }
 
         public PacketS03JoinGame(int index, string uuid)
         {
-            this.index = index;
-            this.uuid = uuid;
+            Index = index;
+            Uuid = uuid;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            index = stream.Int();
-            uuid = stream.String();
+            Index = stream.Int();
+            Uuid = stream.String();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Int(index);
-            stream.String(uuid);
+            stream.Int(Index);
+            stream.String(Uuid);
         }
     }
 }

@@ -189,7 +189,7 @@ namespace Vge.Games
         {
             if (_IsConnect())
             {
-                PacketS02LoadingGame.EnumStatus status = packet.GetStatus();
+                PacketS02LoadingGame.EnumStatus status = packet.Status;
                 if (status == PacketS02LoadingGame.EnumStatus.BeginNet)
                 {
                     _socket.SendPacket(new PacketC02LoginStart(Player.Login, Player.Token, Ce.IndexVersion));

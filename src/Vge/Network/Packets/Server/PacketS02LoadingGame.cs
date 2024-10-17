@@ -5,41 +5,38 @@
     /// </summary>
     public struct PacketS02LoadingGame : IPacket
     {
-        public byte GetId() => 0x02;
+        public byte Id => 0x02;
 
-        private EnumStatus status;
-        private ushort value;
-
-        public EnumStatus GetStatus() => status;
-        public ushort GetValue() => value;
+        public EnumStatus Status { get; private set; }
+        public ushort Value { get; private set; }
 
         public PacketS02LoadingGame(EnumStatus status)
         {
-            this.status = status;
-            value = 0;
+            Status = status;
+            Value = 0;
         }
 
         public PacketS02LoadingGame(ushort value)
         {
-            status = EnumStatus.Begin;
-            this.value = value;
+            Status = EnumStatus.Begin;
+            Value = value;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            status = (EnumStatus)stream.Byte();
-            if (status == EnumStatus.Begin)
+            Status = (EnumStatus)stream.Byte();
+            if (Status == EnumStatus.Begin)
             {
-                value = stream.UShort();
+                Value = stream.UShort();
             }
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Byte((byte)status);
-            if (status == EnumStatus.Begin)
+            stream.Byte((byte)Status);
+            if (Status == EnumStatus.Begin)
             {
-                stream.UShort(value);
+                stream.UShort(Value);
             }
         }
 

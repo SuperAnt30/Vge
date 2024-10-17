@@ -5,44 +5,40 @@
     /// </summary>
     public struct PacketC02LoginStart : IPacket
     {
-        public byte GetId() => 0x02;
-
-        private string login;
-        private string token;
-        private ushort version;
+        public byte Id => 0x02;
 
         /// <summary>
         /// Имя игрока
         /// </summary>
-        public string GetLogin() => login;
+        public string Login { get; private set; }
         /// <summary>
         /// Имя игрока
         /// </summary>
-        public string GetToken() => token;
+        public string Token { get; private set; }
         /// <summary>
         /// Версия проекта
         /// </summary>
-        public ushort GetVersion() => version;
+        public ushort Version { get; private set; }
 
         public PacketC02LoginStart(string login, string token, ushort version)
         {
-            this.login = login;
-            this.token = token;
-            this.version = version;
+            Login = login;
+            Token = token;
+            Version = version;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            login = stream.String();
-            token = stream.String();
-            version = stream.UShort();
+            Login = stream.String();
+            Token = stream.String();
+            Version = stream.UShort();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.String(login);
-            stream.String(token);
-            stream.UShort(version);
+            stream.String(Login);
+            stream.String(Token);
+            stream.UShort(Version);
         }
     }
 }

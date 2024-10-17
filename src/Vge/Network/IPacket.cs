@@ -8,7 +8,7 @@
         /// <summary>
         /// Порядковый номер сетевого пакета, для клиента и серваера отдельный порядок.
         /// </summary>
-        byte GetId();
+        byte Id { get; }
         void ReadPacket(ReadPacket stream);
         void WritePacket(WritePacket stream);
     }

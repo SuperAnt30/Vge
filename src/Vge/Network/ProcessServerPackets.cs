@@ -154,7 +154,7 @@ namespace Vge.Network
         /// </summary>
         private void _Handle01KeepAlive(SocketSide socketSide, Packet01KeepAlive packet)
         {
-            if (_pingKeySend == packet.GetTime())
+            if (_pingKeySend == packet.Time)
             {
                 PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
                 if (playerServer != null)
@@ -183,7 +183,7 @@ namespace Vge.Network
                 playerServer.isPos = true;
 
 
-                if (playerServer.idWorld != packet.World)
+                if (playerServer.IdWorld != packet.World)
                 {
                     // Смена мира
                     playerServer.ChangeWorld(packet.World);

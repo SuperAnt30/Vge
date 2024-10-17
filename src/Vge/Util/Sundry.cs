@@ -38,7 +38,7 @@
             }
             if (dbs != previous)
             {
-                return (byte)((previous * 3 + dbs) / 4);
+                return (byte)((previous * 7 + dbs) / 8);
             }
             return previous;
         }

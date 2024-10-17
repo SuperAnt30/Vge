@@ -69,7 +69,7 @@ namespace Vge.World
             
             if (idWorld == 0)
             {
-                //Fragment.AddAnchor(_testAnchor);
+                Fragment.AddAnchor(_testAnchor);
             }
 
             if (idWorld != 0 || Ce.OneWorldRunInFlow)
@@ -126,7 +126,7 @@ namespace Vge.World
             // Тут начинается все действия с блоками АИ мобов и всё такое....
             if (IdWorld == 0)
             {
-                //_testAnchor.Update();
+                _testAnchor.Update();
             }
 
             // Обработка фрагментов в конце такта
@@ -151,6 +151,11 @@ namespace Vge.World
         /// </summary>
         private void _FragmentBegin()
         {
+            if (Server.TickCounter % Ce.Tps == 0)
+            {
+                // Прошла секунда
+                ChunkPrServ.ClearCounter();
+            }
             // Запускаем фрагмент, тут определение какие чанки выгрузить, какие загрузить, 
             // определение активных чанков.
             Filer.StartSection("Fragment");
@@ -187,6 +192,8 @@ namespace Vge.World
             Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
             ChunkPrServ.UnloadingRequiredChunksFromQueue();
             Filer.EndSection();
+
+            
         }
 
         #endregion

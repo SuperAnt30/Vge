@@ -13,5 +13,10 @@
         /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
         /// </summary>
         public byte ActiveRadius { get; protected set; } = 8;
+        /// <summary>
+        /// Количество секций в чанке
+        /// </summary>
+        public byte NumberChunkSections { get; protected set; } = 8;
+
     }
 }

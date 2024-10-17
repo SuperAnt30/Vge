@@ -5,7 +5,7 @@
     /// </summary>
     public struct PacketC15PlayerSetting : IPacket
     {
-        public byte GetId() => 0x15;
+        public byte Id => 0x15;
 
         /// <summary>
         /// Обзор чанков

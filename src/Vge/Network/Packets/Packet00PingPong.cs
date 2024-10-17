@@ -5,14 +5,13 @@
     /// </summary>
     public struct Packet00PingPong : IPacket
     {
-        public byte GetId() => 0x00;
+        public byte Id => 0x00;
 
-        private long clientTime;
-        public long GetClientTime() => clientTime;
+        public long ClientTime { get; private set; }
 
-        public Packet00PingPong(long time) => clientTime = time;
+        public Packet00PingPong(long time) => ClientTime = time;
 
-        public void ReadPacket(ReadPacket stream) => clientTime = stream.Long();
-        public void WritePacket(WritePacket stream) => stream.Long(clientTime);
+        public void ReadPacket(ReadPacket stream) => ClientTime = stream.Long();
+        public void WritePacket(WritePacket stream) => stream.Long(ClientTime);
     }
 }

@@ -7,7 +7,7 @@ namespace Vge.Network.Packets.Client
     /// </summary>
     public struct PacketC04PlayerPosition : IPacket
     {
-        public byte GetId() => 0x04;
+        public byte Id => 0x04;
 
         public byte World { get; private set; }
         public Vector3 Position { get; private set; }

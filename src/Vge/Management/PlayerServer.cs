@@ -45,7 +45,7 @@ namespace Vge.Management
         /// <summary>
         /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
         /// </summary>
-        public byte ActiveRadius => 8;
+        public byte ActiveRadius => GetWorld().Settings.ActiveRadius;
         /// <summary>
         /// Является ли якорь игроком
         /// </summary>
@@ -199,11 +199,10 @@ namespace Vge.Management
         {
             SendPacket(new PacketS03JoinGame(Id, UUID));
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));
+            SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             SendPacket(new PacketS08PlayerPosLook(new System.Numerics.Vector3(chPos.X, chPos.Y, 0), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
-            // Определяем в каком мире
-            idWorld = 1;
 
             // Установленный перемещенный якорь
             MountedMovedAnchor();
@@ -227,7 +226,7 @@ namespace Vge.Management
         /// <summary>
         /// Получить мир в котором находится игрок
         /// </summary>
-        public WorldServer GetWorld() => server.Worlds.GetWorld(idWorld);
+        public WorldServer GetWorld() => server.Worlds.GetWorld(IdWorld);
 
         /// <summary>
         /// Смена мира, передаём новый id мира
@@ -236,7 +235,8 @@ namespace Vge.Management
         {
             GetWorld().Fragment.RemoveAnchor(this);
             // Смена id мира
-            idWorld = newIdWorld;
+            IdWorld = newIdWorld;
+            SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Вносим в менеджер фрагментов игрока
             GetWorld().Fragment.AddAnchor(this);
             // Установленный перемещенный якорь
@@ -267,6 +267,7 @@ namespace Vge.Management
                     TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
                     Token = nbt.GetString("Token");
                     TimesExisted = nbt.GetLong("TimesExisted");
+                    IdWorld = nbt.GetByte("IdWorld");
                     chPos = new Vector2i(nbt.GetInt("ChX"), nbt.GetInt("ChY"));
                     return true;
                 }
@@ -287,6 +288,7 @@ namespace Vge.Management
             TagCompound nbt = new TagCompound();
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
+            nbt.SetByte("IdWorld", IdWorld);
             nbt.SetInt("ChX", chPos.X);
             nbt.SetInt("ChY", chPos.Y);
             NBTTools.WriteToFile(nbt, pathName, true);

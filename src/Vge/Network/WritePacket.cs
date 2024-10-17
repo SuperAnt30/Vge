@@ -42,7 +42,7 @@ namespace Vge.Network
         private void Trancive(IPacket packet)
         {
             count = 0;
-            Byte(packet.GetId());
+            Byte(packet.Id);
             packet.WritePacket(this);
         }
 

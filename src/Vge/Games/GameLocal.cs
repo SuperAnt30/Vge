@@ -161,15 +161,15 @@ namespace Vge.Games
         {
             if (window.Screen != null && window.Screen is ScreenWorking screen)
             {
-                if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.Begin)
+                if (packet.Status == PacketS02LoadingGame.EnumStatus.Begin)
                 {
-                    screen.ServerBegin(packet.GetValue());
+                    screen.ServerBegin(packet.Value);
                 }
-                else if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.Step)
+                else if (packet.Status == PacketS02LoadingGame.EnumStatus.Step)
                 {
                     screen.ServerStep();
                 }
-                else if (packet.GetStatus() == PacketS02LoadingGame.EnumStatus.ServerGo)
+                else if (packet.Status == PacketS02LoadingGame.EnumStatus.ServerGo)
                 {
                     window.ScreenClose();
                 }

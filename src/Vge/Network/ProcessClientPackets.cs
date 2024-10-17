@@ -72,6 +72,9 @@ namespace Vge.Network
                 case 0x04:
                     _Handle04TimeUpdate((PacketS04TimeUpdate)readPacket.Receive(buffer, new PacketS04TimeUpdate()));
                     break;
+                case 0x07:
+                    _Handle07RespawnInWorld((PacketS07RespawnInWorld)readPacket.Receive(buffer, new PacketS07RespawnInWorld()));
+                    break;
                 case 0x08:
                     _Handle08PlayerPosLook((PacketS08PlayerPosLook)readPacket.Receive(buffer, new PacketS08PlayerPosLook()));
                     break;
@@ -111,7 +114,7 @@ namespace Vge.Network
         /// Пакет связи
         /// </summary>
         private void _Handle00Pong(Packet00PingPong packet) 
-            => Game.Player.SetPing(packet.GetClientTime());
+            => Game.Player.SetPing(packet.ClientTime);
 
         /// <summary>
         /// KeepAlive
@@ -129,15 +132,21 @@ namespace Vge.Network
         /// Пакет соединения игрока с сервером
         /// </summary>
         private void _Handle03JoinGame(PacketS03JoinGame packet)
-            => Game.PlayerOnTheServer(packet.GetIndex(), packet.GetUuid());
+            => Game.PlayerOnTheServer(packet.Index, packet.Uuid);
         
         /// <summary>
         /// Пакет синхронизации времени с сервером
         /// </summary>
         private void _Handle04TimeUpdate(PacketS04TimeUpdate packet)
         {
-            Game.SetTickCounter(packet.GetTime());
+            Game.SetTickCounter(packet.Time);
         }
+
+        /// <summary>
+        /// Пакет Возраждение в мире
+        /// </summary>
+        private void _Handle07RespawnInWorld(PacketS07RespawnInWorld packet)
+            => Game.Player.PacketRespawnInWorld(packet);
 
         /// <summary>
         /// Пакет расположения игрока, при старте, телепорт, рестарте и тп
