@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using Vge.Games;
+﻿using Vge.Games;
 
 namespace Vge.World
 {
@@ -50,51 +48,23 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            if (Ce.OneWorldRunInFlow)
+            byte b;
+            // Запускаем такты дополнительный миров в отдельных потоках
+            for (b = 1; b < _count; b++)
             {
-                _worldServers[0].UpdateRunInFlow();
-            }
-            else
-            {
-                _worldServers[0].Update();
-            }
-            for (byte i = 1; i < _count; i++)
-            {
-                _worldServers[i].UpdateRunInFlow();
+                _worldServers[b].Wait.RunInFlow();
             }
 
-            if (_count > 1 || Ce.OneWorldRunInFlow)
+            // Отрабатываем такт основного мира
+            _worldServers[0].Update();
+
+            // Ждём отработку в остальных потоках
+            for (b = 1; b < _count; b++)
             {
-                bool flag;
-                // Если мир отрабатываем в потоке
-                while (Server.IsServerRunning)
-                {
-                    // Ждём когда отработает первый мир
-                    if (!Ce.OneWorldRunInFlow || _worldServers[0].FlagExecutionTackt)
-                    {
-                        flag = true;
-                        // Далее ждём когда отработают все остальные миры
-                        for (byte i = 1; i < _count; i++)
-                        {
-                            if (!_worldServers[i].FlagExecutionTackt)
-                            {
-                                flag = false;
-                                Thread.Sleep(1);
-                                break;
-                            }
-                        }
-                        if (flag)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
+                _worldServers[b].Wait.Waiting();
             }
 
+            // Если есть отладка отправляем на отладку
             if (Ce.IsDebugDrawChunks)
             {
                 Server.Filer.StartSection("FragmentManagerDebug");

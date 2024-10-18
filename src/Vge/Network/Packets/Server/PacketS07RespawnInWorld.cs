@@ -3,7 +3,7 @@
 namespace Vge.Network.Packets.Server
 {
     /// <summary>
-    /// Возраждение в мире
+    /// Возраждение в мире, передаём параметры мира
     /// </summary>
     public struct PacketS07RespawnInWorld : IPacket
     {

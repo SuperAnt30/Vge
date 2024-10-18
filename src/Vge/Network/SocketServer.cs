@@ -16,8 +16,6 @@ namespace Vge.Network
         /// Сокет сервера
         /// </summary>
         private Socket socket;
-
-        private Socket socketUdp;
         /// <summary>
         /// Порт сервера
         /// </summary>

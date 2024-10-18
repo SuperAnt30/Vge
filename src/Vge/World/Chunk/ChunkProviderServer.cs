@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Vge.Util;
+﻿using Vge.Util;
 
 namespace Vge.World.Chunk
 {
@@ -11,11 +10,11 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Размер партии закачки чанков
         /// </summary>
-        public byte LoadingBatchSize { get; private set; } = Ce.MaxDesiredBatchSize;
+        public byte LoadingBatchSize { get; private set; } = Ce.StartDesiredBatchSize;
         /// <summary>
-        /// Флаг выполненого такта
+        /// Ждать обработчик
         /// </summary>
-        public bool FlagExecutionTackt { get; private set; }
+        public readonly WaitHandler Wait;
 
         /// <summary>
         /// Посредник серверного чанка
@@ -34,11 +33,7 @@ namespace Vge.World.Chunk
         /// Карта чанков которые надо загрузить
         /// </summary>
         private readonly MapChunk _loadingChunkMapping = new MapChunk();
-
-        /// <summary>
-        /// Флаг разрешающий запустить такт
-        /// </summary>
-        private bool _flagRunUpdate;
+        
         /// <summary>
         /// Счётчик для партии закачки чанков прошлой секунды
         /// </summary>
@@ -52,9 +47,9 @@ namespace Vge.World.Chunk
         {
             _worldServer = world;
             SetHeightChunks(world.Settings.NumberChunkSections);
-            // Запускаем отдельный поток для загрузки и генерации чанков
-            Thread myThread = new Thread(_ThreadUpdate) { Name = "Chunk" + world.IdWorld };
-            myThread.Start();
+            Wait = new WaitHandler("Chunk" + world.IdWorld);
+            Wait.DoInFlow += (sender, e) => _LoadQueuedChunks();
+            Wait.Run();
         }
 
         /// <summary>
@@ -72,6 +67,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public bool NeededChunk(int x, int y)
         {
+            _droppedChunks.Remove(Conv.ChunkXyToIndex(x, y));
             if (IsChunkLoaded(x, y)) return true;
             ChunkBase chunk = new ChunkBase(_worldServer, x, y);
             _loadingChunks.Add(chunk);
@@ -181,42 +177,8 @@ namespace Vge.World.Chunk
             _counterLBS = 0;
         }
 
-        #region В потоке
-
-        /// <summary>
-        /// Отдельный поток для дополнительного мира
-        /// </summary>
-        private void _ThreadUpdate()
-        {
-            while (_worldServer.IsRuning)
-            {
-                if (_flagRunUpdate)
-                {
-                    _flagRunUpdate = false;
-                    _LoadQueuedChunks();
-                    FlagExecutionTackt = true;
-                }
-                else
-                {
-                    Thread.Sleep(1);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Запуск в потоке
-        /// </summary>
-        public void UpdateRunInFlow()
-        {
-            _flagRunUpdate = true;
-            FlagExecutionTackt = false;
-        }
-
-        #endregion
-
         public override string ToString() => "Ch:" + _chunkMapping.ToString()
             + " Lbs:" + LoadingBatchSize + "|" + _counterLBSprev
             + " Dr:" + _droppedChunks.Count;
-            
     }
 }

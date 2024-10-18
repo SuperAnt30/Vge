@@ -39,13 +39,13 @@ public sealed class Ce
     /// </summary>
     public const byte MaxDesiredBatchSize = 128;
     /// <summary>
+    /// Стартовое значение желаемого размера партии закачки чанков
+    /// </summary>
+    public const byte StartDesiredBatchSize = 16;
+    /// <summary>
     /// Максимальный время для закачки чанков
     /// </summary>
-    public const int MaxBatchChunksTime = Tick​​Time * 2 / 3;
-    /// <summary>
-    /// Сколько выделено времени на загрузку чанков всех якоре за такт в мс
-    /// </summary>
-    //public const int TimeLoadChunksAnchors = 15;
+    public const int MaxBatchChunksTime = Tick​​Time * 4 / 5;
 
     #endregion
 
@@ -76,10 +76,6 @@ public sealed class Ce
     /// Время в мс на такт, в minecraft 50
     /// </summary>
     public const int Tick​​Time = 1000 / Tps;
-    /// <summary>
-    /// Запускается ли первый мир в отдельном потоке
-    /// </summary>
-    public const bool OneWorldRunInFlow = false;
 
     /// <summary>
     /// Двумерный массив обзорных кругио от ближних колец к дальним.

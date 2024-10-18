@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Vge.Games;
+﻿using Vge.Games;
 using Vge.Management;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -36,18 +35,14 @@ namespace Vge.World
         /// </summary>
         public readonly ChunkProviderServer ChunkPrServ;
         /// <summary>
-        /// Флаг выполненого такта
+        /// Ждать обработчик
         /// </summary>
-        public bool FlagExecutionTackt { get; private set; }
+        public readonly WaitHandler Wait;
         /// <summary>
         /// Запущен ли мир
         /// </summary>
         public bool IsRuning { get; private set; } = true;
 
-        /// <summary>
-        /// Флаг разрешающий запустить такт
-        /// </summary>
-        private bool _flagRunUpdate;
         /// <summary>
         /// Время затраченое за такт
         /// </summary>
@@ -65,53 +60,22 @@ namespace Vge.World
             ChunkPr = ChunkPrServ = new ChunkProviderServer(this);
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
-            _testAnchor = new TestAnchor(this);
-            
+
+
             if (idWorld == 0)
             {
+                _testAnchor = new TestAnchor(this);
                 Fragment.AddAnchor(_testAnchor);
             }
 
-            if (idWorld != 0 || Ce.OneWorldRunInFlow)
+            if (idWorld != 0)
             {
-                // Запускаем отдельный поток для всех дополнительных миров
-                Thread myThread = new Thread(_ThreadUpdate) { Name = "World" + idWorld };
-                myThread.Start();
+                // Все кроме основного мира, использую дополнительный поток
+                Wait = new WaitHandler("World" + IdWorld);
+                Wait.DoInFlow += (sender, e) => Update();
+                Wait.Run();
             }
         }
-
-        #region В потоке
-
-        /// <summary>
-        /// Отдельный поток для дополнительного мира
-        /// </summary>
-        private void _ThreadUpdate()
-        {
-            while (IsRuning && Server.IsServerRunning)
-            {
-                if (_flagRunUpdate)
-                {
-                    _flagRunUpdate = false;
-                    Update();
-                    FlagExecutionTackt = true;
-                }
-                else
-                {
-                    Thread.Sleep(1);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Запуск в потоке
-        /// </summary>
-        public void UpdateRunInFlow()
-        {
-            _flagRunUpdate = true;
-            FlagExecutionTackt = false;
-        }
-
-        #endregion
 
         /// <summary>
         /// Такт выполнения
@@ -141,6 +105,11 @@ namespace Vge.World
         public void Stoping()
         {
             IsRuning = false;
+            ChunkPrServ.Wait.Stoping();
+            if (Wait != null)
+            {
+                Wait.Stoping();
+            }
             _WriteToFile();
         }
 
@@ -166,7 +135,7 @@ namespace Vge.World
             Filer.EndSection();
 
             // Этап запуска чанков в отдельном потоке
-            ChunkPrServ.UpdateRunInFlow();
+            ChunkPrServ.Wait.RunInFlow();
         }
 
         /// <summary>
@@ -174,26 +143,13 @@ namespace Vge.World
         /// </summary>
         private void _FragmentEnd()
         {
-            // Дожидаемся Загрузки чанков
-            while(IsRuning)
-            {
-                // Ждём когда отработает поток чанков
-                if (!ChunkPrServ.FlagExecutionTackt)
-                {
-                    Thread.Sleep(1);
-                }
-                else
-                {
-                    break;
-                }
-            }
+            // Дожидаемся загрузки чанков
+            ChunkPrServ.Wait.Waiting();
 
             // Выгрузка требуемых чанков из очереди которые отработали в отдельном потоке
             Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
             ChunkPrServ.UnloadingRequiredChunksFromQueue();
             Filer.EndSection();
-
-            
         }
 
         #endregion
