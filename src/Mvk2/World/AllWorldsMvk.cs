@@ -1,5 +1,7 @@
-﻿using Vge.Games;
+﻿using Mvk2.World.Block;
+using Vge.Games;
 using Vge.World;
+using Vge.World.Block;
 
 namespace Mvk2.World
 {
@@ -13,10 +15,12 @@ namespace Mvk2.World
 
         public override void Init(GameServer server)
         {
-            Server = server;
+            base.Init(server);
+            BlocksRegMvk.Initialization();
+            BlocksReg.Correct(server.Settings.Table);
+
             _worldServers[0] = new WorldServer(server, 0, new WorldSettingsNightmare());
             _worldServers[1] = new WorldServer(server, 1, new WorldSettings());
-            
         }
     }
 }

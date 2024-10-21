@@ -75,7 +75,8 @@ namespace Vge.Games
                 nbt.SetLong("TickCounter", server.TickCounter);
                 nbt.SetLong("TimeCounter", server.TimeCounter);
                 nbt.SetShort("Version", Ce.IndexVersion);
-
+                // Таблица блоков
+                gameSettings.Table.Write(nbt);
                 
                 NBTTools.WriteToFile(nbt, pathGame + NameFaileGame, true);
                 server.Log.Server(Srl.ServerSavingGame);

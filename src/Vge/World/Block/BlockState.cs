@@ -33,9 +33,14 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Блок воздуха
+        /// </summary>
+        public bool IsAir() => Id == 0;
+        /// <summary>
         /// Пустой ли объект
         /// </summary>
         public bool IsEmpty() => Id == 0 && Met == 1;
+
         /// <summary>
         /// Пометить пустой блок
         /// </summary>
@@ -50,11 +55,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Получить тип блок
         /// </summary>
-       // public EnumBlock GetEBlock() => (EnumBlock)id;
-        /// <summary>
-        /// Блок воздуха
-        /// </summary>
-        public bool IsAir() => Id == 0;
+        // public EnumBlock GetEBlock() => (EnumBlock)id;
 
         /// <summary>
         /// Получить кэш блока

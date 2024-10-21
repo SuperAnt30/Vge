@@ -8,6 +8,7 @@ using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Games

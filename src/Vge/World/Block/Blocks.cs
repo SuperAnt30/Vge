@@ -12,20 +12,65 @@
         */
 
         /// <summary>
+        /// Массив названий блоков
+        /// </summary>
+        public readonly static string[] BlockAlias;
+        /// <summary>
+        /// Массив объектов блоков
+        /// </summary>
+        public readonly static BlockBase[] BlockObjects;
+        /// <summary>
         /// Массив прозрачности и излучаемости освещения, для ускорения алгоритмов освещения
         /// </summary>
-        public static byte[] BlocksLightOpacity;
-        /// <summary>
-        /// Массив всех кэш блоков
-        /// </summary>
-        public static BlockBase[] BlocksInt;
+        public readonly static byte[] BlocksLightOpacity;
         /// <summary>
         /// Массив нужности случайного тика для блока
         /// </summary>
-        public static bool[] BlocksRandomTick;
+        public readonly static bool[] BlocksRandomTick;
         /// <summary>
         /// Массив с дополнительными metdata свыше 4 бита
         /// </summary>
-        public static bool[] BlocksAddMet;
+        public readonly static bool[] BlocksAddMet;
+        /// <summary>
+        /// Количество всех блоков
+        /// </summary>
+        public readonly static int Count;
+
+        static Blocks()
+        {
+            Count = BlocksReg.Table.Count;
+            BlockAlias = new string[Count];
+            BlockObjects = new BlockBase[Count];
+            BlocksLightOpacity = new byte[Count];
+            BlocksRandomTick = new bool[Count];
+            BlocksAddMet = new bool[Count];
+
+            ushort id;
+            BlockBase block;
+            for (id = 0; id < Count; id++)
+            {
+                BlockAlias[id] = BlocksReg.Table.GetAlias(id);
+                BlockObjects[id] = block = BlocksReg.Table[id];
+                BlocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
+                BlocksRandomTick[id] = block.NeedsRandomTick;
+                BlocksAddMet[id] = block.IsAddMet;
+            }
+
+            for (id = 0; id < Count; id++)
+            {
+                BlockObjects[id].Initialization();
+            }
+        }
+
+        /// <summary>
+        /// Дополнительная инициализация блоков после инициализации предметов
+        /// </summary>
+        public static void InitializationAfterItems()
+        {
+            for (int id = 0; id < Count; id++)
+            {
+                BlockObjects[id].InitializationAfterItems();
+            }
+        }
     }
 }

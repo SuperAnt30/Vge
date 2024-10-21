@@ -2,6 +2,7 @@
 using System.IO;
 using Vge.NBT;
 using Vge.Util;
+using Vge.World.Block;
 
 namespace Vge.Games
 {
@@ -22,6 +23,10 @@ namespace Vge.Games
         /// Название папки сохранённой игры
         /// </summary>
         public string FileName { get; private set; }
+        /// <summary>
+        /// Корректировочная таблица Id блоков
+        /// </summary>
+        public readonly CorrectTable Table = new CorrectTable();
 
         #region PathFile
 
@@ -90,6 +95,7 @@ namespace Vge.Games
                 }
                 server.SetDataFile(nbt.GetLong("TimeCounter"), (uint)nbt.GetLong("TickCounter"));
                 Seed = nbt.GetLong("Seed");
+                Table.Read(nbt);
             }
             return true;
         }

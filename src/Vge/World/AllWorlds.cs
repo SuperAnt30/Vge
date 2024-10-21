@@ -1,4 +1,5 @@
 ﻿using Vge.Games;
+using Vge.World.Block;
 
 namespace Vge.World
 {
@@ -37,10 +38,7 @@ namespace Vge.World
         public virtual void Init(GameServer server)
         {
             Server = server;
-            for (byte i = 0; i < _count; i++)
-            {
-                _worldServers[i] = new WorldServer(server, i, new WorldSettings());
-            }
+            BlocksReg.Initialization();
         }
 
         /// <summary>
