@@ -6,15 +6,13 @@
     public class BlockAir : BlockBase
     {
         /// <summary>
-        /// Блок воздуха, пустотаб может сталкиваться
+        /// Блок воздуха
         /// </summary>
-        /// <param name="collidable">Выбрать может ли блок сталкиваться</param>
-        public BlockAir(bool collidable = false)
-        {
-            IsAction = false;
-            LightOpacity = 0;
+        public BlockAir() => SetAir();
 
-            IsCollidable = collidable;
-        }
+        /// <summary>
+        /// Является ли блок проходимым, т.е. можно ли ходить через него
+        /// </summary>
+        public override bool IsPassable(uint met) => true;
     }
 }

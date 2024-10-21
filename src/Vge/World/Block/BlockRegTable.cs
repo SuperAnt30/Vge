@@ -108,8 +108,7 @@ namespace Vge.World.Block
                 }
                 else
                 {
-                    // TODO::2024-10-21 BlockNull
-                    blocks[i] = new BlockAir(true);
+                    blocks[i] = new BlockNull();
                 }
             }
             _alias = alias;

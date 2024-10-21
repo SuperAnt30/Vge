@@ -1,5 +1,4 @@
 ﻿using Vge.Network;
-
 namespace Vge.World.Block
 {
     /// <summary>
@@ -12,7 +11,7 @@ namespace Vge.World.Block
         /// </summary>
         public ushort Id;
         /// <summary>
-        /// Параметры блока если имеются;
+        /// Дополнительные параметры блока если имеются (32 бита)
         /// </summary>
         public uint Met;
         /// <summary>
@@ -73,7 +72,7 @@ namespace Vge.World.Block
         public void ReadStream(ReadPacket stream)
         {
             Id = stream.UShort();
-            Met = stream.UShort();
+            Met = stream.UInt();
             byte light = stream.Byte();
             LightBlock = (byte)(light >> 4);
             LightSky = (byte)(light & 0xF);

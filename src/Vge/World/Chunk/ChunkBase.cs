@@ -263,6 +263,10 @@ namespace Vge.World.Chunk
 
         #endregion
 
+
+
+
+
         public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
     }
 }
