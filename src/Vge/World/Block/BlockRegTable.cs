@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.World.Block.List;
 
 namespace Vge.World.Block
 {
@@ -108,7 +109,7 @@ namespace Vge.World.Block
                 else
                 {
                     // TODO::2024-10-21 BlockNull
-                    blocks[i] = new BlockBase();
+                    blocks[i] = new BlockAir(true);
                 }
             }
             _alias = alias;

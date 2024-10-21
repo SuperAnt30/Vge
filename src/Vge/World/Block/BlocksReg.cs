@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Block
+﻿using Vge.World.Block.List;
+
+namespace Vge.World.Block
 {
     /// <summary>
     /// Регистрация блоков
@@ -12,7 +14,7 @@
             Table.Clear();
 
             // Первые обязательные блоки
-            RegisterBlockClass("Air", new BlockBase());
+            RegisterBlockClass("Air", new BlockAir());
             RegisterBlockClass("Debug", new BlockBase());
         }
 

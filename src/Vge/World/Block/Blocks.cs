@@ -28,9 +28,9 @@
         /// </summary>
         public readonly static bool[] BlocksRandomTick;
         /// <summary>
-        /// Массив с дополнительными metdata свыше 4 бита
+        /// Массив с флагом имеется ли у блока metadata
         /// </summary>
-        public readonly static bool[] BlocksAddMet;
+        public readonly static bool[] BlocksMetadata;
         /// <summary>
         /// Количество всех блоков
         /// </summary>
@@ -43,7 +43,7 @@
             BlockObjects = new BlockBase[Count];
             BlocksLightOpacity = new byte[Count];
             BlocksRandomTick = new bool[Count];
-            BlocksAddMet = new bool[Count];
+            BlocksMetadata = new bool[Count];
 
             ushort id;
             BlockBase block;
@@ -53,7 +53,7 @@
                 BlockObjects[id] = block = BlocksReg.Table[id];
                 BlocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
                 BlocksRandomTick[id] = block.NeedsRandomTick;
-                BlocksAddMet[id] = block.IsAddMet;
+                BlocksMetadata[id] = block.IsMetadata;
             }
 
             for (id = 0; id < Count; id++)

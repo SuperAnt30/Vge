@@ -7,9 +7,9 @@
     {
 
         /// <summary>
-        /// Имеет ли блок дополнительные данные свыше 4 bit
+        /// Имеет ли блок данные
         /// </summary>
-        public bool IsAddMet { get; protected set; }
+        public bool IsMetadata { get; protected set; }
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0
         /// В VoxelEngine он в public static byte GetBlockLightOpacity(EnumBlock eblock)
@@ -30,7 +30,14 @@
         /// Блок не прозрачный
         /// </summary>
         public bool IsNotTransparent { get; protected set; }
-
+        /// <summary>
+        /// Можно ли выбирать блок
+        /// </summary>
+        public bool IsAction { get; protected set; } = true;
+        /// <summary>
+        /// Может ли блок сталкиваться
+        /// </summary>
+        public bool IsCollidable { get; protected set; } = true;
 
         /// <summary>
         /// Инициализировать блок

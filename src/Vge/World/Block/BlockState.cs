@@ -8,13 +8,13 @@ namespace Vge.World.Block
     public struct BlockState
     {
         /// <summary>
-        /// ID блока 12 bit
+        /// ID блока
         /// </summary>
         public ushort Id;
         /// <summary>
-        /// Дополнительные параметры блока 4 bita или если IsAddMet то 16 bit;
+        /// Параметры блока если имеются;
         /// </summary>
-        public ushort Met;
+        public uint Met;
         /// <summary>
         /// Освещение блочное, 4 bit используется
         /// </summary>
@@ -24,7 +24,7 @@ namespace Vge.World.Block
         /// </summary>
         public byte LightSky;
 
-        public BlockState(ushort id, ushort met = 0, byte lightBlock = 0, byte lightSky = 0)
+        public BlockState(ushort id, uint met = 0, byte lightBlock = 0, byte lightSky = 0)
         {
             Id = id;
             Met = met;
@@ -53,16 +53,6 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Получить тип блок
-        /// </summary>
-        // public EnumBlock GetEBlock() => (EnumBlock)id;
-
-        /// <summary>
-        /// Получить кэш блока
-        /// </summary>
-        //public BlockBase GetBlock() => Blocks.GetBlockCache(GetEBlock());
-
-        /// <summary>
         /// Веррнуть новый BlockState с новыйм мет данные
         /// </summary>
         public BlockState NewMet(ushort met) => new BlockState(Id, met, LightBlock, LightSky);
@@ -73,7 +63,7 @@ namespace Vge.World.Block
         public void WriteStream(WritePacket stream)
         {
             stream.UShort(Id);
-            stream.UShort(Met);
+            stream.UInt(Met);
             stream.Byte((byte)(LightBlock << 4 | LightSky & 0xF));
         }
 
@@ -100,7 +90,7 @@ namespace Vge.World.Block
             return false;
         }
 
-        public override int GetHashCode() => Id ^ Met ^ LightBlock ^ LightSky;
+        public override int GetHashCode() => Id ^ Met.GetHashCode() ^ LightBlock ^ LightSky;
 
         public override string ToString() => "#" + Id + " M:" + Met;
     }

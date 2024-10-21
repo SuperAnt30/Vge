@@ -37,7 +37,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Дополнительные данные блока
         /// </summary>
-        public readonly Dictionary<ushort, ushort> AddMet = new Dictionary<ushort, ushort>();
+        public readonly Dictionary<ushort, uint> Metadata = new Dictionary<ushort, uint>();
 
         /// <summary>
         /// Количество блоков которым нужен тик
@@ -82,7 +82,7 @@ namespace Vge.World.Chunk
                 ushort value = Data[index];
                 ushort id = (ushort)(value & 0xFFF);
                 return new BlockState(id,
-                    Blocks.BlocksAddMet[id] ? AddMet.ContainsKey(index) ? AddMet[index] : (ushort)0 : (ushort)(value >> 12),
+                    Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)0,
                     LightBlock[index], LightSky[index]);
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace Vge.World.Chunk
                 {
                     CountBlock--;
                     if (Blocks.BlocksRandomTick[Data[index] & 0xFFF]) _countTickBlock--;
-                    AddMet.Remove((ushort)index);
+                    Metadata.Remove((ushort)index);
                     if (CountBlock == 0)
                     {
                         Data = null;
@@ -132,16 +132,16 @@ namespace Vge.World.Chunk
                 if (!rold && rnew) _countTickBlock++;
                 else if (rold && !rnew) _countTickBlock--;
                 ushort key = (ushort)index;
-                if (Blocks.BlocksAddMet[id])
+                if (Blocks.BlocksMetadata[id])
                 {
                     Data[index] = id;
-                    if (AddMet.ContainsKey(key)) AddMet[key] = met;
-                    else AddMet.Add(key, met);
+                    if (Metadata.ContainsKey(key)) Metadata[key] = met;
+                    else Metadata.Add(key, met);
                 }
                 else
                 {
                     Data[index] = (ushort)(id & 0xFFF | met << 12);
-                    AddMet.Remove(key);
+                    Metadata.Remove(key);
                 }
             }
         }
@@ -156,15 +156,15 @@ namespace Vge.World.Chunk
             {
                 int id = Data[index] & 0xFFF;
                 ushort key = (ushort)index;
-                if (Blocks.BlocksAddMet[id])
+                if (Blocks.BlocksMetadata[id])
                 {
-                    if (AddMet.ContainsKey(key)) AddMet[key] = met;
-                    else AddMet.Add(key, met);
+                    if (Metadata.ContainsKey(key)) Metadata[key] = met;
+                    else Metadata.Add(key, met);
                 }
                 else
                 {
                     Data[index] = (ushort)(id & 0xFFF | met << 12);
-                    AddMet.Remove(key);
+                    Metadata.Remove(key);
                 }
             }
         }
