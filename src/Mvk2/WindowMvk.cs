@@ -10,6 +10,7 @@ using Vge.Renderer.Font;
 using Vge.Renderer;
 using Vge.World;
 using Mvk2.World;
+using WinGL.Util;
 
 namespace Mvk2
 {
@@ -70,7 +71,7 @@ namespace Mvk2
                 {
                     isTextDebug = false;
                     Render.FontMain.Clear();
-                    Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new System.Numerics.Vector3(.9f, .9f, .9f));
+                    Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new Vector3(.9f, .9f, .9f));
                     Render.FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug);
                     Render.FontMain.RenderFX();
                     meshTextDebug.Reload(Render.FontMain.ToBuffer());

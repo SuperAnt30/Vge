@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Numerics;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 using WinGL.Actions;
+using WinGL.Util;
 
 namespace Vge.Gui.Controls
 {

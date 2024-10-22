@@ -1,6 +1,7 @@
 ﻿using System;
 using Vge.Games;
 using WinGL.Actions;
+using WinGL.Util;
 
 namespace Vge.Actions
 {
@@ -69,8 +70,9 @@ namespace Vge.Actions
                 }
                 if (b)
                 {
+                    _game.Player.UpView();
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
                         false, false, false, _game.Player.IdWorld));
                     Debug.Player = _game.Player.chPos;
                 }
@@ -92,13 +94,13 @@ namespace Vge.Actions
                 else if (keys == Keys.NumPad0)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
                         false, false, false, 0));
                 }
                 else if (keys == Keys.NumPad1)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new System.Numerics.Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
                         false, false, false, 1));
                 }
             }

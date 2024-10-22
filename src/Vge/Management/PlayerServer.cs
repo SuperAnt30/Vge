@@ -200,7 +200,7 @@ namespace Vge.Management
             SendPacket(new PacketS03JoinGame(Id, UUID));
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
-            SendPacket(new PacketS08PlayerPosLook(new System.Numerics.Vector3(chPos.X, chPos.Y, 0), 0, 0));
+            SendPacket(new PacketS08PlayerPosLook(new Vector3(chPos.X, chPos.Y, 0), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
 

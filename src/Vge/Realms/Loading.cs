@@ -41,7 +41,7 @@ namespace Vge.Realms
         /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public virtual int GetMaxCountSteps() => 2;
+        public virtual int GetMaxCountSteps() => 3;
 
         /// <summary>
         /// Этот метод как раз и реализует список загрузок
@@ -55,16 +55,21 @@ namespace Vge.Realms
             // Виджет Gui
             FileToBufferedImage(vs[1]);
             OnStep();
+            // AtlasBlocks
+            FileToBufferedImage(vs[2]);
+            OnStep();
         }
 
         /// <summary>
         /// Получить массив имён файл текстур,
         /// 0 - FontMain основной шрифт
         /// 1 - Widgets
+        /// 2 - AtlasBlocks
         /// </summary>
         protected virtual string[] GetFileNameTextures() => new string[] {
             Options.PathTextures + "FontMain.png",
-            Options.PathTextures + "Widgets.png"
+            Options.PathTextures + "Widgets.png",
+            Options.PathTextures + "AtlasBlocks.png"
         };
 
         /// <summary>

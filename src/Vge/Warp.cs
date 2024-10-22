@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Renderer;
 using WinGL.Actions;
 using WinGL.OpenGL;
 
@@ -23,6 +24,16 @@ namespace Vge
             this.window = window;
             gl = window.GetOpenGL();
         }
+
+        /// <summary>
+        /// Получить объект OpenGL. Использовать только в основном потоке
+        /// </summary>
+        public GL GetOpenGL() => gl;
+
+        /// <summary>
+        /// Объект отвечающий за прорисовку
+        /// </summary>
+        public RenderMain Render => window.Render;
 
         #region Draw
 

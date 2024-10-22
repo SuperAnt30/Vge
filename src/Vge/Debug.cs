@@ -171,9 +171,10 @@ namespace Vge
                     }
                 }
             }
-            window.Render.TextureDisable();
+
+            window.Render.FontMain.BindTexture();
+            window.Render.ShaderBindGuiColor();
             _meshChunks.Draw();
-            window.Render.TextureEnable();
         }
 
         private static bool _RenderChuks(List<float> vs)

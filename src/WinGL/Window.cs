@@ -5,7 +5,6 @@ using WinGL.Win32.Gdi32;
 using WinGL.OpenGL;
 using WinGL.Win32.User32;
 using WinGL.Actions;
-using System.Numerics;
 using System.Diagnostics;
 
 namespace WinGL
@@ -194,7 +193,7 @@ namespace WinGL
             catch (Exception ex)
             {
                 Close();
-                throw new Exception(Sr.ErrorWhileStartingWindow, ex);
+                throw new Exception(Sr.GetString(Sr.ErrorWhileStartingWindow, ex.Message), ex);
             }
             finally
             {
@@ -488,14 +487,7 @@ namespace WinGL
                 windowHeigt = height + windowHeigtBorder;
             }
 
-            Matrix4x4 mat = Matrix4x4.CreateOrthographicOffCenter(0, Width, Height, 0, 0, 1);
-            Ortho2D = new float[]
-            {
-                mat.M11, mat.M12, mat.M13, mat.M14,
-                mat.M21, mat.M22, mat.M23, mat.M24,
-                mat.M31, mat.M32, mat.M33, mat.M34,
-                mat.M41, mat.M42, mat.M43, mat.M44
-            };
+            Ortho2D = Glm.Ortho(0, Width, Height, 0, 0, 1).ToArray();
 
             gl.Viewport(0, 0, width, height);
         }

@@ -139,6 +139,19 @@ namespace Vge.Renderer
             gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
+        /// <summary>
+        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// </summary>
+        public void Reload(IntPtr intPtr, int count)
+        {
+            countVertices = count / vertexSize;
+            gl.BindVertexArray(vao);
+            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
+            gl.BufferData(GL.GL_ARRAY_BUFFER, count, intPtr, GL.GL_STATIC_DRAW);
+            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+        }
+
         #endregion
     }
 }

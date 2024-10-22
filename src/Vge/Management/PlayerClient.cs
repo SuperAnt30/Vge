@@ -2,6 +2,7 @@
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.Management
 {
@@ -10,6 +11,11 @@ namespace Vge.Management
     /// </summary>
     public class PlayerClient : PlayerBase
     {
+        /// <summary>
+        /// Матрица просмотра Projection * LookAt
+        /// </summary>
+        public float[] View { get; private set; }
+
         /// <summary>
         /// Класс  игры
         /// </summary>
@@ -32,6 +38,7 @@ namespace Vge.Management
             _game = game;
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
+            UpView();
         }
 
         /// <summary>
@@ -55,6 +62,20 @@ namespace Vge.Management
                     new OptionsFile().Save();
                 }
             }
+        }
+
+        /// <summary>
+        /// Обновить матрицу камеры
+        /// </summary>
+        public void UpView()
+        {
+            Vector3 front = new Vector3(1, -.7f, 0); //GetLookFrame(timeIndex).normalize();
+            Vector3 up = new Vector3(0, 1, 0);
+            Vector3 pos = new Vector3(chPos.X, 25, chPos.Y);
+            Mat4 look = Glm.LookAt(pos, pos + front, up);
+            Mat4 projection = Glm.Perspective(65f, (float)Gi.Width / (float)Gi.Height, 
+                0.01f, 16 * 22f);
+            View = (projection * look).ToArray();
         }
 
         #region Packet

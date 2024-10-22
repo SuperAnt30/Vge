@@ -38,7 +38,8 @@ internal sealed class Sr
     internal const string IncorrectParameterValue = "Некорректное значение параметра";
     internal const string TheValueMustBeGreaterThanZero = "Значение должно быть больше нуля";
     internal const string ItIsImpossibleToCompareTwoObjects = "Невозможно сравнить два объекта";
-    
+    internal const string OutOfRangeArray = "Вне диапазона массива, количество {0}";
+
     #endregion
 
     #region NBT

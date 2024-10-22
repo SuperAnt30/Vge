@@ -40,10 +40,12 @@ namespace Mvk2.Realms
         /// Получить массив имён файл текстур,
         /// 0 - FontMain основной шрифт
         /// 1 - Widgets
+        /// 2 - AtlasBlocks
         /// </summary>
         protected override string[] GetFileNameTextures() => new string[] {
             Options.PathTextures + "FontMain.png",
-            OptionsMvk.PathTextures + "WidgetsMvk.png"
+            OptionsMvk.PathTextures + "WidgetsMvk.png",
+            Options.PathTextures + "AtlasBlocks.png",
         };
 
         /// <summary>
@@ -66,15 +68,15 @@ namespace Mvk2.Realms
             // Шрифты
             renderMvk.CreateTextureFontSmall(
                 FileToBufferedImage(OptionsMvk.PathTextures + "FontSmall.png"));
-            //System.Threading.Thread.Sleep(100);
             OnStep();
 
             renderMvk.CreateTextureFontLarge(
                 FileToBufferedImage(OptionsMvk.PathTextures + "FontLarge.png"));
-           // System.Threading.Thread.Sleep(100);
             OnStep();
 
             // Текстуры
+            //FileToBufferedImage(OptionsMvk.PathTextures + "AtlasBlocks.png");
+            //OnStep();
         }
 
         /// <summary>

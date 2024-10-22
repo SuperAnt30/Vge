@@ -30,7 +30,7 @@ internal sealed class Sr
 
     #region Window
 
-    internal const string ErrorWhileStartingWindow = "Ошибка при запуске окна";
+    internal const string ErrorWhileStartingWindow = "Ошибка при запуске окна.\r\n{0}";
     internal const string FailedToRegisterTheWindowClass = "Не удалось зарегистрировать класс окна";
     internal const string WindowCreationError = "Ошибка создания окна";
     internal const string CantCreateAOpenGLDeviceContext = "Невозможно создать контекст устройства OpenGL";

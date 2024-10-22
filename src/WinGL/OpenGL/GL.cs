@@ -526,16 +526,6 @@ namespace WinGL.OpenGL
         public void PixelStore(uint pname, int param) => glPixelStorei(pname, param);
 
         /// <summary>
-		/// Restore the previously saved state of the current matrix stack.
-		/// </summary>
-		public void PopMatrix() => glPopMatrix();
-
-        /// <summary>
-        /// Save the current state of the current matrix stack.
-        /// </summary>
-        public void PushMatrix() => glPushMatrix();
-
-        /// <summary>
         /// Select flat or smooth shading.
         /// </summary>
         /// <param name="mode">Specifies a symbolic value representing a shading technique. Accepted values are OpenGL.FLAT and OpenGL.SMOOTH. The default is OpenGL.SMOOTH.</param>
@@ -577,9 +567,35 @@ namespace WinGL.OpenGL
 		public void Viewport(int x, int y, int width, int height) 
             => glViewport(x, y, width, height);
 
+        /// <summary>
+		/// This sets the current drawing mode of polygons (points, lines, filled).
+		/// </summary>
+		/// <param name="face">The faces this applies to (front, back or both).</param>
+		/// <param name="mode">The mode to set to (points, lines, or filled).</param>
+		public void PolygonMode(uint face, uint mode)
+            => glPolygonMode(face, mode);
+
         #endregion
 
         #region Old
+
+        /// <summary>
+        /// Specify the Alpha Test function.
+        /// </summary>
+        /// <param name="func">Specifies the alpha comparison function. Symbolic constants OpenGL.NEVER, OpenGL.LESS, OpenGL.EQUAL, OpenGL.LEQUAL, OpenGL.GREATER, OpenGL.NOTEQUAL, OpenGL.GEQUAL and OpenGL.ALWAYS are accepted. The initial value is OpenGL.ALWAYS.</param>
+        /// <param name="reference">Specifies the reference	value that incoming alpha values are compared to. This value is clamped to the range 0	through	1, where 0 represents the lowest possible alpha value and 1 the highest possible value. The initial reference value is 0.</param>
+        public void AlphaFunc(uint func, float reference)
+            => glAlphaFunc(func, reference);
+
+        /// <summary>
+		/// Restore the previously saved state of the current matrix stack.
+		/// </summary>
+		public void PopMatrix() => glPopMatrix();
+
+        /// <summary>
+        /// Save the current state of the current matrix stack.
+        /// </summary>
+        public void PushMatrix() => glPushMatrix();
 
         /// <summary>
         /// Begin drawing geometry in the specified mode.

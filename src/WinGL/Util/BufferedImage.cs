@@ -33,14 +33,14 @@
         /// <summary>
         /// Получить цвет пикселя
         /// </summary>
-        //public Vec4 GetPixel(int x, int y)
+        //public 4 GetPixel(int x, int y)
         //{
         //    int index = y * height * 4 + x * 4;
         //    byte r = buffer[index];
         //    byte g = buffer[index + 1];
         //    byte b = buffer[index + 2];
         //    byte a = buffer[index + 3];
-        //    return new Vec4(Bf(r), Bf(g), Bf(b), Bf(a));
+        //    return new 4(Bf(r), Bf(g), Bf(b), Bf(a));
         //}
 
         //private float Bf(byte c) => c / 255f;

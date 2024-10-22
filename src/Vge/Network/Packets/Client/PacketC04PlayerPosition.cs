@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using WinGL.Util;
 
 namespace Vge.Network.Packets.Client
 {

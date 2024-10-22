@@ -42,7 +42,7 @@ namespace Mvk2.Renderer
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
         public void BindTexture(AssetsTexture index, uint texture = 0) 
-            => textureMap.BindTexture((int)index, texture);
+            => Texture.BindTexture((int)index, texture);
 
         #endregion
 

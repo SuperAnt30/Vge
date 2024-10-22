@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Vge.Games;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Util;
@@ -20,46 +20,51 @@ namespace Vge.Renderer
         /// <summary>
         /// Объект текстур
         /// </summary>
-        public readonly TextureMap textureMap;
+        public readonly TextureMap Texture;
         /// <summary>
         /// Шейдоры для GUI цветных текстур без смещения
         /// </summary>
-        public readonly ShaderGuiColor shaderGuiColor;
+        public readonly ShaderGuiColor ShGuiColor;
         /// <summary>
         /// Шейдоры для GUI линий с альфа цветом
         /// </summary>
-        public readonly ShaderGuiLine shaderGuiLine;
+        public readonly ShaderGuiLine ShGuiLine;
+        /// <summary>
+        /// Шейдоры для вокселей
+        /// </summary>
+        public readonly ShaderVoxel ShVoxel;
 
         /// <summary>
         /// Время выполнения кадра
         /// </summary>
-        private float speedFrameAll;
+        private float _speedFrameAll;
         /// <summary>
         /// Время выполнения такта
         /// </summary>
-        private float speedTickAll;
+        private float _speedTickAll;
         /// <summary>
         /// Счётчик времени кратно секундам в мс
         /// </summary>
-        private long timeSecond;
+        private long _timeSecond;
         /// <summary>
         /// Количество фпс
         /// </summary>
-        private int fps;
+        private int _fps;
         /// <summary>
         /// Количество тпс
         /// </summary>
-        private int tps;
+        private int _tps;
         /// <summary>
         /// Время перед начало прорисовки кадра
         /// </summary>
-        private long timeBegin;
+        private long _timeBegin;
 
         public RenderMain(WindowMain window) : base(window)
         {
-            textureMap = new TextureMap(gl);
-            shaderGuiColor = new ShaderGuiColor(gl);
-            shaderGuiLine = new ShaderGuiLine(gl);
+            Texture = new TextureMap(gl);
+            ShGuiColor = new ShaderGuiColor(gl);
+            ShGuiLine = new ShaderGuiLine(gl);
+            ShVoxel = new ShaderVoxel(gl);
         }
 
         /// <summary>
@@ -67,13 +72,14 @@ namespace Vge.Renderer
         /// </summary>
         public void InitializeFirst()
         {
-            SetTextureSplash(Options.PathTextures + "Splash.png");
+            _SetTextureSplash(Options.PathTextures + "Splash.png");
         }
 
         public override void Dispose()
         {
-            shaderGuiColor.Delete(gl);
-            shaderGuiLine.Delete(gl);
+            ShGuiColor.Delete(gl);
+            ShGuiLine.Delete(gl);
+            ShVoxel.Delete(gl);
         }
 
         #region ShaderBind
@@ -83,8 +89,8 @@ namespace Vge.Renderer
         /// </summary>
         public void ShaderBindGuiLine()
         {
-            shaderGuiLine.Bind(gl);
-            shaderGuiLine.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            ShGuiLine.Bind(gl);
+            ShGuiLine.SetUniformMatrix4(gl, "projview", window.Ortho2D);
         }
 
         /// <summary>
@@ -92,8 +98,33 @@ namespace Vge.Renderer
         /// </summary>
         public void ShaderBindGuiColor()
         {
-            shaderGuiColor.Bind(gl);
-            shaderGuiColor.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            ShGuiColor.Bind(gl);
+            ShGuiColor.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+        }
+
+        /// <summary>
+        /// Связать шейдер Voxels
+        /// </summary>
+        /// <param name="torchInHand">0-15 яркость в руке</param>
+        public void ShaderBindVoxels(float[] view, short overview, 
+            float colorFogR, float colorFogG, float colorFogB, byte torchInHand)
+        {
+            ShVoxel.Bind(gl);
+            ShVoxel.SetUniformMatrix4(gl, "view", view);
+            ShVoxel.SetUniform3(gl, "pos", 0, 0, 0);
+            ShVoxel.SetUniform1(gl, "takt", window.Game.TickCounter);
+            ShVoxel.SetUniform1(gl, "overview", overview);
+            ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
+            ShVoxel.SetUniform1(gl, "torch", torchInHand);
+
+            int atlas = ShVoxel.GetUniformLocation(gl, "atlas");
+            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            BindTextureAtlasBlocks();
+            //BindTextureWidgets();
+            gl.Uniform1(atlas, 0);
+            TextureLightmapEnable();
+            gl.Uniform1(lightMap, 1);
+            TextureLightmapDisable();
         }
 
         #endregion
@@ -112,20 +143,24 @@ namespace Vge.Renderer
         /// <summary>
         /// Запустить текстуру заставки
         /// </summary>
-        public void BindTextureSplash() => textureMap.BindSplash();
+        public void BindTextureSplash() => Texture.BindSplash();
         /// <summary>
         /// Удалить текстуру заставки
         /// </summary>
-        public void DeleteTextureSplash() => textureMap.DeleteSplash();
+        public void DeleteTextureSplash() => Texture.DeleteSplash();
         /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
-        public void BindTextureWidgets() => textureMap.BindTexture(1);
+        public void BindTextureWidgets() => Texture.BindTexture(1);
+        /// <summary>
+        /// Запустить текстуру атласа блоков
+        /// </summary>
+        public void BindTextureAtlasBlocks() => Texture.BindTexture(2);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
-        public void BindTexture(int index, uint texture = 0) => textureMap.BindTexture(index, texture);
+        public void BindTexture(int index, uint texture = 0) => Texture.BindTexture(index, texture);
 
         /// <summary>
         /// Создать текстуру основного шрифта
@@ -133,10 +168,30 @@ namespace Vge.Renderer
         public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1, this, 0);
 
         /// <summary>
+        /// Активировать мульти текстуру освещения
+        /// </summary>
+        public void TextureLightmapEnable()
+        {
+            gl.ActiveTexture(GL.GL_TEXTURE1);
+            TextureEnable();
+            gl.ActiveTexture(GL.GL_TEXTURE0);
+        }
+
+        /// <summary>
+        /// Деактивировать мульти текстуру освещения
+        /// </summary>
+        public void TextureLightmapDisable()
+        {
+            gl.ActiveTexture(GL.GL_TEXTURE1);
+            TextureDisable();
+            gl.ActiveTexture(GL.GL_TEXTURE0);
+        }
+
+        /// <summary>
         /// Задать текстуру заставки
         /// </summary>
-        private void SetTextureSplash(string fileName)
-            => textureMap.SetSplash(BufferedFileImage.FileToBufferedImage(fileName));
+        private void _SetTextureSplash(string fileName)
+            => Texture.SetSplash(BufferedFileImage.FileToBufferedImage(fileName));
 
         #endregion
 
@@ -146,21 +201,33 @@ namespace Vge.Renderer
         /// <param name="buffereds">буфер всех текстур для биндинга</param>
         public virtual void AtFinishLoading(BufferedImage[] buffereds)
         {
-            textureMap.SetCount(buffereds.Length);
+            Texture.SetCount(buffereds.Length);
             for (int i = 0; i < buffereds.Length; i++)
             {
-                textureMap.SetTexture(i, buffereds[i]);
+                Texture.SetTexture(i, buffereds[i]);
             }
             FontMain.CreateMesh(gl);
+        }
+
+        public void TestRun()
+        {
+        //    gl.Enable(GL.GL_CULL_FACE);
+            gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+            //gl.ClearColor(.5f, .7f, .99f, 1f);
+
+            // Код с фиксированной функцией может использовать альфа-тестирование
+            // Чтоб корректно прорисовывался кактус
+            gl.AlphaFunc(GL.GL_GREATER, 0.1f);
+            gl.Enable(GL.GL_ALPHA_TEST);
         }
 
         #region Draw
 
         public virtual void DrawBegin()
         {
-            fps++;
+            _fps++;
             Debug.MeshCount = 0;
-            timeBegin = window.TimeTicks();
+            _timeBegin = window.TimeTicks();
         }
 
         /// <summary>
@@ -171,19 +238,19 @@ namespace Vge.Renderer
             // Перерасчёт кадров раз в секунду, и среднее время прорисовки кадра
             if (Ce.IsDebugDraw)
             {
-                if (window.Time() >= timeSecond)
+                if (window.Time() >= _timeSecond)
                 {
                     float speedTick = 0;
-                    if (tps > 0) speedTick = speedTickAll / tps;
-                    window.debug.SetTpsFps(fps, speedFrameAll / fps, tps, speedTick);
+                    if (_tps > 0) speedTick = _speedTickAll / _tps;
+                    window.debug.SetTpsFps(_fps, _speedFrameAll / _fps, _tps, speedTick);
 
-                    timeSecond += 1000;
-                    speedFrameAll = 0;
-                    speedTickAll = 0;
-                    fps = 0;
-                    tps = 0;
+                    _timeSecond += 1000;
+                    _speedFrameAll = 0;
+                    _speedTickAll = 0;
+                    _fps = 0;
+                    _tps = 0;
                 }
-                speedFrameAll += (float)(window.TimeTicks() - timeBegin) / Ticker.TimerFrequency;
+                _speedFrameAll += (float)(window.TimeTicks() - _timeBegin) / Ticker.TimerFrequency;
             }
         }
 
@@ -192,8 +259,8 @@ namespace Vge.Renderer
         /// </summary>
         public void SetExecutionTime(float time)
         {
-            speedTickAll += time;
-            tps++;
+            _speedTickAll += time;
+            _tps++;
         }
 
         #endregion

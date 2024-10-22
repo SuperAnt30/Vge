@@ -64,8 +64,8 @@ namespace Vge.World
 
             if (idWorld == 0)
             {
-                _testAnchor = new TestAnchor(this);
-                Fragment.AddAnchor(_testAnchor);
+                //_testAnchor = new TestAnchor(this);
+                //Fragment.AddAnchor(_testAnchor);
             }
 
             if (idWorld != 0)
@@ -90,7 +90,7 @@ namespace Vge.World
             // Тут начинается все действия с блоками АИ мобов и всё такое....
             if (IdWorld == 0)
             {
-                _testAnchor.Update();
+              //  _testAnchor.Update();
             }
 
             // Обработка фрагментов в конце такта

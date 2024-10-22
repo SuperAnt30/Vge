@@ -3,16 +3,15 @@ using System.Diagnostics;
 using System.Threading;
 using Vge.Actions;
 using Vge.Event;
-using Vge.Gui.Huds;
 using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets;
-using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.Huds;
+using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
 using WinGL.Actions;
-using WinGL.Util;
 
 namespace Vge.Games
 {
@@ -49,11 +48,15 @@ namespace Vge.Games
         /// <summary>
         /// Объект игрока для клиента
         /// </summary>
-        public PlayerClient Player { get; private set; }
+        public readonly PlayerClient Player;
         /// <summary>
         /// Клиентский объект мира
         /// </summary>
         public WorldClient World { get; private set; }
+        /// <summary>
+        /// Рендер мира
+        /// </summary>
+        public readonly WorldRenderer WorldRender;
 
         /// <summary>
         /// Увеличивается каждый тик 
@@ -102,6 +105,7 @@ namespace Vge.Games
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
             Player = new PlayerClient(this);
+            WorldRender = new WorldRenderer(this);
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
         }
@@ -134,7 +138,8 @@ namespace Vge.Games
             World = new WorldClient(this);
             World.TagDebug += World_TagDebug;
             _stopwatch.Start();
-            Ce.IsDebugDrawChunks = Ce.IsDebugDraw = true;
+            //Ce.IsDebugDrawChunks = 
+            Ce.IsDebugDraw = true;
         }
 
         private void World_TagDebug(object sender, StringEventArgs e) => _OnTagDebug(e);
@@ -219,7 +224,7 @@ namespace Vge.Games
                 }
             }
             // Тест
-         //   TrancivePacket(new PacketC04PlayerPosition(new System.Numerics.Vector3(1, 2.5f, 3.5f), true, false, true));
+         //   TrancivePacket(new PacketC04PlayerPosition(new Vector3(1, 2.5f, 3.5f), true, false, true));
         }
 
         /// <summary>
@@ -241,11 +246,13 @@ namespace Vge.Games
             // Тут прорисовка мира
             gl.ClearColor(.4f, .4f, .7f, 1f);
 
-            // мир
+            // Мир
+            WorldRender.Draw(timeIndex);
+
             // Тут индикация если имеется
             if (Hud != null)
             {
-                Hud.Draw();
+                Hud.Draw(timeIndex);
             }
 
             if (Ce.IsDebugDrawChunks)
@@ -264,6 +271,17 @@ namespace Vge.Games
         public virtual void TrancivePacket(IPacket packet) { }
 
         #endregion
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            // Надо очистить сетки
+            if (Hud != null)
+            {
+                Hud.Dispose();
+            }
+            WorldRender.Dispose();
+        }
 
         public override string ToString()
         {

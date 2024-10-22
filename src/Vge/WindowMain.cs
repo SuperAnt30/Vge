@@ -132,8 +132,8 @@ namespace Vge
             Ready = false;
             if (Screen != null) Screen.Dispose();
             if (Game != null) Game.Dispose();
-            Render.Dispose();
-            audio.Clear();
+            if (Render != null) Render.Dispose();
+            if (audio != null) audio.Clear();
         }
 
         /// <summary>

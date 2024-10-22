@@ -78,9 +78,12 @@ namespace Vge.Audio
         /// </summary>
         public void Clear()
         {
-            foreach(AudioSample audio in items)
+            if (items != null)
             {
-                audio.Clear();
+                foreach (AudioSample audio in items)
+                {
+                    audio.Clear();
+                }
             }
         }
     }

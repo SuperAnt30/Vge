@@ -191,6 +191,7 @@ namespace Vge.Games
 
         public override void Dispose()
         {
+            base.Dispose();
             if (_server != null)
             {
                 _server.Stop();

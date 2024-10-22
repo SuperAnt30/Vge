@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Vge.Util;
+﻿using Vge.Util;
+using WinGL.Util;
 
 /// <summary>
 /// GraphicalInterface
