@@ -1,5 +1,4 @@
 ﻿using System;
-using Vge.Gui.Controls;
 using Vge.Realms;
 using Vge.Util;
 using WinGL.OpenGL;

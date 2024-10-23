@@ -73,7 +73,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Выгрузили чанк
         /// </summary>
-        public void OnChunkUnload()
+        public virtual void OnChunkUnload()
         {
             IsChunkPresent = false;
         }
@@ -263,7 +263,13 @@ namespace Vge.World.Chunk
 
         #endregion
 
-
+        /// <summary>
+        /// Задать чанк байтами
+        /// </summary>
+        public void SetBinary()//yte[] buffer, bool biom, int flagsYAreas)
+        {
+            IsChunkPresent = true;
+        }
 
 
 

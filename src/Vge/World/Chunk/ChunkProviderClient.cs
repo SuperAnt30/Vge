@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.World;
 
 namespace Vge.World.Chunk
 {
@@ -9,19 +10,17 @@ namespace Vge.World.Chunk
     public class ChunkProviderClient : ChunkProvider
     {
         /// <summary>
-        /// Посредник серверного чанка
+        /// Клиентский мир
         /// </summary>
         private readonly WorldClient _worldClient;
 
         public ChunkProviderClient(WorldClient world) : base(world)
-        {
-            _worldClient = world;
-        }
+            => _worldClient = world;
 
         /// <summary>
         /// Выгрузить чанк
         /// </summary>
-        public void UnloadChunk(ChunkBase chunk)
+        public void UnloadChunk(ChunkRender chunk)
         {
             if (chunk != null)
             {
@@ -29,6 +28,7 @@ namespace Vge.World.Chunk
                 {
                     chunk.OnChunkUnload();
                 }
+                chunk.Dispose();
                 _chunkMapping.Remove(chunk.CurrentChunkX, chunk.CurrentChunkY);
             }
         }
@@ -45,17 +45,20 @@ namespace Vge.World.Chunk
             if (packet.IsRemoved())
             {
                 // Выгружаем чанк
-                UnloadChunk(_chunkMapping.Get(chx, chy) as ChunkBase);
+                UnloadChunk(_chunkMapping.Get(chx, chy) as ChunkRender);
             }
             else
             {
                 // Вносим данные в чанк
-                ChunkBase chunk = _chunkMapping.Get(chx, chy) as ChunkBase;
+                ChunkRender chunk = _chunkMapping.Get(chx, chy) as ChunkRender;
                 if (chunk == null)
                 {
-                    chunk = new ChunkBase(_worldClient, chx, chy);
+                    chunk = new ChunkRender(_worldClient, chx, chy);
                     _chunkMapping.Add(chunk);
                 }
+
+                chunk.SetBinary();// packet.GetBuffer(), packet.IsBiom(), packet.GetFlagsYAreas());
+
                 // Далее тут манипулации с чанком chunkBase
                 //System.Threading.Thread.Sleep(20);
 

@@ -1,5 +1,6 @@
 ﻿using Vge.Event;
 using Vge.Games;
+using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World.Chunk;
 
@@ -14,6 +15,10 @@ namespace Vge.World
         /// Посредник клиентоского чанка
         /// </summary>
         public readonly ChunkProviderClient ChunkPrClient;
+        /// <summary>
+        /// Мир для рендера
+        /// </summary>
+        public readonly WorldRenderer WorldRender;
 
         /// <summary>
         /// Флаг на изминение количество чанков
@@ -24,9 +29,12 @@ namespace Vge.World
         {
             IsRemote = true;
             Rnd = new Rand();
+            WorldRender = game.WorldRender;
             ChunkPr = ChunkPrClient = new ChunkProviderClient(this);
             Filer = new Profiler(game.Log, "[Client] ");
             ChunkPrClient.ChunkMappingChanged += _ChunkPrClient_ChunkMappingChanged;
+
+            WorldRender.Starting();
         }
 
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
@@ -42,6 +50,14 @@ namespace Vge.World
                 _flagDebugChunkMappingChanged = false;
                 OnTagDebug(Debug.Key.ChunkClient.ToString(), ChunkPr.GetListDebug());
             }
+        }
+
+        /// <summary>
+        /// Останавливаем мир
+        /// </summary>
+        public void Stoping()
+        {
+            WorldRender.Stoping();
         }
 
         public override string ToString() => ChunkPrClient.ToString();

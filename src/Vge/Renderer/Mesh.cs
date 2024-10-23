@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer
@@ -8,69 +9,93 @@ namespace Vge.Renderer
     /// </summary>
     public abstract class Mesh : IDisposable
     {
-        private readonly uint ebo;
-        protected readonly uint vao;
-        protected readonly uint vbo;
-        private readonly int[] attrs;
-        protected readonly GL gl;
-        protected int countVertices;
-        private int countIndices;
-        protected readonly int vertexSize;
-        /// <summary>
-        /// Количество float в буфере на один полигон
-        /// </summary>
-        public readonly int PoligonFloat;
+        protected uint _ebo;
+        protected readonly uint _vao;
+        protected uint _vbo;
+        protected readonly GL _gl;
+        protected int _countVertices;
+        private int _countIndices;
+        protected int _vertexSize;
 
-        public Mesh(GL gl, int[] attrs, bool isQuad = true)
+        public Mesh(GL gl)
         {
-            this.gl = gl;
-            for (int i = 0; i < attrs.Length; i++)
-            {
-                vertexSize += attrs[i];
-            }
-            PoligonFloat = vertexSize * 3;
-            this.attrs = attrs;
-
+            _gl = gl;
             uint[] id = new uint[1];
             gl.GenVertexArrays(1, id);
-            vao = id[0];
-            gl.BindVertexArray(vao);
-            gl.GenBuffers(1, id);
-            vbo = id[0];
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            if (isQuad)
+            _vao = id[0];
+            gl.BindVertexArray(_vao);
+            Debug.MeshId = _vao;
+
+            // Инициализация VBO
+            _InitVbo();
+
+            // Инициализация ebo если это надо
+            _InitEbo();
+
+            // Инициализация атрибут
+            _InitAtributs();
+            //gl.BindVertexArray(0); // ?
+        }
+
+        /// <summary>
+        /// Инициализация VBO
+        /// </summary>
+        protected virtual void _InitVbo()
+        {
+            uint[] id = new uint[1];
+            _gl.GenBuffers(1, id);
+            _vbo = id[0];
+        }
+
+        /// <summary>
+        /// Инициализация ebo если это надо
+        /// </summary>
+        protected virtual void _InitEbo()
+        {
+            uint[] id = new uint[1];
+            _gl.GenBuffers(1, id);
+            _ebo = id[0];
+        }
+
+        /// <summary>
+        /// Инициализация атрибут
+        /// </summary>
+        protected virtual void _InitAtributs() { }
+
+        /// <summary>
+        /// Инициализация атрибут
+        /// </summary>
+        protected void _InitAtributs(int[] attrs)
+        {
+            uint i;
+            int count = attrs.Length;
+            for (i = 0; i < count; i++)
             {
-                gl.GenBuffers(1, id);
-                ebo = id[0];
+                _vertexSize += attrs[i];
             }
 
-            Debug.MeshId = vao;
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
 
-            // attributes
-            int stride = vertexSize * sizeof(float);
+            int stride = _vertexSize * sizeof(float);
             int offset = 0;
-            for (uint i = 0; i < attrs.Length; i++)
+            for (i = 0; i < count; i++)
             {
                 if (attrs[i] == 0) break;
                 int size = attrs[i];
-                gl.VertexAttribPointer(i, size, GL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(i, size, GL.GL_FLOAT, false,
                     stride, new IntPtr(offset * sizeof(float)));
-                gl.EnableVertexAttribArray(i);
+                _gl.EnableVertexAttribArray(i);
                 offset += size;
             }
-            gl.BindVertexArray(0); // ?
         }
-
-        public Mesh(GL gl, float[] vertices, int[] attrs) : this(gl, attrs)
-            => Reload(vertices);
 
         /// <summary>
         /// Генерация массива вершин, для построения квада
         /// </summary>
-        private int[] QuadIndices()
+        protected int[] QuadIndices()
         {
-            countIndices = countVertices / 4 * 6;
-            int[] indices = new int[countIndices];
+            _countIndices = _countVertices / 4 * 6;
+            int[] indices = new int[_countIndices];
             int[] quad = new int[] { 0, 1, 2, 1, 3, 2 };
             int c = 0;
             int c1 = 0;
@@ -91,11 +116,11 @@ namespace Vge.Renderer
         /// </summary>
         public void Delete()
         {
-            gl.DeleteVertexArrays(1, new uint[] { vao });
-            gl.DeleteBuffers(1, new uint[] { vbo });
-            if (ebo != 0)
+            _gl.DeleteVertexArrays(1, new uint[] { _vao });
+            _gl.DeleteBuffers(1, new uint[] { _vbo });
+            if (_ebo != 0)
             {
-                gl.DeleteBuffers(1, new uint[] { ebo });
+                _gl.DeleteBuffers(1, new uint[] { _ebo });
             }
         }
 
@@ -107,8 +132,8 @@ namespace Vge.Renderer
         public virtual void Draw()
         {
             Debug.MeshCount++;
-            gl.BindVertexArray(vao);
-            gl.DrawElements(GL.GL_TRIANGLES, countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+            _gl.BindVertexArray(_vao);
+            _gl.DrawElements(GL.GL_TRIANGLES, _countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
         }
 
         #region Reload
@@ -118,12 +143,12 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void Reload(float[] vertices)
         {
-            countVertices = vertices.Length / vertexSize;
-            gl.BindVertexArray(vao);
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
-            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+            _countVertices = vertices.Length / _vertexSize;
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         /// <summary>
@@ -131,25 +156,26 @@ namespace Vge.Renderer
         /// </summary>
         public void Reload(float[] vertices, int count)
         {
-            countVertices = count / vertexSize;
-            gl.BindVertexArray(vao);
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
-            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+            _countVertices = count / _vertexSize;
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
         /// </summary>
-        public void Reload(IntPtr intPtr, int count)
+        public void Reload(BufferFast bufferFast)
         {
-            countVertices = count / vertexSize;
-            gl.BindVertexArray(vao);
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, count, intPtr, GL.GL_STATIC_DRAW);
-            gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ebo);
-            gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+            int count = bufferFast.Count;
+            _countVertices = count / _vertexSize;
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, count, bufferFast.ToBuffer(), GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         #endregion

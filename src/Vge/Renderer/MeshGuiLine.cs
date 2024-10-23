@@ -8,15 +8,20 @@ namespace Vge.Renderer
     /// </summary>
     public class MeshGuiLine : Mesh
     {
-        public MeshGuiLine(GL gl) : base(gl, new int[] { 2, 4 }, false) { }
+        public MeshGuiLine(GL gl) : base(gl) { }
+
+        protected override void _InitEbo() { }
+
+        protected override void _InitAtributs()
+            => _InitAtributs(new int[] { 2, 4 });
 
         /// <summary>
         /// Прорисовать меш с линиями GL_LINES
         /// </summary>
         public override void Draw()
         {
-            gl.BindVertexArray(vao);
-            gl.DrawArrays(GL.GL_LINES, 0, countVertices);
+            _gl.BindVertexArray(_vao);
+            _gl.DrawArrays(GL.GL_LINES, 0, _countVertices);
         }
 
         /// <summary>
@@ -24,10 +29,10 @@ namespace Vge.Renderer
         /// </summary>
         public override void Reload(float[] vertices)
         {
-            countVertices = vertices.Length / vertexSize;
-            gl.BindVertexArray(vao);
-            gl.BindBuffer(GL.GL_ARRAY_BUFFER, vbo);
-            gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+            _countVertices = vertices.Length / _vertexSize;
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
         }
 
         /// <summary>

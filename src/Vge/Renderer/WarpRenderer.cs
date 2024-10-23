@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Games;
+using WinGL.OpenGL;
 
 namespace Vge.Renderer
 {
@@ -14,6 +15,16 @@ namespace Vge.Renderer
         protected readonly GameBase _game;
 
         public WarpRenderer(GameBase game) => _game = game;
+
+        /// <summary>
+        /// Получить объект OpenGL. Использовать только в основном потоке
+        /// </summary>
+        public GL GetOpenGL() => _game.GetOpenGL();
+
+        /// <summary>
+        /// Объект отвечающий за прорисовку
+        /// </summary>
+        public RenderMain Render => _game.Render;
 
         /// <summary>
         /// Метод для прорисовки кадра

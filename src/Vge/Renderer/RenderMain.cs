@@ -111,7 +111,6 @@ namespace Vge.Renderer
         {
             ShVoxel.Bind(gl);
             ShVoxel.SetUniformMatrix4(gl, "view", view);
-            ShVoxel.SetUniform3(gl, "pos", 0, 0, 0);
             ShVoxel.SetUniform1(gl, "takt", window.Game.TickCounter);
             ShVoxel.SetUniform1(gl, "overview", overview);
             ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
@@ -120,7 +119,6 @@ namespace Vge.Renderer
             int atlas = ShVoxel.GetUniformLocation(gl, "atlas");
             int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
             BindTextureAtlasBlocks();
-            //BindTextureWidgets();
             gl.Uniform1(atlas, 0);
             TextureLightmapEnable();
             gl.Uniform1(lightMap, 1);

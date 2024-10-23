@@ -54,6 +54,7 @@ namespace Vge.Management
             if (OverviewChunk != overviewChunk)
             {
                 SetOverviewChunk(overviewChunk);
+                _game.WorldRender.SetOverviewChunk(overviewChunk);
                 // Отправим обзор 
                 _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
                 if (isSaveOptions)
@@ -69,9 +70,9 @@ namespace Vge.Management
         /// </summary>
         public void UpView()
         {
-            Vector3 front = new Vector3(1, -.7f, 0); //GetLookFrame(timeIndex).normalize();
+            Vector3 front = new Vector3(.1f, -.98f, 0); //GetLookFrame(timeIndex).normalize();
             Vector3 up = new Vector3(0, 1, 0);
-            Vector3 pos = new Vector3(chPos.X, 25, chPos.Y);
+            Vector3 pos = new Vector3(0, 96, 0);
             Mat4 look = Glm.LookAt(pos, pos + front, up);
             Mat4 projection = Glm.Perspective(65f, (float)Gi.Width / (float)Gi.Height, 
                 0.01f, 16 * 22f);
