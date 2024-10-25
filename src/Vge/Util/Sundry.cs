@@ -1,4 +1,7 @@
-﻿namespace Vge.Util
+﻿using System.Collections.Generic;
+using WinGL.Util;
+
+namespace Vge.Util
 {
     /// <summary>
     /// Объект всякого разного
@@ -43,5 +46,31 @@
             return previous;
         }
 
+        /// <summary>
+        /// Сгенерировать кольца для конкретного обзора
+        /// </summary>
+        public static Vector2i[] GenOverviewCircles(int overview)
+        {
+            ComparisonDistance comparison;
+            List<ComparisonDistance> r = new List<ComparisonDistance>();
+            for (int x = -overview; x <= overview; x++)
+            {
+                for (int y = -overview; y <= overview; y++)
+                {
+                    comparison = new ComparisonDistance(x, y, Mth.Sqrt(x * x + y * y));
+                    if (comparison.Distance() - .3f <= overview)
+                    {
+                        r.Add(comparison);
+                    }
+                }
+            }
+            r.Sort();
+            Vector2i[] overviewCircles = new Vector2i[r.Count];
+            for (int i = 0; i < r.Count; i++)
+            {
+                overviewCircles[i] = r[i].GetPosition();
+            }
+            return overviewCircles;
+        }
     }
 }
