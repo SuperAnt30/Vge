@@ -22,11 +22,6 @@ namespace Vge.Gui.Screens
         public ScreenBase(WindowMain window) : base(window) => si = Gi.Si;
 
         /// <summary>
-        /// Получить объект OpenGL
-        /// </summary>
-        public GL GetOpenGL() => gl;
-
-        /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
         public void Initialize()

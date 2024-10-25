@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using Vge.Entity;
+using WinGL.Util;
 
 namespace Vge.Management
 {
@@ -40,19 +41,21 @@ namespace Vge.Management
         /// Индекс мира, где находится игрок
         /// </summary>
         public byte IdWorld { get; protected set; } = 0;
-        
+
+        /// <summary>
+        /// Позиция игрока
+        /// </summary>
+        public readonly EntityPos Position = new EntityPos();
+        /// <summary>
+        /// Позиция игрока предыдущего такта
+        /// </summary>
+        public readonly EntityPos PositionPrev = new EntityPos();
+
         /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
         protected long _lastTimeServer;
 
-        #region Debug
-
-        public Vector2i chPos = new Vector2i(0);
-        
-        public bool isPos = false;
-
-        #endregion
 
         #region Overview
 
@@ -99,6 +102,11 @@ namespace Vge.Management
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
+
+        /// <summary>
+        /// Изменена ли позиция
+        /// </summary>
+        public bool IsPositionChange() => Position.IsChange(PositionPrev);
 
         /// <summary>
         /// Игровой такт

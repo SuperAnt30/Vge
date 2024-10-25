@@ -72,5 +72,27 @@ namespace Vge.Util
             }
             return overviewCircles;
         }
+
+        /// <summary>
+        /// Определение вращения
+        /// </summary>
+        public static Vector2 MotionAngle(float strafe, float forward, float friction, float yaw)
+        {
+            Vector2 motion = new Vector2(0);
+            float sf = strafe * strafe + forward * forward;
+            if (sf >= 0.0001f)
+            {
+                sf = Mth.Sqrt(sf);
+                if (sf < 1f) sf = 1f;
+                sf = friction / sf;
+                strafe *= sf;
+                forward *= sf;
+                float ysin = Glm.Sin(yaw);
+                float ycos = Glm.Cos(yaw);
+                motion.X += ycos * strafe - ysin * forward;
+                motion.Y += ycos * forward + ysin * strafe;
+            }
+            return motion;
+        }
     }
 }

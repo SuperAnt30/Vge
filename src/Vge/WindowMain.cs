@@ -162,7 +162,7 @@ namespace Vge
             MouseX = x;
             MouseY = y;
             if (Screen != null) Screen.OnMouseMove(x, y);
-            if (Game != null) Game.OnMouseMove(x, y);
+            else if (Game != null) Game.OnMouseMove(x, y);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Vge
             MouseX = x;
             MouseY = y;
             if (Screen != null) Screen.OnMouseDown(button, x, y);
-            if (Game != null) Game.OnMouseDown(button, x, y);
+            else if (Game != null) Game.OnMouseDown(button, x, y);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Vge
             MouseX = x;
             MouseY = y;
             if (Screen != null) Screen.OnMouseUp(button, x, y);
-            if (Game != null) Game.OnMouseUp(button, x, y);
+            else if (Game != null) Game.OnMouseUp(button, x, y);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Vge
             MouseX = x;
             MouseY = y;
             if (Screen != null) Screen.OnMouseWheel(delta, x, y);
-            if (Game != null) Game.OnMouseWheel(delta, x, y);
+            else if (Game != null) Game.OnMouseWheel(delta, x, y);
         }
 
         #endregion
@@ -231,6 +231,19 @@ namespace Vge
         #endregion
 
         #region On...
+
+        /// <summary>
+        /// Активация или деакциваия окна
+        /// </summary>
+        protected override void OnActivate(bool active)
+        {
+            if (!active && Game != null)
+            {
+                // Если происходит деактивация окна, а мы находились в игре,
+                // Выключаем вид от первого лица
+                Game.MouseFirstPersonView(false);
+            }
+        }
 
         protected override void OnOpenGLInitialized()
         {
@@ -403,6 +416,11 @@ namespace Vge
             if (dispose && Screen != null) Screen.Dispose();
             Screen = screen;
             Screen.Initialize();
+            // Если находимся в игре, то выключаем управление вида от первого лица
+            if (Game != null)
+            {
+                Game.MouseFirstPersonView(false);
+            }
         }
         /// <summary>
         /// Запуск от родителя с параметром
@@ -421,6 +439,11 @@ namespace Vge
         {
             if (Screen != null) Screen.Dispose();
             Screen = null;
+            // Если находимся в игре, то включаем управление вида от первого лица
+            if (Game != null)
+            {
+                Game.MouseFirstPersonView(true);
+            }
         }
 
         #endregion

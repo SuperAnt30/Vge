@@ -274,11 +274,11 @@ namespace Vge.Management
                 countPl = 0;
                 if (PlayerOwner != null)
                 {
-                    Debug.Players[countPl++] = PlayerOwner.chPos;
+                    Debug.Players[countPl++] = PlayerOwner.Position.GetChunkPosition();
                 }
                 for (int i = 0; i < _players.Count; i++)
                 {
-                    Debug.Players[countPl++] = _players[i].chPos;
+                    Debug.Players[countPl++] = _players[i].Position.GetChunkPosition();
                 }
             }
         }

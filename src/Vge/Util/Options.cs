@@ -74,7 +74,7 @@ namespace Vge.Util
         /// <summary>
         /// Получить чувствительность мыши
         /// </summary>
-        public static float MouseSensitivityFloat { get; private set; } = 50;
+        public static float MouseSensitivityFloat { get; private set; }
 
         /// <summary>
         /// Обзор чанков

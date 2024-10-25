@@ -6,7 +6,7 @@
     public interface IAnchor
     {
         /// <summary>
-        /// Является ли якорь активным
+        /// Является ли якорь активным, чтоб тикали рядом чанки
         /// </summary>
         bool IsActive { get; }
         /// <summary>

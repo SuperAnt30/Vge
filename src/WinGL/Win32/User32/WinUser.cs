@@ -193,6 +193,10 @@ namespace WinGL.Win32.User32
         static extern bool GetCursorPos(out Vector2i point);
 
         [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetCursorPos(int x, int y);
+
+        [DllImport(User32, SetLastError = true)]
         static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
 
         [DllImport(User32, SetLastError = true)]
@@ -210,6 +214,12 @@ namespace WinGL.Win32.User32
             GetCursorPos(out pos);
             return pos;
         }
+
+        /// <summary>
+        /// Задать позицию курсора
+        /// </summary>
+        public static void SetCursorPosition(int x, int y)
+            => SetCursorPos(x, y);
 
         /// <summary>
         /// Виден ли курсор мыши

@@ -506,6 +506,11 @@ namespace WinGL
             }
         }
 
+        /// <summary>
+        /// Активация или деакциваия окна
+        /// </summary>
+        protected virtual void OnActivate(bool active) { }
+
         #endregion 
 
         #region OnOpenGl
@@ -609,9 +614,12 @@ namespace WinGL
                         OnMove((short)(param & 0xFFFF), (short)(param >> 16));
                     }
                     return IntPtr.Zero;
-
+                case WinUser.WM_ACTIVATE:
+                    param = wParam.ToInt32();
+                    OnActivate(param != 0);
+                    return IntPtr.Zero;
                 #endregion
-                
+
                 #region Mouse
 
                 // Движение мышью
@@ -704,7 +712,13 @@ namespace WinGL
         /// <summary>
         /// Указать виден ли курсор
         /// </summary>
-        protected void CursorShow(bool bShow) => WinUser.CursorShow(bShow);
+        public void CursorShow(bool bShow) => WinUser.CursorShow(bShow);
+
+        /// <summary>
+        /// Задать позицию курсора в окне
+        /// </summary>
+        public void SetCursorPosition(int x, int y) 
+            => WinUser.SetCursorPosition(x + LocationX, y + LocationY);
 
         /// <summary>
         /// Включить или выключить вертикальную сенхронизацию

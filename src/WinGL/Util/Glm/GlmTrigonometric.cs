@@ -83,5 +83,20 @@ namespace WinGL.Util
             if (angle < -Pi) angle += Pi360;
             return angle;
         }
+
+        /// <summary>
+        /// Получить вектор направления по поворотам
+        /// </summary>
+        public static Vector3 Ray(float yaw, float pitch)
+        {
+            //float var3 = glm.cos(-yaw - glm.pi);
+            //float var4 = glm.sin(-yaw - glm.pi);
+            //float var5 = -glm.cos(-pitch);
+            //float var6 = glm.sin(-pitch);
+            //return new vec3(var4 * var5, var6, var3 * var5);
+
+            float pitchxz = Cos(pitch);
+            return new Vector3(Sin(yaw) * pitchxz, Sin(pitch), -Cos(yaw) * pitchxz).Normalize();
+        }
     }
 }

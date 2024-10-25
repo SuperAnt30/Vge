@@ -32,7 +32,7 @@ namespace Vge.Renderer.World
         /// Задать обзор
         /// </summary>
         public void SetOverviewChunk(byte overviewChunk)
-            => _overviewCircles = Ce.GenOverviewCircles(overviewChunk);
+            => _overviewCircles = Sundry.GenOverviewCircles(overviewChunk);
 
         /// <summary>
         /// Запускается мир, возможно смена миров
@@ -61,8 +61,8 @@ namespace Vge.Renderer.World
             _game.Render.ShaderBindVoxels(_game.Player.View, 256, 1, 1, 1, 15);
 
             int count = _overviewCircles.Length;
-            int px = _game.Player.chPos.X;
-            int py = _game.Player.chPos.Y;
+            int px = _game.Player.Position.ChunkPositionX;
+            int py = _game.Player.Position.ChunkPositionZ;
             int bx = px << 4;
             int by = py << 4;
             ChunkRender chunkRender;

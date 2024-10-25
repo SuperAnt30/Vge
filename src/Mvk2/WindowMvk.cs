@@ -17,11 +17,6 @@ namespace Mvk2
     public class WindowMvk : WindowMain
     {
         /// <summary>
-        /// Виден ли курсор
-        /// </summary>
-        public bool cursorShow = false;
-
-        /// <summary>
         /// Объект отвечающий за прорисовку Малювек
         /// </summary>
         private RenderMvk renderMvk;
@@ -102,13 +97,11 @@ namespace Mvk2
         protected override void OnMouseDown(MouseButton button, int x, int y)
         {
             base.OnMouseDown(button, x, y);
-            if (button == MouseButton.Left) cursorShow = true;
         }
 
         protected override void OnMouseUp(MouseButton button, int x, int y)
         {
             base.OnMouseUp(button, x, y);
-            if (button == MouseButton.Left) cursorShow = false;
         }
 
         protected override void OnMouseEnter()
@@ -120,7 +113,6 @@ namespace Mvk2
 
         protected override void OnMouseLeave()
         {
-            cursorShow = false;
             //CursorShow(true);
         }
 

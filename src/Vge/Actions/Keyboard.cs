@@ -45,37 +45,20 @@ namespace Vge.Actions
                 if (keys == Keys.F3) _keyF3 = true;
                 else if (keys == Keys.Escape || keys == Keys.Menu) _OnInGameMenu();
 
+                switch (keys)
+                {
+                    case Keys.W: _game.Player.Movement.Forward = true; break;
+                    case Keys.A: _game.Player.Movement.Left = true; break;
+                    case Keys.D: _game.Player.Movement.Right = true; break;
+                    case Keys.S: _game.Player.Movement.Back = true; break;
+                    case Keys.Space: _game.Player.Movement.Jump = true; break;
+                    case Keys.ShiftKey: _game.Player.Movement.Sneak = true; break;
+                    case Keys.ControlKey: _game.Player.Movement.Sprinting = true; break;
+                    case Keys.Tab: _game.MouseFirstPersonView(false); break;
+                }
+
 
                 // TODO::2024-10-15 Отладка перемещения!!!
-                bool b = false;
-                if (keys == Keys.Left)
-                {
-                    _game.Player.chPos.X -= 1;
-                    b = true;
-                }
-                else if (keys == Keys.Right)
-                {
-                    _game.Player.chPos.X += 2;
-                    b = true;
-                }
-                else if (keys == Keys.Up)
-                {
-                    _game.Player.chPos.Y -= 1;
-                    b = true;
-                }
-                else if (keys == Keys.Down)
-                {
-                    _game.Player.chPos.Y += 1;
-                    b = true;
-                }
-                if (b)
-                {
-                    _game.Player.UpView();
-                    _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
-                        false, false, false, _game.Player.IdWorld));
-                    Debug.Player = _game.Player.chPos;
-                }
 
                 if (keys == Keys.PageUp)
                 {
@@ -94,13 +77,13 @@ namespace Vge.Actions
                 else if (keys == Keys.NumPad0)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        new Vector3(_game.Player.Position.X, _game.Player.Position.Y, _game.Player.Position.Z),
                         false, false, false, 0));
                 }
                 else if (keys == Keys.NumPad1)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new Vector3(_game.Player.chPos.X, _game.Player.chPos.Y, 0),
+                        new Vector3(_game.Player.Position.X, _game.Player.Position.Y, _game.Player.Position.Z),
                         false, false, false, 1));
                 }
             }
@@ -117,6 +100,22 @@ namespace Vge.Actions
                 if (_keyPrev == Keys.F3)
                 {
                     Ce.IsDebugDraw = !Ce.IsDebugDraw;
+                }
+            }
+            else
+            { 
+                switch (keys)
+                {
+                    case Keys.W:
+                        _game.Player.Movement.Forward = false;
+                        _game.Player.Movement.Sprinting = false;
+                        break;
+                    case Keys.A: _game.Player.Movement.Left = false; break;
+                    case Keys.D: _game.Player.Movement.Right = false; break;
+                    case Keys.S: _game.Player.Movement.Back = false; break;
+                    case Keys.Space: _game.Player.Movement.Jump = false; break;
+                    case Keys.ShiftKey: _game.Player.Movement.Sneak = false; break;
+                    case Keys.ControlKey: _game.Player.Movement.Sprinting = false; break;
                 }
             }
         }

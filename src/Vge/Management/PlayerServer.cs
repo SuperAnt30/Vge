@@ -54,11 +54,11 @@ namespace Vge.Management
         /// <summary>
         /// Координату X в каком чанке находится
         /// </summary>
-        public int ChunkPositionX => chPos.X;
+        public int ChunkPositionX => Position.ChunkPositionX;
         /// <summary>
         /// Координата Y в каком чанке находится
         /// </summary>
-        public int ChunkPositionY => chPos.Y;
+        public int ChunkPositionY => Position.ChunkPositionZ;
 
         /// <summary>
         /// В какой позиции X чанка было обработка видимых чанков
@@ -154,12 +154,12 @@ namespace Vge.Management
             TimesExisted += server.DeltaTime;
 
             // Тут надо анализ сделать было ли перемещение
-            if (isPos)
+            if (IsPositionChange() || IsChangeOverview())
             {
                 //server.Filer.StartSection("Fragment" + OverviewChunk);
                 GetWorld().Fragment.UpdateMountedMovingAnchor(this);
                 //server.Filer.EndSectionLog();
-                isPos = false;
+                PositionPrev.Set(Position);
             }
 
             _UpdatePlayer();
@@ -177,10 +177,7 @@ namespace Vge.Management
         /// Пакет: Параметры игрока
         /// </summary>
         public void PacketPlayerSetting(PacketC15PlayerSetting packet)
-        {
-            SetOverviewChunk(packet.OverviewChunk);
-            isPos = true;
-        }
+            => SetOverviewChunk(packet.OverviewChunk);
         
         /// <summary>
         /// Пакет: Подтверждение фрагментов
@@ -200,7 +197,7 @@ namespace Vge.Management
             SendPacket(new PacketS03JoinGame(Id, UUID));
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
-            SendPacket(new PacketS08PlayerPosLook(new Vector3(chPos.X, chPos.Y, 0), 0, 0));
+            SendPacket(new PacketS08PlayerPosLook(new Vector3(Position.X, Position.Y, Position.Z), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
 
@@ -210,7 +207,8 @@ namespace Vge.Management
             // Вносим в менеджер фрагментов игрока
             GetWorld().Fragment.AddAnchor(this);
             
-            isPos = true;
+            //
+            //isPos = true;
         }
 
         /// <summary>
@@ -268,7 +266,9 @@ namespace Vge.Management
                     Token = nbt.GetString("Token");
                     TimesExisted = nbt.GetLong("TimesExisted");
                     IdWorld = nbt.GetByte("IdWorld");
-                    chPos = new Vector2i(nbt.GetInt("ChX"), nbt.GetInt("ChY"));
+                    PositionPrev.X = Position.X = nbt.GetFloat("PosX");
+                    PositionPrev.Y = Position.Y = nbt.GetFloat("PosY");
+                    PositionPrev.Z = Position.Z = nbt.GetFloat("PosZ");
                     return true;
                 }
                 catch
@@ -289,8 +289,9 @@ namespace Vge.Management
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
             nbt.SetByte("IdWorld", IdWorld);
-            nbt.SetInt("ChX", chPos.X);
-            nbt.SetInt("ChY", chPos.Y);
+            nbt.SetFloat("PosX", Position.X);
+            nbt.SetFloat("PosY", Position.Y);
+            nbt.SetFloat("PosZ", Position.Z);
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 

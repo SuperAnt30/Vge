@@ -178,10 +178,9 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
-                playerServer.chPos = new WinGL.Util.Vector2i((int)packet.Position.X, (int)packet.Position.Y);
-                
-                playerServer.isPos = true;
-
+                playerServer.Position.X = packet.Position.X;
+                playerServer.Position.Y = packet.Position.Y;
+                playerServer.Position.Z = packet.Position.Z;
 
                 if (playerServer.IdWorld != packet.World)
                 {

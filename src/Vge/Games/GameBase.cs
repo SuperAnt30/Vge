@@ -83,6 +83,10 @@ namespace Vge.Games
         /// Флаг, можно ли уже использовать тик
         /// </summary>
         protected bool _flagTick = false;
+        /// <summary>
+        /// Объект работы с пакетами
+        /// </summary>
+        protected readonly ProcessClientPackets _packets;
 
         /// <summary>
         /// Объект времени с момента запуска проекта
@@ -94,9 +98,13 @@ namespace Vge.Games
         /// </summary>
         private bool _flagStoped = false;
         /// <summary>
-        /// Объект работы с пакетами
+        /// Имеется ли упровление мышкой вида от первого лица
         /// </summary>
-        protected readonly ProcessClientPackets _packets;
+        private bool _isMouseFirstPersonView;
+        /// <summary>
+        /// Флаг первого запуска упровление мышкой вида от первого лица
+        /// </summary>
+        private bool _flagFirstMouseFPV;
 
         public GameBase(WindowMain window) : base(window)
         {
@@ -175,6 +183,59 @@ namespace Vge.Games
 
         #endregion
 
+        #region OnMouse
+
+        /// <summary>
+        /// Включить или выключить вид от первого лица
+        /// </summary>
+        public void MouseFirstPersonView(bool on)
+        {
+            if (_isMouseFirstPersonView != on)
+            {
+                _isMouseFirstPersonView = on;
+                window.CursorShow(!on);
+                if (on)
+                {
+                    // Включить вид от первого лица
+                    _flagFirstMouseFPV = true;
+                }
+                else
+                {
+                    // Выключить вид от первого лица
+                    Player.Movement.SetStop();
+                }
+            }
+        }
+
+        public override void OnMouseMove(int x, int y)
+        {
+            if (_isMouseFirstPersonView)
+            {
+                int centerX = Gi.Width / 2;
+                int centerY = Gi.Height / 2;
+
+                if (_flagFirstMouseFPV)
+                {
+                    _flagFirstMouseFPV = false;
+                }
+                else
+                {
+                    // Передаём откланение от центра
+                    Player.MouseMove(x - centerX, y - centerY);
+                }
+                // Смещаем курсор в центр
+                window.SetCursorPosition(centerX, centerY);
+            }
+        }
+
+        public override void OnMouseDown(MouseButton button, int x, int y)
+        {
+            // Включить вид от первого лица, если это необходимо
+            MouseFirstPersonView(true);
+        }
+
+        #endregion
+
         #region OnKey
 
         /// <summary>
@@ -209,6 +270,9 @@ namespace Vge.Games
                 _tickCounterClient++;
                 TickCounter++;
 
+                // Обновить игрока
+                Player.Update();
+                // Обновить мир
                 World.Update();
 
                 // Прошла минута, или 1800 тактов

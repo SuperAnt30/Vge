@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using Vge.Actions;
+using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
@@ -12,9 +13,18 @@ namespace Vge.Management
     public class PlayerClient : PlayerBase
     {
         /// <summary>
+        /// Для Pitch предел Пи 1.55, аналог 89гр
+        /// </summary>
+        public const float Pi89 = 1.55334303f;
+
+        /// <summary>
         /// Матрица просмотра Projection * LookAt
         /// </summary>
         public float[] View { get; private set; }
+        /// <summary>
+        /// Обект перемещений
+        /// </summary>
+        public readonly MovementInput Movement = new MovementInput();
 
         /// <summary>
         /// Класс  игры
@@ -39,6 +49,30 @@ namespace Vge.Management
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
             UpView();
+        }
+
+        /// <summary>
+        /// Изменение мыши
+        /// </summary>
+        /// <param name="centerBiasX">растояние по X от центра</param>
+        /// <param name="centerBiasY">растояние по Y от центра</param>
+        public void MouseMove(int centerBiasX, int centerBiasY)
+        {
+            if (centerBiasX == 0 && centerBiasY == 0) return;
+
+            // Чувствительность мыши
+            float speedMouse = Options.MouseSensitivityFloat;
+            // Определяем углы смещения
+            float pitch = Position.Pitch - centerBiasY / (float)Gi.Height * speedMouse;
+            float yaw = Position.Yaw + centerBiasX / (float)Gi.Width * speedMouse;
+            
+            if (pitch < -Pi89) pitch = -Pi89;
+            if (pitch > Pi89) pitch = Pi89;
+            if (yaw > Glm.Pi) yaw -= Glm.Pi360;
+            if (yaw < -Glm.Pi) yaw += Glm.Pi360;
+
+            Position.Yaw = yaw;
+            Position.Pitch = pitch;
         }
 
         /// <summary>
@@ -70,13 +104,41 @@ namespace Vge.Management
         /// </summary>
         public void UpView()
         {
-            Vector3 front = new Vector3(.1f, -.98f, 0); //GetLookFrame(timeIndex).normalize();
+            Vector3 front = Glm.Ray(Position.Yaw, Position.Pitch);
+                //new Vector3(.1f, -.98f, 0); //GetLookFrame(timeIndex).normalize();
             Vector3 up = new Vector3(0, 1, 0);
             Vector3 pos = new Vector3(0, 96, 0);
             Mat4 look = Glm.LookAt(pos, pos + front, up);
-            Mat4 projection = Glm.Perspective(65f, (float)Gi.Width / (float)Gi.Height, 
+            Mat4 projection = Glm.Perspective(65f, Gi.Width / (float)Gi.Height, 
                 0.01f, 16 * 22f);
             View = (projection * look).ToArray();
+        }
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        public override void Update()
+        {
+            Vector2 motion = Sundry.MotionAngle(
+                Movement.GetMoveStrafe(), Movement.GetMoveForward(),
+                10, Position.Yaw);
+
+            // Временно меняем перемещение если это надо
+            Position.X += motion.X;
+            Position.Z += motion.Y;
+            //Position.X += Movement.GetMoveForward();
+            //Position.Z += Movement.GetMoveStrafe();
+            Position.Y += Movement.GetMoveVertical();
+
+            if (IsPositionChange())
+            {
+                UpView();
+                PositionPrev.Set(Position);
+                _game.TrancivePacket(new PacketC04PlayerPosition(
+                    new Vector3(Position.X, Position.Y, Position.Z),
+                    false, false, false, IdWorld));
+                Debug.Player = Position.GetChunkPosition();
+            }
         }
 
         #region Packet
@@ -113,8 +175,9 @@ namespace Vge.Management
 
         public override string ToString()
         {
-            return Login + " " + chPos + " O:" + OverviewChunk 
-                + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc";
+            return Login + " " + Position + " O:" + OverviewChunk 
+                + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
+                + Movement;
         }
     }
 }
