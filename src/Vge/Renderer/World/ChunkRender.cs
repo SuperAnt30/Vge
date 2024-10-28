@@ -43,6 +43,12 @@ namespace Vge.Renderer.World
             AddVertex(0, 0, 16, 0, .1f, 0, (byte)(chunkPosY % 3 == 0 ? 255 : 0), (byte)(chunkPosY % 3 == 0 ? 255 : 0), 255);
             AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
 
+
+            AddVertex(0, 127, 0, 0, 0, 255, 255, 255, 255);
+            AddVertex(16, 127, 0, .1f, 0, 255, 255, 255, 255);
+            AddVertex(0, 127, 16, 0, .1f, 255, 255, 255, 255);
+            AddVertex(16, 127, 16, .1f, .1f, 255, 255, 255, 255);
+
             _meshDense.Reload(_bufferFloat, _buffer);
         }
 

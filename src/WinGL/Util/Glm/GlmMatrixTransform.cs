@@ -16,14 +16,16 @@ namespace WinGL.Util
         /// <returns></returns>
         public static Mat4 Frustum(float left, float right, float bottom, float top, float nearVal, float farVal)
         {
-            var result = Mat4.Identity();
-            result[0, 0] = (2.0f * nearVal) / (right - left);
-            result[1, 1] = (2.0f * nearVal) / (top - bottom);
+            Mat4 result = new Mat4(
+                2f * nearVal / (right - left),
+                2f * nearVal / (top - bottom),
+                -(farVal + nearVal) / (farVal - nearVal),
+                1
+            );
             result[2, 0] = (right + left) / (right - left);
             result[2, 1] = (top + bottom) / (top - bottom);
-            result[2, 2] = -(farVal + nearVal) / (farVal - nearVal);
             result[2, 3] = -1.0f;
-            result[3, 2] = -(2.0f * farVal * nearVal) / (farVal - nearVal);
+            result[3, 2] = -(2f * farVal * nearVal) / (farVal - nearVal);
             return result;
         }
 
@@ -43,10 +45,12 @@ namespace WinGL.Util
             float bottom = -range;
             float top = range;
 
-            var result = new Mat4(0);
-            result[0, 0] = 2f * zNear / (right - left);
-            result[1, 1] = 2f * zNear / (top - bottom);
-            result[2, 2] = -1f;
+            Mat4 result = new Mat4(
+                2f * zNear / (right - left),
+                2f * zNear / (top - bottom),
+                -1,
+                1
+            );
             result[2, 3] = -1f;
             result[3, 2] = -2f * zNear;
             return result;
@@ -65,20 +69,22 @@ namespace WinGL.Util
             Vector3 s = new Vector3(Normalize(Cross(f, up)));
             Vector3 u = new Vector3(Cross(s, f));
 
-            Mat4 Result = new Mat4(1);
-            Result[0, 0] = s.X;
-            Result[1, 0] = s.Y;
-            Result[2, 0] = s.Z;
-            Result[0, 1] = u.X;
-            Result[1, 1] = u.Y;
-            Result[2, 1] = u.Z;
-            Result[0, 2] = -f.X;
-            Result[1, 2] = -f.Y;
-            Result[2, 2] = -f.Z;
-            Result[3, 0] = -Dot(s, eye);
-            Result[3, 1] = -Dot(u, eye);
-            Result[3, 2] = Dot(f, eye);
-            return Result;
+            Mat4 result = new Mat4(
+                s.X,
+                u.Y,
+                -f.Z,
+                1
+            );
+            result[1, 0] = s.Y;
+            result[2, 0] = s.Z;
+            result[0, 1] = u.X;
+            result[2, 1] = u.Z;
+            result[0, 2] = -f.X;
+            result[1, 2] = -f.Y;
+            result[3, 0] = -Dot(s, eye);
+            result[3, 1] = -Dot(u, eye);
+            result[3, 2] = Dot(f, eye);
+            return result;
         }
 
         /// <summary>
@@ -93,10 +99,12 @@ namespace WinGL.Util
         /// <returns></returns>
         public static Mat4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
         {
-            var result = Mat4.Identity();
-            result[0, 0] = 2f / (right - left);
-            result[1, 1] = 2f / (top - bottom);
-            result[2, 2] = -2f / (zFar - zNear);
+            Mat4 result = new Mat4(
+                2f / (right - left),
+                2f / (top - bottom),
+                -2f / (zFar - zNear),
+                1
+            );
             result[3, 0] = -(right + left) / (right - left);
             result[3, 1] = -(top + bottom) / (top - bottom);
             result[3, 2] = -(zFar + zNear) / (zFar - zNear);
@@ -113,10 +121,12 @@ namespace WinGL.Util
         /// <returns></returns>
         public static Mat4 Ortho(float left, float right, float bottom, float top)
         {
-            var result = Mat4.Identity();
-            result[0, 0] = 2f / (right - left);
-            result[1, 1] = 2f / (top - bottom);
-            result[2, 2] = -1f;
+            Mat4 result = new Mat4(
+                2f / (right - left),
+                2f / (top - bottom),
+                -1,
+                1
+            );
             result[3, 0] = -(right + left) / (right - left);
             result[3, 1] = -(top + bottom) / (top - bottom);
             return result;
@@ -132,15 +142,16 @@ namespace WinGL.Util
         /// <returns>A <see cref="mat4"/> that contains the projection matrix for the perspective transformation.</returns>
         public static Mat4 Perspective(float fovy, float aspect, float zNear, float zFar)
         {
-            var tanHalfFovy = Tan(fovy / 2.0f);
+            float tanHalfFovy = Tan(fovy / 2.0f);
 
-            var result = Mat4.Identity();
-            result[0, 0] = 1.0f / (aspect * tanHalfFovy);
-            result[1, 1] = 1.0f / (tanHalfFovy);
-            result[2, 2] = -(zFar + zNear) / (zFar - zNear);
-            result[2, 3] = -1.0f;
-            result[3, 2] = -(2.0f * zFar * zNear) / (zFar - zNear);
-            result[3, 3] = 0.0f;
+            Mat4 result = new Mat4(
+                1f / (aspect * tanHalfFovy),
+                1f / tanHalfFovy,
+                -(zFar + zNear) / (zFar - zNear),
+                0
+            );
+            result[2, 3] = -1f;
+            result[3, 2] = -(2f * zFar * zNear) / (zFar - zNear);
             return result;
         }
 
@@ -156,18 +167,17 @@ namespace WinGL.Util
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public static Mat4 PerspectiveFov(float fov, float width, float height, float zNear, float zFar)
         {
-            if (width <= 0 || height <= 0 || fov <= 0)
-                throw new ArgumentOutOfRangeException();
+            //if (width <= 0 || height <= 0 || fov <= 0)
+            //    throw new ArgumentOutOfRangeException();
 
-            var rad = fov;
+            float h = Cos(.5f * fov) / Sin(.5f * fov);
 
-            var h = Cos(.5f * rad) / Sin(.5f * rad);
-            var w = h * height / width;
-
-            var result = new Mat4(0);
-            result[0, 0] = w;
-            result[1, 1] = h;
-            result[2, 2] = -(zFar + zNear) / (zFar - zNear);
+            Mat4 result = new Mat4(
+                h * height / width,
+                h,
+                -(zFar + zNear) / (zFar - zNear),
+                0
+            );
             result[2, 3] = -1f;
             result[3, 2] = -(2f * zFar * zNear) / (zFar - zNear);
             return result;
@@ -185,7 +195,7 @@ namespace WinGL.Util
         {
             if (delta.X <= 0 || delta.Y <= 0)
                 throw new ArgumentOutOfRangeException();
-            var result = new Mat4(1.0f);
+            Mat4 result = new Mat4(1.0f);
 
             if (!(delta.X > 0 && delta.Y > 0))
                 return result; // Error

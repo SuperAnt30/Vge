@@ -33,10 +33,21 @@ namespace WinGL.Util
         {
             _cols = new[]
             {
-                new Vector4(scale, 0.0f, 0.0f, 0.0f),
-                new Vector4(0.0f, scale, 0.0f, 0.0f),
-                new Vector4(0.0f, 0.0f, scale, 0.0f),
-                new Vector4(0.0f, 0.0f, 0.0f, scale),
+                new Vector4(scale, 0, 0, 0),
+                new Vector4(0, scale, 0, 0),
+                new Vector4(0, 0, scale, 0),
+                new Vector4(0, 0, 0, scale),
+            };
+        }
+
+        public Mat4(float m00, float m11, float m22, float m33)
+        {
+            _cols = new[]
+            {
+                new Vector4(m00, 0, 0, 0),
+                new Vector4(0, m11, 0, 0),
+                new Vector4(0, 0, m22, 0),
+                new Vector4(0, 0, 0, m33),
             };
         }
 
@@ -74,10 +85,10 @@ namespace WinGL.Util
             {
                 _cols = new[]
                 {
-                    new Vector4(1,0,0,0),
-                    new Vector4(0,1,0,0),
-                    new Vector4(0,0,1,0),
-                    new Vector4(0,0,0,1)
+                    new Vector4(1, 0, 0, 0),
+                    new Vector4(0, 1, 0, 0),
+                    new Vector4(0, 0, 1, 0),
+                    new Vector4(0, 0, 0, 1)
                 }
             };
         }
@@ -128,6 +139,29 @@ namespace WinGL.Util
         public float[] ToArray()
         {
             return _cols.SelectMany(v => v.ToArray()).ToArray();
+        }
+
+        /// <summary>
+        /// Передать все данные в входящий массив не создавая ни структур ни массивов
+        /// </summary>
+        public void ConvArray(float[] array)
+        {
+            array[0] = _cols[0].X;
+            array[1] = _cols[0].Y;
+            array[2] = _cols[0].Z;
+            array[3] = _cols[0].W;
+            array[4] = _cols[1].X;
+            array[5] = _cols[1].Y;
+            array[6] = _cols[1].Z;
+            array[7] = _cols[1].W;
+            array[8] = _cols[2].X;
+            array[9] = _cols[2].Y;
+            array[10] = _cols[2].Z;
+            array[11] = _cols[2].W;
+            array[12] = _cols[3].X;
+            array[13] = _cols[3].Y;
+            array[14] = _cols[3].Z;
+            array[15] = _cols[3].W;
         }
 
         #endregion

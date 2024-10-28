@@ -46,7 +46,7 @@ namespace WinGL
         /// <summary>
         /// Массив матрицы для проецирования двумерных координат на экран
         /// </summary>
-        public float[] Ortho2D { get; private set; }
+        public readonly float[] Ortho2D = new float[16];
 
         /// <summary>
         /// Объект OpenGL для элемента управления
@@ -487,8 +487,7 @@ namespace WinGL
                 windowHeigt = height + windowHeigtBorder;
             }
 
-            Ortho2D = Glm.Ortho(0, Width, Height, 0, 0, 1).ToArray();
-
+            Glm.Ortho(0, Width, Height, 0, 0, 1).ConvArray(Ortho2D);
             gl.Viewport(0, 0, width, height);
         }
 

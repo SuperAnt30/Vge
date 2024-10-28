@@ -8,6 +8,8 @@ namespace Vge.Renderer.Font
     /// </summary>
     public class TransferText
     {
+        public static string[] StringSeparators = new string[] { Ce.Br, ChatStyle.Br };
+
         /// <summary>
         /// Объект шрифта
         /// </summary>
@@ -52,7 +54,7 @@ namespace Vge.Renderer.Font
         {
             OutWidth = 0;
             NumberLines = 1;
-            string[] strs = inText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
+            string[] strs = inText.Split(StringSeparators, StringSplitOptions.None);
 
             font.Clear(false);
             // Ширина пробела
@@ -94,7 +96,7 @@ namespace Vge.Renderer.Font
         /// Сгенерировать строки по OutText
         /// </summary>
         public string[] GetStrings()
-            => OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
+            => OutText.Split(StringSeparators, StringSplitOptions.None);
 
         /// <summary>
         /// Сгенерировать количество строк по OutText

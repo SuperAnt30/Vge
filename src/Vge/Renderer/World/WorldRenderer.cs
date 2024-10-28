@@ -18,21 +18,10 @@ namespace Vge.Renderer.World
         /// </summary>
         public readonly BufferFast BufferMesh = new BufferFast(10000);
 
-        /// <summary>
-        /// Обзор в виде круга
-        /// </summary>
-        private Vector2i[] _overviewCircles;
-
         public WorldRenderer(GameBase game) : base(game)
         {
-            SetOverviewChunk(_game.Player.OverviewChunk);
-        }
 
-        /// <summary>
-        /// Задать обзор
-        /// </summary>
-        public void SetOverviewChunk(byte overviewChunk)
-            => _overviewCircles = Sundry.GenOverviewCircles(overviewChunk);
+        }
 
         /// <summary>
         /// Запускается мир, возможно смена миров
@@ -60,22 +49,29 @@ namespace Vge.Renderer.World
 
             _game.Render.ShaderBindVoxels(_game.Player.View, 256, 1, 1, 1, 15);
 
-            int count = _overviewCircles.Length;
+            int count = _game.Player.FrustumCulling.Count;
             int px = _game.Player.Position.ChunkPositionX;
-            int py = _game.Player.Position.ChunkPositionZ;
+            int pz = _game.Player.Position.ChunkPositionZ;
             int bx = px << 4;
-            int by = py << 4;
+            int bz = pz << 4;
+
+            float fx = _game.Player.Position.X - bx;
+            float fz = _game.Player.Position.Z - bz;
             ChunkRender chunkRender;
+            Vector2i vec;
             int x, y; 
             for (int i = 0; i < count; i++)
             {
-                chunkRender = _game.World.ChunkPrClient.GetChunk(_overviewCircles[i].X + px, _overviewCircles[i].Y + py) as ChunkRender;
+                vec = _game.Player.FrustumCulling[i];
+                chunkRender = _game.World.ChunkPrClient.GetChunk(vec.X + px, vec.Y + pz) as ChunkRender;
                 if (chunkRender != null)
                 {
-                    x = _overviewCircles[i].X << 4;
-                    y = _overviewCircles[i].Y << 4;
+                    x = vec.X << 4;
+                    y = vec.Y << 4;
                     _game.Render.ShVoxel.SetUniform3(_game.GetOpenGL(), "pos",
-                        x, 0, y);
+                    //x, -_game.Player.Position.Y, y);
+                    x - fx, -_game.Player.Position.Y, y - fz);
+
                     chunkRender.DrawDense();
                 }
             }

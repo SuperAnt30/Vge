@@ -96,7 +96,7 @@ namespace WinGL.Util
             //return new vec3(var4 * var5, var6, var3 * var5);
 
             float pitchxz = Cos(pitch);
-            return new Vector3(Sin(yaw) * pitchxz, Sin(pitch), -Cos(yaw) * pitchxz).Normalize();
+            return new Vector3(Sin(yaw) * pitchxz, Sin(pitch), -Cos(yaw) * pitchxz);
         }
     }
 }

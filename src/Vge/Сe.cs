@@ -1,4 +1,5 @@
-﻿/// <summary>
+﻿using WinGL.Util;
+/// <summary>
 /// ConstEngine
 /// Класс констант и статический данных для движка
 /// </summary>
@@ -43,6 +44,10 @@ public sealed class Ce
     /// Максимальный время для закачки чанков
     /// </summary>
     public const int MaxBatchChunksTime = Tick​​Time * 4 / 5;
+    /// <summary>
+    /// Обзор в виде круга
+    /// </summary>
+    public static Vector2i[] OverviewCircles = new Vector2i[] { new Vector2i(0) };
 
     #endregion
 

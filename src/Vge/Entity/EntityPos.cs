@@ -20,6 +20,10 @@ namespace Vge.Entity
         /// </summary>
         public int ChunkPositionZ => (int)Z >> 4;
         /// <summary>
+        /// Координата Y
+        /// </summary>
+        public int PositionY => (int)Y;
+        /// <summary>
         /// Получить координаты чанка
         /// </summary>
         public Vector2i GetChunkPosition() => new Vector2i(ChunkPositionX, ChunkPositionZ);

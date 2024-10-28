@@ -32,7 +32,7 @@ namespace Vge.Actions
         public void OnKeyDown(Keys keys)
         {
             _keyPrev = keys;
-            Debug.Text = keys.ToString();
+            //Debug.Text = keys.ToString();
             if (_keyF3)
             {
                 // Сочетания клавиш с F3

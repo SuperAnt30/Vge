@@ -73,6 +73,8 @@ namespace Vge.Renderer.Font
         /// </summary>
         private readonly int texture;
 
+        
+
         /// <summary>
         /// Класс шрифта
         /// </summary>
@@ -260,7 +262,7 @@ namespace Vge.Renderer.Font
         {
             int width3dot = WidthString(Ce.Ellipsis);
             Transfer.Run(text, width - width3dot, si);
-            string[] strs = Transfer.OutText.Split(new string[] { Ce.Br, ChatStyle.Br }, StringSplitOptions.None);
+            string[] strs = Transfer.OutText.Split(TransferText.StringSeparators, StringSplitOptions.None);
             if (strs.Length > 0) text = strs[0];
             if (ellipsis && strs.Length > 1) text += Ce.Ellipsis;
             return text;
@@ -367,8 +369,7 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void RenderText(int x, int y, string text)
         {
-            string[] stringSeparators = new string[] { Ce.Br, ChatStyle.Br };
-            string[] strs = text.Split(stringSeparators, StringSplitOptions.None);
+            string[] strs = text.Split(TransferText.StringSeparators, StringSplitOptions.None);
 
             foreach (string str in strs)
             {
@@ -493,6 +494,17 @@ namespace Vge.Renderer.Font
         }
 
         /// <summary>
+        /// Перезалить буфер
+        /// </summary>
+        public void Reload()
+        {
+            if (mesh != null)
+            {
+                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
+            }
+        }
+
+        /// <summary>
         /// Перезалить в сторонюю сетку
         /// </summary>
         public void Reload(Mesh mesh)
@@ -520,10 +532,6 @@ namespace Vge.Renderer.Font
             }
         }
 
-        /// <summary>
-        /// Получить сетку буфера
-        /// </summary>
-        public float[] ToBuffer() => buffer.ToArray();
         /// <summary>
         /// Сколько полигон
         /// </summary>

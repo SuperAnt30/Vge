@@ -69,7 +69,7 @@ namespace Mvk2
                     Render.FontMain.SetFontFX(EnumFontFX.Shadow).SetColor(new Vector3(.9f, .9f, .9f));
                     Render.FontMain.RenderText(10 * Gi.Si, 10 * Gi.Si, textDebug);
                     Render.FontMain.RenderFX();
-                    meshTextDebug.Reload(Render.FontMain.ToBuffer());
+                    Render.FontMain.Reload(meshTextDebug);
                     Render.FontMain.Clear();
                 }
                 // Прорисовка отладки
@@ -144,7 +144,7 @@ namespace Mvk2
             meshTextDebug = new MeshGuiColor(gl);
 
             //gl.ShadeModel(GL.GL_SMOOTH);
-            //gl.ClearColor(0.0f, .5f, 0.0f, 1f);
+            //gl.ClearColor(0, .5f, 0, 1f);
             //gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
             //gl.ClearDepth(1.0f);
             //gl.Enable(GL.GL_DEPTH_TEST);

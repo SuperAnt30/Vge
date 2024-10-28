@@ -1,4 +1,5 @@
 ﻿using Vge.Actions;
+using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -20,11 +21,15 @@ namespace Vge.Management
         /// <summary>
         /// Матрица просмотра Projection * LookAt
         /// </summary>
-        public float[] View { get; private set; }
+        public readonly float[] View = new float[16];
         /// <summary>
         /// Обект перемещений
         /// </summary>
         public readonly MovementInput Movement = new MovementInput();
+        /// <summary>
+        /// Массив всех видимых чанков 
+        /// </summary>
+        public readonly ListFast<Vector2i> FrustumCulling = new ListFast<Vector2i>();
 
         /// <summary>
         /// Класс  игры
@@ -42,6 +47,10 @@ namespace Vge.Management
         /// Количество на загрузку чанков
         /// </summary>
         private byte _batchChunksQuantity;
+        /// <summary>
+        /// Объект расчёта FrustumCulling
+        /// </summary>
+        private readonly Frustum _frustumCulling = new Frustum();
 
         public PlayerClient(GameBase game)
         {
@@ -88,7 +97,7 @@ namespace Vge.Management
             if (OverviewChunk != overviewChunk)
             {
                 SetOverviewChunk(overviewChunk);
-                _game.WorldRender.SetOverviewChunk(overviewChunk);
+                Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
                 // Отправим обзор 
                 _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
                 if (isSaveOptions)
@@ -105,13 +114,80 @@ namespace Vge.Management
         public void UpView()
         {
             Vector3 front = Glm.Ray(Position.Yaw, Position.Pitch);
-                //new Vector3(.1f, -.98f, 0); //GetLookFrame(timeIndex).normalize();
             Vector3 up = new Vector3(0, 1, 0);
-            Vector3 pos = new Vector3(0, 96, 0);
-            Mat4 look = Glm.LookAt(pos, pos + front, up);
-            Mat4 projection = Glm.Perspective(65f, Gi.Width / (float)Gi.Height, 
+            Vector3 pos = new Vector3(0, 0, 0);
+            Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
+            //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
+            //    0.01f, 16 * 22f);
+            Mat4 projection = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
                 0.01f, 16 * 22f);
-            View = (projection * look).ToArray();
+            (projection * look).ConvArray(View);
+            InitFrustumCulling();
+        }
+
+        /// <summary>
+        /// Перерасчёт FrustumCulling
+        /// </summary>
+        public void InitFrustumCulling()
+        {
+            _frustumCulling.Init(View);
+
+            int countFC = 0;
+            int chunkPosX = Position.ChunkPositionX;
+            int chunkPosZ = Position.ChunkPositionZ;
+
+            int i, xc, zc, xb, zb, x1, y1, z1, x2, y2, z2;
+            //FrustumStruct frustum;
+            //ChunkRender chunk;
+            Vector2i coord;
+            Vector2i vec;
+            ListFast<Vector2i> debug = Ce.IsDebugDrawChunks ? new ListFast<Vector2i>() : null;
+            FrustumCulling.Clear();
+            int countOC = Ce.OverviewCircles.Length;
+            for (i = 0; i < countOC; i++)
+            {
+                vec = Ce.OverviewCircles[i];
+                xc = vec.X;
+                zc = vec.Y;
+                xb = xc << 4;
+                zb = zc << 4;
+
+                x1 = xb - 12;
+                y1 = -Position.PositionY;
+                z1 = zb - 12;
+                x2 = xb + 12;
+                y2 = 128 - Position.PositionY;
+                z2 = zb + 12;
+
+                if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
+                {
+                    coord = new Vector2i(xc + chunkPosX, zc + chunkPosZ);
+                    //coord = vec;
+                    //chunk = ClientWorld.ChunkPrClient.GetChunkRender(coord);
+                    //if (chunk == null) frustum = new FrustumStruct(coord);
+                    //else frustum = new FrustumStruct(chunk);
+
+                    //int count = frustum.FrustumShow(FrustumCulling, x1, z1, x2, z2, Mth.Floor(positionFrame.y + eyeFrame));// positionFrame.y);
+                    //if (count > 0)
+                    //{
+                    //    if (Debug.IsDrawFrustumCulling)
+                    //    {
+                    //        coord = new Vector2i(xc, zc);
+                    //        if (!Debug.DrawFrustumCulling.Contains(coord)) Debug.DrawFrustumCulling.Add(coord);
+                    //    }
+                    //    FrustumCulling.Add(frustum);
+                    //}
+                    FrustumCulling.Add(vec);
+                    if (Ce.IsDebugDrawChunks) debug.Add(coord);
+                    // Для подсчёта чанков меша
+                    countFC++;
+                }
+            }
+            if (Ce.IsDebugDrawChunks)
+            {
+                OnTagDebug(Debug.Key.FrustumCulling.ToString(), debug.ToArray());
+            }
+            Debug.CountMeshFC = FrustumCulling.Count;
         }
 
         /// <summary>
@@ -121,13 +197,11 @@ namespace Vge.Management
         {
             Vector2 motion = Sundry.MotionAngle(
                 Movement.GetMoveStrafe(), Movement.GetMoveForward(),
-                10, Position.Yaw);
+                5, Position.Yaw);
 
             // Временно меняем перемещение если это надо
             Position.X += motion.X;
             Position.Z += motion.Y;
-            //Position.X += Movement.GetMoveForward();
-            //Position.Z += Movement.GetMoveStrafe();
             Position.Y += Movement.GetMoveVertical();
 
             if (IsPositionChange())
@@ -175,9 +249,16 @@ namespace Vge.Management
 
         public override string ToString()
         {
-            return Login + " " + Position + " O:" + OverviewChunk 
+            return Login + " " + Position + " O:" + OverviewChunk
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
                 + Movement;
         }
+
+        /// <summary>
+        /// Событие любого объекта с сервера для отладки
+        /// </summary>
+        public event StringEventHandler TagDebug;
+        public void OnTagDebug(string title, object tag)
+            => TagDebug?.Invoke(this, new StringEventArgs(title, tag));
     }
 }

@@ -20,6 +20,10 @@ namespace Vge
         public static string Text = "";
         public static uint MeshId = 0;
         public static int MeshCount = 0;
+        /// <summary>
+        /// FrustumCulling
+        /// </summary>
+        public static int CountMeshFC = 0;
 
         public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick)
         {
@@ -31,7 +35,7 @@ namespace Vge
         {
             return StrTpsFps
                 + "\r\nAudio: " + Audio
-                + "\r\nMesh Id: " + MeshId + " C: " + MeshCount
+                + "\r\nMesh Id: " + MeshId + " C: " + MeshCount + " FC: " + CountMeshFC
                 + "\r\n" + Server
                 + "[Client]: " + Client
                 + "\r\n" + Text;
@@ -92,6 +96,20 @@ namespace Vge
                 _flagBlockDraw = false;
                 _renderChunks = true;
             }
+            else if (e.Text == Key.FrustumCulling.ToString())
+            {
+                _flagBlockDraw = true;
+                Vector2i[] ar = (Vector2i[])e.Tag;
+                _frustumCulling = new Vector2i[ar.Length];
+                for (int i = 0; i < ar.Length; i++)
+                {
+                    _frustumCulling[i] = new Vector2i(ar[i]);
+                }
+                _flagBlockDraw = false;
+                _renderChunks = true;
+            }
+
+            
         }
 
         public enum Key
@@ -115,7 +133,12 @@ namespace Vge
             /// Готовые чанкина на клиенте
             /// Черные
             /// </summary>
-            ChunkClient
+            ChunkClient,
+            /// <summary>
+            /// FrustumCulling локально для клиента
+            /// Голубой
+            /// </summary>
+            FrustumCulling
         }
 
         /// <summary>
@@ -146,6 +169,11 @@ namespace Vge
         /// Черные
         /// </summary>
         private static Vector2i[] _chunksСlient = new Vector2i[0];
+        /// <summary>
+        /// FrustumCulling локально для клиента
+        /// Голубой
+        /// </summary>
+        private static Vector2i[] _frustumCulling = new Vector2i[0];
 
         private static bool _flagBlockDraw = false;
 
@@ -215,6 +243,15 @@ namespace Vge
                 y = yc + _chunksForAnchors[i].Y * 8;
                 vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 6, y + 6, .9f, .9f, .9f));
             }
+            // Голубой
+            for (int i = 0; i < _frustumCulling.Length; i++)
+            {
+                if (_flagBlockDraw) return false;
+                x = xc + _frustumCulling[i].X * 8;
+                y = yc + _frustumCulling[i].Y * 8;
+                vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 6, y + 6, 0, .4f, 1));
+            }
+
             // Черный
             for (int i = 0; i < _chunksСlient.Length; i++)
             {
@@ -223,6 +260,7 @@ namespace Vge
                 y = yc + _chunksСlient[i].Y * 8;
                 vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 5, y + 5, 0, 0, .6f));
             }
+            
 
             // Игрок
             x = xc + Player.X * 8;
