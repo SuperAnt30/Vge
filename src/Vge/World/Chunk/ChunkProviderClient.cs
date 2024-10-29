@@ -69,6 +69,12 @@ namespace Vge.World.Chunk
             }
         }
 
+        /// <summary>
+        /// Получить клиентский чанк по координатам чанка
+        /// </summary>
+        public ChunkRender GetChunkRender(int x, int y)
+             => _chunkMapping.Get(x, y) as ChunkRender;
+
         #endregion
 
         public override string ToString() => string.Format("Ch:{0}|{1} Dr:{2}",

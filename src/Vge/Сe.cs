@@ -45,6 +45,10 @@ public sealed class Ce
     /// </summary>
     public const int MaxBatchChunksTime = Tick​​Time * 4 / 5;
     /// <summary>
+    /// Через сколько тактов происходит переформирование FrustumCulling если хоть один чанк не догружен
+    /// </summary>
+    public const int CheckTickInitFrustumCulling = 5;
+    /// <summary>
     /// Обзор в виде круга
     /// </summary>
     public static Vector2i[] OverviewCircles = new Vector2i[] { new Vector2i(0) };

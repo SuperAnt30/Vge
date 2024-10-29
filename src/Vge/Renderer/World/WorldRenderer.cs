@@ -58,24 +58,16 @@ namespace Vge.Renderer.World
             float fx = _game.Player.Position.X - bx;
             float fz = _game.Player.Position.Z - bz;
             ChunkRender chunkRender;
-            Vector2i vec;
-            int x, y; 
             for (int i = 0; i < count; i++)
             {
-                vec = _game.Player.FrustumCulling[i];
-                chunkRender = _game.World.ChunkPrClient.GetChunk(vec.X + px, vec.Y + pz) as ChunkRender;
-                if (chunkRender != null)
-                {
-                    x = vec.X << 4;
-                    y = vec.Y << 4;
-                    _game.Render.ShVoxel.SetUniform3(_game.GetOpenGL(), "pos",
-                    //x, -_game.Player.Position.Y, y);
-                    x - fx, -_game.Player.Position.Y, y - fz);
-
-                    chunkRender.DrawDense();
-                }
+                chunkRender = _game.Player.FrustumCulling[i];
+                _game.Render.ShVoxel.SetUniform3(_game.GetOpenGL(), "pos",
+                    (chunkRender.CurrentChunkX << 4) - _game.Player.Position.X, 
+                    -_game.Player.Position.Y, 
+                    (chunkRender.CurrentChunkY << 4) - _game.Player.Position.Z
+                );
+                chunkRender.DrawDense();
             }
-
         }
 
         public override void Dispose()

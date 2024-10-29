@@ -3,7 +3,9 @@ using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World.Chunk;
 using WinGL.Util;
 
 namespace Vge.Management
@@ -29,7 +31,8 @@ namespace Vge.Management
         /// <summary>
         /// Массив всех видимых чанков 
         /// </summary>
-        public readonly ListFast<Vector2i> FrustumCulling = new ListFast<Vector2i>();
+        public readonly ListFast<ChunkRender> FrustumCulling = new ListFast<ChunkRender>();
+        
 
         /// <summary>
         /// Класс  игры
@@ -51,13 +54,21 @@ namespace Vge.Management
         /// Объект расчёта FrustumCulling
         /// </summary>
         private readonly Frustum _frustumCulling = new Frustum();
+        /// <summary>
+        /// Количество чанков в видимости камеры, незадействованных
+        /// </summary>
+        private int _countUnusedFrustumCulling;
+        /// <summary>
+        /// Количество тиков после последнего формирования FrustumCulling
+        /// </summary>
+        private int _countTickLastFrustumCulling;
 
         public PlayerClient(GameBase game)
         {
             _game = game;
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
-            UpView();
+            _UpdateMatrixCamera();
         }
 
         /// <summary>
@@ -108,10 +119,21 @@ namespace Vge.Management
             }
         }
 
+        #region FrustumCulling Camera
+
+        /// <summary>
+        /// Камера была изменена
+        /// </summary>
+        public void  CameraHasBeenChanged()
+        {
+            _UpdateMatrixCamera();
+            _InitFrustumCulling();
+        }
+
         /// <summary>
         /// Обновить матрицу камеры
         /// </summary>
-        public void UpView()
+        private void _UpdateMatrixCamera()
         {
             Vector3 front = Glm.Ray(Position.Yaw, Position.Pitch);
             Vector3 up = new Vector3(0, 1, 0);
@@ -122,28 +144,26 @@ namespace Vge.Management
             Mat4 projection = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
                 0.01f, 16 * 22f);
             (projection * look).ConvArray(View);
-            InitFrustumCulling();
         }
 
         /// <summary>
         /// Перерасчёт FrustumCulling
         /// </summary>
-        public void InitFrustumCulling()
+        private void _InitFrustumCulling()
         {
             _frustumCulling.Init(View);
 
-            int countFC = 0;
             int chunkPosX = Position.ChunkPositionX;
             int chunkPosZ = Position.ChunkPositionZ;
 
             int i, xc, zc, xb, zb, x1, y1, z1, x2, y2, z2;
-            //FrustumStruct frustum;
-            //ChunkRender chunk;
-            Vector2i coord;
+            ChunkRender chunk;
             Vector2i vec;
             ListFast<Vector2i> debug = Ce.IsDebugDrawChunks ? new ListFast<Vector2i>() : null;
             FrustumCulling.Clear();
             int countOC = Ce.OverviewCircles.Length;
+            _countUnusedFrustumCulling = 0;
+            _countTickLastFrustumCulling = 0;
             for (i = 0; i < countOC; i++)
             {
                 vec = Ce.OverviewCircles[i];
@@ -161,26 +181,19 @@ namespace Vge.Management
 
                 if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
                 {
-                    coord = new Vector2i(xc + chunkPosX, zc + chunkPosZ);
-                    //coord = vec;
-                    //chunk = ClientWorld.ChunkPrClient.GetChunkRender(coord);
-                    //if (chunk == null) frustum = new FrustumStruct(coord);
-                    //else frustum = new FrustumStruct(chunk);
-
-                    //int count = frustum.FrustumShow(FrustumCulling, x1, z1, x2, z2, Mth.Floor(positionFrame.y + eyeFrame));// positionFrame.y);
-                    //if (count > 0)
-                    //{
-                    //    if (Debug.IsDrawFrustumCulling)
-                    //    {
-                    //        coord = new Vector2i(xc, zc);
-                    //        if (!Debug.DrawFrustumCulling.Contains(coord)) Debug.DrawFrustumCulling.Add(coord);
-                    //    }
-                    //    FrustumCulling.Add(frustum);
-                    //}
-                    FrustumCulling.Add(vec);
-                    if (Ce.IsDebugDrawChunks) debug.Add(coord);
-                    // Для подсчёта чанков меша
-                    countFC++;
+                    chunk = _game.World.ChunkPrClient.GetChunkRender(xc + chunkPosX, zc + chunkPosZ);
+                    if (chunk != null)
+                    {
+                        FrustumCulling.Add(chunk);
+                    }
+                    else
+                    {
+                        _countUnusedFrustumCulling++;
+                    }
+                    if (Ce.IsDebugDrawChunks)
+                    {
+                        debug.Add(new Vector2i(xc + chunkPosX, zc + chunkPosZ));
+                    }
                 }
             }
             if (Ce.IsDebugDrawChunks)
@@ -190,6 +203,8 @@ namespace Vge.Management
             Debug.CountMeshFC = FrustumCulling.Count;
         }
 
+        #endregion
+
         /// <summary>
         /// Игровой такт
         /// </summary>
@@ -197,7 +212,7 @@ namespace Vge.Management
         {
             Vector2 motion = Sundry.MotionAngle(
                 Movement.GetMoveStrafe(), Movement.GetMoveForward(),
-                5, Position.Yaw);
+                Movement.Sprinting ? 5 : 1, Position.Yaw);
 
             // Временно меняем перемещение если это надо
             Position.X += motion.X;
@@ -206,12 +221,18 @@ namespace Vge.Management
 
             if (IsPositionChange())
             {
-                UpView();
+                CameraHasBeenChanged();
                 PositionPrev.Set(Position);
                 _game.TrancivePacket(new PacketC04PlayerPosition(
                     new Vector3(Position.X, Position.Y, Position.Z),
                     false, false, false, IdWorld));
                 Debug.Player = Position.GetChunkPosition();
+            }
+
+            if (_countUnusedFrustumCulling > 0
+                && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)
+            {
+                _InitFrustumCulling();
             }
         }
 
