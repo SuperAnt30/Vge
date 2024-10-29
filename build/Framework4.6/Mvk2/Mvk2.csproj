@@ -38,12 +38,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Audio\AudioMvk.cs" />
-    <Compile Include="Gui\Screens\ScreenGameDebug.cs" />
-    <Compile Include="Gui\Screens\ScreenDebug.cs" />
+    <Compile Include="Gui\Screens\LaunchScreenMvk.cs" />
+    <Compile Include="Gui\Screens\ScreenOptionsMvk.cs" />
+    <Compile Include="Gui\Screens\ScreenSingleMvk.cs" />
     <Compile Include="Gui\Screens\ScreenSplashMvk.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +53,9 @@
     <Compile Include="Util\OptionsFileMvk.cs" />
     <Compile Include="Util\OptionsMvk.cs" />
     <Compile Include="WindowMvk.cs" />
+    <Compile Include="World\AllWorldsMvk.cs" />
+    <Compile Include="World\Block\BlocksRegMvk.cs" />
+    <Compile Include="World\WorldSettingsNightmare.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vge\Vge.csproj">

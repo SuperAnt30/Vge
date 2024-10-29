@@ -45,7 +45,6 @@
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
     </Reference>
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -54,6 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Keyboard.cs" />
+    <Compile Include="Actions\MovementInput.cs" />
     <Compile Include="Audio\Al.cs" />
     <Compile Include="Audio\Alc.cs" />
     <Compile Include="Audio\AudioBase.cs" />
@@ -61,16 +62,67 @@
     <Compile Include="Audio\AudioSource.cs" />
     <Compile Include="Audio\AudioSources.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Entity\EntityPos.cs" />
     <Compile Include="Event\GameStopEvent.cs" />
     <Compile Include="Games\GameBase.cs" />
+    <Compile Include="Games\GameFile.cs" />
     <Compile Include="Games\GameLocal.cs" />
     <Compile Include="Games\GameNet.cs" />
+    <Compile Include="Games\GameSettings.cs" />
+    <Compile Include="Games\ListSingleGame.cs" />
+    <Compile Include="Gui\Controls\CheckBox.cs" />
+    <Compile Include="Gui\Controls\Slider.cs" />
+    <Compile Include="Gui\Controls\EnumAlightVert.cs" />
+    <Compile Include="Gui\Controls\EnumAlight.cs" />
+    <Compile Include="Gui\Controls\TextBox.cs" />
+    <Compile Include="Gui\Screens\EnumScreenParent.cs" />
+    <Compile Include="Gui\Screens\LaunchScreen.cs" />
+    <Compile Include="Gui\Screens\ScreenCreateGame.cs" />
+    <Compile Include="Gui\Screens\ScreenProcess.cs" />
+    <Compile Include="Gui\Screens\ScreenInGameMenu.cs" />
+    <Compile Include="Gui\Screens\ScreenWorking.cs" />
+    <Compile Include="Gui\Screens\ScreenMultiplayer.cs" />
+    <Compile Include="Gui\Screens\ScreenYesNo.cs" />
+    <Compile Include="Gui\Screens\ScreenSingle.cs" />
+    <Compile Include="Gui\Screens\ScreenOptions.cs" />
+    <Compile Include="Management\ChunkForAnchor.cs" />
+    <Compile Include="Management\IAnchor.cs" />
+    <Compile Include="Management\PlayerBase.cs" />
+    <Compile Include="Management\PlayerClient.cs" />
+    <Compile Include="Management\PlayerManager.cs" />
+    <Compile Include="Management\FragmentManager.cs" />
+    <Compile Include="Management\PlayerServer.cs" />
+    <Compile Include="Management\TestAnchor.cs" />
+    <Compile Include="NBT\NBTBase.cs" />
+    <Compile Include="NBT\NBTStream.cs" />
+    <Compile Include="NBT\NBTTools.cs" />
+    <Compile Include="NBT\TagByte.cs" />
+    <Compile Include="NBT\TagByteArray.cs" />
+    <Compile Include="NBT\TagCompound.cs" />
+    <Compile Include="NBT\TagEnd.cs" />
+    <Compile Include="NBT\TagFloat.cs" />
+    <Compile Include="NBT\TagInt.cs" />
+    <Compile Include="NBT\TagIntArray.cs" />
+    <Compile Include="NBT\TagList.cs" />
+    <Compile Include="NBT\TagLong.cs" />
+    <Compile Include="NBT\TagShort.cs" />
+    <Compile Include="NBT\TagString.cs" />
+    <Compile Include="Network\PacketStringEvent.cs" />
+    <Compile Include="Network\Packets\Client\PacketC02LoginStart.cs" />
+    <Compile Include="Network\Packets\Client\PacketC20AcknowledgeChunks.cs" />
+    <Compile Include="Network\Packets\Client\PacketC15PlayerSetting.cs" />
+    <Compile Include="Network\Packets\Server\PacketS02LoadingGame.cs" />
+    <Compile Include="Network\Packets\Server\PacketS03JoinGame.cs" />
+    <Compile Include="Network\Packets\Server\PacketS08PlayerPosLook.cs" />
+    <Compile Include="Network\Packets\Server\PacketS07RespawnInWorld.cs" />
+    <Compile Include="Network\Packets\Server\PacketS20ChunkSend.cs" />
+    <Compile Include="Network\Packets\Server\PacketS21ChunkData.cs" />
     <Compile Include="Realms\ChatStyle.cs" />
     <Compile Include="Gui\Controls\Button.cs" />
     <Compile Include="Gui\Controls\WidgetBase.cs" />
     <Compile Include="Gi.cs" />
     <Compile Include="Gui\Controls\Label.cs" />
-    <Compile Include="Gui\Huds\HudBase.cs" />
+    <Compile Include="Renderer\Huds\HudBase.cs" />
     <Compile Include="Gui\Screens\ScreenBase.cs" />
     <Compile Include="Gui\Screens\ScreenNotification.cs" />
     <Compile Include="Gui\Screens\ScreenMainMenu.cs" />
@@ -80,7 +132,7 @@
     <Compile Include="Network\Packets\Client\PacketC04PlayerPosition.cs" />
     <Compile Include="Network\Packets\Packet00PingPong.cs" />
     <Compile Include="Network\Packets\Packet01KeepAlive.cs" />
-    <Compile Include="Network\Packets\Server\PacketS03TimeUpdate.cs" />
+    <Compile Include="Network\Packets\Server\PacketS04TimeUpdate.cs" />
     <Compile Include="Network\ProcessClientPackets.cs" />
     <Compile Include="Network\ProcessServerPackets.cs" />
     <Compile Include="Network\ReceivingBytes.cs" />
@@ -94,14 +146,52 @@
     <Compile Include="Renderer\Font\TransferText.cs" />
     <Compile Include="Renderer\Font\EnumFontFX.cs" />
     <Compile Include="Renderer\Font\FontStyle.cs" />
+    <Compile Include="Renderer\Mesh.cs" />
+    <Compile Include="Renderer\MeshVoxel.cs" />
     <Compile Include="Renderer\MeshGuiLine.cs" />
     <Compile Include="Renderer\MeshGuiColor.cs" />
     <Compile Include="Renderer\RenderMain.cs" />
+    <Compile Include="Renderer\Shaders\ShaderVoxel.cs" />
     <Compile Include="Renderer\Shaders\ShaderGuiLine.cs" />
+    <Compile Include="Renderer\WarpRenderer.cs" />
+    <Compile Include="Renderer\World\ChunkRender.cs" />
+    <Compile Include="Renderer\World\WorldRenderer.cs" />
     <Compile Include="Srl.cs" />
     <Compile Include="Sr.cs" />
+    <Compile Include="Util\BufferFastFloat.cs" />
+    <Compile Include="Util\BufferFast.cs" />
+    <Compile Include="Util\ComparisonDistance.cs" />
     <Compile Include="Util\BufferedFileImage.cs" />
+    <Compile Include="L.cs" />
+    <Compile Include="Util\Conv.cs" />
     <Compile Include="Util\ListFlout.cs" />
+    <Compile Include="Util\ListMessy.cs" />
+    <Compile Include="Util\Sundry.cs" />
+    <Compile Include="Util\WaitHandler.cs" />
+    <Compile Include="Util\WeaverSpinLock.cs" />
+    <Compile Include="World\Block\BlockBase.cs" />
+    <Compile Include="World\Block\Blocks.cs" />
+    <Compile Include="World\Block\BlocksReg.cs" />
+    <Compile Include="World\Block\BlockState.cs" />
+    <Compile Include="World\Block\BlockRegTable.cs" />
+    <Compile Include="World\Block\CorrectTable.cs" />
+    <Compile Include="World\Block\List\BlockNull.cs" />
+    <Compile Include="World\Block\List\BlockAir.cs" />
+    <Compile Include="World\Chunk\ChunkPosition.cs" />
+    <Compile Include="World\Chunk\ChunkProviderClient.cs" />
+    <Compile Include="World\Chunk\ChunkProviderServer.cs" />
+    <Compile Include="World\Chunk\ChunkStorage.cs" />
+    <Compile Include="World\Chunk\MapChunk.cs" />
+    <Compile Include="Util\Rand.cs" />
+    <Compile Include="Util\SizeDirectory.cs" />
+    <Compile Include="World\Chunk\ChunkBase.cs" />
+    <Compile Include="World\Chunk\ChunkProvider.cs" />
+    <Compile Include="World\Chunk\IChunkPosition.cs" />
+    <Compile Include="World\WorldBase.cs" />
+    <Compile Include="World\WorldClient.cs" />
+    <Compile Include="World\AllWorlds.cs" />
+    <Compile Include="World\WorldServer.cs" />
+    <Compile Include="World\WorldSettings.cs" />
     <Compile Include="Сe.cs" />
     <Compile Include="Util\DoubleList.cs" />
     <Compile Include="Util\Logger.cs" />
@@ -111,7 +201,7 @@
     <Compile Include="Warp.cs" />
     <Compile Include="Renderer\RenderFigure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Games\Server.cs" />
+    <Compile Include="Games\GameServer.cs" />
     <Compile Include="Renderer\Shaders\ShaderGuiColor.cs" />
     <Compile Include="Renderer\Font\Symbol.cs" />
     <Compile Include="Util\FileAssets.cs" />
