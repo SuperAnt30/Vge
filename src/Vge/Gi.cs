@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using Vge.Renderer.World;
+using Vge.Util;
 using WinGL.Util;
 
 /// <summary>
@@ -54,5 +55,11 @@ public sealed class Gi
     /// Перечень 16-ти цветов Синего как в майне
     /// </summary>
     public readonly static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
+
+
+    /// <summary>
+    /// Буфер для склейки рендера. покуда тест в будущем для чанка
+    /// </summary>
+    public readonly static VertexBuffer Vertex = new VertexBuffer(1000);
 
 }

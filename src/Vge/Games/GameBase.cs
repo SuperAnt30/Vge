@@ -278,6 +278,8 @@ namespace Vge.Games
                 Player.Update();
                 // Обновить мир
                 World.Update();
+                // Обновить рендоровский мир
+                WorldRender.Update();
 
                 // Прошла минута, или 1800 тактов
                 if (_tickCounterClient % 1800 == 0)
@@ -299,6 +301,11 @@ namespace Vge.Games
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
         public long Time() => _stopwatch.ElapsedMilliseconds;
+
+        /// <summary>
+        /// Получить время в тактах объекта Stopwatch с момента запуска проекта
+        /// </summary>
+        public long ElapsedTicks() => _stopwatch.ElapsedTicks;
 
         /// <summary>
         /// Задать время с сервера
@@ -353,12 +360,13 @@ namespace Vge.Games
 
         public override string ToString()
         {
-            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5}\r\n{6}",
+            return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5}\r\n{6} {7}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
                 _ToTraffic(),TickCounter, // 3-4
                 Player, // 5
-                World.ToString() // 6
+                WorldRender.ToString(), // 6
+                World.ToString() // 7
                 );
         }
 

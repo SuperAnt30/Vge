@@ -238,9 +238,14 @@ namespace Vge.Renderer
             {
                 if (window.Time() >= _timeSecond)
                 {
+                    int countChunk = Debug.CountUpdateChunck;
+                    Debug.CountUpdateChunck = 0;
+                    int countChunkAlpha = Debug.CountUpdateChunckAlpha;
+                    Debug.CountUpdateChunckAlpha = 0;
                     float speedTick = 0;
                     if (_tps > 0) speedTick = _speedTickAll / _tps;
-                    window.debug.SetTpsFps(_fps, _speedFrameAll / _fps, _tps, speedTick);
+                    window.debug.SetTpsFps(_fps, _speedFrameAll / _fps, _tps, speedTick,
+                        countChunk, countChunkAlpha);
 
                     _timeSecond += 1000;
                     _speedFrameAll = 0;

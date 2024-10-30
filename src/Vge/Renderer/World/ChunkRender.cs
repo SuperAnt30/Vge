@@ -45,7 +45,7 @@ namespace Vge.Renderer.World
             : base(worldClient, chunkPosX, chunkPosY)
         {
             _worldClient = worldClient;
-            _vertex = _worldClient.WorldRender.Vertex;
+            _vertex = Gi.Vertex;
             _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshUnique = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshUniqueBothSides = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
@@ -106,8 +106,17 @@ namespace Vge.Renderer.World
         /// </summary>
         public void Render(bool isDense)
         {
+            long timeBegin = _worldClient.Game.ElapsedTicks();
+
             _vertex.Clear();
-            _vertex.AddVertex(0, 0, 0, 0, 0, 0, (byte)(CurrentChunkX % 3 == 0 ? 255 : 0), 0, 255);
+            if (_worldClient.Game.Player.IdWorld == 0)
+            {
+                _vertex.AddVertex(0, 0, 0, 0, 0, 0, (byte)(CurrentChunkX % 3 == 0 ? 255 : 0), 0, 255);
+            }
+            else
+            {
+                _vertex.AddVertex(0, 0, 0, 0, 0, 255, 255, 255, 255);
+            }
             _vertex.AddVertex(16, 0, 0, .1f, 0, 255, 255, 255, 255);
             _vertex.AddVertex(0, 0, 16, 0, .1f, 0, (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), 255);
             _vertex.AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
@@ -119,10 +128,21 @@ namespace Vge.Renderer.World
                 _vertex.AddVertex(1, i, 16, 0, .1f, 255, 255, 255, 255);
                 _vertex.AddVertex(15, i, 16, .1f, .1f, 255, 255, 255, 255);
             }
-            Debug.Burden(8.5f);
+            Debug.Burden(1f);
             // _meshDense.SetBuffer(_bufferFloat.ToArray(), _buffer.ToArray());
 
             _meshDense.SetBuffer(_vertex);
+
+            // Для отладочной статистики
+            float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
+            if (isDense)
+            {
+                Debug.RenderChunckTime8 = (Debug.RenderChunckTime8 * 7f + time) / 8f;
+            }
+            else
+            {
+                Debug.RenderChunckTimeAlpha8 = (Debug.RenderChunckTimeAlpha8 * 7f + time) / 8f;
+            }
         }
 
         /// <summary>

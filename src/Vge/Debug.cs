@@ -24,18 +24,34 @@ namespace Vge
         /// FrustumCulling
         /// </summary>
         public static int CountMeshFC = 0;
+        /// <summary>
+        /// Сколько обновилось чанков
+        /// </summary>
+        public static int CountUpdateChunck = 0;
+        /// <summary>
+        /// Сколько обновилось чанков
+        /// </summary>
+        public static int CountUpdateChunckAlpha = 0;
+        /// <summary>
+        /// Время рендера чанка в мс, среднее из последних 8
+        /// </summary>
+        public static float RenderChunckTime8 = 0;
+        public static float RenderChunckTimeAlpha8 = 0;
 
-        public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick)
+        public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick,
+            int countUpdateChunk, int countUpdateChunkAlpha)
         {
-            StrTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00} ms",
-                fps, speedFrame, tps, speedTick);
+            StrTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00} ms ({4}/a{5})",
+                fps, speedFrame, tps, speedTick, countUpdateChunk, countUpdateChunkAlpha);
         }
 
         public string ToText()
         {
             return StrTpsFps
                 + "\r\nAudio: " + Audio
-                + "\r\nMesh Id: " + MeshId + " C: " + MeshCount + " FC: " + CountMeshFC
+                + "\r\nMesh Id: " + MeshId + " C: " + MeshCount + " FC: " + CountMeshFC 
+                    + " RCh: " + RenderChunckTime8.ToString("0.000")
+                    + " a:" + RenderChunckTimeAlpha8.ToString("0.000")
                 + "\r\n" + Server
                 + "[Client]: " + Client
                 + "\r\n" + Text;

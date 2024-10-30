@@ -184,7 +184,8 @@ namespace Vge.Management
         /// </summary>
         public void PacketAcknowledgeChunks(PacketC20AcknowledgeChunks packet)
         {
-            _desiredBatchSize = Sundry.RecommendedQuantityBatch(packet.Time, packet.Quantity, _desiredBatchSize);
+            _desiredBatchSize = Sundry.RecommendedQuantityBatch(packet.Time, 
+                packet.Quantity, _desiredBatchSize);
         }
 
         #endregion

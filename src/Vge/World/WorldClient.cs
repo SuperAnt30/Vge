@@ -19,6 +19,10 @@ namespace Vge.World
         /// Мир для рендера
         /// </summary>
         public readonly WorldRenderer WorldRender;
+        /// <summary>
+        /// Объект игры
+        /// </summary>
+        public readonly GameBase Game;
 
         /// <summary>
         /// Флаг на изминение количество чанков
@@ -27,6 +31,7 @@ namespace Vge.World
 
         public WorldClient(GameBase game)
         {
+            Game = game;
             IsRemote = true;
             Rnd = new Rand();
             WorldRender = game.WorldRender;

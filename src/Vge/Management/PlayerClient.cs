@@ -269,11 +269,9 @@ namespace Vge.Management
         #endregion
 
         public override string ToString()
-        {
-            return Login + " " + Position + " O:" + OverviewChunk
+            => Login + " " + Position + " O:" + OverviewChunk
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
                 + Movement;
-        }
 
         /// <summary>
         /// Событие любого объекта с сервера для отладки

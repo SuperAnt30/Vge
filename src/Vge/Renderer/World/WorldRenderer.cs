@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Util;
@@ -11,11 +12,6 @@ namespace Vge.Renderer.World
     public class WorldRenderer : WarpRenderer
     {
         /// <summary>
-        /// Буфер для склейки рендера. покуда тест в будущем для чанка
-        /// </summary>
-        public readonly VertexBuffer Vertex = new VertexBuffer(1000);
-
-        /// <summary>
         /// Флаг потока рендера чанков
         /// </summary>
         private bool _flagRenderLoopRunning = false;
@@ -23,6 +19,19 @@ namespace Vge.Renderer.World
         /// Массив очередей чанков для рендера
         /// </summary>
         private readonly DoubleList<ChunkRender> _renderQueues = new DoubleList<ChunkRender>();
+
+        /// <summary>
+        /// Желаемый размер партии рендера чанков
+        /// </summary>
+        private byte _desiredBatchSize = Ce.MinDesiredBatchSize;
+        /// <summary>
+        /// Время мс на рендера чанков
+        /// </summary>
+        private int _batchChunksTime;
+        /// <summary>
+        /// Объект-событие
+        /// </summary>
+        private readonly AutoResetEvent _waitHandler = new AutoResetEvent(true);
 
         public WorldRenderer(GameBase game) : base(game)
         {
@@ -36,11 +45,26 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _RenderLoop()
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            long timeBegin;
+            int quantity;
             while (_flagRenderLoopRunning)
             {
-                _RenderQueues(true, _renderQueues);
-                //RenderQueues(false, renderAlphaQueues);
-                Thread.Sleep(1);
+                timeBegin = stopwatch.ElapsedMilliseconds;
+                quantity = _renderQueues.CountForward; // + renderAlphaQueues.CountForward
+
+                if (quantity > 0)
+                {
+                    quantity = _RenderQueues(true, _renderQueues);
+                    //RenderQueues(false, renderAlphaQueues);
+
+                    _batchChunksTime = (int)(stopwatch.ElapsedMilliseconds - timeBegin);
+                    _desiredBatchSize = Sundry.RecommendedQuantityBatch(
+                        _batchChunksTime, quantity, _desiredBatchSize, Ce.TickTime);
+                }
+                // Ожидаем сигнала
+                _waitHandler.WaitOne();
             }
         }
 
@@ -49,7 +73,7 @@ namespace Vge.Renderer.World
         /// </summary>
         /// <param name="isDense">Флаг сплошных блоков</param>
         /// <param name="list">Список очередей</param>
-        private void _RenderQueues(bool isDense, DoubleList<ChunkRender> list)
+        private int _RenderQueues(bool isDense, DoubleList<ChunkRender> list)
         {
             int count, i;
             ChunkRender chunkRender;
@@ -63,6 +87,7 @@ namespace Vge.Renderer.World
                 chunkRender.ClearBufferChunks();
                 if (!_flagRenderLoopRunning) break;
             }
+            return count;
         }
 
         #endregion
@@ -84,6 +109,18 @@ namespace Vge.Renderer.World
         public void Stoping() 
         {
             _flagRenderLoopRunning = false;
+            // Сигнализируем, что waitHandler в сигнальном состоянии
+            _waitHandler.Set();
+        }
+
+        /// <summary>
+        /// Такт выполнения
+        /// </summary>
+        public void Update()
+        {
+            // Биндим чанки вокселей и готовим массив чанков
+            // В игровом такте, для подсчёта чтоб максимально можно было нагрузить CPU
+            _BindChunkVoxel();
         }
 
         /// <summary>
@@ -93,14 +130,8 @@ namespace Vge.Renderer.World
         public override void Draw(float timeIndex)
         {
             _game.Render.TestRun();
-
-            // Биндим чанки вокселей и готовим массив чанков
-            _BindChunkVoxel();
-
             // Рисуем воксели сплошных блоков VBO
             _DrawVoxelDense(timeIndex);
-
-            
         }
 
         /// <summary>
@@ -110,18 +141,29 @@ namespace Vge.Renderer.World
         {
             int count = _game.Player.FrustumCulling.Count;
             ChunkRender chunkRender;
+            // Нужен ли рендер
+            bool needRender = false;
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _game.Player.FrustumCulling[i];
                 if (chunkRender == null || !chunkRender.IsChunkPresent) continue;
-                if (chunkRender.IsModifiedRender && _renderQueues.CountForward < 8)
+                if (chunkRender.IsModifiedRender 
+                    && _renderQueues.CountForward < _desiredBatchSize)
                 {
+                    // Обновление рендера псевдочанка
+                    Debug.CountUpdateChunck++;
                     chunkRender.StartRendering();
                     _renderQueues.Add(chunkRender);
+                    needRender = true;
                 }
 
                 // Занести буфер сплошных блоков псевдо чанка если это требуется
                 if (chunkRender.IsMeshDenseBinding) chunkRender.BindBufferDense();
+            }
+            if (needRender)
+            {
+                // Сигнализируем, что waitHandler в сигнальном состоянии
+                _waitHandler.Set();
             }
         }
 
@@ -166,7 +208,10 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
-            Vertex.Dispose();
+
         }
+
+        public override string ToString()
+            => "WR dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
     }
 }
