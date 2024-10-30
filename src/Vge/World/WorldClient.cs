@@ -58,6 +58,7 @@ namespace Vge.World
         public void Stoping()
         {
             WorldRender.Stoping();
+            ChunkPrClient.Stoping();
         }
 
         public override string ToString() => ChunkPrClient.ToString();

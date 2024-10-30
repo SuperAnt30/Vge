@@ -142,7 +142,7 @@ namespace Vge.Management
             //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
             //    0.01f, 16 * 22f);
             Mat4 projection = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
-                0.01f, 16 * 22f);
+                0.01f, OverviewChunk * 22f);
             (projection * look).ConvArray(View);
         }
 

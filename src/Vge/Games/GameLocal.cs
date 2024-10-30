@@ -88,6 +88,8 @@ namespace Vge.Games
         /// </summary>
         public override void GameStoping(string notification, bool isWarning)
         {
+            base.GameStoping(notification, isWarning);
+
             window.LScreen.Process(L.T("Saving") + Ce.Ellipsis);
             if (_server != null)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
 
@@ -76,6 +77,20 @@ namespace Vge.World.Chunk
              => _chunkMapping.Get(x, y) as ChunkRender;
 
         #endregion
+
+        /// <summary>
+        /// Останавливаем
+        /// </summary>
+        public void Stoping()
+        {
+            // Получить список всех чанков
+            List<IChunkPosition> positions = _chunkMapping.GetList();
+            // Выгружаем чанки
+            foreach (ChunkRender chunkRender in positions)
+            {
+                UnloadChunk(chunkRender);
+            }
+        }
 
         public override string ToString() => string.Format("Ch:{0}|{1} Dr:{2}",
                _chunkMapping.Count, _chunkMapping.RegionCount, -1);

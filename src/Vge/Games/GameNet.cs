@@ -95,6 +95,8 @@ namespace Vge.Games
 
         public override void GameStoping(string notification, bool isWarning)
         {
+            base.GameStoping(notification, isWarning);
+
             window.LScreen.Process(L.T("Leaving") + Ce.Ellipsis);
             _stopIsWarning = isWarning;
             _stopNotification = notification;

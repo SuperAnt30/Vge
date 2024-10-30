@@ -106,7 +106,7 @@ namespace Vge.Renderer
         /// Связать шейдер Voxels
         /// </summary>
         /// <param name="torchInHand">0-15 яркость в руке</param>
-        public void ShaderBindVoxels(float[] view, short overview, 
+        public void ShaderBindVoxels(float[] view, int overview, 
             float colorFogR, float colorFogG, float colorFogB, byte torchInHand)
         {
             ShVoxel.Bind(gl);

@@ -37,6 +37,21 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Получить список всех чанков
+        /// </summary>
+        public List<IChunkPosition> GetList()
+        {
+            List<IChunkPosition> chunks = new List<IChunkPosition>();
+
+            foreach (Region region in _map.Values)
+            {
+                region.AddRegionList(chunks);
+            }
+
+            return chunks;
+        }
+
+        /// <summary>
         /// Добавить
         /// </summary>
         public void Add(IChunkPosition value)
@@ -194,6 +209,17 @@ namespace Vge.World.Chunk
                 }
                 // Нечего удалять
                 return false;
+            }
+
+            /// <summary>
+            /// Добавить в лист присутствующие чанки
+            /// </summary>
+            public void AddRegionList(List<IChunkPosition> chunks)
+            {
+                for (int i = 0; i < 1024; i++)
+                {
+                    if (_buffer[i] != null) chunks.Add(_buffer[i]);
+                }
             }
 
             /// <summary>

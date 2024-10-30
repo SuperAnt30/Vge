@@ -1,5 +1,4 @@
 ﻿using System;
-using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer
@@ -114,7 +113,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Удалить меш
         /// </summary>
-        public void Delete()
+        public virtual void Delete()
         {
             _gl.DeleteVertexArrays(1, new uint[] { _vao });
             _gl.DeleteBuffers(1, new uint[] { _vbo });
@@ -160,20 +159,6 @@ namespace Vge.Renderer
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
-            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
-        }
-
-        /// <summary>
-        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
-        /// </summary>
-        public void Reload(BufferFast bufferFast)
-        {
-            int count = bufferFast.Count;
-            _countVertices = count / _vertexSize;
-            _gl.BindVertexArray(_vao);
-            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, count, bufferFast.ToBuffer(), GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
         }

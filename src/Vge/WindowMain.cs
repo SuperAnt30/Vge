@@ -525,6 +525,10 @@ namespace Vge
             }
             else
             {
+                // Чистка мусора
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
                 // Тут надо вызвать запуск окна с ошибкой
                 if (e.IsWarning)
                 {

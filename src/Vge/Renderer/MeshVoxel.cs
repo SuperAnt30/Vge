@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using Vge.Renderer.World;
 using Vge.Util;
 using WinGL.OpenGL;
 
@@ -9,6 +11,24 @@ namespace Vge.Renderer
     /// </summary>
     public class MeshVoxel : Mesh
     {
+        /// <summary>
+        /// Пометка изменения
+        /// </summary>
+        public bool IsModifiedRender = true;
+        /// <summary>
+        /// Статус обработки сетки
+        /// </summary>
+        public StatusMesh Status { get; private set; } = StatusMesh.Null;
+
+        /// <summary>
+        /// Буфер XYZ UV
+        /// </summary>
+        private readonly BufferSlot _bufferFloat = new BufferSlot();
+        /// <summary>
+        /// Буфер RBGLaFaP
+        /// </summary>
+        private readonly BufferSlot _bufferByte = new BufferSlot();
+
         /// <summary>
         /// Дополнительный буфер для байтовых данных
         /// </summary>
@@ -53,7 +73,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
         /// </summary>
-        public void Reload(BufferFastFloat bufferFastFloat, BufferFast bufferFast)
+        public void Reload(BufferFastFloat bufferFastFloat, BufferFastByte bufferFastByte)
         {
             int count = bufferFastFloat.Count * sizeof(float);
             _countVertices = count / _vertexSize;
@@ -61,9 +81,98 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, count, bufferFastFloat.ToBuffer(), GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, count, bufferFast.ToBuffer(), GL.GL_STATIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, bufferFastByte.Count, bufferFastByte.ToBuffer(), GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+        }
+
+        /// <summary>
+        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// </summary>
+        public void Reload()
+        {
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferFloat.Size, _bufferFloat.Buffer, GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferByte.Size, _bufferByte.Buffer, GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+        }
+
+        public override void Delete()
+        {
+            _bufferFloat.Dispose();
+            _bufferByte.Dispose();
+            _gl.DeleteVertexArrays(1, new uint[] { _vao });
+            _gl.DeleteBuffers(2, new uint[] { _vbo, _vboByte });
+            _gl.DeleteBuffers(1, new uint[] { _ebo });
+            Status = StatusMesh.Null;
+        }
+
+        /// <summary>
+        /// Изменить статус на рендеринг
+        /// </summary>
+        public void StatusRendering()
+        {
+            IsModifiedRender = false;
+            Status = StatusMesh.Rendering;
+        }
+
+        /// <summary>
+        /// Буфер внесён
+        /// </summary>
+        public void SetBuffer(VertexBuffer vertexBuffer)
+        {
+            _bufferFloat.Set(vertexBuffer.BufferFloat);
+            _bufferByte.Set(vertexBuffer.BufferByte);
+
+            //_countPoligon = bufferByte.Count / 24;
+            _countVertices = vertexBuffer.GetCountVertices();
+            Status = StatusMesh.Binding;
+        }
+
+        /// <summary>
+        /// Занести буфер в OpenGL 
+        /// </summary>
+        public void BindBuffer()
+        {
+            if (!_bufferFloat.Empty)//bufferData.body && countPoligon > 0)
+            {
+                Reload();
+                _bufferFloat.Clear();
+                _bufferByte.Clear();
+                //BindBufferReload();
+                //bufferData.Free();
+                Status = StatusMesh.Wait;
+            }
+            else
+            {
+                Status = StatusMesh.Null;
+            }
+        }
+
+        /// <summary>
+        /// Статус обработки сетки
+        /// </summary>
+        public enum StatusMesh
+        {
+            /// <summary>
+            /// Пустой
+            /// </summary>
+            Null,
+            /// <summary>
+            /// Ждём
+            /// </summary>
+            Wait,
+            /// <summary>
+            /// Процесс рендеринга
+            /// </summary>
+            Rendering,
+            /// <summary>
+            /// Процесс связывания сетки с OpenGL
+            /// </summary>
+            Binding
         }
     }
 }

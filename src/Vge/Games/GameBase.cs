@@ -156,7 +156,10 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public virtual void GameStoping(string notification, bool isWarning) { }
+        public virtual void GameStoping(string notification, bool isWarning)
+        {
+            World.Stoping();
+        }
 
         /// <summary>
         /// Задать паузу для одиночной игры
