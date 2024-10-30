@@ -19,6 +19,18 @@ namespace Vge.Renderer.World
         /// Массив очередей чанков для рендера
         /// </summary>
         private readonly DoubleList<ChunkRender> _renderQueues = new DoubleList<ChunkRender>();
+        /// <summary>
+        /// Массив очередей чанков для рендера альфа
+        /// </summary>
+        private readonly DoubleList<ChunkRender> _renderAlphaQueues = new DoubleList<ChunkRender>();
+        /// <summary>
+        /// Метод чанков для прорисовки
+        /// </summary>
+        private readonly ArrayFast<ChunkRender> _arrayChunkRender;
+        /// <summary>
+        /// Объект-событие
+        /// </summary>
+        private readonly AutoResetEvent _waitHandler = new AutoResetEvent(true);
 
         /// <summary>
         /// Желаемый размер партии рендера чанков
@@ -29,13 +41,22 @@ namespace Vge.Renderer.World
         /// </summary>
         private int _batchChunksTime;
         /// <summary>
-        /// Объект-событие
+        /// Обзор в блоках
         /// </summary>
-        private readonly AutoResetEvent _waitHandler = new AutoResetEvent(true);
+        private int _overviewBlock = 32;
 
         public WorldRenderer(GameBase game) : base(game)
         {
+            _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
+        }
 
+        /// <summary>
+        /// Изменён обзор чанков
+        /// </summary>
+        public void ModifyOverviewChunk()
+        { 
+            _arrayChunkRender.Resize(Ce.OverviewCircles.Length);
+            _overviewBlock = _game.Player.OverviewChunk * 16;
         }
 
         #region Поток рендера
@@ -52,12 +73,12 @@ namespace Vge.Renderer.World
             while (_flagRenderLoopRunning)
             {
                 timeBegin = stopwatch.ElapsedMilliseconds;
-                quantity = _renderQueues.CountForward; // + renderAlphaQueues.CountForward
+                quantity = _renderQueues.CountForward + _renderAlphaQueues.CountForward;
 
                 if (quantity > 0)
                 {
-                    quantity = _RenderQueues(true, _renderQueues);
-                    //RenderQueues(false, renderAlphaQueues);
+                    quantity = _RenderQueues(true, _renderQueues)
+                        + _RenderQueues(false, _renderAlphaQueues);
 
                     _batchChunksTime = (int)(stopwatch.ElapsedMilliseconds - timeBegin);
                     _desiredBatchSize = Sundry.RecommendedQuantityBatch(
@@ -130,8 +151,25 @@ namespace Vge.Renderer.World
         public override void Draw(float timeIndex)
         {
             _game.Render.TestRun();
-            // Рисуем воксели сплошных блоков VBO
-            _DrawVoxelDense(timeIndex);
+
+            // Небо
+            //DrawSky(timeIndex);
+
+            // Рисуем воксели сплошных и уникальных блоков
+            _DrawVoxel();
+
+            // Сущности
+            //DrawEntities(timeIndex);
+
+            // Прорисовка вид не с руки, а видим себя
+
+            // Облака
+            //DrawClouds(timeIndex);
+
+            // Рисуем воксели альфа
+            _DrawVoxelAlpha();
+
+            // Прорисовка руки
         }
 
         /// <summary>
@@ -139,28 +177,55 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _BindChunkVoxel()
         {
+            _arrayChunkRender.Clear();
             int count = _game.Player.FrustumCulling.Count;
             ChunkRender chunkRender;
-            // Нужен ли рендер
-            bool needRender = false;
+            int batchCount = 0;
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _game.Player.FrustumCulling[i];
-                if (chunkRender == null || !chunkRender.IsChunkPresent) continue;
-                if (chunkRender.IsModifiedRender 
-                    && _renderQueues.CountForward < _desiredBatchSize)
+                if (chunkRender != null && chunkRender.IsChunkPresent)
                 {
-                    // Обновление рендера псевдочанка
-                    Debug.CountUpdateChunck++;
-                    chunkRender.StartRendering();
-                    _renderQueues.Add(chunkRender);
-                    needRender = true;
-                }
+                    // Можем ли мы в этом тике пополнять партию
+                    if (batchCount < _desiredBatchSize)
+                    {
+                        // Проверяем надо ли рендер для чанка, и возможно ли по времени
+                        if (chunkRender.IsModifiedRender)
+                        {
+                            // Проверяем занят ли чанк уже рендером
+                            if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
+                            {
+                                // Обновление рендера псевдочанка
+                                Debug.CountUpdateChunck++;
+                                batchCount++;
+                                chunkRender.StartRendering();
+                                _renderQueues.Add(chunkRender);
+                            }
+                        }
+                        // Проверяем надо ли рендер для псевдо чанка, и возможно ли по времени
+                        else if (chunkRender.IsModifiedRenderAlpha)
+                        {
+                            // Проверяем занят ли чанк уже рендером
+                            if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
+                            {
+                                // Обновление рендера псевдочанка
+                                Debug.CountUpdateChunckAlpha++;
+                                batchCount++;
+                                chunkRender.StartRenderingAlpha();
+                                _renderAlphaQueues.Add(chunkRender);
+                            }
+                        }
+                    }
 
-                // Занести буфер сплошных блоков псевдо чанка если это требуется
-                if (chunkRender.IsMeshDenseBinding) chunkRender.BindBufferDense();
+                    // Занести буфер сплошных блоков псевдо чанка если это требуется
+                    if (chunkRender.IsMeshDenseBinding) chunkRender.BindBufferDense();
+                    // Занести буфер альфа блоков псевдо чанка если это требуется
+                    if (chunkRender.IsMeshAlphaBinding) chunkRender.BindBufferAlpha();
+
+                    _arrayChunkRender.Add(chunkRender);
+                }
             }
-            if (needRender)
+            if (batchCount > 0)
             {
                 // Сигнализируем, что waitHandler в сигнальном состоянии
                 _waitHandler.Set();
@@ -168,28 +233,51 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Рисуем воксели сплошных блоков
+        /// Рисуем воксели сплошных и уникальных блоков
         /// </summary>
-        private void _DrawVoxelDense(float timeIndex)
+        private void _DrawVoxel()
         {
-            _game.Render.ShaderBindVoxels(_game.Player.View, _game.Player.OverviewChunk * 16, 1, 1, 1, 15);
+            // Биндим шейдор для вокселей
+            _game.Render.ShaderBindVoxels(_game.Player.View,
+                _overviewBlock, 1, 1, 1, 15);
 
-            int count = _game.Player.FrustumCulling.Count;
-            int px = _game.Player.Position.ChunkPositionX;
-            int pz = _game.Player.Position.ChunkPositionZ;
-            int bx = px << 4;
-            int bz = pz << 4;
-
-            float fx = _game.Player.Position.X - bx;
-            float fz = _game.Player.Position.Z - bz;
+            int count = _arrayChunkRender.Count;
             ChunkRender chunkRender;
             for (int i = 0; i < count; i++)
             {
-                chunkRender = _game.Player.FrustumCulling[i];
-                if (chunkRender.NotNullMeshDense)
+                chunkRender = _arrayChunkRender[i];
+                /// Прорисовка сплошных блоков чанка
+                if (chunkRender.NotNullMeshDenseOrUnique)
                 {
-                    _VoxelsShaderChunk(_game.Render.ShVoxel, chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
-                    chunkRender.DrawDense();
+                    _VoxelsShaderChunk(_game.Render.ShVoxel, 
+                        chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
+                    chunkRender.DrawDenseUnique();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Прорисовка вокселей альфа цвета
+        /// </summary>
+        private void _DrawVoxelAlpha()
+        {
+            // Биндим шейдор для вокселей
+            _game.Render.ShaderBindVoxels(_game.Player.View,
+                _overviewBlock, 1, 1, 1, 15);
+
+            int count = _arrayChunkRender.Count - 1;
+            ChunkRender chunkRender;
+
+            // Пробегаем по всем чанкам которые видим FrustumCulling
+            for (int i = count; i >= 0; i--)
+            {
+                chunkRender = _arrayChunkRender[i];
+                // Прорисовка альфа блоков псевдо чанка
+                if (chunkRender.NotNullMeshAlpha)
+                {
+                    _VoxelsShaderChunk(_game.Render.ShVoxel,
+                        chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
+                    chunkRender.DrawAlpha();
                 }
             }
         }

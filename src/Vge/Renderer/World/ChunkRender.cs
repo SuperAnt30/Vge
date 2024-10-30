@@ -23,10 +23,6 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly MeshVoxel _meshUnique;
         /// <summary>
-        /// Сетка чанков уникальных блоков
-        /// </summary>
-        private readonly MeshVoxel _meshUniqueBothSides;
-        /// <summary>
         /// Сетка чанка альфа блоков
         /// </summary>
         private readonly MeshVoxel _meshAlpha;
@@ -48,7 +44,6 @@ namespace Vge.Renderer.World
             _vertex = Gi.Vertex;
             _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshUnique = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
-            _meshUniqueBothSides = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
         }
 
@@ -89,15 +84,23 @@ namespace Vge.Renderer.World
         #endregion
 
         /// <summary>
-        /// Прорисовка сплошных блоков псевдо чанка
+        /// Прорисовка сплошных и уникальных блоков чанка
         /// </summary>
-        public void DrawDense() => _meshDense.Draw();
+        public void DrawDenseUnique()
+        {
+            _meshDense.Draw();
+            _meshUnique.Draw();
+        }
+
+        /// <summary>
+        /// Прорисовка альфа блоков чанка
+        /// </summary>
+        public void DrawAlpha() => _meshAlpha.Draw();
 
         public void Dispose()
         {
             _meshDense.Dispose();
             _meshUnique.Dispose();
-            _meshUniqueBothSides.Dispose();
             _meshAlpha.Dispose();
         }
 
@@ -171,7 +174,6 @@ namespace Vge.Renderer.World
         public void BindBufferDense()
         {
             _meshUnique.BindBuffer();
-            _meshUniqueBothSides.BindBuffer();
             _meshDense.BindBuffer();
         }
         /// <summary>
@@ -228,17 +230,10 @@ namespace Vge.Renderer.World
         /// </summary>
         public bool IsMeshAlphaBinding => _meshAlpha.Status == MeshVoxel.StatusMesh.Binding;
         /// <summary>
-        /// Статсус не пустой для рендера сплошных блоков
+        /// Статсус не пустой для рендера сплошных или уникальных блоков
         /// </summary>
-        public bool NotNullMeshDense => _meshDense.Status != MeshVoxel.StatusMesh.Null;
-        /// <summary>
-        /// Статсус не пустой для рендера уникальных блоков
-        /// </summary>
-        public bool NotNullMeshUnique => _meshUnique.Status != MeshVoxel.StatusMesh.Null;
-        /// <summary>
-        /// Статсус не пустой для рендера уникальных блоков
-        /// </summary>
-        public bool NotNullMeshUniqueBothSides => _meshUniqueBothSides.Status != MeshVoxel.StatusMesh.Null;
+        public bool NotNullMeshDenseOrUnique => _meshDense.Status != MeshVoxel.StatusMesh.Null
+            || _meshUnique.Status != MeshVoxel.StatusMesh.Null;
         /// <summary>
         /// Статсус не пустой для рендера альфа блоков
         /// </summary>

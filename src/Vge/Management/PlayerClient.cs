@@ -109,6 +109,7 @@ namespace Vge.Management
             {
                 SetOverviewChunk(overviewChunk);
                 Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
+                _game.WorldRender.ModifyOverviewChunk();
                 // Отправим обзор 
                 _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
                 if (isSaveOptions)
