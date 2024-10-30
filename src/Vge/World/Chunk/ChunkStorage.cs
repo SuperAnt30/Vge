@@ -60,13 +60,13 @@ namespace Vge.World.Chunk
         public bool IsEmptyData() => CountBlock == 0;
 
         /// <summary>
-        /// Очистить
+        /// Очистить без света
         /// </summary>
-        public void Clear()
+        public void ClearNotLight()
         {
             Data = null;
-            LightBlock = new byte[4096];
-            LightSky = new byte[4096];
+            //LightBlock = new byte[4096];
+            //LightSky = new byte[4096];
             CountBlock = 0;
             _countTickBlock = 0;
         }
@@ -101,7 +101,7 @@ namespace Vge.World.Chunk
         /// Задать данные блока, XYZ 0..15 
         /// index = y << 8 | z << 4 | x
         /// </summary>
-        public void SetData(int index, ushort id, ushort met = 0)
+        public void SetData(int index, ushort id, uint met = 0)
         {
             if (id == 0)
             {

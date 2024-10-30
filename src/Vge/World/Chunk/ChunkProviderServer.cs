@@ -57,7 +57,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public void InitialLoadingChunk(int x, int y)
         {
-            ChunkBase chunk = new ChunkBase(_worldServer, x, y);
+            ChunkBase chunk = new ChunkBase(_worldServer, NumberSections, x, y);
             _chunkMapping.Add(chunk);
             chunk.LoadingOrGen();
         }
@@ -69,7 +69,7 @@ namespace Vge.World.Chunk
         {
             _droppedChunks.Remove(Conv.ChunkXyToIndex(x, y));
             if (IsChunkLoaded(x, y)) return true;
-            ChunkBase chunk = new ChunkBase(_worldServer, x, y);
+            ChunkBase chunk = new ChunkBase(_worldServer, NumberSections, x, y);
             _loadingChunks.Add(chunk);
             _loadingChunkMapping.Add(chunk);
             return false;

@@ -39,6 +39,13 @@ internal sealed class Sr
     internal const string TheValueMustBeGreaterThanZero = "Значение должно быть больше нуля";
     internal const string ItIsImpossibleToCompareTwoObjects = "Невозможно сравнить два объекта";
     internal const string OutOfRangeArray = "Вне диапазона массива, количество {0}";
+    internal const string OutOfRange = "Вне диапазона, значение {0}";
+
+    #endregion
+
+    #region Game
+
+    internal const string EmptyArrayIsNotAllowed = "Пустой массив не разрешон";
 
     #endregion
 

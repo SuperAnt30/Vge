@@ -460,7 +460,8 @@ namespace Vge.Management
                         SendPacket(new PacketS20ChunkSend());
                     }
                     quantityBatch++;
-                    SendPacket(new PacketS21ChunkData(chunk, 65535));
+                    
+                    SendPacket(new PacketS21ChunkData(chunk, true, 65535));
                 }
                 else
                 {

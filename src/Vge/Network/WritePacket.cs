@@ -108,13 +108,18 @@ namespace Vge.Network
         /// Записать массив байт c компрессией
         /// </summary>
         public void BytesCompress(byte[] value)
+            => BytesCompress(value, 0, value.Length);
+        /// <summary>
+        /// Записать массив байт c компрессией
+        /// </summary>
+        public void BytesCompress(byte[] value, int index, int count)
         {
             if (value.Length > 0)
             {
                 using (MemoryStream outStream = new MemoryStream())
                 {
                     using (GZipStream tinyStream = new GZipStream(outStream, CompressionMode.Compress))
-                    using (MemoryStream mStream = new MemoryStream(value))
+                    using (MemoryStream mStream = new MemoryStream(value, index, count))
                         mStream.CopyTo(tinyStream);
                     Bytes(outStream.ToArray());
                 }

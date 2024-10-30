@@ -1,4 +1,9 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using Vge.Util;
+using Vge.World.Block;
+
 namespace Vge.World.Chunk
 {
     /// <summary>
@@ -6,6 +11,11 @@ namespace Vge.World.Chunk
     /// </summary>
     public class ChunkBase : IChunkPosition
     {
+        /// <summary>
+        /// Статический быстрый буфер для записи
+        /// </summary>
+        public readonly static ListFast<byte> BufferWrite = new ListFast<byte>(50000);
+
         /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
@@ -26,6 +36,10 @@ namespace Vge.World.Chunk
         /// Совокупное количество тиков, которые якори провели в этом чанке 
         /// </summary>
         public uint InhabitedTakt { get; private set; }
+        /// <summary>
+        /// Количество секций в чанке
+        /// </summary>
+        public readonly byte NumberSections;
 
         #region Кольца 1-4
 
@@ -52,14 +66,14 @@ namespace Vge.World.Chunk
 
         #endregion
 
-        public ChunkBase(WorldBase world, int chunkPosX, int chunkPosY)
+        public ChunkBase(WorldBase world, byte numberSections, int chunkPosX, int chunkPosY)
         {
             World = world;
             CurrentChunkX = chunkPosX;
             CurrentChunkY = chunkPosY;
-            byte count = ChunkProvider.NumberSections;
-            StorageArrays = new ChunkStorage[count];
-            for (int y = 0; y < count; y++)
+            NumberSections = numberSections;
+            StorageArrays = new ChunkStorage[NumberSections];
+            for (int y = 0; y < NumberSections; y++)
             {
                 StorageArrays[y] = new ChunkStorage(y << 4);
             }
@@ -91,7 +105,29 @@ namespace Vge.World.Chunk
 
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
-                Debug.Burden(.6f);
+
+                // Временно льём тест
+                for (int x = 0; x < 16; x++)
+                {
+                    for (int z = 0; z < 16; z++)
+                    {
+                        SetBlockState(x, 0, z, new BlockState(1));
+                        SetBlockState(x, 1, z, new BlockState(1));
+                    }
+                }
+
+                for (int y = 2; y < 40; y++)
+                {
+                    SetBlockState(7, y, 5, new BlockState(2));
+                }
+                
+
+                SetBlockState(8, 2, 5, new BlockState(2));
+                SetBlockState(8, 2, 6, new BlockState(2));
+                SetBlockState(8, 2, 7, new BlockState(2));
+                SetBlockState(8, 4, 7, new BlockState(3));
+
+               // Debug.Burden(.6f);
                 //World.Filer.EndSectionLog();
 
                 if (!World.IsRemote && World is WorldServer worldServer)
@@ -264,14 +300,170 @@ namespace Vge.World.Chunk
         #endregion
 
         /// <summary>
+        /// Ставим блок в своём чанке, xz 0-15, y 0-max
+        /// </summary>
+        public void SetBlockState(int x, int y, int z, BlockState blockState)
+        {
+            int index = (y & 15) << 8 | z << 4 | x;
+            ChunkStorage storage = StorageArrays[y >> 4];
+            storage.SetData(index, blockState.Id, blockState.Met);
+            storage.LightBlock[index] = blockState.LightBlock;
+            storage.LightSky[index] = blockState.LightSky;
+        }
+
+        #region Binary
+
+        /// <summary>
+        /// Сгенерировать буфер байт для отправки чанка игроку
+        /// </summary>
+        public void GenBinary(bool biom, int flagsYAreas)
+        {
+            if (flagsYAreas == 0)
+            {
+                throw new Exception(Sr.GetString(Sr.OutOfRange, flagsYAreas));
+            }
+
+            BufferWrite.Clear();
+
+            ushort data;
+            int i;
+            uint value;
+            ChunkStorage chunkStorage;
+
+            for (int y = 0; y < NumberSections; y++)
+            {
+                if ((flagsYAreas & 1 << y) != 0)
+                {
+                    chunkStorage = StorageArrays[y];
+                    bool emptyData = chunkStorage.IsEmptyData();
+                    BufferWrite.Add((byte)(emptyData ? 0 : 1));
+                    for (i = 0; i < 4096; i++)
+                    {
+                        // TODO::2024-10-30 Буфер передавать копией, а не по единичке. Когда будет рендер блоков, чтоб протестить можно было
+                        if (!emptyData)
+                        {
+                            data = chunkStorage.Data[i];
+                            BufferWrite.Add((byte)(data & 0xFF));
+                            BufferWrite.Add((byte)(data >> 8));
+                        }
+
+                        BufferWrite.Add((byte)(chunkStorage.LightBlock[i] << 4 | chunkStorage.LightSky[i] & 0xF));
+                    }
+                    if (!emptyData)
+                    {
+                        data = (ushort)chunkStorage.Metadata.Count;
+                        BufferWrite.Add((byte)(data & 0xFF));
+                        BufferWrite.Add((byte)(data >> 8));
+
+                        foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
+                        {
+                            BufferWrite.Add((byte)(entry.Key >> 8));
+                            BufferWrite.Add((byte)(entry.Key & 0xFF));
+                            value = entry.Value;
+                            BufferWrite.Add((byte)((value & 0xFF000000) >> 24));
+                            BufferWrite.Add((byte)((value & 0xFF0000) >> 16));
+                            BufferWrite.Add((byte)((value & 0xFF00) >> 8));
+                            BufferWrite.Add((byte)(value & 0xFF));
+                        }
+                    }
+                }
+            }
+            if (biom)
+            {
+                // добавляем данные биома
+                for (i = 0; i < 256; i++)
+                {
+                    BufferWrite.Add(0);// (byte)chunk.biome[i];
+                }
+            }
+        }
+
+        /// <summary>
         /// Задать чанк байтами
         /// </summary>
-        public void SetBinary()//yte[] buffer, bool biom, int flagsYAreas)
+        public void SetBinary(byte[] buffer, bool biom, int flagsYAreas)
         {
+            if (buffer == null)
+            {
+                throw new Exception(Sr.EmptyArrayIsNotAllowed);
+            }
+
+            int sy, i, value;
+            ushort countMet;
+            int count = 0;
+            byte light;
+            ushort id, key;
+            uint met;
+            bool emptyData;
+            for (sy = 0; sy < NumberSections; sy++)
+            {
+                if ((flagsYAreas & 1 << sy) != 0)
+                {
+                    ChunkStorage storage = StorageArrays[sy];
+                    emptyData = buffer[count++] == 0;
+                    if (emptyData)
+                    {
+                        storage.ClearNotLight();
+                    }
+                    for (i = 0; i < 4096; i++)
+                    {
+                        if (!emptyData)
+                        {
+                            value = buffer[count++] | buffer[count++] << 8;
+                            id = (ushort)(value & 0xFFF);
+                            storage.SetData(i, id, (ushort)(value >> 12));
+                            if (!Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
+                        }
+                        light = buffer[count++];
+                        storage.LightBlock[i] = (byte)(light >> 4);
+                        storage.LightSky[i] = (byte)(light & 0xF);
+                    }
+                    if (!emptyData)
+                    {
+                        countMet = (ushort)(buffer[count++] | buffer[count++] << 8);
+                        for (i = 0; i < countMet; i++)
+                        {
+                            key = (ushort)(buffer[count++] << 8 | buffer[count++]);
+                            met = (uint)(buffer[count++] << 24 | buffer[count++] << 16
+                                | buffer[count++] << 8 | buffer[count++]);
+                            if (storage.Metadata.ContainsKey(key))
+                            {
+                                storage.Metadata[key] = met;
+                            }
+                            else
+                            {
+                                storage.Metadata.Add(key, met);
+                            }
+                        }
+                    }
+                }
+            }
+            // биом
+            if (biom)
+            {
+                for (i = 0; i < 256; i++)
+                {
+                    count++;
+                    // biome[i] = (EnumBiome)buffer[count++];
+                }
+            }
+            else
+            {
+                // Не первая закгрузка, помечаем что надо отрендерить весь столб
+                for (int y = 0; y < NumberSections; y++)
+                {
+                    ModifiedToRender(y);
+                }
+            }
             IsChunkPresent = true;
         }
 
+        #endregion
 
+        /// <summary>
+        /// Пометить что надо перерендерить сетку чанка для клиента
+        /// </summary>
+        public virtual void ModifiedToRender(int y) { }
 
         public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
     }

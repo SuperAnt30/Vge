@@ -43,15 +43,104 @@ public sealed class Ce
     /// <summary>
     /// Максимальный время для закачки чанков
     /// </summary>
-    public const int MaxBatchChunksTime = Tick​​Time * 4 / 5;
+    public const int MaxBatchChunksTime = Tick​​Time * 2 / 3;
     /// <summary>
     /// Через сколько тактов происходит переформирование FrustumCulling если хоть один чанк не догружен
     /// </summary>
     public const int CheckTickInitFrustumCulling = 5;
+
+    #endregion
+
+    #region Game Геометрия
+
+    /**
+   *      (North)
+   *        0;-1
+   *         N
+   * (West)  |   (East)
+   *   W ----+---- E 
+   * -1;0    |    1;0
+   *         S
+   *        0;1
+   *      (South)
+   **/
+
     /// <summary>
     /// Обзор в виде круга
     /// </summary>
     public static Vector2i[] OverviewCircles = new Vector2i[] { new Vector2i(0) };
+
+    /// <summary>
+    /// Область в один блок без центра, 4 блоков
+    /// </summary>
+    //public readonly static Vector2i[] AreaOne4 = new Vector2i[] {
+    //    new Vector2i(0, 1), new Vector2i(1, 0), new Vector2i(0, -1), new Vector2i(-1, 0)
+    //};
+    /// <summary>
+    /// Область в один блок без центра, 8 блоков
+    /// </summary>
+    //public readonly static Vector2i[] AreaOne8 = new Vector2i[] {
+    //    new Vector2i(0, 1), new Vector2i(1, 1), new Vector2i(1, 0), new Vector2i(1, -1),
+    //    new Vector2i(0, -1), new Vector2i(-1, -1), new Vector2i(-1, 0), new Vector2i(-1, 1)
+    //};
+    /// <summary>
+    /// Область в один блок без центра, 8 блоков Х
+    /// </summary>
+    public readonly static int[] AreaOne8X = new int[] { 0, 1, 1, 1, 0, -1, -1, -1 };
+    /// <summary>
+    /// Область в один блок без центра, 8 блоков Y
+    /// </summary>
+    public readonly static int[] AreaOne8Y = new int[] { 1, 1, 0, -1, -1, -1, 0, 1 };
+
+    /// <summary>
+    /// Область в один блок c центром, 9 блоков
+    /// </summary>
+    //public readonly static Vector2i[] AreaOne9 = new Vector2i[] { new Vector2i(0, 0),
+    //    new Vector2i(0, 1), new Vector2i(1, 1), new Vector2i(1, 0), new Vector2i(1, -1),
+    //    new Vector2i(0, -1), new Vector2i(-1, -1), new Vector2i(-1, 0), new Vector2i(-1, 1)
+    //};
+
+    /// <summary>
+    /// Получить индекс по вектору в один блок без центра, 8 блоков
+    /// </summary>
+    public static int GetAreaOne8(int x, int y)
+    {
+        if (x == 1)
+        {
+            if (y == 0) return 2;
+            if (y == -1) return 3;
+            return 1;
+        }
+        if (x == -1)
+        {
+            if (y == -1) return 5;
+            if (y == 0) return 6;
+            return 7;
+        }
+        if (y == -1) return 4;
+        return 0;
+    }
+    /// <summary>
+    /// Получить индекс по вектору в один блок без центра, 9 блоков
+    /// </summary>
+    public static int GetAreaOne9(int x, int y)
+    {
+        if (x == 0)
+        {
+            if (y == 0) return 0;
+            if (y == 1) return 1;
+            return 5;
+        }
+        if (x == 1)
+        {
+            if (y == 0) return 3;
+            if (y == -1) return 4;
+            return 2;
+        }
+        if (y == -1) return 6;
+        if (y == 0) return 7;
+        return 8;
+    }
 
     #endregion
 

@@ -51,18 +51,20 @@ namespace Vge.World.Chunk
             else
             {
                 // Вносим данные в чанк
-                ChunkRender chunk = _chunkMapping.Get(chx, chy) as ChunkRender;
-                if (chunk == null)
+                ChunkRender chunkRender = _chunkMapping.Get(chx, chy) as ChunkRender;
+                bool isNew = chunkRender == null;
+                if (isNew)
                 {
-                    chunk = new ChunkRender(_worldClient, chx, chy);
-                    _chunkMapping.Add(chunk);
+                    chunkRender = new ChunkRender(_worldClient, chx, chy);
+                    _chunkMapping.Add(chunkRender);
                 }
 
-                chunk.SetBinary();// packet.GetBuffer(), packet.IsBiom(), packet.GetFlagsYAreas());
+                chunkRender.SetBinary(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
 
-                // Далее тут манипулации с чанком chunkBase
-                //System.Threading.Thread.Sleep(20);
-
+                if (isNew || packet.IsBiom)
+                {
+                    //chunk.Light.GenerateHeightMap();
+                }
             }
             if (Ce.IsDebugDrawChunks)
             {

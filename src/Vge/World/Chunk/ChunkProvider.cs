@@ -8,19 +8,19 @@
         /// <summary>
         /// Количество секций в чанке
         /// </summary>
-        public static byte NumberSections { get; private set; }
+        public byte NumberSections { get; private set; }
         /// <summary>
         /// Количество секций в чанке меньше. NumberChunkSections - 1
         /// </summary>
-        public static byte NumberSectionsLess { get; private set; }
+        public byte NumberSectionsLess { get; private set; }
         /// <summary>
         /// Количество блоков в чанке. NumberChunkSections * 16 - 1
         /// </summary>
-        public static ushort NumberBlocks { get; private set; }
+        public ushort NumberBlocks { get; private set; }
         /// <summary>
         /// Верхний блок который можно установить. NumberBlocks - 1
         /// </summary>
-        public static ushort NumberMaxBlock { get; private set; }
+        public ushort NumberMaxBlock { get; private set; }
 
         /// <summary>
         /// Сылка на объект мира

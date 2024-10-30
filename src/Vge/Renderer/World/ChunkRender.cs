@@ -38,7 +38,7 @@ namespace Vge.Renderer.World
         private readonly ChunkRender[] _chunks = new ChunkRender[8];
 
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
-            : base(worldClient, chunkPosX, chunkPosY)
+            : base(worldClient, worldClient.ChunkPr.NumberSections, chunkPosX, chunkPosY)
         {
             _worldClient = worldClient;
             _vertex = Gi.Vertex;
@@ -62,7 +62,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Пометить что надо перерендерить сетку чанка
         /// </summary>
-        public/* override */void ModifiedToRender(int y)
+        public override void ModifiedToRender(int y)
         {
             _meshDense.IsModifiedRender = true;
             //if (y >= 0 && y < COUNT_HEIGHT) meshSectionDense[y].isModifiedRender = true;
@@ -124,14 +124,15 @@ namespace Vge.Renderer.World
             _vertex.AddVertex(0, 0, 16, 0, .1f, 0, (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), 255);
             _vertex.AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
 
-            for (int i = 64; i < 128; i++)
+            for (int j = 1; j < NumberSections; j++)
             {
+                int i = j * 16;
                 _vertex.AddVertex(1, i, 0, 0, 0, 255, 255, 255, 255);
                 _vertex.AddVertex(15, i, 0, .1f, 0, 255, 255, 255, 255);
                 _vertex.AddVertex(1, i, 16, 0, .1f, 255, 255, 255, 255);
                 _vertex.AddVertex(15, i, 16, .1f, .1f, 255, 255, 255, 255);
             }
-            Debug.Burden(1f);
+           // Debug.Burden(1f);
             // _meshDense.SetBuffer(_bufferFloat.ToArray(), _buffer.ToArray());
 
             _meshDense.SetBuffer(_vertex);
@@ -188,10 +189,12 @@ namespace Vge.Renderer.World
         /// </summary>
         public void UpBufferChunks()
         {
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    _chunks[i] = World.ChunkPr.GetChunk(Position + MvkStatic.AreaOne8[i]) as ChunkRender;
-            //}
+            for (int i = 0; i < 8; i++)
+            {
+                _chunks[i] = _worldClient.ChunkPrClient.GetChunkRender(
+                    CurrentChunkX + Ce.AreaOne8X[i], CurrentChunkY + Ce.AreaOne8Y[i]
+                );
+            }
         }
 
         /// <summary>
@@ -205,7 +208,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Получить соседний чанк, где x и y -1..1
         /// </summary>
-        public ChunkRender Chunk(int x, int y) => null;// chunks[MvkStatic.GetAreaOne8(x, y)];
+        public ChunkRender Chunk(int x, int y) => _chunks[Ce.GetAreaOne8(x, y)];
 
         #endregion
 
