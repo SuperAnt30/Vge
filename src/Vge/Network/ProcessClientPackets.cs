@@ -2,6 +2,7 @@
 using Vge.Network.Packets;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using Vge.World.Block;
 
 namespace Vge.Network
 {
@@ -72,6 +73,9 @@ namespace Vge.Network
                 case 0x04:
                     _Handle04TimeUpdate((PacketS04TimeUpdate)readPacket.Receive(buffer, new PacketS04TimeUpdate()));
                     break;
+                case 0x05:
+                    _Handle05TableBlocks((PacketS05TableBlocks)readPacket.Receive(buffer, new PacketS05TableBlocks()));
+                    break;
                 case 0x07:
                     _Handle07RespawnInWorld((PacketS07RespawnInWorld)readPacket.Receive(buffer, new PacketS07RespawnInWorld()));
                     break;
@@ -138,9 +142,13 @@ namespace Vge.Network
         /// Пакет синхронизации времени с сервером
         /// </summary>
         private void _Handle04TimeUpdate(PacketS04TimeUpdate packet)
-        {
-            Game.SetTickCounter(packet.Time);
-        }
+            => Game.SetTickCounter(packet.Time);
+
+        /// <summary>
+        /// Пакет передать таблицу блоков
+        /// </summary>
+        private void _Handle05TableBlocks(PacketS05TableBlocks packet)
+            => BlocksReg.Correct(new CorrectTable(packet.Blocks));
 
         /// <summary>
         /// Пакет Возраждение в мире

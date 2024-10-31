@@ -58,7 +58,7 @@
 
             for (id = 0; id < Count; id++)
             {
-                BlockObjects[id].Initialization();
+                BlockObjects[id].Initialization(id, BlockAlias[id]);
             }
         }
 

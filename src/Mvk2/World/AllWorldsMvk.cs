@@ -16,8 +16,9 @@ namespace Mvk2.World
         public override void Init(GameServer server)
         {
             base.Init(server);
-            BlocksRegMvk.Initialization();
             BlocksReg.Correct(server.Settings.Table);
+            
+            //Blocks.InitializationAfterItems();
 
             _worldServers[0] = new WorldServer(server, 0, new WorldSettingsNightmare());
             _worldServers[1] = new WorldServer(server, 1, new WorldSettings());

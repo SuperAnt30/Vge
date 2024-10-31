@@ -221,7 +221,7 @@ namespace Vge.Gui.Controls
 
         #region Draw
 
-        public override void Render()
+        public override void Rendering()
         {
             RenderInside(window.Render, PosX * si, PosY * si);
             IsRender = false;

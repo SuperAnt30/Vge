@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Gui.Controls;
 using WinGL.Actions;
-using WinGL.OpenGL;
 
 namespace Vge.Gui.Screens
 {
@@ -74,7 +73,7 @@ namespace Vge.Gui.Screens
                 {
                     if (control.IsRender)
                     {
-                        control.Render();
+                        control.Rendering();
                     }
                     control.Draw(timeIndex);
                 }

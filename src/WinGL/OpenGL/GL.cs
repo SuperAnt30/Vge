@@ -108,6 +108,8 @@ namespace WinGL.OpenGL
         private glUniformMatrix4fv delegateUniformMatrix4;
         private delegate int glGetUniformLocation(uint program, string name);
         private glGetUniformLocation delegateGetUniformLocation;
+        private delegate void glGenerateMipmapEXT(uint target);
+        private glGenerateMipmapEXT delegateGenerateMipmapEXT;
 
         private delegate IntPtr wglCreateContextAttribsARB(IntPtr hDC, IntPtr hShareContext, int[] attribList);
         private wglCreateContextAttribsARB delegateCreateContextAttribsARB;
@@ -372,7 +374,12 @@ namespace WinGL.OpenGL
                 delegateCreateContextAttribsARB = GetDelegate<wglCreateContextAttribsARB>() as wglCreateContextAttribsARB;
             return delegateCreateContextAttribsARB(hDC, hShareContext, attribList);
         }
-
+        public void GenerateMipmapEXT(uint target)
+        {
+            if (delegateGenerateMipmapEXT == null)
+                delegateGenerateMipmapEXT = GetDelegate<glGenerateMipmapEXT>() as glGenerateMipmapEXT;
+            delegateGenerateMipmapEXT(target);
+        }
 
         #endregion
 

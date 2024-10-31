@@ -123,6 +123,8 @@ namespace Vge.Renderer
             TextureLightmapEnable();
             gl.Uniform1(lightMap, 1);
             TextureLightmapDisable();
+
+            
         }
 
         #endregion
@@ -207,9 +209,16 @@ namespace Vge.Renderer
             FontMain.CreateMesh(gl);
         }
 
-        public void TestRun()
+
+
+        #region Draw
+
+        /// <summary>
+        /// Прорисовка в начале мира
+        /// </summary>
+        public virtual void DrawWorldBegin()
         {
-        //    gl.Enable(GL.GL_CULL_FACE);
+            gl.Enable(GL.GL_CULL_FACE);
             gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
             //gl.ClearColor(.5f, .7f, .99f, 1f);
 
@@ -218,8 +227,6 @@ namespace Vge.Renderer
             gl.AlphaFunc(GL.GL_GREATER, 0.1f);
             gl.Enable(GL.GL_ALPHA_TEST);
         }
-
-        #region Draw
 
         public virtual void DrawBegin()
         {

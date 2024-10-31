@@ -37,6 +37,10 @@ namespace Vge
         /// </summary>
         public static float RenderChunckTime8 = 0;
         public static float RenderChunckTimeAlpha8 = 0;
+        /// <summary>
+        /// Прорисовка вокселей контуром линий
+        /// </summary>
+        public static bool IsDrawVoxelLine = false;
 
         public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick,
             int countUpdateChunk, int countUpdateChunkAlpha)

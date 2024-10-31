@@ -56,10 +56,27 @@ public sealed class Gi
     /// </summary>
     public readonly static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
 
+    /// <summary>
+    /// Затемнение стороны от стороны блока
+    /// </summary>
+    public readonly static float[] LightPoles = new float[] { 1, .6f, .7f, .7f, .85f, .85f };
 
     /// <summary>
     /// Буфер для склейки рендера. покуда тест в будущем для чанка
     /// </summary>
-    public readonly static VertexBuffer Vertex = new VertexBuffer(1000);
+    public readonly static VertexBuffer Vertex = new VertexBuffer(65000);
+
+    /// <summary>
+    /// Объект рендера целого блока с эффектом размытия (Mipmap)
+    /// </summary>
+    public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull();
+    /// <summary>
+    /// Объект рендера уникального блока с эффектом контраста (Not Mipmap)
+    /// </summary>
+    public readonly static BlockRenderUnique BlockRendUnique = new BlockRenderUnique();
+    /// <summary>
+    /// Объект рендера жидкого блока с эффектом контраста (Not Mipmap)
+    /// </summary>
+    public readonly static BlockRenderLiquid BlockRendLiquid = new BlockRenderLiquid();
 
 }

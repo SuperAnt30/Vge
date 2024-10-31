@@ -116,15 +116,40 @@ namespace WinGL.OpenGL
             }
             //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
             gl.BindTexture(GL.GL_TEXTURE_2D, key);
+            gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,
+                    0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
 
+            if (image.FlagMipMap)
+            {
+                //for (int i = 0; i < image.Images.Length; i++)
+                //{
+                //    gl.TexImage2D(GL.GL_TEXTURE_2D, i + 1, GL.GL_RGBA, image.Images[i].width, image.Images[i].height,
+                //        0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Images[i].buffer);
+                //}
 
-            gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.width, image.height,
-                0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.buffer);
-            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
-            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
-            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-            gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
 
+                //if (image.Images.Length > 0)
+                //{
+                //    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, image.Images.Length);
+                //}
+                //else
+                {
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, 5);
+                    gl.GenerateMipmapEXT(GL.GL_TEXTURE_2D);
+                }
+            }
+            else
+            {
+                
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+            }
             return key;
         }
 

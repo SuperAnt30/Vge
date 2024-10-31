@@ -56,7 +56,7 @@ namespace Vge.Realms
             FileToBufferedImage(vs[1]);
             OnStep();
             // AtlasBlocks
-            FileToBufferedImage(vs[2]);
+            FileToBufferedImage(vs[2], true);
             OnStep();
         }
 
@@ -76,9 +76,9 @@ namespace Vge.Realms
         /// Конвертировать картинку в структуру BufferedImage
         /// и занести в массиф буферов
         /// </summary>
-        protected BufferedImage FileToBufferedImage(string fileName)
+        protected BufferedImage FileToBufferedImage(string fileName, bool minmap = false)
         {
-            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
+            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName, minmap);
             buffereds.Add(buffered);
             return buffered;
         }

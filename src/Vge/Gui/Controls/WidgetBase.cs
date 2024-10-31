@@ -160,7 +160,7 @@
         /// <summary>
         /// рендер контрола
         /// </summary>
-        public virtual void Render() => IsRender = false;
+        public virtual void Rendering() => IsRender = false;
 
         /// <summary>
         /// Прямоугольник
@@ -171,8 +171,8 @@
             {
                 x1, y1, u1, v1, r, g, b,
                 x1, y2, u1, v2, r, g, b,
-                x2, y1, u2, v1, r, g, b,
                 x2, y2, u2, v2, r, g, b,
+                x2, y1, u2, v1, r, g, b
             };
         }
 
@@ -197,13 +197,13 @@
             {
                 x1, y1, u1, v1, r, g, b,
                 x1, y2, u1, v2, r, g, b,
-                x2, y1, u2, v1, r, g, b,
                 x2, y2, u2, v2, r, g, b,
+                x2, y1, u2, v1, r, g, b,
 
                 x2, y1, u3, v1, r, g, b,
                 x2, y2, u3, v2, r, g, b,
-                x3, y1, u4, v1, r, g, b,
                 x3, y2, u4, v2, r, g, b,
+                x3, y1, u4, v1, r, g, b
             };
         }
 

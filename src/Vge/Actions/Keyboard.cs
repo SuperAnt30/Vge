@@ -55,6 +55,8 @@ namespace Vge.Actions
                     case Keys.ShiftKey: _game.Player.Movement.Sneak = true; break;
                     case Keys.ControlKey: _game.Player.Movement.Sprinting = true; break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
+
+                    case Keys.F8: Debug.IsDrawVoxelLine = !Debug.IsDrawVoxelLine; break;
                 }
 
 

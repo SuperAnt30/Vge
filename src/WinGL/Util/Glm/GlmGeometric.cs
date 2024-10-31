@@ -95,7 +95,7 @@
         /// <param name="vec">вектор</param>
         public static Vector3 Rotate(Vector3 pos, float angle, Vector3 vec)
         {
-            Mat4 rotat = Rotate(new Mat4(1.0f), angle, vec);
+            Mat4 rotat = Rotate(Mat4.Identity(), angle, vec);
             Mat4 res = Translate(rotat, pos);
             return new Vector3(res);
         }

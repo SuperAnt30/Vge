@@ -15,7 +15,19 @@ namespace Vge.World.Chunk
         /// Статический быстрый буфер для записи
         /// </summary>
         public readonly static ListFast<byte> BufferWrite = new ListFast<byte>(50000);
+        /// <summary>
+        /// Опции высот чанка
+        /// </summary>
+        public readonly ChunkSettings Settings = new ChunkSettings();
 
+        /// <summary>
+        /// Позиция X текущего чанка
+        /// </summary>
+        public readonly int X;
+        /// <summary>
+        /// Позиция Y текущего чанка
+        /// </summary>
+        public readonly int Y;
         /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
@@ -66,12 +78,13 @@ namespace Vge.World.Chunk
 
         #endregion
 
-        public ChunkBase(WorldBase world, byte numberSections, int chunkPosX, int chunkPosY)
+        public ChunkBase(WorldBase world, ChunkSettings settings, int chunkPosX, int chunkPosY)
         {
             World = world;
-            CurrentChunkX = chunkPosX;
-            CurrentChunkY = chunkPosY;
-            NumberSections = numberSections;
+            X = CurrentChunkX = chunkPosX;
+            Y = CurrentChunkY = chunkPosY;
+            Settings = settings;
+            NumberSections = Settings.NumberSections;
             StorageArrays = new ChunkStorage[NumberSections];
             for (int y = 0; y < NumberSections; y++)
             {
@@ -111,23 +124,29 @@ namespace Vge.World.Chunk
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                        SetBlockState(x, 0, z, new BlockState(1));
-                        SetBlockState(x, 1, z, new BlockState(1));
+                        SetBlockState(x, 0, z, new BlockState(5));
+                        for (int y = 1; y < 96; y++)
+                        {
+                            SetBlockState(x, y, z, new BlockState(2));
+                        }
                     }
                 }
 
-                for (int y = 2; y < 40; y++)
+                for (int y = 96; y < 128; y++)
                 {
-                    SetBlockState(7, y, 5, new BlockState(2));
+                    SetBlockState(7, y, 5, new BlockState(3));
                 }
                 
+                SetBlockState(8, 96, 5, new BlockState(3));
+                SetBlockState(8, 96, 6, new BlockState(5));
+                SetBlockState(8, 96, 7, new BlockState(3));
+                SetBlockState(8, 97, 7, new BlockState(4));
 
-                SetBlockState(8, 2, 5, new BlockState(2));
-                SetBlockState(8, 2, 6, new BlockState(2));
-                SetBlockState(8, 2, 7, new BlockState(2));
-                SetBlockState(8, 4, 7, new BlockState(3));
+                SetBlockState(8, 98, 3, new BlockState(5));
+                SetBlockState(8, 99, 3, new BlockState(5));
+                SetBlockState(8, 100, 3, new BlockState(5));
 
-               // Debug.Burden(.6f);
+                // Debug.Burden(.6f);
                 //World.Filer.EndSectionLog();
 
                 if (!World.IsRemote && World is WorldServer worldServer)

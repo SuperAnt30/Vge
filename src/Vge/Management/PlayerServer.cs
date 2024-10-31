@@ -9,6 +9,7 @@ using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -195,9 +196,18 @@ namespace Vge.Management
         /// </summary>
         public void JoinGame()
         {
+            // Id игрока
             SendPacket(new PacketS03JoinGame(Id, UUID));
+            // Таблицу блоков если не владелец
+            if (!Owner)
+            {
+                SendPacket(new PacketS05TableBlocks(Blocks.BlockAlias));
+            }
+            // Тикущий счётчик тика сервера
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));
+            // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
+            // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(new Vector3(Position.X, Position.Y, Position.Z), 0, 0));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 

@@ -91,11 +91,11 @@ namespace Vge.Renderer
         /// <summary>
         /// Генерация массива вершин, для построения квада
         /// </summary>
-        protected int[] QuadIndices()
+        protected int[] _QuadIndices()
         {
             _countIndices = _countVertices / 4 * 6;
             int[] indices = new int[_countIndices];
-            int[] quad = new int[] { 0, 1, 2, 1, 3, 2 };
+            int[] quad = new int[] { 0, 1, 2, 0, 2, 3 };
             int c = 0;
             int c1 = 0;
             for (int i = 0; i < indices.Length; i++)
@@ -147,7 +147,7 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STREAM_DRAW);
         }
 
         #endregion

@@ -109,6 +109,9 @@ namespace Vge.Management
             {
                 SetOverviewChunk(overviewChunk);
                 Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
+                // Корректируем FrustumCulling
+                _InitFrustumCulling();
+                // Меняем в рендере мира
                 _game.WorldRender.ModifyOverviewChunk();
                 // Отправим обзор 
                 _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
@@ -125,7 +128,7 @@ namespace Vge.Management
         /// <summary>
         /// Камера была изменена
         /// </summary>
-        public void  CameraHasBeenChanged()
+        private void  _CameraHasBeenChanged()
         {
             _UpdateMatrixCamera();
             _InitFrustumCulling();
@@ -173,12 +176,12 @@ namespace Vge.Management
                 xb = xc << 4;
                 zb = zc << 4;
 
-                x1 = xb - 12;
+                x1 = xb - 15;
                 y1 = -Position.PositionY;
-                z1 = zb - 12;
-                x2 = xb + 12;
+                z1 = zb - 15;
+                x2 = xb + 15;
                 y2 = 128 - Position.PositionY;
-                z2 = zb + 12;
+                z2 = zb + 15;
 
                 if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
                 {
@@ -222,7 +225,7 @@ namespace Vge.Management
 
             if (IsPositionChange())
             {
-                CameraHasBeenChanged();
+                _CameraHasBeenChanged();
                 PositionPrev.Set(Position);
                 _game.TrancivePacket(new PacketC04PlayerPosition(
                     new Vector3(Position.X, Position.Y, Position.Z),
@@ -245,7 +248,7 @@ namespace Vge.Management
         public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
         {
             IdWorld = packet.IdWorld;
-            _game.World.ChunkPr.SetHeightChunks(packet.NumberChunkSections);
+            _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
         }
 
         /// <summary>

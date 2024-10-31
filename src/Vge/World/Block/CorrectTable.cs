@@ -13,6 +13,9 @@ namespace Vge.World.Block
         /// </summary>
         public string[] LoadBlocks { get; private set; } = new string[] { };
 
+        public CorrectTable() { }
+        public CorrectTable(string[] blocks) => LoadBlocks = blocks;
+
         /// <summary>
         /// Корректировка блоков после регистрации и загрузки
         /// </summary>

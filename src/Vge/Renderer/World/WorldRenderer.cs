@@ -3,6 +3,7 @@ using System.Threading;
 using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Util;
+using WinGL.OpenGL;
 
 namespace Vge.Renderer.World
 {
@@ -11,6 +12,11 @@ namespace Vge.Renderer.World
     /// </summary>
     public class WorldRenderer : WarpRenderer
     {
+        /// <summary>
+        /// Объект OpenGL для элемента управления
+        /// </summary>
+        private readonly GL gl;
+
         /// <summary>
         /// Флаг потока рендера чанков
         /// </summary>
@@ -47,6 +53,7 @@ namespace Vge.Renderer.World
 
         public WorldRenderer(GameBase game) : base(game)
         {
+            gl = GetOpenGL();
             _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
         }
 
@@ -150,7 +157,7 @@ namespace Vge.Renderer.World
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            _game.Render.TestRun();
+            _game.Render.DrawWorldBegin();
 
             // Небо
             //DrawSky(timeIndex);
@@ -170,6 +177,8 @@ namespace Vge.Renderer.World
             _DrawVoxelAlpha();
 
             // Прорисовка руки
+
+
         }
 
         /// <summary>
@@ -237,6 +246,17 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxel()
         {
+            if (Debug.IsDrawVoxelLine)
+            {
+                gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
+                gl.Disable(GL.GL_CULL_FACE);
+            }
+            else
+            {
+                gl.Enable(GL.GL_CULL_FACE);
+                gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+            }
+
             // Биндим шейдор для вокселей
             _game.Render.ShaderBindVoxels(_game.Player.View,
                 _overviewBlock, 1, 1, 1, 15);
@@ -253,6 +273,13 @@ namespace Vge.Renderer.World
                         chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
                     chunkRender.DrawDenseUnique();
                 }
+            }
+
+            if (Debug.IsDrawVoxelLine)
+            {
+                // Дебаг должен прорисовать текстуру по этому сетка тут не уместна
+                gl.Enable(GL.GL_CULL_FACE);
+                gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
             }
         }
 

@@ -3,32 +3,36 @@
     /// <summary>
     /// Объект изображения
     /// </summary>
-    public struct BufferedImage
+    public class BufferedImage
     {
         /// <summary>
         /// Ширина
         /// </summary>
-        public int width;
+        public readonly int Width;
         /// <summary>
         /// Высотп
         /// </summary>
-        public int height;
+        public readonly int Height;
         /// <summary>
         /// Массив байт
         /// </summary>
-        public byte[] buffer;
+        public readonly byte[] Buffer;
+        /// <summary>
+        /// Нужно ли делать MinMap
+        /// </summary>
+        public bool FlagMipMap;
 
         public BufferedImage(int width, int height, byte[] buffer)
         {
-            this.width = width;
-            this.height = height;
-            this.buffer = buffer;
+            Width = width;
+            Height = height;
+            Buffer = buffer;
         }
 
         /// <summary>
         /// Получить байт значения альфа цвета пиксела
         /// </summary>
-        public byte GetPixelAlpha(int x, int y) => buffer[y * height * 4 + x * 4 + 3];
+        public byte GetPixelAlpha(int x, int y) => Buffer[y * Height * 4 + x * 4 + 3];
 
         /// <summary>
         /// Получить цвет пикселя

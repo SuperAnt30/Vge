@@ -11,10 +11,11 @@ namespace Vge.Util
         /// <summary>
         /// Конвертировать картинку в структуру BufferedImage
         /// </summary>
-        public static BufferedImage FileToBufferedImage(string fileName)
+        public static BufferedImage FileToBufferedImage(string fileName, bool minmap = false)
         {
             Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
-            return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
+            return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap))
+            { FlagMipMap = minmap };
         }
 
         /// <summary>

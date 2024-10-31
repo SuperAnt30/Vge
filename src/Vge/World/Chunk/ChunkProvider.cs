@@ -6,22 +6,9 @@
     public abstract class ChunkProvider
     {
         /// <summary>
-        /// Количество секций в чанке
+        /// Опции высот чанка
         /// </summary>
-        public byte NumberSections { get; private set; }
-        /// <summary>
-        /// Количество секций в чанке меньше. NumberChunkSections - 1
-        /// </summary>
-        public byte NumberSectionsLess { get; private set; }
-        /// <summary>
-        /// Количество блоков в чанке. NumberChunkSections * 16 - 1
-        /// </summary>
-        public ushort NumberBlocks { get; private set; }
-        /// <summary>
-        /// Верхний блок который можно установить. NumberBlocks - 1
-        /// </summary>
-        public ushort NumberMaxBlock { get; private set; }
-
+        public readonly ChunkSettings Settings = new ChunkSettings();
         /// <summary>
         /// Сылка на объект мира
         /// </summary>
@@ -68,16 +55,5 @@
         public IChunkPosition[] GetListDebug() => _chunkMapping.ToArrayDebug();
 
         #endregion
-
-        /// <summary>
-        /// Задать высоту чанков
-        /// </summary>
-        public void SetHeightChunks(byte height)
-        {
-            NumberSections = height;
-            NumberSectionsLess = (byte)(height - 1);
-            NumberBlocks = (ushort)(height * 16 - 1);
-            NumberMaxBlock = (ushort)(height * 16 - 2);
-        }
     }
 }

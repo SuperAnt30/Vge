@@ -1,6 +1,7 @@
 ﻿using System;
 using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using Vge.World.Chunk;
 
 namespace Vge.Renderer.World
@@ -28,20 +29,14 @@ namespace Vge.Renderer.World
         private readonly MeshVoxel _meshAlpha;
 
         /// <summary>
-        /// Буфер для склейки рендера
-        /// </summary>
-        private readonly VertexBuffer _vertex;
-
-        /// <summary>
         /// Соседние чанки, заполняются перед рендером
         /// </summary>
         private readonly ChunkRender[] _chunks = new ChunkRender[8];
 
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
-            : base(worldClient, worldClient.ChunkPr.NumberSections, chunkPosX, chunkPosY)
+            : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
         {
             _worldClient = worldClient;
-            _vertex = Gi.Vertex;
             _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshUnique = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
@@ -111,31 +106,128 @@ namespace Vge.Renderer.World
         {
             long timeBegin = _worldClient.Game.ElapsedTicks();
 
-            _vertex.Clear();
-            if (_worldClient.Game.Player.IdWorld == 0)
-            {
-                _vertex.AddVertex(0, 0, 0, 0, 0, 0, (byte)(CurrentChunkX % 3 == 0 ? 255 : 0), 0, 255);
-            }
-            else
-            {
-                _vertex.AddVertex(0, 0, 0, 0, 0, 255, 255, 255, 255);
-            }
-            _vertex.AddVertex(16, 0, 0, .1f, 0, 255, 255, 255, 255);
-            _vertex.AddVertex(0, 0, 16, 0, .1f, 0, (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), 255);
-            _vertex.AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
+            Gi.Vertex.Clear();
 
-            for (int j = 1; j < NumberSections; j++)
-            {
-                int i = j * 16;
-                _vertex.AddVertex(1, i, 0, 0, 0, 255, 255, 255, 255);
-                _vertex.AddVertex(15, i, 0, .1f, 0, 255, 255, 255, 255);
-                _vertex.AddVertex(1, i, 16, 0, .1f, 255, 255, 255, 255);
-                _vertex.AddVertex(15, i, 16, .1f, .1f, 255, 255, 255, 255);
-            }
-           // Debug.Burden(1f);
-            // _meshDense.SetBuffer(_bufferFloat.ToArray(), _buffer.ToArray());
+            ChunkStorage chunkStorage;
+            int cbY, realY, realZ, index, yb, x, z;
+            ushort data, id;
+            uint met;
+            BlockBase block;
+          //  BlockRenderFull blockRender = Gi.BlockRendFull;
+            Gi.BlockRendFull.InitChunk(this);
+            Gi.BlockRendUnique.InitChunk(this);
+            Gi.BlockRendLiquid.InitChunk(this);
 
-            _meshDense.SetBuffer(_vertex);
+            int indexY, indexYZ;
+            for (cbY = 0; cbY < NumberSections; cbY++)
+            {
+                chunkStorage = StorageArrays[cbY];
+                if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
+                {
+                    // Имекется хоть один блок
+                    for (yb = 0; yb < 16; yb++)
+                    {
+                        realY = cbY << 4 | yb;
+                        indexY = yb << 8;
+                        for (z = 0; z < 16; z++)
+                        {
+                            indexYZ = indexY | z << 4;
+                            for (x = 0; x < 16; x++)
+                            {
+                                index = indexYZ | x;
+                                //index = yb << 8 | z << 4 | x;
+                                data = chunkStorage.Data[index];
+                                // Если блок воздуха, то пропускаем рендер сразу
+                                if (data == 0 || data == 4096) continue;
+                                // 0.125 - 0.145
+                                
+                                // Определяем id блока
+                                id = (ushort)(data & 0xFFF);
+                                // 0.135 - 0.150
+
+                                // Определяем met блока
+                                met = Blocks.BlocksMetadata[id]
+                                    ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                // 0.180 - 0.190
+                                
+                                // Определяем объект блока
+                                block = Blocks.BlockObjects[id];
+                                // 0.195 - 0.225
+
+                                if (block.Translucent)
+                                {
+                                    // Альфа
+                                }
+                                else if (isDense)
+                                {
+                                    // Сплошной
+                                    // Рендер сплошных, не прозрачных блоков
+                                    //if (block.IsUnique)
+                                    //{
+                                    //    // Уникальный блок
+                                    //    blockRender = Gi.BlockRendUnique;
+                                    //}
+                                    //else if (block.FullBlock)
+                                    //{
+                                    //    // Сплошной блок
+                                    //    blockRender = Gi.BlockRendFull;
+                                    //}
+                                    //else
+                                    //{
+                                    //    // Жидкость
+                                    //    blockRender = Gi.BlockRendLiquid;
+                                    //}
+                                    // 0.230 - 0.250
+
+                                    block.BlockRender.BlockSt.Id = id;
+
+                                    block.BlockRender.Met = block.BlockRender.BlockSt.Met = met;
+                                    block.BlockRender.BlockSt.LightBlock = chunkStorage.LightBlock[index];
+                                    block.BlockRender.BlockSt.LightSky = chunkStorage.LightSky[index];
+                                    block.BlockRender.PosChunkX = x;
+                                    block.BlockRender.PosChunkY = realY;
+                                    block.BlockRender.PosChunkZ = z;
+                                    block.BlockRender.Block = block;
+
+                                    // 0.450 - 0.550
+                                    //continue;
+                                    block.BlockRender.RenderMesh();
+                                }
+                                //_vertex.AddVertex(x, realY, z, .046875f, 0, 255, 255, 255, 255);
+                                //_vertex.AddVertex(x + 1, realY, z, .0625f, 0, 255, 255, 255, 255);
+                                //_vertex.AddVertex(x, realY, z + 1, .046875f, .015625f, 255, 255, 255, 255);
+                                //_vertex.AddVertex(x + 1, realY, z + 1, .0625f, .015625f, 255, 255, 255, 255);
+                            }
+                        }
+                    }
+                }
+            }
+                /*
+                if (_worldClient.Game.Player.IdWorld == 0)
+                {
+                    _vertex.AddVertex(0, 0, 0, 0, 0, 0, (byte)(CurrentChunkX % 3 == 0 ? 255 : 0), 0, 255);
+                }
+                else
+                {
+                    _vertex.AddVertex(0, 0, 0, 0, 0, 255, 255, 255, 255);
+                }
+                _vertex.AddVertex(16, 0, 0, .1f, 0, 255, 255, 255, 255);
+                _vertex.AddVertex(0, 0, 16, 0, .1f, 0, (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), 255);
+                _vertex.AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
+
+                for (int j = 1; j < NumberSections; j++)
+                {
+                    int i = j * 16;
+                    _vertex.AddVertex(1, i, 0, 0, 0, 255, 255, 255, 255);
+                    _vertex.AddVertex(15, i, 0, .1f, 0, 255, 255, 255, 255);
+                    _vertex.AddVertex(1, i, 16, 0, .1f, 255, 255, 255, 255);
+                    _vertex.AddVertex(15, i, 16, .1f, .1f, 255, 255, 255, 255);
+                }
+                */
+                // Debug.Burden(1f);
+                // _meshDense.SetBuffer(_bufferFloat.ToArray(), _buffer.ToArray());
+
+            _meshDense.SetBuffer(Gi.Vertex);
 
             // Для отладочной статистики
             float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
@@ -189,6 +281,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public void UpBufferChunks()
         {
+            // TODO::2024-11-01 надо вынести за пределы потока
             for (int i = 0; i < 8; i++)
             {
                 _chunks[i] = _worldClient.ChunkPrClient.GetChunkRender(

@@ -86,8 +86,8 @@ namespace Vge.Renderer.Font
         {
             this.render = render;
             this.texture = texture;
-            horiAdvance = textureFont.width >> 4;
-            vertAdvance = textureFont.height >> 4;
+            horiAdvance = textureFont.Width >> 4;
+            vertAdvance = textureFont.Height >> 4;
             this.stepFont = stepFont;
             Transfer = new TransferText(this);
 
@@ -464,16 +464,16 @@ namespace Vge.Renderer.Font
                 {
                     x1 + 1.8f, y1, v1, u1, r, g, b,
                     x1 - 1.8f, y2, v1, u2, r, g, b,
-                    x2 + 1.8f, y1, v2, u1, r, g, b,
                     x2 - 1.8f, y2, v2, u2, r, g, b,
+                    x2 + 1.8f, y1, v2, u1, r, g, b
                 };
             }
             return new float[]
             {
                 x1, y1, v1, u1, r, g, b,
                 x1, y2, v1, u2, r, g, b,
-                x2, y1, v2, u1, r, g, b,
                 x2, y2, v2, u2, r, g, b,
+                x2, y1, v2, u1, r, g, b
             };
         }
 

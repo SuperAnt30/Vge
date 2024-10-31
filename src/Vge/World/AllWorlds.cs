@@ -35,11 +35,7 @@ namespace Vge.World
         /// <summary>
         /// Инициализация миров после создания сервера
         /// </summary>
-        public virtual void Init(GameServer server)
-        {
-            Server = server;
-            BlocksReg.Initialization();
-        }
+        public virtual void Init(GameServer server) => Server = server;
 
         /// <summary>
         /// Такт сервера

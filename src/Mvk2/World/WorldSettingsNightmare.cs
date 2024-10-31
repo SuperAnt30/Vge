@@ -10,7 +10,7 @@ namespace Mvk2.World
         public WorldSettingsNightmare()
         {
             ActiveRadius = 3;
-            NumberChunkSections = 4;
+            NumberChunkSections = 16;
         }
     }
 }

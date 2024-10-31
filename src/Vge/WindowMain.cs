@@ -11,6 +11,7 @@ using Vge.Audio;
 using Vge.Event;
 using Vge.Gui.Screens;
 using Vge.World;
+using Vge.World.Block;
 
 namespace Vge
 {
@@ -456,6 +457,11 @@ namespace Vge
         protected virtual AllWorlds CreateAllWorlds() => new AllWorlds();
 
         /// <summary>
+        /// Инициализация блоков
+        /// </summary>
+        protected virtual void _InitializationBlocks() => BlocksReg.Initialization();
+
+        /// <summary>
         /// Запустить игру по сети
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
@@ -463,6 +469,7 @@ namespace Vge
             LScreen.Process(L.T("Connection") + Ce.Ellipsis);
             if (Game == null)
             {
+                _InitializationBlocks();
                 Game = new GameNet(this, ipAddress, port);
                 GameRun();
             }
@@ -476,6 +483,7 @@ namespace Vge
             LScreen.Working();
             if (Game == null)
             {
+                _InitializationBlocks();
                 Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();
             }

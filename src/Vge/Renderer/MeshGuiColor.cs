@@ -24,8 +24,8 @@ namespace Vge.Renderer
             {
                 x1, y1, v1, u1, r, g, b,
                 x1, y2, v1, u2, r, g, b,
-                x2, y1, v2, u1, r, g, b,
                 x2, y2, v2, u2, r, g, b,
+                x2, y1, v2, u1, r, g, b
             };
         }
 
@@ -38,8 +38,8 @@ namespace Vge.Renderer
             {
                 x1, y1, 0, 0, r, g, b,
                 x1, y2, 0, 0, r, g, b,
-                x2, y1, 0, 0, r, g, b,
                 x2, y2, 0, 0, r, g, b,
+                x2, y1, 0, 0, r, g, b
             };
         }
 
@@ -52,8 +52,8 @@ namespace Vge.Renderer
             {
                 x1, y1, v1, u1, 1, 1, 1,
                 x1, y2, v1, u2, 1, 1, 1,
-                x2, y1, v2, u1, 1, 1, 1,
                 x2, y2, v2, u2, 1, 1, 1,
+                x2, y1, v2, u1, 1, 1, 1
             };
         }
 

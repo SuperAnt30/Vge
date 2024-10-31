@@ -37,6 +37,7 @@ namespace Vge.Util
         {
             _size = newSize;
             Array.Resize(ref _buffer, _size);
+            if (Count >= _size) Count = _size;
         }
 
         /// <summary>

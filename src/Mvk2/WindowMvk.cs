@@ -11,6 +11,7 @@ using Vge.Renderer;
 using Vge.World;
 using Mvk2.World;
 using WinGL.Util;
+using Mvk2.World.Block;
 
 namespace Mvk2
 {
@@ -188,6 +189,15 @@ namespace Mvk2
         /// Создание миров
         /// </summary>
         protected override AllWorlds CreateAllWorlds() => new AllWorldsMvk();
+
+        /// <summary>
+        /// Инициализация блоков
+        /// </summary>
+        protected override void _InitializationBlocks()
+        {
+            base._InitializationBlocks();
+            BlocksRegMvk.Initialization();
+        }
 
         #endregion
 

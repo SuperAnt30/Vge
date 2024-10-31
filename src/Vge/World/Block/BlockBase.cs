@@ -1,10 +1,29 @@
-﻿namespace Vge.World.Block
+﻿using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using Vge.Renderer.World;
+using Vge.Util;
+
+namespace Vge.World.Block
 {
     /// <summary>
     /// Базовый объект Блока
     /// </summary>
     public class BlockBase
     {
+        /// <summary>
+        /// Индекс блока из таблицы
+        /// </summary>
+        public ushort Id { get; private set; }
+        /// <summary>
+        /// Псевдоним блока из таблицы
+        /// </summary>
+        public string Alias { get; private set; }
+
+        /// <summary>
+        /// Блок рендера
+        /// </summary>
+        public BlockRenderFull BlockRender;
+
         #region Группа
 
         // У блока может быть один из параметров true FullBlock || Liquid || IsUnique || IsAir
@@ -90,41 +109,46 @@
         /// <summary>
         /// Прорисовка возможно с обеих сторон, для уникальных блоков, типа трава, листва и подобное
         /// </summary>
-        public bool BothSides { get; private set; } = false;
+        //public bool BothSides { get; private set; } = false;
         /// <summary>
         /// Полупрозрачный, альфа блок, вода, стекло...
         /// </summary>
-        public bool Translucent { get; protected set; } = false;
+        public bool Translucent = false;
+
         /// <summary>
         /// Флаг, если блок должен использовать самое яркое значение соседнего света как свое собственное
         /// Пример: листва, вода, стекло
         /// </summary>
-        public bool UseNeighborBrightness { get; protected set; } = false;
+        public bool UseNeighborBrightness = false;
 
         /// <summary>
         /// Все стороны принудительно, пример: трава, стекло, вода, лава
         /// *** Продумать, возможно заменить...
         /// </summary>
-        public bool AllSideForcibly { get; protected set; } = false;
+        public bool AllSideForcibly = false;
         /// <summary>
         /// При значении flase у AllSideForcibly + обнотипные блоков не будет между собой сетки, пример: вода, блок стекла
         /// *** Продумать, возможно заменить...
         /// </summary>
-        public bool BlocksNotSame { get; protected set; } = true;
+        public bool BlocksNotSame = true;
 
         /// <summary>
         /// Обрабатывается блок эффектом АmbientOcclusion
         /// </summary>
-        public bool АmbientOcclusion { get; protected set; } = true;
+        public bool АmbientOcclusion = true;
         /// <summary>
         /// Обрабатывается блок эффектом Плавного перехода цвета между биомами
         /// </summary>
-        public bool BiomeColor { get; protected set; } = false;
+        public bool BiomeColor = false;
         /// <summary>
         /// Может ли быть тень сущности на блоке, только для целых блоков
         /// </summary>
         public bool Shadow { get; protected set; } = true;
-        
+
+        /// <summary>
+        /// Стороны целого блока для прорисовки блока quads
+        /// </summary>
+        protected QuadSide[][] _quads = new QuadSide[][] { new QuadSide[] { new QuadSide() } };
 
         #endregion
 
@@ -133,10 +157,15 @@
         /// <summary>
         /// Инициализировать блок
         /// </summary>
-        public virtual void Initialization()
+        public virtual void Initialization(ushort id, string alias)
         {
+            Id = id;
+            Alias = alias;
+            BlockRender = Gi.BlockRendFull;
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;
+
+
         }
 
         /// <summary>
@@ -181,5 +210,30 @@
 
         #endregion
 
+        #region Методы для Render
+
+        /// <summary>
+        /// Стороны целого блока для рендера
+        /// </summary>
+        public virtual QuadSide[] GetQuads(uint met, int xc, int zc, int xb, int zb) => _quads[0];
+
+        /// <summary>
+        /// Инициализация коробок всех одной текстурой с параметром Нет бокового затемнения, пример: трава, цветы
+        /// </summary>
+        protected void _InitQuads(int numberTexture)
+        {
+            _quads = new QuadSide[][] { new QuadSide[] {
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.Up),
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.Down),
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.East),
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.West),
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.North),
+                new QuadSide().SetTexture(numberTexture).SetSide(Pole.South)
+            } };
+        }
+
+        #endregion
+
+        public override string ToString() => Id.ToString() + " " + Alias;
     }
 }
