@@ -44,6 +44,17 @@
         /// Получить следующее значение из списка
         /// </summary>
         public T GetNext() => vsBackward[index++];
+
+        /// <summary>
+        /// Получить следующее значение из списка и присвоить в массиве его null
+        /// </summary>
+        public T GetNextNull()
+        {
+            T value = vsBackward[index];
+            vsBackward.IndexNull(index++);
+            return value;
+        }
+
         /// <summary>
         /// Зафиксировать следующй шаг, где происходит смена листов, надо перед Count и Get
         /// </summary>

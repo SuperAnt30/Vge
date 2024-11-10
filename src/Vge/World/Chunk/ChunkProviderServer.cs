@@ -113,7 +113,7 @@ namespace Vge.World.Chunk
                 _counterLBS += count;
                 LoadingBatchSize = Sundry.RecommendedQuantityBatch(
                     (int)(_worldServer.Server.Time() - timeBegin),
-                    count, LoadingBatchSize);
+                    count, LoadingBatchSize, Ce.MaxDesiredBatchSize);
             }
         }
 
@@ -162,6 +162,7 @@ namespace Vge.World.Chunk
                     //Тут сохраняем чанк
                     //SaveChunkData(chunk);
                     _chunkMapping.Remove(x, y);
+                    chunk.Dispose();
                     // Для дебага
                     _worldServer.Fragment.flagDebugChunkProviderServer = true;
                 }

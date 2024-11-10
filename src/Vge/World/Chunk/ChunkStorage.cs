@@ -10,13 +10,21 @@ namespace Vge.World.Chunk
     /// 16 * 16 * 16
     /// y << 8 | z << 4 | x
     /// </summary>
-    public class ChunkStorage
+    public class ChunkStorage: IDisposable
     {
         /// <summary>
         /// Уровень псевдочанка, нижнего блока, т.е. кратно 16. Глобальная координата Y, не чанка
         /// </summary>
         public readonly int YBase;
-        
+        /// <summary>
+        /// Высота чанка 0 - NumberSections
+        /// </summary>
+        public readonly int Index;
+        /// <summary>
+        /// Ключ кэш координат чанка (ulong)(uint)x  32) | ((uint)y
+        /// </summary>
+        public readonly ulong KeyCash;
+
         /// <summary>
         /// Данные блока
         /// 12 bit Id блока и 4 bit параметр блока
@@ -44,9 +52,12 @@ namespace Vge.World.Chunk
         /// </summary>
         private int _countTickBlock;
 
-        public ChunkStorage(int y)
+        public ChunkStorage(ulong keyCash, int index)
         {
-            YBase = y;
+            //KeyCash = y + (x % 2 == 0 ? 16777216 : 0) + (z % 2 == 0 ? 33554432 : 0);
+            KeyCash = keyCash;
+            Index = index;
+            YBase = index << 4;
             Data = null;
             CountBlock = 0;
             _countTickBlock = 0;
@@ -58,6 +69,21 @@ namespace Vge.World.Chunk
         /// Пустой, все блоки воздуха
         /// </summary>
         public bool IsEmptyData() => CountBlock == 0;
+
+        /// <summary>
+        /// Перепроверить количество блоков
+        /// </summary>
+        public void UpCountBlock()
+        {
+            CountBlock = 0;
+            if (Data != null)
+            {
+                for (int i = 0; i < 4096; i++)
+                {
+                    if ((Data[i] & 0xFFF) != 0) CountBlock++;
+                }
+            }
+        }
 
         /// <summary>
         /// Очистить без света
@@ -174,11 +200,20 @@ namespace Vge.World.Chunk
         /// </summary>
         public bool GetNeedsRandomTick() => _countTickBlock > 0;
 
+        public void Dispose()
+        {
+            CountBlock = 0;
+            Data = null;
+            LightBlock = null;
+            LightSky = null;
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Вернуть количество блоков не воздуха и количество тикающих блоков
         /// </summary>
         public string ToStringCount() => CountBlock + "|" + _countTickBlock;
 
-        public override string ToString() => "yB:" + YBase + " body:" + CountBlock + " ";
+        public override string ToString() => " yB:" + YBase + " body:" + CountBlock + " ";
     }
 }

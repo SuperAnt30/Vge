@@ -36,7 +36,7 @@
         /// <summary>
         /// Коэффициент ускорения вперёд, для мобов
         /// </summary>
-        public float Speed = 1;
+        public float Speed = .5f;
 
 
         /// <summary>
@@ -69,17 +69,17 @@
         /// <summary>
         /// Перемещение шага влево -1.0 .. +1.0 право
         /// </summary>
-        public float GetMoveStrafe() => (Right ? 1f : 0) - (Left ? 1f : 0);
+        public float GetMoveStrafe() => (Right ? .5f : 0) - (Left ? .5f : 0);
 
         /// <summary>
         /// Перемещение назад 1.0 .. -1.0 вперёд
         /// </summary>
-        public float GetMoveForward() => (Back ? 1f : 0f) - (Forward ? Speed : 0f);
+        public float GetMoveForward() => (Back ? .5f : 0f) - (Forward ? Speed : 0f);
 
         /// <summary>
         /// Перемещение вертикали вверх 1.0 .. -1.0 вниз
         /// </summary>
-        public float GetMoveVertical() => (Jump ? 1f : 0f) - (Sneak ? 1f : 0);
+        public float GetMoveVertical() => (Jump ? .5f : 0f) - (Sneak ? .5f : 0);
 
         public override string ToString()
         {

@@ -3,7 +3,7 @@
     /// <summary>
     /// Объект рендера уникальных блоков, без проверки соседних блоков
     /// </summary>
-    public class BlockRenderUnique : BlockRenderFull
-    {
-    }
+    //public class BlockRenderUnique : BlockRenderFull
+    //{
+    //}
 }

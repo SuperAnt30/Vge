@@ -8,40 +8,39 @@ namespace Vge.Network
     /// <summary>
     /// Записывающий пакет данных в массив байт
     /// </summary>
-    public class WritePacket
+    public class WritePacket : IDisposable
     {
         /// <summary>
         /// Количество элементов
         /// </summary>
-        private int count;
+        public int _count;
         /// <summary>
         /// Массив
         /// </summary>
-        private byte[] buffer;
+        private byte[] _buffer;
         /// <summary>
         /// Реальный размер массива
         /// </summary>
-        private int size;
+        private int _size;
 
-        private WritePacket(int size = 64)
+        public WritePacket(int size = 64)
         {
-            this.size = size;
-            buffer = new byte[size];
+            _size = size;
+            _buffer = new byte[size];
         }
 
-        public static byte[] TranciveToArray(IPacket packet)
+        public void Dispose()
         {
-            WritePacket writePacket = new WritePacket();
-            writePacket.Trancive(packet);
-            return writePacket.ToArray();
+            _buffer = null;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Внести загрузку пакета
         /// </summary>
-        private void Trancive(IPacket packet)
+        public void Trancive(IPacket packet)
         {
-            count = 0;
+            _count = 0;
             Byte(packet.Id);
             packet.WritePacket(this);
         }
@@ -49,10 +48,10 @@ namespace Vge.Network
         /// <summary>
         /// Сгенерировать массив
         /// </summary>
-        private byte[] ToArray()
+        public byte[] ToArray()
         {
-            byte[] result = new byte[count];
-            Array.Copy(buffer, result, count);
+            byte[] result = new byte[_count];
+            Buffer.BlockCopy(_buffer, 0, result, 0, _count);
             return result;
         }
 
@@ -61,12 +60,12 @@ namespace Vge.Network
         /// </summary>
         private void Add(byte item)
         {
-            if (size <= count)
+            if (_size <= _count)
             {
-                size = (int)(size * 2f);
-                Array.Resize(ref buffer, size);
+                _size = (int)(_size * 2f);
+                Array.Resize(ref _buffer, _size);
             }
-            buffer[count++] = item;
+            _buffer[_count++] = item;
         }
 
         /// <summary>
@@ -75,14 +74,29 @@ namespace Vge.Network
         private void Add(params byte[] items)
         {
             int c = items.Length;
-            if (size <= count + c)
+            if (_size <= _count + c)
             {
-                size = (int)(size + c + (size * 0.5f));
-                Array.Resize(ref buffer, size);
+                _size = (int)(_size + c + (_size * 0.5f));
+                Array.Resize(ref _buffer, _size);
             }
-            Buffer.BlockCopy(items, 0, buffer, count, c);
+            Buffer.BlockCopy(items, 0, _buffer, _count, c);
 
-            count += c;
+            _count += c;
+        }
+
+        /// <summary>
+        /// Добавить часть массива
+        /// </summary>
+        private void AddRange(byte[] items, int index, int count)
+        {
+            if (_size <= _count + count)
+            {
+                _size = (int)(_size + count + (_size * 0.5f));
+                Array.Resize(ref _buffer, _size);
+            }
+            Buffer.BlockCopy(items, index, _buffer, _count, count);
+
+            _count += count;
         }
 
         #region Write
@@ -97,10 +111,25 @@ namespace Vge.Network
         /// </summary>
         public void Bytes(byte[] value)
         {
-            UShort((ushort)value.Length);
+            Int(value.Length);
             if (value.Length > 0)
             {
                 Add(value);
+            }
+        }
+        /// <summary>
+        /// Записать массив байт
+        /// </summary>
+        public void Bytes(byte[] value, int index, int count)
+        {
+            if (value.Length >= count)
+            {
+                Int(count);
+                AddRange(value, index, count);
+            }
+            else
+            {
+                Int(0);
             }
         }
 
@@ -119,14 +148,18 @@ namespace Vge.Network
                 using (MemoryStream outStream = new MemoryStream())
                 {
                     using (GZipStream tinyStream = new GZipStream(outStream, CompressionMode.Compress))
-                    using (MemoryStream mStream = new MemoryStream(value, index, count))
-                        mStream.CopyTo(tinyStream);
+                    {
+                        using (MemoryStream mStream = new MemoryStream(value, index, count))
+                        {
+                            mStream.CopyTo(tinyStream);
+                        }
+                    }
                     Bytes(outStream.ToArray());
                 }
             }
             else
             {
-                UShort(0);
+                Int(0);
             }
         }
 
@@ -139,7 +172,7 @@ namespace Vge.Network
         /// </summary>
         public void UShort(ushort value)
         {
-            Add((byte)((value & 0xFF00) >> 8), 
+            Add((byte)((value & 0xFF00) >> 8),
                 (byte)(value & 0xFF));
         }
         /// <summary>
@@ -167,7 +200,7 @@ namespace Vge.Network
                 (byte)((value & 0xFF00) >> 8),
                 (byte)(value & 0xFF));
         }
-            
+
         /// <summary>
         /// Записать тип sbyte (-128..127) 1 байт
         /// </summary>
@@ -194,9 +227,9 @@ namespace Vge.Network
         /// <summary>
         /// Записать тип float (точность 0,0001) 4 байта
         /// </summary>
-        public void Float(float value) 
+        public void Float(float value)
             => Int((int)(value * 10000)); // Этот быстрее на ~10-20%
-         // => Write(BitConverter.GetBytes(value), 0, 4);
+        // => Write(BitConverter.GetBytes(value), 0, 4);
 
         #endregion
     }

@@ -1,6 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Runtime.InteropServices;
 using Vge.Util;
 using Vge.World.Block;
 
@@ -9,12 +11,21 @@ namespace Vge.World.Chunk
     /// <summary>
     /// Базовый объект чанка
     /// </summary>
-    public class ChunkBase : IChunkPosition
+    public class ChunkBase : IChunkPosition, IDisposable
     {
         /// <summary>
-        /// Статический быстрый буфер для записи
+        /// Входящий буфер памяти для Zip
         /// </summary>
-        public readonly static ListFast<byte> BufferWrite = new ListFast<byte>(50000);
+        private readonly static MemoryStream _inStream = new MemoryStream();
+        /// <summary>
+        /// Буфер памяти для Zip
+        /// </summary>
+        private readonly static GZipStream _bigStream = new GZipStream(_inStream, CompressionMode.Decompress);
+        /// <summary>
+        /// Исходящий буфер памяти для Zip
+        /// </summary>
+        private readonly static MemoryStream _bigStreamOut = new MemoryStream();
+
         /// <summary>
         /// Опции высот чанка
         /// </summary>
@@ -36,6 +47,10 @@ namespace Vge.World.Chunk
         /// Позиция Y текущего чанка
         /// </summary>
         public int CurrentChunkY { get; private set; }
+        /// <summary>
+        /// Ключ кэш координат чанка (ulong)(uint)x  32) | ((uint)y
+        /// </summary>
+        public readonly ulong KeyCash;
         /// <summary>
         /// Сылка на объект мира
         /// </summary>
@@ -83,12 +98,13 @@ namespace Vge.World.Chunk
             World = world;
             X = CurrentChunkX = chunkPosX;
             Y = CurrentChunkY = chunkPosY;
+            KeyCash = Conv.ChunkXyToIndex(X, Y);
             Settings = settings;
             NumberSections = Settings.NumberSections;
             StorageArrays = new ChunkStorage[NumberSections];
-            for (int y = 0; y < NumberSections; y++)
+            for (int index = 0; index < NumberSections; index++)
             {
-                StorageArrays[y] = new ChunkStorage(y << 4);
+                StorageArrays[index] = new ChunkStorage(KeyCash, index);
             }
         }
 
@@ -105,6 +121,16 @@ namespace Vge.World.Chunk
             IsChunkPresent = false;
         }
 
+        public virtual void Dispose()
+        {
+            for (int index = 0; index < NumberSections; index++)
+            {
+                StorageArrays[index].Dispose();
+                StorageArrays[index] = null;
+            }
+            GC.SuppressFinalize(this);
+        }
+
         #region Кольца 1-4
 
         /// <summary>
@@ -114,40 +140,46 @@ namespace Vge.World.Chunk
         {
             if (!IsChunkPresent)
             {
-                IsChunkPresent = true;
-
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
-
+                int h = NumberSections == 8 ? 63 : 127;
                 // Временно льём тест
                 for (int x = 0; x < 16; x++)
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                        SetBlockState(x, 0, z, new BlockState(5));
-                        for (int y = 1; y < 96; y++)
+                    //    SetBlockState(x, 0, z, new BlockState(5));
+                        for (int y = 0; y < h; y++)
                         {
                             SetBlockState(x, y, z, new BlockState(2));
                         }
                     }
                 }
 
-                for (int y = 96; y < 128; y++)
+                for (int y = h; y < h + 32; y++)
                 {
                     SetBlockState(7, y, 5, new BlockState(3));
                 }
-                
-                SetBlockState(8, 96, 5, new BlockState(3));
-                SetBlockState(8, 96, 6, new BlockState(5));
-                SetBlockState(8, 96, 7, new BlockState(3));
-                SetBlockState(8, 97, 7, new BlockState(4));
 
-                SetBlockState(8, 98, 3, new BlockState(5));
-                SetBlockState(8, 99, 3, new BlockState(5));
-                SetBlockState(8, 100, 3, new BlockState(5));
+                SetBlockState(0, h, 0, new BlockState(3));
+                SetBlockState(0, h + 1, 0, new BlockState(3));
+                SetBlockState(0, h + 2, 0, new BlockState(3));
+
+                SetBlockState(15, h, 15, new BlockState(4));
+                SetBlockState(15, h + 1, 15, new BlockState(4));
+
+                SetBlockState(8, h, 5, new BlockState(3));
+                SetBlockState(8, h, 6, new BlockState(5));
+                SetBlockState(8, h + 3, 7, new BlockState(3));
+                SetBlockState(8, h + 4, 7, new BlockState(4));
+
+                SetBlockState(8, h + 5, 3, new BlockState(5));
+                SetBlockState(8, h + 6, 3, new BlockState(5));
+                SetBlockState(8, h + 7, 3, new BlockState(5));
 
                 // Debug.Burden(.6f);
                 //World.Filer.EndSectionLog();
+                IsChunkPresent = true;
 
                 if (!World.IsRemote && World is WorldServer worldServer)
                 {
@@ -165,6 +197,7 @@ namespace Vge.World.Chunk
                         }
                     }
                 }
+                
             }
         }
 
@@ -190,12 +223,12 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                IsPopulated = true;
+                
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Pop " + CurrentChunkX + "," + CurrentChunkY);
                 Debug.Burden(1.5f);
                 //World.Filer.EndSectionLog();
-
+                IsPopulated = true;
                 for (x = -1; x <= 1; x++)
                 {
                     for (y = -1; y <= 1; y++)
@@ -231,12 +264,12 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                IsHeightMapSky = true;
+                
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Hms " + CurrentChunkX + "," + CurrentChunkY);
                 Debug.Burden(.1f);
                 //World.Filer.EndSectionLog();
-
+                IsHeightMapSky = true;
                 for (x = -1; x <= 1; x++)
                 {
                     for (y = -1; y <= 1; y++)
@@ -333,118 +366,47 @@ namespace Vge.World.Chunk
         #region Binary
 
         /// <summary>
-        /// Сгенерировать буфер байт для отправки чанка игроку
+        /// Внести данные в zip буфере
         /// </summary>
-        public void GenBinary(bool biom, int flagsYAreas)
+        public void SetBinaryZip(byte[] bufferIn, bool biom, int flagsYAreas)
         {
-            if (flagsYAreas == 0)
-            {
-                throw new Exception(Sr.GetString(Sr.OutOfRange, flagsYAreas));
-            }
-
-            BufferWrite.Clear();
-
-            ushort data;
-            int i;
-            uint value;
-            ChunkStorage chunkStorage;
-
-            for (int y = 0; y < NumberSections; y++)
-            {
-                if ((flagsYAreas & 1 << y) != 0)
-                {
-                    chunkStorage = StorageArrays[y];
-                    bool emptyData = chunkStorage.IsEmptyData();
-                    BufferWrite.Add((byte)(emptyData ? 0 : 1));
-                    for (i = 0; i < 4096; i++)
-                    {
-                        // TODO::2024-10-30 Буфер передавать копией, а не по единичке. Когда будет рендер блоков, чтоб протестить можно было
-                        if (!emptyData)
-                        {
-                            data = chunkStorage.Data[i];
-                            BufferWrite.Add((byte)(data & 0xFF));
-                            BufferWrite.Add((byte)(data >> 8));
-                        }
-
-                        BufferWrite.Add((byte)(chunkStorage.LightBlock[i] << 4 | chunkStorage.LightSky[i] & 0xF));
-                    }
-                    if (!emptyData)
-                    {
-                        data = (ushort)chunkStorage.Metadata.Count;
-                        BufferWrite.Add((byte)(data & 0xFF));
-                        BufferWrite.Add((byte)(data >> 8));
-
-                        foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
-                        {
-                            BufferWrite.Add((byte)(entry.Key >> 8));
-                            BufferWrite.Add((byte)(entry.Key & 0xFF));
-                            value = entry.Value;
-                            BufferWrite.Add((byte)((value & 0xFF000000) >> 24));
-                            BufferWrite.Add((byte)((value & 0xFF0000) >> 16));
-                            BufferWrite.Add((byte)((value & 0xFF00) >> 8));
-                            BufferWrite.Add((byte)(value & 0xFF));
-                        }
-                    }
-                }
-            }
-            if (biom)
-            {
-                // добавляем данные биома
-                for (i = 0; i < 256; i++)
-                {
-                    BufferWrite.Add(0);// (byte)chunk.biome[i];
-                }
-            }
-        }
-
-        /// <summary>
-        /// Задать чанк байтами
-        /// </summary>
-        public void SetBinary(byte[] buffer, bool biom, int flagsYAreas)
-        {
-            if (buffer == null)
-            {
-                throw new Exception(Sr.EmptyArrayIsNotAllowed);
-            }
-
+            _inStream.Write(bufferIn, 0, bufferIn.Length);
+            _inStream.Position = 0;
+            _bigStream.CopyTo(_bigStreamOut);
+            _bigStreamOut.Position = 0;
+                
             int sy, i, value;
             ushort countMet;
             int count = 0;
-            byte light;
             ushort id, key;
             uint met;
-            bool emptyData;
             for (sy = 0; sy < NumberSections; sy++)
             {
                 if ((flagsYAreas & 1 << sy) != 0)
                 {
                     ChunkStorage storage = StorageArrays[sy];
-                    emptyData = buffer[count++] == 0;
-                    if (emptyData)
+                    _bigStreamOut.Read(storage.LightBlock, 0, 4096);
+                    _bigStreamOut.Read(storage.LightSky, 0, 4096);
+
+                    if (_bigStreamOut.ReadByte() == 0)
                     {
                         storage.ClearNotLight();
                     }
-                    for (i = 0; i < 4096; i++)
+                    else
                     {
-                        if (!emptyData)
-                        {
-                            value = buffer[count++] | buffer[count++] << 8;
-                            id = (ushort)(value & 0xFFF);
-                            storage.SetData(i, id, (ushort)(value >> 12));
-                            if (!Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
-                        }
-                        light = buffer[count++];
-                        storage.LightBlock[i] = (byte)(light >> 4);
-                        storage.LightSky[i] = (byte)(light & 0xF);
-                    }
-                    if (!emptyData)
-                    {
-                        countMet = (ushort)(buffer[count++] | buffer[count++] << 8);
+                        storage.Data = new ushort[4096];
+                        byte[] b = new byte[8192];
+                        _bigStreamOut.Read(b, 0, 8192);
+                        Buffer.BlockCopy(b, 0, storage.Data, 0, 8192);
+                        storage.UpCountBlock();
+
+                        storage.Metadata.Clear();
+                        countMet = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
                         for (i = 0; i < countMet; i++)
                         {
-                            key = (ushort)(buffer[count++] << 8 | buffer[count++]);
-                            met = (uint)(buffer[count++] << 24 | buffer[count++] << 16
-                                | buffer[count++] << 8 | buffer[count++]);
+                            key = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                            met = (uint)(_bigStreamOut.ReadByte() << 24 | _bigStreamOut.ReadByte() << 16
+                                | _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
                             if (storage.Metadata.ContainsKey(key))
                             {
                                 storage.Metadata[key] = met;

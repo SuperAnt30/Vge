@@ -90,6 +90,7 @@ namespace Vge.Renderer.World
                     _batchChunksTime = (int)(stopwatch.ElapsedMilliseconds - timeBegin);
                     _desiredBatchSize = Sundry.RecommendedQuantityBatch(
                         _batchChunksTime, quantity, _desiredBatchSize, Ce.TickTime);
+                    //_desiredBatchSize = 6;
                 }
                 // Ожидаем сигнала
                 _waitHandler.WaitOne();
@@ -110,11 +111,11 @@ namespace Vge.Renderer.World
             for (i = 0; i < count; i++)
             {
                 chunkRender = list.GetNext();
-                chunkRender.UpBufferChunks();
                 chunkRender.Render(isDense);
                 chunkRender.ClearBufferChunks();
                 if (!_flagRenderLoopRunning) break;
             }
+
             return count;
         }
 
@@ -159,6 +160,9 @@ namespace Vge.Renderer.World
         {
             _game.Render.DrawWorldBegin();
 
+            // Обновить кадр основного игрока, камера и прочее
+            _game.Player.UpdateFrame(timeIndex);
+            
             // Небо
             //DrawSky(timeIndex);
 
@@ -202,12 +206,13 @@ namespace Vge.Renderer.World
                         if (chunkRender.IsModifiedRender)
                         {
                             // Проверяем занят ли чанк уже рендером
-                            if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
+                            if (chunkRender.IsMeshDenseWait)// && chunkRender.IsMeshAlphaWait)
                             {
                                 // Обновление рендера псевдочанка
                                 Debug.CountUpdateChunck++;
                                 batchCount++;
                                 chunkRender.StartRendering();
+                                chunkRender.UpBufferChunks();
                                 _renderQueues.Add(chunkRender);
                             }
                         }
@@ -315,9 +320,9 @@ namespace Vge.Renderer.World
         private void _VoxelsShaderChunk(ShaderVoxel shader, int chunkX, int chunkY)
         {
             shader.SetUniform3(_game.GetOpenGL(), "pos",
-                (chunkX << 4) - _game.Player.Position.X,
-                -_game.Player.Position.Y,
-                (chunkY << 4) - _game.Player.Position.Z
+                (chunkX << 4) - _game.Player.PositionFrame.X,
+                -_game.Player.PositionFrame.Y,
+                (chunkY << 4) - _game.Player.PositionFrame.Z
             );
         }
 

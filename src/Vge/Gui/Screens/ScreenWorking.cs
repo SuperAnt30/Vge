@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer;
 using Vge.Util;
+using WinGL.OpenGL;
 
 namespace Vge.Gui.Screens
 {
@@ -84,13 +85,13 @@ namespace Vge.Gui.Screens
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-          //  gl.ClearColor(1, 1, 1, 1);
+            gl.ClearColor(.5f, .3f, .02f, 1f);
+            gl.Enable(GL.GL_CULL_FACE);
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();
             DrawLogo();
-            window.Render.TextureDisable();
+            window.Render.FontMain.BindTexture();
             meshProcess.Draw();
-            window.Render.TextureEnable();
         }
 
         public override void Dispose()

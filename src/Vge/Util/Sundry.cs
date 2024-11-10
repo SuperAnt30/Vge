@@ -14,30 +14,30 @@ namespace Vge.Util
         /// <param name="time">Время в мс затраченное</param>
         /// <param name="quantity">Количество сделанного</param>
         /// <param name="previous">Предыдущее количество</param>
-        public static byte RecommendedQuantityBatch(int time, int quantity, byte previous, 
-            int maxTime = Ce.MaxBatchChunksTime)
+        public static byte RecommendedQuantityBatch(int time, int quantity, byte previous,
+            int maxBatch, int maxTime = Ce.MaxBatchChunksTime)
         {
             int dbs = previous;
             if (time == 0)
             {
-                if (quantity < Ce.MaxDesiredBatchSize)
+                if (quantity < maxBatch)
                 {
                     dbs = quantity * 2;
-                    if (dbs > Ce.MaxDesiredBatchSize)
+                    if (dbs > maxBatch)
                     {
                         // Максималка!
-                        dbs = Ce.MaxDesiredBatchSize;
+                        dbs = maxBatch;
                     }
                 }
-                else if (dbs != Ce.MaxDesiredBatchSize)
+                else if (dbs != maxBatch)
                 {
-                    dbs = Ce.MaxDesiredBatchSize;
+                    dbs = maxBatch;
                 }
             }
             else
             {
                 dbs = maxTime * quantity / time;
-                if (dbs > Ce.MaxDesiredBatchSize) dbs = Ce.MaxDesiredBatchSize;
+                if (dbs > maxBatch) dbs = maxBatch;
                 if (dbs < Ce.MinDesiredBatchSize) dbs = Ce.MinDesiredBatchSize;
             }
             if (dbs != previous)

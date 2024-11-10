@@ -84,7 +84,26 @@ namespace WinGL.Util
         {
             long count = 0;
             for (int i = 0; i < items.Length; i++) { count += items[i]; }
-            return (float)count / (float)items.Length;
+            return count / (float)items.Length;
+        }
+        /// <summary>
+        /// Получить среднее значение массива
+        /// </summary>
+        public static string Average(float[] items)
+        {
+            float count = 0;
+            float min = float.MaxValue;
+            float max = float.MinValue;
+            float f;
+            for (int i = 0; i < items.Length; i++)
+            {
+                f = items[i];
+                count += f;
+                if (min > f) min = f;
+                if (max < f) max = f;
+            }
+            return string.Format("{0:0.000} {1:0.00} {2:0.00}",
+                min, count / (float)items.Length, max);
         }
 
         /// <summary>

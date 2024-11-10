@@ -37,6 +37,10 @@ namespace Vge.Util
         /// </summary>
         public static bool VSync { get; set; } = true;
         /// <summary>
+        /// Графика качественнее, красивее
+        /// </summary>
+        public static bool Qualitatively { get; set; } = true;
+        /// <summary>
         /// Желаемый FPS
         /// </summary>
         public static int Fps { get; set; } = 60;

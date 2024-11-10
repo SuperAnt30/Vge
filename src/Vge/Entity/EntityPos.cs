@@ -38,6 +38,12 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Разные ли по вращению
+        /// </summary>
+        public bool IsChangeRotate(EntityPos entityPos)
+            => Yaw != entityPos.Yaw || Pitch != entityPos.Pitch;
+
+        /// <summary>
         /// Задать значения
         /// </summary>
         public void Set(EntityPos entityPos)
@@ -48,6 +54,32 @@ namespace Vge.Entity
             Yaw = entityPos.Yaw;
             Pitch = entityPos.Pitch;
         }
+
+        /// <summary>
+        /// Обновить значения в кадре, между тикущем и предыдущем
+        /// </summary>
+        public void UpdateFrame(float timeIndex, EntityPos entityPos, EntityPos entityPosPrev)
+        {
+            if (timeIndex >= 1f)
+            {
+                if (entityPos.X != entityPosPrev.X) X = entityPos.X;
+                if (entityPos.Y != entityPosPrev.Y) Y = entityPos.Y;
+                if (entityPos.Z != entityPosPrev.Z) Z = entityPos.Z;
+                if (entityPos.Yaw != entityPosPrev.Yaw) Yaw = entityPos.Yaw;
+                if (entityPos.Pitch != entityPosPrev.Pitch) Pitch = entityPos.Pitch;
+            }
+            else
+            {
+                X = entityPosPrev.X + (entityPos.X - entityPosPrev.X) * timeIndex;
+                Y = entityPosPrev.Y + (entityPos.Y - entityPosPrev.Y) * timeIndex;
+                Z = entityPosPrev.Z + (entityPos.Z - entityPosPrev.Z) * timeIndex;
+                Yaw = entityPosPrev.Yaw + (entityPos.Yaw - entityPosPrev.Yaw) * timeIndex;
+                Pitch = entityPosPrev.Pitch + (entityPos.Pitch - entityPosPrev.Pitch) * timeIndex;
+            }
+        }
+
+        public string ToStringPos()
+            => string.Format("{0:0.00}; {1:0.00}; {2:0.00}", X, Y, Z);
 
         public override string ToString()
             => string.Format("{0:0.00}; {1:0.00}; {2:0.00} Y:{3:0.00} P:{4:0.00}",

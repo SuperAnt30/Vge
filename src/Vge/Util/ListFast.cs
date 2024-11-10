@@ -84,6 +84,11 @@ namespace Vge.Util
         public T GetLast() => _buffer[Count - 1];
 
         /// <summary>
+        /// Присвоить значение null
+        /// </summary>
+        public void IndexNull(int index) => _buffer[index] = default(T);
+
+        /// <summary>
         /// Очистить
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

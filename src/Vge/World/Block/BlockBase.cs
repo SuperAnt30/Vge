@@ -52,7 +52,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Имеет ли блок данные
         /// </summary>
-        public bool IsMetadata { get; protected set; }
+        public bool IsMetadata;
 
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0
@@ -215,7 +215,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Стороны целого блока для рендера
         /// </summary>
-        public virtual QuadSide[] GetQuads(uint met, int xc, int zc, int xb, int zb) => _quads[0];
+        public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
 
         /// <summary>
         /// Инициализация коробок всех одной текстурой с параметром Нет бокового затемнения, пример: трава, цветы

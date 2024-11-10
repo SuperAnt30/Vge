@@ -144,7 +144,7 @@ namespace Vge.Games
             => _StopAfterTick("Error: " + e.GetException().Message);
 
         private void _Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
-            => _packets.ReceiveBuffer(e.Buffer.bytes);
+            => _packets.ReceiveBuffer(e.Bytes, e.Count);
 
         /// <summary>
         /// Остановить через тик
@@ -222,7 +222,11 @@ namespace Vge.Games
         {
             if (_isConnected)
             {
-                _socket.SendPacket(WritePacket.TranciveToArray(packet));
+                using (WritePacket writePacket = new WritePacket())
+                {
+                    writePacket.Trancive(packet);
+                    _socket.SendPacket(writePacket.ToArray());
+                }
             }
         }
 

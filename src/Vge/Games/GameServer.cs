@@ -277,7 +277,7 @@ namespace Vge.Games
 
         private void _SocketServer_ReceivePacket(object sender, PacketBufferEventArgs e)
         {
-            LocalReceivePacket(e.Side, e.Buffer.bytes);
+            LocalReceivePacket(e.Side, e.Bytes);
         }
 
         /// <summary>
@@ -324,7 +324,11 @@ namespace Vge.Games
         public void ResponsePacketOwner(IPacket packet)
         {
             _tx++;
-            _OnRecievePacket(new PacketBufferEventArgs(new PacketBuffer(WritePacket.TranciveToArray(packet)), null));
+            using (WritePacket writePacket = new WritePacket())
+            {
+                writePacket.Trancive(packet);
+                _OnRecievePacket(new PacketBufferEventArgs(writePacket.ToArray()));
+            }
         }
 
         /// <summary>
@@ -551,7 +555,7 @@ namespace Vge.Games
             Filer.EndStartSection("PlayersTick");
             // Тики менеджера игроков
             Players.Update();
-            Filer.EndSection();
+            Filer.EndSection(Profiler.StepTime);
             
             //Thread.Sleep(10);
             // Тут игровые мировые тики

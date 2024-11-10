@@ -466,9 +466,9 @@ namespace Vge
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
         {
-            LScreen.Process(L.T("Connection") + Ce.Ellipsis);
             if (Game == null)
             {
+                LScreen.Process(L.T("Connection") + Ce.Ellipsis);
                 _InitializationBlocks();
                 Game = new GameNet(this, ipAddress, port);
                 GameRun();
@@ -479,10 +479,10 @@ namespace Vge
         /// Запустить локальную игру
         /// </summary>
         public void GameLocalRun(GameSettings gameSettings)
-        { 
-            LScreen.Working();
+        {
             if (Game == null)
             {
+                LScreen.Working();
                 _InitializationBlocks();
                 Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();
@@ -495,8 +495,8 @@ namespace Vge
             Game.Error += Game_Error;
             Game.ServerTextDebug += Game_ServerTextDebug;
             Game.TagDebug += Game_TagDebug;
-            Game.GameStarting();
             SetWishFrame(Options.Fps);
+            Game.GameStarting();
         }
 
         /// <summary>

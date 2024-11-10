@@ -12,7 +12,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Пометка изменения
         /// </summary>
-        public bool IsModifiedRender = true;
+        public bool IsModifiedRender = false;
         /// <summary>
         /// Статус обработки сетки
         /// </summary>

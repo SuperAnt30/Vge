@@ -37,16 +37,19 @@ namespace Vge
         /// </summary>
         public static float RenderChunckTime8 = 0;
         public static float RenderChunckTimeAlpha8 = 0;
+
+        public static int dct = 0;
+        public static float[] RenderChunckTime = new float[32];
         /// <summary>
         /// Прорисовка вокселей контуром линий
         /// </summary>
         public static bool IsDrawVoxelLine = false;
 
-        public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick,
+        public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick, float speedTickMax,
             int countUpdateChunk, int countUpdateChunkAlpha)
         {
-            StrTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00} ms ({4}/a{5})",
-                fps, speedFrame, tps, speedTick, countUpdateChunk, countUpdateChunkAlpha);
+            StrTpsFps = string.Format("Speed: {0} fps {1:0.00} ms {2} tps {3:0.00}|{4:0.00} ms ({5}/a{6})",
+                fps, speedFrame, tps, speedTick, speedTickMax, countUpdateChunk, countUpdateChunkAlpha);
         }
 
         public string ToText()
@@ -56,6 +59,7 @@ namespace Vge
                 + "\r\nMesh Id: " + MeshId + " C: " + MeshCount + " FC: " + CountMeshFC 
                     + " RCh: " + RenderChunckTime8.ToString("0.000")
                     + " a:" + RenderChunckTimeAlpha8.ToString("0.000")
+                    + " rch: " + Mth.Average(RenderChunckTime)
                 + "\r\n" + Server
                 + "[Client]: " + Client
                 + "\r\n" + Text;
@@ -296,6 +300,7 @@ namespace Vge
         /// </summary>
         public static void Burden(float ms)
         {
+            //return;
             // Пробуем загрузить с файла
             float f, d;
             f = d = .5f;

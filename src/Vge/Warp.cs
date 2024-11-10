@@ -26,6 +26,11 @@ namespace Vge
         }
 
         /// <summary>
+        /// Записать настройки
+        /// </summary>
+        public void OptionsSave() => window.OptionsSave();
+
+        /// <summary>
         /// Получить объект OpenGL. Использовать только в основном потоке
         /// </summary>
         public GL GetOpenGL() => gl;

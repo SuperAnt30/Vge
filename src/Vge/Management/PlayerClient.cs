@@ -1,4 +1,5 @@
 ﻿using Vge.Actions;
+using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
@@ -32,7 +33,10 @@ namespace Vge.Management
         /// Массив всех видимых чанков 
         /// </summary>
         public readonly ListFast<ChunkRender> FrustumCulling = new ListFast<ChunkRender>();
-        
+        /// <summary>
+        /// Позиция игрока для камеры
+        /// </summary>
+        public readonly EntityPos PositionFrame = new EntityPos();
 
         /// <summary>
         /// Класс  игры
@@ -118,7 +122,7 @@ namespace Vge.Management
                 if (isSaveOptions)
                 {
                     Options.OverviewChunk = OverviewChunk;
-                    new OptionsFile().Save();
+                    _game.OptionsSave();
                 }
             }
         }
@@ -139,7 +143,7 @@ namespace Vge.Management
         /// </summary>
         private void _UpdateMatrixCamera()
         {
-            Vector3 front = Glm.Ray(Position.Yaw, Position.Pitch);
+            Vector3 front = Glm.Ray(PositionFrame.Yaw, PositionFrame.Pitch);
             Vector3 up = new Vector3(0, 1, 0);
             Vector3 pos = new Vector3(0, 0, 0);
             Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
@@ -210,29 +214,59 @@ namespace Vge.Management
         #endregion
 
         /// <summary>
+        /// Остановить все инпуты
+        /// </summary>
+        public void ActionStop()
+        {
+            Movement.SetStop();
+            if (!_game.IsRunNet())
+            {
+                PositionPrev.Set(Position);
+                PositionFrame.Set(Position);
+            }
+        }
+
+        /// <summary>
+        /// Обновление в кадре
+        /// </summary>
+        public void UpdateFrame(float timeIndex)
+        {
+            PositionFrame.UpdateFrame(timeIndex, Position, PositionPrev);
+            //_game.Log.Log(Position.ToStringPos() + " | "
+            //    + PositionPrev.ToStringPos() + " | "
+            //    + PositionFrame.ToStringPos());
+        }
+         
+
+        /// <summary>
         /// Игровой такт
         /// </summary>
         public override void Update()
         {
             Vector2 motion = Sundry.MotionAngle(
                 Movement.GetMoveStrafe(), Movement.GetMoveForward(),
-                Movement.Sprinting ? 5 : 1, Position.Yaw);
+                Movement.Sprinting ? 5f : .5f, Position.Yaw);
 
             // Временно меняем перемещение если это надо
-            Position.X += motion.X;
-            Position.Z += motion.Y;
-            Position.Y += Movement.GetMoveVertical();
 
-            if (IsPositionChange())
+            float x = Position.X + motion.X;
+            float y = Position.Y + Movement.GetMoveVertical();
+            float z = Position.Z + motion.Y;
+            if (x != PositionPrev.X || y != PositionPrev.Y || z != PositionPrev.Z
+                || Position.IsChangeRotate(PositionPrev))
             {
-                _CameraHasBeenChanged();
                 PositionPrev.Set(Position);
+                Position.X = x;
+                Position.Y = y;
+                Position.Z = z;
+                //_game.Log.Log(Position.ToStringPos() + " | "
+                //+ PositionPrev.ToStringPos());
+                _CameraHasBeenChanged();
                 _game.TrancivePacket(new PacketC04PlayerPosition(
                     new Vector3(Position.X, Position.Y, Position.Z),
                     false, false, false, IdWorld));
                 Debug.Player = Position.GetChunkPosition();
             }
-
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)
             {

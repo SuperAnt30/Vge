@@ -2,17 +2,17 @@
 {
     /// <summary>
     /// Все текстуры.
-    /// Начиная с 2, на 0 находится основной шрифт, 1 виджет gui
+    /// Начиная с 2, на 0 находится основной шрифт, 1 виджет gui, 2 атлас блоков
     /// </summary>
     public enum AssetsTexture
     {
         /// <summary>
         /// Мелкий шрифт (8 пиксель)
         /// </summary>
-        FontSmall = 2,
+        FontSmall = 3,
         /// <summary>
         /// Крупный шрифт (16 пиксель)
         /// </summary>
-        FontLarge = 3
+        FontLarge = 4
     }
 }

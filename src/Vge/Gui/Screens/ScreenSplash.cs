@@ -122,9 +122,7 @@ namespace Vge.Gui.Screens
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();
             DrawLogo();
-            window.Render.TextureDisable();
             meshProcess.Draw();
-            window.Render.TextureEnable();
         }
 
         public override void Dispose()

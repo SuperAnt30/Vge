@@ -167,6 +167,11 @@ namespace Vge.Games
         public virtual void SetGamePauseSingle(bool value) { }
 
         /// <summary>
+        /// Получить истину запущена ли сеть
+        /// </summary>
+        public virtual bool IsRunNet() => true;
+
+        /// <summary>
         /// Игрок на сервере
         /// </summary>
         public void PlayerOnTheServer(int id, string uuid)
@@ -206,7 +211,7 @@ namespace Vge.Games
                 else
                 {
                     // Выключить вид от первого лица
-                    Player.Movement.SetStop();
+                    Player.ActionStop();
                 }
             }
         }
@@ -267,20 +272,24 @@ namespace Vge.Games
         public override void OnTick(float deltaTime)
         {
             // почерёдно получаем пакеты с сервера
+            //Filer.StartSection("Packets.Update");
             _packets.Update();
-
+            //Filer.EndSection(10);
             if (_flagTick && !IsGamePaused)
             {
                 _tickCounterClient++;
                 TickCounter++;
 
+                //Filer.StartSection("Player.Update");
                 // Обновить игрока
                 Player.Update();
+               // Filer.EndStartSection("World.Update", 10);
                 // Обновить мир
                 World.Update();
+                //Filer.EndStartSection("WorldRender.Update", 10);
                 // Обновить рендоровский мир
                 WorldRender.Update();
-
+               // Filer.EndSection(5);
                 // Прошла минута, или 1800 тактов
                 if (_tickCounterClient % 1800 == 0)
                 {

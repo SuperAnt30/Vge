@@ -9,7 +9,7 @@ namespace Vge.Renderer.World
     /// <summary>
     /// Объект рендера чанка, он же клиентский чанк
     /// </summary>
-    public class ChunkRender : ChunkBase, IDisposable
+    public class ChunkRender : ChunkBase
     {
         /// <summary>
         /// Клиентский мир
@@ -92,11 +92,12 @@ namespace Vge.Renderer.World
         /// </summary>
         public void DrawAlpha() => _meshAlpha.Draw();
 
-        public void Dispose()
+        public override void Dispose()
         {
             _meshDense.Dispose();
             _meshUnique.Dispose();
             _meshAlpha.Dispose();
+            base.Dispose();
         }
 
         /// <summary>
@@ -112,11 +113,11 @@ namespace Vge.Renderer.World
             int cbY, realY, realZ, index, yb, x, z;
             ushort data, id;
             uint met;
-            BlockBase block;
-          //  BlockRenderFull blockRender = Gi.BlockRendFull;
+            //BlockBase block;
+            //BlockRenderFull blockRender = Gi.BlockRendFull;
             Gi.BlockRendFull.InitChunk(this);
-            Gi.BlockRendUnique.InitChunk(this);
-            Gi.BlockRendLiquid.InitChunk(this);
+            //Gi.BlockRendUnique.InitChunk(this);
+            //Gi.BlockRendLiquid.InitChunk(this);
 
             int indexY, indexYZ;
             for (cbY = 0; cbY < NumberSections; cbY++)
@@ -124,6 +125,7 @@ namespace Vge.Renderer.World
                 chunkStorage = StorageArrays[cbY];
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
+                    Gi.BlockRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
                     {
@@ -132,33 +134,28 @@ namespace Vge.Renderer.World
                         for (z = 0; z < 16; z++)
                         {
                             indexYZ = indexY | z << 4;
+                            // ~0.002
                             for (x = 0; x < 16; x++)
                             {
+                                // ~0.011
                                 index = indexYZ | x;
-                                //index = yb << 8 | z << 4 | x;
+                                // ~0.012
                                 data = chunkStorage.Data[index];
                                 // Если блок воздуха, то пропускаем рендер сразу
-                                if (data == 0 || data == 4096) continue;
-                                // 0.125 - 0.145
-                                
+                                if (data == 0) continue;
+                                // ~0.020
                                 // Определяем id блока
                                 id = (ushort)(data & 0xFFF);
-                                // 0.135 - 0.150
-
-                                // Определяем met блока
-                                met = Blocks.BlocksMetadata[id]
-                                    ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
-                                // 0.180 - 0.190
-                                
+                                // ~0.021
                                 // Определяем объект блока
-                                block = Blocks.BlockObjects[id];
-                                // 0.195 - 0.225
-
-                                if (block.Translucent)
+                                Gi.Block = Blocks.BlockObjects[id];
+                                // ~0.066
+                                
+                                if (Gi.Block.Translucent) //+0.006
                                 {
                                     // Альфа
                                 }
-                                else if (isDense)
+                                else if (isDense) // Теряю время на ~0.006
                                 {
                                     // Сплошной
                                     // Рендер сплошных, не прозрачных блоков
@@ -177,55 +174,35 @@ namespace Vge.Renderer.World
                                     //    // Жидкость
                                     //    blockRender = Gi.BlockRendLiquid;
                                     //}
-                                    // 0.230 - 0.250
 
-                                    block.BlockRender.BlockSt.Id = id;
+                                    // ~0.078
+                                    Gi.Block.BlockRender.PosChunkX = x;
+                                    Gi.Block.BlockRender.PosChunkY = realY;
+                                    Gi.Block.BlockRender.PosChunkZ = z;
 
-                                    block.BlockRender.Met = block.BlockRender.BlockSt.Met = met;
-                                    block.BlockRender.BlockSt.LightBlock = chunkStorage.LightBlock[index];
-                                    block.BlockRender.BlockSt.LightSky = chunkStorage.LightSky[index];
-                                    block.BlockRender.PosChunkX = x;
-                                    block.BlockRender.PosChunkY = realY;
-                                    block.BlockRender.PosChunkZ = z;
-                                    block.BlockRender.Block = block;
-
-                                    // 0.450 - 0.550
+                                    // ~0.11
                                     //continue;
-                                    block.BlockRender.RenderMesh();
+                                    if (Gi.Block.BlockRender.CheckSide()) // +0.75
+                                    {
+                                        // ~0.85
+                                        //continue;
+                                        // Определяем met блока
+                                        Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                        Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                        // ~0.87
+                                        //continue;
+                                        Gi.Block.BlockRender.RenderSide(); // +0.40
+                                    }
+
+                                    // ~1.25
+                                    //continue;
                                 }
-                                //_vertex.AddVertex(x, realY, z, .046875f, 0, 255, 255, 255, 255);
-                                //_vertex.AddVertex(x + 1, realY, z, .0625f, 0, 255, 255, 255, 255);
-                                //_vertex.AddVertex(x, realY, z + 1, .046875f, .015625f, 255, 255, 255, 255);
-                                //_vertex.AddVertex(x + 1, realY, z + 1, .0625f, .015625f, 255, 255, 255, 255);
                             }
                         }
                     }
                 }
             }
-                /*
-                if (_worldClient.Game.Player.IdWorld == 0)
-                {
-                    _vertex.AddVertex(0, 0, 0, 0, 0, 0, (byte)(CurrentChunkX % 3 == 0 ? 255 : 0), 0, 255);
-                }
-                else
-                {
-                    _vertex.AddVertex(0, 0, 0, 0, 0, 255, 255, 255, 255);
-                }
-                _vertex.AddVertex(16, 0, 0, .1f, 0, 255, 255, 255, 255);
-                _vertex.AddVertex(0, 0, 16, 0, .1f, 0, (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), (byte)(CurrentChunkY % 3 == 0 ? 255 : 0), 255);
-                _vertex.AddVertex(16, 0, 16, .1f, .1f, 255, 255, 255, 255);
-
-                for (int j = 1; j < NumberSections; j++)
-                {
-                    int i = j * 16;
-                    _vertex.AddVertex(1, i, 0, 0, 0, 255, 255, 255, 255);
-                    _vertex.AddVertex(15, i, 0, .1f, 0, 255, 255, 255, 255);
-                    _vertex.AddVertex(1, i, 16, 0, .1f, 255, 255, 255, 255);
-                    _vertex.AddVertex(15, i, 16, .1f, .1f, 255, 255, 255, 255);
-                }
-                */
-                // Debug.Burden(1f);
-                // _meshDense.SetBuffer(_bufferFloat.ToArray(), _buffer.ToArray());
+            // Debug.Burden(1f);
 
             _meshDense.SetBuffer(Gi.Vertex);
 
@@ -233,7 +210,8 @@ namespace Vge.Renderer.World
             float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
             if (isDense)
             {
-                Debug.RenderChunckTime8 = (Debug.RenderChunckTime8 * 7f + time) / 8f;
+                Debug.RenderChunckTime8 = time;// (Debug.RenderChunckTime8 * 100f + time) / 101f;
+                Debug.RenderChunckTime[(++Debug.dct) % 32] = time;
             }
             else
             {
@@ -281,7 +259,6 @@ namespace Vge.Renderer.World
         /// </summary>
         public void UpBufferChunks()
         {
-            // TODO::2024-11-01 надо вынести за пределы потока
             for (int i = 0; i < 8; i++)
             {
                 _chunks[i] = _worldClient.ChunkPrClient.GetChunkRender(

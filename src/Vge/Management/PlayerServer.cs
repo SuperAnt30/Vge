@@ -129,7 +129,7 @@ namespace Vge.Management
             UUID = GetHash(login);
             pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
-            _desiredBatchSize = Owner ? Ce.MaxDesiredBatchSize : Ce.MinDesiredBatchSize;
+            _desiredBatchSize = Owner ? Ce.StartDesiredBatchSize : Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
         }
@@ -185,8 +185,10 @@ namespace Vge.Management
         /// </summary>
         public void PacketAcknowledgeChunks(PacketC20AcknowledgeChunks packet)
         {
+            // TODO::2024-11-10 RecommendedQuantityBatch
             _desiredBatchSize = Sundry.RecommendedQuantityBatch(packet.Time, 
-                packet.Quantity, _desiredBatchSize);
+                packet.Quantity, _desiredBatchSize, Ce.MaxDesiredBatchSize);
+            _desiredBatchSize = 8;// 8;
         }
 
         #endregion
@@ -470,7 +472,7 @@ namespace Vge.Management
                         SendPacket(new PacketS20ChunkSend());
                     }
                     quantityBatch++;
-                    
+
                     SendPacket(new PacketS21ChunkData(chunk, true, 65535));
                 }
                 else
@@ -484,7 +486,7 @@ namespace Vge.Management
                 SendPacket(new PacketS20ChunkSend(_clientChunksSort.Count == 0 
                     ? _desiredBatchSize : quantityBatch));
             }
-
+            
             int count = _loadedNull.Count;
             if (count > 0)
             {

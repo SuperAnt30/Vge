@@ -1,4 +1,6 @@
-﻿using Vge.World.Block;
+﻿using System.Runtime.CompilerServices;
+using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -20,7 +22,13 @@ namespace Vge.Renderer.World
         /// Объект блока кэш
         /// </summary>
         public BlockBase Block;
-        public BlockState BlockSt;
+        /// <summary>
+        /// Освещение блочное и небесное
+        /// </summary>
+        public int LightBlockSky;
+        /// <summary>
+        /// Метданные текущего блока
+        /// </summary>
         public uint Met;
 
         /// <summary>
@@ -35,11 +43,22 @@ namespace Vge.Renderer.World
         /// Позиция блока в чанке 0..15
         /// </summary>
         public int PosChunkZ;
-
+        
         /// <summary>
-        /// Тень на углах
+        /// Ключ кэш координат чанка (ulong)(uint)x  32) | ((uint)y
+        /// </summary>
+        private ulong _keyCash;
+        /// <summary>
+        /// Тень на углах + ~0.200 мс к рендеру на чанк
         /// </summary>
         private bool _ambientOcclusion = true;
+        /// <summary>
+        /// Индекс стороны для массива, который храним наличие и свет
+        /// </summary>
+        private int _indexSide = -1;
+        /// <summary>
+        /// Массив сторон, который храним наличие и свет
+        /// </summary>
         private readonly int[] _resultSide = new int[] { -1, -1, -1, -1, -1, -1 };
         /// <summary>
         /// Объект рендера чанков
@@ -59,6 +78,7 @@ namespace Vge.Renderer.World
         private ChunkStorage _storage;
         private bool _isDraw;
         private int _stateLight, _stateLightHis;
+        private byte _stateLightByte;
         private QuadSide[] _rectangularSides;
         private QuadSide _rectangularSide;
         private readonly AmbientOcclusionLights _ambient = new AmbientOcclusionLights();
@@ -66,8 +86,20 @@ namespace Vge.Renderer.World
         private Vector3 _color;
         private readonly ColorsLights _colorLight = new ColorsLights();
 
-        private int i, count, index, id, s1, s2, s3, s4, s5, s6, ntdbv, rs, side;
+        private int i, count, index, id, s1, s2, s3, s4, side;
         private int xc, yc, zc, xb, yb, zb, xcn, zcn, pX, pY, pZ;
+
+        /// <summary>
+        /// Проверяем вверхний блок
+        /// _GetBlockSideState
+        /// </summary>
+        private bool _isUp;
+        /// <summary>
+        /// Пустые ли стороны
+        /// _GetBlockSideState
+        /// </summary>
+        private bool _emptySide;
+        
 
         /// <summary>
         /// Создание блока генерации для мира
@@ -75,129 +107,124 @@ namespace Vge.Renderer.World
         public BlockRenderFull()
         {
             blockUV.Buffer = Gi.Vertex;
+            InitAmbientOcclusion();
         }
 
-        public virtual void InitChunk(ChunkRender chunkRender)
+        #region Init
+
+        /// <summary>
+        /// Инициализация чанка
+        /// </summary>
+        public void InitChunk(ChunkRender chunkRender)
         {
             _chunkRender = chunkRender;
+            _keyCash = chunkRender.KeyCash;
+            _blockCheck = Blocks.BlockObjects[0];
+            _storage = _chunkRender.StorageArrays[0];
             _numberBlocksY = _chunkRender.Settings.NumberBlocks;
         }
 
         /// <summary>
-        /// Получть cетку сплошного блока
+        /// Инициализация сектора данных чанка
         /// </summary>
-        public void RenderMesh()
+        public void InitStorage(int y) => _storage = _chunkRender.StorageArrays[y];
+
+        /// <summary>
+        /// Инициализация AmbientOcclusion
+        /// </summary>
+        public void InitAmbientOcclusion() => _ambientOcclusion = Options.Qualitatively;
+
+        #endregion
+
+        /// <summary>
+        /// Проверяем видны ли стороны, если хоть одна видна вернём true
+        /// </summary>
+        public bool CheckSide()
         {
-            // 0.7 - 0.8
-            // 0.8 - 0.9 virtual
-            
-            xc = _chunkRender.X;
-            zc = _chunkRender.Y;
-
-            // 0.75 - 0.85
-            if (PosChunkY + 1 > _numberBlocksY) rs = _resultSide[0] = 0x0F;
-            else rs = _resultSide[0] = _GetBlockSideState(PosChunkX, PosChunkY + 1, PosChunkZ, false, true);
-
-          //  return;
-
-            if (PosChunkY - 1 < 0) rs += _resultSide[1] = 0x0F;
-            else rs += _resultSide[1] = _GetBlockSideState(PosChunkX, PosChunkY - 1, PosChunkZ, false);
-
+            // ~0.12
+            _emptySide = true;
+            // Up
+            PosChunkY++;
+            if (PosChunkY > _numberBlocksY)
+            {
+                _resultSide[0] = 0x0F;
+                _emptySide = false;
+            }
+            else
+            {
+                _isUp = true;
+                if (_storage.Index != PosChunkY >> 4 || _storage.KeyCash != _keyCash)
+                {
+                    _storage = _chunkRender.StorageArrays[PosChunkY >> 4];
+                }
+                _indexSide = 0;
+                _GetBlockSideState();
+            }
+            _isUp = false;
+            // Down
+            PosChunkY -= 2;
+            if (PosChunkY < 0)
+            {
+                _resultSide[1] = 0x0F;
+                _emptySide = false;
+            }
+            else
+            {
+                if (_storage.Index != PosChunkY >> 4 || _storage.KeyCash != _keyCash)
+                {
+                    _storage = _chunkRender.StorageArrays[PosChunkY >> 4];
+                }
+                _indexSide = 1;
+                _GetBlockSideState();
+            }
+            PosChunkY++;
             yc = PosChunkY >> 4;
-            rs += _resultSide[2] = _GetBlockSideState(PosChunkX + 1, PosChunkY, PosChunkZ, true);
-            rs += _resultSide[3] = _GetBlockSideState(PosChunkX - 1, PosChunkY, PosChunkZ, true);
-            rs += _resultSide[4] = _GetBlockSideState(PosChunkX, PosChunkY, PosChunkZ - 1, true);
-            rs += _resultSide[5] = _GetBlockSideState(PosChunkX, PosChunkY, PosChunkZ + 1, true);
 
-         //   return;
-            _stateLightHis = -1;
-            if (rs != -6)
+            // East
+            PosChunkX++;
+
+            _indexSide = 2;
+            _GetBlockSideStateCheck();
+
+            // West
+            PosChunkX -= 2;
+
+            _indexSide = 3;
+            _GetBlockSideStateCheck();
+
+            PosChunkX++;
+            // North
+            PosChunkZ--;
+
+            _indexSide = 4;
+            _GetBlockSideStateCheck();
+
+            // South
+            PosChunkZ += 2;
+
+            _indexSide = 5;
+            _GetBlockSideStateCheck();
+
+            if (!_emptySide)
             {
-                if (Block.UseNeighborBrightness) _stateLightHis = BlockSt.LightBlock << 4 | BlockSt.LightSky & 0xF;
-                //damagedBlocksValue = chunk.GetDestroyBlocksValue(posChunkX, posChunkY, posChunkZ);
-                _RenderMeshBlock();
+                PosChunkZ--;
+                return true;
             }
+            return false;
+            // Когда _GetBlockSideState сразу -1  ~0.33-0.4
         }
 
-
         /// <summary>
-        /// Подготовить кэш blockSideCache, прорисовывается ли сторона и её яркость
+        /// Рендерим стороны, после метода CheckSide
         /// </summary>
-        private int _GetBlockSideState(int x, int y, int z, bool isNearbyChunk, bool isUp = false)
+        public void RenderSide()
         {
-            if (isNearbyChunk)
-            {
-                xcn = x >> 4;
-                zcn = z >> 4;
-                xc = _chunkRender.CurrentChunkX;
-                zc = _chunkRender.CurrentChunkY;
+            if (Gi.Block.UseNeighborBrightness) _stateLightHis = LightBlockSky;
+            else _stateLightHis = -1;
+            // ~1.100-1.150
+            
+            _rectangularSides = Gi.Block.GetQuads(Met, PosChunkX, PosChunkZ);
 
-                
-                // Определяем рабочий чанк соседнего блока
-                if (xcn == 0 && zcn == 0)
-                {
-                    _storage = _chunkRender.StorageArrays[yc];
-                }
-                else
-                {
-                    xc += xcn;
-                    zc += zcn;
-                    _chunkCheck = _chunkRender.Chunk(xcn, zcn);
-                    if (_chunkCheck == null || !_chunkCheck.IsChunkPresent)
-                    {
-                        return 0x0F; // Только яркость неба макс
-                    }
-                    _storage = _chunkCheck.StorageArrays[yc];
-                }
-            }
-            else
-            {
-                _storage = _chunkRender.StorageArrays[y >> 4];
-            }
-
-            xb = x & 15;
-            yb = y & 15;
-            zb = z & 15;
-            i = yb << 8 | zb << 4 | xb;
-
-            if (_storage.CountBlock > 0)
-            {
-                id = _storage.Data[i];
-                _metCheck = id >> 12;
-                id = id & 0xFFF;
-            }
-            else
-            {
-                _metCheck = 0;
-                id = 0;
-            }
-
-            if (id == 0)
-            {
-                return _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-            }
-
-            _blockCheck = Blocks.BlockObjects[id];
-
-            if (_blockCheck.AllSideForcibly || (isUp && Block.Liquid))
-            {
-                if (!(!_blockCheck.BlocksNotSame))// && _blockCheck.Material == Block.Material))
-                {
-                    //EnumMaterial material = _blockCheck.Material.EMaterial;
-                    return (_storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF);
-                      //  + ((block.Material.EMaterial == EnumMaterial.Water && (material == EnumMaterial.Glass || material == EnumMaterial.Oil)) ? 1024 : 0);
-                }
-            }
-            return -1;
-        }
-
-
-        /// <summary>
-        /// Рендер сеток сторон блока которые требуются для прорисовки
-        /// </summary>
-        private void _RenderMeshBlock()
-        {
-            _rectangularSides = Block.GetQuads(Met, xc, zc, PosChunkX, PosChunkZ);
             count = _rectangularSides.Length;
             for (i = 0; i < count; i++)
             {
@@ -208,22 +235,18 @@ namespace Vge.Renderer.World
                 {
                     // Смекшировать яркость, в зависимости от требований самой яркой
                     if (_stateLight != _stateLightHis
-                        && Block.UseNeighborBrightness && _stateLightHis != -1)
+                        && Gi.Block.UseNeighborBrightness && _stateLightHis != -1)
                     {
-                        _stateLight = _stateLight & 0xFF;
                         s1 = _stateLight >> 4;
                         s2 = _stateLight & 0x0F;
                         s3 = _stateLightHis >> 4;
                         s4 = _stateLightHis & 0x0F;
-
-                        s5 = s1 > s3 ? s1 : s3;
-                        s6 = s2 > s4 ? s2 : s4;
-
-                        _stateLight = (s5 << 4 | s6 & 0xF);
+                        _stateLight = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
                     }
 
                     _lightPole = _rectangularSide.LightPole;
-                    _GenColors((byte)(_stateLight & 0xFF));
+                    _stateLightByte = (byte)_stateLight;
+                    _GenColors();
 
                     blockUV.ColorsR = _colorLight.ColorR;
                     blockUV.ColorsG = _colorLight.ColorG;
@@ -253,23 +276,101 @@ namespace Vge.Renderer.World
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _GetBlockSideStateCheck()
+        {
+            // Это до _GetBlockSideState Занимает около ~0,15мс
+            if (_storage.KeyCash != _keyCash)
+            {
+                // Если разный кеш, значит разные чанки, берём из соседей
+                _chunkCheck = _chunkRender.Chunk(PosChunkX >> 4, PosChunkZ >> 4);
+                if (_chunkCheck == null || !_chunkCheck.IsChunkPresent)
+                {
+                    _emptySide = false;
+                    _resultSide[_indexSide] = 0x0F; // Только яркость неба макс
+                    return;
+                }
+                _storage = _chunkCheck.StorageArrays[yc];
+            }
+            else if (_storage.Index != yc)
+            {
+                // Если изменён только вверх
+                _storage = _chunkRender.StorageArrays[yc];
+            }
+
+            _GetBlockSideState();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _GetBlockSideState()
+        {
+            // На старте ~0.580
+
+            i = (PosChunkY & 15) << 8 | (PosChunkZ & 15) << 4 | (PosChunkX & 15);
+
+            // ~0.620
+
+            if (_storage.CountBlock > 0)
+            {
+                id = _storage.Data[i]; // Это больно?!
+                _metCheck = id >> 12;
+                id = id & 0xFFF;
+            }
+            else
+            {
+                _metCheck = 0;
+                id = 0;
+            }
+            // ~1.0 ~0.850
+
+            // Ниже ~0.5мс
+            if (id == 0)
+            {
+                _emptySide = false;
+                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                return;
+            }
+            // ~1.150 ~0.980
+            if (_blockCheck.Id != id)
+            {
+                _blockCheck = Blocks.BlockObjects[id];
+            }
+            // ~1.250 ~1.070
+            if (_blockCheck.AllSideForcibly)// || (_isUp && Gi.Block.Liquid))
+            {
+                if (_blockCheck.BlocksNotSame)// && _blockCheck.Material == Block.Material))
+                {
+                    _emptySide = false;
+                    // ~1.4 ~1.1
+                    //EnumMaterial material = _blockCheck.Material.EMaterial;
+                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                    return;
+                    //  + ((block.Material.EMaterial == EnumMaterial.Water && (material == EnumMaterial.Glass || material == EnumMaterial.Oil)) ? 1024 : 0);
+                }
+            }
+
+            _resultSide[_indexSide] = -1;
+            // ~1.5-1.6  ~1.1
+        }
+
         /// <summary>
         /// Сгенерировать цвета на каждый угол, если надо то AmbientOcclusion
         /// </summary>
-        private void _GenColors(byte light)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _GenColors()
         {
             _color = _GetBiomeColor(_chunkRender, PosChunkX, PosChunkZ);
-            if (_ambientOcclusion && (Block.АmbientOcclusion || Block.BiomeColor || Block.Liquid))
+            if (_ambientOcclusion && (Gi.Block.АmbientOcclusion || Gi.Block.BiomeColor || Gi.Block.Liquid))
             {
                 _GetAmbientOcclusionLights();
                 _lightPole *= .5f;
-                if (Block.Liquid)
+                if (Gi.Block.Liquid)
                 {
                     _colorLight.InitColorsLights(
                         _ambient.GetColorNotAO(0, _color, _lightPole), _ambient.GetColorNotAO(1, _color, _lightPole),
                         _ambient.GetColorNotAO(2, _color, _lightPole), _ambient.GetColorNotAO(3, _color, _lightPole),
-                        _ambient.GetLight(0, light), _ambient.GetLight(1, light),
-                        _ambient.GetLight(2, light), _ambient.GetLight(3, light)
+                        _ambient.GetLight(0, _stateLightByte), _ambient.GetLight(1, _stateLightByte),
+                        _ambient.GetLight(2, _stateLightByte), _ambient.GetLight(3, _stateLightByte)
                     );
                 }
                 else
@@ -277,8 +378,8 @@ namespace Vge.Renderer.World
                     _colorLight.InitColorsLights(
                         _ambient.GetColor(0, _color, _lightPole), _ambient.GetColor(1, _color, _lightPole),
                         _ambient.GetColor(2, _color, _lightPole), _ambient.GetColor(3, _color, _lightPole),
-                        _ambient.GetLight(0, light), _ambient.GetLight(1, light),
-                        _ambient.GetLight(2, light), _ambient.GetLight(3, light));
+                        _ambient.GetLight(0, _stateLightByte), _ambient.GetLight(1, _stateLightByte),
+                        _ambient.GetLight(2, _stateLightByte), _ambient.GetLight(3, _stateLightByte));
                 }
             }
             else
@@ -290,7 +391,7 @@ namespace Vge.Renderer.World
                 _colorLight.ColorR[0] = _colorLight.ColorR[1] = _colorLight.ColorR[2] = _colorLight.ColorR[3] = (byte)(_color.X * 255);
                 _colorLight.ColorG[0] = _colorLight.ColorG[1] = _colorLight.ColorG[2] = _colorLight.ColorG[3] = (byte)(_color.Y * 255);
                 _colorLight.ColorB[0] = _colorLight.ColorB[1] = _colorLight.ColorB[2] = _colorLight.ColorB[3] = (byte)(_color.Z * 255);
-                _colorLight.Light[0] = _colorLight.Light[1] = _colorLight.Light[2] = _colorLight.Light[3] = light;
+                _colorLight.Light[0] = _colorLight.Light[1] = _colorLight.Light[2] = _colorLight.Light[3] = _stateLightByte;
             }
         }
 
@@ -300,7 +401,7 @@ namespace Vge.Renderer.World
         /// <param name="bx">0-15</param>
         /// <param name="bz">0-15</param>
         /// <returns></returns>
-        protected virtual Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
+        protected Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
         {
             // подготовка для теста плавности цвета
             //if (_rectangularSide.IsBiomeColor())
@@ -322,71 +423,139 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Получить все 4 вершины AmbientOcclusion и яркости от блока и неба
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _GetAmbientOcclusionLights()
         {
-            switch (side)
+            if (side == 0)
             {
-                case 0:
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 1, 0);
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 1, 0);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(0, 1, -1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, 1, -1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(1, 1, -1);
-                    break;
-                case 1:
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(1, -1, 0);
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(0, -1, 1);
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, -1, 0);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, -1, 1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(1, -1, 1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
-                    break;
-                case 2:
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(1, 1, 0);
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, 1);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(1, -1, 0);
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, -1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, 1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, -1);
-                    break;
-                case 3:
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(-1, 1, 0);
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, 1);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(-1, -1, 0);
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, -1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, 1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, -1);
-                    break;
-                case 4:
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, -1);
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, -1);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, -1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, -1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, -1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, -1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, -1);
-                    break;
-                case 5:
-                    _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
-                    _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, 1);
-                    _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, 1);
-                    _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, 1);
-                    _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, 1);
-                    _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, 1);
-                    _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, 1);
-                    _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, 1);
-                    break;
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 1, 0);
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 1, 0);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, 1, -1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, 1, -1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(1, 1, -1);
             }
+            else if (side == 1)
+            {
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(1, -1, 0);
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, -1, 1);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, -1, 0);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, -1, 1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(1, -1, 1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
+            }
+            else if (side == 2)
+            {
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(1, 1, 0);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, 1);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(1, -1, 0);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, -1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, 1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, -1);
+            }
+            else if (side == 3)
+            {
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(-1, 1, 0);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, 1);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(-1, -1, 0);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, -1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, 1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, -1);
+            }
+            else if (side == 4)
+            {
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, -1);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, -1);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, -1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, -1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, -1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, -1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, -1);
+            }
+            else// if ( side == 5)
+            { 
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, 1);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, 1);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, 1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, 1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, 1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, 1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, 1);
+            }
+
+            //switch (side)
+            //{
+            //    case 0:
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 1, 0);
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 1, 0);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(0, 1, -1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, 1, -1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(1, 1, -1);
+            //        break;
+            //    case 1:
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(1, -1, 0);
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(0, -1, 1);
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, -1, 0);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, -1, 1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(1, -1, 1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
+            //        break;
+            //    case 2:
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(1, 1, 0);
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, 1);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(1, -1, 0);
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, -1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, -1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, 1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, -1);
+            //        break;
+            //    case 3:
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(-1, 1, 0);
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, 1);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(-1, -1, 0);
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, -1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, -1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, 1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, -1);
+            //        break;
+            //    case 4:
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, -1);
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 0, -1);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, -1);
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 0, -1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, -1, -1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(1, -1, -1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, -1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, -1);
+            //        break;
+            //    case 5:
+            //        _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
+            //        _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, 1);
+            //        _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, 1);
+            //        _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 0, 1);
+            //        _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, -1, 1);
+            //        _ambient.Aos[4] = _GetAmbientOcclusionLight(1, -1, 1);
+            //        _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, 1);
+            //        _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, 1);
+            //        break;
+            //}
 
             _ambient.InitAmbientOcclusionLights();
         }
@@ -395,37 +564,42 @@ namespace Vge.Renderer.World
         /// Подготовить кэш blockSideCache, прорисовывается ли сторона и её яркость
         /// Получть данные (AmbientOcclusion и яркость) одно стороны для вершины
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private AmbientOcclusionLight _GetAmbientOcclusionLight(int x, int y, int z)
         {
-            pX = PosChunkX + x;
             pY = PosChunkY + y;
+            // проверка высоты
+            if (pY < 0)
+            {
+                return new AmbientOcclusionLight() { Color = ColorWhite };
+            }
+
+            pX = PosChunkX + x;
             pZ = PosChunkZ + z;
-            AmbientOcclusionLight aoLight = new AmbientOcclusionLight();
 
             xcn = pX >> 4;
             zcn = pZ >> 4;
             xc = PosChunkX + xcn;
             zc = PosChunkY + zcn;
-            xb = pX & 15;
-            zb = pZ & 15;
 
-            // проверка высоты
-            if (pY < 0)
-            {
-                aoLight.LightSky = 0;
-                aoLight.Color = ColorWhite;
-                return aoLight;
-            }
             // Определяем рабочий чанк соседнего блока
             _chunkCheck = (xc == PosChunkX && zc == PosChunkY) ? _chunkRender : _chunkRender.Chunk(xcn, zcn);
             if (_chunkCheck == null || !_chunkCheck.IsChunkPresent)
             {
-                aoLight.LightSky = 15;
-                aoLight.Color = _color;
-                aoLight.Aol = 1;
-                return aoLight;
+                return new AmbientOcclusionLight()
+                {
+                    LightSky = 15,
+                    Color = ColorWhite,
+                    Aol = 1
+                };
             }
-            aoLight.Color = _GetBiomeColor(_chunkCheck, xb, zb);
+
+            xb = pX & 15;
+            zb = pZ & 15;
+            AmbientOcclusionLight aoLight = new AmbientOcclusionLight()
+            {
+                Color = _GetBiomeColor(_chunkCheck, xb, zb)
+            };
             if (pY >= _numberBlocksY)
             {
                 aoLight.LightSky = 15;
@@ -448,11 +622,26 @@ namespace Vge.Renderer.World
             }
 
             id = _storage.Data[index];
-            _metCheck = id >> 12;
+            if (id == 0)
+            {
+                // Воздух берём яркость
+                aoLight.LightSky = _storage.LightSky[index];
+                aoLight.LightBlock = _storage.LightBlock[index];
+                aoLight.Aol = 1;
+                return aoLight;
+            }
+            
             id = id & 0xFFF;
             _blockCheck = Blocks.BlockObjects[id];
+            aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 : 1;
             aoLight.Aoc = _blockCheck.АmbientOcclusion ? 1 : 0;
-            aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Block.Liquid) ? 0 : 1;
+
+            if (aoLight.Aol == 0)
+            {
+                aoLight.LightBlock = 0;
+                aoLight.LightSky = 0;
+                return aoLight;
+            }
 
             _isDraw = id == 0 || _blockCheck.AllSideForcibly;
             //if (_isDraw && (_blockCheck.Material == Block.Material && !_blockCheck.BlocksNotSame)) _isDraw = false;
@@ -462,12 +651,6 @@ namespace Vge.Renderer.World
                 // Яркость берётся из данных блока
                 aoLight.LightBlock = _storage.LightBlock[index];
                 aoLight.LightSky = _storage.LightSky[index];
-            }
-
-            if (aoLight.Aol == 0)
-            {
-                aoLight.LightBlock = 0;
-                aoLight.LightSky = 0;
             }
             return aoLight;
         }

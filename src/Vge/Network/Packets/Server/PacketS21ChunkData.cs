@@ -7,9 +7,25 @@ namespace Vge.Network.Packets.Server
     /// <summary>
     /// Отправляем клиенту изменённые псевдо чанки
     /// </summary>
-    public struct PacketS21ChunkData : IPacket
+    public struct PacketS21ChunkData : IPacket, IDisposable
     {
         public byte Id => 0x21;
+
+        // TDOO::2024-11-10 ЗАМЕНИТЬ на List
+        /// <summary>
+        /// Статический быстрый буфер для записи
+        /// </summary>
+        //private static readonly ListByte _bufferWrite = new ListByte(50000);
+
+        /// <summary>
+        /// Буффер записи чанка, статический.
+        /// Размер надо определить от максималки высот чанков и данных
+        /// </summary>
+        private static byte[] _bufferWrite = new byte[285000];
+        /// <summary>
+        /// Количество элементов используемых для буфера записи
+        /// </summary>
+        private static int _count;
 
         /// <summary>
         /// Позиция X текущего чанка
@@ -31,17 +47,6 @@ namespace Vge.Network.Packets.Server
         /// Данные столбца биома, как правило при первой загрузке
         /// </summary>
         public bool IsBiom { get; private set; }
-
-        /// <summary>
-        /// Количество буфер данных псевдо чанка.
-        /// 16 * 16 * 16 * 3 + 2 на доп метданных
-        /// </summary>
-        private int _CountBufChunck() => 12290;
-        /// <summary>
-        /// Количество буфер данных для биома чанка.
-        /// 16 * 16
-        /// </summary>
-        private int _CountBufBiom() => IsBiom ? 256 : 0;
 
         /// <summary>
         /// Выгрузить чанк у игрока
@@ -69,7 +74,67 @@ namespace Vge.Network.Packets.Server
             FlagsYAreas = flagsYAreas;
             IsBiom = biom;
             BufferRead = null;
-            chunk.GenBinary(biom, flagsYAreas);
+            _count = _ChunkBufferWrite(chunk, biom, flagsYAreas, _bufferWrite);
+        }
+
+        /// <summary>
+        /// Записать данные чанка в буфер
+        /// </summary>
+        private int _ChunkBufferWrite(ChunkBase chunk, bool biom, int flagsYAreas, byte[] buf)
+        {
+            ushort data;
+            int i, y;
+            uint value;
+            ChunkStorage chunkStorage;
+
+            int count = 0;
+            for (y = 0; y < chunk.NumberSections; y++)
+            {
+                if ((flagsYAreas & 1 << y) != 0)
+                {
+                    chunkStorage = chunk.StorageArrays[y];
+
+                    Buffer.BlockCopy(chunkStorage.LightBlock, 0, buf, count, chunkStorage.LightBlock.Length);
+                    count += chunkStorage.LightBlock.Length;
+                    Buffer.BlockCopy(chunkStorage.LightSky, 0, buf, count, chunkStorage.LightSky.Length);
+                    count += chunkStorage.LightSky.Length;
+
+                    if (chunkStorage.IsEmptyData())
+                    {
+                        buf[count++] = 0;
+                    }
+                    else
+                    {
+                        buf[count++] = 1;
+                        Buffer.BlockCopy(chunkStorage.Data, 0, buf, count, chunkStorage.Data.Length * 2);
+                        count += chunkStorage.Data.Length * 2;
+
+                        data = (ushort)chunkStorage.Metadata.Count;
+                        buf[count++] = (byte)(data >> 8);
+                        buf[count++] = (byte)(data & 0xFF);
+
+                        foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
+                        {
+                            buf[count++] = (byte)(entry.Key >> 8);
+                            buf[count++] = (byte)(entry.Key & 0xFF);
+                            value = entry.Value;
+                            buf[count++] = (byte)((value & 0xFF000000) >> 24);
+                            buf[count++] = (byte)((value & 0xFF0000) >> 16);
+                            buf[count++] = (byte)((value & 0xFF00) >> 8);
+                            buf[count++] = (byte)(value & 0xFF);
+                        }
+                    }
+                }
+            }
+            if (biom)
+            {
+                // добавляем данные биома
+                for (i = 0; i < 256; i++)
+                {
+                    buf[count++] = 0;
+                }
+            }
+            return count;
         }
 
         /// <summary>
@@ -90,7 +155,9 @@ namespace Vge.Network.Packets.Server
             if (FlagsYAreas > 0)
             {
                 IsBiom = stream.Bool();
-                BufferRead = stream.BytesDecompress();
+                // Возвращаем данные без декомпрессии, чтоб объём данных был мал, 
+                // декомпрессия будет в игровом клиентском потоке
+                BufferRead = stream.Bytes();
             }
         }
 
@@ -102,8 +169,14 @@ namespace Vge.Network.Packets.Server
             if (FlagsYAreas > 0)
             {
                 stream.Bool(IsBiom);
-                stream.BytesCompress(ChunkBase.BufferWrite.GetBufferAll(), 0, ChunkBase.BufferWrite.Count);
+                stream.BytesCompress(_bufferWrite, 0, _count);
             }
+        }
+
+        public void Dispose()
+        {
+            BufferRead = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

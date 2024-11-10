@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World.Block;
 using WinGL.Util;
 
 /// <summary>
@@ -64,7 +65,7 @@ public sealed class Gi
     /// <summary>
     /// Буфер для склейки рендера. покуда тест в будущем для чанка
     /// </summary>
-    public readonly static VertexBuffer Vertex = new VertexBuffer(65000);
+    public readonly static VertexBuffer Vertex = new VertexBuffer(128000);
 
     /// <summary>
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
@@ -73,10 +74,12 @@ public sealed class Gi
     /// <summary>
     /// Объект рендера уникального блока с эффектом контраста (Not Mipmap)
     /// </summary>
-    public readonly static BlockRenderUnique BlockRendUnique = new BlockRenderUnique();
+    //public readonly static BlockRenderUnique BlockRendUnique = new BlockRenderUnique();
     /// <summary>
     /// Объект рендера жидкого блока с эффектом контраста (Not Mipmap)
     /// </summary>
-    public readonly static BlockRenderLiquid BlockRendLiquid = new BlockRenderLiquid();
+    //public readonly static BlockRenderLiquid BlockRendLiquid = new BlockRenderLiquid();
+
+    public static BlockBase Block;
 
 }

@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using System;
+using Vge.Games;
 using Vge.Management;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
@@ -13,17 +14,17 @@ namespace Vge.Network
     public class ProcessServerPackets
     {
         /// <summary>
-        /// Структура сокета и буфера пакета
+        /// Класс для очередей пакетов
         /// </summary>
-        private struct SocketBuffer
+        private struct SocketPacket
         {
-            public readonly SocketSide Side;
-            public readonly byte[] Buffer;
+            public SocketSide Side;
+            public IPacket Packet;
 
-            public SocketBuffer(SocketSide side, byte[] buffer)
+            public SocketPacket(SocketSide side, IPacket packet)
             {
                 Side = side;
-                Buffer = buffer;
+                Packet = packet;
             }
         }
 
@@ -34,7 +35,7 @@ namespace Vge.Network
         /// <summary>
         /// Массив очередей пакетов
         /// </summary>
-        private readonly DoubleList<SocketBuffer> _packets = new DoubleList<SocketBuffer>();
+        private readonly DoubleList<SocketPacket> _packets = new DoubleList<SocketPacket>();
         /// <summary>
         /// Зафиксированное время для проверки пинга, у игроках
         /// </summary>
@@ -51,37 +52,40 @@ namespace Vge.Network
         /// </summary>
         public void ReceiveBuffer(SocketSide socketSide, byte[] buffer)
         {
-            if (buffer[0] < 2)
+            using (ReadPacket readPacket = new ReadPacket())
             {
-                // Объект который из буфера данных склеивает пакеты
-                ReadPacket readPacket = new ReadPacket();
-                switch (buffer[0])
+                readPacket.SetBuffer(buffer);
+                _ReceivePacket(socketSide, readPacket.Receive(PacketsInit.InitClient(buffer[0])));
+            }
+        }
+
+        private void _ReceivePacket(SocketSide socketSide, IPacket packet)
+        {
+            byte index = packet.Id;
+            if (index < 2)
+            {
+                if (index == 0)
                 {
-                    case 0x00:
-                        _Handle00Ping(socketSide, (Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
-                        break;
-                    case 0x01:
-                        _Handle01KeepAlive(socketSide, (Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
-                        break;
-                    default:
-                        // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                        _packets.Add(new SocketBuffer(socketSide, buffer));
-                        break;
+                    _Handle00Ping(socketSide, (Packet00PingPong)packet);
+                }
+                else if (index == 1)
+                {
+                    _Handle01KeepAlive(socketSide, (Packet01KeepAlive)packet);
                 }
             }
             else
             {
                 // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                _packets.Add(new SocketBuffer(socketSide, buffer));
+                _packets.Add(new SocketPacket(socketSide, packet));
             }
         }
 
         /// <summary>
         /// Передача данных для сервера в последовотельности игрового такта
         /// </summary>
-        private void _UpdateReceivePacket(SocketBuffer sb)
+        private void _UpdateReceivePacket(SocketPacket sp)
         {
-            if (sb.Side != null && !sb.Side.IsConnect())
+            if (sp.Side != null && !sp.Side.IsConnect())
             {
                 // Связь с сетевым игроком разорвана, не зачем обрабатывать пакет
                 return;
@@ -89,22 +93,12 @@ namespace Vge.Network
             try
             {
                 // Объект который из буфера данных склеивает пакеты
-                ReadPacket readPacket = new ReadPacket();
-                switch (sb.Buffer[0])
+                switch (sp.Packet.Id)
                 {
-                    case 0x02:
-                        _Handle02LoginStart(sb.Side, (PacketC02LoginStart)readPacket.Receive(sb.Buffer, new PacketC02LoginStart()));
-                        break;
-                    case 0x04:
-                        _Handle04PlayerPosition(sb.Side, (PacketC04PlayerPosition)readPacket.Receive(sb.Buffer, new PacketC04PlayerPosition()));
-                        break;
-                    case 0x15:
-                        _Handle15PlayerSetting(sb.Side, (PacketC15PlayerSetting)readPacket.Receive(sb.Buffer, new PacketC15PlayerSetting()));
-                        break;
-                    case 0x20:
-                        _Handle20AcknowledgeChunks(sb.Side, (PacketC20AcknowledgeChunks)readPacket.Receive(sb.Buffer, new PacketC20AcknowledgeChunks()));
-                        break;
-
+                    case 0x02: _Handle02LoginStart(sp.Side, (PacketC02LoginStart)sp.Packet); break;
+                    case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
+                    case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
+                    case 0x20: _Handle20AcknowledgeChunks(sp.Side, (PacketC20AcknowledgeChunks)sp.Packet); break;
                 }
             }
             catch

@@ -24,70 +24,56 @@ namespace Vge.Network
         /// <summary>
         /// Массив очередей пакетов
         /// </summary>
-        private readonly DoubleList<byte[]> _packets = new DoubleList<byte[]>();
+        private readonly DoubleList<IPacket> _packets = new DoubleList<IPacket>();
+
+        // Объект который из буфера данных склеивает пакеты
+        ReadPacket _readPacket = new ReadPacket();
 
         public ProcessClientPackets(GameBase client) => Game = client;
 
         /// <summary>
         /// Передача данных для клиента
         /// </summary>
-        public void ReceiveBuffer(byte[] buffer)
+        public void ReceiveBuffer(byte[] buffer, int count)
         {
-            Traffic += buffer.Length + Ce.SizeHeaderTCP;
-            if (buffer[0] <= 2)
+            Traffic += count + Ce.SizeHeaderTCP;
+            _readPacket.SetBuffer(buffer);
+            _ReceivePacket(_readPacket.Receive(PacketsInit.InitServer(buffer[0])));
+        }
+
+        private void _ReceivePacket(IPacket packet)
+        {
+            byte index = packet.Id;
+            if (index <= 2 || index == 0x20)
             {
-                // Объект который из буфера данных склеивает пакеты
-                ReadPacket readPacket = new ReadPacket();
-                switch (buffer[0])
+                switch (index)
                 {
-                    case 0x00:
-                        _Handle00Pong((Packet00PingPong)readPacket.Receive(buffer, new Packet00PingPong()));
-                        break;
-                    case 0x01:
-                        _Handle01KeepAlive((Packet01KeepAlive)readPacket.Receive(buffer, new Packet01KeepAlive()));
-                        break;
-                    case 0x02:
-                        _Handle02LoadingGame((PacketS02LoadingGame)readPacket.Receive(buffer, new PacketS02LoadingGame()));
-                        break;
+                    case 0x00: _Handle00Pong((Packet00PingPong)packet); break;
+                    case 0x01: _Handle01KeepAlive((Packet01KeepAlive)packet); break;
+                    case 0x02: _Handle02LoadingGame((PacketS02LoadingGame)packet); break;
+                    case 0x20: _Handle20ChunkSend((PacketS20ChunkSend)packet); break;
                 }
             }
             else
             {
                 // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
-                _packets.Add(buffer);
+                _packets.Add(packet);
             }
         }
 
         /// <summary>
         /// Передача данных для клиента в последовотельности игрового такта
         /// </summary>
-        private void _UpdateReceivePacket(byte[] buffer)
+        private void _UpdateReceivePacket(IPacket packet)
         {
-            // Объект который из буфера данных склеивает пакеты
-            ReadPacket readPacket = new ReadPacket();
-            switch (buffer[0])
+            switch (packet.Id)
             {
-                case 0x03:
-                    _Handle03JoinGame((PacketS03JoinGame)readPacket.Receive(buffer, new PacketS03JoinGame()));
-                    break;
-                case 0x04:
-                    _Handle04TimeUpdate((PacketS04TimeUpdate)readPacket.Receive(buffer, new PacketS04TimeUpdate()));
-                    break;
-                case 0x05:
-                    _Handle05TableBlocks((PacketS05TableBlocks)readPacket.Receive(buffer, new PacketS05TableBlocks()));
-                    break;
-                case 0x07:
-                    _Handle07RespawnInWorld((PacketS07RespawnInWorld)readPacket.Receive(buffer, new PacketS07RespawnInWorld()));
-                    break;
-                case 0x08:
-                    _Handle08PlayerPosLook((PacketS08PlayerPosLook)readPacket.Receive(buffer, new PacketS08PlayerPosLook()));
-                    break;
-                case 0x20:
-                    _Handle20ChunkSend((PacketS20ChunkSend)readPacket.Receive(buffer, new PacketS20ChunkSend()));
-                    break;
-                case 0x21:
-                    _Handle21ChunkData((PacketS21ChunkData)readPacket.Receive(buffer, new PacketS21ChunkData()));
-                    break;
+                case 0x03: _Handle03JoinGame((PacketS03JoinGame)packet); break;
+                case 0x04: _Handle04TimeUpdate((PacketS04TimeUpdate)packet); break;
+                case 0x05: _Handle05TableBlocks((PacketS05TableBlocks)packet); break;
+                case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
+                case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
+                case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
             }
         }
 
@@ -102,7 +88,7 @@ namespace Vge.Network
                 int count = _packets.CountBackward;
                 for (int i = 0; i < count; i++)
                 {
-                    _UpdateReceivePacket(_packets.GetNext());
+                    _UpdateReceivePacket(_packets.GetNextNull());
                 }
             }
         }
@@ -169,7 +155,8 @@ namespace Vge.Network
         }
 
         /// <summary>
-        /// Замер скорости закачки чанков
+        /// Замер скорости закачки чанков.
+        /// Обрабатываем сразу, не дожидаясь такта
         /// </summary>
         private void _Handle20ChunkSend(PacketS20ChunkSend packet)
             => Game.Player.PacketChunckSend(packet);

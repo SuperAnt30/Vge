@@ -10,13 +10,45 @@
     /// </summary>
     public class PacketBufferEventArgs
     {
-        public PacketBuffer Buffer { get; private set; }
-        public SocketSide Side { get; private set; }
+        /// <summary>
+        /// Получить массив байтов
+        /// </summary>
+        public readonly byte[] Bytes;
+        /// <summary>
+        /// Количество элементов
+        /// </summary>
+        public readonly int Count;
+        /// <summary>
+        /// Объект стороны сокета
+        /// </summary>
+        public readonly SocketSide Side;
 
-        public PacketBufferEventArgs(PacketBuffer packetBuffer, SocketSide socketSide)
+        public PacketBufferEventArgs(byte[] bytes, int count, SocketSide socketSide)
         {
-            Buffer = packetBuffer;
+            Bytes = bytes;
+            Count = count;
             Side = socketSide;
         }
-   }
+
+        public PacketBufferEventArgs(byte[] bytes, SocketSide socketSide)
+        {
+            Bytes = bytes;
+            Count = bytes.Length;
+            Side = socketSide;
+        }
+
+        public PacketBufferEventArgs(byte[] bytes, int count)
+        {
+            Bytes = bytes;
+            Count = count;
+            Side = null;
+        }
+
+        public PacketBufferEventArgs(byte[] bytes)
+        {
+            Bytes = bytes;
+            Count = bytes.Length;
+            Side = null;
+        }
+    }
 }

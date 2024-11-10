@@ -75,7 +75,7 @@ namespace Vge.Network
         /// Ответ готовности сообщения
         /// </summary>
         private void ReceivingBytes_Receive(object sender, PacketBufferEventArgs e)
-            => OnReceivePacket(new PacketBufferEventArgs(e.Buffer, this));
+            => OnReceivePacket(new PacketBufferEventArgs(e.Bytes, e.Count, this));
 
         /// <summary>
         /// Имеется ли связь
@@ -125,13 +125,16 @@ namespace Vge.Network
         {
             while (socket != null)
             {
-                packets.Step();
                 try
                 {
-                    int count = packets.CountBackward;
-                    for (int i = 0; i < count; i++)
+                    if (!packets.Empty())
                     {
-                        socket.Send(packets.GetNext());
+                        packets.Step();
+                        int count = packets.CountBackward;
+                        for (int i = 0; i < count; i++)
+                        {
+                            socket.Send(packets.GetNext());
+                        }
                     }
                 }
                 catch
@@ -169,7 +172,11 @@ namespace Vge.Network
         {
             if (IsConnect())
             {
-                SendPacket(WritePacket.TranciveToArray(packet));
+                using (WritePacket writePacket = new WritePacket())
+                {
+                    writePacket.Trancive(packet);
+                    SendPacket(writePacket.ToArray());
+                }
             }
         }
 

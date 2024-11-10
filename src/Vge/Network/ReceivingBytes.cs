@@ -97,8 +97,7 @@ namespace Vge.Network
             if (bodyFactLength == bodyLength)
             {
                 // Отправляем событие получения
-                OnReceive(new PacketBufferEventArgs(
-                    new PacketBuffer(bytesCache, bodyFactLength), null));
+                OnReceive(new PacketBufferEventArgs(bytesCache, bodyFactLength));
 
                 // Обнуляем глобальные переменные
                 bytesCache = null;

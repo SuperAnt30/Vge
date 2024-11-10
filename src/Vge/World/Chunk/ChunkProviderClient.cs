@@ -29,8 +29,8 @@ namespace Vge.World.Chunk
                 {
                     chunk.OnChunkUnload();
                 }
-                chunk.Dispose();
                 _chunkMapping.Remove(chunk.CurrentChunkX, chunk.CurrentChunkY);
+                chunk.Dispose();
             }
         }
 
@@ -57,9 +57,10 @@ namespace Vge.World.Chunk
                 {
                     chunkRender = new ChunkRender(_worldClient, chx, chy);
                     _chunkMapping.Add(chunkRender);
+                    _worldClient.AreaModifiedToRender(chx - 1, 0, chy - 1, chx + 1, Settings.NumberSections, chy + 1);
                 }
 
-                chunkRender.SetBinary(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
+                chunkRender.SetBinaryZip(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
 
                 if (isNew || packet.IsBiom)
                 {
@@ -70,6 +71,7 @@ namespace Vge.World.Chunk
             {
                 _OnChunkMappingChanged();
             }
+            packet.Dispose();
         }
 
         /// <summary>

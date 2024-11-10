@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using Vge.Event;
 using Vge.Gui.Screens;
@@ -53,7 +54,7 @@ namespace Vge.Games
         /// <summary>
         /// Получить истину запущена ли сеть
         /// </summary>
-        public bool IsRunNet() => _server.IsRunNet();
+        public override bool IsRunNet() => _server.IsRunNet();
 
         /// <summary>
         /// Запуск игры
@@ -126,7 +127,7 @@ namespace Vge.Games
         }
 
         private void _Server_RecievePacket(object sender, PacketBufferEventArgs e)
-            => _packets.ReceiveBuffer(e.Buffer.bytes);
+            => _packets.ReceiveBuffer(e.Bytes, e.Count);
 
         private void _Server_RecieveMessage(object sender, StringEventArgs e)
         {
@@ -185,7 +186,11 @@ namespace Vge.Games
         {
             if (IsServerRunning())
             {
-                _server.LocalReceivePacket(null, WritePacket.TranciveToArray(packet));
+                using (WritePacket writePacket = new WritePacket())
+                {
+                    writePacket.Trancive(packet);
+                    _server.LocalReceivePacket(null, writePacket.ToArray());
+                }
             }
         }
 

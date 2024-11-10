@@ -31,6 +31,7 @@ namespace Vge.Gui.Screens
         protected readonly CheckBox checkBoxBigInterface;
         protected readonly CheckBox checkBoxVSinc;
         protected readonly CheckBox checkBoxFullScreen;
+        protected readonly CheckBox checkBoxQualitatively;
         protected readonly Button buttonNet;
 
         protected readonly Button buttonDone;
@@ -78,6 +79,8 @@ namespace Vge.Gui.Screens
             checkBoxVSinc.SetChecked(Options.VSync);
             checkBoxFullScreen = new CheckBox(window, font, 300, L.T("FullScreenReset"));
             checkBoxFullScreen.SetChecked(Options.FullScreen);
+            checkBoxQualitatively = new CheckBox(window, font, 300, L.T("Qualitatively"));
+            checkBoxQualitatively.SetChecked(Options.Qualitatively);
 
             if (isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
                 && gameLocal.IsRunNet())
@@ -127,6 +130,7 @@ namespace Vge.Gui.Screens
             int si = checkBoxBigInterface.Checked ? 2 : 1;
             bool isSizeInterface = Options.SizeInterface != si;
             bool isOverviewChunk = Options.OverviewChunk != sliderOverviewChunk.Value;
+            bool isQualitatively = Options.Qualitatively != checkBoxQualitatively.Checked;
             if (Options.VSync != checkBoxVSinc.Checked)
             {
                 window.SetVSync(checkBoxVSinc.Checked);
@@ -144,6 +148,7 @@ namespace Vge.Gui.Screens
             Options.FullScreen = checkBoxFullScreen.Checked;
             Options.Nickname = textBoxNikame.Text;
             Options.OverviewChunk = (byte)sliderOverviewChunk.Value;
+            Options.Qualitatively = checkBoxQualitatively.Checked;
             window.OptionsSave();
             if (isFullScreen)
             {
@@ -153,11 +158,18 @@ namespace Vge.Gui.Screens
             {
                 window.UpdateSizeInterface();
             }
-
-            if (isOverviewChunk && window.Game != null)
+            if (window.Game != null)
             {
-                window.Game.Player.SetOverviewChunk(Options.OverviewChunk, false);
+                if (isOverviewChunk)
+                {
+                    window.Game.Player.SetOverviewChunk(Options.OverviewChunk, false);
+                }
+                if (isQualitatively)
+                {
+                    Gi.BlockRendFull.InitAmbientOcclusion();
+                }
             }
+            
         }
 
         /// <summary>
@@ -179,6 +191,7 @@ namespace Vge.Gui.Screens
 
             AddControls(checkBoxBigInterface);
             AddControls(checkBoxVSinc);
+            AddControls(checkBoxQualitatively);
 
             AddControls(buttonNet);
             AddControls(checkBoxFullScreen);
@@ -202,6 +215,7 @@ namespace Vge.Gui.Screens
             checkBoxFullScreen.SetPosition(w + 2, h - 68);
             checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width - 2, h - 24);
             checkBoxVSinc.SetPosition(w + 2, h - 24);
+            checkBoxQualitatively.SetPosition(w - checkBoxQualitatively.Width, h + 20);
 
             //-24
             // +20

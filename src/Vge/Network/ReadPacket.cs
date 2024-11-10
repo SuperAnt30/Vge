@@ -8,23 +8,33 @@ namespace Vge.Network
     /// <summary>
     /// Объект который из буфера данных склеивает пакеты
     /// </summary>
-    public struct ReadPacket
+    public class ReadPacket : IDisposable
     {
         /// <summary>
         /// Массив
         /// </summary>
-        private byte[] buffer;
+        private byte[] _buffer;
         /// <summary>
         /// Расположение где читаем
         /// </summary>
-        private int position;
+        private int _position;
 
-        public IPacket Receive(byte[] buffer, IPacket packet)
+        public void SetBuffer(byte[] buffer)
         {
-            this.buffer = buffer;
-            position = 1;
+            _buffer = buffer;
+            _position = 1;
+        }
+
+        public IPacket Receive(IPacket packet)
+        {
             packet.ReadPacket(this);
             return packet;
+        }
+
+        public void Dispose()
+        {
+            _buffer = null;
+            GC.SuppressFinalize(this);
         }
 
         #region Read
@@ -32,55 +42,74 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть логический тип (0..1) 1 байт
         /// </summary>
-        public bool Bool() => buffer[position++] != 0;
+        public bool Bool() => _buffer[_position++] != 0;
 
+        public byte[] GetBuffer() => _buffer;
         /// <summary>
         /// Прочесть массив байт
         /// </summary>
         public byte[] Bytes()
         {
             // Первый параметр длинна массива
-            ushort count = UShort();
+            int count = Int();
             byte[] b = new byte[count];
-            Buffer.BlockCopy(buffer, position, b, 0, count);
-            position += count;
+            Buffer.BlockCopy(_buffer, _position, b, 0, count);
+            _position += count;
             return b;
         }
 
         /// <summary>
         /// Прочесть массив байт c декомпрессией
         /// </summary>
-        public byte[] BytesDecompress()
-        {
-            using (MemoryStream inStream = new MemoryStream(Bytes()))
-            using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
-            using (MemoryStream bigStreamOut = new MemoryStream())
-            {
-                bigStream.CopyTo(bigStreamOut);
-                return bigStreamOut.ToArray();
-            }
-        }
+        //public byte[] BytesDecompress()
+        //{
+        //    int count = Int();
+        //    using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
+        //    using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+        //    using (MemoryStream bigStreamOut = new MemoryStream())
+        //    {
+        //        _position += count;
+        //        bigStream.CopyTo(bigStreamOut);
+        //        return bigStreamOut.ToArray();
+        //    }
+        //}
+
+        //public int BytesDecompress(byte[] vs, int offset)
+        //{
+        //    int count = Int();
+        //    int countOut;
+        //    using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
+        //    using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+        //    using (MemoryStream bigStreamOut = new MemoryStream())
+        //    {
+        //        _position += count;
+        //        bigStream.CopyTo(bigStreamOut);
+        //        countOut = (int)bigStreamOut.Length;
+        //        Buffer.BlockCopy(bigStreamOut.GetBuffer(), 0, vs, offset, countOut);
+        //    }
+        //    return countOut;
+        //}
 
         /// <summary>
         /// Прочесть тип byte (0..255) 1 байт
         /// </summary>
-        public byte Byte() => buffer[position++];
+        public byte Byte() => _buffer[_position++];
         /// <summary>
         /// Прочесть тип ushort (0..65535) 2 байта
         /// </summary>
-        public ushort UShort() => (ushort)((buffer[position++] << 8) | buffer[position++]);
+        public ushort UShort() => (ushort)((_buffer[_position++] << 8) | _buffer[_position++]);
         /// <summary>
         /// Прочесть тип uint (0..4 294 967 295) 4 байта
         /// </summary>
-        public uint UInt() => (uint)((buffer[position++] << 24) | (buffer[position++] << 16) 
-            | (buffer[position++] << 8) | buffer[position++]);
+        public uint UInt() => (uint)((_buffer[_position++] << 24) | (_buffer[_position++] << 16) 
+            | (_buffer[_position++] << 8) | _buffer[_position++]);
         /// <summary>
         /// Прочесть тип uint (0..18 446 744 073 709 551 615) 8 байт
         /// </summary>
-        public ulong ULong() => (ulong)((buffer[position++] << 56) | (buffer[position++] << 48) 
-            | (buffer[position++] << 40) | (buffer[position++] << 32)
-            | (buffer[position++] << 24) | (buffer[position++] << 16) 
-            | (buffer[position++] << 8) | buffer[position++]);
+        public ulong ULong() => (ulong)((_buffer[_position++] << 56) | (_buffer[_position++] << 48) 
+            | (_buffer[_position++] << 40) | (_buffer[_position++] << 32)
+            | (_buffer[_position++] << 24) | (_buffer[_position++] << 16) 
+            | (_buffer[_position++] << 8) | _buffer[_position++]);
         /// <summary>
         /// Прочесть тип sbyte (-128..127) 1 байт
         /// </summary>

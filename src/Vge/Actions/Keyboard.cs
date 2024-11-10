@@ -48,6 +48,7 @@ namespace Vge.Actions
                 switch (keys)
                 {
                     case Keys.W: _game.Player.Movement.Forward = true; break;
+                    case Keys.E: _game.Player.Movement.Forward = true; break;
                     case Keys.A: _game.Player.Movement.Left = true; break;
                     case Keys.D: _game.Player.Movement.Right = true; break;
                     case Keys.S: _game.Player.Movement.Back = true; break;

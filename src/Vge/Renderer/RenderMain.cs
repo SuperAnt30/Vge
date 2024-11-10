@@ -43,6 +43,10 @@ namespace Vge.Renderer
         /// </summary>
         private float _speedTickAll;
         /// <summary>
+        /// Максимальное время выполнения такта
+        /// </summary>
+        private float _speedTickMax;
+        /// <summary>
         /// Счётчик времени кратно секундам в мс
         /// </summary>
         private long _timeSecond;
@@ -251,9 +255,10 @@ namespace Vge.Renderer
                     Debug.CountUpdateChunckAlpha = 0;
                     float speedTick = 0;
                     if (_tps > 0) speedTick = _speedTickAll / _tps;
-                    window.debug.SetTpsFps(_fps, _speedFrameAll / _fps, _tps, speedTick,
+                    window.debug.SetTpsFps(_fps, _speedFrameAll / _fps, _tps, speedTick, _speedTickMax,
                         countChunk, countChunkAlpha);
 
+                    _speedTickMax = 0;
                     _timeSecond += 1000;
                     _speedFrameAll = 0;
                     _speedTickAll = 0;
@@ -270,6 +275,7 @@ namespace Vge.Renderer
         public void SetExecutionTime(float time)
         {
             _speedTickAll += time;
+            if (time > _speedTickMax) _speedTickMax = time;
             _tps++;
         }
 

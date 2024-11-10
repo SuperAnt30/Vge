@@ -66,6 +66,30 @@ namespace Vge.World
             ChunkPrClient.Stoping();
         }
 
+        /// <summary>
+        /// Сделать запрос перерендера выбранной облости псевдочанков
+        /// </summary>
+        public void AreaModifiedToRender(int c0x, int c0y, int c0z, int c1x, int c1y, int c1z)
+        {
+            int x, y, z;
+            if (c0y < 0) c0y = 0;
+            if (c1y > ChunkPr.Settings.NumberSectionsLess) c1y = ChunkPr.Settings.NumberSectionsLess;
+            for (x = c0x; x <= c1x; x++)
+            {
+                for (z = c0z; z <= c1z; z++)
+                {
+                    ChunkRender chunk = ChunkPrClient.GetChunkRender(x, z);
+                    if (chunk != null)
+                    {
+                        for (y = c0y; y <= c1y; y++)
+                        {
+                            chunk.ModifiedToRender(y);
+                        }
+                    }
+                }
+            }
+        }
+
         public override string ToString() => ChunkPrClient.ToString();
 
         /// <summary>
