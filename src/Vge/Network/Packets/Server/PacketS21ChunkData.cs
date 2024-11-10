@@ -158,6 +158,7 @@ namespace Vge.Network.Packets.Server
                 // Возвращаем данные без декомпрессии, чтоб объём данных был мал, 
                 // декомпрессия будет в игровом клиентском потоке
                 BufferRead = stream.Bytes();
+                //BufferRead = stream.BytesDecompress();
             }
         }
 

@@ -61,34 +61,34 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть массив байт c декомпрессией
         /// </summary>
-        //public byte[] BytesDecompress()
-        //{
-        //    int count = Int();
-        //    using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
-        //    using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
-        //    using (MemoryStream bigStreamOut = new MemoryStream())
-        //    {
-        //        _position += count;
-        //        bigStream.CopyTo(bigStreamOut);
-        //        return bigStreamOut.ToArray();
-        //    }
-        //}
+        public byte[] BytesDecompress()
+        {
+            int count = Int();
+            using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
+            using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+            using (MemoryStream bigStreamOut = new MemoryStream())
+            {
+                _position += count;
+                bigStream.CopyTo(bigStreamOut);
+                return bigStreamOut.ToArray();
+            }
+        }
 
-        //public int BytesDecompress(byte[] vs, int offset)
-        //{
-        //    int count = Int();
-        //    int countOut;
-        //    using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
-        //    using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
-        //    using (MemoryStream bigStreamOut = new MemoryStream())
-        //    {
-        //        _position += count;
-        //        bigStream.CopyTo(bigStreamOut);
-        //        countOut = (int)bigStreamOut.Length;
-        //        Buffer.BlockCopy(bigStreamOut.GetBuffer(), 0, vs, offset, countOut);
-        //    }
-        //    return countOut;
-        //}
+        public int BytesDecompress(byte[] vs, int offset)
+        {
+            int count = Int();
+            int countOut;
+            using (MemoryStream inStream = new MemoryStream(_buffer, _position, count))
+            using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+            using (MemoryStream bigStreamOut = new MemoryStream())
+            {
+                _position += count;
+                bigStream.CopyTo(bigStreamOut);
+                countOut = (int)bigStreamOut.Length;
+                Buffer.BlockCopy(bigStreamOut.GetBuffer(), 0, vs, offset, countOut);
+            }
+            return countOut;
+        }
 
         /// <summary>
         /// Прочесть тип byte (0..255) 1 байт

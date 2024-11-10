@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 using Vge.Util;
 using Vge.World.Block;
 
@@ -13,14 +12,6 @@ namespace Vge.World.Chunk
     /// </summary>
     public class ChunkBase : IChunkPosition, IDisposable
     {
-        /// <summary>
-        /// Входящий буфер памяти для Zip
-        /// </summary>
-        private readonly static MemoryStream _inStream = new MemoryStream();
-        /// <summary>
-        /// Буфер памяти для Zip
-        /// </summary>
-        private readonly static GZipStream _bigStream = new GZipStream(_inStream, CompressionMode.Decompress);
         /// <summary>
         /// Исходящий буфер памяти для Zip
         /// </summary>
@@ -370,11 +361,87 @@ namespace Vge.World.Chunk
         /// </summary>
         public void SetBinaryZip(byte[] bufferIn, bool biom, int flagsYAreas)
         {
-            _inStream.Write(bufferIn, 0, bufferIn.Length);
-            _inStream.Position = 0;
-            _bigStream.CopyTo(_bigStreamOut);
-            _bigStreamOut.Position = 0;
-                
+            using (MemoryStream inStream = new MemoryStream(bufferIn))
+            using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+            {
+                _bigStreamOut.Position = 0;
+                bigStream.CopyTo(_bigStreamOut);
+                _bigStreamOut.Position = 0;
+                int sy, i;
+                ushort countMet;
+                int count = 0;
+                ushort key;
+                uint met;
+                for (sy = 0; sy < NumberSections; sy++)
+                {
+                    if ((flagsYAreas & 1 << sy) != 0)
+                    {
+                        ChunkStorage storage = StorageArrays[sy];
+                        _bigStreamOut.Read(storage.LightBlock, 0, 4096);
+                        _bigStreamOut.Read(storage.LightSky, 0, 4096);
+
+                        if (_bigStreamOut.ReadByte() == 0)
+                        {
+                            storage.ClearNotLight();
+                        }
+                        else
+                        {
+                            storage.Data = new ushort[4096];
+                            byte[] b = new byte[8192];
+                            _bigStreamOut.Read(b, 0, 8192);
+                            Buffer.BlockCopy(b, 0, storage.Data, 0, 8192);
+                            storage.UpCountBlock();
+
+                            storage.Metadata.Clear();
+                            countMet = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                            for (i = 0; i < countMet; i++)
+                            {
+                                key = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                                met = (uint)(_bigStreamOut.ReadByte() << 24 | _bigStreamOut.ReadByte() << 16
+                                    | _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                                if (storage.Metadata.ContainsKey(key))
+                                {
+                                    storage.Metadata[key] = met;
+                                }
+                                else
+                                {
+                                    storage.Metadata.Add(key, met);
+                                }
+                            }
+                        }
+                    }
+                }
+                // биом
+                if (biom)
+                {
+                    for (i = 0; i < 256; i++)
+                    {
+                        count++;
+                        // biome[i] = (EnumBiome)buffer[count++];
+                    }
+                }
+                else
+                {
+                    // Не первая закгрузка, помечаем что надо отрендерить весь столб
+                    for (int y = 0; y < NumberSections; y++)
+                    {
+                        ModifiedToRender(y);
+                    }
+                }
+            }
+            IsChunkPresent = true;
+        }
+
+        /// <summary>
+        /// Задать чанк байтами
+        /// </summary>
+        public void SetBinary(byte[] buffer, bool biom, int flagsYAreas)
+        {
+            if (buffer == null)
+            {
+                throw new Exception(Sr.EmptyArrayIsNotAllowed);
+            }
+
             int sy, i, value;
             ushort countMet;
             int count = 0;
@@ -385,28 +452,34 @@ namespace Vge.World.Chunk
                 if ((flagsYAreas & 1 << sy) != 0)
                 {
                     ChunkStorage storage = StorageArrays[sy];
-                    _bigStreamOut.Read(storage.LightBlock, 0, 4096);
-                    _bigStreamOut.Read(storage.LightSky, 0, 4096);
+                    for (i = 0; i < 4096; i++)
+                    {
+                        storage.LightBlock[i] = buffer[count++];
+                    }
+                    for (i = 0; i < 4096; i++)
+                    {
+                        storage.LightSky[i] = buffer[count++];
+                    }
 
-                    if (_bigStreamOut.ReadByte() == 0)
+                    if (buffer[count++] == 0)
                     {
                         storage.ClearNotLight();
                     }
                     else
                     {
-                        storage.Data = new ushort[4096];
-                        byte[] b = new byte[8192];
-                        _bigStreamOut.Read(b, 0, 8192);
-                        Buffer.BlockCopy(b, 0, storage.Data, 0, 8192);
-                        storage.UpCountBlock();
-
-                        storage.Metadata.Clear();
-                        countMet = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                        for (i = 0; i < 4096; i++)
+                        {
+                            value = buffer[count++] | buffer[count++] << 8;
+                            id = (ushort)(value & 0xFFF);
+                            storage.SetData(i, id, (ushort)(value >> 12));
+                            if (!Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
+                        }
+                        countMet = (ushort)(buffer[count++] | buffer[count++] << 8);
                         for (i = 0; i < countMet; i++)
                         {
-                            key = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
-                            met = (uint)(_bigStreamOut.ReadByte() << 24 | _bigStreamOut.ReadByte() << 16
-                                | _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
+                            key = (ushort)(buffer[count++] << 8 | buffer[count++]);
+                            met = (uint)(buffer[count++] << 24 | buffer[count++] << 16
+                                | buffer[count++] << 8 | buffer[count++]);
                             if (storage.Metadata.ContainsKey(key))
                             {
                                 storage.Metadata[key] = met;
