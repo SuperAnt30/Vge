@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
 using Vge.Management;
@@ -324,11 +325,8 @@ namespace Vge.Games
         public void ResponsePacketOwner(IPacket packet)
         {
             _tx++;
-            using (WritePacket writePacket = new WritePacket())
-            {
-                writePacket.Trancive(packet);
-                _OnRecievePacket(new PacketBufferEventArgs(writePacket.ToArray()));
-            }
+            WritePacket writePacket = new WritePacket(packet);
+            _OnRecievePacket(new PacketBufferEventArgs(writePacket.ToArray()));
         }
 
         /// <summary>

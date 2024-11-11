@@ -8,7 +8,7 @@ namespace Vge.Network
     /// <summary>
     /// Записывающий пакет данных в массив байт
     /// </summary>
-    public class WritePacket : IDisposable
+    public class WritePacket
     {
         /// <summary>
         /// Количество элементов
@@ -29,10 +29,12 @@ namespace Vge.Network
             _buffer = new byte[size];
         }
 
-        public void Dispose()
+        public WritePacket(IPacket packet, int size = 64)
         {
-            _buffer = null;
-            GC.SuppressFinalize(this);
+            _size = size;
+            _buffer = new byte[size];
+            Byte(packet.Id);
+            packet.WritePacket(this);
         }
 
         /// <summary>

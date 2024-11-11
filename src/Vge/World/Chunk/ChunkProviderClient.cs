@@ -30,16 +30,16 @@ namespace Vge.World.Chunk
                     chunk.OnChunkUnload();
                 }
                 _chunkMapping.Remove(chunk.CurrentChunkX, chunk.CurrentChunkY);
-                chunk.Dispose();
+                chunk.DisposeMesh();
             }
         }
 
         #region Packet
 
         /// <summary>
-        /// Заносим данные с пакета сервера
+        /// Заносим данные с пакета сервера, возвращает true если создать чанк
         /// </summary>
-        public void PacketChunckData(PacketS21ChunkData packet)
+        public bool PacketChunckData(PacketS21ChunkData packet)
         {
             int chx = packet.CurrentChunkX;
             int chy = packet.CurrentChunkY;
@@ -66,13 +66,12 @@ namespace Vge.World.Chunk
                 if (isNew || packet.IsBiom)
                 {
                     //chunk.Light.GenerateHeightMap();
+                    if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();
+                    return true;
                 }
             }
-            if (Ce.IsDebugDrawChunks)
-            {
-                _OnChunkMappingChanged();
-            }
-            packet.Dispose();
+            if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();
+            return false;
         }
 
         /// <summary>

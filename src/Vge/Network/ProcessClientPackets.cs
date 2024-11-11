@@ -1,5 +1,6 @@
 ﻿using Vge.Games;
 using Vge.Network.Packets;
+using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
@@ -26,8 +27,19 @@ namespace Vge.Network
         /// </summary>
         private readonly DoubleList<IPacket> _packets = new DoubleList<IPacket>();
 
-        // Объект который из буфера данных склеивает пакеты
-        ReadPacket _readPacket = new ReadPacket();
+        /// <summary>
+        /// Объект который из буфера данных склеивает пакеты
+        /// </summary>
+        private ReadPacket _readPacket = new ReadPacket();
+
+        /// <summary>
+        /// Время в мс сколько загружались чанки у клиента
+        /// </summary>
+        private long _timeReceiveChunk;
+        /// <summary>
+        /// Какое количество загружало чанков у клиента
+        /// </summary>
+        private byte _countReceiveChunk;
 
         public ProcessClientPackets(GameBase client) => Game = client;
 
@@ -86,9 +98,18 @@ namespace Vge.Network
             {
                 _packets.Step();
                 int count = _packets.CountBackward;
-                for (int i = 0; i < count; i++)
+                if (count > 0)
                 {
-                    _UpdateReceivePacket(_packets.GetNextNull());
+                    for (int i = 0; i < count; i++)
+                    {
+                        _UpdateReceivePacket(_packets.GetNext());
+                    }
+                    if (_countReceiveChunk > 0)
+                    {
+                        Game.TrancivePacket(new PacketC20AcknowledgeChunks((int)_timeReceiveChunk, _countReceiveChunk, false));
+                        _countReceiveChunk = 0;
+                        _timeReceiveChunk = 0;
+                    }
                 }
             }
         }
@@ -147,9 +168,7 @@ namespace Vge.Network
         /// </summary>
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
-            Game.Player.Position.X = packet.GetPos().X;
-            Game.Player.Position.Y = packet.GetPos().Y;
-            Game.Player.Position.Z = packet.GetPos().Z;
+            Game.Player.Position.Set(packet.Position);
 
             Debug.Player = Game.Player.Position.GetChunkPosition();
         }
@@ -165,7 +184,15 @@ namespace Vge.Network
         /// Пакет изменённые псевдо чанки
         /// </summary>
         private void _Handle21ChunkData(PacketS21ChunkData packet)
-            => Game.World.ChunkPrClient.PacketChunckData(packet);
+        {
+            long time = Game.Time();
+            if (Game.World.ChunkPrClient.PacketChunckData(packet))
+            {
+                // Считаем время
+                _countReceiveChunk++;
+                _timeReceiveChunk += Game.Time() - time;
+            }
+        }
 
         #endregion
     }

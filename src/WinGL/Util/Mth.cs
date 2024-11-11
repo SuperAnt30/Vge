@@ -71,6 +71,10 @@ namespace WinGL.Util
         /// <summary>
         /// Возращаем наименьшее
         /// </summary>
+        public static byte Min(byte v1, byte v2) => v1 > v2 ? v2 : v1;
+        /// <summary>
+        /// Возращаем наименьшее
+        /// </summary>
         public static int Min(int v1, int v2) => v1 > v2 ? v2 : v1;
         /// <summary>
         /// Возращаем наименьшее

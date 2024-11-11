@@ -52,11 +52,9 @@ namespace Vge.Network
         /// </summary>
         public void ReceiveBuffer(SocketSide socketSide, byte[] buffer)
         {
-            using (ReadPacket readPacket = new ReadPacket())
-            {
-                readPacket.SetBuffer(buffer);
-                _ReceivePacket(socketSide, readPacket.Receive(PacketsInit.InitClient(buffer[0])));
-            }
+            ReadPacket readPacket = new ReadPacket();
+            readPacket.SetBuffer(buffer);
+            _ReceivePacket(socketSide, readPacket.Receive(PacketsInit.InitClient(buffer[0])));
         }
 
         private void _ReceivePacket(SocketSide socketSide, IPacket packet)
@@ -172,9 +170,7 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
-                playerServer.Position.X = packet.Position.X;
-                playerServer.Position.Y = packet.Position.Y;
-                playerServer.Position.Z = packet.Position.Z;
+                playerServer.Position.Set(packet.Position);
 
                 if (playerServer.IdWorld != packet.World)
                 {

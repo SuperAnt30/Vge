@@ -92,12 +92,11 @@ namespace Vge.Renderer.World
         /// </summary>
         public void DrawAlpha() => _meshAlpha.Draw();
 
-        public override void Dispose()
+        public void DisposeMesh()
         {
             _meshDense.Dispose();
             _meshUnique.Dispose();
             _meshAlpha.Dispose();
-            base.Dispose();
         }
 
         /// <summary>

@@ -186,11 +186,8 @@ namespace Vge.Games
         {
             if (IsServerRunning())
             {
-                using (WritePacket writePacket = new WritePacket())
-                {
-                    writePacket.Trancive(packet);
-                    _server.LocalReceivePacket(null, writePacket.ToArray());
-                }
+                WritePacket writePacket = new WritePacket(packet);
+                _server.LocalReceivePacket(null, writePacket.ToArray());
             }
         }
 

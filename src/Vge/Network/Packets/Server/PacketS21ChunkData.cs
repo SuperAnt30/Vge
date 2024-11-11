@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Util;
 using Vge.World.Chunk;
 
 namespace Vge.Network.Packets.Server
@@ -7,25 +8,14 @@ namespace Vge.Network.Packets.Server
     /// <summary>
     /// Отправляем клиенту изменённые псевдо чанки
     /// </summary>
-    public struct PacketS21ChunkData : IPacket, IDisposable
+    public struct PacketS21ChunkData : IPacket
     {
         public byte Id => 0x21;
 
-        // TDOO::2024-11-10 ЗАМЕНИТЬ на List
         /// <summary>
         /// Статический быстрый буфер для записи
         /// </summary>
-        //private static readonly ListByte _bufferWrite = new ListByte(50000);
-
-        /// <summary>
-        /// Буффер записи чанка, статический.
-        /// Размер надо определить от максималки высот чанков и данных
-        /// </summary>
-        private static byte[] _bufferWrite = new byte[285000];
-        /// <summary>
-        /// Количество элементов используемых для буфера записи
-        /// </summary>
-        private static int _count;
+        private static readonly ListByte _bufferWrite = new ListByte(32768);
 
         /// <summary>
         /// Позиция X текущего чанка
@@ -74,54 +64,43 @@ namespace Vge.Network.Packets.Server
             FlagsYAreas = flagsYAreas;
             IsBiom = biom;
             BufferRead = null;
-            _count = _ChunkBufferWrite(chunk, biom, flagsYAreas, _bufferWrite);
-        }
 
-        /// <summary>
-        /// Записать данные чанка в буфер
-        /// </summary>
-        private int _ChunkBufferWrite(ChunkBase chunk, bool biom, int flagsYAreas, byte[] buf)
-        {
             ushort data;
             int i, y;
             uint value;
             ChunkStorage chunkStorage;
-
-            int count = 0;
+            _bufferWrite.Clear();
             for (y = 0; y < chunk.NumberSections; y++)
             {
                 if ((flagsYAreas & 1 << y) != 0)
                 {
                     chunkStorage = chunk.StorageArrays[y];
 
-                    Buffer.BlockCopy(chunkStorage.LightBlock, 0, buf, count, chunkStorage.LightBlock.Length);
-                    count += chunkStorage.LightBlock.Length;
-                    Buffer.BlockCopy(chunkStorage.LightSky, 0, buf, count, chunkStorage.LightSky.Length);
-                    count += chunkStorage.LightSky.Length;
+                    _bufferWrite.AddRange(chunkStorage.LightBlock);
+                    _bufferWrite.AddRange(chunkStorage.LightSky);
 
                     if (chunkStorage.IsEmptyData())
                     {
-                        buf[count++] = 0;
+                        _bufferWrite.Add(0);
                     }
                     else
                     {
-                        buf[count++] = 1;
-                        Buffer.BlockCopy(chunkStorage.Data, 0, buf, count, chunkStorage.Data.Length * 2);
-                        count += chunkStorage.Data.Length * 2;
+                        _bufferWrite.Add(1);
+                        _bufferWrite.AddRange(chunkStorage.Data);
 
                         data = (ushort)chunkStorage.Metadata.Count;
-                        buf[count++] = (byte)(data >> 8);
-                        buf[count++] = (byte)(data & 0xFF);
+                        _bufferWrite.Add((byte)(data >> 8));
+                        _bufferWrite.Add((byte)(data & 0xFF));
 
                         foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
                         {
-                            buf[count++] = (byte)(entry.Key >> 8);
-                            buf[count++] = (byte)(entry.Key & 0xFF);
+                            _bufferWrite.Add((byte)(entry.Key >> 8));
+                            _bufferWrite.Add((byte)(entry.Key & 0xFF));
                             value = entry.Value;
-                            buf[count++] = (byte)((value & 0xFF000000) >> 24);
-                            buf[count++] = (byte)((value & 0xFF0000) >> 16);
-                            buf[count++] = (byte)((value & 0xFF00) >> 8);
-                            buf[count++] = (byte)(value & 0xFF);
+                            _bufferWrite.Add((byte)((value & 0xFF000000) >> 24));
+                            _bufferWrite.Add((byte)((value & 0xFF0000) >> 16));
+                            _bufferWrite.Add((byte)((value & 0xFF00) >> 8));
+                            _bufferWrite.Add((byte)(value & 0xFF));
                         }
                     }
                 }
@@ -131,10 +110,9 @@ namespace Vge.Network.Packets.Server
                 // добавляем данные биома
                 for (i = 0; i < 256; i++)
                 {
-                    buf[count++] = 0;
+                    _bufferWrite.Add(0);
                 }
             }
-            return count;
         }
 
         /// <summary>
@@ -170,14 +148,8 @@ namespace Vge.Network.Packets.Server
             if (FlagsYAreas > 0)
             {
                 stream.Bool(IsBiom);
-                stream.BytesCompress(_bufferWrite, 0, _count);
+                stream.BytesCompress(_bufferWrite.GetBufferAll(), 0, _bufferWrite.Count);
             }
-        }
-
-        public void Dispose()
-        {
-            BufferRead = null;
-            GC.SuppressFinalize(this);
         }
     }
 }

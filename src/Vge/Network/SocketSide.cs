@@ -172,11 +172,8 @@ namespace Vge.Network
         {
             if (IsConnect())
             {
-                using (WritePacket writePacket = new WritePacket())
-                {
-                    writePacket.Trancive(packet);
-                    SendPacket(writePacket.ToArray());
-                }
+                WritePacket writePacket = new WritePacket(packet);
+                SendPacket(writePacket.ToArray());
             }
         }
 

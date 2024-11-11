@@ -231,7 +231,11 @@ namespace Vge.Management
         /// </summary>
         public void UpdateFrame(float timeIndex)
         {
-            PositionFrame.UpdateFrame(timeIndex, Position, PositionPrev);
+            if (Position.IsChange(PositionFrame))
+            {   
+                PositionFrame.UpdateFrame(timeIndex, Position, PositionPrev);
+                _UpdateMatrixCamera();
+            }
             //_game.Log.Log(Position.ToStringPos() + " | "
             //    + PositionPrev.ToStringPos() + " | "
             //    + PositionFrame.ToStringPos());
@@ -263,8 +267,7 @@ namespace Vge.Management
                 //+ PositionPrev.ToStringPos());
                 _CameraHasBeenChanged();
                 _game.TrancivePacket(new PacketC04PlayerPosition(
-                    new Vector3(Position.X, Position.Y, Position.Z),
-                    false, false, false, IdWorld));
+                    Position, false, Movement.Sprinting, false, IdWorld));
                 Debug.Player = Position.GetChunkPosition();
             }
             if (_countUnusedFrustumCulling > 0
@@ -300,7 +303,7 @@ namespace Vge.Management
                 // Закончили замер
                 _batchChunksTime = (int)(_Time() - _timeStartBatchChunks);
                 _batchChunksQuantity = packet.Quantity;
-                _game.TrancivePacket(new PacketC20AcknowledgeChunks(_batchChunksTime, _batchChunksQuantity));
+                _game.TrancivePacket(new PacketC20AcknowledgeChunks(_batchChunksTime, _batchChunksQuantity, true));
             }
         }
 

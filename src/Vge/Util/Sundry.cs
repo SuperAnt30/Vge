@@ -15,7 +15,7 @@ namespace Vge.Util
         /// <param name="quantity">Количество сделанного</param>
         /// <param name="previous">Предыдущее количество</param>
         public static byte RecommendedQuantityBatch(int time, int quantity, byte previous,
-            int maxBatch, int maxTime = Ce.MaxBatchChunksTime)
+            int maxBatch, int maxTime)
         {
             int dbs = previous;
             if (time == 0)

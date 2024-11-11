@@ -102,6 +102,14 @@ namespace Vge.Management
         /// </summary>
         private ListFast<ulong> _loadedNull = new ListFast<ulong>(10);
         /// <summary>
+        /// Рфзмер партии закачки чанков
+        /// </summary>
+        private byte _batchSizeReceive;
+        /// <summary>
+        /// Размер партии распаковки чанков
+        /// </summary>
+        private byte _batchSizeUnpack;
+        /// <summary>
         /// Желаемый размер партии закачки чанков
         /// </summary>
         private byte _desiredBatchSize;
@@ -129,7 +137,8 @@ namespace Vge.Management
             UUID = GetHash(login);
             pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
-            _desiredBatchSize = Owner ? Ce.StartDesiredBatchSize : Ce.MinDesiredBatchSize;
+            _batchSizeReceive = _batchSizeUnpack 
+                = _desiredBatchSize = Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
         }
@@ -185,10 +194,21 @@ namespace Vge.Management
         /// </summary>
         public void PacketAcknowledgeChunks(PacketC20AcknowledgeChunks packet)
         {
-            // TODO::2024-11-10 RecommendedQuantityBatch
-            _desiredBatchSize = Sundry.RecommendedQuantityBatch(packet.Time, 
-                packet.Quantity, _desiredBatchSize, Ce.MaxDesiredBatchSize);
-            _desiredBatchSize = 8;// 8;
+            //" dbs:" + _desiredBatchSize;
+            if (packet.IsLoad)
+            {
+                // Желаемое количество при передаче по сети
+                _batchSizeReceive = Sundry.RecommendedQuantityBatch(packet.Time,
+                packet.Quantity, _batchSizeReceive, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTimeUnpack);
+            }
+            else
+            {
+                // Желаемое количество при распаковке на клиенте
+                _batchSizeUnpack = Sundry.RecommendedQuantityBatch(packet.Time,
+                packet.Quantity, _batchSizeUnpack, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTimeUnpack);
+            }
+            // Минимальное используем
+            _desiredBatchSize = Mth.Min(_batchSizeReceive, _batchSizeUnpack);
         }
 
         #endregion
@@ -210,7 +230,7 @@ namespace Vge.Management
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Местоположение игрока
-            SendPacket(new PacketS08PlayerPosLook(new Vector3(Position.X, Position.Y, Position.Z), 0, 0));
+            SendPacket(new PacketS08PlayerPosLook(Position));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
 
@@ -282,6 +302,8 @@ namespace Vge.Management
                     PositionPrev.X = Position.X = nbt.GetFloat("PosX");
                     PositionPrev.Y = Position.Y = nbt.GetFloat("PosY");
                     PositionPrev.Z = Position.Z = nbt.GetFloat("PosZ");
+                    PositionPrev.Yaw = Position.Yaw = nbt.GetFloat("Yaw");
+                    PositionPrev.Pitch = Position.Pitch = nbt.GetFloat("Pitch");
                     return true;
                 }
                 catch
@@ -305,6 +327,8 @@ namespace Vge.Management
             nbt.SetFloat("PosX", Position.X);
             nbt.SetFloat("PosY", Position.Y);
             nbt.SetFloat("PosZ", Position.Z);
+            nbt.SetFloat("Yaw", Position.Yaw);
+            nbt.SetFloat("Pitch", Position.Pitch);
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 

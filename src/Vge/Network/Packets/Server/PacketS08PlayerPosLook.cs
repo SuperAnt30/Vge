@@ -1,4 +1,4 @@
-﻿using WinGL.Util;
+﻿using Vge.Entity;
 
 namespace Vge.Network.Packets.Server
 {
@@ -9,35 +9,22 @@ namespace Vge.Network.Packets.Server
     {
         public byte Id => 0x08;
 
-        private Vector3 pos;
-        private float yaw;
-        private float pitch;
+        public EntityPos Position { get; private set; }
 
-        public Vector3 GetPos() => pos;
-        public float GetYaw() => yaw;
-        public float GetPitch() => pitch;
-
-        public PacketS08PlayerPosLook(Vector3 pos, float yaw, float pitch)
+        public PacketS08PlayerPosLook(EntityPos pos)
         {
-            this.pos = pos;
-            this.yaw = yaw;
-            this.pitch = pitch;
+            Position = pos;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            pos = new Vector3(stream.Float(), stream.Float(), stream.Float());
-            yaw = stream.Float();
-            pitch = stream.Float();
+            Position = new EntityPos();
+            Position.ReadPacket(stream);
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Float(pos.X);
-            stream.Float(pos.Y);
-            stream.Float(pos.Z);
-            stream.Float(yaw);
-            stream.Float(pitch);
+            Position.WritePacket(stream);
         }
     }
 }

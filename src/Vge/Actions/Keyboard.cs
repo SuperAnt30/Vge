@@ -80,14 +80,12 @@ namespace Vge.Actions
                 else if (keys == Keys.NumPad0)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new Vector3(_game.Player.Position.X, _game.Player.Position.Y, _game.Player.Position.Z),
-                        false, false, false, 0));
+                        _game.Player.Position, false, false, false, 0));
                 }
                 else if (keys == Keys.NumPad1)
                 {
                     _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        new Vector3(_game.Player.Position.X, _game.Player.Position.Y, _game.Player.Position.Z),
-                        false, false, false, 1));
+                        _game.Player.Position, false, false, false, 1));
                 }
             }
         }

@@ -16,22 +16,22 @@ namespace Vge.Util
         /// <summary>
         /// Массив
         /// </summary>
-        private byte[] buffer;
+        private byte[] _buffer;
         /// <summary>
         /// Реальный размер массива
         /// </summary>
-        private int size;
+        private int _size;
 
         public ListByte(int size = 100)
         {
-            this.size = size;
-            buffer = new byte[size];
+            _size = size;
+            _buffer = new byte[size];
         }
 
         public byte this[int index]
         {
-            get => buffer[index];
-            set => buffer[index] = value;
+            get => _buffer[index];
+            set => _buffer[index] = value;
         }
 
         /// <summary>
@@ -39,12 +39,12 @@ namespace Vge.Util
         /// </summary>
         public void Add(byte item)
         {
-            if (size <= Count)
+            if (_size <= Count)
             {
-                size = (int)(size * 1.5f);
-                Array.Resize(ref buffer, size);
+                _size = (int)(_size * 1.5f);
+                Array.Resize(ref _buffer, _size);
             }
-            buffer[Count++] = item;
+            _buffer[Count++] = item;
         }
 
         /// <summary>
@@ -53,12 +53,12 @@ namespace Vge.Util
         public void AddRange(byte[] items)
         {
             int count = items.Length;
-            if (size < Count + count)
+            if (_size < Count + count)
             {
-                size = Count + count + (Count + count) / 2;
-                Array.Resize(ref buffer, size);
+                _size = Count + count + (Count + count) / 2;
+                Array.Resize(ref _buffer, _size);
             }
-            Buffer.BlockCopy(items, 0, buffer, Count, count);
+            Buffer.BlockCopy(items, 0, _buffer, Count, count);
             Count += count;
         }
 
@@ -68,12 +68,12 @@ namespace Vge.Util
         public void AddRange(ushort[] items)
         {
             int count = items.Length * 2;
-            if (size < Count + count)
+            if (_size < Count + count)
             {
-                size = Count + count + (Count + count) / 2;
-                Array.Resize(ref buffer, size);
+                _size = Count + count + (Count + count) / 2;
+                Array.Resize(ref _buffer, _size);
             }
-            Buffer.BlockCopy(items, 0, buffer, Count, count);
+            Buffer.BlockCopy(items, 0, _buffer, Count, count);
             Count += count;
         }
 
@@ -83,14 +83,14 @@ namespace Vge.Util
         public byte[] ToArray()
         {
             byte[] result = new byte[Count];
-            Buffer.BlockCopy(buffer, 0, result, 0, Count);
+            Buffer.BlockCopy(_buffer, 0, result, 0, Count);
             return result;
         }
 
         /// <summary>
         /// Получить целый буфер
         /// </summary>
-        public byte[] GetBufferAll() => buffer;
+        public byte[] GetBufferAll() => _buffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear() => Count = 0;

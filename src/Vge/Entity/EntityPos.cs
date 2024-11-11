@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using Vge.Network;
+using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -73,9 +74,38 @@ namespace Vge.Entity
                 X = entityPosPrev.X + (entityPos.X - entityPosPrev.X) * timeIndex;
                 Y = entityPosPrev.Y + (entityPos.Y - entityPosPrev.Y) * timeIndex;
                 Z = entityPosPrev.Z + (entityPos.Z - entityPosPrev.Z) * timeIndex;
-                Yaw = entityPosPrev.Yaw + (entityPos.Yaw - entityPosPrev.Yaw) * timeIndex;
+                if (entityPos.Yaw - entityPosPrev.Yaw > Glm.Pi)
+                {
+                    Yaw = entityPosPrev.Yaw + ((entityPos.Yaw - Glm.Pi360) - entityPosPrev.Yaw) * timeIndex;
+                }
+                else if (entityPos.Yaw - entityPosPrev.Yaw < -Glm.Pi)
+                {
+                    Yaw = entityPosPrev.Yaw + ((entityPos.Yaw + Glm.Pi360) - entityPosPrev.Yaw) * timeIndex;
+                }
+                else
+                {
+                    Yaw = entityPosPrev.Yaw + (entityPos.Yaw - entityPosPrev.Yaw) * timeIndex;
+                }
                 Pitch = entityPosPrev.Pitch + (entityPos.Pitch - entityPosPrev.Pitch) * timeIndex;
             }
+        }
+
+        public void ReadPacket(ReadPacket stream)
+        {
+            X = stream.Float();
+            Y = stream.Float();
+            Z = stream.Float();
+            Yaw = stream.Float();
+            Pitch = stream.Float();
+        }
+
+        public void WritePacket(WritePacket stream)
+        {
+            stream.Float(X);
+            stream.Float(Y);
+            stream.Float(Z);
+            stream.Float(Yaw);
+            stream.Float(Pitch);
         }
 
         public string ToStringPos()

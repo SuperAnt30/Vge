@@ -8,7 +8,7 @@ namespace Vge.Network
     /// <summary>
     /// Объект который из буфера данных склеивает пакеты
     /// </summary>
-    public class ReadPacket : IDisposable
+    public class ReadPacket
     {
         /// <summary>
         /// Массив
@@ -29,12 +29,6 @@ namespace Vge.Network
         {
             packet.ReadPacket(this);
             return packet;
-        }
-
-        public void Dispose()
-        {
-            _buffer = null;
-            GC.SuppressFinalize(this);
         }
 
         #region Read

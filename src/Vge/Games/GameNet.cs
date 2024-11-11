@@ -222,11 +222,8 @@ namespace Vge.Games
         {
             if (_isConnected)
             {
-                using (WritePacket writePacket = new WritePacket())
-                {
-                    writePacket.Trancive(packet);
-                    _socket.SendPacket(writePacket.ToArray());
-                }
+                WritePacket writePacket = new WritePacket(packet);
+                _socket.SendPacket(writePacket.ToArray());
             }
         }
 

@@ -87,10 +87,10 @@ namespace Vge.Renderer.World
                     quantity = _RenderQueues(true, _renderQueues)
                         + _RenderQueues(false, _renderAlphaQueues);
 
+                    //"WR dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
                     _batchChunksTime = (int)(stopwatch.ElapsedMilliseconds - timeBegin);
-                    _desiredBatchSize = Sundry.RecommendedQuantityBatch(
-                        _batchChunksTime, quantity, _desiredBatchSize, Ce.TickTime);
-                    //_desiredBatchSize = 6;
+                    _desiredBatchSize = Sundry.RecommendedQuantityBatch(_batchChunksTime, 
+                        quantity, _desiredBatchSize, Ce.MaxDesiredBatchSize, Ce.TickTime);
                 }
                 // Ожидаем сигнала
                 _waitHandler.WaitOne();
@@ -319,10 +319,19 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _VoxelsShaderChunk(ShaderVoxel shader, int chunkX, int chunkY)
         {
+            int x = chunkX << 4;
+            int z = chunkY << 4;
+
             shader.SetUniform3(_game.GetOpenGL(), "pos",
-                (chunkX << 4) - _game.Player.PositionFrame.X,
+                x - _game.Player.PositionFrame.X,
                 -_game.Player.PositionFrame.Y,
-                (chunkY << 4) - _game.Player.PositionFrame.Z
+                z - _game.Player.PositionFrame.Z
+            );
+
+            shader.SetUniform3(_game.GetOpenGL(), "camera",
+                _game.Player.PositionFrame.X - x,
+                _game.Player.PositionFrame.Y,
+                _game.Player.PositionFrame.Z - z
             );
         }
 

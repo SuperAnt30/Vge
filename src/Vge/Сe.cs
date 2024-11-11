@@ -45,6 +45,10 @@ public sealed class Ce
     /// </summary>
     public const int MaxBatchChunksTime = Tick​​Time / 3 * 2;
     /// <summary>
+    /// Максимальный время для закачки и распаковки чанков
+    /// </summary>
+    public const int MaxBatchChunksTimeUnpack = Tick​​Time / 2;
+    /// <summary>
     /// Через сколько тактов происходит переформирование FrustumCulling если хоть один чанк не догружен
     /// </summary>
     public const int CheckTickInitFrustumCulling = 5;

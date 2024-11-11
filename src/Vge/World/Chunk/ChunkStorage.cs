@@ -10,7 +10,7 @@ namespace Vge.World.Chunk
     /// 16 * 16 * 16
     /// y << 8 | z << 4 | x
     /// </summary>
-    public class ChunkStorage: IDisposable
+    public class ChunkStorage
     {
         /// <summary>
         /// Уровень псевдочанка, нижнего блока, т.е. кратно 16. Глобальная координата Y, не чанка
@@ -199,15 +199,6 @@ namespace Vge.World.Chunk
         /// Имеются ли блоки которым нужен случайный тик
         /// </summary>
         public bool GetNeedsRandomTick() => _countTickBlock > 0;
-
-        public void Dispose()
-        {
-            CountBlock = 0;
-            Data = null;
-            LightBlock = null;
-            LightSky = null;
-            GC.SuppressFinalize(this);
-        }
 
         /// <summary>
         /// Вернуть количество блоков не воздуха и количество тикающих блоков

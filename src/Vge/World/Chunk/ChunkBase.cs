@@ -10,7 +10,7 @@ namespace Vge.World.Chunk
     /// <summary>
     /// Базовый объект чанка
     /// </summary>
-    public class ChunkBase : IChunkPosition, IDisposable
+    public class ChunkBase : IChunkPosition
     {
         /// <summary>
         /// Исходящий буфер памяти для Zip
@@ -110,16 +110,6 @@ namespace Vge.World.Chunk
         public virtual void OnChunkUnload()
         {
             IsChunkPresent = false;
-        }
-
-        public virtual void Dispose()
-        {
-            for (int index = 0; index < NumberSections; index++)
-            {
-                StorageArrays[index].Dispose();
-                StorageArrays[index] = null;
-            }
-            GC.SuppressFinalize(this);
         }
 
         #region Кольца 1-4
