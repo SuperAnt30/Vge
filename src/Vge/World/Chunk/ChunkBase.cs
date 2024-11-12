@@ -154,9 +154,19 @@ namespace Vge.World.Chunk
                 SetBlockState(8, h + 3, 7, new BlockState(3));
                 SetBlockState(8, h + 4, 7, new BlockState(4));
 
-                SetBlockState(8, h + 5, 3, new BlockState(5));
-                SetBlockState(8, h + 6, 3, new BlockState(5));
-                SetBlockState(8, h + 7, 3, new BlockState(5));
+
+                for (int y = h + 5; y < h + 10; y++)
+                {
+                    SetBlockState(8, y, 3, new BlockState(5));
+
+                    SetBlockState(8, y, 5, new BlockState(12));
+                    SetBlockState(8, y, 7, new BlockState(13));
+                    SetBlockState(8, y, 13, new BlockState(14));
+                    SetBlockState(8, y, 15, new BlockState(15));
+                }
+
+
+
 
                 // Debug.Burden(.6f);
                 //World.Filer.EndSectionLog();

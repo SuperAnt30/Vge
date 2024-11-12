@@ -41,12 +41,12 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
-        private readonly byte BiomeColor = 0;
+        public readonly byte BiomeColor = 0;
 
         /// <summary>
         /// Прямоугольная сторона блока или элемента блока
         /// </summary>
-        /// <param name = "noSideDimming" >Нет бокового затемнения, пример: трава, цветы</param>
+        /// <param name = "biomeColor" >Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет</param>
         public QuadSide(byte biomeColor = 0)
         {
             BiomeColor = biomeColor;

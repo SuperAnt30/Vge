@@ -63,14 +63,29 @@ public sealed class Gi
     public readonly static float[] LightPoles = new float[] { 1, .6f, .7f, .7f, .85f, .85f };
 
     /// <summary>
-    /// Буфер для склейки рендера. покуда тест в будущем для чанка
+    /// Буфер для склейки рендера сплошных блоков всего ряда
+    /// 128000 / 4 = 32000 квадов
     /// </summary>
-    public readonly static VertexBuffer Vertex = new VertexBuffer(128000);
+    public readonly static VertexBuffer VertexDense = new VertexBuffer(128000);
+    /// <summary>
+    /// Буфер для склейки рендера альфа блоков всего ряда
+    /// 128000 / 4 = 32000 квадов
+    /// </summary>
+    public readonly static VertexBuffer VertexAlpha = new VertexBuffer(128000);
+    /// <summary>
+    /// Буфер одного альфа кэш блока
+    /// 128 / 4 = 32 квадов
+    /// </summary>
+    public readonly static VertexBuffer VertexAlphaCache = new VertexBuffer(128);
 
     /// <summary>
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
     /// </summary>
-    public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull();
+    public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull(VertexDense);
+    /// <summary>
+    /// Объект рендера целого блока с эффектом размытия (Mipmap)
+    /// </summary>
+    public readonly static BlockRenderFull BlockAlphaRendFull = new BlockRenderFull(VertexAlpha);
     /// <summary>
     /// Объект рендера уникального блока с эффектом контраста (Not Mipmap)
     /// </summary>

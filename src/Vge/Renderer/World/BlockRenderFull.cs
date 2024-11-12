@@ -104,9 +104,9 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Создание блока генерации для мира
         /// </summary>
-        public BlockRenderFull()
+        public BlockRenderFull(VertexBuffer vertex)
         {
-            blockUV.Buffer = Gi.Vertex;
+            blockUV.Buffer = vertex;
             InitAmbientOcclusion();
         }
 
@@ -338,7 +338,8 @@ namespace Vge.Renderer.World
             // ~1.250 ~1.070
             if (_blockCheck.AllSideForcibly)// || (_isUp && Gi.Block.Liquid))
             {
-                if (_blockCheck.BlocksNotSame)// && _blockCheck.Material == Block.Material))
+                //if (_blockCheck.BlocksNotSame)// && _blockCheck.Material == Block.Material))
+                if (!(!_blockCheck.BlocksNotSame && _blockCheck.Id == Gi.Block.Id))
                 {
                     _emptySide = false;
                     // ~1.4 ~1.1
@@ -403,6 +404,18 @@ namespace Vge.Renderer.World
         /// <returns></returns>
         protected Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
         {
+            // подготовка для теста плавности цвета
+            if (_rectangularSide.BiomeColor == 0)
+            {
+                // Нет цвета
+                return ColorWhite;
+            }
+            if (_rectangularSide.BiomeColor == 4)
+            {
+                // Свой цвет
+                return Gi.Block.Color;
+            }
+
             // подготовка для теста плавности цвета
             //if (_rectangularSide.IsBiomeColor())
             //{

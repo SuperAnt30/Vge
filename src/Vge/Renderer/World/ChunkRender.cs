@@ -106,17 +106,23 @@ namespace Vge.Renderer.World
         {
             long timeBegin = _worldClient.Game.ElapsedTicks();
 
-            Gi.Vertex.Clear();
+            Gi.VertexDense.Clear();
+            Gi.VertexAlpha.Clear();
 
             ChunkStorage chunkStorage;
             int cbY, realY, realZ, index, yb, x, z;
             ushort data, id;
             uint met;
             //BlockBase block;
-            //BlockRenderFull blockRender = Gi.BlockRendFull;
-            Gi.BlockRendFull.InitChunk(this);
-            //Gi.BlockRendUnique.InitChunk(this);
-            //Gi.BlockRendLiquid.InitChunk(this);
+            if (isDense)
+            {
+                //BlockRenderFull blockRender = Gi.BlockRendFull;
+                Gi.BlockRendFull.InitChunk(this);
+                //Gi.BlockRendUnique.InitChunk(this);
+                //Gi.BlockRendLiquid.InitChunk(this);
+            }
+            Gi.BlockAlphaRendFull.InitChunk(this);
+            
 
             int indexY, indexYZ;
             for (cbY = 0; cbY < NumberSections; cbY++)
@@ -124,7 +130,11 @@ namespace Vge.Renderer.World
                 chunkStorage = StorageArrays[cbY];
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
-                    Gi.BlockRendFull.InitStorage(cbY);
+                    if (isDense)
+                    {
+                        Gi.BlockRendFull.InitStorage(cbY);
+                    }
+                    Gi.BlockAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
                     {
@@ -153,6 +163,16 @@ namespace Vge.Renderer.World
                                 if (Gi.Block.Translucent) //+0.006
                                 {
                                     // Альфа
+                                    Gi.Block.BlockRender.PosChunkX = x;
+                                    Gi.Block.BlockRender.PosChunkY = realY;
+                                    Gi.Block.BlockRender.PosChunkZ = z;
+                                    if (Gi.Block.BlockRender.CheckSide())
+                                    {
+                                        // Определяем met блока
+                                        Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                        Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                        Gi.Block.BlockRender.RenderSide();
+                                    }
                                 }
                                 else if (isDense) // Теряю время на ~0.006
                                 {
@@ -174,27 +194,16 @@ namespace Vge.Renderer.World
                                     //    blockRender = Gi.BlockRendLiquid;
                                     //}
 
-                                    // ~0.078
                                     Gi.Block.BlockRender.PosChunkX = x;
                                     Gi.Block.BlockRender.PosChunkY = realY;
                                     Gi.Block.BlockRender.PosChunkZ = z;
-
-                                    // ~0.11
-                                    //continue;
-                                    if (Gi.Block.BlockRender.CheckSide()) // +0.75
+                                    if (Gi.Block.BlockRender.CheckSide())
                                     {
-                                        // ~0.85
-                                        //continue;
                                         // Определяем met блока
                                         Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
                                         Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
-                                        // ~0.87
-                                        //continue;
-                                        Gi.Block.BlockRender.RenderSide(); // +0.40
+                                        Gi.Block.BlockRender.RenderSide();
                                     }
-
-                                    // ~1.25
-                                    //continue;
                                 }
                             }
                         }
@@ -203,7 +212,8 @@ namespace Vge.Renderer.World
             }
             // Debug.Burden(1f);
 
-            _meshDense.SetBuffer(Gi.Vertex);
+            _meshDense.SetBuffer(Gi.VertexDense);
+            _meshAlpha.SetBuffer(Gi.VertexAlpha);
 
             // Для отладочной статистики
             float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;

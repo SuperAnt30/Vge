@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Renderer.World;
 using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -141,6 +142,10 @@ namespace Vge.World.Block
         /// </summary>
         public bool BiomeColor = false;
         /// <summary>
+        /// Цвет блока, используется при BiomeColor = true;
+        /// </summary>
+        public Vector3 Color = new Vector3(1);
+        /// <summary>
         /// Может ли быть тень сущности на блоке, только для целых блоков
         /// </summary>
         public bool Shadow { get; protected set; } = true;
@@ -161,12 +166,17 @@ namespace Vge.World.Block
         {
             Id = id;
             Alias = alias;
-            BlockRender = Gi.BlockRendFull;
+            _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;
-
-
         }
+
+        /// <summary>
+        /// Инициализация объекта рендера для блока
+        /// </summary>
+        protected virtual void _InitBlockRender()
+            => BlockRender = Gi.BlockRendFull;
+
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов
