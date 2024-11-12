@@ -15,6 +15,22 @@ namespace Vge.Renderer.World
         public BufferFastByte(int maxSize = 1000) : base(maxSize)
             => _hBuffer = Marshal.AllocHGlobal(maxSize);
 
+        /// <summary>
+        /// Добавить массив значений
+        /// </summary>
+        public void AddRange(byte[] items)
+        {
+            try
+            {
+                int count = items.Length;
+                Buffer.BlockCopy(items, 0, _buffer, Count, count);
+                Count += count;
+            }
+            catch
+            {
+                throw new Exception(Sr.GetString(Sr.OutOfRangeArray, Count));
+            }
+        }
 
         /// <summary>
         /// Получить адрес буфера

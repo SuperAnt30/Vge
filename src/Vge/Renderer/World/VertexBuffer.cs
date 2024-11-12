@@ -32,6 +32,11 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
+        /// Пустой
+        /// </summary>
+        public bool Empty() => BufferByte.Count == 0;
+
+        /// <summary>
         /// Получить количество вершин
         /// </summary>
         public int GetCountVertices() => BufferByte.Count / _sizeByte;
@@ -40,6 +45,15 @@ namespace Vge.Renderer.World
         {
             BufferFloat.Clear();
             BufferByte.Clear();
+        }
+
+        /// <summary>
+        /// Добавить буфер с дистанции
+        /// </summary>
+        public void AddBlockBufferDistance(BlockBufferDistance blockBuffer)
+        {
+            BufferFloat.AddRange(blockBuffer.BufferFloat);
+            BufferByte.AddRange(blockBuffer.BufferByte);
         }
 
         /// <summary>

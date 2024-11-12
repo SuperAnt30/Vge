@@ -28,6 +28,10 @@ namespace Vge.Entity
         /// Получить координаты чанка
         /// </summary>
         public Vector2i GetChunkPosition() => new Vector2i(ChunkPositionX, ChunkPositionZ);
+        /// <summary>
+        /// Получить вектор 3
+        /// </summary>
+        public Vector3 GetVector3() => new Vector3(X, Y, Z);
 
         /// <summary>
         /// Разные ли 

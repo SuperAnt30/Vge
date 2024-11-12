@@ -160,9 +160,9 @@ namespace Vge.World.Chunk
                     SetBlockState(8, y, 3, new BlockState(5));
 
                     SetBlockState(8, y, 5, new BlockState(12));
-                    SetBlockState(8, y, 7, new BlockState(13));
-                    SetBlockState(8, y, 13, new BlockState(14));
-                    SetBlockState(8, y, 15, new BlockState(15));
+                    SetBlockState(9, y, 12, new BlockState(13));
+                    SetBlockState(10, y, 13, new BlockState(14));
+                    SetBlockState(11, y, 15, new BlockState(15));
                 }
 
 

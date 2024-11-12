@@ -96,6 +96,35 @@ namespace Vge.World.Chunk
             }
         }
 
+        /// <summary>
+        /// Сделать запрос на обновление близ лежащих псевдо чанков для альфа блоков
+        /// </summary>
+        /// <param name="x">координата чанка X</param>
+        /// <param name="y">координата псевдо чанка Y</param>
+        /// <param name="z">координата чанка Z</param>
+        public void ModifiedToRenderAlpha(int x, int y, int z)
+        {
+            ChunkRender chunk = GetChunkRender(x, z);
+            if (chunk != null)
+            {
+                if (!chunk.ModifiedToRenderAlpha(y))
+                {
+                    if (!chunk.ModifiedToRenderAlpha(y - 1))
+                    {
+                        chunk.ModifiedToRenderAlpha(y + 1);
+                    }
+                }
+            }
+            chunk = GetChunkRender(x + 1, z);
+            if (chunk != null) chunk.ModifiedToRenderAlpha(y);
+            chunk = GetChunkRender(x - 1, z);
+            if (chunk != null) chunk.ModifiedToRenderAlpha(y);
+            chunk = GetChunkRender(x, z + 1);
+            if (chunk != null) chunk.ModifiedToRenderAlpha(y);
+            chunk = GetChunkRender(x, z - 1);
+            if (chunk != null) chunk.ModifiedToRenderAlpha(y);
+        }
+
         public override string ToString() => string.Format("Ch:{0}|{1} Dr:{2}",
                _chunkMapping.Count, _chunkMapping.RegionCount, -1);
 

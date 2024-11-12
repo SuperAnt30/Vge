@@ -128,6 +128,16 @@ namespace Vge.Renderer.World
         /// Инициализация сектора данных чанка
         /// </summary>
         public void InitStorage(int y) => _storage = _chunkRender.StorageArrays[y];
+        /// <summary>
+        /// Задать Псевдо чанк с данными вокселей
+        /// </summary>
+        public void InitStorage(ChunkStorage chunkStorage)
+        {
+            if (chunkStorage.KeyCash != _storage.KeyCash)
+            {
+                _storage = chunkStorage;
+            }
+        }
 
         /// <summary>
         /// Инициализация AmbientOcclusion

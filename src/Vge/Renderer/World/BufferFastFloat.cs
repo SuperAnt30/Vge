@@ -16,6 +16,23 @@ namespace Vge.Renderer.World
             => _hBuffer = Marshal.AllocHGlobal(maxSize * sizeof(float));
 
         /// <summary>
+        /// Добавить массив значений
+        /// </summary>
+        public void AddRange(float[] items)
+        {
+            try
+            {
+                int count = items.Length;
+                Buffer.BlockCopy(items, 0, _buffer, Count * sizeof(float), count * sizeof(float));
+                Count += count;
+            }
+            catch
+            {
+                throw new Exception(Sr.GetString(Sr.OutOfRangeArray, Count));
+            }
+        }
+
+        /// <summary>
         /// Получить адрес буфера
         /// </summary>
         public override IntPtr ToBuffer()

@@ -73,6 +73,10 @@ public sealed class Ce
     /// Обзор в виде круга
     /// </summary>
     public static Vector2i[] OverviewCircles = new Vector2i[] { new Vector2i(0) };
+    /// <summary>
+    /// Обзор в виде Сферы для Альфа блоков
+    /// </summary>
+    public static Vector3i[] OverviewAlphaSphere = new Vector3i[] { new Vector3i(0) };
 
     /// <summary>
     /// Область в один блок без центра, 4 блоков

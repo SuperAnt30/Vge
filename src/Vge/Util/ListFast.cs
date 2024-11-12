@@ -88,6 +88,9 @@ namespace Vge.Util
         /// </summary>
         public void IndexNull(int index) => _buffer[index] = default(T);
 
+        public void Sort()
+            => Array.Sort<T>(_buffer, 0, Count, null);
+
         /// <summary>
         /// Очистить
         /// </summary>

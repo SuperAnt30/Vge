@@ -76,6 +76,35 @@ namespace Vge.Util
         }
 
         /// <summary>
+        /// Сгенерировать сферу для конкретного обзора без сортировки, столбами по Y
+        /// </summary>
+        public static Vector3i[] GenOverviewSphere(int overview)
+        {
+            ComparisonDistance comparison;
+            List<ComparisonDistance> r = new List<ComparisonDistance>();
+            for (int y = -overview; y <= overview; y++)
+            {
+                for (int x = -overview; x <= overview; x++)
+                {
+                    for (int z = -overview; z <= overview; z++)
+                    {
+                        comparison = new ComparisonDistance(x, y, z, Mth.Sqrt(x * x + y * y));
+                        if (comparison.Distance() - .3f <= overview)
+                        {
+                            r.Add(comparison);
+                        }
+                    }
+                }
+            }
+            Vector3i[] overviewSphere = new Vector3i[r.Count];
+            for (int i = 0; i < r.Count; i++)
+            {
+                overviewSphere[i] = r[i].GetPosition3d();
+            }
+            return overviewSphere;
+        }
+
+        /// <summary>
         /// Определение вращения
         /// </summary>
         public static Vector2 MotionAngle(float strafe, float forward, float friction, float yaw)

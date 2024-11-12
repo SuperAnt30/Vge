@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using WinGL.Util;
 
 namespace Vge.Renderer.World
 {
@@ -11,6 +12,11 @@ namespace Vge.Renderer.World
     /// </summary>
     public class ChunkRender : ChunkBase
     {
+        /// <summary>
+        /// Массив буфера блоков альфы
+        /// </summary>
+        private static readonly ListFast<BlockBufferDistance> _listAlphaBuffer = new ListFast<BlockBufferDistance>();
+
         /// <summary>
         /// Клиентский мир
         /// </summary>
@@ -27,11 +33,21 @@ namespace Vge.Renderer.World
         /// Сетка чанка альфа блоков
         /// </summary>
         private readonly MeshVoxel _meshAlpha;
+        /// <summary>
+        /// Список всех видимых альфа блоков
+        /// Координаты в битах 0000 yyyy zzzz xxxx
+        /// </summary>
+        private readonly List<ushort>[] _listAlphaBlock;
+        /// <summary>
+        /// Количество альфа блоков в чанке
+        /// </summary>
+        private int _countAlpha;
 
         /// <summary>
         /// Соседние чанки, заполняются перед рендером
         /// </summary>
         private readonly ChunkRender[] _chunks = new ChunkRender[8];
+        
 
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
@@ -40,6 +56,12 @@ namespace Vge.Renderer.World
             _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshUnique = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
+
+            _listAlphaBlock = new List<ushort>[NumberSections];
+            for (int index = 0; index < NumberSections; index++)
+            {
+                _listAlphaBlock[index] = new List<ushort>();
+            }
         }
 
         #region Modified
@@ -58,21 +80,18 @@ namespace Vge.Renderer.World
         /// Пометить что надо перерендерить сетку чанка
         /// </summary>
         public override void ModifiedToRender(int y)
-        {
-            _meshDense.IsModifiedRender = true;
-            //if (y >= 0 && y < COUNT_HEIGHT) meshSectionDense[y].isModifiedRender = true;
-        }
+            => _meshDense.IsModifiedRender = true;
 
         /// <summary>
         /// Пометить что надо перерендерить сетку чанка альфа блоков
         /// </summary>
         public bool ModifiedToRenderAlpha(int y)
         {
-            //if (y >= 0 && y < COUNT_HEIGHT && countSectionAlpha[y] > 0)
-            //{
-            //    meshAlpha.SetModifiedRender();
-            //    return true;
-            //}
+            if (y >= 0 && y < NumberSections && _listAlphaBlock[y].Count > 0)
+            {
+                _meshAlpha.IsModifiedRender = true;
+                return true;
+            }
             return false;
         }
 
@@ -100,40 +119,40 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Рендер псевдо чанка, сплошных и альфа блоков
+        /// Рендер чанка, сплошных и альфа блоков
         /// </summary>
-        public void Render(bool isDense)
+        public void Render()
         {
             long timeBegin = _worldClient.Game.ElapsedTicks();
 
+            Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
             Gi.VertexDense.Clear();
             Gi.VertexAlpha.Clear();
+            _listAlphaBuffer.Clear();
+            _countAlpha = 0;
+            for (int i = 0; i < NumberSections; i++)
+            {
+                _listAlphaBlock[i].Clear();
+            }
 
             ChunkStorage chunkStorage;
-            int cbY, realY, realZ, index, yb, x, z;
+            int cbX = CurrentChunkX << 4;
+            int cbZ = CurrentChunkY << 4;
+            int cbY, realY, index, yb, x, z, indexY, indexYZ;
             ushort data, id;
-            uint met;
-            //BlockBase block;
-            if (isDense)
-            {
-                //BlockRenderFull blockRender = Gi.BlockRendFull;
-                Gi.BlockRendFull.InitChunk(this);
-                //Gi.BlockRendUnique.InitChunk(this);
-                //Gi.BlockRendLiquid.InitChunk(this);
-            }
+
+            //BlockRenderFull blockRender = Gi.BlockRendFull;
+            Gi.BlockRendFull.InitChunk(this);
+            //Gi.BlockRendUnique.InitChunk(this);
+            //Gi.BlockRendLiquid.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
             
-
-            int indexY, indexYZ;
             for (cbY = 0; cbY < NumberSections; cbY++)
             {
                 chunkStorage = StorageArrays[cbY];
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
-                    if (isDense)
-                    {
-                        Gi.BlockRendFull.InitStorage(cbY);
-                    }
+                    Gi.BlockRendFull.InitStorage(cbY);
                     Gi.BlockAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
@@ -172,9 +191,22 @@ namespace Vge.Renderer.World
                                         Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
                                         Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
                                         Gi.Block.BlockRender.RenderSide();
+
+                                        if (!Gi.VertexAlpha.Empty())
+                                        {
+                                            _listAlphaBlock[cbY].Add((ushort)(yb << 8 | z << 4 | x));
+                                            _listAlphaBuffer.Add(new BlockBufferDistance()
+                                            {
+                                                BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
+                                                BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
+                                                Distance = Glm.Distance(posPlayer,
+                                                    new Vector3i(cbX | x, realY, cbZ | z))
+                                            });
+                                            Gi.VertexAlpha.Clear();
+                                        }
                                     }
                                 }
-                                else if (isDense) // Теряю время на ~0.006
+                                else
                                 {
                                     // Сплошной
                                     // Рендер сплошных, не прозрачных блоков
@@ -208,24 +240,105 @@ namespace Vge.Renderer.World
                             }
                         }
                     }
+                    if (_listAlphaBlock[cbY].Count > 0)
+                    {
+                        _countAlpha += _listAlphaBlock[cbY].Count;
+                    }
                 }
             }
             // Debug.Burden(1f);
 
             _meshDense.SetBuffer(Gi.VertexDense);
-            _meshAlpha.SetBuffer(Gi.VertexAlpha);
+            _AlphaBlocksSort();
 
             // Для отладочной статистики
             float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
-            if (isDense)
+            Debug.RenderChunckTime8 = time;// (Debug.RenderChunckTime8 * 100f + time) / 101f;
+            Debug.RenderChunckTime[(++Debug.dct) % 32] = time;
+        }
+
+        /// <summary>
+        /// Рендер видимых альфа блоков
+        /// </summary>
+        public void RenderAlpha()
+        {
+            if (_countAlpha > 0)
             {
-                Debug.RenderChunckTime8 = time;// (Debug.RenderChunckTime8 * 100f + time) / 101f;
-                Debug.RenderChunckTime[(++Debug.dct) % 32] = time;
-            }
-            else
-            {
+                long timeBegin = _worldClient.Game.ElapsedTicks();
+
+                int cbX = CurrentChunkX << 4;
+                int cbZ = CurrentChunkY << 4;
+
+                int cbY, i, x, y, z, realY, index, count;
+                ushort data, id;
+                ChunkStorage chunkStorage;
+                Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
+                Gi.VertexAlpha.Clear();
+                _listAlphaBuffer.Clear();
+                Gi.BlockAlphaRendFull.InitChunk(this);
+
+                for (cbY = 0; cbY < NumberSections; cbY++)
+                {
+                    count = _listAlphaBlock[cbY].Count;
+                    if (count > 0)
+                    {
+                        chunkStorage = StorageArrays[cbY];
+                        Gi.BlockAlphaRendFull.InitStorage(cbY);
+                        for (i = 0; i < count; i++)
+                        {
+                            index = _listAlphaBlock[cbY][i];
+                            x = index & 0xF;
+                            z = (index >> 4) & 0xF;
+                            y = index >> 8;
+                            realY = cbY << 4 | y;
+                            
+                            index = index & 0xFFF;
+                            data = chunkStorage.Data[index];
+                            id = (ushort)(data & 0xFFF);
+                            Gi.Block = Blocks.BlockObjects[id];
+                            Gi.Block.BlockRender.PosChunkX = x;
+                            Gi.Block.BlockRender.PosChunkY = realY;
+                            Gi.Block.BlockRender.PosChunkZ = z;
+                            if (Gi.Block.BlockRender.CheckSide())
+                            {
+                                // Определяем met блока
+                                Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                Gi.Block.BlockRender.RenderSide();
+                                _listAlphaBuffer.Add(new BlockBufferDistance()
+                                {
+                                    BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
+                                    BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
+                                    Distance = Glm.Distance(posPlayer,
+                                        new Vector3i(cbX | x, realY, cbZ | z))
+                                });
+                                Gi.VertexAlpha.Clear();
+                            }
+                        }
+                    }
+                }
+                _AlphaBlocksSort();
+
+                float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
                 Debug.RenderChunckTimeAlpha8 = (Debug.RenderChunckTimeAlpha8 * 7f + time) / 8f;
             }
+        }
+
+        /// <summary>
+        /// Отсортировать альфа блоки и подготовить буфер к бинду
+        /// </summary>
+        private void _AlphaBlocksSort()
+        {
+            int count = _listAlphaBuffer.Count;
+            if (count > 0)
+            {
+                _listAlphaBuffer.Sort();
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    Gi.VertexAlpha.AddBlockBufferDistance(_listAlphaBuffer[i]);
+                }
+            }
+            _meshAlpha.SetBuffer(Gi.VertexAlpha);
         }
 
         /// <summary>

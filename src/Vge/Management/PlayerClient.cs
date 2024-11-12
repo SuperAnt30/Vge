@@ -39,6 +39,24 @@ namespace Vge.Management
         public readonly EntityPos PositionFrame = new EntityPos();
 
         /// <summary>
+        /// Позиция камеры в блоке для альфа, в зависимости от вида (с глаз, с зади, спереди)
+        /// </summary>
+        public Vector3i PositionAlphaBlock { get; private set; }
+
+        /// <summary>
+        /// Позиция камеры в чанке для альфа, в зависимости от вида (с глаз, с зади, спереди)
+        /// </summary>
+        private Vector3i _positionAlphaChunk;
+        /// <summary>
+        /// Позиция когда был запрос рендера для альфа блоков для малого смещения, в чанке
+        /// </summary>
+        private Vector3i _positionAlphaBlockPrev;
+        /// <summary>
+        /// Позиция когда был запрос рендера для альфа блоков для большого смещения, за пределами чанка
+        /// </summary>
+        private Vector3i _positionAlphaChunkPrev;
+
+        /// <summary>
         /// Класс  игры
         /// </summary>
         private readonly GameBase _game;
@@ -66,6 +84,10 @@ namespace Vge.Management
         /// Количество тиков после последнего формирования FrustumCulling
         /// </summary>
         private int _countTickLastFrustumCulling;
+        /// <summary>
+        /// Высота для FrustumCulling
+        /// </summary>
+        private int _heightChinkFrustumCulling;
 
         public PlayerClient(GameBase game)
         {
@@ -113,6 +135,8 @@ namespace Vge.Management
             {
                 SetOverviewChunk(overviewChunk);
                 Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
+                Ce.OverviewAlphaSphere = Sundry.GenOverviewSphere(overviewChunk < Gi.UpdateAlphaChunk
+                    ? overviewChunk : Gi.UpdateAlphaChunk);
                 // Корректируем FrustumCulling
                 _InitFrustumCulling();
                 // Меняем в рендере мира
@@ -184,7 +208,7 @@ namespace Vge.Management
                 y1 = -Position.PositionY;
                 z1 = zb - 15;
                 x2 = xb + 15;
-                y2 = 128 - Position.PositionY;
+                y2 = _heightChinkFrustumCulling - Position.PositionY;
                 z2 = zb + 15;
 
                 if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
@@ -234,7 +258,7 @@ namespace Vge.Management
             if (Position.IsChange(PositionFrame))
             {   
                 PositionFrame.UpdateFrame(timeIndex, Position, PositionPrev);
-                _UpdateMatrixCamera();
+                _CameraHasBeenChanged();
             }
             //_game.Log.Log(Position.ToStringPos() + " | "
             //    + PositionPrev.ToStringPos() + " | "
@@ -265,7 +289,7 @@ namespace Vge.Management
                 Position.Z = z;
                 //_game.Log.Log(Position.ToStringPos() + " | "
                 //+ PositionPrev.ToStringPos());
-                _CameraHasBeenChanged();
+                //_CameraHasBeenChanged();
                 _game.TrancivePacket(new PacketC04PlayerPosition(
                     Position, false, Movement.Sprinting, false, IdWorld));
                 Debug.Player = Position.GetChunkPosition();
@@ -274,6 +298,69 @@ namespace Vge.Management
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)
             {
                 _InitFrustumCulling();
+            }
+
+            // Проверка на обновление чанков альфа блоков, в такте после перемещения
+            _UpdateChunkRenderAlphe();
+        }
+
+        /// <summary>
+        /// Проверка на обновление чанков альфа блоков, в такте после перемещения
+        /// </summary>
+        private void _UpdateChunkRenderAlphe()
+        {
+            PositionAlphaBlock = new Vector3i(Position.GetVector3());
+            _positionAlphaChunk = new Vector3i(PositionAlphaBlock.X >> 4, 
+                PositionAlphaBlock.Y >> 4, PositionAlphaBlock.Z >> 4);
+
+            if (!_positionAlphaChunk.Equals(_positionAlphaChunkPrev))
+            {
+                // Если смещение чанком
+                _positionAlphaChunkPrev = _positionAlphaChunk;
+                _positionAlphaBlockPrev = PositionAlphaBlock;
+
+                int chX = Position.ChunkPositionX;
+                int chY = Position.PositionY >> 4;
+                int chZ = Position.ChunkPositionZ;
+                Vector3i pos;
+                ChunkRender chunk = null;
+                int count = Ce.OverviewAlphaSphere.Length;
+                int x, z, xOld, zOld;
+                xOld = zOld = 0;
+                bool body = false;
+
+                for (int i = 0; i < count; i++)
+                {
+                    pos = Ce.OverviewAlphaSphere[i];
+                    x = pos.X + chX;
+                    z = pos.Y + chZ;
+
+                    if (body && x == xOld && z == zOld)
+                    {
+                        chunk.ModifiedToRenderAlpha(pos.Y + chY);
+                    }
+                    chunk = _game.World.ChunkPrClient.GetChunkRender(x, z);
+                    if (chunk != null)
+                    {
+                        chunk.ModifiedToRenderAlpha(pos.Y + chY);
+                        xOld = x;
+                        zOld = z;
+                        body = true;
+                    }
+                    else
+                    {
+                        body = false;
+                    }
+                }
+            }
+            else if (!PositionAlphaBlock.Equals(_positionAlphaBlockPrev))
+            {
+                // Если смещение блока
+                _positionAlphaBlockPrev = PositionAlphaBlock;
+                _game.World.ChunkPrClient.ModifiedToRenderAlpha(
+                    Position.ChunkPositionX,
+                    Position.PositionY >> 4,
+                    Position.ChunkPositionZ);
             }
         }
 
@@ -286,6 +373,7 @@ namespace Vge.Management
         {
             IdWorld = packet.IdWorld;
             _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
+            _heightChinkFrustumCulling = _game.World.ChunkPrClient.Settings.NumberBlocks;
         }
 
         /// <summary>

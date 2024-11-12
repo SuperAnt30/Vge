@@ -76,8 +76,12 @@ public sealed class Gi
     /// Буфер одного альфа кэш блока
     /// 128 / 4 = 32 квадов
     /// </summary>
-    public readonly static VertexBuffer VertexAlphaCache = new VertexBuffer(128);
+    // public readonly static VertexBuffer VertexAlphaCache = new VertexBuffer(128);
 
+    /// <summary>
+    /// Выбранный объект блока для рендера
+    /// </summary>
+    public static BlockBase Block;
     /// <summary>
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
     /// </summary>
@@ -86,6 +90,11 @@ public sealed class Gi
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
     /// </summary>
     public readonly static BlockRenderFull BlockAlphaRendFull = new BlockRenderFull(VertexAlpha);
+
+    /// <summary>
+    /// Какой радиус для рендера псевдо чанков альфа блоков, при смещении больше 16 блоков
+    /// </summary>
+    public const int UpdateAlphaChunk = 4;
     /// <summary>
     /// Объект рендера уникального блока с эффектом контраста (Not Mipmap)
     /// </summary>
@@ -95,6 +104,6 @@ public sealed class Gi
     /// </summary>
     //public readonly static BlockRenderLiquid BlockRendLiquid = new BlockRenderLiquid();
 
-    public static BlockBase Block;
+    
 
 }

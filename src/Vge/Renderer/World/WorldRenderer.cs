@@ -111,7 +111,14 @@ namespace Vge.Renderer.World
             for (i = 0; i < count; i++)
             {
                 chunkRender = list.GetNext();
-                chunkRender.Render(isDense);
+                if (isDense)
+                {
+                    chunkRender.Render();
+                }
+                else
+                {
+                    chunkRender.RenderAlpha();
+                }
                 chunkRender.ClearBufferChunks();
                 if (!_flagRenderLoopRunning) break;
             }
@@ -206,7 +213,7 @@ namespace Vge.Renderer.World
                         if (chunkRender.IsModifiedRender)
                         {
                             // Проверяем занят ли чанк уже рендером
-                            if (chunkRender.IsMeshDenseWait)// && chunkRender.IsMeshAlphaWait)
+                            if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
                             {
                                 // Обновление рендера псевдочанка
                                 Debug.CountUpdateChunck++;

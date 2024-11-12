@@ -10,6 +10,7 @@ namespace Vge.Util
     {
         private readonly int _x;
         private readonly int _y;
+        private readonly int _z;
         private readonly float _distance;
         private readonly bool _body;
 
@@ -17,6 +18,15 @@ namespace Vge.Util
         {
             _x = x;
             _y = y;
+            _z = 0;
+            _distance = distance;
+            _body = true;
+        }
+        public ComparisonDistance(int x, int y, int z, float distance)
+        {
+            _x = x;
+            _y = y;
+            _z = z;
             _distance = distance;
             _body = true;
         }
@@ -33,6 +43,10 @@ namespace Vge.Util
         /// Получить вектор
         /// </summary>
         public Vector2i GetPosition() => new Vector2i(_x, _y);
+        /// <summary>
+        /// Получить вектор 3d
+        /// </summary>
+        public Vector3i GetPosition3d() => new Vector3i(_x, _y, _z);
 
         /// <summary>
         /// Метод для сортировки
