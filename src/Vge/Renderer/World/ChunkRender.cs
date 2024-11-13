@@ -31,10 +31,6 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly MeshVoxel _meshDense;
         /// <summary>
-        /// Сетка чанков уникальных блоков
-        /// </summary>
-        private readonly MeshVoxel _meshUnique;
-        /// <summary>
         /// Сетка чанка альфа блоков
         /// </summary>
         private readonly MeshVoxel _meshAlpha;
@@ -59,7 +55,6 @@ namespace Vge.Renderer.World
         {
             _worldClient = worldClient;
             _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
-            _meshUnique = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
 
             _listAlphaBlock = new List<ushort>[NumberSections];
@@ -108,11 +103,6 @@ namespace Vge.Renderer.World
         public void DrawDense() => _meshDense.Draw();
 
         /// <summary>
-        /// Прорисовка уникальных блоков чанка
-        /// </summary>
-        public void DrawUnique() => _meshUnique.Draw();
-
-        /// <summary>
         /// Прорисовка альфа блоков чанка
         /// </summary>
         public void DrawAlpha() => _meshAlpha.Draw();
@@ -120,7 +110,6 @@ namespace Vge.Renderer.World
         public void DisposeMesh()
         {
             _meshDense.Dispose();
-            _meshUnique.Dispose();
             _meshAlpha.Dispose();
         }
 
@@ -133,7 +122,6 @@ namespace Vge.Renderer.World
 
             Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
             Gi.VertexDense.Clear();
-            Gi.VertexUnique.Clear();
             Gi.VertexAlpha.Clear();
             _listAlphaBuffer.Clear();
             _countAlpha = 0;
@@ -150,7 +138,6 @@ namespace Vge.Renderer.World
 
             //BlockRenderFull blockRender = Gi.BlockRendFull;
             Gi.BlockRendFull.InitChunk(this);
-            Gi.BlockUniqueRendFull.InitChunk(this);
             //Gi.BlockRendLiquid.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
             
@@ -160,7 +147,6 @@ namespace Vge.Renderer.World
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
                     Gi.BlockRendFull.InitStorage(cbY);
-                    Gi.BlockUniqueRendFull.InitStorage(cbY);
                     Gi.BlockAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
@@ -257,7 +243,6 @@ namespace Vge.Renderer.World
             // Debug.Burden(1f);
 
             _meshDense.SetBuffer(Gi.VertexDense);
-            _meshUnique.SetBuffer(Gi.VertexUnique);
             _AlphaBlocksSort();
 
             // Для отладочной статистики
@@ -369,17 +354,13 @@ namespace Vge.Renderer.World
         /// </summary>
         public void StartRenderingAlpha() => _meshAlpha.StatusRendering();
 
+        /// <summary>
+        /// Занести буфер сплошных блоков чанка если это требуется
+        /// </summary>
+        public void BindBufferDense() => _meshDense.BindBuffer();
 
         /// <summary>
-        /// Занести буфер сплошных блоков псевдо чанка если это требуется
-        /// </summary>
-        public void BindBufferDense()
-        {
-            _meshUnique.BindBuffer();
-            _meshDense.BindBuffer();
-        }
-        /// <summary>
-        /// Занести буфер альфа блоков псевдо чанка если это требуется
+        /// Занести буфер альфа блоков чанка если это требуется
         /// </summary>
         public void BindBufferAlpha() => _meshAlpha.BindBuffer();
 
@@ -436,8 +417,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Статсус не пустой для рендера сплошных или уникальных блоков
         /// </summary>
-        public bool NotNullMeshDenseOrUnique => _meshDense.Status != MeshVoxel.StatusMesh.Null
-            || _meshUnique.Status != MeshVoxel.StatusMesh.Null;
+        public bool NotNullMeshDense => _meshDense.Status != MeshVoxel.StatusMesh.Null;
         /// <summary>
         /// Статсус не пустой для рендера альфа блоков
         /// </summary>

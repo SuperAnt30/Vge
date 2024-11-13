@@ -10,6 +10,7 @@ out vec2 a_texCoord;
 out float fog_factor;
 out vec3 fog_color;
 out vec2 a_light;
+out float a_sharpness;
 
 uniform mat4 view;
 uniform float takt;
@@ -46,6 +47,7 @@ void main()
     a_light = vec2(lightBlock, lightSky);
     a_texCoord = v_texCoord;
 
+	a_sharpness = ((v_anim >> 24) & 0xFF);
     int frame = (v_anim & 0xFF);
     if (frame > 0)
     {

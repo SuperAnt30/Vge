@@ -124,17 +124,17 @@ namespace Vge.Renderer
             int wind = (int)window.Time() / 48 & 0x7F;
             ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
 
-            // Активация текстуры атласа с Mipmap
-            int atlasMipmap = ShVoxel.GetUniformLocation(gl, "atlas_mipmap");
+            // Активация текстуры атласа с размытостью (с Mipmap)
+            int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
             BindTextureAtlasBlocks();
             gl.ActiveTexture(GL.GL_TEXTURE0);
-            gl.Uniform1(atlasMipmap, 0);
+            gl.Uniform1(atlasBlurry, 0);
 
-            // Активация текстуры атласа без Mipmap
-            int atlas = ShVoxel.GetUniformLocation(gl, "atlas");
+            // Активация текстуры атласа с резкостью (без Mipmap)
+            int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
             gl.ActiveTexture(GL.GL_TEXTURE1);
             gl.Enable(GL.GL_TEXTURE_2D);
-            gl.Uniform1(atlas, 1);
+            gl.Uniform1(atlasSharpness, 1);
             gl.Disable(GL.GL_TEXTURE_2D);
 
             // Активация текстуры карты света

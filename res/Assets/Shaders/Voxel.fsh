@@ -5,17 +5,17 @@ in vec2 a_texCoord;
 in float fog_factor;
 in vec3 fog_color;
 in vec2 a_light;
+in float a_sharpness;
 
 out vec4 f_color;
 
-uniform int mipmap;
-uniform sampler2D atlas_mipmap;
-uniform sampler2D atlas;
+uniform sampler2D atlas_blurry;
+uniform sampler2D atlas_sharpness;
 uniform sampler2D light_map;
 
 void main()
 {
-    vec4 tex_color = texture((mipmap == 1 ? atlas_mipmap : atlas), a_texCoord);
+	vec4 tex_color = texture((a_sharpness == 0 ? atlas_blurry : atlas_sharpness), a_texCoord);
 	if (tex_color.a < 0.1) discard;
 //    vec4 light_color = texture(light_map, a_light);
 //    vec4 color = a_color * tex_color * light_color;

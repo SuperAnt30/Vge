@@ -279,17 +279,11 @@ namespace Vge.Renderer.World
             {
                 chunkRender = _arrayChunkRender[i];
                 // Прорисовка сплошных блоков чанка
-                if (chunkRender.NotNullMeshDenseOrUnique)
+                if (chunkRender.NotNullMeshDense)
                 {
                     _VoxelsShaderChunk(_game.Render.ShVoxel, 
                         chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
-                    _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 1);
                     chunkRender.DrawDense();
-                    if (chunkRender.Distance < Gi.MaxDistanceNotMipMap)
-                    {
-                        _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 0);
-                        chunkRender.DrawUnique();
-                    }
                 }
             }
 
@@ -306,8 +300,6 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxelAlpha()
         {
-            _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 1);
-
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
 
