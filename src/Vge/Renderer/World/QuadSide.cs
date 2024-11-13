@@ -38,7 +38,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public byte Wind;
         /// <summary>
-        /// Резкость = 1; mipmap = 0;
+        /// Резкость = 4; mipmap = 0;
         /// </summary>
         public byte Sharpness;
 
@@ -265,11 +265,11 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Резкость = 1; mipmap = 0;
+        /// Резкость = 4; mipmap = 0;
         /// </summary>
-        public QuadSide SetSharpness(byte sharpness = 1)
+        public QuadSide SetSharpness()
         {
-            Sharpness = sharpness;
+            Sharpness = 4;
             return this;
         }
 

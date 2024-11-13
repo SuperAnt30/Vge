@@ -59,8 +59,9 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Добавить вершину
         /// </summary>
+        /// <param name="flag">По битовые данные, 0 - wind (ветер), 1 - wave (волна), 2 - sharpness (резкость)</param>
         public void AddVertex(float x, float y, float z, float u, float v, 
-            byte r, byte g, byte b, byte light, byte sharpness, byte wind = 0)
+            byte r, byte g, byte b, byte light, byte flag)
         {
             BufferFloat.Add(x);
             BufferFloat.Add(y);
@@ -74,8 +75,8 @@ namespace Vge.Renderer.World
             BufferByte.Add(light);
             BufferByte.Add(0);
             BufferByte.Add(0);
-            BufferByte.Add(wind);
-            BufferByte.Add(sharpness);
+            BufferByte.Add(flag);
+            BufferByte.AddNull();
         }
 
         public void Dispose()
