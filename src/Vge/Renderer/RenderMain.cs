@@ -109,8 +109,9 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер Voxels
         /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         /// <param name="torchInHand">0-15 яркость в руке</param>
-        public void ShaderBindVoxels(float[] view, int overview, 
+        public void ShaderBindVoxels(float[] view, float timeIndex, int overview, 
             float colorFogR, float colorFogG, float colorFogB, byte torchInHand)
         {
             ShVoxel.Bind(gl);
@@ -119,6 +120,9 @@ namespace Vge.Renderer
             ShVoxel.SetUniform1(gl, "overview", (float)overview);
             ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
             ShVoxel.SetUniform1(gl, "torch", (float)torchInHand);
+            // Ветер, значение от -1 до 1
+            int wind = (int)window.Time() / 48 & 0x7F;
+            ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
 
             // Активация текстуры атласа с Mipmap
             int atlasMipmap = ShVoxel.GetUniformLocation(gl, "atlas_mipmap");

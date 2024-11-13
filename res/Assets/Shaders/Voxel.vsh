@@ -13,6 +13,7 @@ out vec2 a_light;
 
 uniform mat4 view;
 uniform float takt;
+uniform float wind;
 uniform float overview;
 uniform vec3 colorfog;
 uniform vec3 pos;
@@ -61,6 +62,16 @@ void main()
         a_texCoord.y += t * 0.015625;
     }
     
-    gl_Position = view * vec4(pos + v_position, 1.0);
-    a_color = vec4(vec3(r, g, b), 1.0);
+	if (((v_anim >> 16) & 0xFF) == 1)
+    {
+        vec3 posanim = v_position;
+        posanim.x += wind;
+        posanim.z += wind;
+        gl_Position = view * vec4(pos + posanim, 1.0);
+    }
+    else
+    {
+        gl_Position = view * vec4(pos + v_position, 1.0);
+    }
+    a_color = vec4(r, g, b, 1.0);
 }

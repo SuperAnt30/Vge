@@ -43,17 +43,17 @@ namespace Vge.World.Block.List
                 _quads[i] = new QuadSide[] {
                     new QuadSide((byte)(_biomeColor ? 1 : 0)).SetTexture(Particle)
                     .SetSide(Pole.South, true, -2, 0, 8, 18, 16, 8).SetRotate(Glm.Pi45)
-                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]),//.Wind(),
+                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]).SetWind().SetSharpness(),
                     new QuadSide((byte)(_biomeColor ? 1 : 0)).SetTexture(Particle)
                     .SetSide(Pole.East, true, 8, 0, -2, 8, 16, 18).SetRotate(Glm.Pi45)
-                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]),//.Wind()
+                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]).SetWind().SetSharpness(),
 
                     new QuadSide((byte)(_biomeColor ? 1 : 0)).SetTexture(Particle, 16, 0, 0, 16)
                     .SetSide(Pole.North, true, -2, 0, 8, 18, 16, 8).SetRotate(Glm.Pi45)
-                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]),//.Wind(),
+                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]).SetWind().SetSharpness(),
                     new QuadSide((byte)(_biomeColor ? 1 : 0)).SetTexture(Particle, 16, 0, 0, 16)
                     .SetSide(Pole.West, true, 8, 0, -2, 8, 16, 18).SetRotate(Glm.Pi45)
-                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i])//.Wind()
+                    .SetTranslate(offsetMetX[i], 0, offsetMetZ[i]).SetWind().SetSharpness(),
                 };
             }
         }

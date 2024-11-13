@@ -267,8 +267,17 @@ namespace Vge.Renderer.World
                     blockUV.PosCenterZ = PosChunkZ;
                     blockUV.AnimationFrame = _rectangularSide.AnimationFrame;
                     blockUV.AnimationPause = _rectangularSide.AnimationPause;
+                    blockUV.Sharpness = _rectangularSide.Sharpness;
                     blockUV.Vertex = _rectangularSide.Vertex;
-                    blockUV.Building();
+                    if (_rectangularSide.Wind == 0)
+                    {
+                        blockUV.Building();
+                    }
+                    else
+                    {
+                        blockUV.BuildingWind(_rectangularSide.Wind);
+                    }
+                    
 
                     //if (damagedBlocksValue != -1)
                     //{

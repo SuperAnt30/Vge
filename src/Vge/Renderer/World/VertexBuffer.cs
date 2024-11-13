@@ -60,7 +60,7 @@ namespace Vge.Renderer.World
         /// Добавить вершину
         /// </summary>
         public void AddVertex(float x, float y, float z, float u, float v, 
-            byte r, byte g, byte b, byte light, byte height = 0)
+            byte r, byte g, byte b, byte light, byte sharpness, byte wind = 0)
         {
             BufferFloat.Add(x);
             BufferFloat.Add(y);
@@ -74,8 +74,8 @@ namespace Vge.Renderer.World
             BufferByte.Add(light);
             BufferByte.Add(0);
             BufferByte.Add(0);
-            BufferByte.Add(height);
-            BufferByte.AddNull();
+            BufferByte.Add(wind);
+            BufferByte.Add(sharpness);
         }
 
         public void Dispose()

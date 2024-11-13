@@ -37,6 +37,10 @@ namespace Vge.Renderer.World
         /// 0 - нет, 1 - вверхние точки, 2 - нижние
         /// </summary>
         public byte Wind;
+        /// <summary>
+        /// Резкость = 1; mipmap = 0;
+        /// </summary>
+        public byte Sharpness;
 
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
@@ -257,6 +261,15 @@ namespace Vge.Renderer.World
         public QuadSide SetWind(byte wind = 1)
         {
             Wind = wind;
+            return this;
+        }
+
+        /// <summary>
+        /// Резкость = 1; mipmap = 0;
+        /// </summary>
+        public QuadSide SetSharpness(byte sharpness = 1)
+        {
+            Sharpness = sharpness;
             return this;
         }
 
