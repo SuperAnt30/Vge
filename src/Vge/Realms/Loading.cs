@@ -55,8 +55,10 @@ namespace Vge.Realms
             // Виджет Gui
             FileToBufferedImage(vs[1]);
             OnStep();
-            // AtlasBlocks
-            FileToBufferedImage(vs[2], true);
+            // AtlasBlocks c mipmap
+            FileToBufferedImage(vs[2], 0, true);
+            // AtlasBlocks без mipmap
+            FileToBufferedImage(vs[2], 1);
             OnStep();
         }
 
@@ -76,9 +78,10 @@ namespace Vge.Realms
         /// Конвертировать картинку в структуру BufferedImage
         /// и занести в массиф буферов
         /// </summary>
-        protected BufferedImage FileToBufferedImage(string fileName, bool minmap = false)
+        protected BufferedImage FileToBufferedImage(string fileName, 
+            uint activeTextureIndex = 0, bool minmap = false)
         {
-            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName, minmap);
+            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName, activeTextureIndex, minmap);
             buffereds.Add(buffered);
             return buffered;
         }

@@ -21,6 +21,10 @@
         /// Нужно ли делать MinMap
         /// </summary>
         public bool FlagMipMap;
+        /// <summary>
+        /// Номер активации текустуры
+        /// </summary>
+        public uint ActiveTextureIndex = 0;
 
         public BufferedImage(int width, int height, byte[] buffer)
         {

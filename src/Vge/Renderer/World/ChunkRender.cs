@@ -98,13 +98,14 @@ namespace Vge.Renderer.World
         #endregion
 
         /// <summary>
-        /// Прорисовка сплошных и уникальных блоков чанка
+        /// Прорисовка сплошных блоков чанка
         /// </summary>
-        public void DrawDenseUnique()
-        {
-            _meshDense.Draw();
-            _meshUnique.Draw();
-        }
+        public void DrawDense() => _meshDense.Draw();
+
+        /// <summary>
+        /// Прорисовка уникальных блоков чанка
+        /// </summary>
+        public void DrawUnique() => _meshUnique.Draw();
 
         /// <summary>
         /// Прорисовка альфа блоков чанка
@@ -127,6 +128,7 @@ namespace Vge.Renderer.World
 
             Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
             Gi.VertexDense.Clear();
+            Gi.VertexUnique.Clear();
             Gi.VertexAlpha.Clear();
             _listAlphaBuffer.Clear();
             _countAlpha = 0;
@@ -143,7 +145,7 @@ namespace Vge.Renderer.World
 
             //BlockRenderFull blockRender = Gi.BlockRendFull;
             Gi.BlockRendFull.InitChunk(this);
-            //Gi.BlockRendUnique.InitChunk(this);
+            Gi.BlockUniqueRendFull.InitChunk(this);
             //Gi.BlockRendLiquid.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
             
@@ -153,6 +155,7 @@ namespace Vge.Renderer.World
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
                     Gi.BlockRendFull.InitStorage(cbY);
+                    Gi.BlockUniqueRendFull.InitStorage(cbY);
                     Gi.BlockAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
@@ -249,6 +252,7 @@ namespace Vge.Renderer.World
             // Debug.Burden(1f);
 
             _meshDense.SetBuffer(Gi.VertexDense);
+            _meshUnique.SetBuffer(Gi.VertexUnique);
             _AlphaBlocksSort();
 
             // Для отладочной статистики

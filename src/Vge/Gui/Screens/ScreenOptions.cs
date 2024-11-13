@@ -167,6 +167,7 @@ namespace Vge.Gui.Screens
                 if (isQualitatively)
                 {
                     Gi.BlockRendFull.InitAmbientOcclusion();
+                    Gi.BlockUniqueRendFull.InitAmbientOcclusion();
                 }
             }
             

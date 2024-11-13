@@ -114,6 +114,7 @@ namespace WinGL.OpenGL
                 gl.GenTextures(1, id);
                 key = id[0];
             }
+            gl.ActiveTexture(GL.GL_TEXTURE0 + image.ActiveTextureIndex);
             //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
             gl.BindTexture(GL.GL_TEXTURE_2D, key);
             gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,

@@ -32,7 +32,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока
         /// </summary>
-        public bool FullBlock { get; private set; } = true;
+        public bool FullBlock { get; protected set; } = true;
         /// <summary>
         /// Блок жидкости: вода, лава, нефть
         /// </summary>
@@ -40,7 +40,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Является ли эта модель не блоком, со всеми сторонами и прозрачной
         /// </summary>
-        public bool IsUnique { get; private set; } = false;
+        public bool IsUnique { get; protected set; } = false;
         /// <summary>
         /// Явлыется ли блок небом
         /// </summary>

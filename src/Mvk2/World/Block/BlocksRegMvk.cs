@@ -24,6 +24,7 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("GlassGreen", new BlockUniTranslucent(322, .2f, .9f, .2f));
             BlocksReg.RegisterBlockClass("GlassBlue", new BlockUniTranslucent(322, .7f, .8f, 1f));
             BlocksReg.RegisterBlockClass("GlassPurple", new BlockUniTranslucent(322, 1f, .5f, 1f));
+            BlocksReg.RegisterBlockClass("Grass", new BlockGrass(197)); // 195
         }
     }
 }

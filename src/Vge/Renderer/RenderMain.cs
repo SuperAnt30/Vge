@@ -116,19 +116,31 @@ namespace Vge.Renderer
             ShVoxel.Bind(gl);
             ShVoxel.SetUniformMatrix4(gl, "view", view);
             ShVoxel.SetUniform1(gl, "takt", window.Game.TickCounter);
-            ShVoxel.SetUniform1(gl, "overview", overview);
+            ShVoxel.SetUniform1(gl, "overview", (float)overview);
             ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
-            ShVoxel.SetUniform1(gl, "torch", torchInHand);
+            ShVoxel.SetUniform1(gl, "torch", (float)torchInHand);
 
-            int atlas = ShVoxel.GetUniformLocation(gl, "atlas");
-            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            // Активация текстуры атласа с Mipmap
+            int atlasMipmap = ShVoxel.GetUniformLocation(gl, "atlas_mipmap");
             BindTextureAtlasBlocks();
-            gl.Uniform1(atlas, 0);
-            TextureLightmapEnable();
-            gl.Uniform1(lightMap, 1);
-            TextureLightmapDisable();
+            gl.ActiveTexture(GL.GL_TEXTURE0);
+            gl.Uniform1(atlasMipmap, 0);
 
-            
+            // Активация текстуры атласа без Mipmap
+            int atlas = ShVoxel.GetUniformLocation(gl, "atlas");
+            gl.ActiveTexture(GL.GL_TEXTURE1);
+            gl.Enable(GL.GL_TEXTURE_2D);
+            gl.Uniform1(atlas, 1);
+            gl.Disable(GL.GL_TEXTURE_2D);
+
+            // Активация текстуры карты света
+            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            gl.ActiveTexture(GL.GL_TEXTURE2);
+            gl.Enable(GL.GL_TEXTURE_2D);
+            gl.Uniform1(lightMap, 2);
+            gl.Disable(GL.GL_TEXTURE_2D);
+
+            gl.ActiveTexture(GL.GL_TEXTURE0);
         }
 
         #endregion
@@ -170,26 +182,6 @@ namespace Vge.Renderer
         /// Создать текстуру основного шрифта
         /// </summary>
         public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1, this, 0);
-
-        /// <summary>
-        /// Активировать мульти текстуру освещения
-        /// </summary>
-        public void TextureLightmapEnable()
-        {
-            gl.ActiveTexture(GL.GL_TEXTURE1);
-            TextureEnable();
-            gl.ActiveTexture(GL.GL_TEXTURE0);
-        }
-
-        /// <summary>
-        /// Деактивировать мульти текстуру освещения
-        /// </summary>
-        public void TextureLightmapDisable()
-        {
-            gl.ActiveTexture(GL.GL_TEXTURE1);
-            TextureDisable();
-            gl.ActiveTexture(GL.GL_TEXTURE0);
-        }
 
         /// <summary>
         /// Задать текстуру заставки

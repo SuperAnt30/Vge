@@ -105,6 +105,9 @@ namespace WinGL.OpenGL
         public void SetUniform1(GL gl, string uniformName, float v1)
             => gl.Uniform1(GetUniformLocation(gl, uniformName), v1);
 
+        public void SetUniform1(GL gl, string uniformName, int v1)
+            => gl.Uniform1(GetUniformLocation(gl, uniformName), v1);
+
         public void SetUniform2(GL gl, string uniformName, float v1, float v2)
             => gl.Uniform2(GetUniformLocation(gl, uniformName), v1, v2);
 

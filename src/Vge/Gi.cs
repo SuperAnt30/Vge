@@ -68,6 +68,11 @@ public sealed class Gi
     /// </summary>
     public readonly static VertexBuffer VertexDense = new VertexBuffer(128000);
     /// <summary>
+    /// Буфер для склейки рендера уникальных блоков всего ряда
+    /// 128000 / 4 = 32000 квадов
+    /// </summary>
+    public readonly static VertexBuffer VertexUnique = new VertexBuffer(128000);
+    /// <summary>
     /// Буфер для склейки рендера альфа блоков всего ряда
     /// 128000 / 4 = 32000 квадов
     /// </summary>
@@ -86,6 +91,10 @@ public sealed class Gi
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
     /// </summary>
     public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull(VertexDense);
+    /// <summary>
+    /// Объект рендера целого блока с эффектом размытия (Not Mipmap)
+    /// </summary>
+    public readonly static BlockRenderFull BlockUniqueRendFull = new BlockRenderFull(VertexUnique);
     /// <summary>
     /// Объект рендера целого блока с эффектом размытия (Mipmap)
     /// </summary>

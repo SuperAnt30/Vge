@@ -169,12 +169,15 @@ namespace Vge.Renderer.World
 
             // Обновить кадр основного игрока, камера и прочее
             _game.Player.UpdateFrame(timeIndex);
-            
+
             // Небо
             //DrawSky(timeIndex);
 
+            // Биндим шейдор для вокселей
+            _game.Render.ShaderBindVoxels(_game.Player.View,
+                _overviewBlock, 1, 1, 1, 15);
             // Рисуем воксели сплошных и уникальных блоков
-            _DrawVoxel();
+            _DrawVoxelDense();
 
             // Сущности
             //DrawEntities(timeIndex);
@@ -185,6 +188,7 @@ namespace Vge.Renderer.World
             //DrawClouds(timeIndex);
 
             // Рисуем воксели альфа
+            
             _DrawVoxelAlpha();
 
             // Прорисовка руки
@@ -256,7 +260,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Рисуем воксели сплошных и уникальных блоков
         /// </summary>
-        private void _DrawVoxel()
+        private void _DrawVoxelDense()
         {
             if (Debug.IsDrawVoxelLine)
             {
@@ -269,21 +273,20 @@ namespace Vge.Renderer.World
                 gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
             }
 
-            // Биндим шейдор для вокселей
-            _game.Render.ShaderBindVoxels(_game.Player.View,
-                _overviewBlock, 1, 1, 1, 15);
-
             int count = _arrayChunkRender.Count;
             ChunkRender chunkRender;
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
-                /// Прорисовка сплошных блоков чанка
+                // Прорисовка сплошных блоков чанка
                 if (chunkRender.NotNullMeshDenseOrUnique)
                 {
                     _VoxelsShaderChunk(_game.Render.ShVoxel, 
                         chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
-                    chunkRender.DrawDenseUnique();
+                    _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 1);
+                    chunkRender.DrawDense();
+                    _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 0);
+                    chunkRender.DrawUnique();
                 }
             }
 
@@ -300,9 +303,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxelAlpha()
         {
-            // Биндим шейдор для вокселей
-            _game.Render.ShaderBindVoxels(_game.Player.View,
-                _overviewBlock, 1, 1, 1, 15);
+            _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 1);
 
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
@@ -328,13 +329,11 @@ namespace Vge.Renderer.World
         {
             int x = chunkX << 4;
             int z = chunkY << 4;
-
             shader.SetUniform3(_game.GetOpenGL(), "pos",
                 x - _game.Player.PositionFrame.X,
                 -_game.Player.PositionFrame.Y,
                 z - _game.Player.PositionFrame.Z
             );
-
             shader.SetUniform3(_game.GetOpenGL(), "camera",
                 _game.Player.PositionFrame.X - x,
                 _game.Player.PositionFrame.Y,
