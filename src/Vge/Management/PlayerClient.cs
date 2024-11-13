@@ -190,7 +190,7 @@ namespace Vge.Management
 
             int i, xc, zc, xb, zb, x1, y1, z1, x2, y2, z2;
             ChunkRender chunk;
-            Vector2i vec;
+            Vector3i vec;
             ListFast<Vector2i> debug = Ce.IsDebugDrawChunks ? new ListFast<Vector2i>() : null;
             FrustumCulling.Clear();
             int countOC = Ce.OverviewCircles.Length;
@@ -216,6 +216,7 @@ namespace Vge.Management
                     chunk = _game.World.ChunkPrClient.GetChunkRender(xc + chunkPosX, zc + chunkPosZ);
                     if (chunk != null)
                     {
+                        chunk.Distance = vec.Z;
                         FrustumCulling.Add(chunk);
                     }
                     else

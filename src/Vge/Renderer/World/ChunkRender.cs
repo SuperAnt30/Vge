@@ -18,6 +18,11 @@ namespace Vge.Renderer.World
         private static readonly ListFast<BlockBufferDistance> _listAlphaBuffer = new ListFast<BlockBufferDistance>();
 
         /// <summary>
+        /// Дистанция до камеры, для рендера, пополняется в момент FrustumCulling
+        /// </summary>
+        public int Distance;
+
+        /// <summary>
         /// Клиентский мир
         /// </summary>
         private readonly WorldClient _worldClient;

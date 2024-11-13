@@ -285,8 +285,11 @@ namespace Vge.Renderer.World
                         chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
                     _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 1);
                     chunkRender.DrawDense();
-                    _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 0);
-                    chunkRender.DrawUnique();
+                    if (chunkRender.Distance < Gi.MaxDistanceNotMipMap)
+                    {
+                        _game.Render.ShVoxel.SetUniform1(gl, "mipmap", 0);
+                        chunkRender.DrawUnique();
+                    }
                 }
             }
 

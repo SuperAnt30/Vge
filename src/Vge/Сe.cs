@@ -70,9 +70,9 @@ public sealed class Ce
    **/
 
     /// <summary>
-    /// Обзор в виде круга
+    /// Обзор в виде круга, z дистанция
     /// </summary>
-    public static Vector2i[] OverviewCircles = new Vector2i[] { new Vector2i(0) };
+    public static Vector3i[] OverviewCircles = new Vector3i[] { new Vector3i(0) };
     /// <summary>
     /// Обзор в виде Сферы для Альфа блоков
     /// </summary>

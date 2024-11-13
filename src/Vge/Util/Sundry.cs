@@ -51,7 +51,7 @@ namespace Vge.Util
         /// <summary>
         /// Сгенерировать кольца для конкретного обзора
         /// </summary>
-        public static Vector2i[] GenOverviewCircles(int overview)
+        public static Vector3i[] GenOverviewCircles(int overview)
         {
             ComparisonDistance comparison;
             List<ComparisonDistance> r = new List<ComparisonDistance>();
@@ -67,7 +67,7 @@ namespace Vge.Util
                 }
             }
             r.Sort();
-            Vector2i[] overviewCircles = new Vector2i[r.Count];
+            Vector3i[] overviewCircles = new Vector3i[r.Count];
             for (int i = 0; i < r.Count; i++)
             {
                 overviewCircles[i] = r[i].GetPosition();

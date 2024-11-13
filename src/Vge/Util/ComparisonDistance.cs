@@ -40,9 +40,9 @@ namespace Vge.Util
         /// </summary>
         public bool IsEmpty() => !_body;
         /// <summary>
-        /// Получить вектор
+        /// Получить вектор xy и z это дистанция
         /// </summary>
-        public Vector2i GetPosition() => new Vector2i(_x, _y);
+        public Vector3i GetPosition() => new Vector3i(_x, _y, (int)_distance);
         /// <summary>
         /// Получить вектор 3d
         /// </summary>

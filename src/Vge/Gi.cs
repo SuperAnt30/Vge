@@ -92,7 +92,7 @@ public sealed class Gi
     /// </summary>
     public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull(VertexDense);
     /// <summary>
-    /// Объект рендера целого блока с эффектом размытия (Not Mipmap)
+    /// Объект рендера целого блока без эффекта размытия (Not Mipmap)
     /// </summary>
     public readonly static BlockRenderFull BlockUniqueRendFull = new BlockRenderFull(VertexUnique);
     /// <summary>
@@ -105,14 +105,7 @@ public sealed class Gi
     /// </summary>
     public const int UpdateAlphaChunk = 4;
     /// <summary>
-    /// Объект рендера уникального блока с эффектом контраста (Not Mipmap)
+    /// Дистанция в чанках, для прорисовки сетки без MipMap, как правило это уникальные блоки
     /// </summary>
-    //public readonly static BlockRenderUnique BlockRendUnique = new BlockRenderUnique();
-    /// <summary>
-    /// Объект рендера жидкого блока с эффектом контраста (Not Mipmap)
-    /// </summary>
-    //public readonly static BlockRenderLiquid BlockRendLiquid = new BlockRenderLiquid();
-
-    
-
+    public const int MaxDistanceNotMipMap = 12;
 }
