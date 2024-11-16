@@ -40,6 +40,8 @@ internal sealed class Sr
     internal const string ItIsImpossibleToCompareTwoObjects = "Невозможно сравнить два объекта";
     internal const string OutOfRangeArray = "Вне диапазона массива, количество {0}";
     internal const string OutOfRange = "Вне диапазона, значение {0}";
+    internal const string InvalidEndJsonReadTag = "Некорректный тег чтения Json, отсутствует завершение {0} файла: {1}";
+    internal const string InvalidJsonReadTag = "Некорректный тег чтения Json, символ {0} файла: {1}";
 
     #endregion
 

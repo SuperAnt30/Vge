@@ -1,7 +1,7 @@
 ﻿using Vge.Util;
 using WinGL.Util;
 
-namespace Vge.Renderer.World
+namespace Vge.World.Block
 {
     /// <summary>
     /// Прямоугольная сторона блока или элемента блока

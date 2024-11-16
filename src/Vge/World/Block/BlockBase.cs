@@ -1,5 +1,6 @@
-﻿using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics;
+using Vge.Json;
 using Vge.Renderer.World;
 using Vge.Util;
 using WinGL.Util;
@@ -162,10 +163,11 @@ namespace Vge.World.Block
         /// <summary>
         /// Инициализировать блок
         /// </summary>
-        public virtual void Initialization(ushort id, string alias)
+        public void Initialization(ushort id, string alias)
         {
             Id = id;
             Alias = alias;
+            _ReadStateFromJson();
             _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;
@@ -182,6 +184,58 @@ namespace Vge.World.Block
         /// Дополнительная инициализация блока после инициализации предметов
         /// </summary>
         public virtual void InitializationAfterItems() { }
+
+        #endregion
+
+        #region Методы для импорта данных с json
+
+        /// <summary>
+        /// Прочесть состояние блока из Json формы
+        /// </summary>
+        public void _ReadStateFromJson()
+        {
+            JsonRead json = new JsonRead(Options.PathBlocks + Alias + ".json");
+            if (json.IsThereFile)
+            {
+                JsonCompound compound = json.Compound;
+                try
+                {
+                    // Статы
+                    if (compound.IsKey("LightOpacity")) LightOpacity = (byte)compound.GetInt("LightOpacity");
+                    if (compound.IsKey("LightValue")) LightValue = (byte)compound.GetInt("LightValue");
+                    if (compound.IsKey("Translucent")) Translucent = compound.GetBool("Translucent");
+                    if (compound.IsKey("АmbientOcclusion")) АmbientOcclusion = compound.GetBool("АmbientOcclusion");
+                    if (compound.IsKey("BiomeColor")) BiomeColor = compound.GetBool("BiomeColor");
+                    if (compound.IsKey("Shadow")) Shadow = compound.GetBool("Shadow");
+
+                    if (compound.IsKey("Variants"))
+                    {
+                        JsonCompound[] variants = compound.GetArray("Variants").ToArrayObject();
+                        _quads = new QuadSide[1][];
+                        _quads[0] = new QuadSide[variants.Length];
+                        for (int i = 0; i < variants.Length; i++)
+                        {
+                            _quads[0][i] = new QuadSide().SetTexture(variants[i].GetInt("texture"))
+                                .SetSide((Pole)variants[i].GetInt("side"));
+                        }
+                    }
+
+                    int fb = compound.GetInt("fullblock");
+                    float fb2 = compound.GetFloat("fullblock2");
+                    int[] arI = compound.GetArray("Int").ToArrayInt();
+                    float[] arF = compound.GetArray("Float").ToArrayFloat();
+                    JsonCompound[] jsonArray = compound.GetArray("Pos").ToArrayObject();
+                    JsonArray jsonObject2 = compound.GetObject("variants").GetArray("normal");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+            }
+            return;
+            //Shadow = false;
+        }
 
         #endregion
 
@@ -243,6 +297,8 @@ namespace Vge.World.Block
         }
 
         #endregion
+
+        
 
         public override string ToString() => Id.ToString() + " " + Alias;
     }

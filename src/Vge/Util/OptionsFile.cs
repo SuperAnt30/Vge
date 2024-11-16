@@ -21,7 +21,7 @@ namespace Vge.Util
         {
             if (File.Exists(_fileName))
             {
-                //получить доступ к  существующему либо создать новый
+                // Получить доступ к существующему либо создать новый
                 using (StreamReader file = new StreamReader(_fileName))
                 {
                     while (true)

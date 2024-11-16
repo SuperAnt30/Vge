@@ -1,6 +1,7 @@
 ﻿using Mvk2.Util;
 using System;
 using Vge.Audio;
+using Vge.Util;
 
 namespace Mvk2.Audio
 {
@@ -15,11 +16,11 @@ namespace Mvk2.Audio
         public override void InitializeSample()
         {
             AudioSample sample = new AudioSample();
-            sample.LoadWave(OptionsMvk.PathSounds + "say1.wav");
+            sample.LoadWave(Options.PathSounds + "say1.wav");
             items[0] = sample;
             OnStep();
             sample = new AudioSample();
-            sample.LoadOgg(OptionsMvk.PathSounds + "Click.ogg");
+            sample.LoadOgg(Options.PathSounds + "Click.ogg");
             items[1] = sample;
             OnStep();
         }

@@ -1,0 +1,26 @@
+{
+    "Shadow": true,
+	"Variants": [
+		{ "texture":2, "side":0 },
+		{ "texture":2, "side":1 },
+		{ "texture":2, "side":2 },
+		{ "texture":2, "side":3 },
+		{ "texture":2, "side":4 },
+		{ "texture":2, "side":5 }
+	],
+    "variants": {
+        "normal": [
+            { "model": "stone" },
+            { "model": "stone_mirrored" },
+            { "model": "stone", "y": 180 },
+            { "model": "stone_mirrored", "y": 180 }
+        ]
+    },
+	"Pos":[{x:1},{y:4},{z:3}],
+	"Ar": [{"id":1, "a":"A"}, {"id":4, "a":"A4"}, {"id":3, "a":"A3"}],
+	"Ar2": [1, 7, "A", {"id":4, "a":"A4"}],
+	"Int": [2, 345, 78],
+	"Float": [2, 345.0, 78, 66.254],
+	fullblock: 1,
+	"fullblock2": 0.75,
+}

@@ -8,9 +8,17 @@ namespace Vge.Util
     public class Options
     {
         /// <summary>
+        /// Префикс для пути игры
+        /// </summary>
+        public static string PrefixPath = "";
+        /// <summary>
         /// путь к ресурсам
         /// </summary>
-        public static string PathAssets { get; set; } = "Assets" + Path.DirectorySeparatorChar;
+        public static string PathAssets = "Assets" + Path.DirectorySeparatorChar;
+        /// <summary>
+        /// Путь к папке звуков
+        /// </summary>
+        public static string PathSounds { get; private set; }
         /// <summary>
         /// Путь к папке шейдеров
         /// </summary>
@@ -20,35 +28,39 @@ namespace Vge.Util
         /// </summary>
         public static string PathTextures { get; private set; }
         /// <summary>
+        /// Путь к папке данных блока
+        /// </summary>
+        public static string PathBlocks { get; private set; }
+        /// <summary>
         /// Путь к сохранении игр
         /// </summary>
-        public static string PathGames { get; set; } = "Games" + Path.DirectorySeparatorChar;
+        public static string PathGames = "Games" + Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Размер интерфеса с учётом размера окна
         /// </summary>
-        public static int SizeInterface { get; set; } = 1;
+        public static int SizeInterface = 1;
         /// <summary>
         /// Полноэкранные окно или нет
         /// </summary>
-        public static bool FullScreen { get; set; } = false;
+        public static bool FullScreen = false;
         /// <summary>
         /// Вертикальная синхронизация
         /// </summary>
-        public static bool VSync { get; set; } = true;
+        public static bool VSync = true;
         /// <summary>
         /// Графика качественнее, красивее
         /// </summary>
-        public static bool Qualitatively { get; set; } = true;
+        public static bool Qualitatively = true;
         /// <summary>
         /// Желаемый FPS
         /// </summary>
-        public static int Fps { get; set; } = 60;
+        public static int Fps = 60;
 
         /// <summary>
         /// Общая громкость
         /// </summary>
-        public static int SoundVolume { get; set; } = 100;
+        public static int SoundVolume = 100;
         /// <summary>
         /// Получить громкость звуковых эффектов
         /// </summary>
@@ -56,7 +68,7 @@ namespace Vge.Util
         /// <summary>
         /// Громкость музыки
         /// </summary>
-        public static int MusicVolume { get; set; } = 100;
+        public static int MusicVolume = 100;
         /// <summary>
         /// Получить громкость музыки
         /// </summary>
@@ -65,16 +77,16 @@ namespace Vge.Util
         /// <summary>
         /// Имя игрока
         /// </summary>
-        public static string Nickname { get; set; } = "Nickname";
+        public static string Nickname = "Nickname";
         /// <summary>
         /// Токен игрока, для сети
         /// </summary>
-        public static string Token { get; set; } = "Token";
+        public static string Token = "Token";
 
         /// <summary>
         /// Чувствительность мышки, 0 - 100, где 0 это минимум, 100 максимум, 50 середина
         /// </summary>
-        public static int MouseSensitivity { get; set; } = 50;
+        public static int MouseSensitivity = 50;
         /// <summary>
         /// Получить чувствительность мыши
         /// </summary>
@@ -83,12 +95,12 @@ namespace Vge.Util
         /// <summary>
         /// Обзор чанков
         /// </summary>
-        public static byte OverviewChunk { get; set; } = 16;
+        public static byte OverviewChunk = 16;
 
         /// <summary>
         /// IP адрес сервера
         /// </summary>
-        public static string IpAddress { get; set; } = "127.0.0.1";
+        public static string IpAddress = "127.0.0.1";
 
         /// <summary>
         /// Обновить данные переменных
@@ -107,8 +119,10 @@ namespace Vge.Util
                 MouseSensitivityFloat = .5f + MouseSensitivity / 20f;
             }
 
-            PathShaders = PathAssets + "Shaders" + Path.DirectorySeparatorChar;
-            PathTextures = PathAssets + "Textures" + Path.DirectorySeparatorChar;
+            PathSounds = PathAssets + PrefixPath + "Sounds" + Path.DirectorySeparatorChar;
+            PathShaders = PathAssets + PrefixPath + "Shaders" + Path.DirectorySeparatorChar;
+            PathTextures = PathAssets + PrefixPath + "Textures" + Path.DirectorySeparatorChar;
+            PathBlocks = PathAssets + PrefixPath + "Blocks" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
             // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()

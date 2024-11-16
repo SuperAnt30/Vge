@@ -1,4 +1,5 @@
-﻿using Vge.World.Block.List;
+﻿using System;
+using Vge.World.Block.List;
 
 namespace Vge.World.Block
 {
@@ -25,9 +26,14 @@ namespace Vge.World.Block
         public static void Correct(CorrectTable correct)
         {
             correct.CorrectRegLoad(Table);
-
-            int c = Blocks.Count;
-
+            try
+            {
+                int c = Blocks.Count;
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
             // Очистить массивы регистрации
             Table.Clear();
         }

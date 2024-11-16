@@ -10,7 +10,8 @@ namespace Mvk2.World.Block
     {
         public static void Initialization()
         {
-            BlocksReg.RegisterBlockClass("Stone", new BlockUniSolid(2));
+            // BlocksReg.RegisterBlockClass("Stone", new BlockUniSolid(2));
+            BlocksReg.RegisterBlockClass("Stone", new BlockBase());
             BlocksReg.RegisterBlockClass("Cobblestone", new BlockUniSolid(3));
             BlocksReg.RegisterBlockClass("Limestone", new BlockUniSolid(4));
             BlocksReg.RegisterBlockClass("Granite", new BlockUniSolid(5));
