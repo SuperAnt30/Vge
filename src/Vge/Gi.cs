@@ -60,7 +60,7 @@ public sealed class Gi
     /// <summary>
     /// Затемнение стороны от стороны блока
     /// </summary>
-    public readonly static float[] LightPoles = new float[] { 1, .6f, .7f, .7f, .85f, .85f };
+    public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f };
 
     /// <summary>
     /// Буфер для склейки рендера сплошных блоков всего ряда

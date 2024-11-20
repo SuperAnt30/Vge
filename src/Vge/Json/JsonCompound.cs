@@ -13,6 +13,23 @@
         public bool IsValue() => false;
 
         /// <summary>
+        /// Количество элементов
+        /// </summary>
+        public int GetCount() => Items.Length;
+
+        /// <summary>
+        /// Получить индекс в массиве по ключу, если отсутствует вернёт -1
+        /// </summary>
+        public int IndexKey(string key)
+        {
+            for (int i = 0; i < Items.Length; i++)
+            {
+                if (Items[i].IsKey(key)) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
         /// Имеется ли ключ в списке объектов
         /// </summary>
         public bool IsKey(string key)

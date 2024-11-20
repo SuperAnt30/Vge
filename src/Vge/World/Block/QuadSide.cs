@@ -45,7 +45,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
-        public readonly byte BiomeColor = 0;
+        public byte BiomeColor = 0;
 
         /// <summary>
         /// Прямоугольная сторона блока или элемента блока
@@ -72,7 +72,7 @@ namespace Vge.World.Block
         /// Задаём сторону и размеры на стороне
         /// </summary>
         /// <param name="pole">индекс стороны</param>
-        /// <param name="noSideDimming">Нет бокового затемнения, пример: трава, цветы</param>
+        /// <param name="noSideDimming">shade Отсутствие оттенка / Нет бокового затемнения, пример: трава, цветы</param>
         public QuadSide SetSide(Pole pole, bool noSideDimming = false, int x1i = 0, int y1i = 0, int z1i = 0, int x2i = 16, int y2i = 16, int z2i = 16)
         {
             float x1 = x1i / 16f;
@@ -132,7 +132,7 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Задать текстуру, её можно повернуть кратно 90 гр. 0 - 3 => 0 - 270
+        /// Задать текстуру, её можно повернуть кратно 90 гр. 0, 90, 180, 270 
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int rotateYawUV = 0)
         {
@@ -148,19 +148,19 @@ namespace Vge.World.Block
                     Vertex[0].V = Vertex[3].V = v2;
                     Vertex[1].V = Vertex[2].V = v1;
                     break;
-                case 1:
+                case 90:
                     Vertex[1].U = Vertex[2].U = u2;
                     Vertex[0].U = Vertex[3].U = u1;
                     Vertex[0].V = Vertex[1].V = v2;
                     Vertex[2].V = Vertex[3].V = v1;
                     break;
-                case 2:
+                case 180:
                     Vertex[0].U = Vertex[1].U = u1;
                     Vertex[2].U = Vertex[3].U = u2;
                     Vertex[0].V = Vertex[3].V = v1;
                     Vertex[1].V = Vertex[2].V = v2;
                     break;
-                case 3:
+                case 270:
                     Vertex[1].U = Vertex[2].U = u1;
                     Vertex[0].U = Vertex[3].U = u2;
                     Vertex[0].V = Vertex[1].V = v1;
@@ -171,7 +171,7 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Задать текстуру, и задать ей размеры не полного сэмпла и можно повернуть кратно 90 гр. 0 - 3 => 0 - 270
+        /// Задать текстуру, и задать ей размеры не полного сэмпла и можно повернуть кратно 90 гр. 0, 90, 180, 270 
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int biasU1, int biasV1, int biasU2, int biasV2, int rotateYawUV = 0)
         {
@@ -186,19 +186,19 @@ namespace Vge.World.Block
                     Vertex[0].V = Vertex[3].V = v + biasV2 / 1024f;
                     Vertex[1].V = Vertex[2].V = v + biasV1 / 1024f;
                     break;
-                case 1:
+                case 270:
                     Vertex[1].U = Vertex[2].U = u + biasU2 / 1024f;
                     Vertex[0].U = Vertex[3].U = u + biasU1 / 1024f;
                     Vertex[0].V = Vertex[1].V = v + biasV2 / 1024f;
                     Vertex[2].V = Vertex[3].V = v + biasV1 / 1024f;
                     break;
-                case 2:
+                case 180:
                     Vertex[0].U = Vertex[1].U = u + biasU1 / 1024f;
                     Vertex[2].U = Vertex[3].U = u + biasU2 / 1024f;
                     Vertex[0].V = Vertex[3].V = v + biasV1 / 1024f;
                     Vertex[1].V = Vertex[2].V = v + biasV2 / 1024f;
                     break;
-                case 3:
+                case 90:
                     Vertex[1].U = Vertex[2].U = u + biasU1 / 1024f;
                     Vertex[0].U = Vertex[3].U = u + biasU2 / 1024f;
                     Vertex[0].V = Vertex[1].V = v + biasV1 / 1024f;
@@ -237,20 +237,50 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Задать вращение
+        /// Задать вращение в градусах по центру блока
         /// </summary>
-        public QuadSide SetRotate(float yaw, float pitch = 0, float roll = 0)
+        public QuadSide SetRotate(float yaw, float pitch, float roll)
         {
             Vector3 vec;
             for (int i = 0; i < 4; i++)
             {
                 vec = Vertex[i].ToPosition() - .5f;
-                if (roll != 0) vec = Glm.Rotate(vec, roll, new Vector3(0, 0, 1));
-                if (pitch != 0) vec = Glm.Rotate(vec, pitch, new Vector3(1, 0, 0));
-                if (yaw != 0) vec = Glm.Rotate(vec, yaw, new Vector3(0, 1, 0));
+                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+                if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
+                if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
                 Vertex[i].X = vec.X + .5f;
                 Vertex[i].Y = vec.Y + .5f;
                 Vertex[i].Z = vec.Z + .5f;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Вращение блока 90, 180, 270 
+        /// </summary>
+        /// <param name="shade">Отсутствие оттенка</param>
+        public QuadSide SetRotateY(int rotate, bool shade)//, bool uvLock)
+        {
+            if (rotate == 90 || rotate == 180 || rotate == 270)
+            {
+                SetRotate(rotate, 0, 0);
+                if (Side == 2) // East Восток
+                {
+                    Side = rotate == 90 ? 4 : rotate == 180 ? 3 : 5;
+                }
+                else if (Side == 3) // West Запад
+                {
+                    Side = rotate == 90 ? 5 : rotate == 180 ? 2 : 4;
+                }
+                else if (Side == 4) // North Север
+                {
+                    Side = rotate == 90 ? 3 : rotate == 180 ? 5 : 2;
+                }
+                else if (Side == 5) // South Юг
+                {
+                    Side = rotate == 90 ? 2 : rotate == 180 ? 4 : 3;
+                }
+                LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             }
             return this;
         }

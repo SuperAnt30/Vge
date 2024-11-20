@@ -3,7 +3,7 @@
     /// <summary>
     /// Различные массивы блоков
     /// </summary>
-    public sealed class Blocks
+    public sealed class BlockArrays
     {
         /*
         BlocksLightOpacity[0] = LightOpacity << 4 | LightValue
@@ -14,29 +14,29 @@
         /// <summary>
         /// Массив названий блоков
         /// </summary>
-        public readonly static string[] BlockAlias;
+        public readonly string[] BlockAlias;
         /// <summary>
         /// Массив объектов блоков
         /// </summary>
-        public readonly static BlockBase[] BlockObjects;
+        public readonly BlockBase[] BlockObjects;
         /// <summary>
         /// Массив прозрачности и излучаемости освещения, для ускорения алгоритмов освещения
         /// </summary>
-        public readonly static byte[] BlocksLightOpacity;
+        public readonly byte[] BlocksLightOpacity;
         /// <summary>
         /// Массив нужности случайного тика для блока
         /// </summary>
-        public readonly static bool[] BlocksRandomTick;
+        public readonly bool[] BlocksRandomTick;
         /// <summary>
         /// Массив с флагом имеется ли у блока metadata
         /// </summary>
-        public readonly static bool[] BlocksMetadata;
+        public readonly bool[] BlocksMetadata;
         /// <summary>
         /// Количество всех блоков
         /// </summary>
-        public readonly static int Count;
+        public readonly int Count;
 
-        static Blocks()
+        public BlockArrays()
         {
             Count = BlocksReg.Table.Count;
             BlockAlias = new string[Count];
@@ -58,18 +58,18 @@
 
             for (id = 0; id < Count; id++)
             {
-                BlockObjects[id].Initialization(id, BlockAlias[id]);
+                BlockObjects[id].InitIdN2(id);
             }
         }
 
         /// <summary>
         /// Дополнительная инициализация блоков после инициализации предметов
         /// </summary>
-        public static void InitializationAfterItems()
+        public void InitializationAfterItemsN3()
         {
-            for (int id = 0; id < Count; id++)
+            for (ushort id = 0; id < Count; id++)
             {
-                BlockObjects[id].InitializationAfterItems();
+                BlockObjects[id].InitializationAfterItemsN3();
             }
         }
     }

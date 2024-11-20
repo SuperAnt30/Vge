@@ -119,7 +119,7 @@ namespace Vge.Renderer.World
         {
             _chunkRender = chunkRender;
             _keyCash = chunkRender.KeyCash;
-            _blockCheck = Blocks.BlockObjects[0];
+            _blockCheck = Ce.Blocks.BlockObjects[0];
             _storage = _chunkRender.StorageArrays[0];
             _numberBlocksY = _chunkRender.Settings.NumberBlocks;
         }
@@ -352,7 +352,7 @@ namespace Vge.Renderer.World
             // ~1.150 ~0.980
             if (_blockCheck.Id != id)
             {
-                _blockCheck = Blocks.BlockObjects[id];
+                _blockCheck = Ce.Blocks.BlockObjects[id];
             }
             // ~1.250 ~1.070
             if (_blockCheck.AllSideForcibly)// || (_isUp && Gi.Block.Liquid))
@@ -664,7 +664,7 @@ namespace Vge.Renderer.World
             }
             
             id = id & 0xFFF;
-            _blockCheck = Blocks.BlockObjects[id];
+            _blockCheck = Ce.Blocks.BlockObjects[id];
             aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 : 1;
             aoLight.Aoc = _blockCheck.АmbientOcclusion ? 1 : 0;
 

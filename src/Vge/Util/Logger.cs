@@ -226,7 +226,9 @@ namespace Vge.Util
             {
                 prefix = string.Format(logMessage, args) + Ce.Br;
             }
-            logger.Error(prefix + "{0}: {1}{3}------{3}{2}", e.Source, e.Message, e.StackTrace, Ce.Br);
+            string stackTrace = e.InnerException == null ? e.StackTrace
+                : e.InnerException.StackTrace + "\r\n" + e.StackTrace;
+            logger.Error(prefix + "{0}: {1}{3}------{3}{2}", e.Source, e.Message, stackTrace, Ce.Br);
             logger.Save();
         }
 

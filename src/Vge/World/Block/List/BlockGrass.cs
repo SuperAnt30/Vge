@@ -13,6 +13,13 @@ namespace Vge.World.Block.List
 
         public BlockGrass(int numberTexture)
         {
+            Particle = numberTexture;
+            //IsUnique = true;
+            //FullBlock = false;
+           // AllSideForcibly = true;
+        }
+        /*
+
             //Material = Materials.GetMaterialCache(EnumMaterial.Sapling);
             //IsDamagedBlockBlack = true;
             Particle = numberTexture;
@@ -57,5 +64,6 @@ namespace Vge.World.Block.List
                 };
             }
         }
+        */
     }
 }

@@ -1,0 +1,23 @@
+{
+    Texture: {
+        Down: 2,
+        Up: 2,
+        North: 2,
+        East: 2,
+        South: 2,
+        West: 2
+    },
+    Elements: [
+        {   From: [ 0, 0, 0 ],
+            To: [ 16, 16, 16 ],
+            Faces: [
+                { Texture:"Down", Side:"Down" },
+                { Texture:"Up", Side:"Up" },
+                { Texture:"North", Side:"North" },
+                { Texture:"East", Side:"East" },
+                { Texture:"South", Side:"South" },
+                { Texture:"West", Side:"West" }
+            ]
+        }
+    ]
+}

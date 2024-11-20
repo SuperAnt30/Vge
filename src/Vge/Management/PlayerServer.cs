@@ -223,7 +223,7 @@ namespace Vge.Management
             // Таблицу блоков если не владелец
             if (!Owner)
             {
-                SendPacket(new PacketS05TableBlocks(Blocks.BlockAlias));
+                SendPacket(new PacketS05TableBlocks(Ce.Blocks.BlockAlias));
             }
             // Тикущий счётчик тика сервера
             SendPacket(new PacketS04TimeUpdate(server.TickCounter));

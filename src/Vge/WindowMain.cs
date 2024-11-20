@@ -459,7 +459,7 @@ namespace Vge
         /// <summary>
         /// Инициализация блоков
         /// </summary>
-        protected virtual void _InitializationBlocks() => BlocksReg.Initialization();
+        protected virtual void _InitializationBlocks() => BlocksReg.Initialization(this);
 
         /// <summary>
         /// Запустить игру по сети
@@ -468,8 +468,8 @@ namespace Vge
         {
             if (Game == null)
             {
-                LScreen.Process(L.T("Connection") + Ce.Ellipsis);
                 _InitializationBlocks();
+                LScreen.Process(L.T("Connection") + Ce.Ellipsis);
                 Game = new GameNet(this, ipAddress, port);
                 GameRun();
             }
@@ -482,8 +482,8 @@ namespace Vge
         {
             if (Game == null)
             {
-                LScreen.Working();
                 _InitializationBlocks();
+                LScreen.Working();
                 Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();
             }

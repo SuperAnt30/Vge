@@ -51,11 +51,13 @@ internal sealed class Sr
 
     #endregion
 
-    #region NBT
+    #region NBT и JSON
 
     internal const string AddingInappropriateTagTypesToList = "Добавление несоответствующих типов тегов в список тегов";
     internal const string IndexOutOfBoundsToSetTagInTagList = "Индекс выходит за пределы, чтобы установить тег в списке тегов";
     internal const string EmptyStringIsNotAllowed = "Пустая строка не разрешена";
+    internal const string ErrorReadJsonBlockStat = "Ошибка чтения из json, параметров блока {0}";
+    internal const string ErrorReadJsonBlockShape = "Ошибка чтения из json, фигура {1} блока {0}";
 
     #endregion
 }

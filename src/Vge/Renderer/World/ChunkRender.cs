@@ -170,7 +170,7 @@ namespace Vge.Renderer.World
                                 id = (ushort)(data & 0xFFF);
                                 // ~0.021
                                 // Определяем объект блока
-                                Gi.Block = Blocks.BlockObjects[id];
+                                Gi.Block = Ce.Blocks.BlockObjects[id];
                                 // ~0.066
                                 
                                 if (Gi.Block.Translucent) //+0.006
@@ -289,7 +289,7 @@ namespace Vge.Renderer.World
                             index = index & 0xFFF;
                             data = chunkStorage.Data[index];
                             id = (ushort)(data & 0xFFF);
-                            Gi.Block = Blocks.BlockObjects[id];
+                            Gi.Block = Ce.Blocks.BlockObjects[id];
                             Gi.Block.BlockRender.PosChunkX = x;
                             Gi.Block.BlockRender.PosChunkY = realY;
                             Gi.Block.BlockRender.PosChunkZ = z;

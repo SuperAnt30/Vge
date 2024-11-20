@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Vge.Json;
 using Vge.Renderer.World;
@@ -154,24 +155,11 @@ namespace Vge.World.Block
         /// <summary>
         /// Стороны целого блока для прорисовки блока quads
         /// </summary>
-        protected QuadSide[][] _quads = new QuadSide[][] { new QuadSide[] { new QuadSide() } };
+        private QuadSide[][] _quads = new QuadSide[][] { new QuadSide[] { new QuadSide() } };
 
         #endregion
 
         #region Init
-
-        /// <summary>
-        /// Инициализировать блок
-        /// </summary>
-        public void Initialization(ushort id, string alias)
-        {
-            Id = id;
-            Alias = alias;
-            _ReadStateFromJson();
-            _InitBlockRender();
-            // Задать что блок не прозрачный
-            if (LightOpacity > 13) IsNotTransparent = true;
-        }
 
         /// <summary>
         /// Инициализация объекта рендера для блока
@@ -179,11 +167,30 @@ namespace Vge.World.Block
         protected virtual void _InitBlockRender()
             => BlockRender = Gi.BlockRendFull;
 
+        /// <summary>
+        /// Инициализация блоков, псевдоним и данные с json
+        /// </summary>
+        public void InitAliasAndJoinN1(string alias, JsonCompound state, JsonCompound model)
+        {
+            Alias = alias;
+            _ReadStateFromJson(state, model);
+            _InitBlockRender();
+            // Задать что блок не прозрачный
+            if (LightOpacity > 13) IsNotTransparent = true;
+        }
+
+        /// <summary>
+        /// Инициализация id после корректировки карты ID блоков
+        /// </summary>
+        public void InitIdN2(ushort id)
+        {
+            Id = id;
+        }
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов
         /// </summary>
-        public virtual void InitializationAfterItems() { }
+        public virtual void InitializationAfterItemsN3() { }
 
         #endregion
 
@@ -192,49 +199,37 @@ namespace Vge.World.Block
         /// <summary>
         /// Прочесть состояние блока из Json формы
         /// </summary>
-        public void _ReadStateFromJson()
+        private void _ReadStateFromJson(JsonCompound state, JsonCompound shapes)
         {
-            JsonRead json = new JsonRead(Options.PathBlocks + Alias + ".json");
-            if (json.IsThereFile)
+            if (state.Items != null)
             {
-                JsonCompound compound = json.Compound;
                 try
                 {
                     // Статы
-                    if (compound.IsKey("LightOpacity")) LightOpacity = (byte)compound.GetInt("LightOpacity");
-                    if (compound.IsKey("LightValue")) LightValue = (byte)compound.GetInt("LightValue");
-                    if (compound.IsKey("Translucent")) Translucent = compound.GetBool("Translucent");
-                    if (compound.IsKey("АmbientOcclusion")) АmbientOcclusion = compound.GetBool("АmbientOcclusion");
-                    if (compound.IsKey("BiomeColor")) BiomeColor = compound.GetBool("BiomeColor");
-                    if (compound.IsKey("Shadow")) Shadow = compound.GetBool("Shadow");
-
-                    if (compound.IsKey("Variants"))
+                    foreach (JsonKeyValue json in state.Items)
                     {
-                        JsonCompound[] variants = compound.GetArray("Variants").ToArrayObject();
-                        _quads = new QuadSide[1][];
-                        _quads[0] = new QuadSide[variants.Length];
-                        for (int i = 0; i < variants.Length; i++)
+                        if (json.IsKey("LightOpacity")) LightOpacity = (byte)json.GetInt();
+                        if (json.IsKey("LightValue")) LightValue = (byte)json.GetInt();
+                        if (json.IsKey("Translucent")) Translucent = json.GetBool();
+                        if (json.IsKey("АmbientOcclusion")) АmbientOcclusion = json.GetBool();
+                        if (json.IsKey("BiomeColor")) BiomeColor = json.GetBool();
+                        if (json.IsKey("Shadow")) Shadow = json.GetBool();
+                        if (json.IsKey("Color"))
                         {
-                            _quads[0][i] = new QuadSide().SetTexture(variants[i].GetInt("texture"))
-                                .SetSide((Pole)variants[i].GetInt("side"));
+                            float[] ar = json.GetArray().ToArrayFloat();
+                            Color = new Vector3(ar[0], ar[1], ar[2]);
                         }
                     }
-
-                    int fb = compound.GetInt("fullblock");
-                    float fb2 = compound.GetFloat("fullblock2");
-                    int[] arI = compound.GetArray("Int").ToArrayInt();
-                    float[] arF = compound.GetArray("Float").ToArrayFloat();
-                    JsonCompound[] jsonArray = compound.GetArray("Pos").ToArrayObject();
-                    JsonArray jsonObject2 = compound.GetObject("variants").GetArray("normal");
-                    return;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    return;
+                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockStat, Alias));
                 }
+                // Модель
+                BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
+                _quads = shapeDefinition.RunShapeFromJson(state, shapes);
+                BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
             }
-            return;
-            //Shadow = false;
         }
 
         #endregion
@@ -277,24 +272,14 @@ namespace Vge.World.Block
         #region Методы для Render
 
         /// <summary>
+        /// Получить перечень сторон по индексу
+        /// </summary>
+        protected QuadSide[] _GetQuads(int index) => _quads[index];
+
+        /// <summary>
         /// Стороны целого блока для рендера
         /// </summary>
         public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
-
-        /// <summary>
-        /// Инициализация коробок всех одной текстурой с параметром Нет бокового затемнения, пример: трава, цветы
-        /// </summary>
-        protected void _InitQuads(int numberTexture)
-        {
-            _quads = new QuadSide[][] { new QuadSide[] {
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.Up),
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.Down),
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.East),
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.West),
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.North),
-                new QuadSide().SetTexture(numberTexture).SetSide(Pole.South)
-            } };
-        }
 
         #endregion
 

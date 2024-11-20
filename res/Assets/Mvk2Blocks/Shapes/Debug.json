@@ -1,0 +1,24 @@
+{
+    Texture: {
+        Down: 0,
+        Up: 0,
+        North: 0,
+        East: 0,
+        South: 0,
+        West: 0
+    },
+    Elements: [
+        {   From: [ 0, 0, 0 ],
+            To: [ 10, 16, 16 ],
+            Faces: [
+                { Texture:"Down", Side:"Down" },
+#                { Texture:"Up", Side:"Up", Uv:[0, 0, 10, 16], UvRotate:90 },
+                { Texture:"Up", Side:"Up", Uv:[0, 0, 10, 16], BiomeColor:4 },
+                { Texture:"North", Side:"North", Uv:[0, 0, 10, 16] },
+                { Texture:"East", Side:"East", Uv:[0, 0, 16, 16]},
+                { Texture:"South", Side:"South", Uv:[0, 0, 10, 16] },
+                { Texture:"West", Side:"West", Uv:[0, 0, 16, 16] }
+            ]
+        }
+    ]
+}

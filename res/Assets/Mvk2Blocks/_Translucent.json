@@ -1,0 +1,10 @@
+{
+    АmbientOcclusion: false,
+    UseNeighborBrightness: true,
+    LightOpacity: 2,
+    Translucent: true,
+    Color: [ 1, 1, 1 ],
+    Variants: [
+        { Shape: "_Translucent" }
+    ]
+}

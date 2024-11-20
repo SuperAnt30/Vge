@@ -8,7 +8,6 @@
         public BlockUniSolid(int numberTexture)
         {
             Particle = numberTexture;
-            _InitQuads(numberTexture);
         }
     }
 }

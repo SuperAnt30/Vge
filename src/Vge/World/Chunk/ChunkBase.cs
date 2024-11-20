@@ -172,7 +172,16 @@ namespace Vge.World.Chunk
                     SetBlockState(11, y, 15, new BlockState(15));
                 }
 
+                SetBlockState(11, h - 1, 4, new BlockState(0));
+                SetBlockState(11, h - 1, 3, new BlockState(0));
+                SetBlockState(12, h - 1, 4, new BlockState(0));
+                SetBlockState(12, h - 1, 3, new BlockState(0));
 
+                SetBlockState(13, h, 8, new BlockState(1));
+                SetBlockState(12, h, 7, new BlockState(1, 0));
+                SetBlockState(11, h, 7, new BlockState(1, 1));
+                SetBlockState(11, h, 6, new BlockState(1, 2));
+                SetBlockState(12, h, 6, new BlockState(1, 3));
 
 
                 // Debug.Burden(.6f);
@@ -479,7 +488,7 @@ namespace Vge.World.Chunk
                             value = buffer[count++] | buffer[count++] << 8;
                             id = (ushort)(value & 0xFFF);
                             storage.SetData(i, id, (ushort)(value >> 12));
-                            if (!Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
+                            if (!Ce.Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
                         }
                         countMet = (ushort)(buffer[count++] | buffer[count++] << 8);
                         for (i = 0; i < countMet; i++)

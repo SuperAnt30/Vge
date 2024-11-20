@@ -416,7 +416,10 @@ namespace Vge.Games
         /// </summary>
         public event ThreadExceptionEventHandler Error;
         protected void _OnError(Exception ex)
-            => Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
+        {
+            WorldRender.Stoping();
+            Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
+        }
 
         /// <summary>
         /// Событие текст отладки сервера

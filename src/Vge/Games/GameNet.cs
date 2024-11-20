@@ -141,7 +141,10 @@ namespace Vge.Games
         }
 
         private void _Socket_Error(object sender, ErrorEventArgs e)
-            => _StopAfterTick("Error: " + e.GetException().Message);
+        {
+            WorldRender.Stoping();
+            _StopAfterTick("Error: " + e.GetException().Message);
+        }
 
         private void _Socket_ReceivePacket(object sender, PacketBufferEventArgs e)
             => _packets.ReceiveBuffer(e.Bytes, e.Count);

@@ -46,8 +46,8 @@ void main()
 
     a_light = vec2(lightBlock, lightSky);
     a_texCoord = v_texCoord;
-	a_sharpness = (v_anim >> 18) & 1;
-	
+    a_sharpness = (v_anim >> 18) & 1;
+    
     int frame = (v_anim & 0xFF);
     if (frame > 0)
     {
@@ -64,7 +64,7 @@ void main()
         a_texCoord.y += t * 0.015625;
     }
     
-	if (((v_anim >> 16) & 1) == 1)
+    if (((v_anim >> 16) & 1) == 1)
     {
         vec3 posanim = v_position;
         posanim.x += wind;

@@ -142,8 +142,16 @@ namespace WinGL
             }
             else
             {
-                e = ex.InnerException;
-                stackTrace = e.StackTrace + "\r\n" + ex.StackTrace;
+                if (ex.InnerException.InnerException == null)
+                {
+                    e = ex.InnerException;
+                    stackTrace = e.StackTrace + "\r\n" + ex.StackTrace;
+                }
+                else
+                {
+                    e = ex.InnerException;
+                    stackTrace = e.InnerException.StackTrace + "\r\n" + e.StackTrace + "\r\n" + ex.StackTrace;
+                }
             }
             if (stackTrace.Length > 800) stackTrace = stackTrace.Substring(0, 800) + "...";
             WinUser.MessageBox(string.Format("{0}: {1}\r\n---\r\n{2}", e.Source, e.Message, stackTrace),
@@ -434,7 +442,7 @@ namespace WinGL
         /// <summary>
         /// Прорисовать кадр, с заменой буфера
         /// </summary>
-        protected void DrawFrame()
+        public void DrawFrame()
         {
             // Тут прорисовка OnDraw
             OnOpenGlDraw();

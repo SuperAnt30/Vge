@@ -108,7 +108,7 @@ namespace Vge.World.Chunk
                 ushort value = Data[index];
                 ushort id = (ushort)(value & 0xFFF);
                 return new BlockState(id,
-                    Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)0,
+                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)0,
                     LightBlock[index], LightSky[index]);
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace Vge.World.Chunk
                 if (CountBlock > 0 && (Data[index] & 0xFFF) != 0)
                 {
                     CountBlock--;
-                    if (Blocks.BlocksRandomTick[Data[index] & 0xFFF]) _countTickBlock--;
+                    if (Ce.Blocks.BlocksRandomTick[Data[index] & 0xFFF]) _countTickBlock--;
                     Metadata.Remove((ushort)index);
                     if (CountBlock == 0)
                     {
@@ -153,12 +153,12 @@ namespace Vge.World.Chunk
                     _countTickBlock = 0;
                 }
                 if ((Data[index] & 0xFFF) == 0) CountBlock++;
-                bool rold = Blocks.BlocksRandomTick[Data[index] & 0xFFF];
-                bool rnew = Blocks.BlocksRandomTick[id];
+                bool rold = Ce.Blocks.BlocksRandomTick[Data[index] & 0xFFF];
+                bool rnew = Ce.Blocks.BlocksRandomTick[id];
                 if (!rold && rnew) _countTickBlock++;
                 else if (rold && !rnew) _countTickBlock--;
                 ushort key = (ushort)index;
-                if (Blocks.BlocksMetadata[id])
+                if (Ce.Blocks.BlocksMetadata[id])
                 {
                     Data[index] = id;
                     if (Metadata.ContainsKey(key)) Metadata[key] = met;
@@ -182,7 +182,7 @@ namespace Vge.World.Chunk
             {
                 int id = Data[index] & 0xFFF;
                 ushort key = (ushort)index;
-                if (Blocks.BlocksMetadata[id])
+                if (Ce.Blocks.BlocksMetadata[id])
                 {
                     if (Metadata.ContainsKey(key)) Metadata[key] = met;
                     else Metadata.Add(key, met);

@@ -65,102 +65,42 @@ namespace Vge.Renderer.World
         /// </summary>
         public void BuildingWind(byte wind)
         {
+            byte f1, f2, f3, f4;
+
             if (wind == 1)
             {
                 // Ветер как для травы, низ не двигается, вверх двигается
-                byte flag = (byte)(Sharpness + 1);
-                Buffer.AddVertex(Vertex[0].X + PosCenterX, Vertex[0].Y + PosCenterY, Vertex[0].Z + PosCenterZ,
-                    Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], Sharpness);
-                Buffer.AddVertex(Vertex[1].X + PosCenterX, Vertex[1].Y + PosCenterY, Vertex[1].Z + PosCenterZ,
-                    Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], flag);
-                Buffer.AddVertex(Vertex[2].X + PosCenterX, Vertex[2].Y + PosCenterY, Vertex[2].Z + PosCenterZ,
-                    Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], flag);
-                Buffer.AddVertex(Vertex[3].X + PosCenterX, Vertex[3].Y + PosCenterY, Vertex[3].Z + PosCenterZ,
-                    Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], Sharpness);
+                f1 = f4 = Sharpness;
+                f2 = f3 = (byte)(Sharpness + 1);
+            }
+            else if(wind == 2)
+            {
+                // Ветер как для ветки снизу, вверхняя часть не двигается, нижняя двигается
+                f2 = f3 = Sharpness;
+                f1 = f4 = (byte)(Sharpness + 1);
+            }
+            else if (wind == 3)
+            {
+                // Ветер двигается всё
+                f1 = f2 = f3 = f4 = (byte)(Sharpness + 1);
             }
             else
             {
                 // Нет ветра
-                Buffer.AddVertex(Vertex[0].X + PosCenterX, Vertex[0].Y + PosCenterY, Vertex[0].Z + PosCenterZ,
-                    Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], Sharpness);
-                Buffer.AddVertex(Vertex[1].X + PosCenterX, Vertex[1].Y + PosCenterY, Vertex[1].Z + PosCenterZ,
-                    Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], Sharpness);
-                Buffer.AddVertex(Vertex[2].X + PosCenterX, Vertex[2].Y + PosCenterY, Vertex[2].Z + PosCenterZ,
-                    Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], Sharpness);
-                Buffer.AddVertex(Vertex[3].X + PosCenterX, Vertex[3].Y + PosCenterY, Vertex[3].Z + PosCenterZ,
-                    Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], Sharpness);
+                f1 = f2 = f3 = f4 = Sharpness;
             }
+
+            Buffer.AddVertex(Vertex[0].X + PosCenterX, Vertex[0].Y + PosCenterY, Vertex[0].Z + PosCenterZ,
+                    Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], f1);
+            Buffer.AddVertex(Vertex[1].X + PosCenterX, Vertex[1].Y + PosCenterY, Vertex[1].Z + PosCenterZ,
+                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], f2);
+            Buffer.AddVertex(Vertex[2].X + PosCenterX, Vertex[2].Y + PosCenterY, Vertex[2].Z + PosCenterZ,
+                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], f3);
+            Buffer.AddVertex(Vertex[3].X + PosCenterX, Vertex[3].Y + PosCenterY, Vertex[3].Z + PosCenterZ,
+                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], f4);
         }
 
             /*
-            /// <summary>
-            /// Построение буфера
-            /// </summary>
-            public void BuildingWind(byte wind)
-            {
-                pos1x = Vertex[0].x + PosCenterX;
-                pos1y = Vertex[0].y + PosCenterY;
-                pos1z = Vertex[0].z + PosCenterZ;
-                pos2x = Vertex[1].x + PosCenterX;
-                pos2y = Vertex[1].y + PosCenterY;
-                pos2z = Vertex[1].z + PosCenterZ;
-                pos3x = Vertex[2].x + PosCenterX;
-                pos3y = Vertex[2].y + PosCenterY;
-                pos3z = Vertex[2].z + PosCenterZ;
-                pos4x = Vertex[3].x + PosCenterX;
-                pos4y = Vertex[3].y + PosCenterY;
-                pos4z = Vertex[3].z + PosCenterZ;
-
-                u1 = Vertex[0].u;
-                u2 = Vertex[1].u;
-                u3 = Vertex[2].u;
-                u4 = Vertex[3].u;
-                v1 = Vertex[0].v;
-                v2 = Vertex[1].v;
-                v3 = Vertex[2].v;
-                v4 = Vertex[3].v;
-
-                if (wind == 0)
-                {
-                    // Нет ветра
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0]);
-                    AddVertex(pos2x, pos2y, pos2z, u2, v2, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1]);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2]);
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0]);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2]);
-                    AddVertex(pos4x, pos4y, pos4z, u4, v4, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3]);
-                }
-                else if (wind == 1)
-                {
-                    // Ветер как для травы, низ не двигается, вверх двигается
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 0);
-                    AddVertex(pos2x, pos2y, pos2z, u2, v2, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], 1);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 1);
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 0);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 1);
-                    AddVertex(pos4x, pos4y, pos4z, u4, v4, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], 0);
-                }
-                else if (wind == 2)
-                {
-                    // Ветер как для ветки снизу, вверхняя часть не двигается, нижняя двигается
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 1);
-                    AddVertex(pos2x, pos2y, pos2z, u2, v2, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], 0);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 0);
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 1);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 0);
-                    AddVertex(pos4x, pos4y, pos4z, u4, v4, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], 1);
-                }
-                else
-                {
-                    // Двигается всё
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 1);
-                    AddVertex(pos2x, pos2y, pos2z, u2, v2, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1], 1);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 1);
-                    AddVertex(pos1x, pos1y, pos1z, u1, v1, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0], 1);
-                    AddVertex(pos3x, pos3y, pos3z, u3, v3, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2], 1);
-                    AddVertex(pos4x, pos4y, pos4z, u4, v4, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3], 1);
-                }
-            }
 
             /// <summary>
             /// Построение буфера с новой текстурой на прошлых позициях для разрушения

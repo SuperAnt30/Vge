@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using Vge.World.Block;
+using WinGL.Util;
 /// <summary>
 /// ConstEngine
 /// Класс констант и статический данных для движка
@@ -20,6 +21,10 @@ public sealed class Ce
 
     #region Game
 
+    /// <summary>
+    /// Различные массивы блоков
+    /// </summary>
+    public static BlockArrays Blocks;
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
     /// </summary>
@@ -57,7 +62,7 @@ public sealed class Ce
 
     #region Game Геометрия
 
-    /**
+  /**
    *      (North)
    *        0;-1
    *         N

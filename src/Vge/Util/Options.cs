@@ -32,6 +32,10 @@ namespace Vge.Util
         /// </summary>
         public static string PathBlocks { get; private set; }
         /// <summary>
+        /// Путь к папке фигур блока
+        /// </summary>
+        public static string PathShapeBlocks { get; private set; }
+        /// <summary>
         /// Путь к сохранении игр
         /// </summary>
         public static string PathGames = "Games" + Path.DirectorySeparatorChar;
@@ -123,6 +127,7 @@ namespace Vge.Util
             PathShaders = PathAssets + PrefixPath + "Shaders" + Path.DirectorySeparatorChar;
             PathTextures = PathAssets + PrefixPath + "Textures" + Path.DirectorySeparatorChar;
             PathBlocks = PathAssets + PrefixPath + "Blocks" + Path.DirectorySeparatorChar;
+            PathShapeBlocks = PathBlocks + "Shapes" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
             // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()

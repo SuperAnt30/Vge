@@ -10,6 +10,11 @@
 
         public byte GetIdType() => 1;
 
+        /// <summary>
+        /// Количество элементов
+        /// </summary>
+        public int GetCount() => Items.Length;
+
         public JsonCompound[] ToArrayObject()
         {
             int count = Items != null ? Items.Length : 0;
