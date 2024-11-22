@@ -11,11 +11,20 @@ out vec4 f_color;
 
 uniform sampler2D atlas_blurry;
 uniform sampler2D atlas_sharpness;
-uniform sampler2D light_map;
+//uniform sampler2D light_map;
 
 void main()
 {
-    vec4 tex_color = texture((a_sharpness == 0 ? atlas_blurry : atlas_sharpness), a_texCoord);
+    vec4 tex_color;
+    if (a_sharpness == 0)
+    {
+        tex_color = texture(atlas_blurry, a_texCoord);
+    }
+    else
+    {
+        tex_color = texture(atlas_sharpness, a_texCoord);
+    }
+    
     if (tex_color.a < 0.1) discard;
 //    vec4 light_color = texture(light_map, a_light);
 //    vec4 color = a_color * tex_color * light_color;
