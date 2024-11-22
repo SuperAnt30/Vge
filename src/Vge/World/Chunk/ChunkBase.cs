@@ -125,6 +125,7 @@ namespace Vge.World.Chunk
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
                 int h = NumberSections == 8 ? 63 : 127;
                 // Временно льём тест
+                
                 for (int x = 0; x < 16; x++)
                 {
                     for (int z = 0; z < 16; z++)
@@ -151,6 +152,7 @@ namespace Vge.World.Chunk
                 SetBlockState(15, h, 10, new BlockState(16));
                 SetBlockState(15, h, 12, new BlockState(16));
                 SetBlockState(0, h, 15, new BlockState(16));
+                SetBlockState(1, h, 15, new BlockState(16));
 
 
                 SetBlockState(15, h, 15, new BlockState(4));
@@ -166,11 +168,15 @@ namespace Vge.World.Chunk
                 {
                     SetBlockState(8, y, 3, new BlockState(5));
 
+                    SetBlockState(11, y, 5, new BlockState(11));
                     SetBlockState(8, y, 5, new BlockState(12));
                     SetBlockState(9, y, 12, new BlockState(13));
                     SetBlockState(10, y, 13, new BlockState(14));
                     SetBlockState(11, y, 15, new BlockState(15));
                 }
+
+                SetBlockState(12, h + 5, 5, new BlockState(12));
+                SetBlockState(12, h + 6, 5, new BlockState(13));
 
                 SetBlockState(11, h - 1, 4, new BlockState(0));
                 SetBlockState(11, h - 1, 3, new BlockState(0));
@@ -178,10 +184,28 @@ namespace Vge.World.Chunk
                 SetBlockState(12, h - 1, 3, new BlockState(0));
 
                 SetBlockState(13, h, 8, new BlockState(1));
-                SetBlockState(12, h, 7, new BlockState(1, 0));
-                SetBlockState(11, h, 7, new BlockState(1, 1));
-                SetBlockState(11, h, 6, new BlockState(1, 2));
+                SetBlockState(12, h, 7, new BlockState(1, 1));
+                SetBlockState(11, h, 7, new BlockState(1, 2));
+                SetBlockState(11, h, 6, new BlockState(1, 3));
                 SetBlockState(12, h, 6, new BlockState(1, 3));
+                SetBlockState(10, h, 6, new BlockState(5));
+                
+
+                SetBlockState(12, h + 1, 9, new BlockState(1));
+                SetBlockState(12, h + 2, 9, new BlockState(1, 0));
+                SetBlockState(12, h + 3, 9, new BlockState(1, 1));
+                SetBlockState(12, h + 4, 9, new BlockState(1, 1));
+                SetBlockState(12, h + 5, 9, new BlockState(1, 1));
+                SetBlockState(12, h + 6, 9, new BlockState(1, 2));
+                SetBlockState(12, h + 7, 9, new BlockState(1, 2));
+                SetBlockState(12, h + 8, 9, new BlockState(1, 2));
+                SetBlockState(12, h + 9, 9, new BlockState(1, 3));
+                SetBlockState(12, h + 10, 9, new BlockState(1, 3));
+                SetBlockState(12, h + 11, 9, new BlockState(1, 3));
+                SetBlockState(12, h, 9, new BlockState(1));
+                SetBlockState(11, h, 9, new BlockState(1));
+                SetBlockState(11, h, 10, new BlockState(1));
+                SetBlockState(12, h, 10, new BlockState(1));
 
 
                 // Debug.Burden(.6f);

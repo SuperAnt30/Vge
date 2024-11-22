@@ -13,6 +13,32 @@ namespace Vge.World.Block
         private readonly BlockBase _block;
 
         /// <summary>
+        /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
+        /// </summary>
+        public ulong[][][] MaskCullFaces { get; private set; }
+        /// <summary>
+        /// Для оптимизации отбраковка стороны, чтоб не использовать маску
+        /// </summary>
+        public bool[][] CullFaces { get; private set; }
+        /// <summary>
+        /// Принудительное рисование стороны, true если сторона не касается края
+        /// </summary>
+        public bool[][] ForceDrawFaces { get; private set; }
+        /// <summary>
+        /// Принудительное рисование не крайней стороны 
+        /// </summary>
+        public bool[][] ForceDrawNotExtremeFaces { get; private set; }
+
+        /// <summary>
+        /// Отбраковка всех сторон всех сторон во всех вариантах
+        /// </summary>
+        public bool CullFaceAll = false;
+        /// <summary>
+        /// Принудительное рисование всех сторон
+        /// </summary>
+        public bool ForceDrawFace = true;
+
+        /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
         public byte BiomeColor = 0;
@@ -33,15 +59,17 @@ namespace Vge.World.Block
                 if (variants.Length > 0)
                 {
                     QuadSide[][] quads = new QuadSide[variants.Length][];
+                    MaskCullFaces = new ulong[variants.Length][][];
+                    ForceDrawFaces = new bool[variants.Length][];
+                    ForceDrawNotExtremeFaces = new bool[variants.Length][];
+                    CullFaces = new bool[variants.Length][];
+
                     int index = 0;
                     int i, j, k;
                     string nameShape = "";
-                    JsonCompound shape;
-                    JsonCompound[] elements;
-                    JsonCompound texture;
+                    JsonCompound shape, texture, face;
+                    JsonCompound[] elements, faces;
                     Dictionary<string, int> textures = new Dictionary<string, int>();
-                    JsonCompound[] faces;
-                    JsonCompound face;
                     QuadSide quadSide;
                     Pole pole;
                     int x1i, y1i, z1i, x2i, y2i, z2i, u1, v1, u2, v2, wind, rotateY, uvRotate;
@@ -63,7 +91,7 @@ namespace Vge.World.Block
                                 offset = variant.GetArray("Offset").ToArrayFloat();
                             }
                             // Имеется вращение по Y 90 | 180 | 270
-                            rotateY = variant.GetInt("RotateY");
+                            rotateY = _CheckRotate(variant.GetInt("RotateY"));
                             // Защита от вращении текстуры
                             uvLock = variant.GetBool("UvLock");
                             // Имеется форма
@@ -88,6 +116,11 @@ namespace Vge.World.Block
                                 k += elements[i].GetArray("Faces").GetCount();
                             }
                             quads[index] = new QuadSide[k];
+                            MaskCullFaces[index] = new ulong[6][];
+                            ForceDrawFaces[index] = new bool[] { true, true, true, true, true, true };
+                            ForceDrawNotExtremeFaces[index] = new bool[6];
+                            CullFaces[index] = new bool[6];
+
                             k = 0;
                             // Заполняем квады
                             for (i = 0; i < elements.Length; i++)
@@ -130,6 +163,7 @@ namespace Vge.World.Block
                                     quadSide = new QuadSide(biomeColor);
                                     
                                     pole = PoleConvert.GetPole(face.GetString("Side"));
+                                    
                                     quadSide.SetSide(pole, shade, x1i, y1i, z1i, x2i, y2i, z2i);
                                     if (isRotate)
                                     {
@@ -190,6 +224,18 @@ namespace Vge.World.Block
                                     quadSide.SetTexture(textures[face.GetString("Texture")],
                                         u1, v1, u2, v2, uvRotate);
 
+
+                                    if (MaskCullFaces[index][quadSide.Side] == null)
+                                    {
+                                        MaskCullFaces[index][quadSide.Side] = new ulong[4];
+                                    }
+
+                                    if (quadSide.GenMask(MaskCullFaces[index][quadSide.Side]))
+                                    {
+                                        ForceDrawNotExtremeFaces[index][quadSide.Side] = true;
+                                        quadSide.SetNotExtremeSide();
+                                    }
+
                                     quads[index][k++] = quadSide;
                                 }
                             }
@@ -197,6 +243,8 @@ namespace Vge.World.Block
                         }
                     }
 
+                    _CullFaceAll();
+                    _ForceDrawFace();
                     return quads;
                 }
             }
@@ -207,5 +255,63 @@ namespace Vge.World.Block
 
             return new QuadSide[][] { new QuadSide[] { new QuadSide() } };
         }
+
+        /// <summary>
+        /// Определить быстрый статус на все стороны, отбраковка всех сторон
+        /// </summary>
+        private void _CullFaceAll()
+        {
+            CullFaceAll = true;
+            for (int i = 0; i < MaskCullFaces.Length; i++)
+            {
+                for (int k = 0; k < 6; k++)
+                {
+                    if (MaskCullFaces[i][k] == null)
+                    {
+                        MaskCullFaces[i][k] = new ulong[4];
+                    }
+                    CullFaces[i][k] = true;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        if (MaskCullFaces[i][k][j] != 18446744073709551615L)
+                        {
+                            CullFaceAll = false;
+                            CullFaces[i][k] = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Определить быстрый статус на все стороны, принудительное рисование всех сторон
+        /// </summary>
+        private void _ForceDrawFace()
+        {
+            ForceDrawFace = true;
+            for (int i = 0; i < MaskCullFaces.Length; i++)
+            {
+                for (int k = 0; k < 6; k++)
+                {
+                    ForceDrawFaces[i][k] = true;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        if (MaskCullFaces[i][k][j] != 0)
+                        {
+                            ForceDrawFace = false;
+                            ForceDrawFaces[i][k] = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Проверка вращения кратно 90 || 180 || 270
+        /// </summary>
+        private int _CheckRotate(int rotate)
+            => (rotate == 90 || rotate == 180 || rotate == 270) ? rotate : 0;
     }
 }

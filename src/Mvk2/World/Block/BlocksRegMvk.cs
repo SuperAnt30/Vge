@@ -19,11 +19,12 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("Turf", new BlockUniSolid(64));
             BlocksReg.RegisterBlockClass("Sand", new BlockUniSolid(68));
             BlocksReg.RegisterBlockClass("Gravel", new BlockUniSolid(69));
-            BlocksReg.RegisterBlockClass("Clay", new BlockUniSolid(70));
+            BlocksReg.RegisterBlockClass("Glass", new BlockBase());
             BlocksReg.RegisterBlockClass("GlassRed", new BlockUniTranslucent());
             BlocksReg.RegisterBlockClass("GlassGreen", new BlockUniTranslucent());
             BlocksReg.RegisterBlockClass("GlassBlue", new BlockUniTranslucent());
             BlocksReg.RegisterBlockClass("GlassPurple", new BlockUniTranslucent());
+            
             BlocksReg.RegisterBlockClass("Grass", new BlockBase()); // 195
 
             //for (int i = 0; i < 500; i++)

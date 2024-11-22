@@ -173,7 +173,7 @@ namespace Vge.Renderer.World
                                 Gi.Block = Ce.Blocks.BlockObjects[id];
                                 // ~0.066
                                 
-                                if (Gi.Block.Translucent) //+0.006
+                                if (Gi.Block.Alpha) //+0.006
                                 {
                                     // Альфа
                                     Gi.Block.BlockRender.PosChunkX = x;
@@ -223,10 +223,10 @@ namespace Vge.Renderer.World
                                     Gi.Block.BlockRender.PosChunkX = x;
                                     Gi.Block.BlockRender.PosChunkY = realY;
                                     Gi.Block.BlockRender.PosChunkZ = z;
+                                    Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
                                     if (Gi.Block.BlockRender.CheckSide())
                                     {
                                         // Определяем met блока
-                                        Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
                                         Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
                                         Gi.Block.BlockRender.RenderSide();
                                     }

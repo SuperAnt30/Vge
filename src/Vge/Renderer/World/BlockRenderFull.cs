@@ -85,7 +85,7 @@ namespace Vge.Renderer.World
         private float _lightPole;
         private Vector3 _color;
         private readonly ColorsLights _colorLight = new ColorsLights();
-
+        private bool _isCullFaceAll, _isForceDrawFace;
         private int i, count, index, id, s1, s2, s3, s4, side;
         private int xc, yc, zc, xb, yb, zb, xcn, zcn, pX, pY, pZ;
 
@@ -151,6 +151,9 @@ namespace Vge.Renderer.World
         /// </summary>
         public bool CheckSide()
         {
+            _isForceDrawFace = Gi.Block.ForceDrawFace;
+            _isCullFaceAll = Gi.Block.CullFaceAll;
+
             // ~0.12
             _emptySide = true;
             // Up
@@ -243,6 +246,12 @@ namespace Vge.Renderer.World
                 _stateLight = _resultSide[side];
                 if (_stateLight != -1)
                 {
+                    // Доп проверка стороны на её не прорисовку
+                    if (_stateLight > 255 && !_rectangularSide.NotExtremeSide)
+                    {
+                        continue;
+                    }
+
                     // Смекшировать яркость, в зависимости от требований самой яркой
                     if (_stateLight != _stateLightHis
                         && Gi.Block.UseNeighborBrightness && _stateLightHis != -1)
@@ -327,6 +336,14 @@ namespace Vge.Renderer.World
 
             i = (PosChunkY & 15) << 8 | (PosChunkZ & 15) << 4 | (PosChunkX & 15);
 
+            if (_isForceDrawFace)
+            {
+                // Принудительное рисование всех сторон, модель которые все стороны не касаются краёв
+                _emptySide = false;
+                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                return;
+            }
+
             // ~0.620
 
             if (_storage.CountBlock > 0)
@@ -345,6 +362,7 @@ namespace Vge.Renderer.World
             // Ниже ~0.5мс
             if (id == 0)
             {
+                // Воздух
                 _emptySide = false;
                 _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
                 return;
@@ -354,23 +372,66 @@ namespace Vge.Renderer.World
             {
                 _blockCheck = Ce.Blocks.BlockObjects[id];
             }
-            // ~1.250 ~1.070
-            if (_blockCheck.AllSideForcibly)// || (_isUp && Gi.Block.Liquid))
+
+            if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)
             {
-                //if (_blockCheck.BlocksNotSame)// && _blockCheck.Material == Block.Material))
-                if (!(!_blockCheck.BlocksNotSame && _blockCheck.Id == Gi.Block.Id))
-                {
-                    _emptySide = false;
-                    // ~1.4 ~1.1
-                    //EnumMaterial material = _blockCheck.Material.EMaterial;
-                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-                    return;
-                    //  + ((block.Material.EMaterial == EnumMaterial.Water && (material == EnumMaterial.Glass || material == EnumMaterial.Oil)) ? 1024 : 0);
-                }
+                // Блоки целые непрозрачные
+                _resultSide[_indexSide] = -1;
+                return;
             }
 
-            _resultSide[_indexSide] = -1;
-            // ~1.5-1.6  ~1.1
+            if (_blockCheck.Translucent)
+            {
+                // Соседний блок прозрачный
+                if (Gi.Block.Id != _blockCheck.Id)
+                {
+                    // Блоки разного типа, то палюбому надо рисовать сторону
+                    _emptySide = false;
+                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                }
+                else
+                {
+                    // Одинаково типа, убираем прорисовку, вода, стекло
+                    _resultSide[_indexSide] = -1;
+                }
+                return;
+            }
+
+            if (Gi.Block.IsForceDrawFace(Met, _indexSide))
+            {
+                // Принудительное рисование стороны, модель которая сторона не касаются краёв
+                _emptySide = false;
+                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                return;
+            }
+
+            if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
+            {
+                // Принудительное рисование не крайней стороны, зависимости от маски,
+                // решаем надо ли рисовать все квады стороны
+                _emptySide = false;
+                if (Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
+                    ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
+                {
+                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF | 256;
+                }
+                else
+                {
+                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                }
+                return;
+            }
+
+            if (Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
+                    ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
+            {
+                // Это не видно по маске
+                _resultSide[_indexSide] = -1;
+                return;
+            }
+
+            _emptySide = false;
+            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
         }
 
         /// <summary>
@@ -674,8 +735,8 @@ namespace Vge.Renderer.World
                 aoLight.LightSky = 0;
                 return aoLight;
             }
-
-            _isDraw = id == 0 || _blockCheck.AllSideForcibly;
+            //_isDraw = id == 0 || _blockCheck.AllSideForcibly;
+            _isDraw = id == 0 /*|| !_blockCheck.GetCullFace(Met, _indexSide)*/ || _blockCheck.Translucent;
             //if (_isDraw && (_blockCheck.Material == Block.Material && !_blockCheck.BlocksNotSame)) _isDraw = false;
 
             if (_isDraw)

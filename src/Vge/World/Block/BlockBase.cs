@@ -110,31 +110,18 @@ namespace Vge.World.Block
         #region Для Render
 
         /// <summary>
-        /// Прорисовка возможно с обеих сторон, для уникальных блоков, типа трава, листва и подобное
+        /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой с сортировкой
         /// </summary>
-        //public bool BothSides { get; private set; } = false;
+        public bool Alpha = false;
         /// <summary>
-        /// Полупрозрачный, альфа блок, вода, стекло...
+        /// Прозрачный блок, не только альфа, с прозрачной текстурой. 
         /// </summary>
         public bool Translucent = false;
-
         /// <summary>
         /// Флаг, если блок должен использовать самое яркое значение соседнего света как свое собственное
         /// Пример: листва, вода, стекло
         /// </summary>
         public bool UseNeighborBrightness = false;
-
-        /// <summary>
-        /// Все стороны принудительно, пример: трава, стекло, вода, лава
-        /// *** Продумать, возможно заменить...
-        /// </summary>
-        public bool AllSideForcibly = false;
-        /// <summary>
-        /// При значении flase у AllSideForcibly + обнотипные блоков не будет между собой сетки, пример: вода, блок стекла
-        /// *** Продумать, возможно заменить...
-        /// </summary>
-        public bool BlocksNotSame = true;
-
         /// <summary>
         /// Обрабатывается блок эффектом АmbientOcclusion
         /// </summary>
@@ -153,9 +140,34 @@ namespace Vge.World.Block
         public bool Shadow { get; protected set; } = true;
 
         /// <summary>
+        /// Отбраковка всех сторон во всех вариантах
+        /// </summary>
+        public bool CullFaceAll = false;
+        /// <summary>
+        /// Принудительное рисование всех сторон
+        /// </summary>
+        public bool ForceDrawFace = false;
+
+        /// <summary>
         /// Стороны целого блока для прорисовки блока quads
         /// </summary>
-        private QuadSide[][] _quads = new QuadSide[][] { new QuadSide[] { new QuadSide() } };
+        private QuadSide[][] _quads;
+        /// <summary>
+        /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
+        /// </summary>
+        private ulong[][][] _maskCullFaces;
+        /// <summary>
+        /// Для оптимизации отбраковка стороны, чтоб не использовать маску
+        /// </summary>
+        private bool[][] _cullFaces;
+        /// <summary>
+        /// Принудительное рисование стороны
+        /// </summary>
+        private bool[][] _forceDrawFaces;
+        /// <summary>
+        /// Принудительное рисование не крайней стороны 
+        /// </summary>
+        private bool[][] _forceDrawNotExtremeFaces;
 
         #endregion
 
@@ -229,6 +241,12 @@ namespace Vge.World.Block
                 BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
                 _quads = shapeDefinition.RunShapeFromJson(state, shapes);
                 BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
+                CullFaceAll = shapeDefinition.CullFaceAll;
+                ForceDrawFace = shapeDefinition.ForceDrawFace;
+                _maskCullFaces = shapeDefinition.MaskCullFaces;
+                _cullFaces = shapeDefinition.CullFaces;
+                _forceDrawFaces = shapeDefinition.ForceDrawFaces;
+                _forceDrawNotExtremeFaces = shapeDefinition.ForceDrawNotExtremeFaces;
             }
         }
 
@@ -281,9 +299,39 @@ namespace Vge.World.Block
         /// </summary>
         public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
 
+        /// <summary>
+        /// Имеется ли отбраковка конкретноц стороны, конкретного варианта
+        /// </summary>
+        public virtual bool IsCullFace(uint met, int indexSide) => _cullFaces[met][indexSide];
+        /// <summary>
+        /// Надо ли принудительно рисовать сторону, конкретного варианта
+        /// </summary>
+        public virtual bool IsForceDrawFace(uint met, int indexSide) => _forceDrawFaces[met][indexSide];
+        /// <summary>
+        /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
+        /// </summary>
+        public virtual bool IsForceDrawNotExtremeFace(uint met, int indexSide) => _forceDrawNotExtremeFaces[met][indexSide];
+
+        /// <summary>
+        /// Проверка масок сторон
+        /// </summary>
+        /// <param name="indexSide">Индекс сторонв</param>
+        /// <param name="met">Мет данные проверяющего блока</param>
+        /// <param name="blockSide">Объект соседнего блока</param>
+        /// <param name="metSide">Мет данные соседнего блока</param>
+        public bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide)
+        {
+            ulong[] mask = _maskCullFaces[met][indexSide];
+            ulong[] maskCheck = blockSide._maskCullFaces[metSide][PoleConvert.Reverse[indexSide]];
+            return (maskCheck[0] & mask[0]) == mask[0]
+                && (maskCheck[1] & mask[1]) == mask[1]
+                && (maskCheck[2] & mask[2]) == mask[2]
+                && (maskCheck[3] & mask[3]) == mask[3];
+        }
+
         #endregion
 
-        
+
 
         public override string ToString() => Id.ToString() + " " + Alias;
     }

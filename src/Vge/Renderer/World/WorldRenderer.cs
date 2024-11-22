@@ -175,7 +175,7 @@ namespace Vge.Renderer.World
 
             // Биндим шейдор для вокселей
             _game.Render.ShaderBindVoxels(_game.Player.View, timeIndex,
-                _overviewBlock, 1, 1, 1, 15);
+                _overviewBlock, .4f, .4f, .7f, 15);
             // Рисуем воксели сплошных и уникальных блоков
             _DrawVoxelDense();
 

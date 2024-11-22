@@ -1,11 +1,8 @@
 {
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
-    LightOpacity: 2,
     Translucent: true,
-    CullFace: true,
-    Color: [ 1, 1, 1 ],
     Variants: [
-        { Shape: "_Translucent" }
+        { Shape: "Glass" }
     ]
 }

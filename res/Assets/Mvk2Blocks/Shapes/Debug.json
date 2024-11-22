@@ -9,15 +9,24 @@
     },
     Elements: [
         {   From: [ 0, 0, 0 ],
-            To: [ 10, 16, 16 ],
+            To: [ 16, 8, 16 ],
             Faces: [
-                { Texture:"Down", Side:"Down" },
-#                { Texture:"Up", Side:"Up", Uv:[0, 0, 10, 16], UvRotate:90 },
-                { Texture:"Up", Side:"Up", Uv:[0, 0, 10, 16], BiomeColor:4 },
-                { Texture:"North", Side:"North", Uv:[0, 0, 10, 16] },
-                { Texture:"East", Side:"East", Uv:[0, 0, 16, 16]},
-                { Texture:"South", Side:"South", Uv:[0, 0, 10, 16] },
-                { Texture:"West", Side:"West", Uv:[0, 0, 16, 16] }
+                { Texture:"Down", Side:"Down", Uv:[0, 0, 8, 16] },
+                { Texture:"Up", Side:"Up", Uv:[0, 0, 8, 16], BiomeColor:4},
+                { Texture:"North", Side:"North", Uv:[0, 0, 8, 8]},
+                { Texture:"East", Side:"East", Uv:[0, 0, 16, 8]},
+                { Texture:"South", Side:"South", Uv:[0, 0, 8, 8]},
+                { Texture:"West", Side:"West", Uv:[0, 0, 16, 8]}
+            ]
+        },
+        {   From: [ 0, 8, 0 ],
+            To: [ 8, 16, 16 ],
+            Faces: [
+                { Texture:"Up", Side:"Up", Uv:[0, 0, 8, 8]},
+                { Texture:"North", Side:"North", Uv:[0, 0, 8, 8]},
+                { Texture:"East", Side:"East", Uv:[0, 0, 8, 8]},
+                { Texture:"South", Side:"South", Uv:[0, 0, 8, 8]},
+                { Texture:"West", Side:"West", Uv:[0, 0, 8, 8]}
             ]
         }
     ]

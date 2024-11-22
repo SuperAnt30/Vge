@@ -46,6 +46,10 @@ namespace Vge.World.Block
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
         public byte BiomeColor = 0;
+        /// <summary>
+        /// Не крайняя сторона
+        /// </summary>
+        public bool NotExtremeSide = false;
 
         /// <summary>
         /// Прямоугольная сторона блока или элемента блока
@@ -55,6 +59,10 @@ namespace Vge.World.Block
         {
             BiomeColor = biomeColor;
         }
+        /// <summary>
+        /// Не крайняя сторона, чтоб не отброкавать при прорисовке
+        /// </summary>
+        public void SetNotExtremeSide() => NotExtremeSide = true;
 
         /// <summary>
         /// Задать анимацию
@@ -248,9 +256,9 @@ namespace Vge.World.Block
                 if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
                 if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
                 if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
-                Vertex[i].X = vec.X + .5f;
-                Vertex[i].Y = vec.Y + .5f;
-                Vertex[i].Z = vec.Z + .5f;
+                Vertex[i].X = Mth.Round(vec.X + .5f, 3);
+                Vertex[i].Y = Mth.Round(vec.Y + .5f, 3);
+                Vertex[i].Z = Mth.Round(vec.Z + .5f, 3);
             }
             return this;
         }
@@ -261,25 +269,10 @@ namespace Vge.World.Block
         /// <param name="shade">Отсутствие оттенка</param>
         public QuadSide SetRotateY(int rotate, bool shade)//, bool uvLock)
         {
-            if (rotate == 90 || rotate == 180 || rotate == 270)
+            if (rotate != 0)
             {
                 SetRotate(rotate, 0, 0);
-                if (Side == 2) // East Восток
-                {
-                    Side = rotate == 90 ? 4 : rotate == 180 ? 3 : 5;
-                }
-                else if (Side == 3) // West Запад
-                {
-                    Side = rotate == 90 ? 5 : rotate == 180 ? 2 : 4;
-                }
-                else if (Side == 4) // North Север
-                {
-                    Side = rotate == 90 ? 3 : rotate == 180 ? 5 : 2;
-                }
-                else if (Side == 5) // South Юг
-                {
-                    Side = rotate == 90 ? 2 : rotate == 180 ? 4 : 3;
-                }
+                Side = PoleConvert.RotateY(Side, rotate);
                 LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             }
             return this;
@@ -315,5 +308,192 @@ namespace Vge.World.Block
         /// Имеется ли у блока свой цвет, цвет как для GUI
         /// </summary>
         public bool IsYourColor() => BiomeColor == 4;
+
+        /// <summary>
+        /// Генерация макси в заданный массив, и возвращает true если принудительное рисование стороны
+        /// </summary>
+        public bool GenMask(ulong[] ar)
+        {
+            if (Side == 0) return _GenUp(ar);
+            if (Side == 1) return _GenDown(ar);
+            if (Side == 2) return _GenEast(ar);
+            if (Side == 3) return _GenWest(ar);
+            if (Side == 4) return _GenNorth(ar);
+            if (Side == 5) return _GenSouth(ar);
+            return false;
+        }
+
+        #region Mask Side
+
+        private bool _GenUp(ulong[] ar)
+        {
+            if (Vertex[0].Y == 1 && Vertex[1].Y == 1 && Vertex[2].Y == 1 && Vertex[3].Y == 1)
+            {
+                _GenMask(_MinX(), _MinZ(), _MaxX(), _MaxZ(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        private bool _GenDown(ulong[] ar)
+        {
+            if (Vertex[0].Y == 0 && Vertex[1].Y == 0 && Vertex[2].Y == 0 && Vertex[3].Y == 0)
+            {
+                _GenMask(_MinX(), _MinZ(), _MaxX(), _MaxZ(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        private bool _GenEast(ulong[] ar)
+        {
+            if (Vertex[0].X == 1 && Vertex[1].X == 1 && Vertex[2].X == 1 && Vertex[3].X == 1)
+            {
+                _GenMask(_MinZ(), _MinY(), _MaxZ(), _MaxY(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        private bool _GenWest(ulong[] ar)
+        {
+            if (Vertex[0].X == 0 && Vertex[1].X == 0 && Vertex[2].X == 0 && Vertex[3].X == 0)
+            {
+                _GenMask(_MinZ(), _MinY(), _MaxZ(), _MaxY(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        private bool _GenNorth(ulong[] ar)
+        {
+            if (Vertex[0].Z == 0 && Vertex[1].Z == 0 && Vertex[2].Z == 0 && Vertex[3].Z == 0)
+            {
+                _GenMask(_MinX(), _MinY(), _MaxX(), _MaxY(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        private bool _GenSouth(ulong[] ar)
+        {
+            if (Vertex[0].Z == 1 && Vertex[1].Z == 1 && Vertex[2].Z == 1 && Vertex[3].Z == 1)
+            {
+                _GenMask(_MinX(), _MinY(), _MaxX(), _MaxY(), ar);
+                return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region Min Max
+
+        private float _MinX()
+        {
+            float f = float.MaxValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].X < f) f = Vertex[i].X;
+            }
+            return f;
+        }
+        private float _MaxX()
+        {
+            float f = float.MinValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].X > f) f = Vertex[i].X;
+            }
+            return f;
+        }
+
+        private float _MinY()
+        {
+            float f = float.MaxValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].Y < f) f = Vertex[i].Y;
+            }
+            return f;
+        }
+        private float _MaxY()
+        {
+            float f = float.MinValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].Y > f) f = Vertex[i].Y;
+            }
+            return f;
+        }
+
+        private float _MinZ()
+        {
+            float f = float.MaxValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].Z < f) f = Vertex[i].Z;
+            }
+            return f;
+        }
+        private float _MaxZ()
+        {
+            float f = float.MinValue;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Vertex[i].Z > f) f = Vertex[i].Z;
+            }
+            return f;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Генерация маски в 4 ulong-а (256 bit), x1, y1 от 0, x2, y2 до 1
+        /// </summary>
+        private void _GenMask(float x1, float y1, float x2, float y2, ulong[] ar)
+        {
+            //string s = "";
+            int index = 0;
+            int i = 0;
+            bool b;
+            float xf, yf;
+            for (int y = 0; y < 16; y++)
+            {
+                yf = y / 16f;
+                for (int x = 0; x < 16; x++)
+                {
+                    xf = x / 16f;
+                    b = xf >= x1 && xf < x2 && yf >= y1 && yf < y2;
+                    //s += b ? "1" : "0";
+                    if (b)
+                    {
+                        ar[i] += (ulong)(1L << index);
+                    }
+
+                    if (++index > 63)
+                    {
+                        index = 0;
+                        i++;
+                    }
+                }
+
+                //s += "\r\n";
+            }
+            //string s2 = "";
+            //index = 0;
+            //for (i = 0; i < 4; i++)
+            //{
+            //    for (int j = 0; j < 64; j++)
+            //    {
+            //        s2 += ((ar[i] >> j) & 1).ToString();
+            //        if (++index > 15)
+            //        {
+            //            index = 0;
+            //            s2 += "\r\n";
+            //        }
+            //    }
+            //}
+        }
     }
 }

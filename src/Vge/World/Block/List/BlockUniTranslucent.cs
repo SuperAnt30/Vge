@@ -18,10 +18,11 @@ namespace Vge.World.Block.List
         /// <param name="blue">Синий 0.0-1.0</param>
         public BlockUniTranslucent()//int numberTexture, float red, float green, float blue)
         {
+            Alpha = true;
             //Particle = numberTexture;
             //АmbientOcclusion = false;
-            BlocksNotSame = false;
-            AllSideForcibly = true;
+            //BlocksNotSame = false;
+            //AllSideForcibly = true;
             //UseNeighborBrightness = true;
             //LightOpacity = 2;
             //Translucent = true;
