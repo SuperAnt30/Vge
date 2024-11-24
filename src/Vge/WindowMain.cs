@@ -462,13 +462,22 @@ namespace Vge
         protected virtual void _InitializationBlocks() => BlocksReg.Initialization(this);
 
         /// <summary>
+        /// Инициализация блоков и атласа
+        /// </summary>
+        private void _InitializationBlocksAndAtlas()
+        {
+            _InitializationBlocks();
+            BlocksReg.InitializationEnd();
+        }
+
+        /// <summary>
         /// Запустить игру по сети
         /// </summary>
         public void GameNetRun(string ipAddress, int port)
         {
             if (Game == null)
             {
-                _InitializationBlocks();
+                _InitializationBlocksAndAtlas();
                 LScreen.Process(L.T("Connection") + Ce.Ellipsis);
                 Game = new GameNet(this, ipAddress, port);
                 GameRun();
@@ -482,7 +491,7 @@ namespace Vge
         {
             if (Game == null)
             {
-                _InitializationBlocks();
+                _InitializationBlocksAndAtlas();
                 LScreen.Working();
                 Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();

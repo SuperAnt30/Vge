@@ -144,10 +144,11 @@ namespace Vge.World.Block
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int rotateYawUV = 0)
         {
-            float u1 = (numberTexture % 64) * .015625f;
-            float u2 = u1 + .015625f;
-            float v1 = numberTexture / 64 * .015625f;
-            float v2 = v1 + .015625f;
+            float k = 1f / Ce.TextureAtlasBlockCount;
+            float u1 = (numberTexture % Ce.TextureAtlasBlockCount) * k;
+            float u2 = u1 + k;
+            float v1 = numberTexture / Ce.TextureAtlasBlockCount * k;
+            float v2 = v1 + k;
             switch (rotateYawUV)
             {
                 case 0:
@@ -183,34 +184,35 @@ namespace Vge.World.Block
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int biasU1, int biasV1, int biasU2, int biasV2, int rotateYawUV = 0)
         {
-            float u = (numberTexture % 64) * .015625f;
-            float v = numberTexture / 64 * .015625f;
-
+            float k = 1f / Ce.TextureAtlasBlockCount;
+            float u = (numberTexture % Ce.TextureAtlasBlockCount) * k;
+            float v = numberTexture / Ce.TextureAtlasBlockCount * k;
+            k = Ce.TextureAtlasBlockCount * 16f;
             switch (rotateYawUV)
             {
                 case 0:
-                    Vertex[0].U = Vertex[1].U = u + biasU2 / 1024f;
-                    Vertex[2].U = Vertex[3].U = u + biasU1 / 1024f;
-                    Vertex[0].V = Vertex[3].V = v + biasV2 / 1024f;
-                    Vertex[1].V = Vertex[2].V = v + biasV1 / 1024f;
+                    Vertex[0].U = Vertex[1].U = u + biasU2 / k;
+                    Vertex[2].U = Vertex[3].U = u + biasU1 / k;
+                    Vertex[0].V = Vertex[3].V = v + biasV2 / k;
+                    Vertex[1].V = Vertex[2].V = v + biasV1 / k;
                     break;
                 case 270:
-                    Vertex[1].U = Vertex[2].U = u + biasU2 / 1024f;
-                    Vertex[0].U = Vertex[3].U = u + biasU1 / 1024f;
-                    Vertex[0].V = Vertex[1].V = v + biasV2 / 1024f;
-                    Vertex[2].V = Vertex[3].V = v + biasV1 / 1024f;
+                    Vertex[1].U = Vertex[2].U = u + biasU2 / k;
+                    Vertex[0].U = Vertex[3].U = u + biasU1 / k;
+                    Vertex[0].V = Vertex[1].V = v + biasV2 / k;
+                    Vertex[2].V = Vertex[3].V = v + biasV1 / k;
                     break;
                 case 180:
-                    Vertex[0].U = Vertex[1].U = u + biasU1 / 1024f;
-                    Vertex[2].U = Vertex[3].U = u + biasU2 / 1024f;
-                    Vertex[0].V = Vertex[3].V = v + biasV1 / 1024f;
-                    Vertex[1].V = Vertex[2].V = v + biasV2 / 1024f;
+                    Vertex[0].U = Vertex[1].U = u + biasU1 / k;
+                    Vertex[2].U = Vertex[3].U = u + biasU2 / k;
+                    Vertex[0].V = Vertex[3].V = v + biasV1 / k;
+                    Vertex[1].V = Vertex[2].V = v + biasV2 / k;
                     break;
                 case 90:
-                    Vertex[1].U = Vertex[2].U = u + biasU1 / 1024f;
-                    Vertex[0].U = Vertex[3].U = u + biasU2 / 1024f;
-                    Vertex[0].V = Vertex[1].V = v + biasV1 / 1024f;
-                    Vertex[2].V = Vertex[3].V = v + biasV2 / 1024f;
+                    Vertex[1].U = Vertex[2].U = u + biasU1 / k;
+                    Vertex[0].U = Vertex[3].U = u + biasU2 / k;
+                    Vertex[0].V = Vertex[1].V = v + biasV1 / k;
+                    Vertex[2].V = Vertex[3].V = v + biasV2 / k;
                     break;
             }
             return this;

@@ -19,6 +19,10 @@ namespace Vge.World.Block
         /// Справочник всех форм
         /// </summary>
         public static readonly Dictionary<string, JsonCompound> Shapes = new Dictionary<string, JsonCompound>();
+        /// <summary>
+        /// Объект генерации атласа блоков
+        /// </summary>
+        public static readonly GeneratingBlockAtlas BlockAtlas = new GeneratingBlockAtlas();
 
         private static WindowMain _window;
 
@@ -30,6 +34,10 @@ namespace Vge.World.Block
 
         public static void Initialization(WindowMain window)
         {
+            // Создаём графический объект гдля генерации атласа блокоы
+            //BlockAtlas.CreateImage(64, 16);
+            BlockAtlas.CreateImage(32, 16); // (64, 16);
+
             _window = window;
             _window.LScreen.Process(L.T("CreateBlocks"));
             _window.DrawFrame();
@@ -40,6 +48,12 @@ namespace Vge.World.Block
             // Первые обязательные блоки
             RegisterBlockClass("Air", new BlockAir());
             RegisterBlockClass("Debug", new BlockDebug());
+        }
+
+        public static void InitializationEnd() 
+        {
+            // Финишируем атлас
+            BlockAtlas.EndImage();
         }
 
         /// <summary>

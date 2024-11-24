@@ -1,0 +1,11 @@
+{
+    АmbientOcclusion: false,
+    Translucent: true,
+    Variants: [
+        { Shape: "FlowerClover" },
+        { Shape: "FlowerClover", Offset: [ 0, 0, 4 ] },
+        { Shape: "FlowerClover", Offset: [ 4, 0, 0 ] },
+        { Shape: "FlowerClover", Offset: [ 0, 0, -4 ] },
+        { Shape: "FlowerClover", Offset: [ -4, 0, 0 ] }
+    ]
+}

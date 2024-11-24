@@ -60,19 +60,26 @@ public sealed class Ce
 
     #endregion
 
+    /// <summary>
+    /// Количество спрайтов на стороне текстурного атласа,
+    /// По умалчанию 64 (1024*1024) = 4096 спрайтов
+    /// </summary>
+    public static int TextureAtlasBlockCount = 64;
+    
+
     #region Game Геометрия
 
-  /**
-   *      (North)
-   *        0;-1
-   *         N
-   * (West)  |   (East)
-   *   W ----+---- E 
-   * -1;0    |    1;0
-   *         S
-   *        0;1
-   *      (South)
-   **/
+    /**
+     *      (North)
+     *        0;-1
+     *         N
+     * (West)  |   (East)
+     *   W ----+---- E 
+     * -1;0    |    1;0
+     *         S
+     *        0;1
+     *      (South)
+     **/
 
     /// <summary>
     /// Обзор в виде круга, z дистанция

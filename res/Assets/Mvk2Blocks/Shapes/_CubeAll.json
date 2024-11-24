@@ -1,7 +1,4 @@
 {
-    Texture: {
-        All: 1
-    },
     Elements: [
         {   From: [ 0, 0, 0 ],
             To: [ 16, 16, 16 ],
@@ -14,13 +11,5 @@
                 { Texture:"All", Side:"West"}
             ]
         }
-    ],
-    CullFaces: [
-        { Side:"Down", Need:15, Have:15 },
-        { Side:"Up", Need:15, Have:15 },
-        { Side:"North", Need:15, Have:15 },
-        { Side:"East", Need:15, Have:15 },
-        { Side:"South", Need:15, Have:15 },
-        { Side:"West", Need:15, Have:15 }
     ]
 }

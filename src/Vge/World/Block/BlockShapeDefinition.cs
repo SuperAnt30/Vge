@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Vge.Json;
-using Vge.Util;
 
 namespace Vge.World.Block
 {
@@ -46,214 +44,163 @@ namespace Vge.World.Block
         public BlockShapeDefinition(BlockBase block) => _block = block;
 
         /// <summary>
+        /// Для краша, название раздела
+        /// </summary>
+        private string _log;
+        /// <summary>
+        /// Объект результата квада
+        /// </summary>
+        private QuadSide[][] _quads;
+        /// <summary>
+        /// Индекс варианта
+        /// </summary>
+        private int _indexV;
+        /// <summary>
+        /// Индекс квада
+        /// </summary>
+        private int _indexQ;
+
+        /// <summary>
+        /// Объект данных готовой фигуры
+        /// </summary>
+        private readonly ShapeAdd _shapeAdd = new ShapeAdd();
+        /// <summary>
+        /// Текстуры к фигуре
+        /// </summary>
+        private readonly ShapeTexture _shapeTexture = new ShapeTexture();
+
+        /// <summary>
         /// Запуск определения формы
         /// </summary>
-        /// <param name="state"></param>
-        /// <param name="shapes"></param>
         public QuadSide[][] RunShapeFromJson(JsonCompound state, JsonCompound shapes)
         {
-            string log = "Variants";
+            _log = "Variants";
             try
             {
                 JsonCompound[] variants = state.GetArray("Variants").ToArrayObject();
                 if (variants.Length > 0)
                 {
-                    QuadSide[][] quads = new QuadSide[variants.Length][];
+                    _quads = new QuadSide[variants.Length][];
                     MaskCullFaces = new ulong[variants.Length][][];
                     ForceDrawFaces = new bool[variants.Length][];
                     ForceDrawNotExtremeFaces = new bool[variants.Length][];
                     CullFaces = new bool[variants.Length][];
 
-                    int index = 0;
-                    int i, j, k;
-                    string nameShape = "";
-                    JsonCompound shape, texture, face;
-                    JsonCompound[] elements, faces;
-                    Dictionary<string, int> textures = new Dictionary<string, int>();
-                    QuadSide quadSide;
-                    Pole pole;
-                    int x1i, y1i, z1i, x2i, y2i, z2i, u1, v1, u2, v2, wind, rotateY, uvRotate;
-                    byte biomeColor;
-                    int[] arInt;
-                    bool shade, isRotate, sharpness, isOffset, uvLock;
-                    float[] ypr = new float[0];
-                    float[] offset = new float[0];
+                    _indexV = 0;
 
                     foreach (JsonCompound variant in variants)
                     {
-                        log = "Shape";
-                        nameShape = variant.GetString("Shape");
-                        if (nameShape != "")
-                        {
-                            isOffset = variant.IsKey("Offset");
-                            if (isOffset)
-                            {
-                                offset = variant.GetArray("Offset").ToArrayFloat();
-                            }
-                            // Имеется вращение по Y 90 | 180 | 270
-                            rotateY = _CheckRotate(variant.GetInt("RotateY"));
-                            // Защита от вращении текстуры
-                            uvLock = variant.GetBool("UvLock");
-                            // Имеется форма
-                            shape = shapes.GetObject(nameShape);
-
-                            log = "Texture";
-                            // Текстура
-                            texture = shape.GetObject("Texture");
-                            textures.Clear();
-                            foreach (JsonKeyValue texutreKV in texture.Items)
-                            {
-                                textures.Add(texutreKV.Key, texutreKV.GetInt());
-                            }
-                            log = "Elements";
-                            elements = shape.GetArray("Elements").ToArrayObject();
-
-                            log = "FacesCount";
-                            // Определяем количество квадов
-                            k = 0;
-                            for (i = 0; i < elements.Length; i++)
-                            {
-                                k += elements[i].GetArray("Faces").GetCount();
-                            }
-                            quads[index] = new QuadSide[k];
-                            MaskCullFaces[index] = new ulong[6][];
-                            ForceDrawFaces[index] = new bool[] { true, true, true, true, true, true };
-                            ForceDrawNotExtremeFaces[index] = new bool[6];
-                            CullFaces[index] = new bool[6];
-
-                            k = 0;
-                            // Заполняем квады
-                            for (i = 0; i < elements.Length; i++)
-                            {
-                                // Определяем размер
-                                log = "FromTo";
-                                arInt = elements[i].GetArray("From").ToArrayInt();
-                                x1i = arInt[0];
-                                y1i = arInt[1];
-                                z1i = arInt[2];
-                                arInt = elements[i].GetArray("To").ToArrayInt();
-                                x2i = arInt[0];
-                                y2i = arInt[1];
-                                z2i = arInt[2];
-
-                                // Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
-                                shade = elements[i].GetBool("Shade");
-                                // Контраст
-                                sharpness = elements[i].IsKey("Sharpness");
-                                // Ветер
-                                wind = elements[i].GetInt("Wind");
-                                // Вращение
-                                log = "Rotate";
-                                isRotate = elements[i].IsKey("Rotate");
-                                if (isRotate)
-                                {
-                                    ypr = elements[i].GetArray("Rotate").ToArrayFloat();
-                                }
-                                // Собираем массив сторон
-                                log = "Faces";
-                                faces = elements[i].GetArray("Faces").ToArrayObject();
-                                for (j = 0; j < faces.Length; j++)
-                                {
-                                    face = faces[j];
-                                    biomeColor = (byte)face.GetInt("BiomeColor");
-                                    if (biomeColor != 0)
-                                    {
-                                        BiomeColor = biomeColor;
-                                    }
-                                    quadSide = new QuadSide(biomeColor);
-                                    
-                                    pole = PoleConvert.GetPole(face.GetString("Side"));
-                                    
-                                    quadSide.SetSide(pole, shade, x1i, y1i, z1i, x2i, y2i, z2i);
-                                    if (isRotate)
-                                    {
-                                        quadSide.SetRotate(ypr[0], ypr[1], ypr[2]);
-                                    }
-                                    if (isOffset)
-                                    {
-                                        quadSide.SetTranslate(offset[0] / 16f, offset[1] / 16f, offset[2] / 16f);
-                                    }
-
-                                    // Резкость
-                                    if (sharpness)
-                                    {
-                                        quadSide.SetSharpness();
-                                    }
-                                    // Ветер
-                                    if (wind != 0)
-                                    {
-                                        quadSide.SetWind((byte)wind);
-                                    }
-                                    // Размеры текстуры
-                                    if (face.IsKey("Uv"))
-                                    {
-                                        arInt = face.GetArray("Uv").ToArrayInt();
-                                        u1 = arInt[0];
-                                        v1 = arInt[1];
-                                        u2 = arInt[2];
-                                        v2 = arInt[3];
-                                    }
-                                    else
-                                    {
-                                        u1 = v1 = 0;
-                                        u2 = v2 = 16;
-                                    }
-                                    // Вращение текстуры 0 || 90 || 180 || 270
-                                    uvRotate = face.GetInt("UvRotate");
-
-                                    if (rotateY != 0)
-                                    {
-                                        quadSide.SetRotateY(rotateY, shade);
-
-                                        if (pole == Pole.Up && uvLock)
-                                        {
-                                            uvRotate += rotateY;
-                                            if (uvRotate > 270) uvRotate -= 360;
-                                            if (rotateY == 90 || rotateY == 270)
-                                            {
-                                                int uv = v1;
-                                                v1 = u1;
-                                                u1 = uv;
-                                                uv = v2;
-                                                v2 = u2;
-                                                u2 = uv;
-                                            }
-                                        }
-                                    }
-
-                                    quadSide.SetTexture(textures[face.GetString("Texture")],
-                                        u1, v1, u2, v2, uvRotate);
-
-
-                                    if (MaskCullFaces[index][quadSide.Side] == null)
-                                    {
-                                        MaskCullFaces[index][quadSide.Side] = new ulong[4];
-                                    }
-
-                                    if (quadSide.GenMask(MaskCullFaces[index][quadSide.Side]))
-                                    {
-                                        ForceDrawNotExtremeFaces[index][quadSide.Side] = true;
-                                        quadSide.SetNotExtremeSide();
-                                    }
-
-                                    quads[index][k++] = quadSide;
-                                }
-                            }
-                            index++;
-                        }
+                        _log = "Shape";
+                        _Shape(variant, shapes);
+                        _indexV++;
                     }
 
                     _CullFaceAll();
                     _ForceDrawFace();
-                    return quads;
+                    return _quads;
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _block.Alias, log), ex);
+                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _block.Alias, _log), ex);
             }
 
             return new QuadSide[][] { new QuadSide[] { new QuadSide() } };
+        }
+
+        private void _Shape(JsonCompound variant, JsonCompound shapes)
+        {
+            string nameShape = variant.GetString("Shape");
+            if (nameShape == "") return;
+
+            // Собираем дополнительные данные на фигуру
+            _shapeAdd.RunShape(variant);
+            // Имеется форма
+            JsonCompound shape = shapes.GetObject(nameShape);
+
+            _log = "Texture";
+            // Текстура
+            _shapeTexture.RunShape(shape);
+
+            _log = "Elements";
+            JsonCompound[] elements = shape.GetArray("Elements").ToArrayObject();
+
+            _log = "FacesCount";
+            // Определяем количество квадов
+            int i;
+            _indexQ = 0;
+            for (i = 0; i < elements.Length; i++)
+            {
+                _indexQ += elements[i].GetArray("Faces").GetCount();
+            }
+            _quads[_indexV] = new QuadSide[_indexQ];
+            MaskCullFaces[_indexV] = new ulong[6][];
+            ForceDrawFaces[_indexV] = new bool[] { true, true, true, true, true, true };
+            ForceDrawNotExtremeFaces[_indexV] = new bool[6];
+            CullFaces[_indexV] = new bool[6];
+
+            _indexQ = 0;
+            // Заполняем квады
+            for (i = 0; i < elements.Length; i++)
+            {
+                _Element(elements[i]);
+            }
+        }
+
+        private void _Element(JsonCompound element)
+        {
+            JsonCompound[] faces;
+            ShapeFace shapeFace = new ShapeFace(_shapeAdd, _shapeTexture);
+            int[] arInt;
+
+            // Определяем размер
+            _log = "FromTo";
+            arInt = element.GetArray("From").ToArrayInt();
+            shapeFace.SetFrom(arInt[0], arInt[1], arInt[2]);
+
+            arInt = element.GetArray("To").ToArrayInt();
+            shapeFace.SetTo(arInt[0], arInt[1], arInt[2]);
+
+            // Вращение
+            _log = "Rotate";
+            if (element.IsKey("Rotate"))
+            {
+                float[] ypr = element.GetArray("Rotate").ToArrayFloat();
+                shapeFace.SetRotate(ypr[0], ypr[1], ypr[2]);
+            }
+            else
+            {
+                shapeFace.NotRotate();
+            }
+
+            // Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
+            shapeFace.Shade = element.GetBool("Shade");
+            // Контраст
+            bool sharpness = element.IsKey("Sharpness");
+            // Ветер
+            int wind = element.GetInt("Wind");
+            
+            // Собираем массив сторон
+            _log = "Faces";
+            faces = element.GetArray("Faces").ToArrayObject();
+            for (int i = 0; i < faces.Length; i++)
+            {
+                shapeFace.RunShape(faces[i]);
+                shapeFace.Add(sharpness, wind);
+
+                if (MaskCullFaces[_indexV][shapeFace.Side] == null)
+                {
+                    MaskCullFaces[_indexV][shapeFace.Side] = new ulong[4];
+                }
+
+                if (shapeFace.GenMask(MaskCullFaces[_indexV][shapeFace.Side]))
+                {
+                    ForceDrawNotExtremeFaces[_indexV][shapeFace.Side] = true;
+                    shapeFace.SetNotExtremeSide();
+                }
+
+                _quads[_indexV][_indexQ++] = shapeFace.GetQuadSide();
+            }
         }
 
         /// <summary>
@@ -307,11 +254,5 @@ namespace Vge.World.Block
                 }
             }
         }
-
-        /// <summary>
-        /// Проверка вращения кратно 90 || 180 || 270
-        /// </summary>
-        private int _CheckRotate(int rotate)
-            => (rotate == 90 || rotate == 180 || rotate == 270) ? rotate : 0;
     }
 }

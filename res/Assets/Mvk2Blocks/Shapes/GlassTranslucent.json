@@ -1,0 +1,4 @@
+{
+    Parent: "_CubeAllColor",
+    Texture: { All: "Blocks/GlassTranslucent" }
+}

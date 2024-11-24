@@ -330,10 +330,23 @@ namespace Vge.Renderer.World
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckAir()
+        {
+            if (_storage.CountBlock > 0)
+            {
+                id = _storage.Data[i];
+                if (id == 0) return true;
+                _metCheck = id >> 12;
+                id = id & 0xFFF;
+                return false;
+            }
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _GetBlockSideState()
         {
             // На старте ~0.580
-
             i = (PosChunkY & 15) << 8 | (PosChunkZ & 15) << 4 | (PosChunkX & 15);
 
             if (_isForceDrawFace)
@@ -341,97 +354,64 @@ namespace Vge.Renderer.World
                 // Принудительное рисование всех сторон, модель которые все стороны не касаются краёв
                 _emptySide = false;
                 _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-                return;
-            }
-
-            // ~0.620
-
-            if (_storage.CountBlock > 0)
-            {
-                id = _storage.Data[i]; // Это больно?!
-                _metCheck = id >> 12;
-                id = id & 0xFFF;
             }
             else
             {
-                _metCheck = 0;
-                id = 0;
-            }
-            // ~1.0 ~0.850
-
-            // Ниже ~0.5мс
-            if (id == 0)
-            {
-                // Воздух
-                _emptySide = false;
-                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-                return;
-            }
-            // ~1.150 ~0.980
-            if (_blockCheck.Id != id)
-            {
-                _blockCheck = Ce.Blocks.BlockObjects[id];
-            }
-
-            if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)
-            {
-                // Блоки целые непрозрачные
-                _resultSide[_indexSide] = -1;
-                return;
-            }
-
-            if (_blockCheck.Translucent)
-            {
-                // Соседний блок прозрачный
-                if (Gi.Block.Id != _blockCheck.Id)
+                // ~0.620
+                if (_CheckAir())
                 {
-                    // Блоки разного типа, то палюбому надо рисовать сторону
+                    // Воздух
                     _emptySide = false;
                     _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
                 }
                 else
                 {
-                    // Одинаково типа, убираем прорисовку, вода, стекло
-                    _resultSide[_indexSide] = -1;
+                    // ~1.150 ~0.980
+                    if (_blockCheck.Id != id)
+                    {
+                        _blockCheck = Ce.Blocks.BlockObjects[id];
+                    }
+
+                    if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)
+                    {
+                        // Блоки целые непрозрачные
+                        _resultSide[_indexSide] = -1;
+                    }
+                    else if (_blockCheck.Translucent)
+                    {
+                        // Соседний блок прозрачный
+                        if (Gi.Block.Id != _blockCheck.Id)
+                        {
+                            // Блоки разного типа, то палюбому надо рисовать сторону
+                            _emptySide = false;
+                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                        }
+                        else
+                        {
+                            // Одинаково типа, убираем прорисовку, вода, стекло
+                            _resultSide[_indexSide] = -1;
+                        }
+                    }
+                    else if (Gi.Block.IsForceDrawFace(Met, _indexSide) 
+                        || !Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
+                                ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
+                    {
+                        // Принудительное рисование стороны, модель которая сторона не касаются краёв
+                        _emptySide = false;
+                        _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                    }
+                    else if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
+                    {
+                        _emptySide = false;
+                        _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF | 256;
+                    }
+                    else
+                    {
+                        // Это не видно по маске
+                        _resultSide[_indexSide] = -1;
+                    }
                 }
-                return;
             }
-
-            if (Gi.Block.IsForceDrawFace(Met, _indexSide))
-            {
-                // Принудительное рисование стороны, модель которая сторона не касаются краёв
-                _emptySide = false;
-                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-                return;
-            }
-
-            if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
-            {
-                // Принудительное рисование не крайней стороны, зависимости от маски,
-                // решаем надо ли рисовать все квады стороны
-                _emptySide = false;
-                if (Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
-                    ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
-                {
-                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF | 256;
-                }
-                else
-                {
-                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
-                }
-                return;
-            }
-
-            if (Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
-                    ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
-            {
-                // Это не видно по маске
-                _resultSide[_indexSide] = -1;
-                return;
-            }
-
-            _emptySide = false;
-            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
         }
 
         /// <summary>

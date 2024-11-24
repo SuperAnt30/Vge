@@ -16,6 +16,13 @@ namespace Vge.Util
         /// </summary>
         public static string PathAssets = "Assets" + Path.DirectorySeparatorChar;
         /// <summary>
+        /// Путь к сохранении игр
+        /// </summary>
+        public static string PathGames = "Games" + Path.DirectorySeparatorChar;
+
+        #region Path
+
+        /// <summary>
         /// Путь к папке звуков
         /// </summary>
         public static string PathSounds { get; private set; }
@@ -35,10 +42,10 @@ namespace Vge.Util
         /// Путь к папке фигур блока
         /// </summary>
         public static string PathShapeBlocks { get; private set; }
-        /// <summary>
-        /// Путь к сохранении игр
-        /// </summary>
-        public static string PathGames = "Games" + Path.DirectorySeparatorChar;
+
+        #endregion
+
+        
 
         /// <summary>
         /// Размер интерфеса с учётом размера окна

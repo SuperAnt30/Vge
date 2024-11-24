@@ -6,6 +6,6 @@
     CullFace: true,
     Color: [ 1, 1, 1 ],
     Variants: [
-        { Shape: "_Translucent" }
+        { Shape: "GlassTranslucent" }
     ]
 }

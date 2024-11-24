@@ -138,11 +138,11 @@ namespace Vge.Renderer
             gl.Disable(GL.GL_TEXTURE_2D);
 
             // Активация текстуры карты света
-            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
-            gl.ActiveTexture(GL.GL_TEXTURE2);
-            gl.Enable(GL.GL_TEXTURE_2D);
-            gl.Uniform1(lightMap, 2);
-            gl.Disable(GL.GL_TEXTURE_2D);
+            //int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            //gl.ActiveTexture(GL.GL_TEXTURE2);
+            //gl.Enable(GL.GL_TEXTURE_2D);
+            //gl.Uniform1(lightMap, 2);
+            //gl.Disable(GL.GL_TEXTURE_2D);
 
             gl.ActiveTexture(GL.GL_TEXTURE0);
         }

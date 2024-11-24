@@ -1,4 +1,4 @@
 {
     Parent: "_CubeAll",
-    Texture: { All: 5 }
+    Texture: { All: "Blocks/Granite" }
 }

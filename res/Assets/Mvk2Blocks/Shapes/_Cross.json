@@ -1,9 +1,8 @@
 {
-    Texture: { All: 1 },
     Elements: [
         {   From: [ -2, 0, 8 ],
             To: [ 18, 16, 8 ],
-#            Rotate: [ 45, 0, 0 ],
+            Rotate: [ 45, 0, 0 ],
             Shade: true,
             Sharpness: true,
             Wind: 1,
@@ -14,7 +13,7 @@
         },
         {   From: [ 8, 0, -2 ],
             To: [ 8, 16, 18 ],
-#            Rotate: [ 45, 0, 0 ],
+            Rotate: [ 45, 0, 0 ],
             Shade: true,
             Sharpness: true,
             Wind: 1,
