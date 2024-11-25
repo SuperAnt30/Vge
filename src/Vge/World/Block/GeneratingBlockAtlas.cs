@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -31,9 +32,9 @@ namespace Vge.World.Block
         private bool[,] _mask; 
 
         /// <summary>
-        /// Справочник текстур, название текстуры, индекс расположения текстуры в атласе
+        /// Справочник текстур, название текстуры, индекс расположения текстуры в атласе и количество кадров
         /// </summary>
-        private readonly Dictionary<string, int> _textures = new Dictionary<string, int>();
+        private readonly Dictionary<string, Vector2i> _textures = new Dictionary<string, Vector2i>();
 
         /// <summary>
         /// Размер текстуры блока
@@ -133,7 +134,7 @@ namespace Vge.World.Block
             _buffer = new byte[0];
         }
 
-        public int AddSprite(string name)
+        public Vector2i AddSprite(string name)
         {
             if (_textures.ContainsKey(name))
             {
@@ -166,15 +167,16 @@ namespace Vge.World.Block
                 }
                 if (index != -1)
                 {
-                    _BufferCopy(index, w, buffered, name);
+                    Vector2i res = new Vector2i(index, _BufferCopy(index, w, buffered, name));
+                    _textures.Add(name, res);
+                    return res;
                 }
                 //_profiler.EndSectionLog();
-                return index;
             }
-            return -1;
+            return new Vector2i(-1, 0);
         }
 
-        private void _BufferCopy(int index, int w, BufferedImage buffered, string name)
+        private int _BufferCopy(int index, int w, BufferedImage buffered, string name)
         {
             int size = _textureBlockSize; // 16
             int sizeRGBA = size * 4; // 64
@@ -186,7 +188,7 @@ namespace Vge.World.Block
                 Buffer.BlockCopy(buffered.Buffer, y * sizeRGBAw,
                     _buffer, index2 + (_stride * y), sizeRGBAw);
             }
-            _textures.Add(name, index);
+            return buffered.Height / _textureBlockSize;
         }
 
         /// <summary>

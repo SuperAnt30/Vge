@@ -1,5 +1,6 @@
 ﻿using Vge.Json;
 using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -166,8 +167,12 @@ namespace Vge.World.Block
                 }
             }
 
-            _quad.SetTexture(_shapeTexture.GetIndex(face.GetString(Ctb.TextureFace)),
-                u1, v1, u2, v2, uvRotate);
+            Vector2i resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+            _quad.SetTexture(resTexture.X, u1, v1, u2, v2, uvRotate);
+            if (resTexture.Y > 1)
+            {
+                _quad.SetAnimal((byte)resTexture.Y, (byte)face.GetInt(Ctb.Pause));
+            }
         }
 
         public void Add(bool sharpness, int wind)

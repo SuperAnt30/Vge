@@ -132,6 +132,10 @@
         /// Вращение текстуры кратно 90 градусах, (90 || 180 || 270)
         /// </summary>
         public const string UvRotate = "UvRotate";
+        /// <summary>
+        /// Количество пропускающих тактов, для анимациионых текстур, 0 и 1 без паузы. (byte)
+        /// </summary>
+        public const string Pause = "Pause";
 
         #endregion
     }

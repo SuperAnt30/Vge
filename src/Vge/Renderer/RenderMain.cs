@@ -115,7 +115,7 @@ namespace Vge.Renderer
         {
             ShVoxel.Bind(gl);
             ShVoxel.SetUniformMatrix4(gl, "view", view);
-            ShVoxel.SetUniform1(gl, "takt", window.Game.TickCounter);
+            ShVoxel.SetUniform1(gl, "takt", (int)window.Game.TickCounter);
             ShVoxel.SetUniform1(gl, "overview", (float)overview);
             ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
             ShVoxel.SetUniform1(gl, "torch", (float)torchInHand);

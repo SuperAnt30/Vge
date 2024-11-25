@@ -13,13 +13,14 @@ out vec2 a_light;
 out float a_sharpness;
 
 uniform mat4 view;
-uniform float takt;
+uniform int takt;
 uniform float wind;
 uniform float overview;
 uniform vec3 colorfog;
 uniform vec3 pos;
 uniform vec3 camera;
 uniform float torch;
+uniform float animOffset;
 
 void main()
 {
@@ -55,13 +56,11 @@ void main()
         int t;
         if (pause > 1) {
             int maxframe = frame * pause;
-            int tt = maxframe - 1;
-            t = ((int(takt) & tt) / pause);
+            t = (takt - takt / maxframe * maxframe) / pause;
         } else {
-            int tt = frame - 1;
-            t = (int(takt) & tt);
+            t = takt - takt / frame * frame;
         }
-        a_texCoord.y += t * 0.015625;
+        a_texCoord.y += t * animOffset;
     }
     
     if (((v_anim >> 16) & 1) == 1)
