@@ -1,5 +1,4 @@
-﻿using Vge.Games;
-using Vge.Renderer.Font;
+﻿using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -131,6 +130,7 @@ namespace Vge.Renderer
             gl.Uniform1(atlasBlurry, 0);
 
             // Активация текстуры атласа с резкостью (без Mipmap)
+            Texture.BindTexture(3, 1);
             int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
             gl.ActiveTexture(GL.GL_TEXTURE1);
             gl.Enable(GL.GL_TEXTURE_2D);

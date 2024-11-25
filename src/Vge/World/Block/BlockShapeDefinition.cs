@@ -8,8 +8,6 @@ namespace Vge.World.Block
     /// </summary>
     public class BlockShapeDefinition
     {
-        private readonly BlockBase _block;
-
         /// <summary>
         /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
         /// </summary>
@@ -41,7 +39,15 @@ namespace Vge.World.Block
         /// </summary>
         public byte BiomeColor = 0;
 
-        public BlockShapeDefinition(BlockBase block) => _block = block;
+        private readonly BlockBase _block;
+        /// <summary>
+        /// Объект данных готовой фигуры
+        /// </summary>
+        private readonly ShapeAdd _shapeAdd = new ShapeAdd();
+        /// <summary>
+        /// Текстуры к фигуре
+        /// </summary>
+        private readonly ShapeTexture _shapeTexture = new ShapeTexture();
 
         /// <summary>
         /// Для краша, название раздела
@@ -60,24 +66,17 @@ namespace Vge.World.Block
         /// </summary>
         private int _indexQ;
 
-        /// <summary>
-        /// Объект данных готовой фигуры
-        /// </summary>
-        private readonly ShapeAdd _shapeAdd = new ShapeAdd();
-        /// <summary>
-        /// Текстуры к фигуре
-        /// </summary>
-        private readonly ShapeTexture _shapeTexture = new ShapeTexture();
+        public BlockShapeDefinition(BlockBase block) => _block = block;
 
         /// <summary>
         /// Запуск определения формы
         /// </summary>
         public QuadSide[][] RunShapeFromJson(JsonCompound state, JsonCompound shapes)
         {
-            _log = "Variants";
+            _log = Ctb.Variants;
             try
             {
-                JsonCompound[] variants = state.GetArray("Variants").ToArrayObject();
+                JsonCompound[] variants = state.GetArray(Ctb.Variants).ToArrayObject();
                 if (variants.Length > 0)
                 {
                     _quads = new QuadSide[variants.Length][];
@@ -90,7 +89,7 @@ namespace Vge.World.Block
 
                     foreach (JsonCompound variant in variants)
                     {
-                        _log = "Shape";
+                        _log = Ctb.Shape;
                         _Shape(variant, shapes);
                         _indexV++;
                     }
@@ -110,7 +109,7 @@ namespace Vge.World.Block
 
         private void _Shape(JsonCompound variant, JsonCompound shapes)
         {
-            string nameShape = variant.GetString("Shape");
+            string nameShape = variant.GetString(Ctb.Shape);
             if (nameShape == "") return;
 
             // Собираем дополнительные данные на фигуру
@@ -118,12 +117,12 @@ namespace Vge.World.Block
             // Имеется форма
             JsonCompound shape = shapes.GetObject(nameShape);
 
-            _log = "Texture";
+            _log = Ctb.Texture;
             // Текстура
             _shapeTexture.RunShape(shape);
 
-            _log = "Elements";
-            JsonCompound[] elements = shape.GetArray("Elements").ToArrayObject();
+            _log = Ctb.Elements;
+            JsonCompound[] elements = shape.GetArray(Ctb.Elements).ToArrayObject();
 
             _log = "FacesCount";
             // Определяем количество квадов
@@ -131,7 +130,7 @@ namespace Vge.World.Block
             _indexQ = 0;
             for (i = 0; i < elements.Length; i++)
             {
-                _indexQ += elements[i].GetArray("Faces").GetCount();
+                _indexQ += elements[i].GetArray(Ctb.Faces).GetCount();
             }
             _quads[_indexV] = new QuadSide[_indexQ];
             MaskCullFaces[_indexV] = new ulong[6][];
@@ -154,18 +153,30 @@ namespace Vge.World.Block
             int[] arInt;
 
             // Определяем размер
-            _log = "FromTo";
-            arInt = element.GetArray("From").ToArrayInt();
+            _log = Ctb.From;
+            arInt = element.GetArray(Ctb.From).ToArrayInt();
             shapeFace.SetFrom(arInt[0], arInt[1], arInt[2]);
-
-            arInt = element.GetArray("To").ToArrayInt();
+            _log = Ctb.To;
+            arInt = element.GetArray(Ctb.To).ToArrayInt();
             shapeFace.SetTo(arInt[0], arInt[1], arInt[2]);
 
-            // Вращение
-            _log = "Rotate";
-            if (element.IsKey("Rotate"))
+            // Перемещение элемента
+            _log = Ctb.Translate;
+            if (element.IsKey(Ctb.Translate))
             {
-                float[] ypr = element.GetArray("Rotate").ToArrayFloat();
+                float[] xyz = element.GetArray(Ctb.Translate).ToArrayFloat();
+                shapeFace.SetTranslate(xyz[0], xyz[1], xyz[2]);
+            }
+            else
+            {
+                shapeFace.NotTranslate();
+            }
+
+            // Вращение по центру блока
+            _log = Ctb.Rotate;
+            if (element.IsKey(Ctb.Rotate))
+            {
+                float[] ypr = element.GetArray(Ctb.Rotate).ToArrayFloat();
                 shapeFace.SetRotate(ypr[0], ypr[1], ypr[2]);
             }
             else
@@ -174,15 +185,15 @@ namespace Vge.World.Block
             }
 
             // Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
-            shapeFace.Shade = element.GetBool("Shade");
+            shapeFace.Shade = element.GetBool(Ctb.Shade);
             // Контраст
-            bool sharpness = element.IsKey("Sharpness");
+            bool sharpness = element.IsKey(Ctb.Sharpness);
             // Ветер
-            int wind = element.GetInt("Wind");
+            int wind = element.GetInt(Ctb.Wind);
             
             // Собираем массив сторон
-            _log = "Faces";
-            faces = element.GetArray("Faces").ToArrayObject();
+            _log = Ctb.Faces;
+            faces = element.GetArray(Ctb.Faces).ToArrayObject();
             for (int i = 0; i < faces.Length; i++)
             {
                 shapeFace.RunShape(faces[i]);

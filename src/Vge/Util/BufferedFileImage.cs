@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using WinGL.Util;
 
 namespace Vge.Util
 {
@@ -15,11 +14,8 @@ namespace Vge.Util
             uint activeTextureIndex = 0,  bool minmap = false)
         {
             Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
-            return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap))
-            {
-                ActiveTextureIndex = activeTextureIndex,
-                FlagMipMap = minmap
-            };
+            return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap),
+                activeTextureIndex, minmap);
         }
 
         /// <summary>

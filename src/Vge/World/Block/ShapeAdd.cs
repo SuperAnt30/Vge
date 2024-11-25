@@ -16,7 +16,7 @@ namespace Vge.World.Block
         /// </summary>
         public int RotateY;
         /// <summary>
-        /// При вращении RotateY сохраняется текстура, и не вращается с мерху и снизу
+        /// При вращении RotateY сохраняется текстура, и не вращается сверху и снизу
         /// </summary>
         public bool UvLock;
 
@@ -27,20 +27,20 @@ namespace Vge.World.Block
 
         public void RunShape(JsonCompound variant)
         {
-            IsOffset = variant.IsKey("Offset");
+            IsOffset = variant.IsKey(Ctb.Offset);
             if (IsOffset)
             {
-                _offset = variant.GetArray("Offset").ToArrayFloat();
+                _offset = variant.GetArray(Ctb.Offset).ToArrayFloat();
             }
             else
             {
                 _offset = new float[0];
             }
             // Имеется вращение по Y 90 | 180 | 270
-            RotateY = _CheckRotate(variant.GetInt("RotateY"));
+            RotateY = _CheckRotate(variant.GetInt(Ctb.RotateY));
             
             // Защита от вращении текстуры
-            UvLock = variant.GetBool("UvLock");
+            UvLock = variant.GetBool(Ctb.UvLock);
         }
 
         public float GetOffsetX() => _offset.Length > 0 ? _offset[0] / 16f : 0;

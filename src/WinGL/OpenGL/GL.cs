@@ -553,6 +553,9 @@ namespace WinGL.OpenGL
 		public void TexImage2D(uint target, int level, uint internalformat, int width, int height, int border, uint format, uint type, byte[] pixels)
             => glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 
+        public void TexSubImage2D(uint target, int level, int xoffset, int yoffset, int width, int height, uint format, uint type, byte[] pixels)
+            => glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+
         /// <summary>
 		///	This function sets the parameters for the currently binded texture object.
 		/// </summary>

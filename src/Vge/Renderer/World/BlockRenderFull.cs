@@ -465,12 +465,12 @@ namespace Vge.Renderer.World
         protected Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
         {
             // подготовка для теста плавности цвета
-            if (_rectangularSide.BiomeColor == 0)
+            if (_rectangularSide.TypeColor == 0)
             {
                 // Нет цвета
                 return ColorWhite;
             }
-            if (_rectangularSide.BiomeColor == 4)
+            if (_rectangularSide.TypeColor == 4)
             {
                 // Свой цвет
                 return Gi.Block.Color;

@@ -1,6 +1,7 @@
-﻿using WinGL.Util;
+﻿using Vge.Util;
+using WinGL.OpenGL;
 
-namespace WinGL.OpenGL
+namespace Vge.Renderer
 {
     /// <summary>
     /// Объект текстур
@@ -59,6 +60,18 @@ namespace WinGL.OpenGL
         }
 
         /// <summary>
+        /// Удалить текстуру, указав индекс текстуры массива
+        /// </summary>
+        public void DeleteTexture(int index)
+        {
+            if (index < textures.Length)
+            {
+                gl.DeleteTextures(1, new uint[] { textures[index] });
+                textures[index] = 0;
+            }
+        }
+
+        /// <summary>
         /// Внесение в кеш текстур заставки
         /// </summary>
         /// <param name="image">рисунок</param>
@@ -108,7 +121,8 @@ namespace WinGL.OpenGL
         /// </summary>
         private uint SetTexture(uint key, BufferedImage image)
         {
-            if (key == 0)
+            bool isCreate = key == 0;
+            if (isCreate)
             {
                 uint[] id = new uint[1];
                 gl.GenTextures(1, id);
@@ -117,39 +131,58 @@ namespace WinGL.OpenGL
             gl.ActiveTexture(GL.GL_TEXTURE0 + image.ActiveTextureIndex);
             //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
             gl.BindTexture(GL.GL_TEXTURE_2D, key);
-            gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,
-                    0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
 
-            if (image.FlagMipMap)
+            if (isCreate)
             {
-                //for (int i = 0; i < image.Images.Length; i++)
-                //{
-                //    gl.TexImage2D(GL.GL_TEXTURE_2D, i + 1, GL.GL_RGBA, image.Images[i].width, image.Images[i].height,
-                //        0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Images[i].buffer);
-                //}
-
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-
-                //if (image.Images.Length > 0)
-                //{
-                //    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, image.Images.Length);
-                //}
-                //else
+                if (image.FlagMipMap)
                 {
-                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, 5);
-                    gl.GenerateMipmapEXT(GL.GL_TEXTURE_2D);
+                    // У текстуры имеется MipMap
+                    gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,
+                            0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
+
+                    int count = image.CountMipMap();
+                    if (count > 0)
+                    {
+                        // Содаём текстуру со своими текстурами для каждого уровня mipmap
+                        BufferedImage bufferedImage;
+                        for (int i = 0; i < image.CountMipMap(); i++)
+                        {
+                            bufferedImage = image.GetLevelMipMap(i);
+                            gl.TexImage2D(GL.GL_TEXTURE_2D, i + 1, GL.GL_RGBA, bufferedImage.Width, bufferedImage.Height,
+                                0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, bufferedImage.Buffer);
+
+                        }
+                        gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, count);
+                    }
+                    else
+                    {
+                        // Содаём автоматическую текстуру для каждого уровня mipmap
+                        gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_LEVEL, 5);
+                        gl.GenerateMipmapEXT(GL.GL_TEXTURE_2D);
+                    }
+
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+                }
+                else
+                {
+                    // У текстуры НЕТ MipMapа
+
+                    gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,
+                        0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
+
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+                    gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
                 }
             }
             else
             {
-                
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+                gl.TexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, image.Width, image.Height,
+                        GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
             }
             return key;
         }

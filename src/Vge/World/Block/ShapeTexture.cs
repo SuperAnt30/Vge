@@ -17,28 +17,31 @@ namespace Vge.World.Block
         {
             _textures.Clear();
             JsonCompound texture;
-            if (shape.IsKey("Texture2"))
+            if (shape.IsKey(Ctb.Texture))
             {
-                texture = shape.GetObject("Texture2");
+                texture = shape.GetObject(Ctb.Texture);
                 foreach (JsonKeyValue texutreKV in texture.Items)
                 {
                     int index = BlocksReg.BlockAtlas.AddSprite(texutreKV.GetString());
                     if (index != -1)
                     {
-                        //_textures.Add(texutreKV.Key, index);
+                        _textures.Add(texutreKV.Key, index);
                     }
                 }
             }
-
-            texture = shape.GetObject("Texture");
-            foreach (JsonKeyValue texutreKV in texture.Items)
-            {
-                _textures.Add(texutreKV.Key, texutreKV.GetInt());
-            }
         }
 
-        public int GetIndex(string name) => _textures[name];
-
-
+        /// <summary>
+        /// Получить индекс текстуры, если нет по названию вернёт 0.
+        /// 0 должны создать первую текстуру в Debug
+        /// </summary>
+        public int GetIndex(string name)
+        {
+            if (_textures.ContainsKey(name))
+            {
+                return _textures[name];
+            }
+            return 0;
+        }
     }
 }

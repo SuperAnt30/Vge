@@ -1,6 +1,6 @@
 ﻿using Vge.Renderer;
 using Vge.Renderer.Font;
-using WinGL.Util;
+using Vge.Util;
 
 namespace Mvk2.Renderer
 {

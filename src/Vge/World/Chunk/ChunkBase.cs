@@ -125,58 +125,78 @@ namespace Vge.World.Chunk
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
                 int h = NumberSections == 8 ? 63 : 127;
                 // Временно льём тест
-                
+
+                ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, GlassBlue, GlassPurple, FlowerClover;
+                Stone = Cobblestone = Limestone = Granite = Glass = GlassRed = GlassGreen = GlassBlue = GlassPurple = FlowerClover = 0;
+
+
+                for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
+                {
+                    switch(Ce.Blocks.BlockAlias[i])
+                    {
+                        case "Stone": Stone = i; break;
+                        case "Cobblestone": Cobblestone = i; break;
+                        case "Limestone": Limestone = i; break;
+                        case "Granite": Granite = i; break;
+                        case "Glass": Glass = i; break;
+                        case "GlassRed": GlassRed = i; break;
+                        case "GlassGreen": GlassGreen = i; break;
+                        case "GlassBlue": GlassBlue = i; break;
+                        case "GlassPurple": GlassPurple = i; break;
+                        case "FlowerClover": FlowerClover = i; break;
+                    }
+                }
+
                 for (int x = 0; x < 16; x++)
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                    //    SetBlockState(x, 0, z, new BlockState(5));
                         for (int y = 0; y < h; y++)
                         {
-                            SetBlockState(x, y, z, new BlockState(2));
+                            SetBlockState(x, y, z, new BlockState(Stone));
                         }
                     }
                 }
 
                 for (int y = h; y < h + 32; y++)
                 {
-                    SetBlockState(7, y, 5, new BlockState(3));
+                    SetBlockState(7, y, 5, new BlockState(Cobblestone));
                 }
 
-                SetBlockState(0, h, 0, new BlockState(3));
-                SetBlockState(0, h + 1, 0, new BlockState(3));
-                SetBlockState(0, h + 2, 0, new BlockState(3));
+                SetBlockState(0, h, 0, new BlockState(Cobblestone));
+                SetBlockState(0, h + 1, 0, new BlockState(Cobblestone));
+                SetBlockState(0, h + 2, 0, new BlockState(Cobblestone));
 
-                SetBlockState(10, h, 10, new BlockState(16));
-                SetBlockState(12, h, 12, new BlockState(16));
-                SetBlockState(15, h, 10, new BlockState(16));
-                SetBlockState(15, h, 12, new BlockState(16));
-                SetBlockState(0, h, 15, new BlockState(16));
-                SetBlockState(1, h, 15, new BlockState(16));
+                SetBlockState(10, h, 10, new BlockState(FlowerClover));
+                SetBlockState(12, h, 12, new BlockState(FlowerClover));
+                SetBlockState(15, h, 10, new BlockState(FlowerClover));
+                SetBlockState(15, h, 12, new BlockState(FlowerClover));
+                SetBlockState(0, h, 15, new BlockState(FlowerClover));
+                SetBlockState(1, h, 15, new BlockState(FlowerClover));
 
 
-                SetBlockState(15, h, 15, new BlockState(4));
-                SetBlockState(15, h + 1, 15, new BlockState(4));
+                SetBlockState(15, h, 15, new BlockState(Limestone));
+                SetBlockState(15, h + 1, 15, new BlockState(Limestone));
 
-                SetBlockState(8, h, 5, new BlockState(3));
-                SetBlockState(8, h, 6, new BlockState(5));
-                SetBlockState(8, h + 3, 7, new BlockState(3));
-                SetBlockState(8, h + 4, 7, new BlockState(4));
+                SetBlockState(8, h, 5, new BlockState(Cobblestone));
+                SetBlockState(8, h, 6, new BlockState(Granite));
+                SetBlockState(8, h + 3, 7, new BlockState(Cobblestone));
+                SetBlockState(8, h + 4, 7, new BlockState(Limestone));
 
 
                 for (int y = h + 5; y < h + 10; y++)
                 {
-                    SetBlockState(8, y, 3, new BlockState(5));
+                    SetBlockState(8, y, 3, new BlockState(Granite));
 
-                    SetBlockState(11, y, 5, new BlockState(11));
-                    SetBlockState(8, y, 5, new BlockState(12));
-                    SetBlockState(9, y, 12, new BlockState(13));
-                    SetBlockState(10, y, 13, new BlockState(14));
-                    SetBlockState(11, y, 15, new BlockState(15));
+                    SetBlockState(11, y, 5, new BlockState(Glass));
+                    SetBlockState(8, y, 5, new BlockState(GlassRed));
+                    SetBlockState(9, y, 12, new BlockState(GlassGreen));
+                    SetBlockState(10, y, 13, new BlockState(GlassBlue));
+                    SetBlockState(11, y, 15, new BlockState(GlassPurple));
                 }
 
-                SetBlockState(12, h + 5, 5, new BlockState(12));
-                SetBlockState(12, h + 6, 5, new BlockState(13));
+                SetBlockState(12, h + 5, 5, new BlockState(GlassRed));
+                SetBlockState(12, h + 6, 5, new BlockState(GlassGreen));
 
                 SetBlockState(11, h - 1, 4, new BlockState(0));
                 SetBlockState(11, h - 1, 3, new BlockState(0));
@@ -188,7 +208,7 @@ namespace Vge.World.Chunk
                 SetBlockState(11, h, 7, new BlockState(1, 2));
                 SetBlockState(11, h, 6, new BlockState(1, 3));
                 SetBlockState(12, h, 6, new BlockState(1, 3));
-                SetBlockState(10, h, 6, new BlockState(5));
+                SetBlockState(10, h, 6, new BlockState(Granite));
                 
 
                 SetBlockState(12, h + 1, 9, new BlockState(1));

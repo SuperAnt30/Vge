@@ -45,7 +45,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
-        public byte BiomeColor = 0;
+        public byte TypeColor = 0;
         /// <summary>
         /// Не крайняя сторона
         /// </summary>
@@ -54,10 +54,10 @@ namespace Vge.World.Block
         /// <summary>
         /// Прямоугольная сторона блока или элемента блока
         /// </summary>
-        /// <param name = "biomeColor" >Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет</param>
-        public QuadSide(byte biomeColor = 0)
+        /// <param name = "typeColor" >Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет</param>
+        public QuadSide(byte typeColor = 0)
         {
-            BiomeColor = biomeColor;
+            TypeColor = typeColor;
         }
         /// <summary>
         /// Не крайняя сторона, чтоб не отброкавать при прорисовке
@@ -299,17 +299,17 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Имеется ли у блока смена цвета от биома
+        /// Имеется ли у блока смена цвета
         /// </summary>
-        public bool IsBiomeColor() => BiomeColor > 0;
+        public bool IsTypeColor() => TypeColor > 0;
         /// <summary>
         /// Имеется ли у блока смена цвета травы от биома
         /// </summary>
-        public bool IsBiomeColorGrass() => BiomeColor == 1;
+        public bool IsColorGrass() => TypeColor == 1;
         /// <summary>
         /// Имеется ли у блока свой цвет, цвет как для GUI
         /// </summary>
-        public bool IsYourColor() => BiomeColor == 4;
+        public bool IsYourColor() => TypeColor == 4;
 
         /// <summary>
         /// Генерация макси в заданный массив, и возвращает true если принудительное рисование стороны

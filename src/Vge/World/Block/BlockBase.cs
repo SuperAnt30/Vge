@@ -220,13 +220,13 @@ namespace Vge.World.Block
                     // Статы
                     foreach (JsonKeyValue json in state.Items)
                     {
-                        if (json.IsKey("LightOpacity")) LightOpacity = (byte)json.GetInt();
-                        if (json.IsKey("LightValue")) LightValue = (byte)json.GetInt();
-                        if (json.IsKey("Translucent")) Translucent = json.GetBool();
-                        if (json.IsKey("АmbientOcclusion")) АmbientOcclusion = json.GetBool();
-                        if (json.IsKey("BiomeColor")) BiomeColor = json.GetBool();
-                        if (json.IsKey("Shadow")) Shadow = json.GetBool();
-                        if (json.IsKey("Color"))
+                        if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
+                        if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
+                        if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
+                        if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
+                        if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
+                        if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
+                        if (json.IsKey(Ctb.Color))
                         {
                             float[] ar = json.GetArray().ToArrayFloat();
                             Color = new Vector3(ar[0], ar[1], ar[2]);

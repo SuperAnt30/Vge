@@ -381,7 +381,7 @@ namespace WinGL.OpenGL
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glTexParameteri(uint target, uint pname, int param);
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glTexParameteriv(uint target, uint pname, int[] params_notkeyword);
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glTexSubImage1D(uint target, int level, int xoffset, int width, uint format, uint type, int[] pixels);
-        [DllImport(OpenGL32, SetLastError = true)] private static extern void glTexSubImage2D(uint target, int level, int xoffset, int yoffset, int width, int height, uint format, uint type, int[] pixels);
+        [DllImport(OpenGL32, SetLastError = true)] private static extern void glTexSubImage2D(uint target, int level, int xoffset, int yoffset, int width, int height, uint format, uint type, byte[] pixels);
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glTranslated(double x, double y, double z);
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glTranslatef(float x, float y, float z);
         [DllImport(OpenGL32, SetLastError = true)] private static extern void glVertex2d(double x, double y);

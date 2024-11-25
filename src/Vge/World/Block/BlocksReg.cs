@@ -36,7 +36,7 @@ namespace Vge.World.Block
         {
             // Создаём графический объект гдля генерации атласа блокоы
             //BlockAtlas.CreateImage(64, 16);
-            BlockAtlas.CreateImage(32, 16); // (64, 16);
+            BlockAtlas.CreateImage(window, 32, 16); // (64, 16);
 
             _window = window;
             _window.LScreen.Process(L.T("CreateBlocks"));
@@ -45,8 +45,14 @@ namespace Vge.World.Block
             // Очистить таблицы и вспомогательные данные json
             _Clear();
 
-            // Первые обязательные блоки
-            RegisterBlockClass("Air", new BlockAir());
+            // Регистрация обязательных блоков
+            // Воздух
+            string alias = "Air";
+            BlockAir blockAir = new BlockAir();
+            blockAir.InitAliasAndJoinN1(alias, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
+            Table.Add(alias, blockAir);
+
+            // Отладочный
             RegisterBlockClass("Debug", new BlockDebug());
         }
 
@@ -129,7 +135,7 @@ namespace Vge.World.Block
             }
             else
             {
-                state = new JsonCompound();
+                throw new Exception(Sr.GetString(Sr.FileMissingJsonBlock, alias));
             }
             blockObject.InitAliasAndJoinN1(alias, state, new JsonCompound(shapes.ToArray()));
             Table.Add(alias, blockObject);

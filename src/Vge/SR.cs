@@ -58,6 +58,7 @@ internal sealed class Sr
     internal const string EmptyStringIsNotAllowed = "Пустая строка не разрешена";
     internal const string ErrorReadJsonBlockStat = "Ошибка чтения из json, параметров блока {0}";
     internal const string ErrorReadJsonBlockShape = "Ошибка чтения из json, фигура {1} блока {0}";
+    internal const string FileMissingJsonBlock = "Отсутствует файл json, блока {0}";
 
     #endregion
 }

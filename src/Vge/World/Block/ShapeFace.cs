@@ -9,10 +9,6 @@ namespace Vge.World.Block
     public class ShapeFace
     {
         /// <summary>
-        /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
-        /// </summary>
-        public byte BiomeColor = 0;
-        /// <summary>
         /// Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
         /// </summary>
         public bool Shade;
@@ -34,11 +30,19 @@ namespace Vge.World.Block
         /// </summary>
         private int _x1, _y1, _z1, _x2, _y2, _z2;
         /// <summary>
+        /// Имеется ли смещение объекта после вращения
+        /// </summary>
+        private bool _isTranslate;
+        /// <summary>
+        /// Координаты смещения блока, задаются в пикселах 16 сторона блока
+        /// </summary>
+        private float _xT, _yT, _zT;
+        /// <summary>
         /// Имеется ли вращение
         /// </summary>
         private bool _isRotate;
         /// <summary>
-        /// Параметры вращения
+        /// Параметры вращения по центру блока
         /// </summary>
         private float _yaw, _pitch, _roll;
 
@@ -47,19 +51,45 @@ namespace Vge.World.Block
             _shapeAdd = shapeAdd;
             _shapeTexture = shapeTexture;
         }
-
+        /// <summary>
+        /// Указываем начальную точку параллелепипеда
+        /// </summary>
         public void SetFrom(int x, int y, int z)
         {
             _x1 = x;
             _y1 = y;
             _z1 = z;
         }
+        /// <summary>
+        /// Указываем конечную точку параллелепипеда
+        /// </summary>
         public void SetTo(int x, int y, int z)
         {
             _x2 = x;
             _y2 = y;
             _z2 = z;
         }
+        /// <summary>
+        /// Задаём смещение в элементе, после вращения, в пикселах 16 на стороне блока
+        /// </summary>
+        public void SetTranslate(float x, float y, float z)
+        {
+            _isTranslate = true;
+            _xT = x / 16f;
+            _yT = y / 16f;
+            _zT = z / 16f;
+        }
+        /// <summary>
+        /// Параметр нет смещения
+        /// </summary>
+        public void NotTranslate()
+        {
+            _isTranslate = false;
+            _xT = _yT = _zT = 0;
+        }
+        /// <summary>
+        /// Задаём вращение блока от центра, в градусах
+        /// </summary>
         public void SetRotate(float yaw, float pitch, float roll)
         {
             _isRotate = true;
@@ -67,6 +97,9 @@ namespace Vge.World.Block
             _pitch = pitch;
             _roll = roll;
         }
+        /// <summary>
+        /// Параметр нет вращения
+        /// </summary>
         public void NotRotate()
         {
             _isRotate = false;
@@ -75,19 +108,18 @@ namespace Vge.World.Block
 
         public void RunShape(JsonCompound face)
         {
-            byte biomeColor = (byte)face.GetInt("BiomeColor");
-            if (biomeColor != 0)
-            {
-                BiomeColor = biomeColor;
-            }
-            _quad = new QuadSide(biomeColor);
+            _quad = new QuadSide((byte)face.GetInt(Ctb.TypeColor));
 
-            Pole pole = PoleConvert.GetPole(face.GetString("Side"));
+            Pole pole = PoleConvert.GetPole(face.GetString(Ctb.Side));
 
             _quad.SetSide(pole, Shade, _x1, _y1, _z1, _x2, _y2, _z2);
             if (_isRotate)
             {
                 _quad.SetRotate(_yaw, _pitch, _roll);
+            }
+            if (_isTranslate)
+            {
+                _quad.SetTranslate(_xT, _yT, _zT);
             }
             if (_shapeAdd.IsOffset)
             {
@@ -98,9 +130,9 @@ namespace Vge.World.Block
             // Размеры текстуры
             int u1, v1, u2, v2;
 
-            if (face.IsKey("Uv"))
+            if (face.IsKey(Ctb.Uv))
             {
-                int[] arInt = face.GetArray("Uv").ToArrayInt();
+                int[] arInt = face.GetArray(Ctb.Uv).ToArrayInt();
                 u1 = arInt[0];
                 v1 = arInt[1];
                 u2 = arInt[2];
@@ -112,7 +144,7 @@ namespace Vge.World.Block
                 u2 = v2 = 16;
             }
             // Вращение текстуры 0 || 90 || 180 || 270
-            int uvRotate = face.GetInt("UvRotate");
+            int uvRotate = face.GetInt(Ctb.UvRotate);
 
             if (_shapeAdd.RotateY != 0)
             {
@@ -134,7 +166,7 @@ namespace Vge.World.Block
                 }
             }
 
-            _quad.SetTexture(_shapeTexture.GetIndex(face.GetString("Texture")),
+            _quad.SetTexture(_shapeTexture.GetIndex(face.GetString(Ctb.TextureFace)),
                 u1, v1, u2, v2, uvRotate);
         }
 

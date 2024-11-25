@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -45,6 +44,8 @@ namespace Vge.World.Block
         /// </summary>
         private int _textureAtlasBlockCount = 64;
 
+        private WindowMain _window;
+
         //private readonly Logger _logger = new Logger("Debug");
         //private readonly Profiler _profiler;
 
@@ -55,8 +56,9 @@ namespace Vge.World.Block
         /// </summary>
         /// <param name="textureAtlasBlockCount">Количество спрайтов на стороне текстурного атласа</param>
         /// <param name="textureBlockSize">Размер спрайта в px</param>
-        public void CreateImage(int textureAtlasBlockCount, int textureBlockSize)
+        public void CreateImage(WindowMain window, int textureAtlasBlockCount, int textureBlockSize)
         {
+            _window = window;
             Ce.TextureAtlasBlockCount = _textureAtlasBlockCount = textureAtlasBlockCount;
             _textureBlockSize = textureBlockSize;
             _height = textureAtlasBlockCount * textureBlockSize;
@@ -67,9 +69,21 @@ namespace Vge.World.Block
 
         public void EndImage()
         {
+            // Удаляем текстуры, так-как может быть иной размер
+            _window.Render.Texture.DeleteTexture(2);
+            _window.Render.Texture.DeleteTexture(3);
+
+            // Создаём заного текстуры
+            BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 1, false);
+            _window.Render.Texture.SetTexture(3, bufferedImage);
+
+            bufferedImage = new BufferedImage(_height, _height, _buffer, 0, true);
+            _window.Render.Texture.SetTexture(2, bufferedImage);
+
 #if DEBUG
             // Для отладки сохранить в файл посмотреть как вышло
 
+            // Отладка маски в txt
             string s = "";
             for (int y = 0; y < _textureAtlasBlockCount; y++)
             {
@@ -86,13 +100,28 @@ namespace Vge.World.Block
                 file.Close();
             }
 
+            // Отладка блочного атласа
             IntPtr ptr = Marshal.AllocHGlobal(_buffer.Length);
             Marshal.Copy(_buffer, 0, ptr, _buffer.Length);
             Bitmap bitmap = new Bitmap(_height, _height, _stride, PixelFormat.Format32bppArgb, ptr);
             bitmap.Save("atlas.png", ImageFormat.Png);
             Marshal.FreeHGlobal(ptr);
+
+            // Отладка mipmap
+            //BufferedImage buffered;
+            //for (int i = 0; i < bufferedImage.CountMipMap(); i++)
+            //{
+            //    buffered = bufferedImage.GetLevelMipMap(i);
+            //    ptr = Marshal.AllocHGlobal(buffered.Buffer.Length);
+            //    Marshal.Copy(buffered.Buffer, 0, ptr, buffered.Buffer.Length);
+            //    bitmap = new Bitmap(buffered.Width, buffered.Height, buffered.Width * 4, PixelFormat.Format32bppArgb, ptr);
+            //    bitmap.Save("atlas-" + i + ".png", ImageFormat.Png);
+            //    Marshal.FreeHGlobal(ptr);
+            //}
+
 #endif
             //_logger.Save();
+            Clear();
         }
 
         /// <summary>
