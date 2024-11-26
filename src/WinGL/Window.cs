@@ -34,7 +34,7 @@ namespace WinGL
         /// <summary>
         /// Заголовок окна
         /// </summary>
-        public string Title { get; private set; } = "FormOpenGL";
+        public string Title { get; protected set; } = "FormOpenGL";
         /// <summary>
         /// Полноэкранные окно или нет
         /// </summary>

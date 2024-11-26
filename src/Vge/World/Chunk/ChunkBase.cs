@@ -127,9 +127,9 @@ namespace Vge.World.Chunk
                 // Временно льём тест
 
                 ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
-                    GlassBlue, GlassPurple, FlowerClover, Water;
+                    GlassBlue, GlassPurple, FlowerClover, Water, Lava;
                 Stone = Cobblestone = Limestone = Granite = Glass = GlassRed = GlassGreen = 
-                    GlassBlue = GlassPurple = FlowerClover = Water = 0;
+                    GlassBlue = GlassPurple = FlowerClover = Water = Lava = 0;
 
 
                 for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
@@ -147,6 +147,7 @@ namespace Vge.World.Chunk
                         case "GlassPurple": GlassPurple = i; break;
                         case "FlowerClover": FlowerClover = i; break;
                         case "Water": Water = i; break;
+                        case "Lava": Lava = i; break;
                     }
                 }
 
@@ -187,10 +188,25 @@ namespace Vge.World.Chunk
                 {
                     SetBlockState(x + 9, h - 1, 15, new BlockState(Water, (byte)(13 - x * 2)));
                     if (x < 6) SetBlockState(x + 9, h - 1, 0, new BlockState(Water, (byte)(13 - x * 2)));
+
+                    if (x < 6) SetBlockState(x + 8, h - 1, 14, new BlockState(Lava, (byte)(13 - x * 3)));
                 }
                 SetBlockState(14, h - 1, 1, new BlockState(Water, 1));
                 SetBlockState(13, h - 1, 14, new BlockState(Water, 2));
                 SetBlockState(13, h - 1, 13, new BlockState(Water, 1));
+
+                SetBlockState(7, h - 1, 14, new BlockState(Lava));
+                SetBlockState(7, h, 15, new BlockState(Lava));
+                SetBlockState(7, h + 1, 15, new BlockState(Lava));
+                SetBlockState(6, h + 16, 5, new BlockState(Lava));
+
+                for (int x = 1; x < 8; x++)
+                {
+                    for (int z = 6; z < 11; z++)
+                    {
+                        SetBlockState(x, h, z, new BlockState(Stone));
+                    }
+                }
 
 
                 for (int y = h; y < h + 32; y++)

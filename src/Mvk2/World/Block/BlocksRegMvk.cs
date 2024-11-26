@@ -21,8 +21,8 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("GlassPurple", new BlockUniTranslucent());
             
             BlocksReg.RegisterBlockClass("FlowerClover", new BlockBase()); // 195
-
             BlocksReg.RegisterBlockClass("Water", new BlockLiquid());
+            BlocksReg.RegisterBlockClass("Lava", new BlockLiquid());
 
             //for (int i = 0; i < 500; i++)
             //{

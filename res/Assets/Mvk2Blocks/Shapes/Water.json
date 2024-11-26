@@ -1,7 +1,7 @@
 {
     Texture: {
-        Still: "Blocks/water_still",
-        Flow: "Blocks/water_flow"
+        Flow: "Blocks/water_flow",
+        Still: "Blocks/water_still"
     },
     Element: {
         TypeColor:4
@@ -9,7 +9,7 @@
             { Texture:"Still", Side:"Down", Pause:10 },
             { Texture:"Still", Side:"Up", Pause:5 },
             { Texture:"Flow", Side:"North", Pause:3 },
-            { Texture:"Flow", Side:"East", Pause:15 },
+            { Texture:"Flow", Side:"East", Pause:3 },
             { Texture:"Flow", Side:"South", Pause:3 },
             { Texture:"Flow", Side:"West", Pause:3 }
         ]

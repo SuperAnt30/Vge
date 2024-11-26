@@ -65,8 +65,16 @@ namespace Vge.Renderer.World
             // Сначало изнутри
             if (_resultSide[0] != -1)
             {
-                _Up();
-                blockUV.BuildingLiquidInside();
+                // Условие, если текучая вода или стоячая но над стоячей вверхний блок 
+                // не может быть стоячей водной под сплошным блоком
+                if (l11 != 15 || (l11 == 15 && (up00 > -2 || up10 > -2 || up20 > -2
+                    || up01 > -2 || up11 > -2 || up21 > -2
+                    || up02 > -2 || up12 > -2 || up22 > -2)))
+                {
+                    _Up();
+                    blockUV.BuildingLiquidInside();
+                }
+
             }
             if (_resultSide[1] != -1)
             {
@@ -161,14 +169,21 @@ namespace Vge.Renderer.World
                 float fs = Glm.Sin(_angleFlow) * .25f;
                 float fc = Glm.Cos(_angleFlow) * .25f;
                 float k = Ce.ShaderAnimOffset * 2f;
-                u1 = sideLiquidCache.U + (-fc - fs) * k;
-                v1 = sideLiquidCache.V + Ce.ShaderAnimOffset + (-fc + fs) * k;
-                u2 = sideLiquidCache.U + (-fc + fs) * k;
-                v2 = sideLiquidCache.V + Ce.ShaderAnimOffset + (fc + fs) * k;
-                u3 = sideLiquidCache.U + (fc + fs) * k;
-                v3 = sideLiquidCache.V + Ce.ShaderAnimOffset + (fc - fs) * k;
-                u4 = sideLiquidCache.U + (fc - fs) * k;
-                v4 = sideLiquidCache.V + Ce.ShaderAnimOffset + (-fc - fs) * k;
+                float fu = sideLiquidCache.U + Ce.ShaderAnimOffset;
+                float fv = sideLiquidCache.V + Ce.ShaderAnimOffset;
+                float fmm = (-fc - fs) * k;
+                float fmp = (-fc + fs) * k;
+                float fpp = (fc + fs) * k;
+                float fpm = (fc - fs) * k;
+
+                u1 = fu + fmm;
+                v1 = fv + fmp;
+                u2 = fu + fmp;
+                v2 = fv + fpp;
+                u3 = fu + fpp;
+                v3 = fv + fpm;
+                u4 = fu + fpm;
+                v4 = fv + fmm;
             }
             _lightPole = _sideLiquid.LightPole;
             _GenColors();
@@ -206,7 +221,6 @@ namespace Vge.Renderer.World
                 new Vertex3d(PosChunkX, PosChunkY, PosChunkZ + 1, u1, v2),
                 new Vertex3d(PosChunkX, PosChunkY, PosChunkZ, u1, v1)
             };
-            //blockUV.BuildingLiquid();
         }
 
         private void _East()
@@ -283,7 +297,6 @@ namespace Vge.Renderer.World
                 new Vertex3d(PosChunkX, PosChunkY + h01, PosChunkZ + 1, u3, v3),
                 new Vertex3d(PosChunkX, PosChunkY, PosChunkZ + 1, u4, v4)
             };
-            //blockUV.BuildingLiquid();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

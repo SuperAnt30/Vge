@@ -1,0 +1,6 @@
+{
+    АmbientOcclusion: false,
+    UseNeighborBrightness: true,
+    Translucent: true,
+    Variant: "Lava"
+}

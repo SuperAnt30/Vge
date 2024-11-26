@@ -168,7 +168,7 @@ namespace Vge.World.Block
                 }
                 if (index != -1)
                 {
-                    Vector2i res = new Vector2i(index, _BufferCopy(index - (w - 1), w, buffered, name));
+                    Vector2i res = new Vector2i(index, _BufferCopy(index, w, buffered, name));
                     _textures.Add(name, res);
                     return res;
                 }
@@ -264,7 +264,7 @@ namespace Vge.World.Block
                                     _mask[y2, x2] = true;
                                 }
                             }
-                            return y * _textureAtlasBlockCount + x * width;
+                            return y * _textureAtlasBlockCount + x;
                         }
                     }
                 }

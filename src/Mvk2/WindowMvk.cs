@@ -24,7 +24,10 @@ namespace Mvk2
 
         #region Initialized
 
-        public WindowMvk() : base() { }
+        public WindowMvk() : base()
+        {
+            Title = "Малювекi 2 - debug";
+        }
 
         protected override void Initialized()
         {
