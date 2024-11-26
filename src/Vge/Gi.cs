@@ -78,13 +78,17 @@ public sealed class Gi
     /// </summary>
     public static BlockBase Block;
     /// <summary>
-    /// Объект рендера целого блока с эффектом размытия (Mipmap)
+    /// Объект рендера блока
     /// </summary>
     public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull(VertexDense);
     /// <summary>
-    /// Объект рендера целого блока с эффектом размытия (Mipmap)
+    /// Объект рендера блока с альфа прозрачностью
     /// </summary>
     public readonly static BlockRenderFull BlockAlphaRendFull = new BlockRenderFull(VertexAlpha);
+    /// <summary>
+    /// Объект рендера жидкого блока с альфа прозрачностью
+    /// </summary>
+    public readonly static BlockRenderLiquid BlockLiquidAlphaRendFull = new BlockRenderLiquid(VertexAlpha);
 
     /// <summary>
     /// Какой радиус для рендера псевдо чанков альфа блоков, при смещении больше 16 блоков

@@ -34,15 +34,15 @@ namespace Vge.World.Block
         /// <summary>
         /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока
         /// </summary>
-        public bool FullBlock { get; protected set; } = true;
+        //public bool FullBlock { get; protected set; } = true;
         /// <summary>
         /// Блок жидкости: вода, лава, нефть
         /// </summary>
-        public bool Liquid { get; private set; } = false;
+        public bool Liquid { get; protected set; } = false;
         /// <summary>
         /// Является ли эта модель не блоком, со всеми сторонами и прозрачной
         /// </summary>
-        public bool IsUnique { get; protected set; } = false;
+        //public bool IsUnique { get; protected set; } = false;
         /// <summary>
         /// Явлыется ли блок небом
         /// </summary>
@@ -155,7 +155,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
         /// </summary>
-        private ulong[][][] _maskCullFaces;
+        protected ulong[][][] _maskCullFaces;
         /// <summary>
         /// Для оптимизации отбраковка стороны, чтоб не использовать маску
         /// </summary>
@@ -223,6 +223,7 @@ namespace Vge.World.Block
                         if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
                         if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                         if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
+                        if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
                         if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
                         if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
                         if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
@@ -238,16 +239,24 @@ namespace Vge.World.Block
                     throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockStat, Alias));
                 }
                 // Модель
-                BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
-                _quads = shapeDefinition.RunShapeFromJson(state, shapes);
-                BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
-                CullFaceAll = shapeDefinition.CullFaceAll;
-                ForceDrawFace = shapeDefinition.ForceDrawFace;
-                _maskCullFaces = shapeDefinition.MaskCullFaces;
-                _cullFaces = shapeDefinition.CullFaces;
-                _forceDrawFaces = shapeDefinition.ForceDrawFaces;
-                _forceDrawNotExtremeFaces = shapeDefinition.ForceDrawNotExtremeFaces;
+                _ShapeDefinition(state, shapes);
             }
+        }
+
+        /// <summary>
+        /// Получить модель
+        /// </summary>
+        protected virtual void _ShapeDefinition(JsonCompound state, JsonCompound shapes)
+        {
+            BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
+            _quads = shapeDefinition.RunShapeFromJson(state, shapes);
+            BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
+            CullFaceAll = shapeDefinition.CullFaceAll;
+            ForceDrawFace = shapeDefinition.ForceDrawFace;
+            _maskCullFaces = shapeDefinition.MaskCullFaces;
+            _cullFaces = shapeDefinition.CullFaces;
+            _forceDrawFaces = shapeDefinition.ForceDrawFaces;
+            _forceDrawNotExtremeFaces = shapeDefinition.ForceDrawNotExtremeFaces;
         }
 
         #endregion
@@ -275,7 +284,6 @@ namespace Vge.World.Block
         {
            // Material = Materials.GetMaterialCache(EnumMaterial.Air);
             IsAir = true;
-            FullBlock = false;
             IsAction = false;
             IsParticle = false;
             АmbientOcclusion = false;
@@ -298,6 +306,11 @@ namespace Vge.World.Block
         /// Стороны целого блока для рендера
         /// </summary>
         public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
+
+        /// <summary>
+        /// Получить сторону для прорисовки жидкого блока
+        /// </summary>
+        public virtual SideLiquid GetSideLiquid(int index) => null;
 
         /// <summary>
         /// Имеется ли отбраковка конкретноц стороны, конкретного варианта

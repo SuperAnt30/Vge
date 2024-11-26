@@ -43,11 +43,11 @@ namespace Vge.Renderer.World
         /// Позиция блока в чанке 0..15
         /// </summary>
         public int PosChunkZ;
-        
+
         /// <summary>
         /// Ключ кэш координат чанка (ulong)(uint)x  32) | ((uint)y
         /// </summary>
-        private ulong _keyCash;
+        protected ulong _keyCash;
         /// <summary>
         /// Тень на углах + ~0.200 мс к рендеру на чанк
         /// </summary>
@@ -59,32 +59,32 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Массив сторон, который храним наличие и свет
         /// </summary>
-        private readonly int[] _resultSide = new int[] { -1, -1, -1, -1, -1, -1 };
+        protected readonly int[] _resultSide = new int[] { -1, -1, -1, -1, -1, -1 };
         /// <summary>
         /// Объект рендера чанков
         /// </summary>
-        private ChunkRender _chunkRender;
+        protected ChunkRender _chunkRender;
         /// <summary>
         /// Объект блока для проверки
         /// </summary>
-        private BlockBase _blockCheck;
-        private int _metCheck;
-        private ChunkRender _chunkCheck;
+        protected BlockBase _blockCheck;
+        protected int _metCheck;
+        protected ChunkRender _chunkCheck;
         /// <summary>
         /// Высота блоков в чанке, 127
         /// </summary>
-        private int _numberBlocksY;
+        protected int _numberBlocksY;
 
-        private ChunkStorage _storage;
+        protected ChunkStorage _storage;
         private bool _isDraw;
-        private int _stateLight, _stateLightHis;
+        protected int _stateLight, _stateLightHis;
         private byte _stateLightByte;
         private QuadSide[] _rectangularSides;
         private QuadSide _rectangularSide;
         private readonly AmbientOcclusionLights _ambient = new AmbientOcclusionLights();
-        private float _lightPole;
+        protected float _lightPole;
         private Vector3 _color;
-        private readonly ColorsLights _colorLight = new ColorsLights();
+        protected readonly ColorsLights _colorLight = new ColorsLights();
         /// <summary>
         /// Отбраковка всех сторон во всех вариантах
         /// </summary>
@@ -93,14 +93,14 @@ namespace Vge.Renderer.World
         /// Принудительное рисование всех сторон
         /// </summary>
         private bool _isForceDrawFace;
-        private int i, count, index, id, s1, s2, s3, s4, side;
-        private int xc, yc, zc, xb, yb, zb, xcn, zcn, pX, pY, pZ;
+        protected int i, count, index, id, s1, s2, s3, s4, side;
+        protected int xc, yc, zc, xb, yb, zb, xcn, zcn, pX, pY, pZ;
 
         /// <summary>
-        /// Проверяем вверхний блок
+        /// Проверяем вверхний блок, для жидкости
         /// _GetBlockSideState
         /// </summary>
-        //private bool _isUp;
+        private bool _isUp;
         /// <summary>
         /// Пустые ли стороны
         /// _GetBlockSideState
@@ -172,15 +172,15 @@ namespace Vge.Renderer.World
             }
             else
             {
-                //_isUp = true;
+                _isUp = true;
                 if (_storage.Index != PosChunkY >> 4 || _storage.KeyCash != _keyCash)
                 {
                     _storage = _chunkRender.StorageArrays[PosChunkY >> 4];
                 }
                 _indexSide = 0;
                 _GetBlockSideState();
+                _isUp = false;
             }
-            //_isUp = false;
             // Down
             PosChunkY -= 2;
             if (PosChunkY < 0)
@@ -237,7 +237,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Рендерим стороны, после метода CheckSide
         /// </summary>
-        public void RenderSide()
+        public virtual void RenderSide()
         {
             if (Gi.Block.UseNeighborBrightness) _stateLightHis = LightBlockSky;
             else _stateLightHis = -1;
@@ -336,24 +336,6 @@ namespace Vge.Renderer.World
             _GetBlockSideState();
         }
 
-        /// <summary>
-        /// Проверка на соседа воздух или одинаковые кубические, отбрасываем.
-        /// </summary>
-        /// <returns></returns>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private bool _CheckAir()
-        //{
-        //    if (_storage.CountBlock > 0)
-        //    {
-        //        id = _storage.Data[i];
-        //        if (id == 0) return true;
-        //        _metCheck = id >> 12;
-        //        id = id & 0xFFF;
-        //        return false;
-        //    }
-        //    return true;
-        //}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _GetBlockSideState()
         {
@@ -391,10 +373,19 @@ namespace Vge.Renderer.World
                         _blockCheck = Ce.Blocks.BlockObjects[id];
                     }
 
-                    if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)
+                    if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)// && !Gi.Block.Liquid)// && (!_isUp || Gi.Block.Liquid))
                     {
-                        // Блоки целые непрозрачные
-                        _resultSide[_indexSide] = -1;
+                        // Блоки целые соседний непрозрачный
+                        if (_isUp && Gi.Block.Liquid)
+                        {
+                            // Над водой блок
+                            _emptySide = false;
+                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                        }
+                        else
+                        {
+                            _resultSide[_indexSide] = -1;
+                        }
                     }
                     else if (_blockCheck.Translucent)
                     {
@@ -443,7 +434,7 @@ namespace Vge.Renderer.World
         /// Сгенерировать цвета на каждый угол, если надо то AmbientOcclusion
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _GenColors()
+        protected void _GenColors()
         {
             _color = _GetBiomeColor(_chunkRender, PosChunkX, PosChunkZ);
             if (_ambientOcclusion && (Gi.Block.АmbientOcclusion || Gi.Block.BiomeColor || Gi.Block.Liquid))
@@ -487,7 +478,7 @@ namespace Vge.Renderer.World
         /// <param name="bx">0-15</param>
         /// <param name="bz">0-15</param>
         /// <returns></returns>
-        protected Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
+        protected virtual Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
         {
             // подготовка для теста плавности цвета
             if (_rectangularSide.TypeColor == 0)

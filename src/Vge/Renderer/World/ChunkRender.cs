@@ -136,11 +136,10 @@ namespace Vge.Renderer.World
             int cbY, realY, index, yb, x, z, indexY, indexYZ;
             ushort data, id;
 
-            //BlockRenderFull blockRender = Gi.BlockRendFull;
             Gi.BlockRendFull.InitChunk(this);
-            //Gi.BlockRendLiquid.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
-            
+            Gi.BlockLiquidAlphaRendFull.InitChunk(this);
+
             for (cbY = 0; cbY < NumberSections; cbY++)
             {
                 chunkStorage = StorageArrays[cbY];
@@ -148,6 +147,7 @@ namespace Vge.Renderer.World
                 {
                     Gi.BlockRendFull.InitStorage(cbY);
                     Gi.BlockAlphaRendFull.InitStorage(cbY);
+                    Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
                     for (yb = 0; yb < 16; yb++)
                     {
@@ -270,6 +270,7 @@ namespace Vge.Renderer.World
                 Gi.VertexAlpha.Clear();
                 _listAlphaBuffer.Clear();
                 Gi.BlockAlphaRendFull.InitChunk(this);
+                Gi.BlockLiquidAlphaRendFull.InitChunk(this);
 
                 for (cbY = 0; cbY < NumberSections; cbY++)
                 {
@@ -278,6 +279,7 @@ namespace Vge.Renderer.World
                     {
                         chunkStorage = StorageArrays[cbY];
                         Gi.BlockAlphaRendFull.InitStorage(cbY);
+                        Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
                         for (i = 0; i < count; i++)
                         {
                             index = _listAlphaBlock[cbY][i];

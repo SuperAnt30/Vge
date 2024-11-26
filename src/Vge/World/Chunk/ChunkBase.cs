@@ -126,8 +126,10 @@ namespace Vge.World.Chunk
                 int h = NumberSections == 8 ? 63 : 127;
                 // Временно льём тест
 
-                ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, GlassBlue, GlassPurple, FlowerClover;
-                Stone = Cobblestone = Limestone = Granite = Glass = GlassRed = GlassGreen = GlassBlue = GlassPurple = FlowerClover = 0;
+                ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
+                    GlassBlue, GlassPurple, FlowerClover, Water;
+                Stone = Cobblestone = Limestone = Granite = Glass = GlassRed = GlassGreen = 
+                    GlassBlue = GlassPurple = FlowerClover = Water = 0;
 
 
                 for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
@@ -144,6 +146,7 @@ namespace Vge.World.Chunk
                         case "GlassBlue": GlassBlue = i; break;
                         case "GlassPurple": GlassPurple = i; break;
                         case "FlowerClover": FlowerClover = i; break;
+                        case "Water": Water = i; break;
                     }
                 }
 
@@ -158,22 +161,46 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                //for (int x = 0; x < 8; x++)
-                //{
-                //    for (int z = 0; z < 16; z++)
-                //    {
-                //        for (int y = h - 42; y < h; y++)
-                //        {
-                //            //SetBlockState(x, y, z, new BlockState(GlassBlue));
-                //            SetBlockState(x, y, z, new BlockState(0));
-                //        }
-                //    }
-                //}
+                for (int x = 2; x < 8; x++)
+                {
+                    for (int z = 0; z < 16; z++)
+                    {
+                        //for (int y = h - 42; y < h; y++)
+                        for (int y = h - 12; y < h; y++)
+                        {
+                            //SetBlockState(x, y, z, new BlockState(GlassBlue));
+                            //SetBlockState(x, y, z, new BlockState(0));
+                            SetBlockState(x, y, z, new BlockState(Water));
+                        }
+                    }
+                }
+                SetBlockState(4, h, 7, new BlockState(Water));
+
+                SetBlockState(1, h + 2, 0, new BlockState(Water));
+                SetBlockState(1, h + 1, 0, new BlockState(Water, 13));
+                SetBlockState(1, h, 0, new BlockState(Water, 11));
+                SetBlockState(2, h, 0, new BlockState(Water, 9));
+
+                SetBlockState(8, h - 1, 15, new BlockState(Water));
+                SetBlockState(8, h - 1, 0, new BlockState(Water));
+                for (int x = 0; x < 7; x++)
+                {
+                    SetBlockState(x + 9, h - 1, 15, new BlockState(Water, (byte)(13 - x * 2)));
+                    if (x < 6) SetBlockState(x + 9, h - 1, 0, new BlockState(Water, (byte)(13 - x * 2)));
+                }
+                SetBlockState(14, h - 1, 1, new BlockState(Water, 1));
+                SetBlockState(13, h - 1, 14, new BlockState(Water, 2));
+                SetBlockState(13, h - 1, 13, new BlockState(Water, 1));
 
 
                 for (int y = h; y < h + 32; y++)
                 {
                     SetBlockState(7, y, 5, new BlockState(Cobblestone));
+                    if (y > h + 16)
+                    {
+                        SetBlockState(6, y, 5, new BlockState(Water));
+                    }
+
                 }
 
                 SetBlockState(0, h, 0, new BlockState(Cobblestone));

@@ -1,5 +1,7 @@
 ﻿using System;
 using Vge.Json;
+using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -67,6 +69,38 @@ namespace Vge.World.Block
         private int _indexQ;
 
         public BlockShapeDefinition(BlockBase block) => _block = block;
+
+        /// <summary>
+        /// Запустить определение жидкой формы
+        /// </summary>
+        public SideLiquid[] RunShapeLiquidFromJson(JsonCompound state, JsonCompound shapes)
+        {
+            _log = Ctb.Variant;
+            try
+            {
+                if (state.IsKey(Ctb.Variant))
+                {
+                    // Имеется форма
+                    _log = Ctb.Shape;
+                    JsonCompound shape = shapes.GetObject(state.GetString(Ctb.Variant));
+                    // Текстура
+                    _log = Ctb.Texture;
+                    _shapeTexture.RunShape(shape);
+
+                    _log = Ctb.Element;
+                    if (shape.IsKey(Ctb.Element))
+                    {
+                        return _ElementLiquid(shape.GetObject(Ctb.Element));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _block.Alias, _log), ex);
+            }
+
+            return new SideLiquid[0];
+        }
 
         /// <summary>
         /// Запуск определения формы
@@ -212,6 +246,56 @@ namespace Vge.World.Block
 
                 _quads[_indexV][_indexQ++] = shapeFace.GetQuadSide();
             }
+        }
+
+        private SideLiquid[] _ElementLiquid(JsonCompound element)
+        {
+            SideLiquid[] sideLiquids = new SideLiquid[6];
+            SideLiquid sideLiquid;
+            JsonCompound[] faces;
+            JsonCompound face;
+
+            // Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
+            bool shade = element.GetBool(Ctb.Shade);
+            // Ветер
+            int wind = element.GetInt(Ctb.Wind);
+            // Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет.
+            byte typeColor = (byte)element.GetInt(Ctb.TypeColor);
+
+            // Собираем массив сторон
+            _log = Ctb.Faces;
+            faces = element.GetArray(Ctb.Faces).ToArrayObject();
+            for (int i = 0; i < faces.Length; i++)
+            {
+                face = faces[i];
+                Pole pole = PoleConvert.GetPole(face.GetString(Ctb.Side));
+                if (pole != Pole.All)
+                {
+                    int side = (int)pole;
+                    Vector2i resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+                    sideLiquid = new SideLiquid(side, shade, resTexture.X, typeColor);
+                    if (resTexture.Y > 1)
+                    {
+                        sideLiquid.SetAnimal((byte)resTexture.Y, (byte)face.GetInt(Ctb.Pause));
+                    }
+                    // Ветер
+                    if (wind != 0)
+                    {
+                        sideLiquid.SetWind((byte)wind);
+                    }
+                    sideLiquids[side] = sideLiquid;
+                }
+            }
+            // Проверяем наличие всех сторон
+            for (int i = 0; i < 6; i++)
+            {
+                if (sideLiquids[i] == null)
+                {
+                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonNotFacesShape, _block.Alias));
+                }
+            }
+            
+            return sideLiquids;
         }
 
         /// <summary>

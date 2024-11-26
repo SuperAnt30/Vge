@@ -20,6 +20,10 @@
         /// </summary>
         public const string Translucent = "Translucent";
         /// <summary>
+        /// Блок должен использовать самое яркое значение соседнего света как свое собственное, листва, вода, стекло. (bool)
+        /// </summary>
+        public const string UseNeighborBrightness = "UseNeighborBrightness";
+        /// <summary>
         /// Обрабатывается блок эффектом АmbientOcclusion. (bool)
         /// </summary>
         public const string АmbientOcclusion = "АmbientOcclusion";
@@ -44,6 +48,10 @@
         /// Массив объектов вариантов фигур. ([])
         /// </summary>
         public const string Variants = "Variants";
+        /// <summary>
+        /// Объект фигуры ждикости. (string)
+        /// </summary>
+        public const string Variant = "Variant";
         /// <summary>
         /// Объект фигуры. ({})
         /// </summary>
@@ -74,6 +82,10 @@
         /// Массив элементов параллелепипедов. ([])
         /// </summary>
         public const string Elements = "Elements";
+        /// <summary>
+        /// Отъект элемента для жидкого блока. ({})
+        /// </summary>
+        public const string Element = "Element";
         /// <summary>
         /// Массив сторон параллелепипеда. ([])
         /// </summary>
@@ -117,7 +129,7 @@
         /// </summary>
         public const string Side = "Side";
         /// <summary>
-        /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет. (int)
+        /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет. (byte)
         /// </summary>
         public const string TypeColor = "TypeColor";
         /// <summary>

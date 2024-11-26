@@ -107,13 +107,13 @@ namespace Vge.World.Block
             if (jsonRead.IsThereFile)
             {
                 state = _ParentState(jsonRead.Compound);
-                if (state.IsKey("Variants"))
+                if (state.IsKey(Ctb.Variants))
                 {
-                    JsonArray variants = state.GetArray("Variants");
+                    JsonArray variants = state.GetArray(Ctb.Variants);
                     bool bodyShape = false;
                     foreach (JsonCompound variant in variants.Items)
                     {
-                        string shapeName = variant.GetString("Shape");
+                        string shapeName = variant.GetString(Ctb.Shape);
                         foreach (JsonKeyValue shape in shapes)
                         {
                             if (shape.IsKey(shapeName))
@@ -131,6 +131,11 @@ namespace Vge.World.Block
                             shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
                         }
                     }
+                }
+                if (state.IsKey(Ctb.Variant))
+                {
+                    string shapeName = state.GetString(Ctb.Variant);
+                    shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
                 }
             }
             else

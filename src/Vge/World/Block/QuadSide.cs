@@ -22,13 +22,11 @@ namespace Vge.World.Block
         public float LightPole;
         /// <summary>
         /// Для анимации блока, указывается количество кадров в игровом времени (50 мс),
-        /// можно кратно 2 в степени (2, 4, 8, 16, 32, 64...)
         /// 0 - нет анимации
         /// </summary>
         public byte AnimationFrame;
         /// <summary>
         /// Для анимации блока, указывается пауза между кадрами в игровом времени (50 мс),
-        /// можно кратно 2 в степени (2, 4, 8, 16, 32, 64...)
         /// 0 или 1 - нет задержки, каждый такт игры смена кадра
         /// </summary>
         public byte AnimationPause;
@@ -41,7 +39,6 @@ namespace Vge.World.Block
         /// Резкость = 4; mipmap = 0;
         /// </summary>
         public byte Sharpness;
-
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет
         /// </summary>
@@ -80,8 +77,8 @@ namespace Vge.World.Block
         /// Задаём сторону и размеры на стороне
         /// </summary>
         /// <param name="pole">индекс стороны</param>
-        /// <param name="noSideDimming">shade Отсутствие оттенка / Нет бокового затемнения, пример: трава, цветы</param>
-        public QuadSide SetSide(Pole pole, bool noSideDimming = false, int x1i = 0, int y1i = 0, int z1i = 0, int x2i = 16, int y2i = 16, int z2i = 16)
+        /// <param name="shade">shade Отсутствие оттенка / Нет бокового затемнения, пример: трава, цветы</param>
+        public QuadSide SetSide(Pole pole, bool shade = false, int x1i = 0, int y1i = 0, int z1i = 0, int x2i = 16, int y2i = 16, int z2i = 16)
         {
             float x1 = x1i / 16f;
             float y1 = y1i / 16f;
@@ -90,7 +87,7 @@ namespace Vge.World.Block
             float y2 = y2i / 16f;
             float z2 = z2i / 16f;
             Side = (int)pole;
-            LightPole = noSideDimming ? 0f : 1f - Gi.LightPoles[Side];
+            LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             switch (pole)
             {
                 case Pole.Up:
@@ -144,11 +141,10 @@ namespace Vge.World.Block
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int rotateYawUV = 0)
         {
-            float k = 1f / Ce.TextureAtlasBlockCount;
-            float u1 = (numberTexture % Ce.TextureAtlasBlockCount) * k;
-            float u2 = u1 + k;
-            float v1 = numberTexture / Ce.TextureAtlasBlockCount * k;
-            float v2 = v1 + k;
+            float u1 = (numberTexture % Ce.TextureAtlasBlockCount) * Ce.ShaderAnimOffset;
+            float u2 = u1 + Ce.ShaderAnimOffset;
+            float v1 = numberTexture / Ce.TextureAtlasBlockCount * Ce.ShaderAnimOffset;
+            float v2 = v1 + Ce.ShaderAnimOffset;
             switch (rotateYawUV)
             {
                 case 0:
@@ -184,10 +180,9 @@ namespace Vge.World.Block
         /// </summary>
         public QuadSide SetTexture(int numberTexture, int biasU1, int biasV1, int biasU2, int biasV2, int rotateYawUV = 0)
         {
-            float k = 1f / Ce.TextureAtlasBlockCount;
-            float u = (numberTexture % Ce.TextureAtlasBlockCount) * k;
-            float v = numberTexture / Ce.TextureAtlasBlockCount * k;
-            k = Ce.TextureAtlasBlockCount * 16f;
+            float u = (numberTexture % Ce.TextureAtlasBlockCount) * Ce.ShaderAnimOffset;
+            float v = numberTexture / Ce.TextureAtlasBlockCount * Ce.ShaderAnimOffset;
+            float k = Ce.TextureAtlasBlockCount * 16f;
             switch (rotateYawUV)
             {
                 case 0:
