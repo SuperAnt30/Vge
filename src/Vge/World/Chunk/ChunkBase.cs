@@ -158,6 +158,19 @@ namespace Vge.World.Chunk
                     }
                 }
 
+                //for (int x = 0; x < 8; x++)
+                //{
+                //    for (int z = 0; z < 16; z++)
+                //    {
+                //        for (int y = h - 42; y < h; y++)
+                //        {
+                //            //SetBlockState(x, y, z, new BlockState(GlassBlue));
+                //            SetBlockState(x, y, z, new BlockState(0));
+                //        }
+                //    }
+                //}
+
+
                 for (int y = h; y < h + 32; y++)
                 {
                     SetBlockState(7, y, 5, new BlockState(Cobblestone));
@@ -174,6 +187,9 @@ namespace Vge.World.Chunk
                 SetBlockState(0, h, 15, new BlockState(FlowerClover));
                 SetBlockState(1, h, 15, new BlockState(FlowerClover));
 
+
+
+                
 
                 SetBlockState(15, h, 15, new BlockState(Limestone));
                 SetBlockState(15, h + 1, 15, new BlockState(Limestone));
@@ -227,6 +243,8 @@ namespace Vge.World.Chunk
                 SetBlockState(11, h, 10, new BlockState(1));
                 SetBlockState(12, h, 10, new BlockState(1));
 
+
+                
 
                 // Debug.Burden(.6f);
                 //World.Filer.EndSectionLog();

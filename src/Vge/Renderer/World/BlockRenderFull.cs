@@ -85,7 +85,14 @@ namespace Vge.Renderer.World
         private float _lightPole;
         private Vector3 _color;
         private readonly ColorsLights _colorLight = new ColorsLights();
-        private bool _isCullFaceAll, _isForceDrawFace;
+        /// <summary>
+        /// Отбраковка всех сторон во всех вариантах
+        /// </summary>
+        private bool _isCullFaceAll;
+        /// <summary>
+        /// Принудительное рисование всех сторон
+        /// </summary>
+        private bool _isForceDrawFace;
         private int i, count, index, id, s1, s2, s3, s4, side;
         private int xc, yc, zc, xb, yb, zb, xcn, zcn, pX, pY, pZ;
 
@@ -93,7 +100,7 @@ namespace Vge.Renderer.World
         /// Проверяем вверхний блок
         /// _GetBlockSideState
         /// </summary>
-        private bool _isUp;
+        //private bool _isUp;
         /// <summary>
         /// Пустые ли стороны
         /// _GetBlockSideState
@@ -165,7 +172,7 @@ namespace Vge.Renderer.World
             }
             else
             {
-                _isUp = true;
+                //_isUp = true;
                 if (_storage.Index != PosChunkY >> 4 || _storage.KeyCash != _keyCash)
                 {
                     _storage = _chunkRender.StorageArrays[PosChunkY >> 4];
@@ -173,7 +180,7 @@ namespace Vge.Renderer.World
                 _indexSide = 0;
                 _GetBlockSideState();
             }
-            _isUp = false;
+            //_isUp = false;
             // Down
             PosChunkY -= 2;
             if (PosChunkY < 0)
@@ -329,19 +336,23 @@ namespace Vge.Renderer.World
             _GetBlockSideState();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool _CheckAir()
-        {
-            if (_storage.CountBlock > 0)
-            {
-                id = _storage.Data[i];
-                if (id == 0) return true;
-                _metCheck = id >> 12;
-                id = id & 0xFFF;
-                return false;
-            }
-            return true;
-        }
+        /// <summary>
+        /// Проверка на соседа воздух или одинаковые кубические, отбрасываем.
+        /// </summary>
+        /// <returns></returns>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private bool _CheckAir()
+        //{
+        //    if (_storage.CountBlock > 0)
+        //    {
+        //        id = _storage.Data[i];
+        //        if (id == 0) return true;
+        //        _metCheck = id >> 12;
+        //        id = id & 0xFFF;
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _GetBlockSideState()
@@ -355,18 +366,26 @@ namespace Vge.Renderer.World
                 _emptySide = false;
                 _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
             }
-            else
+            else if (_storage.CountBlock > 0)
             {
-                // ~0.620
-                if (_CheckAir())
+                id = _storage.Data[i];
+                if (id == 0)
                 {
                     // Воздух
                     _emptySide = false;
                     _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
                 }
+                else if (_isCullFaceAll && id == Gi.Block.Id)
+                {
+                    // Одинаково типа, убираем прорисовку, вода, стекло без метданых!
+                    // Чистый должен быть id, для воды
+                    _resultSide[_indexSide] = -1;
+                }
                 else
                 {
-                    // ~1.150 ~0.980
+                    // Собираем данные соседнего блока
+                    _metCheck = id >> 12;
+                    id = id & 0xFFF;
                     if (_blockCheck.Id != id)
                     {
                         _blockCheck = Ce.Blocks.BlockObjects[id];
@@ -380,7 +399,7 @@ namespace Vge.Renderer.World
                     else if (_blockCheck.Translucent)
                     {
                         // Соседний блок прозрачный
-                        if (Gi.Block.Id != _blockCheck.Id)
+                        if (Gi.Block.Id != id)
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
@@ -392,7 +411,7 @@ namespace Vge.Renderer.World
                             _resultSide[_indexSide] = -1;
                         }
                     }
-                    else if (Gi.Block.IsForceDrawFace(Met, _indexSide) 
+                    else if (Gi.Block.IsForceDrawFace(Met, _indexSide)
                         || !Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
                                 ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
                     {
@@ -411,6 +430,12 @@ namespace Vge.Renderer.World
                         _resultSide[_indexSide] = -1;
                     }
                 }
+            }
+            else
+            {
+                // Воздух нет сектора
+                _emptySide = false;
+                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
             }
         }
 

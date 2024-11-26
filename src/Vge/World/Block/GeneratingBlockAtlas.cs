@@ -61,6 +61,7 @@ namespace Vge.World.Block
         {
             _window = window;
             Ce.TextureAtlasBlockCount = _textureAtlasBlockCount = textureAtlasBlockCount;
+            Ce.ShaderAnimOffset = 1f / Ce.TextureAtlasBlockCount;
             _textureBlockSize = textureBlockSize;
             _height = textureAtlasBlockCount * textureBlockSize;
             _stride = _height * 4;

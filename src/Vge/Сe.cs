@@ -65,7 +65,11 @@ public sealed class Ce
     /// По умалчанию 64 (1024*1024) = 4096 спрайтов
     /// </summary>
     public static int TextureAtlasBlockCount = 64;
-    
+    /// <summary>
+    /// Коэффициент смещения по кадрам для анимации текстур
+    /// </summary>
+    public static float ShaderAnimOffset = 1f / TextureAtlasBlockCount;
+
 
     #region Game Геометрия
 

@@ -119,6 +119,7 @@ namespace Vge.Renderer
             ShVoxel.SetUniform1(gl, "overview", (float)overview);
             ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
             ShVoxel.SetUniform1(gl, "torch", (float)torchInHand);
+            ShVoxel.SetUniform1(gl, "animOffset", Ce.ShaderAnimOffset);
             // Ветер, значение от -1 до 1
             int wind = (int)window.Time() / 48 & 0x7F;
             ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
