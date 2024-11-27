@@ -173,8 +173,14 @@ namespace Vge.World.Chunk
                             //SetBlockState(x, y, z, new BlockState(0));
                             SetBlockState(x, y, z, new BlockState(Water));
                         }
+
+                        
                     }
                 }
+                SetBlockState(5, h, 5, new BlockState(GlassRed));
+                SetBlockState(5, h - 1, 4, new BlockState(GlassRed));
+                SetBlockState(5, h - 2, 3, new BlockState(GlassRed));
+
                 SetBlockState(4, h, 7, new BlockState(Water));
 
                 SetBlockState(1, h + 2, 0, new BlockState(Water));
@@ -204,7 +210,8 @@ namespace Vge.World.Chunk
                 {
                     for (int z = 6; z < 11; z++)
                     {
-                        SetBlockState(x, h, z, new BlockState(Stone));
+                        SetBlockState(x, h, z, new BlockState(Granite));
+                        //SetBlockState(x, h - 1, z, new BlockState(Lava));
                     }
                 }
 

@@ -16,6 +16,7 @@ namespace Vge.Renderer.World
         private float h00, h10, h01, h11;
         private int up00, up10, up20, up01, up11, up21, up02, up12, up22;
         private int l00, l10, l20, l01, l11, l21, l02, l12, l22;
+        private byte h1, h2, h3, h4;
 
         private float _angleFlow;
         /// <summary>
@@ -63,40 +64,82 @@ namespace Vge.Renderer.World
             h11 = _HeightVertexLiquid(up11, up21, up12, up22, new int[] { l11, l21, l12, l22 });
 
             // Сначало изнутри
-            if (_resultSide[0] != -1)
+            if ((_resultSide[0] & 255) == _resultSide[0])
             {
                 // Условие, если текучая вода или стоячая но над стоячей вверхний блок 
                 // не может быть стоячей водной под сплошным блоком
-                if (l11 != 15 || (l11 == 15 && (up00 > -2 || up10 > -2 || up20 > -2
-                    || up01 > -2 || up11 > -2 || up21 > -2
-                    || up02 > -2 || up12 > -2 || up22 > -2)))
+                bool b1 = up11 == -3 && (h00 != 1 || h10 != 1 || h01 != 1 || h11 != 1);
+                if (b1)
+                {
+                    b1 = l11 != 15 || (l11 == 15 && (up00 > -2 || up10 > -2 || up20 > -2
+                       || up01 > -2 || up11 > -2 || up21 > -2
+                       || up02 > -2 || up12 > -2 || up22 > -2));
+                }
+                if (!b1)
+                {
+                    b1 = up11 != -3 && (l11 != 15 || (l11 == 15 && (up00 > -2 || up10 > -2 || up20 > -2
+                  || up01 > -2 || up11 > -2 || up21 > -2
+                  || up02 > -2 || up12 > -2 || up22 > -2)));
+                }
+                if (b1)
                 {
                     _Up();
-                    blockUV.BuildingLiquidInside();
+                    if (_ambientOcclusion && _sideLiquid.Wind != 0)
+                    {
+                        if (l00 == 15 && l10 == 15 && l01 == 15 && l11 == 15
+                            && up00 == -1 && up10 == -1 && up01 == -1 && up11 == -1)
+                        {
+                            h1 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 == 0 ? 1 : 2 : 2);
+                        }
+                        else h1 = 0;
+                        if (l01 == 15 && l11 == 15 && l02 == 15 && l12 == 15
+                            && up01 == -1 && up11 == -1 && up02 == -1 && up12 == -1)
+                        {
+                            h2 = (byte)(PosChunkZ % 2 != 0 ? PosChunkX % 2 == 0 ? 1 : 2 : 2);
+                        }
+                        else h2 = 0;
+                        if (l11 == 15 && l21 == 15 && l12 == 15 && l22 == 15
+                            && up11 == -1 && up21 == -1 && up12 == -1 && up22 == -1)
+                        {
+                            h3 = (byte)(PosChunkZ % 2 != 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
+                        }
+                        else h3 = 0;
+                        if (l10 == 15 && l20 == 15 && l11 == 15 && l21 == 15
+                            && up10 == -1 && up20 == -1 && up11 == -1 && up21 == -1)
+                        {
+                            h4 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
+                        }
+                        else h4 = 0;
+                        blockUV.BuildingLiquidInsideWind(h1, h2, h3, h4);
+                    }
+                    else
+                    {
+                        blockUV.BuildingLiquidInside();
+                    }
                 }
 
             }
-            if (_resultSide[1] != -1)
+            if ((_resultSide[1] & 255) == _resultSide[1])
             {
                 _Down();
                 blockUV.BuildingLiquidInside();
             }
-            if (_resultSide[2] != -1)
+            if ((_resultSide[2] & 255) == _resultSide[2])
             {
                 _East();
                 blockUV.BuildingLiquidInside();
             }
-            if (_resultSide[3] != -1)
+            if ((_resultSide[3] & 255) == _resultSide[3])
             {
                 _West();
                 blockUV.BuildingLiquidInside();
             }
-            if (_resultSide[4] != -1)
+            if ((_resultSide[4] & 255) == _resultSide[4])
             {
                 _North();
                 blockUV.BuildingLiquidInside();
             }
-            if (_resultSide[5] != -1)
+            if ((_resultSide[5] & 255) == _resultSide[5])
             {
                 _South();
                 blockUV.BuildingLiquidInside();
@@ -109,7 +152,38 @@ namespace Vge.Renderer.World
             if (_resultSide[0] != -1)
             {
                 _Up();
-                blockUV.BuildingLiquidOutside();
+                if (_ambientOcclusion && _sideLiquid.Wind != 0)
+                {
+                    if (l00 == 15 && l10 == 15 && l01 == 15 && l11 == 15
+                        && up00 == -1 && up10 == -1 && up01 == -1 && up11 == -1)
+                    {
+                        h1 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 == 0 ? 1 : 2 : 2);
+                    }
+                    else h1 = 0;
+                    if (l01 == 15 && l11 == 15 && l02 == 15 && l12 == 15
+                        && up01 == -1 && up11 == -1 && up02 == -1 && up12 == -1)
+                    {
+                        h2 = (byte)(PosChunkZ % 2 != 0 ? PosChunkX % 2 == 0 ? 1 : 2 : 2);
+                    }
+                    else h2 = 0;
+                    if (l11 == 15 && l21 == 15 && l12 == 15 && l22 == 15
+                        && up11 == -1 && up21 == -1 && up12 == -1 && up22 == -1)
+                    {
+                        h3 = (byte)(PosChunkZ % 2 != 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
+                    }
+                    else h3 = 0;
+                    if (l10 == 15 && l20 == 15 && l11 == 15 && l21 == 15
+                        && up10 == -1 && up20 == -1 && up11 == -1 && up21 == -1)
+                    {
+                        h4 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
+                    }
+                    else h4 = 0;
+                    blockUV.BuildingLiquidOutsideWind(h1, h2, h3, h4);
+                }
+                else
+                {
+                    blockUV.BuildingLiquidOutside();
+                }
             }
             if (_resultSide[1] != -1)
             {
@@ -393,12 +467,16 @@ namespace Vge.Renderer.World
 
             if (_blockCheck.Liquid)
             {
-                if (_metCheck == 0) return 15;
+                if (_metCheck == 0)
+                {
+                    // 14 это ограничение стыка между разными типами жидкости, для блокировки волны
+                    return Gi.Block.Id != _blockCheck.Id ? 14 : 15;
+                }
                 return _metCheck;
             }
 
-            if (_blockCheck.CullFaceAll) return -2;
-
+            if (_blockCheck.CullFaceAll) return _blockCheck.Translucent ? -3 : - 2;
+            return -1;
             
             
             //EnumMaterial eMaterial = blockCheck.Material.EMaterial;
@@ -413,7 +491,7 @@ namespace Vge.Renderer.World
             //    return _metCheck;
             //}
 
-            return -1;
+            
         }
 
         /// <summary>

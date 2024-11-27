@@ -109,6 +109,26 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
+        /// Построение буфера для жидкости снаружи с эффектом ветра
+        /// </summary>
+        public void BuildingLiquidOutsideWind(byte wind1, byte wind2, byte wind3, byte wind4)
+        {
+            // С EBO
+            Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
+                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind1));
+            Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
+                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind2));
+            Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
+                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind3));
+            Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
+                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind4));
+        }
+
+        /// <summary>
         /// Построение буфера для жидкости снаружи
         /// </summary>
         public void BuildingLiquidOutside()
@@ -126,6 +146,25 @@ namespace Vge.Renderer.World
             Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
                 Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                 AnimationFrame, AnimationPause, Sharpness);
+        }
+
+        /// <summary>
+        /// Построение буфера для жидкости изнутри с эффектом ветра
+        /// </summary>
+        public void BuildingLiquidInsideWind(byte wind1, byte wind2, byte wind3, byte wind4)
+        {
+            Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
+               Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+               AnimationFrame, AnimationPause, (byte)(Sharpness + wind4));
+            Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
+                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind3));
+            Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
+                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind2));
+            Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
+                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                AnimationFrame, AnimationPause, (byte)(Sharpness + wind1));
         }
 
         /// <summary>

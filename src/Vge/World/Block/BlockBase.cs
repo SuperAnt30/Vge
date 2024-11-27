@@ -35,10 +35,11 @@ namespace Vge.World.Block
         /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока
         /// </summary>
         //public bool FullBlock { get; protected set; } = true;
+       
         /// <summary>
-        /// Блок жидкости: вода, лава, нефть
+        /// Параметры нет жидкости на стороне, 1024 или 0
         /// </summary>
-        public bool Liquid { get; protected set; } = false;
+        public int[] NotLiquidOutside = new int[] { 1024, 0, 0, 0, 0, 0 };
         /// <summary>
         /// Является ли эта модель не блоком, со всеми сторонами и прозрачной
         /// </summary>
@@ -48,6 +49,8 @@ namespace Vge.World.Block
         /// </summary>
         public bool IsAir { get; private set; } = false;
 
+        
+
         #endregion
 
         #region Для логики
@@ -56,7 +59,6 @@ namespace Vge.World.Block
         /// Имеет ли блок данные
         /// </summary>
         public bool IsMetadata;
-
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0
         /// В VoxelEngine он в public static byte GetBlockLightOpacity(EnumBlock eblock)
@@ -109,6 +111,14 @@ namespace Vge.World.Block
 
         #region Для Render
 
+        /// <summary>
+        /// Блок жидкости: вода, лава, нефть
+        /// </summary>
+        public bool Liquid = false;
+        /// <summary>
+        /// Параметр для жидкости, 0 или 1024
+        /// </summary>
+        public int LiquidOutside = 0;
         /// <summary>
         /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой с сортировкой
         /// </summary>

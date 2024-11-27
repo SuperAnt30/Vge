@@ -4,9 +4,8 @@
         Still: "Blocks/lava_still",
     },
     Element: {
-        TypeColor:4
         Faces: [
-            { Texture:"Still", Side:"Down", Pause:10 },
+            { Texture:"Still", Side:"Down", Pause:12 },
             { Texture:"Still", Side:"Up", Pause:8 },
             { Texture:"Flow", Side:"North", Pause:5 },
             { Texture:"Flow", Side:"East", Pause:5 },

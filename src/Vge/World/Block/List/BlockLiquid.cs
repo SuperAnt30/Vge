@@ -13,19 +13,20 @@ namespace Vge.World.Block.List
         /// </summary>
         protected SideLiquid[] _sideLiquids;
 
-        public BlockLiquid()
+        public BlockLiquid(bool alpha)
         {
-            Alpha = true;
+            Alpha = alpha;
             Liquid = true;
             CullFaceAll = true;
+            LiquidOutside = 1024;
+            NotLiquidOutside = new int[] { 0, 0, 0, 0, 0, 0 };
         }
 
         /// <summary>
         /// Инициализация объекта рендера для блока
         /// </summary>
         protected override void _InitBlockRender()
-            //=> BlockRender = Gi.BlockAlphaRendFull;
-            => BlockRender = Gi.BlockLiquidAlphaRendFull;
+            => BlockRender = Alpha ? Gi.BlockLiquidAlphaRendFull : Gi.BlockLiquidRendFull;
 
         /// <summary>
         /// Имеется ли отбраковка конкретноц стороны, конкретного варианта
@@ -77,10 +78,28 @@ namespace Vge.World.Block.List
             Vector3 vec = new Vector3(0);
             if (l11 > 0)
             {
-                if (l01 > 0) vec.X -= l11 - l01;
-                if (l10 > 0) vec.Z -= l11 - l10;
-                if (l21 > 0) vec.X += l11 - l21;
-                if (l12 > 0) vec.Z += l11 - l12;
+                // 14 это ограничение стыка между разными типами жидкости, для блокировки волны
+                if (l11 == 14) l11 = 15;
+                if (l01 > 0)
+                {
+                    if (l01 == 14) vec.X -= l11 - 15;
+                    else vec.X -= l11 - l01;
+                }
+                if (l10 > 0)
+                {
+                    if (l10 == 14) vec.Z -= l11 - 15;
+                    else vec.Z -= l11 - l10;
+                }
+                if (l21 > 0)
+                {
+                    if (l21 == 14) vec.X += l11 - 15;
+                    else vec.X += l11 - l21;
+                }
+                if (l12 > 0)
+                {
+                    if (l12 == 14) vec.Z += l11 - 15;
+                    else vec.Z += l11 - l12;
+                }
                 vec.Y -= 6f;
                 vec = vec.Normalize();
             }

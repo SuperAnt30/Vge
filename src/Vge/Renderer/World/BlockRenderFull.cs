@@ -51,7 +51,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Тень на углах + ~0.200 мс к рендеру на чанк
         /// </summary>
-        private bool _ambientOcclusion = true;
+        protected bool _ambientOcclusion = true;
         /// <summary>
         /// Индекс стороны для массива, который храним наличие и свет
         /// </summary>
@@ -373,7 +373,7 @@ namespace Vge.Renderer.World
                         _blockCheck = Ce.Blocks.BlockObjects[id];
                     }
 
-                    if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)// && !Gi.Block.Liquid)// && (!_isUp || Gi.Block.Liquid))
+                    if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)// || !_blockCheck.Liquid))// && (!_isUp || Gi.Block.Liquid))
                     {
                         // Блоки целые соседний непрозрачный
                         if (_isUp && Gi.Block.Liquid)
@@ -394,7 +394,8 @@ namespace Vge.Renderer.World
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
-                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF 
+                                | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
                         }
                         else
                         {

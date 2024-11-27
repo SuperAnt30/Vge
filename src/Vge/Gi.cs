@@ -82,6 +82,10 @@ public sealed class Gi
     /// </summary>
     public readonly static BlockRenderFull BlockRendFull = new BlockRenderFull(VertexDense);
     /// <summary>
+    /// Объект рендера жидкого блока без альфа прозрачности
+    /// </summary>
+    public readonly static BlockRenderLiquid BlockLiquidRendFull = new BlockRenderLiquid(VertexDense);
+    /// <summary>
     /// Объект рендера блока с альфа прозрачностью
     /// </summary>
     public readonly static BlockRenderFull BlockAlphaRendFull = new BlockRenderFull(VertexAlpha);

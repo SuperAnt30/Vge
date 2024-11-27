@@ -70,6 +70,12 @@ void main()
         posanim.z += wind;
         gl_Position = view * vec4(pos + posanim, 1.0);
     }
+    else if (((v_anim >> 17) & 1) == 1)
+    {
+        vec3 posanim = v_position;
+        posanim.y += wind * 0.5;
+        gl_Position = view * vec4(pos + posanim, 1.0);
+    }
     else
     {
         gl_Position = view * vec4(pos + v_position, 1.0);

@@ -137,6 +137,7 @@ namespace Vge.Renderer.World
             ushort data, id;
 
             Gi.BlockRendFull.InitChunk(this);
+            Gi.BlockLiquidRendFull.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
             Gi.BlockLiquidAlphaRendFull.InitChunk(this);
 
@@ -146,6 +147,7 @@ namespace Vge.Renderer.World
                 if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                 {
                     Gi.BlockRendFull.InitStorage(cbY);
+                    Gi.BlockLiquidRendFull.InitStorage(cbY);
                     Gi.BlockAlphaRendFull.InitStorage(cbY);
                     Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
                     // Имекется хоть один блок
