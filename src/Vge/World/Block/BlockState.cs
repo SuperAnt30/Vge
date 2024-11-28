@@ -41,6 +41,11 @@ namespace Vge.World.Block
         public bool IsEmpty() => Id == 0 && Met == 1;
 
         /// <summary>
+        /// Получить кэш блока
+        /// </summary>
+        public BlockBase GetBlock() => Ce.Blocks.BlockObjects[Id];
+
+        /// <summary>
         /// Пометить пустой блок
         /// </summary>
         public BlockState Empty()
@@ -90,6 +95,8 @@ namespace Vge.World.Block
         }
 
         public override int GetHashCode() => Id ^ Met.GetHashCode() ^ LightBlock ^ LightSky;
+
+        public string ToInfo() => Id + " " + Ce.Blocks.BlockAlias[Id] + " M:" + Met;
 
         public override string ToString() => "#" + Id + " M:" + Met;
     }

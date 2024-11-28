@@ -14,7 +14,7 @@
         /// </summary>
         public byte NumberSectionsLess { get; private set; }
         /// <summary>
-        /// Количество блоков в чанке. NumberChunkSections * 16 - 1
+        /// Количество блоков в чанке. NumberChunkSections * 16 - 1 (old COUNT_HEIGHT_BLOCK)
         /// </summary>
         public ushort NumberBlocks { get; private set; }
         /// <summary>

@@ -6,6 +6,7 @@ using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -42,6 +43,11 @@ namespace Vge.Management
         /// Позиция камеры в блоке для альфа, в зависимости от вида (с глаз, с зади, спереди)
         /// </summary>
         public Vector3i PositionAlphaBlock { get; private set; }
+
+        /// <summary>
+        /// Выбранный объект
+        /// </summary>
+        public MovingObjectPosition MovingObject { get; private set; } = new MovingObjectPosition();
 
         /// <summary>
         /// Позиция камеры в чанке для альфа, в зависимости от вида (с глаз, с зади, спереди)
@@ -88,6 +94,10 @@ namespace Vge.Management
         /// Высота для FrustumCulling
         /// </summary>
         private int _heightChinkFrustumCulling;
+        /// <summary>
+        /// Вектор луча
+        /// </summary>
+        private Vector3 _rayLook;
 
         public PlayerClient(GameBase game)
         {
@@ -170,6 +180,7 @@ namespace Vge.Management
             Vector3 front = Glm.Ray(PositionFrame.Yaw, PositionFrame.Pitch);
             Vector3 up = new Vector3(0, 1, 0);
             Vector3 pos = new Vector3(0, 0, 0);
+            _rayLook = front;
             Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
             //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
             //    0.01f, 16 * 22f);
@@ -301,6 +312,9 @@ namespace Vge.Management
                 _InitFrustumCulling();
             }
 
+            // Обновление курсора, не зависимо от действия игрока, так-как рядом может быть изминение
+            _UpCursor();
+
             // Проверка на обновление чанков альфа блоков, в такте после перемещения
             _UpdateChunkRenderAlphe();
         }
@@ -363,6 +377,76 @@ namespace Vge.Management
                     Position.PositionY >> 4,
                     Position.ChunkPositionZ);
             }
+        }
+
+        /// <summary>
+        /// Обновляем курсор
+        /// </summary>
+        private void _UpCursor()
+        {
+            MovingObject = _RayCast();
+
+            if (MovingObject.IsBlock())
+            {
+                ChunkBase chunk = _game.World.GetChunk(MovingObject.BlockPosition.GetPositionChunk());
+                Vector3i pos = MovingObject.BlockPosition.GetPositionInChunk();
+                string s1 = Debug.ToBlockInfo(chunk, pos);
+                string strUp = "";
+                if (MovingObject.BlockPosition.Y < chunk.Settings.NumberBlocks)
+                {
+                    BlockPos blockPosUp = MovingObject.BlockPosition.OffsetUp();
+                    strUp = string.Format(
+                        "BlkUp:{0} {1} L:{2}",
+                        blockPosUp,
+                        _game.World.GetBlockState(blockPosUp).ToInfo(),
+                        Debug.ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
+                    );
+                }
+                Debug.BlockFocus = string.Format(
+                    "Block:{0} {1}{4} L:{2}\r\n{3}\r\n",//{5}, {6}\r\n",
+                    MovingObject.BlockPosition,
+                    MovingObject.Block.ToInfo(),
+                    s1,
+                    strUp,
+                    MovingObject.IsLiquid ? string.Format(" {0} {1}", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition) : ""
+                //chunk.Light.GetHeight(pos.X, pos.z),
+                //chunk.GetDebugAllSegment(),
+
+                );
+            }
+            else if (MovingObject.IsLiquid)
+            {
+                Debug.BlockFocus = string.Format("Liquid:{0} {1}\r\n", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition);
+            }
+            //else if (MovingObject.IsEntity())
+            //{
+            //    Debug.BlockFocus = MovingObject.Entity.GetName();
+            //    if (MovingObject.Entity is EntityLiving entityLiving)
+            //    {
+            //        Debug.BlockFocus += " [" + entityLiving.GetHealth() + "]";
+            //    }
+            //    Debug.BlockFocus += "\r\n";
+            //}
+            else
+            {
+                Debug.BlockFocus = "";
+            }
+        }
+
+        /// <summary>
+        /// Луч игроком
+        /// </summary>
+        /// <param name="collidable"></param>
+        /// <param name="isLiquid"></param>
+        /// <returns></returns>
+        private MovingObjectPosition _RayCast(bool collidable = false, bool isLiquid = false)
+        {
+            // максимальная дистанция луча
+
+            Vector3 pos = PositionFrame.GetVector3();
+           // pos.Y += GetEyeHeightFrame();
+           return _game.World.RayCastBlock(pos, _rayLook, 6, collidable, /*Id,*/ isLiquid);
+            // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
         }
 
         #region Packet

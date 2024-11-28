@@ -212,6 +212,7 @@ namespace Vge.Renderer.World
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Up()
         {
             _sideLiquid = Gi.Block.GetSideLiquid(0);
@@ -279,6 +280,7 @@ namespace Vge.Renderer.World
 
         #region SideAssign
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Down()
         {
             _SideAssign(1);
@@ -297,6 +299,7 @@ namespace Vge.Renderer.World
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _East()
         {
             _SideAssign(2);
@@ -316,6 +319,7 @@ namespace Vge.Renderer.World
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _West()
         {
             _SideAssign(3);
@@ -335,6 +339,7 @@ namespace Vge.Renderer.World
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _North()
         {
             _SideAssign(4);
@@ -354,6 +359,7 @@ namespace Vge.Renderer.World
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _South()
         {
             _SideAssign(5);
@@ -497,6 +503,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Получить высоту вершины жидкости 0..1
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float _HeightVertexLiquid(int up00, int up10, int up01, int up11, int[] vs)
         {
             if (up00 > 0 || up10 > 0 || up01 > 0 || up11 > 0)

@@ -1,4 +1,7 @@
-﻿namespace WinGL.Util
+﻿using System.Runtime.CompilerServices;
+using WinGL.Util;
+
+namespace Vge.Util
 {
     /// <summary>
     /// Frustum Culling
@@ -26,6 +29,7 @@
             _Divide(_frustum5, view[3] + view[2], view[7] + view[6], view[11] + view[10], view[15] + view[14]);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Divide(float[] frustum, float v0, float v1, float v2, float v3)
         {
             float f = Mth.Sqrt(v0 * v0 + v1 * v1 + v2 * v2);
@@ -34,6 +38,7 @@
             frustum[2] = v2 / f;
             frustum[3] = v3 / f;
         }
+
 
         public bool IsBoxInFrustum(float x1, float y1, float z1, float x2, float y2, float z2)
         {
@@ -46,7 +51,7 @@
             return true;
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool _check(float[] frustum, float x1, float y1, float z1, float x2, float y2, float z2)
         {
             if ((frustum[0] * x1 + frustum[1] * y1 + frustum[2] * z1 + frustum[3] <= 0)
@@ -65,7 +70,7 @@
         /// Возвращает true, если прямоугольник находится внутри всех 6 плоскостей отсечения,
         /// в противном случае возвращает false.
         /// </summary>
-        //public bool IsBoxInFrustum(AxisAlignedBB aabb)
-        //    => IsBoxInFrustum(aabb.Min.x, aabb.Min.y, aabb.Min.z, aabb.Max.x, aabb.Max.y, aabb.Max.z);
+        public bool IsBoxInFrustum(AxisAlignedBB aabb)
+            => IsBoxInFrustum(aabb.Min.X, aabb.Min.Y, aabb.Min.Z, aabb.Max.X, aabb.Max.Y, aabb.Max.Z);
     }
 }

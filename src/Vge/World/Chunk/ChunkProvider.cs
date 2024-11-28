@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Chunk
+﻿using WinGL.Util;
+
+namespace Vge.World.Chunk
 {
     /// <summary>
     /// Объект который хранит и отвечает за кэш чанков конкретного мира
@@ -43,6 +45,12 @@
         /// </summary>
         public virtual ChunkBase GetChunk(int x, int y) 
             => _chunkMapping.Get(x, y) as ChunkBase;
+
+        /// <summary>
+        /// Получить чанк по координатам чанка
+        /// </summary>
+        public ChunkBase GetChunk(Vector2i chunkPos)
+            => _chunkMapping.Get(chunkPos.X, chunkPos.Y) as ChunkBase;
 
         /// <summary>
         /// Количество чанков в кэше

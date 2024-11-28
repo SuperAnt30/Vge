@@ -20,7 +20,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Опции высот чанка
         /// </summary>
-        public readonly ChunkSettings Settings = new ChunkSettings();
+        public readonly ChunkSettings Settings;
 
         /// <summary>
         /// Позиция X текущего чанка
@@ -123,7 +123,7 @@ namespace Vge.World.Chunk
             {
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
-                int h = NumberSections == 8 ? 63 : 127;
+                int h = NumberSections == 8 ? 63 : 95;
                 // Временно льём тест
 
                 ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
@@ -470,6 +470,35 @@ namespace Vge.World.Chunk
 
         #endregion
 
+
+        #region Block
+
+        /// <summary>
+        /// Получить блок данных, XZ 0..15, Y 0..255
+        /// </summary>
+        public BlockState GetBlockState(int x, int y, int z)
+        {
+            if (x >> 4 == 0 && z >> 4 == 0) return GetBlockStateNotCheck(x, y, z);
+            return new BlockState().Empty();
+        }
+
+        /// <summary>
+        /// Получить блок данных, XZ 0..15, Y 0..255 без проверки
+        /// </summary>
+        public BlockState GetBlockStateNotCheck(int x, int y, int z)
+        {
+            ChunkStorage chunkStorage = StorageArrays[y >> 4];
+            if (chunkStorage.CountBlock != 0)
+            {
+                return chunkStorage.GetBlockState(x, y & 15, z);
+            }
+            else
+            {
+                int index = (y & 15) << 8 | z << 4 | x;
+                return new BlockState(0, 0, chunkStorage.LightBlock[index], chunkStorage.LightSky[index]);
+            }
+        }
+
         /// <summary>
         /// Ставим блок в своём чанке, xz 0-15, y 0-max
         /// </summary>
@@ -481,6 +510,8 @@ namespace Vge.World.Chunk
             storage.LightBlock[index] = blockState.LightBlock;
             storage.LightSky[index] = blockState.LightSky;
         }
+
+        #endregion
 
         #region Binary
 

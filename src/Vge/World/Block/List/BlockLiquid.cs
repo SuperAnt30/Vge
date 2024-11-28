@@ -17,6 +17,7 @@ namespace Vge.World.Block.List
         {
             Alpha = alpha;
             Liquid = true;
+            FullBlock = false;
             CullFaceAll = true;
             LiquidOutside = 1024;
             NotLiquidOutside = new int[] { 0, 0, 0, 0, 0, 0 };

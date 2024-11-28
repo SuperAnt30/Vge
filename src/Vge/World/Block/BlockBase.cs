@@ -32,14 +32,11 @@ namespace Vge.World.Block
         // У блока может быть один из параметров true FullBlock || Liquid || IsUnique || IsAir
 
         /// <summary>
-        /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока
+        /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока.
+        /// Жидкости будут false
         /// </summary>
-        //public bool FullBlock { get; protected set; } = true;
+        public bool FullBlock { get; protected set; } = true;
        
-        /// <summary>
-        /// Параметры нет жидкости на стороне, 1024 или 0
-        /// </summary>
-        public int[] NotLiquidOutside = new int[] { 1024, 0, 0, 0, 0, 0 };
         /// <summary>
         /// Является ли эта модель не блоком, со всеми сторонами и прозрачной
         /// </summary>
@@ -119,6 +116,10 @@ namespace Vge.World.Block
         /// Параметр для жидкости, 0 или 1024
         /// </summary>
         public int LiquidOutside = 0;
+        /// <summary>
+        /// Параметры нет жидкости на стороне, 1024 или 0
+        /// </summary>
+        public int[] NotLiquidOutside = new int[] { 1024, 0, 0, 0, 0, 0 };
         /// <summary>
         /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой с сортировкой
         /// </summary>
@@ -262,6 +263,7 @@ namespace Vge.World.Block
             _quads = shapeDefinition.RunShapeFromJson(state, shapes);
             BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
             CullFaceAll = shapeDefinition.CullFaceAll;
+            FullBlock = CullFaceAll;
             ForceDrawFace = shapeDefinition.ForceDrawFace;
             _maskCullFaces = shapeDefinition.MaskCullFaces;
             _cullFaces = shapeDefinition.CullFaces;
@@ -282,6 +284,30 @@ namespace Vge.World.Block
         /// Является ли блок проходимым на нём, т.е. можно ли ходить по нему
         /// </summary>
         public virtual bool IsPassableOnIt(uint met) => !IsPassable(met);
+
+        /// <summary>
+        /// Проверить колизию блока на пересечение луча
+        /// </summary>
+        /// <param name="pos">позиция блока</param>
+        /// <param name="a">точка от куда идёт лучь</param>
+        /// <param name="dir">вектор луча</param>
+        /// <param name="maxDist">максимальная дистания</param>
+        public bool CollisionRayTrace(BlockPos pos, uint met, Vector3 a, Vector3 dir, float maxDist)
+        {
+            if (IsAction)
+            {
+                if (FullBlock) return true;
+
+                //// Если блок не полный, обрабатываем хитбокс блока
+                //AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
+                //Vector3 pos2 = a + dir * maxDist;
+                //foreach (AxisAlignedBB aabb in aabbs)
+                //{
+                //    if (aabb.CalculateIntercept(a, pos2) != null) return true;
+                //}
+            }
+            return false;
+        }
 
         #endregion
 

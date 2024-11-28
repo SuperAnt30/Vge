@@ -37,6 +37,11 @@ namespace Vge.Renderer.World
         /// Объект-событие
         /// </summary>
         private readonly AutoResetEvent _waitHandler = new AutoResetEvent(true);
+        /// <summary>
+        /// Рендер курсоров
+        /// </summary>
+        private readonly CursorRender _cursorRender;
+
 
         /// <summary>
         /// Желаемый размер партии рендера чанков
@@ -55,6 +60,7 @@ namespace Vge.Renderer.World
         {
             gl = GetOpenGL();
             _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
+            _cursorRender = new CursorRender(game.Player, this);
         }
 
         /// <summary>
@@ -165,22 +171,22 @@ namespace Vge.Renderer.World
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            _game.Render.DrawWorldBegin();
+            Render.DrawWorldBegin();
 
             // Обновить кадр основного игрока, камера и прочее
             _game.Player.UpdateFrame(timeIndex);
 
             // Небо
             //DrawSky(timeIndex);
-
-            // Биндим шейдор для вокселей
-            _game.Render.ShaderBindVoxels(_game.Player.View, timeIndex,
-                _overviewBlock, .4f, .4f, .7f, 15);
+           
             // Рисуем воксели сплошных и уникальных блоков
-            _DrawVoxelDense();
+            _DrawVoxelDense(timeIndex);
 
             // Сущности
             //DrawEntities(timeIndex);
+
+            // Рендер и прорисовка курсора если это необходимо
+            _cursorRender.RenderDraw();
 
             // Прорисовка вид не с руки, а видим себя
 
@@ -188,11 +194,11 @@ namespace Vge.Renderer.World
             //DrawClouds(timeIndex);
 
             // Рисуем воксели альфа
-            
             _DrawVoxelAlpha();
 
-            // Прорисовка руки
+           
 
+            // Прорисовка руки
 
         }
 
@@ -260,8 +266,12 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Рисуем воксели сплошных и уникальных блоков
         /// </summary>
-        private void _DrawVoxelDense()
+        private void _DrawVoxelDense(float timeIndex)
         {
+            // Биндим шейдор для вокселей
+            Render.ShaderBindVoxels(_game.Player.View, timeIndex,
+                _overviewBlock, .4f, .4f, .7f, 15);
+
             if (Debug.IsDrawVoxelLine)
             {
                 gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
@@ -300,6 +310,8 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxelAlpha()
         {
+            Render.ShVoxel.Bind(gl);
+
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
 
@@ -338,7 +350,7 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
-
+            _cursorRender.Dispose();
         }
 
         public override string ToString()

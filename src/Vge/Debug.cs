@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Event;
+using Vge.Realms;
 using Vge.Renderer;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -44,6 +45,10 @@ namespace Vge
         /// Прорисовка вокселей контуром линий
         /// </summary>
         public static bool IsDrawVoxelLine = false;
+        /// <summary>
+        /// Фокус блок
+        /// </summary>
+        public static string BlockFocus = "";
 
         public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick, float speedTickMax,
             int countUpdateChunk, int countUpdateChunkAlpha)
@@ -62,6 +67,7 @@ namespace Vge
                     + " rch: " + Mth.Average(RenderChunckTime)
                 + "\r\n" + Server
                 + "[Client]: " + Client
+                + "\r\n" + ChatStyle.Gold + BlockFocus + ChatStyle.Reset
                 + "\r\n" + Text;
         }
 
@@ -311,6 +317,19 @@ namespace Vge
             {
                 f *= d + i;
             }
+        }
+
+        /// <summary>
+        /// Для определения параметров блока чанк и локальные координаты блока
+        /// </summary>
+        public static string ToBlockInfo(ChunkBase chunk, Vector3i pos)
+        {
+            if (pos.Y > chunk.Settings.NumberBlocks) return "";
+            ChunkStorage storage = chunk.StorageArrays[pos.Y >> 4];
+            int index = (pos.Y & 15) << 8 | pos.Z << 4 | pos.X;
+            return string.Format("[{2}] b{0} s{1} {3}",
+                storage.LightBlock[index], storage.LightSky[index], pos,
+                    "Biom");// chunk.Biome[pos.X << 4 | pos.Z]);
         }
     }
 }
