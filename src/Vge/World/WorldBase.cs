@@ -60,6 +60,52 @@ namespace Vge.World
             return new BlockState().Empty();
         }
 
+        /// <summary>
+        /// Задать блок неба, с флагом по умолчанию 14 (уведомление соседей, modifyRender, modifySave)
+        /// </summary>
+        /// <param name="blockPos">позици блока</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break</param>
+        public bool SetBlockToAir(BlockPos blockPos, int flag = 14) 
+            => SetBlockState(blockPos, new BlockState(0), flag);
+
+        /// <summary>
+        /// Сменить блок
+        /// </summary>
+        /// <param name="blockPos">позици блока</param>
+        /// <param name="blockState">данные блока</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break</param>
+        /// <returns>true смена была</returns>
+        public virtual bool SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
+        {
+            if (!blockPos.IsValid(ChunkPr.Settings)) return false;
+
+            ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
+            if (chunk == null) return false;
+
+            Vector3i pos = blockPos.GetPositionInChunk();
+            chunk.SetBlockState(pos.X, pos.Y, pos.Z, blockState);
+
+            //BlockState blockStateTrue = chunk.SetBlockState(pos.X, pos.Y, pos.Z, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
+            //if (blockStateTrue.IsEmpty()) return false;
+
+            //if (!IsRemote)
+            //{
+            //    // Частички блока, только на сервере чтоб всем разослать
+            //    if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos, 50);
+            //}
+            //// Уведомление соседей и на сервере и на клиенте
+            //if ((flag & 2) != 0) NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
+
+            MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Отметить блок для обновления
+        /// </summary>
+        public virtual void MarkBlockForUpdate(int x, int y, int z) { }
+
         #endregion
 
         /// <summary>

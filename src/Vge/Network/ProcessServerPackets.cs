@@ -95,6 +95,8 @@ namespace Vge.Network
                 {
                     case 0x02: _Handle02LoginStart(sp.Side, (PacketC02LoginStart)sp.Packet); break;
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
+                    case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
+                    case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
                     case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
                     case 0x20: _Handle20AcknowledgeChunks(sp.Side, (PacketC20AcknowledgeChunks)sp.Packet); break;
                 }
@@ -149,10 +151,7 @@ namespace Vge.Network
             if (_pingKeySend == packet.Time)
             {
                 PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-                if (playerServer != null)
-                {
-                    playerServer.SetPing(_lastPingTime);
-                }
+                if (playerServer != null) playerServer.SetPing(_lastPingTime);
             }
         }
 
@@ -168,26 +167,25 @@ namespace Vge.Network
         private void _Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null)
-            {
-                playerServer.Position.Set(packet.Position);
+            if (playerServer != null) playerServer.PacketPlayerPosition(packet);
+        }
 
-                if (playerServer.IdWorld != packet.World)
-                {
-                    // Смена мира
-                    playerServer.ChangeWorld(packet.World);
-                }
-              //  _server.Worlds.GetWorld(0).Fragment.AddWorldAnchorChunk(playerServer.chPos.X + 25, playerServer.chPos.Y);
-            }
+        /// <summary>
+        /// Пакет игрок копает / ломает
+        /// </summary>
+        private void _Handle07PlayerDigging(SocketSide socketSide, PacketC07PlayerDigging packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null) playerServer.PacketPlayerDigging(packet);
+        }
 
-            //EntityPlayerServer entityPlayer = ServerMain.World.Players.GetPlayerSocket(socket);
-            //if (entityPlayer != null)
-            //{
-            //    entityPlayer.SetSneakingSprinting(packet.IsSneaking(), packet.IsSprinting());
-            //    entityPlayer.SetPosition(packet.GetPos());
-            //    entityPlayer.SetOnGroundServer(packet.OnGround());
-            //    entityPlayer.MarkPlayerActive();
-            //}
+        /// <summary>
+        /// Пакет игрок устанавливает или взаимодействует с блоком
+        /// </summary>
+        private void _Handle08PlayerBlockPlacement(SocketSide socketSide, PacketC08PlayerBlockPlacement packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null) playerServer.PacketPlayerBlockPlacement(packet);
         }
 
         /// <summary>
@@ -196,10 +194,7 @@ namespace Vge.Network
         private void _Handle15PlayerSetting(SocketSide socketSide, PacketC15PlayerSetting packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null)
-            {
-                playerServer.PacketPlayerSetting(packet);
-            }
+            if (playerServer != null) playerServer.PacketPlayerSetting(packet);
         }
 
         /// <summary>
@@ -208,10 +203,7 @@ namespace Vge.Network
         private void _Handle20AcknowledgeChunks(SocketSide socketSide, PacketC20AcknowledgeChunks packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null)
-            {
-                playerServer.PacketAcknowledgeChunks(packet);
-            }
+            if (playerServer != null) playerServer.PacketAcknowledgeChunks(packet);
         }
 
         #endregion

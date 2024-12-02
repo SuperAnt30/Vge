@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Network;
 using Vge.Util;
 using Vge.World.Chunk;
 using WinGL.Util;
@@ -242,12 +243,6 @@ namespace Vge.World.Block
             return false;
         }
 
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
         public override int GetHashCode() 
             => X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
     }

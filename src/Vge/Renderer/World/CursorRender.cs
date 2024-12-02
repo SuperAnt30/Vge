@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Vge.Management;
 using Vge.Util;
 using WinGL.Util;
@@ -41,7 +42,15 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Скрыт ли курсор чанка
         /// </summary>
-        private bool _hiddenChunk = true;
+        private bool _hiddenChunk = false;
+        /// <summary>
+        /// Была ли сделана сетка для чанка
+        /// </summary>
+        private bool _renderChunk;
+        /// <summary>
+        /// Высота блоков в чанке
+        /// </summary>
+        private ushort _numberBlocks;
 
         public CursorRender(PlayerClient player, WorldRenderer worldRenderer)
         {
@@ -49,6 +58,15 @@ namespace Vge.Renderer.World
             _player = player;
             _meshBlock = new MeshLine(_worldRenderer.GetOpenGL());
             _meshChunk = new MeshLine(_worldRenderer.GetOpenGL());
+        }
+
+        /// <summary>
+        /// Задать высоту чанков
+        /// </summary>
+        public void SetHeightChunks(ushort numberBlocks)
+        {
+            _numberBlocks = numberBlocks;
+            _renderChunk = true;
         }
 
         public void Dispose()
@@ -63,17 +81,22 @@ namespace Vge.Renderer.World
         public void RenderDraw()
         {
             _RenderBlock();
+            _RenderChunk();
             // Прорисовка
-            if (!_hiddenBlock || !_hiddenChunk)
-            {
-                _worldRenderer.Render.ShaderBindLine(_player.View);
-            }
             if (!_hiddenBlock)
             {
+                _worldRenderer.Render.ShaderBindLine(_player.View, 0, 0, 0);
                 _meshBlock.Draw();
             }
             if (!_hiddenChunk)
             {
+                Vector2i posCh = _player.PositionFrame.GetChunkPosition();
+                posCh.X = posCh.X << 4;
+                posCh.Y = posCh.Y << 4;
+                _worldRenderer.Render.ShaderBindLine(_player.View,
+                    posCh.X - _player.PositionFrame.X,
+                    -_player.PositionFrame.Y,
+                    posCh.Y - _player.PositionFrame.Z);
                 _meshChunk.Draw();
             }
         }
@@ -122,6 +145,65 @@ namespace Vge.Renderer.World
             }
         }
 
-        
+
+        private void _RenderChunk()
+        {
+            if (!_hiddenChunk && _renderChunk)
+            {
+                _renderChunk = false;
+
+                Vector3 colorYelow = new Vector3(1, 1, 0);
+                Vector3 colorRed = new Vector3(1, 0, 0);
+                Vector3 colorBlue = new Vector3(0, 0, 1);
+                Vector3 color;
+
+                int leght = _numberBlocks + 1;
+                List<float> buffer = new List<float>();
+
+                // вертикальные линии
+                for (int i = 2; i < 16; i += 2)
+                {
+                    buffer.AddRange(_Line(0, 0, i, 0, leght, i, colorYelow));
+                    buffer.AddRange(_Line(16, 0, i, 16, leght, i, colorYelow));
+                    buffer.AddRange(_Line(i, 0, 0, i, leght, 0, colorYelow));
+                    buffer.AddRange(_Line(i, 0, 16, i, leght, 16, colorYelow));
+                }
+                // вертикальные линии границы чанка
+                buffer.AddRange(_Line(0, 0, 0, 0, leght, 0, colorBlue));
+                buffer.AddRange(_Line(16, 0, 0, 16, leght, 0, colorBlue));
+                buffer.AddRange(_Line(0, 0, 16, 0, leght, 16, colorBlue));
+                buffer.AddRange(_Line(16, 0, 16, 16, leght, 16, colorBlue));
+
+                // Кольца с низу вверх
+                for (int i = 0; i <= leght; i += 2)
+                {
+                    color = i % 16 == 0 ? colorBlue : colorYelow;
+                    buffer.AddRange(_Line(0, i, 0, 16, i, 0, color));
+                    buffer.AddRange(_Line(0, i, 0, 0, i, 16, color));
+                    buffer.AddRange(_Line(16, i, 0, 16, i, 16, color));
+                    buffer.AddRange(_Line(0, i, 16, 16, i, 16, color));
+                }
+                // Вертикальные углы соседнего чанка
+                for (int i = -16; i <= 32; i += 16)
+                {
+                    buffer.AddRange(_Line(i, 0, -16, i, leght, -16, colorRed));
+                    buffer.AddRange(_Line(i, 0, 32, i, leght, 32, colorRed));
+                }
+                buffer.AddRange(_Line(-16, 0, 0, -16, leght, 0, colorRed));
+                buffer.AddRange(_Line(-16, 0, 16, -16, leght, 16, colorRed));
+                buffer.AddRange(_Line(32, 0, 0, 32, leght, 0, colorRed));
+                buffer.AddRange(_Line(32, 0, 16, 32, leght, 16, colorRed));
+
+                _meshChunk.Reload(buffer.ToArray());
+            }
+        }
+
+        private float[] _Line(float x1, float y1, float z1,
+            float x2, float y2, float z2, Vector3 color, float alpha = 1)
+            => new float[]
+            {
+                x1, y1, z1, color.X, color.Y, color.Z, alpha,
+                x2, y2, z2, color.X, color.Y, color.Z, alpha
+            };
     }
 }

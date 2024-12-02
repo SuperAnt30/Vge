@@ -314,10 +314,19 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _GetBlockSideStateCheck()
         {
-            // Это до _GetBlockSideState Занимает около ~0,15мс
-            if (_storage.KeyCash != _keyCash)
+            // Определяем рабочий чанк соседнего блока
+            if (PosChunkX >> 4 == 0 && PosChunkZ >> 4 == 0)
             {
-                // Если разный кеш, значит разные чанки, берём из соседей
+                // Текущий чанк
+                if (_storage.KeyCash != _keyCash || _storage.Index != yc)
+                {
+                    // Прошли проверку, что прошлый раз в кеше другой, надо заменить
+                    _storage = _chunkRender.StorageArrays[yc];
+                }
+            }
+            else
+            {
+                // Соседний чанк
                 _chunkCheck = _chunkRender.Chunk(PosChunkX >> 4, PosChunkZ >> 4);
                 if (_chunkCheck == null || !_chunkCheck.IsChunkPresent)
                 {
@@ -325,12 +334,8 @@ namespace Vge.Renderer.World
                     _resultSide[_indexSide] = 0x0F; // Только яркость неба макс
                     return;
                 }
+                // Сразу присваеваю без проверок, так-как если соседний чанк, то в кеше маловероятно, что он же
                 _storage = _chunkCheck.StorageArrays[yc];
-            }
-            else if (_storage.Index != yc)
-            {
-                // Если изменён только вверх
-                _storage = _chunkRender.StorageArrays[yc];
             }
 
             _GetBlockSideState();

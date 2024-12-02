@@ -48,11 +48,24 @@ namespace Vge.Management
         /// Чанки игроков она же выступает в роли маски какие нельзя выгружать и какие может видеть игрок
         /// </summary>
         private MapChunk _chunkForAnchors = new MapChunk();
-        
+        /// <summary>
+        /// Этот список используется, когда чанк должен быть обработан (каждые 8000 тиков)
+        /// </summary>
+        private ListMessy<ChunkForAnchor> _chunkAnchorsList = new ListMessy<ChunkForAnchor>();
+        /// <summary>
+        /// Список ChunkForAnchor которые надо обновить
+        /// </summary>
+        private ListMessy<ChunkForAnchor> _chunkAnchorsToUpdate = new ListMessy<ChunkForAnchor>();
+
         /// <summary>
         /// флаг для обновления активных чанков
         /// </summary>
         private bool _flagUpListChunkAction = true;
+
+        /// <summary>
+        /// Время, которое используется, чтобы проверить, следует ли рассчитывать _chunkForAnchors 
+        /// </summary>
+        private uint _previousTotalWorldTime;
 
         /// <summary>
         /// Объект сыщик
@@ -79,6 +92,8 @@ namespace Vge.Management
             radius += AddOverviewChunkServer;
             return radius;
         }
+
+        #region Anchor
 
         /// <summary>
         /// Добавить якорь
@@ -119,6 +134,10 @@ namespace Vge.Management
             }
         }
 
+        #endregion
+
+        #region Update
+
         public void Update()
         {
             // Обновить список активных чанков
@@ -134,6 +153,8 @@ namespace Vge.Management
 
             _filer.StartSection("Fragment.LoadingChunks");
             if (_UpdateLoadingChunks()) flagDebugChunkProviderServer = true;
+            _filer.EndStartSection("Fragment.ChunksUpdate");
+            _ChunksUpdate();
             _filer.EndSection();
         }
 
@@ -188,6 +209,38 @@ namespace Vge.Management
             return load;
         }
 
+        /// <summary>
+        /// Обновление в каждом такте чанков которые были помечены для обнолвения
+        /// </summary>
+        private void _ChunksUpdate()
+        {
+            // Чистка чанков по времени
+            uint time = World.Server.TickCounter;
+            int i, count;
+            if (time - _previousTotalWorldTime > 8000)
+            {
+                _previousTotalWorldTime = time;
+                count = _chunkAnchorsList.Count;
+                for (i = 0; i < count; i++)
+                {
+                    _chunkAnchorsList[i].Update();
+                    _chunkAnchorsList[i].ProcessChunk();
+                }
+                _chunkAnchorsToUpdate.Clear();
+            }
+            else
+            {
+                count = _chunkAnchorsToUpdate.Count - 1;
+                for (i = count; i >= 0; i--)
+                {
+                    _chunkAnchorsToUpdate[i].Update();
+                    _chunkAnchorsToUpdate.RemoveLast();
+                }
+            }
+        }
+
+        #endregion
+
         #region ChunkForAnchor
 
         /// <summary>
@@ -210,10 +263,12 @@ namespace Vge.Management
                     // Создаём чанк для якоря
                     chunkForAnchor = new ChunkForAnchor(World, x, y);
                     _chunkForAnchors.Add(chunkForAnchor);
+                    _chunkAnchorsList.Add(chunkForAnchor);
                 }
                 chunkForAnchor.AddAnchor(anchor);
             }
         }
+
         /// <summary>
         /// Удалить якорь с конкретного чанка 
         /// </summary>
@@ -236,6 +291,11 @@ namespace Vge.Management
                         // Удалить чанк
                         World.ChunkPrServ.DropChunk(x, y);
                         _chunkForAnchors.Remove(x, y);
+                        _chunkAnchorsList.Remove(chunkForAnchor);
+                        if (chunkForAnchor.NumBlocksToUpdate > 0)
+                        {
+                            _chunkAnchorsToUpdate.Remove(chunkForAnchor);
+                        }
                         flagDebugAnchorChunkOffset = true;
                         flagDebugChunkProviderServer = true;
                     }
@@ -246,6 +306,21 @@ namespace Vge.Management
         #endregion
 
         #region Обновление фрагментов
+
+        /// <summary>
+        /// Флаг блока который был изменён
+        /// </summary>
+        public void FlagBlockForUpdate(int x, int y, int z)
+        {
+            if (_chunkForAnchors.Get(x >> 4, z >> 4) is ChunkForAnchor chunkForAnchor)
+            {
+                if (chunkForAnchor.NumBlocksToUpdate == 0)
+                {
+                    _chunkAnchorsToUpdate.Add(chunkForAnchor);
+                }
+                chunkForAnchor.FlagBlockForUpdate(x & 15, y, z & 15);
+            }
+        }
 
         /// <summary>
         /// Обновлять фрагменты чанков вокруг якоря, перемещаемого логикой сервера
@@ -757,7 +832,8 @@ namespace Vge.Management
             {
                 flagDebugAnchorChunkOffset = false;
                 Server.OnTagDebug(Debug.Key.ChunksActive.ToString(), ListChunkAction.ToArray());
-                Server.OnTagDebug(Debug.Key.ChunkForAnchors.ToString(), _chunkForAnchors.ToArrayDebug());
+                Server.OnTagDebug(Debug.Key.ChunkForAnchors.ToString(), _chunkAnchorsList.ToArray());
+                
             }
             if (flagDebugChunkProviderServer)
             {

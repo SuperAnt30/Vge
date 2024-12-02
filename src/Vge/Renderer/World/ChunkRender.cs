@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
-using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -48,7 +47,16 @@ namespace Vge.Renderer.World
         /// Соседние чанки, заполняются перед рендером
         /// </summary>
         private readonly ChunkRender[] _chunks = new ChunkRender[8];
-        
+
+        /// <summary>
+        /// Буфер сетки секций чанков сплошных блоков
+        /// </summary>
+        private readonly ChunkSectionBuffer[] _sectionsBuffer;
+        /// <summary>
+        /// Массив какие секции сплошных чанков надо рендерить, для потока где идёт рендер
+        /// </summary>
+        private readonly bool[] _isRenderingSection;
+
 
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
@@ -58,8 +66,11 @@ namespace Vge.Renderer.World
             _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
 
             _listAlphaBlock = new List<ushort>[NumberSections];
+            _sectionsBuffer = new ChunkSectionBuffer[NumberSections];
+            _isRenderingSection = new bool[NumberSections];
             for (int index = 0; index < NumberSections; index++)
             {
+                _sectionsBuffer[index] = new ChunkSectionBuffer();
                 _listAlphaBlock[index] = new List<ushort>();
             }
         }
@@ -80,7 +91,13 @@ namespace Vge.Renderer.World
         /// Пометить что надо перерендерить сетку чанка
         /// </summary>
         public override void ModifiedToRender(int y)
-            => _meshDense.IsModifiedRender = true;
+        {
+            _meshDense.IsModifiedRender = true;
+            if (y >= 0 && y < NumberSections)
+            {
+                _isRenderingSection[y] = true;
+            }
+        }
 
         /// <summary>
         /// Пометить что надо перерендерить сетку чанка альфа блоков
@@ -109,6 +126,10 @@ namespace Vge.Renderer.World
 
         public void DisposeMesh()
         {
+            for (int y = 0; y < NumberSections; y++)
+            {
+                _isRenderingSection[y] = false;
+            }
             _meshDense.Dispose();
             _meshAlpha.Dispose();
         }
@@ -120,21 +141,25 @@ namespace Vge.Renderer.World
         {
             long timeBegin = _worldClient.Game.ElapsedTicks();
 
+            
+
             Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
             Gi.VertexDense.Clear();
-            Gi.VertexAlpha.Clear();
-            _listAlphaBuffer.Clear();
-            _countAlpha = 0;
-            for (int i = 0; i < NumberSections; i++)
-            {
-                _listAlphaBlock[i].Clear();
-            }
 
             ChunkStorage chunkStorage;
             int cbX = CurrentChunkX << 4;
             int cbZ = CurrentChunkY << 4;
             int cbY, realY, index, yb, x, z, indexY, indexYZ;
             ushort data, id;
+
+            for (cbY = 0; cbY < NumberSections; cbY++)
+            {
+                if (_sectionsBuffer[cbY].BufferFloat == null)
+                {
+                    _sectionsBuffer[cbY].BufferFloat = new float[0];
+                    _sectionsBuffer[cbY].BufferByte = new byte[0];
+                }
+            }
 
             Gi.BlockRendFull.InitChunk(this);
             Gi.BlockLiquidRendFull.InitChunk(this);
@@ -143,114 +168,103 @@ namespace Vge.Renderer.World
 
             for (cbY = 0; cbY < NumberSections; cbY++)
             {
-                chunkStorage = StorageArrays[cbY];
-                if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
+                if (_isRenderingSection[cbY])
                 {
-                    Gi.BlockRendFull.InitStorage(cbY);
-                    Gi.BlockLiquidRendFull.InitStorage(cbY);
-                    Gi.BlockAlphaRendFull.InitStorage(cbY);
-                    Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
-                    // Имекется хоть один блок
-                    for (yb = 0; yb < 16; yb++)
+                    _listAlphaBlock[cbY].Clear();
+                    chunkStorage = StorageArrays[cbY];
+                    if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                     {
-                        realY = cbY << 4 | yb;
-                        indexY = yb << 8;
-                        for (z = 0; z < 16; z++)
+                        Gi.BlockRendFull.InitStorage(cbY);
+                        Gi.BlockLiquidRendFull.InitStorage(cbY);
+                        Gi.BlockAlphaRendFull.InitStorage(cbY);
+                        Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
+                        // Имекется хоть один блок
+                        for (yb = 0; yb < 16; yb++)
                         {
-                            indexYZ = indexY | z << 4;
-                            // ~0.002
-                            for (x = 0; x < 16; x++)
+                            realY = cbY << 4 | yb;
+                            indexY = yb << 8;
+                            for (z = 0; z < 16; z++)
                             {
-                                // ~0.011
-                                index = indexYZ | x;
-                                // ~0.012
-                                data = chunkStorage.Data[index];
-                                // Если блок воздуха, то пропускаем рендер сразу
-                                if (data == 0) continue;
-                                // ~0.020
-                                // Определяем id блока
-                                id = (ushort)(data & 0xFFF);
-                                // ~0.021
-                                // Определяем объект блока
-                                Gi.Block = Ce.Blocks.BlockObjects[id];
-                                // ~0.066
-                                
-                                if (Gi.Block.Alpha) //+0.006
+                                indexYZ = indexY | z << 4;
+                                for (x = 0; x < 16; x++)
                                 {
-                                    // Альфа
-                                    Gi.Block.BlockRender.PosChunkX = x;
-                                    Gi.Block.BlockRender.PosChunkY = realY;
-                                    Gi.Block.BlockRender.PosChunkZ = z;
-                                    if (Gi.Block.BlockRender.CheckSide())
+                                    index = indexYZ | x;
+                                    data = chunkStorage.Data[index];
+                                    // Если блок воздуха, то пропускаем рендер сразу
+                                    if (data == 0) continue;
+                                    // Определяем id блока
+                                    id = (ushort)(data & 0xFFF);
+                                    // Определяем объект блока
+                                    Gi.Block = Ce.Blocks.BlockObjects[id];
+
+                                    if (Gi.Block.Alpha)
                                     {
+                                        // Альфа
+                                        Gi.Block.BlockRender.PosChunkX = x;
+                                        Gi.Block.BlockRender.PosChunkY = realY;
+                                        Gi.Block.BlockRender.PosChunkZ = z;
                                         // Определяем met блока
                                         Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
-                                        Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
-                                        Gi.Block.BlockRender.RenderSide();
 
-                                        if (!Gi.VertexAlpha.Empty())
+                                        if (Gi.Block.BlockRender.CheckSide())
                                         {
+                                            // Имеется видимый альфа блок, заносим в буфер для отельного рендера альфы
                                             _listAlphaBlock[cbY].Add((ushort)(yb << 8 | z << 4 | x));
-                                            _listAlphaBuffer.Add(new BlockBufferDistance()
-                                            {
-                                                BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
-                                                BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
-                                                Distance = Glm.Distance(posPlayer,
-                                                    new Vector3i(cbX | x, realY, cbZ | z))
-                                            });
-                                            Gi.VertexAlpha.Clear();
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    // Сплошной
-                                    // Рендер сплошных, не прозрачных блоков
-                                    //if (block.IsUnique)
-                                    //{
-                                    //    // Уникальный блок
-                                    //    blockRender = Gi.BlockRendUnique;
-                                    //}
-                                    //else if (block.FullBlock)
-                                    //{
-                                    //    // Сплошной блок
-                                    //    blockRender = Gi.BlockRendFull;
-                                    //}
-                                    //else
-                                    //{
-                                    //    // Жидкость
-                                    //    blockRender = Gi.BlockRendLiquid;
-                                    //}
-
-                                    Gi.Block.BlockRender.PosChunkX = x;
-                                    Gi.Block.BlockRender.PosChunkY = realY;
-                                    Gi.Block.BlockRender.PosChunkZ = z;
-                                    Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
-                                    if (Gi.Block.BlockRender.CheckSide())
+                                    else
                                     {
-                                        // Определяем met блока
-                                        Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
-                                        Gi.Block.BlockRender.RenderSide();
+                                        Gi.Block.BlockRender.PosChunkX = x;
+                                        Gi.Block.BlockRender.PosChunkY = realY;
+                                        Gi.Block.BlockRender.PosChunkZ = z;
+                                        Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                        if (Gi.Block.BlockRender.CheckSide())
+                                        {
+                                            // Определяем met блока
+                                            Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                            Gi.Block.BlockRender.RenderSide();
+                                        }
                                     }
                                 }
                             }
                         }
+                        _sectionsBuffer[cbY].BufferFloat = Gi.VertexDense.BufferFloat.ToArray();
+                        _sectionsBuffer[cbY].BufferByte = Gi.VertexDense.BufferByte.ToArray();
+                        Gi.VertexDense.Clear();
                     }
-                    if (_listAlphaBlock[cbY].Count > 0)
+                    else
                     {
-                        _countAlpha += _listAlphaBlock[cbY].Count;
+                        // Нет блоков, все блоки воздуха очищаем буфера
+                        if (_sectionsBuffer[cbY].BufferFloat.Length != 0)
+                        {
+                            _sectionsBuffer[cbY].BufferFloat = new float[0];
+                            _sectionsBuffer[cbY].BufferByte = new byte[0];
+                        }
                     }
+                    _isRenderingSection[cbY] = false;
                 }
             }
-            // Debug.Burden(1f);
-
+            // Пересчитываем количество альфа блоков
+            _countAlpha = 0;
+            // Клеим секции
+            for (cbY = 0; cbY < NumberSections; cbY++)
+            {
+                _countAlpha += _listAlphaBlock[cbY].Count;
+                if (_sectionsBuffer[cbY].BufferFloat.Length != 0)
+                {
+                    Gi.VertexDense.BufferFloat.AddRange(_sectionsBuffer[cbY].BufferFloat);
+                    Gi.VertexDense.BufferByte.AddRange(_sectionsBuffer[cbY].BufferByte);
+                }
+            }
             _meshDense.SetBuffer(Gi.VertexDense);
-            _AlphaBlocksSort();
 
             // Для отладочной статистики
             float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
             Debug.RenderChunckTime8 = time;// (Debug.RenderChunckTime8 * 100f + time) / 101f;
             Debug.RenderChunckTime[(++Debug.dct) % 32] = time;
+
+            // Если был рендер сплошных блоков, обязательно надо сделать рендер альфа блоков
+            RenderAlpha();
         }
 
         /// <summary>
@@ -297,10 +311,11 @@ namespace Vge.Renderer.World
                             Gi.Block.BlockRender.PosChunkX = x;
                             Gi.Block.BlockRender.PosChunkY = realY;
                             Gi.Block.BlockRender.PosChunkZ = z;
+                            // Определяем met блока
+                            Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+
                             if (Gi.Block.BlockRender.CheckSide())
                             {
-                                // Определяем met блока
-                                Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
                                 Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
                                 Gi.Block.BlockRender.RenderSide();
                                 _listAlphaBuffer.Add(new BlockBufferDistance()
@@ -345,11 +360,6 @@ namespace Vge.Renderer.World
         public void StartRendering()
         {
             _meshDense.StatusRendering();
-            //for (int y = 0; y < COUNT_HEIGHT; y++)
-            //{
-            //    isRenderingSectionDense[y] = meshSectionDense[y].isModifiedRender;
-            //    meshSectionDense[y].isModifiedRender = false;
-            //}
             _meshAlpha.StatusRendering();
         }
 

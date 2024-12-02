@@ -157,10 +157,11 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер Line
         /// </summary>
-        public void ShaderBindLine(float[] view)
+        public void ShaderBindLine(float[] view, float posX, float posY, float posZ)
         {
             ShLine.Bind(gl);
             ShLine.SetUniformMatrix4(gl, "view", view);
+            ShLine.SetUniform3(gl, "pos", posX, posY, posZ);
         }
 
         #endregion

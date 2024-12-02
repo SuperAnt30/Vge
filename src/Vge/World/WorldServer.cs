@@ -48,7 +48,7 @@ namespace Vge.World
         /// </summary>
         private short _timeTick = 0;
 
-        private readonly TestAnchor _testAnchor;
+        //private readonly TestAnchor _testAnchor;
 
         public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
         {
@@ -114,6 +114,12 @@ namespace Vge.World
         }
 
         #region Fragments (Chunks)
+
+        /// <summary>
+        /// Отметить блок для обновления 
+        /// </summary>
+        public override void MarkBlockForUpdate(int x, int y, int z)
+            => Fragment.FlagBlockForUpdate(x, y, z);
 
         /// <summary>
         /// Обработка фрагментов в начале такта

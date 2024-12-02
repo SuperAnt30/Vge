@@ -102,6 +102,14 @@ namespace Vge.Games
         /// </summary>
         private bool _isMouseFirstPersonView;
         /// <summary>
+        /// Зажата ли левая клавиша мыши
+        /// </summary>
+        private bool _isMouseDownLeft;
+        /// <summary>
+        /// Зажата ли праваля клавиша мыши
+        /// </summary>
+        private bool _isMouseDownRight;
+        /// <summary>
         /// Флаг первого запуска упровление мышкой вида от первого лица
         /// </summary>
         private bool _flagFirstMouseFPV;
@@ -214,6 +222,20 @@ namespace Vge.Games
                     Player.ActionStop();
                 }
             }
+            else
+            {
+                // При отключении режима от первого лица, надо убрать клики мыши
+                if (_isMouseDownLeft || _isMouseDownRight)
+                {
+                    _isMouseDownLeft = false;
+                    Player.UndoHandAction();
+                    if (_isMouseDownRight)
+                    {
+                        _isMouseDownRight = false;
+                        Player.StoppedUsingItem();
+                    }
+                }
+            }
         }
 
         public override void OnMouseMove(int x, int y)
@@ -239,8 +261,37 @@ namespace Vge.Games
 
         public override void OnMouseDown(MouseButton button, int x, int y)
         {
+            if (_isMouseFirstPersonView)
+            {
+                // Если режим от первого лица, начинаем кликать руками игрока
+                if (button == MouseButton.Left)
+                {
+                    _isMouseDownLeft = true;
+                    Player.HandAction();
+                }
+                else if (button == MouseButton.Right)
+                {
+                    _isMouseDownRight = true;
+                    Player.ItemUse();
+                }
+            }
+
             // Включить вид от первого лица, если это необходимо
             MouseFirstPersonView(true);
+        }
+
+        public override void OnMouseUp(MouseButton button, int x, int y)
+        {
+            Player.UndoHandAction();
+            if (button == MouseButton.Left)
+            {
+                _isMouseDownLeft = false;
+            }
+            else if (button == MouseButton.Right)
+            {
+                _isMouseDownRight = false;
+                Player.StoppedUsingItem();
+            }
         }
 
         #endregion

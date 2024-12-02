@@ -45,6 +45,8 @@ namespace Vge.Network
                 case 0x01: return new Packet01KeepAlive();
                 case 0x02: return new PacketC02LoginStart();
                 case 0x04: return new PacketC04PlayerPosition();
+                case 0x07: return new PacketC07PlayerDigging();
+                case 0x08: return new PacketC08PlayerBlockPlacement();
                 case 0x15: return new PacketC15PlayerSetting();
                 case 0x20: return new PacketC20AcknowledgeChunks();
             }

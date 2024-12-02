@@ -72,6 +72,14 @@ namespace Vge.Renderer.World
             _overviewBlock = _game.Player.OverviewChunk * 16;
         }
 
+        /// <summary>
+        /// Перезапуск мира
+        /// </summary>
+        public void RespawnInWorld()
+        {
+            _cursorRender.SetHeightChunks(_game.World.ChunkPr.Settings.NumberBlocks);
+        }
+
         #region Поток рендера
 
         /// <summary>
@@ -243,6 +251,7 @@ namespace Vge.Renderer.World
                                 Debug.CountUpdateChunckAlpha++;
                                 batchCount++;
                                 chunkRender.StartRenderingAlpha();
+                                chunkRender.UpBufferChunks();
                                 _renderAlphaQueues.Add(chunkRender);
                             }
                         }

@@ -6,11 +6,11 @@
     public class ChunkSettings
     {
         /// <summary>
-        /// Количество секций в чанке
+        /// Количество секций в чанке  (old COUNT_HEIGHT)
         /// </summary>
         public byte NumberSections { get; private set; }
         /// <summary>
-        /// Количество секций в чанке меньше. NumberChunkSections - 1
+        /// Количество секций в чанке меньше. NumberChunkSections - 1 (old COUNT_HEIGHT15)
         /// </summary>
         public byte NumberSectionsLess { get; private set; }
         /// <summary>
@@ -18,7 +18,7 @@
         /// </summary>
         public ushort NumberBlocks { get; private set; }
         /// <summary>
-        /// Верхний блок который можно установить. NumberBlocks - 1
+        /// Верхний блок который можно установить. NumberBlocks - 1 (old MAX_HEIGHT_BLOCK)
         /// </summary>
         public ushort NumberMaxBlock { get; private set; }
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Vge.Network.Packets.Server;
 using Vge.World;
 using Vge.World.Chunk;
 
@@ -11,6 +13,16 @@ namespace Vge.Management
     public class ChunkForAnchor : IChunkPosition
     {
         /// <summary>
+        /// Количество блоков отправляемые за так изменённые в чанке
+        /// </summary>
+        private const int _CountMultyBlocks = 4096;
+
+        /// <summary>
+        /// Серверный мир к которому принадлежит чанк
+        /// </summary>
+        public readonly WorldServer World;
+
+        /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
         public int CurrentChunkX { get; private set; }
@@ -19,9 +31,9 @@ namespace Vge.Management
         /// </summary>
         public int CurrentChunkY { get; private set; }
         /// <summary>
-        /// Серверный мир к которому принадлежит чанк
+        /// Сколько блоков надо обновить до _CountMultyBlocks шт
         /// </summary>
-        public readonly WorldServer World;
+        public int NumBlocksToUpdate { get; private set; }
 
         /// <summary>
         /// Список якорей (не игроки) которые имеют этот чанк в обзоре
@@ -35,6 +47,15 @@ namespace Vge.Management
         /// Предыдущее игровой такт, для определения сколько времени провели в этом чанке якоря
         /// </summary>
         private uint _previousGameTakt;
+        /// <summary>
+        /// Массив каких блоков надо обновить
+        /// </summary>
+        private readonly int[] _locationOfBlockChange = new int[_CountMultyBlocks];
+        /// <summary>
+        /// Флаг какие псевдо чанки надо обновлять
+        /// </summary>
+        private int _flagsYAreasToUpdate;
+
 
         public ChunkForAnchor(WorldServer world, int chunkPosX, int chunkPosY)
         {
@@ -116,6 +137,7 @@ namespace Vge.Management
             {
                 // Если удалили последний якорь
                 _IncreaseInhabitedTime();
+
                 return true;
             }
             return false;
@@ -134,6 +156,76 @@ namespace Vge.Management
                 chunk.SetInhabitedTime(chunk.InhabitedTakt + countInhabitedTakt);
             }
         }
+
+        /// <summary>
+        /// Увеличить время проживания у чанка
+        /// </summary>
+        public void ProcessChunk() => _IncreaseInhabitedTime();
+
+        /// <summary>
+        /// Обновление в игровом такте
+        /// </summary>
+        public void Update()
+        {
+            if (NumBlocksToUpdate != 0)
+                //if (NumBlocksToUpdate >= _CountMultyBlocks)
+            {
+                for (int i = 0; i < _players.Count; i++)
+                {
+                    if (!_players[i].IsLoadingChunks(CurrentChunkX, CurrentChunkY))
+                    {
+                        ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
+                        if (chunk != null && chunk.IsSendChunk)
+                        {
+                            _players[i].SendPacket(new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate));
+                        }
+                    }
+                }
+                NumBlocksToUpdate = 0;
+                _flagsYAreasToUpdate = 0;
+            }
+            else
+            {
+
+            }
+            //if (NumBlocksToUpdate != 0)
+            //{
+                
+            //}
+        }
+
+        /// <summary>
+        /// Флаг блока который был изменён
+        /// </summary>
+        /// <param name="pos">локальные координаты xz 0..15, y 0..255</param>
+        public void FlagBlockForUpdate(int x, int y, int z)
+        {
+            if (_players.Count > 0)
+            {
+                _flagsYAreasToUpdate |= 1 << (y >> 4);
+
+                if (NumBlocksToUpdate < _CountMultyBlocks)
+                {
+                    int index = (y << 8) | (x << 4) | z;
+                    for (int i = 0; i < NumBlocksToUpdate; i++)
+                    {
+                        if (_locationOfBlockChange[i] == index) return;
+                    }
+                    _locationOfBlockChange[NumBlocksToUpdate++] = index;
+                }
+                else
+                {
+                    NumBlocksToUpdate = _CountMultyBlocks;
+
+                    // TODO::2024-11-29 надо отладить, добираемся ли мы до этого количества
+                    throw new Exception("ChunkForAnchor вышел за предел _CountMultyBlocks =" + NumBlocksToUpdate);
+                }
+            }
+        }
+
+
+
+
 
         public override string ToString() => CurrentChunkX + ":" + CurrentChunkY 
             + " P:" + _players.Count + " A:" + _anchors.Count;

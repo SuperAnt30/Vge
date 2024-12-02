@@ -1,5 +1,4 @@
 ﻿using Vge.Entity;
-using WinGL.Util;
 
 namespace Vge.Network.Packets.Client
 {

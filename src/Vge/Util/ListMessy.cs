@@ -22,7 +22,7 @@ namespace Vge.Util
         /// </summary>
         private int _size;
 
-        public ListMessy(int size = 100)
+        public ListMessy(int size = 128)
         {
             _size = size;
             _buffer = new T[size];

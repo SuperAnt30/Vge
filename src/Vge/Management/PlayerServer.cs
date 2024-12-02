@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Vge.Games;
@@ -37,7 +38,7 @@ namespace Vge.Management
         /// </summary>
         public double TimesExisted { get; private set; }
 
-        #region Anchor 
+        #region Anchor (якорь)
 
         /// <summary>
         /// Является ли якорь активным
@@ -149,11 +150,7 @@ namespace Vge.Management
         public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
 
-
-        /// <summary>
-        /// Получить время в милисекундах с сервера
-        /// </summary>
-        protected override long _Time() => server.Time();
+        #region Update
 
         /// <summary>
         /// Игровой такт
@@ -176,12 +173,121 @@ namespace Vge.Management
         }
 
         /// <summary>
+        /// Вызывается только на сервере у игроков для передачи перемещения
+        /// </summary>
+        private void _UpdatePlayer()
+        {
+            ulong index;
+            int x, y;
+            ChunkBase chunk;
+            _loadedNull.Clear();
+            byte quantityBatch = 0;
+            while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
+            {
+                index = _clientChunksSort.GetLast();
+                _clientChunksSort.RemoveLast();
+                x = Conv.IndexToChunkX(index);
+                y = Conv.IndexToChunkY(index);
+
+                chunk = GetWorld().GetChunk(x, y);
+                // NULL по сути не должен быть!!!
+                if (chunk != null && chunk.IsSendChunk)
+                {
+                    _clientChunks.Remove(x, y);
+                    if (quantityBatch == 0)
+                    {
+                        // Отправляем перед партией закачки чанков
+                        SendPacket(new PacketS20ChunkSend());
+                    }
+                    quantityBatch++;
+
+                    SendPacket(new PacketS21ChunkData(chunk, true, 65535));
+                }
+                else
+                {
+                    _loadedNull.Add(index);
+                }
+            }
+            if (quantityBatch > 0)
+            {
+                // Отправляем в конце партии закачки чанков
+                SendPacket(new PacketS20ChunkSend(_clientChunksSort.Count == 0
+                    ? _desiredBatchSize : quantityBatch));
+            }
+
+            int count = _loadedNull.Count;
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    _clientChunksSort.Add(_loadedNull[i]);
+                }
+                // Запрос на пересортировку ClientChunks
+            }
+        }
+
+        #endregion
+
+        #region Packet
+
+        /// <summary>
         /// Отправить сетевой пакет этому игроку
         /// </summary>
         public void SendPacket(IPacket packet)
             => server.ResponsePacket(Socket, packet);
 
-        #region Packet
+        /// <summary>
+        /// Пакет: позиции игрока
+        /// </summary>
+        public void PacketPlayerPosition(PacketC04PlayerPosition packet)
+        {
+            Position.Set(packet.Position);
+
+            // TODO::2024-11-29 временная смена мира
+            if (IdWorld != packet.World)
+            {
+                // Смена мира
+                ChangeWorld(packet.World);
+            }
+        }
+
+        /// <summary>
+        /// Пакет: Игрок копает / ломает
+        /// </summary>
+        public void PacketPlayerDigging(PacketC07PlayerDigging packet)
+        {
+            // Временно!
+            // Уничтожение блока
+            WorldServer world = GetWorld();
+            BlockState blockState = world.GetBlockState(packet.BlockPosition);
+            BlockBase block = blockState.GetBlock();
+
+            world.SetBlockToAir(packet.BlockPosition, world.IsRemote ? 14 : 31);
+            //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
+        }
+
+        /// <summary>
+        /// Пакет: Установки или взаимодействия с блоком
+        /// </summary>
+        public void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
+        {
+            // Временно устанваливаем блок
+            ushort idBlock = 0;
+            for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
+            {
+                if (Ce.Blocks.BlockAlias[i] == "Granite")
+                {
+                    idBlock = i;
+                    break;
+                }
+            }
+
+            WorldServer world = GetWorld();
+            BlockState blockState = world.GetBlockState(packet.BlockPosition);
+            BlockBase block = blockState.GetBlock();
+            BlockPos blockPos = packet.BlockPosition.Offset(packet.Side);
+            world.SetBlockState(blockPos, new BlockState(idBlock), world.IsRemote ? 14 : 31);
+        }
 
         /// <summary>
         /// Пакет: Параметры игрока
@@ -212,6 +318,8 @@ namespace Vge.Management
         }
 
         #endregion
+
+        #region JoinLeftGame
 
         /// <summary>
         /// Пройдены все проверки, отправляем нужные пакеты игроку
@@ -254,9 +362,14 @@ namespace Vge.Management
             WriteToFile();
         }
 
+        #endregion
+
+        #region World
+
         /// <summary>
         /// Получить мир в котором находится игрок
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public WorldServer GetWorld() => server.Worlds.GetWorld(IdWorld);
 
         /// <summary>
@@ -274,15 +387,7 @@ namespace Vge.Management
             MountedMovedAnchor();
         }
 
-        /// <summary>
-        /// Получить хэш по строке
-        /// </summary>
-        public static string GetHash(string input)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
-            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
-        }
+        #endregion
 
         #region WriteRead
 
@@ -334,6 +439,8 @@ namespace Vge.Management
 
         #endregion
 
+        #region ChunkAddRemove
+
         /// <summary>
         /// Добавить игрока в конкретный чанк для клиента
         /// </summary>
@@ -349,7 +456,15 @@ namespace Vge.Management
             SendPacket(new PacketS21ChunkData(chunkPosX, chunkPosY));
         }
 
+        #endregion
+
         #region Anchor
+
+        /// <summary>
+        /// Проверить имеется ли чанк в загрузке (loadingChunksSort)
+        /// </summary>
+        public bool IsLoadingChunks(int x, int y)
+            => _loadingChunksSort.Contains(Conv.ChunkXyToIndex(x, y));
 
         /// <summary>
         /// Возвращает имеется ли хоть один чанк для загрузки
@@ -406,8 +521,6 @@ namespace Vge.Management
         /// </summary>
         public bool IsAnOffsetNecessary() 
             => ChunkPositionX != ChunkPosManagedX || ChunkPositionY != ChunkPosManagedY;
-
-        #endregion
 
         /// <summary>
         /// Фильтрация очереди загрузки фрагментов от центра к краю (реверс)
@@ -468,58 +581,21 @@ namespace Vge.Management
             }
         }
 
+        #endregion
+
         /// <summary>
-        /// Вызывается только на сервере у игроков для передачи перемещения
+        /// Получить время в милисекундах с сервера
         /// </summary>
-        private void _UpdatePlayer()
+        protected override long _Time() => server.Time();
+
+        /// <summary>
+        /// Получить хэш по строке
+        /// </summary>
+        public static string GetHash(string input)
         {
-            ulong index;
-            int x, y;
-            ChunkBase chunk;
-            _loadedNull.Clear();
-            byte quantityBatch = 0;
-            while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
-            {
-                index = _clientChunksSort.GetLast();
-                _clientChunksSort.RemoveLast();
-                x = Conv.IndexToChunkX(index);
-                y = Conv.IndexToChunkY(index);
-
-                chunk = GetWorld().GetChunk(x, y);
-                // NULL по сути не должен быть!!!
-                if (chunk != null && chunk.IsSendChunk)
-                {
-                    _clientChunks.Remove(x, y);
-                    if (quantityBatch == 0)
-                    {
-                        // Отправляем перед партией закачки чанков
-                        SendPacket(new PacketS20ChunkSend());
-                    }
-                    quantityBatch++;
-
-                    SendPacket(new PacketS21ChunkData(chunk, true, 65535));
-                }
-                else
-                {
-                    _loadedNull.Add(index);
-                }
-            }
-            if (quantityBatch > 0)
-            {
-                // Отправляем в конце партии закачки чанков
-                SendPacket(new PacketS20ChunkSend(_clientChunksSort.Count == 0 
-                    ? _desiredBatchSize : quantityBatch));
-            }
-            
-            int count = _loadedNull.Count;
-            if (count > 0)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    _clientChunksSort.Add(_loadedNull[i]);
-                }
-                // Запрос на пересортировку ClientChunks
-            }
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }
 
         public override string ToString() => Login + " Lc:" 

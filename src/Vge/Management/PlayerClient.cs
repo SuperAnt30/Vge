@@ -107,6 +107,17 @@ namespace Vge.Management
             _UpdateMatrixCamera();
         }
 
+        #region Методы от Entity
+
+        /// <summary>
+        /// Наблюдение
+        /// </summary>
+        public bool IsSpectator() => false;
+
+        #endregion
+
+        #region Inputs (Mouse Key)
+
         /// <summary>
         /// Изменение мыши
         /// </summary>
@@ -132,34 +143,69 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Получить время в милисекундах
+        /// Остановить все инпуты
         /// </summary>
-        protected override long _Time() => _game.Time();
+        public void ActionStop()
+        {
+            Movement.SetStop();
+            if (!_game.IsRunNet())
+            {
+                PositionPrev.Set(Position);
+                PositionFrame.Set(Position);
+            }
+        }
+
+        #endregion
+
+        #region Действие рук, левый или правый клик
 
         /// <summary>
-        /// Задать обзор чанков у клиента
+        /// Основное действие правой рукой. Левый клик мыши
+        /// (old HandAction)
         /// </summary>
-        public void SetOverviewChunk(byte overviewChunk, bool isSaveOptions)
+        public void HandAction()
         {
-            if (OverviewChunk != overviewChunk)
+            if (!IsSpectator() && true)
             {
-                SetOverviewChunk(overviewChunk);
-                Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
-                Ce.OverviewAlphaSphere = Sundry.GenOverviewSphere(overviewChunk < Gi.UpdateAlphaChunk
-                    ? overviewChunk : Gi.UpdateAlphaChunk);
-                // Корректируем FrustumCulling
-                _InitFrustumCulling();
-                // Меняем в рендере мира
-                _game.WorldRender.ModifyOverviewChunk();
-                // Отправим обзор 
-                _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
-                if (isSaveOptions)
+                if (MovingObject.IsBlock())
                 {
-                    Options.OverviewChunk = OverviewChunk;
-                    _game.OptionsSave();
+                    _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
                 }
             }
         }
+
+        /// <summary>
+        /// Отмена действия правой рукой
+        /// (old UndoHandAction)
+        /// </summary>
+        public void UndoHandAction()
+        {
+           // _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.About));
+        }
+
+        /// <summary>
+        /// Использовать предмет (ставим блок, кушаем). Правый клик мыши
+        /// (old HandActionRight)
+        /// </summary>
+        public void ItemUse()
+        {
+            if (MovingObject.IsBlock())
+            {
+                _game.TrancivePacket(new PacketC08PlayerBlockPlacement(MovingObject.BlockPosition,
+                    MovingObject.Side, MovingObject.Facing));
+            }
+        }
+
+        /// <summary>
+        /// Остановить использование предмета
+        /// (old OnStoppedUsingItem)
+        /// </summary>
+        public void StoppedUsingItem()
+        {
+
+        }
+
+        #endregion
 
         #region FrustumCulling Camera
 
@@ -249,18 +295,7 @@ namespace Vge.Management
 
         #endregion
 
-        /// <summary>
-        /// Остановить все инпуты
-        /// </summary>
-        public void ActionStop()
-        {
-            Movement.SetStop();
-            if (!_game.IsRunNet())
-            {
-                PositionPrev.Set(Position);
-                PositionFrame.Set(Position);
-            }
-        }
+        #region Update
 
         /// <summary>
         /// Обновление в кадре
@@ -384,70 +419,70 @@ namespace Vge.Management
         /// </summary>
         private void _UpCursor()
         {
-            MovingObject = _RayCast();
-
-            if (MovingObject.IsBlock())
+            if (IsSpectator())
             {
-                ChunkBase chunk = _game.World.GetChunk(MovingObject.BlockPosition.GetPositionChunk());
-                Vector3i pos = MovingObject.BlockPosition.GetPositionInChunk();
-                string s1 = Debug.ToBlockInfo(chunk, pos);
-                string strUp = "";
-                if (MovingObject.BlockPosition.Y < chunk.Settings.NumberBlocks)
+                // Если наблюдатель, то не может выбирать объекты
+                if (MovingObject.IsBlock())
                 {
-                    BlockPos blockPosUp = MovingObject.BlockPosition.OffsetUp();
-                    strUp = string.Format(
-                        "BlkUp:{0} {1} L:{2}",
-                        blockPosUp,
-                        _game.World.GetBlockState(blockPosUp).ToInfo(),
-                        Debug.ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
-                    );
+                    // Если был объект убираем его
+                    MovingObject = new MovingObjectPosition();
                 }
-                Debug.BlockFocus = string.Format(
-                    "Block:{0} {1}{4} L:{2}\r\n{3}\r\n",//{5}, {6}\r\n",
-                    MovingObject.BlockPosition,
-                    MovingObject.Block.ToInfo(),
-                    s1,
-                    strUp,
-                    MovingObject.IsLiquid ? string.Format(" {0} {1}", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition) : ""
-                //chunk.Light.GetHeight(pos.X, pos.z),
-                //chunk.GetDebugAllSegment(),
-
-                );
-            }
-            else if (MovingObject.IsLiquid)
-            {
-                Debug.BlockFocus = string.Format("Liquid:{0} {1}\r\n", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition);
-            }
-            //else if (MovingObject.IsEntity())
-            //{
-            //    Debug.BlockFocus = MovingObject.Entity.GetName();
-            //    if (MovingObject.Entity is EntityLiving entityLiving)
-            //    {
-            //        Debug.BlockFocus += " [" + entityLiving.GetHealth() + "]";
-            //    }
-            //    Debug.BlockFocus += "\r\n";
-            //}
-            else
-            {
                 Debug.BlockFocus = "";
             }
+            else
+            {
+
+                MovingObject = _RayCast();
+
+                if (MovingObject.IsBlock())
+                {
+                    ChunkBase chunk = _game.World.GetChunk(MovingObject.BlockPosition.GetPositionChunk());
+                    Vector3i pos = MovingObject.BlockPosition.GetPositionInChunk();
+                    string s1 = Debug.ToBlockInfo(chunk, pos);
+                    string strUp = "";
+                    if (MovingObject.BlockPosition.Y < chunk.Settings.NumberBlocks)
+                    {
+                        BlockPos blockPosUp = MovingObject.BlockPosition.OffsetUp();
+                        strUp = string.Format(
+                            "BlkUp:{0} {1} L:{2}",
+                            blockPosUp,
+                            _game.World.GetBlockState(blockPosUp).ToInfo(),
+                            Debug.ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
+                        );
+                    }
+                    Debug.BlockFocus = string.Format(
+                        "Block:{0} {1}{4} L:{2}\r\n{3}\r\n",//{5}, {6}\r\n",
+                        MovingObject.BlockPosition,
+                        MovingObject.Block.ToInfo(),
+                        s1,
+                        strUp,
+                        MovingObject.IsLiquid ? string.Format(" {0} {1}", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition) : ""
+                    //chunk.Light.GetHeight(pos.X, pos.z),
+                    //chunk.GetDebugAllSegment(),
+
+                    );
+                }
+                else if (MovingObject.IsLiquid)
+                {
+                    Debug.BlockFocus = string.Format("Liquid:{0} {1}\r\n", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition);
+                }
+                //else if (MovingObject.IsEntity())
+                //{
+                //    Debug.BlockFocus = MovingObject.Entity.GetName();
+                //    if (MovingObject.Entity is EntityLiving entityLiving)
+                //    {
+                //        Debug.BlockFocus += " [" + entityLiving.GetHealth() + "]";
+                //    }
+                //    Debug.BlockFocus += "\r\n";
+                //}
+                else
+                {
+                    Debug.BlockFocus = "";
+                }
+            }
         }
 
-        /// <summary>
-        /// Луч игроком
-        /// </summary>
-        /// <param name="collidable"></param>
-        /// <param name="isLiquid"></param>
-        /// <returns></returns>
-        private MovingObjectPosition _RayCast(bool collidable = false, bool isLiquid = false)
-        {
-            // максимальная дистанция луча
-
-            Vector3 pos = PositionFrame.GetVector3();
-           // pos.Y += GetEyeHeightFrame();
-           return _game.World.RayCastBlock(pos, _rayLook, 6, collidable, /*Id,*/ isLiquid);
-            // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
-        }
+        #endregion
 
         #region Packet
 
@@ -458,6 +493,7 @@ namespace Vge.Management
         {
             IdWorld = packet.IdWorld;
             _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
+            _game.WorldRender.RespawnInWorld();
             _heightChinkFrustumCulling = _game.World.ChunkPrClient.Settings.NumberBlocks;
         }
 
@@ -481,6 +517,52 @@ namespace Vge.Management
         }
 
         #endregion
+
+        /// <summary>
+        /// Луч игроком
+        /// </summary>
+        /// <param name="collidable"></param>
+        /// <param name="isLiquid"></param>
+        /// <returns></returns>
+        private MovingObjectPosition _RayCast(bool collidable = false, bool isLiquid = false)
+        {
+            // максимальная дистанция луча
+
+            Vector3 pos = PositionFrame.GetVector3();
+            // pos.Y += GetEyeHeightFrame();
+            return _game.World.RayCastBlock(pos, _rayLook, 16, collidable, /*Id,*/ isLiquid);
+            // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
+        }
+
+        /// <summary>
+        /// Задать обзор чанков у клиента
+        /// </summary>
+        public void SetOverviewChunk(byte overviewChunk, bool isSaveOptions)
+        {
+            if (OverviewChunk != overviewChunk)
+            {
+                SetOverviewChunk(overviewChunk);
+                Ce.OverviewCircles = Sundry.GenOverviewCircles(overviewChunk);
+                Ce.OverviewAlphaSphere = Sundry.GenOverviewSphere(overviewChunk < Gi.UpdateAlphaChunk
+                    ? overviewChunk : Gi.UpdateAlphaChunk);
+                // Корректируем FrustumCulling
+                _InitFrustumCulling();
+                // Меняем в рендере мира
+                _game.WorldRender.ModifyOverviewChunk();
+                // Отправим обзор 
+                _game.TrancivePacket(new PacketC15PlayerSetting(OverviewChunk));
+                if (isSaveOptions)
+                {
+                    Options.OverviewChunk = OverviewChunk;
+                    _game.OptionsSave();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Получить время в милисекундах
+        /// </summary>
+        protected override long _Time() => _game.Time();
 
         public override string ToString()
             => Login + " " + Position + " O:" + OverviewChunk

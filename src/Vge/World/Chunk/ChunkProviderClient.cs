@@ -57,7 +57,6 @@ namespace Vge.World.Chunk
                 {
                     chunkRender = new ChunkRender(_worldClient, chx, chy);
                     _chunkMapping.Add(chunkRender);
-                    _worldClient.AreaModifiedToRender(chx - 1, 0, chy - 1, chx + 1, Settings.NumberSections, chy + 1);
                 }
 
                 chunkRender.SetBinaryZip(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
@@ -66,8 +65,17 @@ namespace Vge.World.Chunk
                 if (isNew || packet.IsBiom)
                 {
                     //chunk.Light.GenerateHeightMap();
+                    _worldClient.AreaModifiedToRender(chx - 1, 0, chy - 1, chx + 1, Settings.NumberSections, chy + 1);
                     if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();
                     return true;
+                }
+                // Соседние сектора помечаем на перерендер
+                for (int sy = 0; sy < Settings.NumberSections; sy++)
+                {
+                    if ((packet.FlagsYAreas & 1 << sy) != 0)
+                    {
+                        _worldClient.AreaModifiedToRender(chx - 1, sy - 1, chy - 1, chx + 1, sy + 1, chy + 1);
+                    }
                 }
             }
             if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();

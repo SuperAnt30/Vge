@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using Vge.Util;
 using Vge.World.Block;
+using WinGL.Util;
 
 namespace Vge.World.Chunk
 {
@@ -55,7 +56,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public uint InhabitedTakt { get; private set; }
         /// <summary>
-        /// Количество секций в чанке
+        /// Количество секций в чанке (old COUNT_HEIGHT)
         /// </summary>
         public readonly byte NumberSections;
 
@@ -123,7 +124,8 @@ namespace Vge.World.Chunk
             {
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
-                int h = NumberSections == 8 ? 63 : 95;
+                //int h = NumberSections == 8 ? 63 : 95;
+                int h = NumberSections == 8 ? 47 : 95;
                 // Временно льём тест
 
                 ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
@@ -159,6 +161,33 @@ namespace Vge.World.Chunk
                         {
                             SetBlockState(x, y, z, new BlockState(Stone));
                         }
+                    }
+                }
+
+                if (X == 0 && Y == 0)
+                {
+                    for (int y = h - 16; y < h - 4; y++)
+                    {
+                        SetBlockState(0, y, 0, new BlockState(0));
+                        SetBlockState(1, y, 0, new BlockState(0));
+                    }
+                    for (int y = h + 16; y < h + 20; y++)
+                    {
+                        SetBlockState(15, y, 0, new BlockState(Water));
+                    }
+                }
+                if (X == 0 && Y == -1)
+                {
+                    for (int y = h - 16; y < h - 4; y++)
+                    {
+                        SetBlockState(1, y, 15, new BlockState(Water));
+                    }
+                }
+                if (X == 0 && Y == 0)
+                {
+                    for (int y = h - 16; y < h - 4; y++)
+                    {
+                        SetBlockState(1, y, 1, new BlockState(Water));
                     }
                 }
 
@@ -294,10 +323,15 @@ namespace Vge.World.Chunk
                 SetBlockState(12, h, 10, new BlockState(1));
 
 
-                
+                //if (X > 4 || X < -4) return;
+                //if (Y > 4 || Y < -4) return;
+
+                //if (Y > 5 || Y < -5) return;
+                //if (Y > 3 || Y < -5) return;
+
 
                 // Debug.Burden(.6f);
-                //World.Filer.EndSectionLog();
+                //World.Filer.EndSectionLog()
                 IsChunkPresent = true;
 
                 if (!World.IsRemote && World is WorldServer worldServer)
@@ -579,18 +613,11 @@ namespace Vge.World.Chunk
                         // biome[i] = (EnumBiome)buffer[count++];
                     }
                 }
-                else
-                {
-                    // Не первая закгрузка, помечаем что надо отрендерить весь столб
-                    for (int y = 0; y < NumberSections; y++)
-                    {
-                        ModifiedToRender(y);
-                    }
-                }
             }
             IsChunkPresent = true;
         }
 
+        /*
         /// <summary>
         /// Задать чанк байтами
         /// </summary>
@@ -660,16 +687,9 @@ namespace Vge.World.Chunk
                     // biome[i] = (EnumBiome)buffer[count++];
                 }
             }
-            else
-            {
-                // Не первая закгрузка, помечаем что надо отрендерить весь столб
-                for (int y = 0; y < NumberSections; y++)
-                {
-                    ModifiedToRender(y);
-                }
-            }
             IsChunkPresent = true;
         }
+        */
 
         #endregion
 
