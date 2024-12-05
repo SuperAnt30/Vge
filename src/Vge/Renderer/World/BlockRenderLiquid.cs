@@ -28,7 +28,7 @@ namespace Vge.Renderer.World
 
         public override void RenderSide()
         {
-            if (Gi.Block.UseNeighborBrightness) _stateLightHis = LightBlockSky;
+            if (Gi.Block.UseNeighborBrightness) _stateLightHis = Light;
             else _stateLightHis = -1;
 
             int y = PosChunkY + 1;

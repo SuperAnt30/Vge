@@ -164,15 +164,20 @@ namespace Vge.Gui.Screens
                 {
                     window.Game.Player.SetOverviewChunk(Options.OverviewChunk, false);
                 }
-                if (isQualitatively)
+            }
+            if (isQualitatively)
+            {
+                Gi.BlockRendFull.InitAmbientOcclusion();
+                Gi.BlockLiquidRendFull.InitAmbientOcclusion();
+                Gi.BlockAlphaRendFull.InitAmbientOcclusion();
+                Gi.BlockLiquidAlphaRendFull.InitAmbientOcclusion();
+
+                if (window.Game != null)
                 {
-                    Gi.BlockRendFull.InitAmbientOcclusion();
-                    Gi.BlockLiquidRendFull.InitAmbientOcclusion();
-                    Gi.BlockAlphaRendFull.InitAmbientOcclusion();
-                    Gi.BlockLiquidAlphaRendFull.InitAmbientOcclusion();
+                    window.Game.Player.RerenderAllChunks();
                 }
             }
-            
+
         }
 
         /// <summary>

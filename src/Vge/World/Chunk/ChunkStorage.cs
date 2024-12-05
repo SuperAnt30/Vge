@@ -31,13 +31,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public ushort[] Data;
         /// <summary>
-        /// Освещение блочное, 4 bit используется
+        /// Освещение блочное и небесное, по 4 bit
+        /// Block << 4 | Sky & 0xF
         /// </summary>
-        public byte[] LightBlock;
-        /// <summary>
-        /// Освещение небесное, 4 bit используется
-        /// </summary>
-        public byte[] LightSky;
+        public byte[] Light;
         /// <summary>
         /// Количество блоков не воздуха
         /// </summary>
@@ -61,8 +58,7 @@ namespace Vge.World.Chunk
             Data = null;
             CountBlock = 0;
             _countTickBlock = 0;
-            LightBlock = new byte[4096];
-            LightSky = new byte[4096];
+            Light = new byte[4096];
         }
 
         /// <summary>
@@ -91,8 +87,6 @@ namespace Vge.World.Chunk
         public void ClearNotLight()
         {
             Data = null;
-            //LightBlock = new byte[4096];
-            //LightSky = new byte[4096];
             CountBlock = 0;
             _countTickBlock = 0;
         }
@@ -108,8 +102,8 @@ namespace Vge.World.Chunk
                 ushort value = Data[index];
                 ushort id = (ushort)(value & 0xFFF);
                 return new BlockState(id,
-                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)0,
-                    LightBlock[index], LightSky[index]);
+                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : 0,
+                    (byte)(Light[index] >> 4), (byte)(Light[index] & 15));
             }
             catch (Exception ex)
             {

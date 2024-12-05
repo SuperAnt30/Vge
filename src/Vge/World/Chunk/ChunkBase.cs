@@ -139,7 +139,7 @@ namespace Vge.World.Chunk
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
                 //int h = NumberSections == 8 ? 63 : 95;
-                int h = NumberSections == 8 ? 47 : 195;
+                int h = NumberSections == 8 ? 47 : 95;
                 // Временно льём тест
 
                 ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
@@ -226,7 +226,7 @@ namespace Vge.World.Chunk
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                        for (int y =  12; y < h - 2; y++)
+                        for (int y = h - 12; y < h - 2; y++)
                         {
                             SetBlockStateD(x, y, z, new BlockState(0));
                         }
@@ -375,8 +375,10 @@ namespace Vge.World.Chunk
 
                 // Debug.Burden(.6f);
 
+                //World.Filer.EndSectionLog(); // 0.3 мс
+                //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
                 //Light.SetLightBlocks(chunkPrimer.arrayLightBlocks.ToArray());
-                Light.GenerateHeightMap();
+                Light.GenerateHeightMap(); // 0.02 мс
                 //InitHeightMapGen();
                 //World.Filer.EndSectionLog();
                 IsChunkPresent = true;
@@ -590,7 +592,7 @@ namespace Vge.World.Chunk
             else
             {
                 int index = (y & 15) << 8 | z << 4 | x;
-                return new BlockState(0, 0, chunkStorage.LightBlock[index], chunkStorage.LightSky[index]);
+                return new BlockState(0, 0, (byte)(chunkStorage.Light[index] >> 4), (byte)(chunkStorage.Light[index] & 15));
             }
         }
 
@@ -696,8 +698,6 @@ namespace Vge.World.Chunk
             int index = (y & 15) << 8 | z << 4 | x;
             ChunkStorage storage = StorageArrays[y >> 4];
             storage.SetData(index, blockState.Id, blockState.Met);
-            storage.LightBlock[index] = blockState.LightBlock;
-            storage.LightSky[index] = blockState.LightSky;
         }
 
         #endregion
@@ -725,8 +725,7 @@ namespace Vge.World.Chunk
                     if ((flagsYAreas & 1 << sy) != 0)
                     {
                         ChunkStorage storage = StorageArrays[sy];
-                        _bigStreamOut.Read(storage.LightBlock, 0, 4096);
-                        _bigStreamOut.Read(storage.LightSky, 0, 4096);
+                        _bigStreamOut.Read(storage.Light, 0, 4096);
 
                         if (_bigStreamOut.ReadByte() == 0)
                         {

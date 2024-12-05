@@ -17,8 +17,7 @@ namespace Vge.Management
         /// <summary>
         /// Количество блоков отправляемые за так изменённые в чанке
         /// </summary>
-        private const int _CountMultyBlocks = 4096;
-        // TODO::2024-12-03 CountMultyBlocks можно сократить до 1024, по итогу определения Metdata блока
+        private const int _CountMultyBlocks = 1024; // было 4096
 
         /// <summary>
         /// Серверный мир к которому принадлежит чанк
@@ -233,6 +232,18 @@ namespace Vge.Management
                     }
                     _locationOfBlockChange[NumBlocksToUpdate++] = index;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Флаг псевдочанка который был изменён
+        /// </summary>
+        public void FlagChunkForUpdate(int y)
+        {
+            if (_players.Count > 0)
+            {
+                NumBlocksToUpdate = _CountMultyBlocks;
+                _flagsYAreasToUpdate |= (uint)(1 << y);
             }
         }
 

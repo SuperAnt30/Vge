@@ -293,6 +293,37 @@ namespace Vge.Management
             Debug.CountMeshFC = FrustumCulling.Count;
         }
 
+        /// <summary>
+        /// Помечаем на перерендер всех чанков в округ игрока
+        /// </summary>
+        public void RerenderAllChunks()
+        {
+            int countOC = Ce.OverviewCircles.Length;
+
+            int chunkPosX = Position.ChunkPositionX;
+            int chunkPosZ = Position.ChunkPositionZ;
+
+            int i, xc, zc, y1, y2;
+            y2 = _game.World.ChunkPr.Settings.NumberSections;
+            ChunkRender chunk;
+            Vector3i vec;
+
+            for (i = 0; i < countOC; i++)
+            {
+                vec = Ce.OverviewCircles[i];
+                xc = vec.X;
+                zc = vec.Y;
+                chunk = _game.World.ChunkPrClient.GetChunkRender(xc + chunkPosX, zc + chunkPosZ);
+                if (chunk != null)
+                {
+                    for (y1 = 0; y1 < y2; y1++)
+                    {
+                        chunk.ModifiedToRender(y1);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Update

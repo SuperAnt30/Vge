@@ -28,11 +28,11 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Сетка чанка сплошных блоков
         /// </summary>
-        private readonly MeshVoxel _meshDense;
+        private MeshVoxel _meshDense;
         /// <summary>
         /// Сетка чанка альфа блоков
         /// </summary>
-        private readonly MeshVoxel _meshAlpha;
+        private MeshVoxel _meshAlpha;
         /// <summary>
         /// Список всех видимых альфа блоков
         /// Координаты в битах 0000 yyyy zzzz xxxx
@@ -62,10 +62,9 @@ namespace Vge.Renderer.World
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
         {
-            _worldClient = worldClient;
-            _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
-            _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
+            // Тут создавать сетки нельзя из-за VSync, он может создать паузу в момент создания объекта
 
+            _worldClient = worldClient;
             _listAlphaBlock = new List<ushort>[NumberSections];
             _sectionsBuffer = new ChunkSectionBuffer[NumberSections];
             _isRenderingSection = new bool[NumberSections];
@@ -73,6 +72,21 @@ namespace Vge.Renderer.World
             {
                 _sectionsBuffer[index] = new ChunkSectionBuffer();
                 _listAlphaBlock[index] = new List<ushort>();
+            }
+        }
+
+        /// <summary>
+        /// Инициализация Сеток GL
+        /// </summary>
+        public void InitGL()
+        {
+            if (_meshDense == null)
+            {
+                _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL())
+                {
+                    IsModifiedRender = true
+                };
+                _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
             }
         }
 
@@ -93,7 +107,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public override void ModifiedToRender(int y)
         {
-            _meshDense.IsModifiedRender = true;
+            if (_meshDense != null) _meshDense.IsModifiedRender = true;
             if (y >= 0 && y < NumberSections)
             {
                 _sectionsBuffer[y].IsModifiedRender = true;
@@ -131,8 +145,14 @@ namespace Vge.Renderer.World
             {
                 _isRenderingSection[y] = false;
             }
-            _meshDense.Dispose();
-            _meshAlpha.Dispose();
+            if (_meshDense != null)
+            {
+                _meshDense.Dispose();
+            }
+            if (_meshDense != null)
+            {
+                _meshAlpha.Dispose();
+            }
         }
 
         /// <summary>
@@ -222,7 +242,7 @@ namespace Vge.Renderer.World
                                         if (Gi.Block.BlockRender.CheckSide())
                                         {
                                             // Определяем met блока
-                                            Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                            Gi.Block.BlockRender.Light = chunkStorage.Light[index];
                                             Gi.Block.BlockRender.RenderSide();
                                         }
                                     }
@@ -317,7 +337,7 @@ namespace Vge.Renderer.World
 
                             if (Gi.Block.BlockRender.CheckSide())
                             {
-                                Gi.Block.BlockRender.LightBlockSky = chunkStorage.LightBlock[index] << 4 | chunkStorage.LightSky[index] & 0xF;
+                                Gi.Block.BlockRender.Light = chunkStorage.Light[index];
                                 Gi.Block.BlockRender.RenderSide();
                                 _listAlphaBuffer.Add(new BlockBufferDistance()
                                 {

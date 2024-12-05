@@ -76,8 +76,7 @@ namespace Vge.Network.Packets.Server
                 {
                     chunkStorage = chunk.StorageArrays[y];
 
-                    _bufferWrite.AddRange(chunkStorage.LightBlock);
-                    _bufferWrite.AddRange(chunkStorage.LightSky);
+                    _bufferWrite.AddRange(chunkStorage.Light);
 
                     if (chunkStorage.IsEmptyData())
                     {

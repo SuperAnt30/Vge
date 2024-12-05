@@ -144,6 +144,24 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Отметить псевдочанки на обновления, сервер. Координаты чанков
+        /// </summary>
+        public void ServerMarkChunkRangeForRenderUpdate(int x0, int y0, int z0, int x1, int y1, int z1)
+        {
+            int x, y, z;
+            for (x = x0; x <= x1; x++)
+            {
+                for (z = z0; z <= z1; z++)
+                {
+                    for (y = y0; y <= y1; y++)
+                    {
+                        Fragment.FlagChunkForUpdate(x, y, z);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Обработка фрагментов в начале такта
         /// </summary>
         private void _FragmentBegin()

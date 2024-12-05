@@ -25,7 +25,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Освещение блочное и небесное
         /// </summary>
-        public int LightBlockSky;
+        public int Light;
         /// <summary>
         /// Метданные текущего блока
         /// </summary>
@@ -239,7 +239,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public virtual void RenderSide()
         {
-            if (Gi.Block.UseNeighborBrightness) _stateLightHis = LightBlockSky;
+            if (Gi.Block.UseNeighborBrightness) _stateLightHis = Light;
             else _stateLightHis = -1;
             // ~1.100-1.150
             
@@ -351,7 +351,7 @@ namespace Vge.Renderer.World
             {
                 // Принудительное рисование всех сторон, модель которые все стороны не касаются краёв
                 _emptySide = false;
-                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                _resultSide[_indexSide] = _storage.Light[i];
             }
             else if (_storage.CountBlock > 0)
             {
@@ -360,7 +360,7 @@ namespace Vge.Renderer.World
                 {
                     // Воздух
                     _emptySide = false;
-                    _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                    _resultSide[_indexSide] = _storage.Light[i];
                 }
                 else if (_isCullFaceAll && id == Gi.Block.Id)
                 {
@@ -385,7 +385,7 @@ namespace Vge.Renderer.World
                         {
                             // Над водой блок
                             _emptySide = false;
-                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                            _resultSide[_indexSide] = _storage.Light[i];
                         }
                         else
                         {
@@ -399,7 +399,7 @@ namespace Vge.Renderer.World
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
-                            _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF 
+                            _resultSide[_indexSide] = _storage.Light[i] 
                                 | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
                         }
                         else
@@ -414,12 +414,12 @@ namespace Vge.Renderer.World
                     {
                         // Принудительное рисование стороны, модель которая сторона не касаются краёв
                         _emptySide = false;
-                        _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                        _resultSide[_indexSide] = _storage.Light[i];
                     }
                     else if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
                     {
                         _emptySide = false;
-                        _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF | 256;
+                        _resultSide[_indexSide] = _storage.Light[i] | 256;
                     }
                     else
                     {
@@ -432,7 +432,7 @@ namespace Vge.Renderer.World
             {
                 // Воздух нет сектора
                 _emptySide = false;
-                _resultSide[_indexSide] = _storage.LightBlock[i] << 4 | _storage.LightSky[i] & 0xF;
+                _resultSide[_indexSide] = _storage.Light[i];
             }
         }
 
@@ -710,8 +710,8 @@ namespace Vge.Renderer.World
             if (_storage.CountBlock == 0)
             {
                 // Только яркость неба
-                aoLight.LightSky = _storage.LightSky[index];
-                aoLight.LightBlock = _storage.LightBlock[index];
+                aoLight.LightSky = (byte)(_storage.Light[index] & 15);
+                aoLight.LightBlock = (byte)(_storage.Light[index] >> 4);
                 aoLight.Aol = 1;
                 return aoLight;
             }
@@ -720,8 +720,8 @@ namespace Vge.Renderer.World
             if (id == 0)
             {
                 // Воздух берём яркость
-                aoLight.LightSky = _storage.LightSky[index];
-                aoLight.LightBlock = _storage.LightBlock[index];
+                aoLight.LightSky = (byte)(_storage.Light[index] & 15);
+                aoLight.LightBlock = (byte)(_storage.Light[index] >> 4);
                 aoLight.Aol = 1;
                 return aoLight;
             }
@@ -744,8 +744,8 @@ namespace Vge.Renderer.World
             if (_isDraw)
             {
                 // Яркость берётся из данных блока
-                aoLight.LightBlock = _storage.LightBlock[index];
-                aoLight.LightSky = _storage.LightSky[index];
+                aoLight.LightSky = (byte)(_storage.Light[index] & 15);
+                aoLight.LightBlock = (byte)(_storage.Light[index] >> 4);
             }
             return aoLight;
         }

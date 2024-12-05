@@ -86,6 +86,9 @@ namespace Vge.World.Light
         /// </summary>
         private readonly int[] _yMax = new int[4];
 
+        private readonly byte[] _xz = new byte[] { 1, 0, 1, 0, 15, 0, 15, 0 };
+        private readonly byte[] _poleX = new byte[] { 1, 0, 2, 0, 1, 0, 2, 0 };
+
         /// <summary>
         /// Отладочный стринг
         /// </summary>
@@ -268,7 +271,7 @@ namespace Vge.World.Light
                             if (xReal < _axisX0) _axisX0 = xReal; else if (xReal > _axisX1) _axisX1 = xReal;
                             if (y < _axisY0) _axisY0 = y; else if (y > _axisY1) _axisY1 = y;
                             if (zReal < _axisZ0) _axisZ0 = zReal; else if (zReal > _axisZ1) _axisZ1 = zReal;
-                            lightSky = _chunk.StorageArrays[y >> 4].LightSky[(y & 15) << 8 | z << 4 | x];
+                            lightSky = _chunk.StorageArrays[y >> 4].Light[(y & 15) << 8 | z << 4 | x] & 15;
                             _arCache[_indexEnd++] = (xReal - _bOffsetX + 32 | y << 6 | zReal - _bOffsetZ + 32 << 16 | lightSky << 22);
                             //World.SetBlockDebug(new BlockPos(xReal, y, zReal), EnumBlock.Glass);
                         }
@@ -317,7 +320,7 @@ namespace Vge.World.Light
                 {
                     indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
                     lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
-                    chunkStorage.LightBlock[indexBlock] = (byte)(lo & 0xF);
+                    chunkStorage.Light[indexBlock] = (byte)((lo & 0xF) << 4 | chunkStorage.Light[indexBlock] & 15);
                     _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | lo << 22;
                 }
             }
@@ -352,7 +355,7 @@ namespace Vge.World.Light
                 lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[index] & 0xFFF];
             }
             // текущаяя яркость
-            byte lightOld = chunkStorage.LightBlock[index];
+            byte lightOld = (byte)(chunkStorage.Light[index] >> 4);
             // яркость от блока
             byte lightBlock = (byte)(lo & 0xF);
             // яркость от соседних блоков
@@ -361,7 +364,7 @@ namespace Vge.World.Light
             byte lightNew = lightBeside > lightBlock ? lightBeside : lightBlock;
 
             // SET яркость блока
-            chunkStorage.LightBlock[index] = lightNew;
+            chunkStorage.Light[index] = (byte)(lightNew << 4 | chunkStorage.Light[index] & 15);
             _axisX0 = _axisX1 = x;
             _axisY0 = _axisY1 = y;
             _axisZ0 = _axisZ1 = z;
@@ -423,7 +426,7 @@ namespace Vge.World.Light
             ChunkStorage chunkStorage = _chunk.StorageArrays[y >> 4];
             int index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
             // Один блок проверки, не видящий неба
-            byte lightOld = chunkStorage.LightSky[index];
+            byte lightOld = (byte)(chunkStorage.Light[index] & 15);
             // яркость от соседних блоков
             byte lightBeside = _GetLevelBrightSky(x, y, z, lo);
 
@@ -438,14 +441,14 @@ namespace Vge.World.Light
             if (lightOld < lightBeside)
             {
                 // Осветлить
-                chunkStorage.LightSky[index] = lightBeside;
+                chunkStorage.Light[index] = (byte)(chunkStorage.Light[index] >> 4 << 4 | lightBeside);
                 _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | lightBeside << 22;
                 _BrighterLightSky();
             }
             else
             {
                 // Затемнить
-                chunkStorage.LightSky[index] = 0;
+                chunkStorage.Light[index] = (byte)(chunkStorage.Light[index] >> 4 << 4);
                 _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | lightOld << 22;
                 _DarkenLightSky();
                 _BrighterLightSky();
@@ -458,9 +461,11 @@ namespace Vge.World.Light
         public void BrighterLightColumnSky(int x, int y0, int z, int y1)
         {
             _indexBegin = _indexEnd = 0;
+            int index;
             for (int y = y0; y < y1; y++)
             {
-                _chunk.StorageArrays[y >> 4].LightSky[(y & 15) << 8 | (z & 15) << 4 | (x & 15)] = 15;
+                index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
+                _chunk.StorageArrays[y >> 4].Light[index] = (byte)(_chunk.StorageArrays[y >> 4].Light[index] >> 4 << 4 | 15);
                 _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | 15 << 22;
                 if (x < _axisX0) _axisX0 = x; else if (x > _axisX1) _axisX1 = x;
                 if (y < _axisY0) _axisY0 = y; else if (y > _axisY1) _axisY1 = y;
@@ -485,8 +490,8 @@ namespace Vge.World.Light
             {
                 index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
                 yco2 = y >> 4;
-                byte l = _chunk.StorageArrays[yco2].LightSky[index];
-                _chunk.StorageArrays[yco2].LightSky[index] = 0;
+                byte l = (byte)(_chunk.StorageArrays[yco2].Light[index] & 15);
+                _chunk.StorageArrays[yco2].Light[index] = (byte)(_chunk.StorageArrays[yco2].Light[index] >> 4 << 4);
                 _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | l << 22;
                 if (x < _axisX0) _axisX0 = x; else if (x > _axisX1) _axisX1 = x;
                 if (y < _axisY0) _axisY0 = y; else if (y > _axisY1) _axisY1 = y;
@@ -497,22 +502,10 @@ namespace Vge.World.Light
                 y1 = _world.ChunkPr.Settings.NumberBlocks;
             }
             _DarkenLightSky();
-            _chunk.StorageArrays[yco].LightSky[(y1 & 15) << 8 | (z & 15) << 4 | (x & 15)] = 15;
+            index = (y1 & 15) << 8 | (z & 15) << 4 | (x & 15);
+            _chunk.StorageArrays[yco].Light[index] = (byte)(_chunk.StorageArrays[yco].Light[index] >> 4 << 4 | 15);
             _arCache[_indexEnd++] = x - _bOffsetX + 32 | y1 << 6 | z - _bOffsetZ + 32 << 16 | 15 << 22;
             _BrighterLightSky();
-        }
-
-        #endregion
-
-        #region CheckLoaded
-
-        // TODO::2024-12-04 Свет СДЕЛАТЬ!
-        /// <summary>
-        /// Проверяем освещение если соседний чанк загружен, основной сгенериорван
-        /// </summary>
-        public void CheckBrighterLightLoaded()
-        {
-
         }
 
         #endregion
@@ -579,7 +572,7 @@ namespace Vge.World.Light
                             lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
                         }
                         else lo = 0;
-                        lightNew = chunkStorage.LightSky[indexBlock];
+                        lightNew = chunkStorage.Light[indexBlock] & 15;
                         // Определяем яркость, какая должна
                         lightCheck = light - (lo >> 4) - 1;
                         if (lightCheck < 0) lightCheck = 0;
@@ -587,7 +580,7 @@ namespace Vge.World.Light
                         // Если тикущая темнее, осветляем её
                         lightB = (byte)lightCheck;
 
-                        chunkStorage.LightSky[indexBlock] = lightB;
+                        chunkStorage.Light[indexBlock] = (byte)(chunkStorage.Light[indexBlock] >> 4 << 4 | lightB);
                         _countBlock++;
 
                         if (x0 < _axisX0) _axisX0 = x0; else if (x0 > _axisX1) _axisX1 = x0;
@@ -666,7 +659,7 @@ namespace Vge.World.Light
                         chunkCache = (xco == 0 && zco == 0) ? _chunk : _chunks[Ce.GetAreaOne8(xco, zco)];
                         chunkStorage = chunkCache.StorageArrays[yco];
                         indexBlock = (y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15);
-                        lightNew = chunkStorage.LightSky[indexBlock];
+                        lightNew = chunkStorage.Light[indexBlock] & 15;
                         // Если фактическая яркость больше уровня прохода,
                         // значит зацепили соседний источник света, 
                         // прерываем с будущей пометкой на проход освещения
@@ -684,7 +677,7 @@ namespace Vge.World.Light
                             if (lightNew > 0)
                             {
                                 lightB = (byte)lightNew;
-                                chunkStorage.LightSky[indexBlock] = (byte)(isAgainstSky ? 15 : 0);
+                                chunkStorage.Light[indexBlock] = (byte)(chunkStorage.Light[indexBlock] >> 4 << 4 | (isAgainstSky ? 15 : 0));
                                 _countBlock++;
                                 if (x0 < _axisX0) _axisX0 = x0; else if (x0 > _axisX1) _axisX1 = x0;
                                 if (y0 < _axisY0) _axisY0 = y0; else if (y0 > _axisY1) _axisY1 = y0;
@@ -775,7 +768,7 @@ namespace Vge.World.Light
                             lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
                         }
                         else lo = 0;
-                        lightNew = chunkStorage.LightBlock[indexBlock];
+                        lightNew = chunkStorage.Light[indexBlock] >> 4;
                         // Определяем яркость, какая должна
                         lightCheck = light - (lo >> 4) - 1;
                         if (lightCheck < 0) lightCheck = 0;
@@ -783,7 +776,7 @@ namespace Vge.World.Light
                         // Если тикущая темнее, осветляем её
                         lightB = (byte)lightCheck;
 
-                        chunkStorage.LightBlock[indexBlock] = lightB;
+                        chunkStorage.Light[indexBlock] = (byte)(lightB << 4 | chunkStorage.Light[indexBlock] & 15);
                         _countBlock++;
 
                         if (x0 < _axisX0) _axisX0 = x0; else if (x0 > _axisX1) _axisX1 = x0;
@@ -867,7 +860,7 @@ namespace Vge.World.Light
                             lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
                         }
                         else lo = 0;
-                        lightNew = chunkStorage.LightBlock[indexBlock];
+                        lightNew = chunkStorage.Light[indexBlock] >> 4;
                         lightCheck = lo & 15;
                         // Если фактическая яркость больше уровня прохода,
                         // значит зацепили соседний источник света, 
@@ -885,7 +878,7 @@ namespace Vge.World.Light
                             if (lightNew > 0)
                             {
                                 lightB = (byte)lightNew;
-                                chunkStorage.LightBlock[indexBlock] = (byte)lightCheck;
+                                chunkStorage.Light[indexBlock] = (byte)(lightCheck << 4 | chunkStorage.Light[indexBlock] & 15);
                                 _countBlock++;
                                 if (x0 < _axisX0) _axisX0 = x0; else if (x0 > _axisX1) _axisX1 = x0;
                                 if (y0 < _axisY0) _axisY0 = y0; else if (y0 > _axisY1) _axisY1 = y0;
@@ -926,9 +919,9 @@ namespace Vge.World.Light
             int zc = (z >> 4) - _chBeginY;
             if (xc == 0 && zc == 0)
             {
-                return _chunk.StorageArrays[yc].LightBlock[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+                return (byte)(_chunk.StorageArrays[yc].Light[(y & 15) << 8 | (z & 15) << 4 | (x & 15)] >> 4);
             }
-            return _chunks[Ce.GetAreaOne8(xc, zc)].StorageArrays[yc].LightBlock[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+            return (byte)(_chunks[Ce.GetAreaOne8(xc, zc)].StorageArrays[yc].Light[(y & 15) << 8 | (z & 15) << 4 | (x & 15)] >> 4);
         }
 
         /// <summary>
@@ -941,9 +934,9 @@ namespace Vge.World.Light
             int zc = (z >> 4) - _chBeginY;
             if (xc == 0 && zc == 0)
             {
-                return _chunk.StorageArrays[yc].LightSky[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+                return (byte)(_chunk.StorageArrays[yc].Light[(y & 15) << 8 | (z & 15) << 4 | (x & 15)] & 15);
             }
-            return _chunks[Ce.GetAreaOne8(xc, zc)].StorageArrays[yc].LightSky[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+            return (byte)(_chunks[Ce.GetAreaOne8(xc, zc)].StorageArrays[yc].Light[(y & 15) << 8 | (z & 15) << 4 | (x & 15)] & 15);
         }
 
         /// <summary>
@@ -1019,6 +1012,301 @@ namespace Vge.World.Light
                 }
             }
             return (byte)light;
+        }
+
+        #endregion
+
+        #region CheckLoaded
+
+        /// <summary>
+        /// Проверяем освещение если соседний чанк загружен, основной сгенериорван.
+        /// В загруженном может быть изменение по свету, которое перетикает в соседний чанк, который только, что сгенерировали.
+        /// </summary>
+        public void CheckBrighterLightLoaded()
+        {
+            for (int i = 0; i < 8; i += 2)
+            {
+                if (_chunks[i].IsLoaded)
+                {
+                    // Соседний загружен с ним и работаем
+                    if (_poleX[i] == 2)
+                    {
+                        _CheckBrighterLightLoadedBlockX(_chunks[i], _xz[i]);
+                        _CheckBrighterLightLoadedSkyX(_chunks[i], _xz[i]);
+                    }
+                    if (_poleX[i] == 1)
+                    {
+                        _CheckBrighterLightLoadedBlockZ(_chunks[i], _xz[i]);
+                        _CheckBrighterLightLoadedSkyZ(_chunks[i], _xz[i]);
+                    }
+                }
+            }
+        }
+
+        // Для ускорения 4 метода похожи, чтоб дополнительных if-ов
+
+        /// <summary>
+        /// Проверка блочного по X
+        /// </summary>
+        private void _CheckBrighterLightLoadedBlockX(ChunkBase chunk, int x)
+        {
+            int yh, yco, indexBlock;
+            byte light;
+            ChunkStorage chunkStorage;
+            _indexBegin = _indexEnd = 0;
+            int offset = x == 1 ? -15 : 16;
+            for (int z = 0; z < 16; z++)
+            {
+                yh = chunk.Light.GetHeight(x, z);
+                for (int y = 0; y < yh; y++)
+                {
+                    yco = y >> 4;
+                    chunkStorage = chunk.StorageArrays[yco];
+                    if (chunkStorage.CountBlock != 0)
+                    {
+                        indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
+                        light = (byte)(chunkStorage.Light[indexBlock] >> 4);
+                        if (light > 0)
+                        {
+                            _arCache[_indexEnd++] = x - offset + 32 | y << 6 | z + 32 << 16 | light << 22;
+                        }
+                    }
+                }
+            }
+            _BrighterLightBlock();
+        }
+        /// <summary>
+        /// Проверка блочного по Z
+        /// </summary>
+        private void _CheckBrighterLightLoadedBlockZ(ChunkBase chunk, int z)
+        {
+            int yh, yco, indexBlock;
+            byte light;
+            ChunkStorage chunkStorage;
+            _indexBegin = _indexEnd = 0;
+            int offset = z == 1 ? -15 : 16;
+            for (int x = 0; x < 16; x++)
+            {
+                yh = chunk.Light.GetHeight(x, z);
+                for (int y = 0; y < yh; y++)
+                {
+                    yco = y >> 4;
+                    chunkStorage = chunk.StorageArrays[yco];
+                    if (chunkStorage.CountBlock != 0)
+                    {
+                        indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
+                        light = (byte)(chunkStorage.Light[indexBlock] >> 4);
+                        if (light > 0)
+                        {
+                            _arCache[_indexEnd++] = x + 32 | y << 6 | z - offset + 32 << 16 | light << 22;
+                        }
+                    }
+                }
+            }
+            _BrighterLightBlock();
+        }
+        /// <summary>
+        /// Проверка небесного по X
+        /// </summary>
+        private void _CheckBrighterLightLoadedSkyX(ChunkBase chunk, int x)
+        {
+            int yco, indexBlock;
+            byte light;
+            ChunkStorage chunkStorage;
+            _indexBegin = _indexEnd = 0;
+            int offset = x == 1 ? -15 : 16;
+            int numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
+            for (int z = 0; z < 16; z++)
+            {
+                for (int y = 0; y <= numberBlocks; y++)
+                {
+                    yco = y >> 4;
+                    chunkStorage = chunk.StorageArrays[yco];
+                    if (chunkStorage.CountBlock != 0)
+                    {
+                        indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
+                        light = (byte)(chunkStorage.Light[indexBlock] & 15);
+                        if (light > 0)
+                        {
+                            _arCache[_indexEnd++] = x - offset + 32 | y << 6 | z + 32 << 16 | light << 22;
+                        }
+                    }
+                }
+            }
+            _BrighterLightSky();
+        }
+        /// <summary>
+        /// Проверка небесного по Z
+        /// </summary>
+        private void _CheckBrighterLightLoadedSkyZ(ChunkBase chunk, int z)
+        {
+            int yco, indexBlock;
+            byte light;
+            ChunkStorage chunkStorage;
+            _indexBegin = _indexEnd = 0;
+            int offset = z == 1 ? -15 : 16;
+            int numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
+            for (int x = 0; x < 16; x++)
+            {
+                for (int y = 0; y <= numberBlocks; y++)
+                {
+                    yco = y >> 4;
+                    chunkStorage = chunk.StorageArrays[yco];
+                    if (chunkStorage.CountBlock != 0)
+                    {
+                        indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
+                        light = (byte)(chunkStorage.Light[indexBlock] & 15);
+                        if (light > 0)
+                        {
+                            _arCache[_indexEnd++] = x + 32 | y << 6 | z - offset + 32 << 16 | light << 22;
+                        }
+                    }
+                }
+            }
+            _BrighterLightSky();
+        }
+
+        #endregion
+
+        #region Fix
+
+        /// <summary>
+        /// Починить чанк блочного освещения по позиции чанка, вернуть ответ количество блоков с ошибкой
+        /// Покуда только те, где остался светится, но не должен
+        /// </summary>
+        public int FixChunkLightBlock(int chX, int chY)
+        {
+            ChunkBase chunk = _world.GetChunk(chX, chY);
+            if (chunk == null)
+            {
+                // Выбранный чанк отсутствует
+                return -1;
+            }
+            ActionChunk(chunk);
+            if (!UpChunks())
+            {
+                // Один из соседних чанков отсутствует
+                return -1;
+            }
+
+            int x, y, z, xx, yy, zz, index;
+            // яркость от блока
+            byte lb, ys;
+            // излучаемая яркость блока
+            byte lo;
+            // яркость от соседних блоков
+            byte lightBeside;
+            int count = 0;
+            int xb = chX << 4;
+            int zb = chY << 4;
+            bool begin = true;
+            int numberSections = _world.ChunkPr.Settings.NumberSections;
+            _countBlock = 0;
+            ChunkStorage chunkStorage;
+            _indexBegin = _indexEnd = 0;
+            List<long> list = new List<long>();
+            for (ys = 0; ys < numberSections; ys++)
+            {
+                chunkStorage = chunk.StorageArrays[ys];
+                for (y = 0; y < 16; y++)
+                {
+                    yy = (ys << 4) | y;
+                    for (x = 0; x < 16; x++)
+                    {
+                        xx = xb | x;
+                        for (z = 0; z < 16; z++)
+                        {
+                            index = y << 8 | z << 4 | x;
+                            lb = (byte)(chunkStorage.Light[index] >> 4);
+                            if (lb > 0) // у блока имеется яркость от блока
+                            {
+                                zz = zb | z;
+                                // яркость от соседних блоков
+                                lightBeside = _GetLevelBrightBlock(xx, yy, zz);
+                                if (lb >= lightBeside) // яркость блока ярче соседних
+                                {
+                                    // проверяем блок на яркость, совпадает с lb или нет
+                                    lo = (byte)(chunkStorage.IsEmptyData() ? 0
+                                        : (Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[index] & 0xFFF] & 0xF));
+                                    if (lo != lb)
+                                    {
+                                        // затемняем
+                                        count++;
+                                        if (begin)
+                                        {
+                                            begin = false;
+                                            _axisX0 = _axisX1 = xx;
+                                            _axisY0 = _axisY1 = yy;
+                                            _axisZ0 = _axisZ1 = zz;
+                                            _indexBegin = _indexEnd = 0;
+                                        }
+                                        else
+                                        {
+                                            if (xx < _axisX0) _axisX0 = xx; else if (xx > _axisX1) _axisX1 = xx;
+                                            if (yy < _axisY0) _axisY0 = yy; else if (yy > _axisY1) _axisY1 = yy;
+                                            if (zz < _axisZ0) _axisZ0 = zz; else if (zz > _axisZ1) _axisZ1 = zz;
+                                        }
+                                        list.Add(ys | (lo << 8) | (index << 16));
+                                        _arCache[_indexEnd++] = xx - _bOffsetX + 32 | yy << 6 | zz - _bOffsetZ + 32 << 16 | lb << 22;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (_indexEnd > 0)
+            {
+                long cache;
+                byte l2;
+                for (x = 0; x < list.Count; x++)
+                {
+                    cache = list[x];
+                    y = (int)(cache & 255);
+                    index = (int)(cache >> 16);
+                    l2 = (byte)((cache >> 8) & 15);
+                    chunk.StorageArrays[y].Light[index] = (byte)(l2 << 4 | chunk.StorageArrays[y].Light[index] & 15);
+                }
+                _DarkenLightBlock();
+                _BrighterLightBlock();
+                if (!_world.IsRemote && _world is WorldServer worldServer)
+                {
+                    worldServer.MarkBlockRangeForModified(_axisX0, _axisZ0, _axisX1, _axisZ1);
+                    worldServer.ServerMarkChunkRangeForRenderUpdate(_axisX0 >> 4, _axisY0 >> 4, 
+                        _axisZ0 >> 4, _axisX1 >> 4, _axisY1 >> 4, _axisZ1 >> 4);
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Возращает наивысший уровень яркости, глобальные координаты
+        /// </summary>
+        private byte _GetLevelBrightBlock(int x, int y, int z)
+        {
+            // обрабатываем соседние блоки, вдруг рядом плафон ярче, чтоб не затемнить
+            // вектор стороны
+            Vector3i vec;
+            int iSide, y2;
+            byte lightResult = 0;
+            byte lightCache;
+            int numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
+
+            for (iSide = 0; iSide < 6; iSide++)
+            {
+                vec = BlockPos.DirectionVectors[iSide];
+                y2 = y + vec.Y;
+                if (y2 >= 0 && y2 <= numberBlocks)
+                {
+                    lightCache = _GetLightBlock(x + vec.X, y2, z + vec.Z);
+                    // Если соседний блок ярче текущего блока
+                    if (lightCache > lightResult) lightResult = lightCache;
+                    // Если блок яркий выводим значение
+                    if (lightResult == 15) return 15;
+                }
+            }
+            return lightResult;
         }
 
         #endregion

@@ -233,6 +233,8 @@ namespace Vge.Renderer.World
                 chunkRender = _game.Player.FrustumCulling[i];
                 if (chunkRender != null && chunkRender.IsChunkPresent)
                 {
+                    // Инициализация GL если это необходимо
+                    chunkRender.InitGL();
                     // Можем ли мы в этом тике пополнять партию
                     if (batchCount < _desiredBatchSize)
                     {

@@ -154,6 +154,7 @@ namespace Vge.World.Light
 
         /// <summary>
         /// Создает карту высот для блока с нуля и тут же осветляет небесные блоки
+        /// Тут ещё нет ни одного блочного освещения
         /// </summary>
         public void GenerateHeightMapSky()
         {
@@ -182,7 +183,7 @@ namespace Vge.World.Light
                             if ((Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[(y1 & 15) << 8 | z << 4 | x] & 0xFFF] >> 4) == 0)
                             {
                                 // Небо, осветляем
-                                Chunk.StorageArrays[y >> 4].LightSky[(y & 15) << 8 | z << 4 | x] = 0xF;
+                                Chunk.StorageArrays[y >> 4].Light[(y & 15) << 8 | z << 4 | x] = 0xF;
                             }
                             else
                             {
@@ -192,7 +193,7 @@ namespace Vge.World.Light
 
                                 light = 15;
                                 y2 = y;
-                                Chunk.StorageArrays[y2 >> 4].LightSky[(y2 & 15) << 8 | z << 4 | x] = 0xF;
+                                Chunk.StorageArrays[y2 >> 4].Light[(y2 & 15) << 8 | z << 4 | x] = 0xF;
                                 y2--;
                                 // Запускаем цикл затемнения блоков
                                 while (light > 0 && y2 > 0)
@@ -206,7 +207,7 @@ namespace Vge.World.Light
                                     else opacity = 0;
                                     light = light - opacity - 1;
                                     if (light < 0) light = 0;
-                                    chunkStorage2.LightSky[index] = (byte)light;
+                                    chunkStorage2.Light[index] = (byte)light;
                                     y2--;
                                 }
                                 HeightMapOpacity[z << 4 | x] = (ushort)(y2 + 2);
@@ -216,7 +217,7 @@ namespace Vge.World.Light
                         else
                         {
                             // Небо, осветляем
-                            Chunk.StorageArrays[y >> 4].LightSky[(y & 15) << 8 | z << 4 | x] = 0xF;
+                            Chunk.StorageArrays[y >> 4].Light[(y & 15) << 8 | z << 4 | x] = 0xF;
                         }
                     }
                 }

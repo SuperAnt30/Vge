@@ -332,7 +332,7 @@ namespace Vge
             ChunkStorage storage = chunk.StorageArrays[pos.Y >> 4];
             int index = (pos.Y & 15) << 8 | pos.Z << 4 | pos.X;
             return string.Format("[{2}] b{0} s{1} {3}",
-                storage.LightBlock[index], storage.LightSky[index], pos,
+                storage.Light[index] >> 4, storage.Light[index] & 15, pos,
                     "Biom");// chunk.Biome[pos.X << 4 | pos.Z]);
         }
     }

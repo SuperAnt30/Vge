@@ -323,6 +323,21 @@ namespace Vge.Management
         }
 
         /// <summary>
+        /// Флаг сектора чанка который был изменён
+        /// </summary>
+        public void FlagChunkForUpdate(int x, int y, int z)
+        {
+            if (_chunkForAnchors.Get(x, z) is ChunkForAnchor chunkForAnchor)
+            {
+                if (chunkForAnchor.NumBlocksToUpdate == 0)
+                {
+                    _chunkAnchorsToUpdate.Add(chunkForAnchor);
+                }
+                chunkForAnchor.FlagChunkForUpdate(y);
+            }
+        }
+
+        /// <summary>
         /// Обновлять фрагменты чанков вокруг якоря, перемещаемого логикой сервера
         /// </summary>
         public void UpdateMountedMovingAnchor(IAnchor anchor)
