@@ -21,6 +21,9 @@ namespace Vge
         public static string Text = "";
         public static uint MeshId = 0;
         public static int MeshCount = 0;
+        public static string DebugString = "";
+        public static string BlockChange = "";
+
         /// <summary>
         /// FrustumCulling
         /// </summary>
@@ -67,6 +70,7 @@ namespace Vge
                     + " rch: " + Mth.Average(RenderChunckTime)
                 + "\r\n" + Server
                 + "[Client]: " + Client
+                + "\r\nDS: " + DebugString + " " + BlockChange
                 + "\r\n" + ChatStyle.Gold + BlockFocus + ChatStyle.Reset
                 + "\r\n" + Text;
         }

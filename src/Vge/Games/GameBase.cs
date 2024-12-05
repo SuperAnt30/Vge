@@ -188,15 +188,25 @@ namespace Vge.Games
 
             // Отправим обзор 
             Player.SetOverviewChunk(Options.OverviewChunk, false);
-            // Закрываем скрин загрузки
-            window.LScreen.Close();
-            _flagTick = true;
+            // Запущена игра
+            StartedGame();
+             _flagTick = true;
         }
 
         /// <summary>
         /// Получили пакет загрузки от сервера
         /// </summary>
         public virtual void PacketLoadingGame(PacketS02LoadingGame packet) { }
+
+        /// <summary>
+        /// Запущена игра
+        /// </summary>
+        protected void StartedGame()
+        {
+            // Закрываем скрин загрузки
+            window.ScreenClose();
+            Hud = new HubDebug(this);
+        }
 
         #endregion
 
@@ -220,19 +230,17 @@ namespace Vge.Games
                 {
                     // Выключить вид от первого лица
                     Player.ActionStop();
-                }
-            }
-            else
-            {
-                // При отключении режима от первого лица, надо убрать клики мыши
-                if (_isMouseDownLeft || _isMouseDownRight)
-                {
-                    _isMouseDownLeft = false;
-                    Player.UndoHandAction();
-                    if (_isMouseDownRight)
+
+                    // При отключении режима от первого лица, надо убрать клики мыши
+                    if (_isMouseDownLeft || _isMouseDownRight)
                     {
-                        _isMouseDownRight = false;
-                        Player.StoppedUsingItem();
+                        _isMouseDownLeft = false;
+                        Player.UndoHandAction();
+                        if (_isMouseDownRight)
+                        {
+                            _isMouseDownRight = false;
+                            Player.StoppedUsingItem();
+                        }
                     }
                 }
             }

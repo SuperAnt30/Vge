@@ -86,6 +86,8 @@ namespace Vge.Network
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
+                case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
+                case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
             }
         }
 
@@ -192,6 +194,25 @@ namespace Vge.Network
                 _countReceiveChunk++;
                 _timeReceiveChunk += Game.Time() - time;
             }
+            Debug.BlockChange = "ChunkData: " + packet.FlagsYAreas;
+        }
+
+        /// <summary>
+        /// Пакет много изменённых блоков
+        /// </summary>
+        private void _Handle22MultiBlockChange(PacketS22MultiBlockChange packet)
+        {
+            packet.ReceivedBlocks(Game.World);
+            Debug.BlockChange = "MultiBlock: " + packet.Count();
+        }
+
+        /// <summary>
+        /// Пакет один изменённый блок
+        /// </summary>
+        private void _Handle23BlockChange(PacketS23BlockChange packet)
+        {
+            Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
+            Debug.BlockChange = "BlockChange";
         }
 
         #endregion

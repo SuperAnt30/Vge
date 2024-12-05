@@ -1,6 +1,7 @@
 ﻿using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Light;
 using WinGL.Util;
 
 namespace Vge.World
@@ -26,6 +27,13 @@ namespace Vge.World
         /// Посредник чанков
         /// </summary>
         public ChunkProvider ChunkPr { get; protected set; }
+
+        /// <summary>
+        /// Объект обработки освещения для мира
+        /// </summary>
+        public readonly WorldLight Light;
+
+        public WorldBase() => Light = new WorldLight(this);
 
         #region Chunk
 
@@ -82,8 +90,8 @@ namespace Vge.World
             ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
             if (chunk == null) return false;
 
-            Vector3i pos = blockPos.GetPositionInChunk();
-            chunk.SetBlockState(pos.X, pos.Y, pos.Z, blockState);
+            BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
+            if (blockStateTrue.IsEmpty()) return false;
 
             //BlockState blockStateTrue = chunk.SetBlockState(pos.X, pos.Y, pos.Z, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
             //if (blockStateTrue.IsEmpty()) return false;
@@ -96,15 +104,25 @@ namespace Vge.World
             //// Уведомление соседей и на сервере и на клиенте
             //if ((flag & 2) != 0) NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
 
-            MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
-
             return true;
         }
+
+        #endregion
+
+        #region Mark
 
         /// <summary>
         /// Отметить блок для обновления
         /// </summary>
         public virtual void MarkBlockForUpdate(int x, int y, int z) { }
+        /// <summary>
+        /// Отметить блоки для обновления
+        /// </summary>
+        public virtual void MarkBlockRangeForUpdate(int x0, int y0, int z0, int x1, int y1, int z1) { }
+        /// <summary>
+        /// Отметить блоки для изминения
+        /// </summary>
+        public virtual void MarkBlockRangeForModified(int x0, int z0, int x1, int z1) { }
 
         #endregion
 
@@ -254,5 +272,10 @@ namespace Vge.World
             }
             return moving;
         }
+
+        /// <summary>
+        /// Для отладки
+        /// </summary>
+        public virtual void DebugString(string logMessage, params object[] args) { }
     }
 }

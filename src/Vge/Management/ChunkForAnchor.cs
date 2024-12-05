@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.World;
+using Vge.World.Block;
 using Vge.World.Chunk;
 
 namespace Vge.Management
@@ -16,6 +18,7 @@ namespace Vge.Management
         /// Количество блоков отправляемые за так изменённые в чанке
         /// </summary>
         private const int _CountMultyBlocks = 4096;
+        // TODO::2024-12-03 CountMultyBlocks можно сократить до 1024, по итогу определения Metdata блока
 
         /// <summary>
         /// Серверный мир к которому принадлежит чанк
@@ -168,30 +171,47 @@ namespace Vge.Management
         public void Update()
         {
             if (NumBlocksToUpdate != 0)
-                //if (NumBlocksToUpdate >= _CountMultyBlocks)
             {
-                for (int i = 0; i < _players.Count; i++)
+                if (NumBlocksToUpdate >= _CountMultyBlocks)
                 {
-                    if (!_players[i].IsLoadingChunks(CurrentChunkX, CurrentChunkY))
+                    for (int i = 0; i < _players.Count; i++)
                     {
-                        ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
-                        if (chunk != null && chunk.IsSendChunk)
+                        if (!_players[i].IsLoadingChunks(CurrentChunkX, CurrentChunkY))
                         {
-                            _players[i].SendPacket(new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate));
+                            ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
+                            if (chunk != null && chunk.IsSendChunk)
+                            {
+                                _players[i].SendPacket(new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate));
+                            }
                         }
+                    }
+                }
+                else
+                {
+                    IPacket packet;
+                    if (NumBlocksToUpdate == 1)
+                    {
+                        int index = _locationOfBlockChange[0];
+                        packet = new PacketS23BlockChange(World, new BlockPos(
+                            CurrentChunkX << 4 | ((index >> 4) & 15),
+                            index >> 8,
+                            CurrentChunkY << 4 | (index & 15)
+                        ));
+                    }
+                    else
+                    {
+                        packet = new PacketS22MultiBlockChange(NumBlocksToUpdate,
+                                _locationOfBlockChange, World.GetChunk(CurrentChunkX, CurrentChunkY));
+                    }
+
+                    for (int i = 0; i < _players.Count; i++)
+                    {
+                        _players[i].SendPacket(packet);
                     }
                 }
                 NumBlocksToUpdate = 0;
                 _flagsYAreasToUpdate = 0;
             }
-            else
-            {
-
-            }
-            //if (NumBlocksToUpdate != 0)
-            //{
-                
-            //}
         }
 
         /// <summary>
@@ -213,19 +233,8 @@ namespace Vge.Management
                     }
                     _locationOfBlockChange[NumBlocksToUpdate++] = index;
                 }
-                else
-                {
-                    NumBlocksToUpdate = _CountMultyBlocks;
-
-                    // TODO::2024-11-29 надо отладить, добираемся ли мы до этого количества
-                    throw new Exception("ChunkForAnchor вышел за предел _CountMultyBlocks =" + NumBlocksToUpdate);
-                }
             }
         }
-
-
-
-
 
         public override string ToString() => CurrentChunkX + ":" + CurrentChunkY 
             + " P:" + _players.Count + " A:" + _anchors.Count;

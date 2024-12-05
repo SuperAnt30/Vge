@@ -1,5 +1,6 @@
 {
     АmbientOcclusion: false,
+    UseNeighborBrightness: true,
     Color: [0.4, 0.6, 1],
     Variants: [
         { Shape: "Debug" },

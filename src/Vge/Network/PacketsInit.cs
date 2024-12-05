@@ -9,9 +9,6 @@ namespace Vge.Network
     /// </summary>
     public class PacketsInit
     {
-
-      //  public static PacketS21ChunkData 
-
         /// <summary>
         /// Пакеты пришедшие с сервера
         /// </summary>
@@ -29,6 +26,8 @@ namespace Vge.Network
                 case 0x08: return new PacketS08PlayerPosLook();
                 case 0x20: return new PacketS20ChunkSend();
                 case 0x21: return new PacketS21ChunkData();
+                case 0x22: return new PacketS22MultiBlockChange();
+                case 0x23: return new PacketS23BlockChange();
             }
 
             return null;

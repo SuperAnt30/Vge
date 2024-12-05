@@ -54,6 +54,7 @@ namespace Vge.Renderer.World
         private readonly ChunkSectionBuffer[] _sectionsBuffer;
         /// <summary>
         /// Массив какие секции сплошных чанков надо рендерить, для потока где идёт рендер
+        /// Двойной флаг нужен, для того, что рендер идёт в другом потоке! (первый флаг в _sectionsBuffer.IsModifiedRender)
         /// </summary>
         private readonly bool[] _isRenderingSection;
 
@@ -95,7 +96,7 @@ namespace Vge.Renderer.World
             _meshDense.IsModifiedRender = true;
             if (y >= 0 && y < NumberSections)
             {
-                _isRenderingSection[y] = true;
+                _sectionsBuffer[y].IsModifiedRender = true;
             }
         }
 
@@ -359,6 +360,11 @@ namespace Vge.Renderer.World
         /// </summary>
         public void StartRendering()
         {
+            for (int y = 0; y < NumberSections; y++)
+            {
+                _isRenderingSection[y] = _sectionsBuffer[y].IsModifiedRender;
+                _sectionsBuffer[y].IsModifiedRender = false;
+            }
             _meshDense.StatusRendering();
             _meshAlpha.StatusRendering();
         }

@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
+using Vge.Renderer.World;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -20,6 +21,11 @@ namespace Vge.Renderer
         /// Объект текстур
         /// </summary>
         public readonly TextureMap Texture;
+        /// <summary>
+        /// Текстурная карта освещения
+        /// </summary>
+        public readonly TextureLightMap LightMap;
+
         /// <summary>
         /// Шейдоры для GUI цветных текстур без смещения
         /// </summary>
@@ -69,6 +75,7 @@ namespace Vge.Renderer
         public RenderMain(WindowMain window) : base(window)
         {
             Texture = new TextureMap(gl);
+            LightMap = new TextureLightMap(gl);
             ShGuiColor = new ShaderGuiColor(gl);
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
@@ -133,25 +140,19 @@ namespace Vge.Renderer
             // Активация текстуры атласа с размытостью (с Mipmap)
             int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
             BindTextureAtlasBlocks();
-            gl.ActiveTexture(GL.GL_TEXTURE0);
             gl.Uniform1(atlasBlurry, 0);
 
             // Активация текстуры атласа с резкостью (без Mipmap)
             Texture.BindTexture(3, 1);
             int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
-            gl.ActiveTexture(GL.GL_TEXTURE1);
-            gl.Enable(GL.GL_TEXTURE_2D);
             gl.Uniform1(atlasSharpness, 1);
-            gl.Disable(GL.GL_TEXTURE_2D);
 
             // Активация текстуры карты света
-            //int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
-            //gl.ActiveTexture(GL.GL_TEXTURE2);
-            //gl.Enable(GL.GL_TEXTURE_2D);
-            //gl.Uniform1(lightMap, 2);
-            //gl.Disable(GL.GL_TEXTURE_2D);
+            LightMap.BindTexture();
+            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            gl.Uniform1(lightMap, 2);
 
-            gl.ActiveTexture(GL.GL_TEXTURE0);
+           // gl.ActiveTexture(GL.GL_TEXTURE0);
         }
 
         /// <summary>

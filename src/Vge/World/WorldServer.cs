@@ -50,7 +50,7 @@ namespace Vge.World
 
         //private readonly TestAnchor _testAnchor;
 
-        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings)
+        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings) : base()
         {
             Server = server;
             IdWorld = idWorld;
@@ -120,6 +120,27 @@ namespace Vge.World
         /// </summary>
         public override void MarkBlockForUpdate(int x, int y, int z)
             => Fragment.FlagBlockForUpdate(x, y, z);
+
+        /// <summary>
+        /// Отметить блоки для изминения
+        /// </summary>
+        public override void MarkBlockRangeForModified(int x0, int z0, int x1, int z1)
+        {
+            int c0x = (x0) >> 4;
+            int c0z = (z0) >> 4;
+            int c1x = (x1) >> 4;
+            int c1z = (z1) >> 4;
+            ChunkBase chunk;
+            int x, z;
+            for (x = c0x; x <= c1x; x++)
+            {
+                for (z = c0z; z <= c1z; z++)
+                {
+                    chunk = ChunkPr.GetChunk(x, z);
+                    if (chunk != null) chunk.Modified();
+                }
+            }
+        }
 
         /// <summary>
         /// Обработка фрагментов в начале такта

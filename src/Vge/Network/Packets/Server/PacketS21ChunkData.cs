@@ -123,7 +123,7 @@ namespace Vge.Network.Packets.Server
         /// <summary>
         /// Количество замеряемых чанков, нужен для Finish
         /// </summary>
-        public int GetQuantity() => FlagsYAreas;
+        //public int GetQuantity() => FlagsYAreas;
 
         public void ReadPacket(ReadPacket stream)
         {

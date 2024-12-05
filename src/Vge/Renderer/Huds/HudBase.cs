@@ -17,11 +17,11 @@ namespace Vge.Renderer.Huds
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public override void Draw(float timeIndex)
-        {
+        //public override void Draw(float timeIndex)
+        //{
 
-        }
+        //}
 
-        public override void Dispose() { }
+        //public override void Dispose() { }
     }
 }

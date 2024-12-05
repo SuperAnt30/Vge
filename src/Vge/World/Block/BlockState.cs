@@ -1,4 +1,5 @@
-﻿using Vge.Network;
+﻿using System.Runtime.CompilerServices;
+using Vge.Network;
 namespace Vge.World.Block
 {
     /// <summary>
@@ -34,10 +35,12 @@ namespace Vge.World.Block
         /// <summary>
         /// Блок воздуха
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAir() => Id == 0;
         /// <summary>
         /// Пустой ли объект
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEmpty() => Id == 0 && Met == 1;
 
         /// <summary>
@@ -64,6 +67,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Записать блок в буффер пакета
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteStream(WritePacket stream)
         {
             stream.UShort(Id);
@@ -74,6 +78,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Прочесть блок из буффер пакета и занести в чанк
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadStream(ReadPacket stream)
         {
             Id = stream.UShort();

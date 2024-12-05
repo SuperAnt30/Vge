@@ -1,0 +1,6 @@
+{
+    LightValue: 15,
+    Variants: [
+        { Shape: "Brol" }
+    ]
+}

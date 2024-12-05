@@ -201,7 +201,7 @@ namespace Vge.Management
                     }
                     quantityBatch++;
 
-                    SendPacket(new PacketS21ChunkData(chunk, true, 65535));
+                    SendPacket(new PacketS21ChunkData(chunk, true, int.MaxValue));
                 }
                 else
                 {
@@ -259,10 +259,10 @@ namespace Vge.Management
             // Временно!
             // Уничтожение блока
             WorldServer world = GetWorld();
-            BlockState blockState = world.GetBlockState(packet.BlockPosition);
+            BlockState blockState = world.GetBlockState(packet.GetBlockPos());
             BlockBase block = blockState.GetBlock();
 
-            world.SetBlockToAir(packet.BlockPosition, world.IsRemote ? 14 : 31);
+            world.SetBlockToAir(packet.GetBlockPos(), world.IsRemote ? 14 : 31);
             //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
         }
 
@@ -275,7 +275,7 @@ namespace Vge.Management
             ushort idBlock = 0;
             for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
             {
-                if (Ce.Blocks.BlockAlias[i] == "Granite")
+                if (Ce.Blocks.BlockAlias[i] == "Brol")
                 {
                     idBlock = i;
                     break;
@@ -283,9 +283,9 @@ namespace Vge.Management
             }
 
             WorldServer world = GetWorld();
-            BlockState blockState = world.GetBlockState(packet.BlockPosition);
+            BlockState blockState = world.GetBlockState(packet.GetBlockPos());
             BlockBase block = blockState.GetBlock();
-            BlockPos blockPos = packet.BlockPosition.Offset(packet.Side);
+            BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
             world.SetBlockState(blockPos, new BlockState(idBlock), world.IsRemote ? 14 : 31);
         }
 

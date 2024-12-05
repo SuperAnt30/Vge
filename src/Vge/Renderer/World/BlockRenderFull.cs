@@ -78,7 +78,7 @@ namespace Vge.Renderer.World
         protected ChunkStorage _storage;
         private bool _isDraw;
         protected int _stateLight, _stateLightHis;
-        private byte _stateLightByte;
+        protected byte _stateLightByte;
         private QuadSide[] _rectangularSides;
         private QuadSide _rectangularSide;
         private readonly AmbientOcclusionLights _ambient = new AmbientOcclusionLights();

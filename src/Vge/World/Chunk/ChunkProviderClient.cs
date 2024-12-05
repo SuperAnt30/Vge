@@ -61,10 +61,10 @@ namespace Vge.World.Chunk
 
                 chunkRender.SetBinaryZip(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
                 //chunkRender.SetBinary(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
-                
+
                 if (isNew || packet.IsBiom)
                 {
-                    //chunk.Light.GenerateHeightMap();
+                    chunkRender.Light.GenerateHeightMap();
                     _worldClient.AreaModifiedToRender(chx - 1, 0, chy - 1, chx + 1, Settings.NumberSections, chy + 1);
                     if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();
                     return true;
@@ -77,6 +77,7 @@ namespace Vge.World.Chunk
                         _worldClient.AreaModifiedToRender(chx - 1, sy - 1, chy - 1, chx + 1, sy + 1, chy + 1);
                     }
                 }
+
             }
             if (Ce.IsDebugDrawChunks) _OnChunkMappingChanged();
             return false;

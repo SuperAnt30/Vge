@@ -29,7 +29,7 @@ namespace Vge.World
         /// </summary>
         private bool _flagDebugChunkMappingChanged;
 
-        public WorldClient(GameBase game)
+        public WorldClient(GameBase game) : base()
         {
             Game = game;
             IsRemote = true;
@@ -66,6 +66,8 @@ namespace Vge.World
             ChunkPrClient.Stoping();
         }
 
+        #region Mark
+
         /// <summary>
         /// Сделать запрос перерендера выбранной облости псевдочанков
         /// </summary>
@@ -89,6 +91,25 @@ namespace Vge.World
                 }
             }
         }
+
+        /// <summary>
+        /// Отметить блок для обновления
+        /// </summary>
+        public override void MarkBlockForUpdate(int x, int y, int z)
+            => AreaModifiedToRender((x - 1) >> 4, (y - 1) >> 4, (z - 1) >> 4,
+                (x + 1) >> 4, (y + 1) >> 4, (z + 1) >> 4);
+
+        /// <summary>
+        /// Отметить блоки для обновления
+        /// </summary>
+        public override void MarkBlockRangeForUpdate(int x0, int y0, int z0, int x1, int y1, int z1)
+            => AreaModifiedToRender((x0 - 1) >> 4, (y0 - 1) >> 4, (z0 - 1) >> 4,
+                (x1 + 1) >> 4, (y1 + 1) >> 4, (z1 + 1) >> 4);
+
+        #endregion
+
+        public override void DebugString(string logMessage, params object[] args) 
+            => Debug.DebugString = string.Format(logMessage, args);
 
         public override string ToString() => ChunkPrClient.ToString();
 

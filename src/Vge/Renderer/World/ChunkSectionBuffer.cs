@@ -6,6 +6,11 @@
     public class ChunkSectionBuffer
     {
         /// <summary>
+        /// Пометка изменения
+        /// </summary>
+        public bool IsModifiedRender;
+
+        /// <summary>
         /// Буфер для склейки рендера, Float данных
         /// </summary>
         public float[] BufferFloat;
@@ -17,6 +22,7 @@
 
         public void Clear()
         {
+            IsModifiedRender = false;
             BufferFloat = new float[0];
             BufferByte = new byte[0];
         }

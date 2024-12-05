@@ -24,10 +24,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private SideLiquid _sideLiquid;
 
-        public BlockRenderLiquid(VertexBuffer vertex) : base(vertex)
-        {
-
-        }
+        public BlockRenderLiquid(VertexBuffer vertex) : base(vertex) { }
 
         public override void RenderSide()
         {
@@ -261,6 +258,7 @@ namespace Vge.Renderer.World
                 v4 = fv + fmm;
             }
             _lightPole = _sideLiquid.LightPole;
+            _stateLightByte = (byte)_stateLight;
             _GenColors();
 
             blockUV.ColorsR = _colorLight.ColorR;
@@ -386,6 +384,7 @@ namespace Vge.Renderer.World
             _stateLight = _resultSide[index];
             _GenLightMix();
             _lightPole = _sideLiquid.LightPole;
+            _stateLightByte = (byte)_stateLight;
             _GenColors();
 
             blockUV.AnimationFrame = _sideLiquid.AnimationFrame;

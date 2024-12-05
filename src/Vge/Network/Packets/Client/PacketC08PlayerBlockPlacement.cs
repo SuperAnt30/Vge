@@ -12,10 +12,6 @@ namespace Vge.Network.Packets.Client
         public byte Id => 0x08;
 
         /// <summary>
-        /// Позиция блока где устанавливаем блок
-        /// </summary>
-        public BlockPos BlockPosition { get; private set; }
-        /// <summary>
         /// С какой стороны устанавливаем блок
         /// </summary>
         public Pole Side { get; private set; }
@@ -29,25 +25,30 @@ namespace Vge.Network.Packets.Client
         /// </summary>
         //private byte flag;
 
+        private BlockPos _blockPos;
+
+        /// <summary>
+        /// Позиция блока где устанавливаем блок
+        /// </summary>
+        public BlockPos GetBlockPos() => _blockPos;
+
         public PacketC08PlayerBlockPlacement(BlockPos blockPos, Pole side, Vector3 facing)
         {
-            BlockPosition = blockPos;
+            _blockPos = blockPos;
             Side = side;
             Facing = facing;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            BlockPosition = new BlockPos(stream.Int(), stream.Int(), stream.Int());
+            _blockPos.ReadStream(stream);
             Side = (Pole)stream.Byte();
             Facing = new Vector3(stream.Byte() / 16f, stream.Byte() / 16f, stream.Byte() / 16f);
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Int(BlockPosition.X);
-            stream.Int(BlockPosition.Y);
-            stream.Int(BlockPosition.Z);
+            _blockPos.WriteStream(stream);
             stream.Byte((byte)Side);
             stream.Byte((byte)(Facing.X * 16f));
             stream.Byte((byte)(Facing.Y * 16f));

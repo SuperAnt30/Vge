@@ -315,7 +315,7 @@ namespace Vge.World.Block
                     CullFaces[i][k] = true;
                     for (int j = 0; j < 4; j++)
                     {
-                        if (MaskCullFaces[i][k][j] != 18446744073709551615L)
+                        if (MaskCullFaces[i][k][j] != ulong.MaxValue)
                         {
                             CullFaceAll = false;
                             CullFaces[i][k] = false;

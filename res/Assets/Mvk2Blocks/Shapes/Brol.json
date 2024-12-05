@@ -1,0 +1,20 @@
+{
+    Texture: {
+        Up: "Blocks/BrolUp",
+        Down: "Blocks/BrolDown",
+        Side: "Blocks/BrolSide",
+    },
+    Elements: [
+        {   From: [ 0, 0, 0 ],
+            To: [ 16, 16, 16 ],
+            Faces: [
+                { Texture:"Down", Side:"Down"},
+                { Texture:"Up", Side:"Up"},
+                { Texture:"Side", Side:"North"},
+                { Texture:"Side", Side:"East"},
+                { Texture:"Side", Side:"South"},
+                { Texture:"Side", Side:"West"}
+            ]
+        }
+    ]
+}

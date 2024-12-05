@@ -54,7 +54,7 @@ namespace Vge.Gui.Screens
             if (window.Game != null)
             {
                 window.Game.SetGamePauseSingle(false);
-                window.LScreen.Close();
+                window.ScreenClose();
             }
         }
 

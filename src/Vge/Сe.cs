@@ -107,6 +107,16 @@ public sealed class Ce
     //    new Vector2i(0, 1), new Vector2i(1, 1), new Vector2i(1, 0), new Vector2i(1, -1),
     //    new Vector2i(0, -1), new Vector2i(-1, -1), new Vector2i(-1, 0), new Vector2i(-1, 1)
     //};
+
+    /// <summary>
+    /// Область в один блок без центра, 4 блоков Х
+    /// </summary>
+    public readonly static int[] AreaOne4X = new int[] { 0, 1, 0, -1 };
+    /// <summary>
+    /// Область в один блок без центра, 4 блоков Y
+    /// </summary>
+    public readonly static int[] AreaOne4Y = new int[] { 1, 0, -1, 0 };
+
     /// <summary>
     /// Область в один блок без центра, 8 блоков Х
     /// </summary>

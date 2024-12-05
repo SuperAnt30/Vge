@@ -9,26 +9,26 @@ namespace Vge.Network.Packets.Client
     {
         public byte Id => 0x07;
 
-        public BlockPos BlockPosition { get; private set; }
+        private BlockPos _blockPos;
         public EnumDigging Digging { get; private set; }
+
+        public BlockPos GetBlockPos() => _blockPos;
 
         public PacketC07PlayerDigging(BlockPos blockPos, EnumDigging digging)
         {
-            BlockPosition = blockPos;
+            _blockPos = blockPos;
             Digging = digging;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            BlockPosition = new BlockPos(stream.Int(), stream.Int(), stream.Int());
+            _blockPos.ReadStream(stream);
             Digging = (EnumDigging)stream.Byte();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Int(BlockPosition.X);
-            stream.Int(BlockPosition.Y);
-            stream.Int(BlockPosition.Z);
+            _blockPos.WriteStream(stream);
             stream.Byte((byte)Digging);
         }
 

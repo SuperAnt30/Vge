@@ -174,7 +174,8 @@ namespace Vge.Games
                 }
                 else if (packet.Status == PacketS02LoadingGame.EnumStatus.ServerGo)
                 {
-                    window.ScreenClose();
+                    // Запущена игра
+                    StartedGame();
                 }
             }
         }

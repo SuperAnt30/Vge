@@ -23,6 +23,7 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("FlowerClover", new BlockBase()); // 195
             BlocksReg.RegisterBlockClass("Water", new BlockLiquid(true));
             BlocksReg.RegisterBlockClass("Lava", new BlockLiquid(false));
+            BlocksReg.RegisterBlockClass("Brol", new BlockBase());
 
             //for (int i = 0; i < 500; i++)
             //{

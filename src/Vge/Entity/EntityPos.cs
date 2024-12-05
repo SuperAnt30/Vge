@@ -15,11 +15,11 @@ namespace Vge.Entity
         /// <summary>
         /// Координату X в каком чанке находится
         /// </summary>
-        public int ChunkPositionX => (int)X >> 4;
+        public int ChunkPositionX => Mth.Floor(X) >> 4;
         /// <summary>
         /// Координата Z в каком чанке находится
         /// </summary>
-        public int ChunkPositionZ => (int)Z >> 4;
+        public int ChunkPositionZ => Mth.Floor(Z) >> 4;
         /// <summary>
         /// Координата Y
         /// </summary>

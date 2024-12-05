@@ -4,6 +4,7 @@ using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Util;
 using WinGL.OpenGL;
+using WinGL.Util;
 
 namespace Vge.Renderer.World
 {
@@ -42,7 +43,6 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly CursorRender _cursorRender;
 
-
         /// <summary>
         /// Желаемый размер партии рендера чанков
         /// </summary>
@@ -79,6 +79,11 @@ namespace Vge.Renderer.World
         {
             _cursorRender.SetHeightChunks(_game.World.ChunkPr.Settings.NumberBlocks);
         }
+
+        /// <summary>
+        /// Смена видимости курсора чанка
+        /// </summary>
+        public void ChunkCursorHiddenShow() => _cursorRender.ChunkCursorHiddenShow();
 
         #region Поток рендера
 
@@ -181,6 +186,10 @@ namespace Vge.Renderer.World
         {
             Render.DrawWorldBegin();
 
+            //Render.LightMap.Update(Glm.Cos((_game.TickCounter + timeIndex) * .01f), .24f );
+            Render.LightMap.Update(1, .12f);
+            //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
+
             // Обновить кадр основного игрока, камера и прочее
             _game.Player.UpdateFrame(timeIndex);
 
@@ -279,7 +288,7 @@ namespace Vge.Renderer.World
         {
             // Биндим шейдор для вокселей
             Render.ShaderBindVoxels(_game.Player.View, timeIndex,
-                _overviewBlock, .4f, .4f, .7f, 15);
+                _overviewBlock, .4f, .4f, .7f, 5);
 
             if (Debug.IsDrawVoxelLine)
             {

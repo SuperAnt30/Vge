@@ -42,7 +42,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Скрыт ли курсор чанка
         /// </summary>
-        private bool _hiddenChunk = false;
+        private bool _hiddenChunk = true;
         /// <summary>
         /// Была ли сделана сетка для чанка
         /// </summary>
@@ -100,6 +100,11 @@ namespace Vge.Renderer.World
                 _meshChunk.Draw();
             }
         }
+
+        /// <summary>
+        /// Смена видимости курсора чанка
+        /// </summary>
+        public void ChunkCursorHiddenShow() => _hiddenChunk = !_hiddenChunk;
 
         /// <summary>
         /// Рендер блока

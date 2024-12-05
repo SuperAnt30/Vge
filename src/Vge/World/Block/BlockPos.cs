@@ -15,7 +15,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Статический массив направлений векторов
         /// </summary>
-        private static readonly Vector3i[] _directionVectors = new Vector3i[]
+        public static readonly Vector3i[] DirectionVectors = new Vector3i[]
         {
             new Vector3i(0, 1, 0), new Vector3i(0, -1, 0),
             new Vector3i(1, 0, 0), new Vector3i(-1, 0, 0),
@@ -25,7 +25,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Статический массив направлений векторов реверс
         /// </summary>
-        private static readonly Vector3i[] _directionReversalVectors = new Vector3i[]
+        public static readonly Vector3i[] DirectionReversalVectors = new Vector3i[]
         {
             new Vector3i(0, -1, 0), new Vector3i(0, 1, 0),
             new Vector3i(-1, 0, 0), new Vector3i(1, 0, 0),
@@ -71,7 +71,7 @@ namespace Vge.World.Block
         {
             try
             {
-                return _Plus(_directionVectors[i]);
+                return _Plus(DirectionVectors[i]);
             }
             catch
             {
@@ -85,7 +85,7 @@ namespace Vge.World.Block
         {
             try
             {
-                return _Plus(_directionReversalVectors[i]);
+                return _Plus(DirectionReversalVectors[i]);
             }
             catch
             {
@@ -99,7 +99,7 @@ namespace Vge.World.Block
         {
             try
             {
-                return _Plus(_directionVectors[(int)pole]);
+                return _Plus(DirectionVectors[(int)pole]);
             }
             catch
             {
@@ -226,6 +226,28 @@ namespace Vge.World.Block
                 }
             }
             return list;
+        }
+
+        /// <summary>
+        /// Записать блок в буффер пакета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteStream(WritePacket stream)
+        {
+            stream.Int(X);
+            stream.Int(Y);
+            stream.Int(Z);
+        }
+
+        /// <summary>
+        /// Прочесть блок из буффер пакета и занести в чанк
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadStream(ReadPacket stream)
+        {
+            X = stream.Int();
+            Y = stream.Int();
+            Z = stream.Int();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
