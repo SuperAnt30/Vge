@@ -29,7 +29,7 @@ namespace Vge.World
         /// </summary>
         private bool _flagDebugChunkMappingChanged;
 
-        public WorldClient(GameBase game) : base()
+        public WorldClient(GameBase game) : base(512)
         {
             Game = game;
             IsRemote = true;
@@ -41,6 +41,11 @@ namespace Vge.World
 
             WorldRender.Starting();
         }
+
+        /// <summary>
+        /// Получить время в тактах объекта Stopwatch с момента запуска проекта
+        /// </summary>
+        public override long ElapsedTicks() => Game.ElapsedTicks();
 
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
             => _flagDebugChunkMappingChanged = true;

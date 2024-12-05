@@ -201,7 +201,7 @@ namespace Vge.Management
                     }
                     quantityBatch++;
 
-                    SendPacket(new PacketS21ChunkData(chunk, true, int.MaxValue));
+                    SendPacket(new PacketS21ChunkData(chunk, true, uint.MaxValue));
                 }
                 else
                 {

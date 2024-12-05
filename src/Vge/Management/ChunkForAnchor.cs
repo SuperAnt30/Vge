@@ -57,7 +57,7 @@ namespace Vge.Management
         /// <summary>
         /// Флаг какие псевдо чанки надо обновлять
         /// </summary>
-        private int _flagsYAreasToUpdate;
+        private uint _flagsYAreasToUpdate;
 
 
         public ChunkForAnchor(WorldServer world, int chunkPosX, int chunkPosY)
@@ -222,7 +222,7 @@ namespace Vge.Management
         {
             if (_players.Count > 0)
             {
-                _flagsYAreasToUpdate |= 1 << (y >> 4);
+                _flagsYAreasToUpdate |= (uint)(1 << (y >> 4));
 
                 if (NumBlocksToUpdate < _CountMultyBlocks)
                 {

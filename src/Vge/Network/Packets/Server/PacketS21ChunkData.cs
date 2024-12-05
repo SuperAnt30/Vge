@@ -32,7 +32,7 @@ namespace Vge.Network.Packets.Server
         /// <summary>
         /// Флаг псевдо чанков
         /// </summary>
-        public int FlagsYAreas { get; private set; }
+        public uint FlagsYAreas { get; private set; }
         /// <summary>
         /// Данные столбца биома, как правило при первой загрузке
         /// </summary>
@@ -52,7 +52,7 @@ namespace Vge.Network.Packets.Server
         /// <summary>
         /// Загрузка данных чанка
         /// </summary>
-        public PacketS21ChunkData(ChunkBase chunk, bool biom, int flagsYAreas)
+        public PacketS21ChunkData(ChunkBase chunk, bool biom, uint flagsYAreas)
         {
             if (flagsYAreas == 0)
             {
@@ -129,7 +129,7 @@ namespace Vge.Network.Packets.Server
         {
             CurrentChunkX = stream.Int();
             CurrentChunkY = stream.Int();
-            FlagsYAreas = stream.Int();
+            FlagsYAreas = stream.UInt();
             if (FlagsYAreas > 0)
             {
                 IsBiom = stream.Bool();
@@ -144,7 +144,7 @@ namespace Vge.Network.Packets.Server
         {
             stream.Int(CurrentChunkX);
             stream.Int(CurrentChunkY);
-            stream.Int(FlagsYAreas);
+            stream.UInt(FlagsYAreas);
             if (FlagsYAreas > 0)
             {
                 stream.Bool(IsBiom);

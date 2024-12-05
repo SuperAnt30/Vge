@@ -50,7 +50,8 @@ namespace Vge.World
 
         //private readonly TestAnchor _testAnchor;
 
-        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings) : base()
+        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings) 
+            : base(worldSettings.NumberChunkSections * 16)
         {
             Server = server;
             IdWorld = idWorld;

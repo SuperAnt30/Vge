@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
@@ -12,10 +11,48 @@ namespace Vge.World.Light
     public class WorldLight
     {
         /// <summary>
+        /// Первая группа
+        /// Расчёт группы, ромб 31*31, это 481 пиксель. Умножаем на высоту блоков.
+        /// </summary>
+        private readonly int _indexStep2; // 388096
+        /// <summary>
+        /// Вторая группа
+        /// </summary>
+        private readonly int _indexStep3; // 776192
+        /// <summary>
+        /// Максималька из трёх групп
+        /// </summary>
+        private readonly int _indexStepMax; // 1164288
+
+        /// <summary>
+        /// Вспомогательный массив, значения в битах 000000LL LLzzzzzz yyyyyyyy yyxxxxxx
+        /// index = x | y << 6 | z << 16 | L << 22; 
+        /// x = index & 63;
+        /// y = index >> 6 & 511;
+        /// z = index >> 16 & 63;
+        /// L = index >> 22 & 15;
+        /// Это старый рассчёт с первой части, ощущение, что я ошибся! Должно быть меньше. 2024-12-05
+        /// 388096 * 3, где 388096 максимально возможное количество блоков в чанке плюс соседние блоки
+        /// (16 * 16 + (14 * 16 + 13 * 6 + 13) * 4) * 256 = 388 096 * 3 (для смещения и затемнения)
+        /// </summary>
+        private readonly int[] _arCache;
+        /// <summary>
+        /// Начальный индекс вспомогательного массива
+        /// </summary>
+        private int _indexBegin;
+        /// <summary>
+        /// Конечный индекс вспомогательного массива
+        /// </summary>
+        private int _indexEnd;
+        /// <summary>
+        /// Тикущий индекс вспомогательного массива
+        /// </summary>
+        private int _indexActive;
+
+        /// <summary>
         /// Объект обрабатываемого мира
         /// </summary>
         private readonly WorldBase _world;
-
         /// <summary>
         /// Соседние чанки, заполняются перед рендером
         /// </summary>
@@ -36,30 +73,6 @@ namespace Vge.World.Light
         /// Количество изменённых блоков
         /// </summary>
         private int _countBlock = 0;
-        
-        /// <summary>
-        /// Вспомогательный массив, значения в битах 000000LL LLzzzzzz yyyyyyyy yyxxxxxx
-        /// index = x | y << 6 | z << 16 | L << 22; 
-        /// x = index & 63;
-        /// y = index >> 6 & 511;
-        /// z = index >> 16 & 63;
-        /// L = index >> 22 & 15;
-        /// 388096 * 3, где 388096 максимально возможное количество блоков в чанке плюс соседние блоки
-        /// (16 * 16 + (14 * 16 + 13 * 6 + 13) * 4) * 256 = 388 096 * 3 (для смещения и затемнения)
-        /// </summary>
-        private readonly int[] _arCache = new int[1164288];
-        /// <summary>
-        /// Начальный индекс вспомогательного массива
-        /// </summary>
-        private int _indexBegin;
-        /// <summary>
-        /// Конечный индекс вспомогательного массива
-        /// </summary>
-        private int _indexEnd;
-        /// <summary>
-        /// Тикущий индекс вспомогательного массива
-        /// </summary>
-        private int _indexActive;
         /// <summary>
         /// Координаты изменения блоков
         /// </summary>
@@ -78,7 +91,14 @@ namespace Vge.World.Light
         /// </summary>
         private string _debugStr = "";
 
-        public WorldLight(WorldBase world) => _world = world;
+        public WorldLight(WorldBase world, int numberBlocks)
+        {
+            _world = world;
+            _indexStep2 = 481 * numberBlocks;
+            _indexStep3 = _indexStep2 * 2;
+            _indexStepMax = _indexStep2 + _indexStep3;
+            _arCache = new int[_indexStepMax];
+        }
 
         #region Debug
 
@@ -135,7 +155,6 @@ namespace Vge.World.Light
             ChunkBase chunkCache;
             ChunkStorage chunkStorage;
             int i, x, y, z, yh, yh2, xReal, zReal, yhOpacity, lightSky;
-           // vec2i vec;
             // координата блока
             int x0, z0, indexBlock;
             // смещение координат чанка от стартового
@@ -321,9 +340,7 @@ namespace Vge.World.Light
             int z = blockPos.Z;
             if (y < 0 || y > _world.ChunkPr.Settings.NumberBlocks) return;
 
-           // _world.
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            long timeBegin = _world.ElapsedTicks();
 
             if (!UpChunks()) return;
 
@@ -389,10 +406,9 @@ namespace Vge.World.Light
                 _world.MarkBlockRangeForModified(_axisX0, _axisZ0, _axisX1, _axisZ1);
             }
 
-            long le = stopwatch.ElapsedTicks;
-            stopwatch.Stop();
+            long timeEnd = _world.ElapsedTicks();
             _debugStr = string.Format("Count B/S: {1}/{2} Light: {0:0.00}ms",
-                le / (float)(Stopwatch.Frequency / 1000f), c1, _countBlock - c1);
+                (timeEnd - timeBegin) / (float)Ce.FrequencyMs, c1, _countBlock - c1);
         }
 
         /// <summary>
@@ -426,8 +442,7 @@ namespace Vge.World.Light
                 _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | lightBeside << 22;
                 _BrighterLightSky();
             }
-            // TODO::fix 2023-04-11 проверит небесное боковое освещение
-            else// if (lightOld > lightBeside) 
+            else
             {
                 // Затемнить
                 chunkStorage.LightSky[index] = 0;
@@ -530,7 +545,7 @@ namespace Vge.World.Light
             int yco;
             // значения LightValue и LightOpacity
             byte lo;
-            _indexActive = _indexBegin == 0 ? 388096 : 0;
+            _indexActive = _indexBegin == 0 ? _indexStep2 : 0;
 
             int numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
 
@@ -585,13 +600,13 @@ namespace Vge.World.Light
                 _indexEnd = _indexActive;
                 if (_indexBegin == 0)
                 {
-                    _indexBegin = 388096;
+                    _indexBegin = _indexStep2;
                     _indexActive = 0;
                 }
                 else
                 {
                     _indexBegin = 0;
-                    _indexActive = 388096;
+                    _indexActive = _indexStep2;
                 }
             }
 
@@ -623,9 +638,9 @@ namespace Vge.World.Light
             int xco, zco;
             // псевдочанк
             int yco;
-            _indexActive = _indexBegin == 0 ? 388096 : 0;
+            _indexActive = _indexBegin == 0 ? _indexStep2 : 0;
             // Индекс для массива осветления
-            int indexBrighter = 776192;
+            int indexBrighter = _indexStep3;
             bool isAgainstSky;
             // Цикл обхода по древу, уровневым метод (он же ширину (breadth-first search, BFS))
             while (_indexEnd - _indexBegin > 0)
@@ -682,18 +697,18 @@ namespace Vge.World.Light
                 _indexEnd = _indexActive;
                 if (_indexBegin == 0)
                 {
-                    _indexBegin = 388096;
+                    _indexBegin = _indexStep2;
                     _indexActive = 0;
                 }
                 else
                 {
                     _indexBegin = 0;
-                    _indexActive = 388096;
+                    _indexActive = _indexStep2;
                 }
             }
             _indexEnd = indexBrighter;
             _indexActive = 0;
-            _indexBegin = 776192;
+            _indexBegin = _indexStep3;
         }
 
         #endregion
@@ -726,7 +741,7 @@ namespace Vge.World.Light
             int yco;
             // значения LightValue и LightOpacity
             byte lo;
-            _indexActive = _indexBegin == 0 ? 388096 : 0;
+            _indexActive = _indexBegin == 0 ? _indexStep2 : 0;
 
             int numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
 
@@ -781,13 +796,13 @@ namespace Vge.World.Light
                 _indexEnd = _indexActive;
                 if (_indexBegin == 0)
                 {
-                    _indexBegin = 388096;
+                    _indexBegin = _indexStep2;
                     _indexActive = 0;
                 }
                 else
                 {
                     _indexBegin = 0;
-                    _indexActive = 388096;
+                    _indexActive = _indexStep2;
                 }
             }
             return true;
@@ -820,9 +835,9 @@ namespace Vge.World.Light
             int yco;
             // значения LightValue и LightOpacity
             byte lo;
-            _indexActive = _indexBegin == 0 ? 388096 : 0;
+            _indexActive = _indexBegin == 0 ? _indexStep2 : 0;
             // Индекс для массива осветления
-            int indexBrighter = 776192;
+            int indexBrighter = _indexStep3;
             // Цикл обхода по древу, уровневым метод (он же ширину (breadth-first search, BFS))
             while (_indexEnd - _indexBegin > 0)
             {
@@ -883,18 +898,18 @@ namespace Vge.World.Light
                 _indexEnd = _indexActive;
                 if (_indexBegin == 0)
                 {
-                    _indexBegin = 388096;
+                    _indexBegin = _indexStep2;
                     _indexActive = 0;
                 }
                 else
                 {
                     _indexBegin = 0;
-                    _indexActive = 388096;
+                    _indexActive = _indexStep2;
                 }
             }
             _indexEnd = indexBrighter;
             _indexActive = 0;
-            _indexBegin = 776192;
+            _indexBegin = _indexStep3;
         }
 
         #endregion

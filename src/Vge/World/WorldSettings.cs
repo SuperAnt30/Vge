@@ -14,7 +14,7 @@
         /// </summary>
         public byte ActiveRadius { get; protected set; } = 8;
         /// <summary>
-        /// Количество секций в чанке. Максимально 24 (ограничение по свету, и 31 ограничение по int)
+        /// Количество секций в чанке. Максимально 32
         /// </summary>
         public byte NumberChunkSections { get; protected set; } = 8;
 

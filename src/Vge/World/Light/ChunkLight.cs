@@ -33,7 +33,7 @@ namespace Vge.World.Light
         private readonly WorldLight _worldLight;
         /// <summary>
         /// Список блоков которые светятся
-        /// Координаты в битах yyyy yyyy yyyy yyyy  yyyy yyyy zzzz xxxx
+        /// Координаты в битах 0000 0000 0000 000y  yyyy yyyy zzzz xxxx
         /// </summary>
         private List<uint> _lightBlocks = new List<uint>();
 
@@ -44,11 +44,11 @@ namespace Vge.World.Light
         }
 
         /// <summary>
-        /// Добавить блок с блочным освещением, xz 0..15, y 0..383
+        /// Добавить блок с блочным освещением, xz 0..15, y 0..510
         /// </summary>
         public void SetLightBlock(int x, int y, int z) => _lightBlocks.Add((uint)(y << 8 | z << 4 | x));
         /// <summary>
-        /// Добавить массив блок с блочным освещением, xz 0..15, y 0..383
+        /// Добавить массив блок с блочным освещением, xz 0..15, y 0..510
         /// </summary>
         public void SetLightBlocks(uint[] lightBlocks) => _lightBlocks.AddRange(lightBlocks);
 
@@ -112,7 +112,7 @@ namespace Vge.World.Light
                         && Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[(y1 & 15) << 8 | z << 4 | x] & 0xFFF] >> 4 != 0)
                     {
                         // первый блок препятствия сверху
-                        HeightMap[index] = (byte)y;
+                        HeightMap[index] = (ushort)y;
                         if (_heightMapMax < y) _heightMapMax = y;
                         break;
                     }
@@ -322,7 +322,7 @@ namespace Vge.World.Light
 
             int yh2 = yh0;
             if (yh2 > numberBlocks + 1) yh2 = numberBlocks + 1;
-            HeightMap[zb << 4 | xb] = (byte)yh2;
+            HeightMap[zb << 4 | xb] = (ushort)yh2;
             if (_heightMapMax < yh2) _heightMapMax = yh2;
 
             if (yh < yh0)

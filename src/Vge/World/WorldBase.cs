@@ -33,7 +33,12 @@ namespace Vge.World
         /// </summary>
         public readonly WorldLight Light;
 
-        public WorldBase() => Light = new WorldLight(this);
+        public WorldBase(int numberBlocksToLight) => Light = new WorldLight(this, numberBlocksToLight);
+
+        /// <summary>
+        /// Получить время в тактах объекта Stopwatch с момента запуска проекта
+        /// </summary>
+        public virtual long ElapsedTicks() => 0;
 
         #region Chunk
 

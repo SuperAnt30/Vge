@@ -139,7 +139,7 @@ namespace Vge.World.Chunk
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
                 //int h = NumberSections == 8 ? 63 : 95;
-                int h = NumberSections == 8 ? 47 : 95;
+                int h = NumberSections == 8 ? 47 : 195;
                 // Временно льём тест
 
                 ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
@@ -226,7 +226,7 @@ namespace Vge.World.Chunk
                 {
                     for (int z = 0; z < 16; z++)
                     {
-                        for (int y = h - 22; y < h - 2; y++)
+                        for (int y =  12; y < h - 2; y++)
                         {
                             SetBlockStateD(x, y, z, new BlockState(0));
                         }
@@ -336,6 +336,10 @@ namespace Vge.World.Chunk
                 SetBlockStateD(11, h - 1, 3, new BlockState(0));
                 SetBlockStateD(12, h - 1, 4, new BlockState(0));
                 SetBlockStateD(12, h - 1, 3, new BlockState(0));
+                SetBlockStateD(11, h - 2, 4, new BlockState(0));
+                SetBlockStateD(11, h - 2, 3, new BlockState(0));
+                SetBlockStateD(12, h - 2, 4, new BlockState(0));
+                SetBlockStateD(12, h - 2, 3, new BlockState(0));
 
                 SetBlockStateD(13, h, 8, new BlockState(1));
                 SetBlockStateD(12, h, 7, new BlockState(1, 1));
@@ -703,7 +707,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Внести данные в zip буфере
         /// </summary>
-        public void SetBinaryZip(byte[] bufferIn, bool biom, int flagsYAreas)
+        public void SetBinaryZip(byte[] bufferIn, bool biom, uint flagsYAreas)
         {
             using (MemoryStream inStream = new MemoryStream(bufferIn))
             using (GZipStream bigStream = new GZipStream(inStream, CompressionMode.Decompress))

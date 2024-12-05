@@ -1,4 +1,5 @@
-﻿using Vge.World.Block;
+﻿using System.Diagnostics;
+using Vge.World.Block;
 using WinGL.Util;
 /// <summary>
 /// ConstEngine
@@ -6,6 +7,16 @@ using WinGL.Util;
 /// </summary>
 public sealed class Ce
 {
+    /// <summary>
+    /// Для перевода тактов в мили секунды Stopwatch.Frequency / 1000;
+    /// </summary>
+    public static readonly long FrequencyMs;
+
+    static Ce()
+    {
+        FrequencyMs = Stopwatch.Frequency / 1000;
+    }
+
     #region Debug
 
     /// <summary>
