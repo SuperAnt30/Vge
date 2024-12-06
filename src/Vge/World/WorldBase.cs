@@ -27,6 +27,10 @@ namespace Vge.World
         /// Посредник чанков
         /// </summary>
         public ChunkProvider ChunkPr { get; protected set; }
+        /// <summary>
+        /// Настройки мира
+        /// </summary>
+        public WorldSettings Settings { get; protected set; }
 
         /// <summary>
         /// Объект обработки освещения для мира

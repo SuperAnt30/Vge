@@ -187,7 +187,7 @@ namespace Vge.Renderer.World
             Render.DrawWorldBegin();
 
             //Render.LightMap.Update(Glm.Cos((_game.TickCounter + timeIndex) * .01f), .24f );
-            Render.LightMap.Update(1, .12f);
+            Render.LightMap.Update(_game.World.Settings.HasNoSky, 1, .12f);
             //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
 
             // Обновить кадр основного игрока, камера и прочее

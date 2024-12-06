@@ -334,7 +334,7 @@ namespace Vge.World.Light
         /// <param name="x">глобальная позиция блока x</param>
         /// <param name="y">глобальная позиция блока y</param>
         /// <param name="z">глобальная позиция блока z</param>
-        /// <param name="differenceOpacity">Разница в непрозрачности</param>
+        /// <param name="differenceOpacity">Разница в непрозрачности, только для небесного освещения</param>
         /// <param name="replaceAir">блок заменён на воздух или на оборот воздух заменён на блок</param>
         public void CheckLightFor(BlockPos blockPos, bool differenceOpacity, bool isModify, bool isModifyRender)
         {

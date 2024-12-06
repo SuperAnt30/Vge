@@ -14,6 +14,10 @@ namespace Vge.Network.Packets.Server
         /// </summary>
         public byte IdWorld { get; private set; }
         /// <summary>
+        /// Не имеет неба, true
+        /// </summary>
+        public bool HasNoSky { get; private set; }
+        /// <summary>
         /// Количество секций в чанке
         /// </summary>
         public byte NumberChunkSections { get; private set; }
@@ -24,6 +28,7 @@ namespace Vge.Network.Packets.Server
         public PacketS07RespawnInWorld(byte idWorld, WorldSettings worldSettings)
         {
             NumberChunkSections = worldSettings.NumberChunkSections;
+            HasNoSky = worldSettings.HasNoSky;
             IdWorld = idWorld;
         }
 
@@ -31,12 +36,14 @@ namespace Vge.Network.Packets.Server
         {
             IdWorld = stream.Byte();
             NumberChunkSections = stream.Byte();
+            HasNoSky = stream.Bool();
         }
 
         public void WritePacket(WritePacket stream)
         {
             stream.Byte(IdWorld);
             stream.Byte(NumberChunkSections);
+            stream.Bool(HasNoSky);
         }
     }
 }

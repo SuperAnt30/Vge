@@ -212,6 +212,7 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Up()
         {
+            side = 0;
             _sideLiquid = Gi.Block.GetSideLiquid(0);
             _stateLight = _resultSide[0];
             _angleFlow = BlockLiquid.GetAngleFlow(l11, l01, l10, l12, l21);
@@ -380,6 +381,7 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SideAssign(int index)
         {
+            side = index;
             _sideLiquid = Gi.Block.GetSideLiquid(index);
             _stateLight = _resultSide[index];
             _GenLightMix();
@@ -427,20 +429,26 @@ namespace Vge.Renderer.World
             yc = y >> 4;
             if (isNearbyChunk)
             {
-                if (_storage.KeyCash != _keyCash)
+                // Определяем рабочий чанк соседнего блока
+                if (x >> 4 == 0 && z >> 4 == 0)
                 {
-                    // Если разный кеш, значит разные чанки, берём из соседей
+                    // Текущий чанк
+                    if (_storage.KeyCash != _keyCash || _storage.Index != yc)
+                    {
+                        // Прошли проверку, что прошлый раз в кеше другой, надо заменить
+                        _storage = _chunkRender.StorageArrays[yc];
+                    }
+                }
+                else
+                {
+                    // Соседний чанк
                     _chunkCheck = _chunkRender.Chunk(x >> 4, z >> 4);
                     if (_chunkCheck == null || !_chunkCheck.IsChunkPresent)
                     {
-                        return -1;
+                        return -2;
                     }
+                    // Сразу присваеваю без проверок, так-как если соседний чанк, то в кеше маловероятно, что он же
                     _storage = _chunkCheck.StorageArrays[yc];
-                }
-                else if (_storage.Index != yc)
-                {
-                    // Если изменён только вверх
-                    _storage = _chunkRender.StorageArrays[yc];
                 }
             }
             else

@@ -524,6 +524,7 @@ namespace Vge.Management
         {
             IdWorld = packet.IdWorld;
             _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
+            _game.World.Settings.PacketRespawnInWorld(packet);
             _game.WorldRender.RespawnInWorld();
             _heightChinkFrustumCulling = _game.World.ChunkPrClient.Settings.NumberBlocks;
         }

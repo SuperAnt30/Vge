@@ -272,16 +272,20 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                SetBlockStateD(4, h + 1, 8, new BlockState(Brol));
-                Light.SetLightBlock(4, h + 1, 8);
+                //SetBlockStateD(4, h + 1, 8, new BlockState(Brol));
+                //Light.SetLightBlock(4, h + 1, 8);
 
-                for (int x = 0; x < 8; x++)
-                {
-                    for (int z = 2; z < 11; z++)
-                    {
-                        SetBlockStateD(x, h + 6, z, new BlockState(Limestone));
-                    }
-                }
+                //for (int x = 0; x < 8; x++)
+                //{
+                //    for (int z = 2; z < 11; z++)
+                //    {
+                //      //  SetBlockStateD(x, h + 6, z, new BlockState(Limestone));
+                //        SetBlockStateD(x, h + 16, z, new BlockState(Lava));
+                //        SetBlockStateD(x, h + 17, z, new BlockState(Lava));
+                //        SetBlockStateD(x, h + 18, z, new BlockState(Lava));
+                //        SetBlockStateD(x, h + 19, z, new BlockState(Lava));
+                //    }
+                //}
 
 
                 for (int y = h; y < h + 32; y++)
@@ -469,7 +473,14 @@ namespace Vge.World.Chunk
 
                 // Пробуем загрузить с файла
                 //World.Filer.StartSection("Hms " + CurrentChunkX + "," + CurrentChunkY);
-                Light.GenerateHeightMapSky(); // 0.09 - 0.13 мс
+                if (World.Settings.HasNoSky)
+                {
+                    Light.GenerateHeightMap();
+                }
+                else
+                {
+                    Light.GenerateHeightMapSky(); // 0.09 - 0.13 мс
+                }
                 //World.Filer.EndSectionLog();
                 IsHeightMapSky = true;
                 for (x = -1; x <= 1; x++)
@@ -507,9 +518,9 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                //World.Filer.StartSection("Sls " + CurrentChunkX + "," + CurrentChunkY);
                 // Боковое небесное освещение и блочное освещение
-                Light.StartRecheckGaps(); // 0.12 - 0.2 мс
+                //World.Filer.StartSection("Sls " + CurrentChunkX + "," + CurrentChunkY);
+                Light.StartRecheckGaps(World.Settings.HasNoSky); // 0.12 - 0.2 мс
                 //World.Filer.EndSectionLog();
                 IsSideLightSky = true;
 
@@ -637,6 +648,11 @@ namespace Vge.World.Chunk
                 if (differenceOpacity || block.LightValue != blockOld.LightValue)
                 {
                     World.Light.ActionChunk(this);
+                    if (differenceOpacity && World.Settings.HasNoSky)
+                    {
+                        // Отключаем проверку небесного освещения
+                        differenceOpacity = false;
+                    }
                     World.Light.CheckLightFor(blockPos, differenceOpacity, isModify, isModifyRender);//, replaceAir);
                 }
                 else

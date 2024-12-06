@@ -19,10 +19,6 @@ namespace Vge.World
         /// </summary>
         public readonly string PathWorld;
         /// <summary>
-        /// Настройки мира
-        /// </summary>
-        public readonly WorldSettings Settings;
-        /// <summary>
         /// Основной сервер
         /// </summary>
         public readonly GameServer Server;

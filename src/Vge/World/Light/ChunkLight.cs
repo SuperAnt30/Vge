@@ -227,11 +227,17 @@ namespace Vge.World.Light
         /// <summary>
         /// Запуск проверки бокового небесного освещения
         /// </summary>
-        public void StartRecheckGaps()
+        /// <param name="hasNoSky">Неба нет</param>
+        public void StartRecheckGaps(bool hasNoSky)
         {
             _worldLight.ActionChunk(Chunk);
             if (!_worldLight.UpChunks()) return;
-            _worldLight.HeavenSideLighting();
+
+            if (!hasNoSky)
+            {
+                // Небесное боковое освещение
+                _worldLight.HeavenSideLighting();
+            }
 
             if (!Chunk.IsLoaded)
             {

@@ -1,4 +1,6 @@
-﻿namespace Vge.World
+﻿using Vge.Network.Packets.Server;
+
+namespace Vge.World
 {
     /// <summary>
     /// Опции мира
@@ -18,5 +20,13 @@
         /// </summary>
         public byte NumberChunkSections { get; protected set; } = 8;
 
+        /// <summary>
+        /// Пакет Возраждение в мире
+        /// </summary>
+        public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
+        {
+            HasNoSky = packet.HasNoSky;
+            NumberChunkSections = packet.NumberChunkSections;
+        }
     }
 }

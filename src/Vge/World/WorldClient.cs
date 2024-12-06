@@ -34,6 +34,7 @@ namespace Vge.World
             Game = game;
             IsRemote = true;
             Rnd = new Rand();
+            Settings = new WorldSettings();
             WorldRender = game.WorldRender;
             ChunkPr = ChunkPrClient = new ChunkProviderClient(this);
             Filer = new Profiler(game.Log, "[Client] ");
