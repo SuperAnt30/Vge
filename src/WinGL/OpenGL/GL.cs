@@ -475,7 +475,18 @@ namespace WinGL.OpenGL
         /// <param name="type">Specifies the type of the values in indices.	Must be one of OpenGL.GL_UNSIGNED_BYTE, OpenGL.GL_UNSIGNED_SHORT, or OpenGL.GL_UNSIGNED_INT.</param>
         /// <param name="indices">Specifies a pointer to the location where the indices are stored.</param>
         public void DrawElements(uint mode, int count, uint type, IntPtr indices)
-            => glDrawElements(mode, count, type, indices);
+        {
+            // TODO::2024-12-06 GL Crash
+            try
+            {
+                glDrawElements(mode, count, type, indices);
+            }
+            catch(Exception ex)
+            {
+                return;
+            }
+        }
+            //=> glDrawElements(mode, count, type, indices);
 
         /// <summary>
 		/// Use this function to query OpenGL parameter values.
@@ -584,6 +595,10 @@ namespace WinGL.OpenGL
 		/// <param name="mode">The mode to set to (points, lines, or filled).</param>
 		public void PolygonMode(uint face, uint mode)
             => glPolygonMode(face, mode);
+
+        public void DepthMask(byte flag) => glDepthMask(flag);
+
+        public void PolygonOffset(float factor, float units) => glPolygonOffset(factor, units);
 
         #endregion
 

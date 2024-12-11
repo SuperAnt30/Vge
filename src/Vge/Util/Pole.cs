@@ -1,4 +1,6 @@
-﻿namespace Vge.Util
+﻿using WinGL.Util;
+
+namespace Vge.Util
 {
   /**
    *      (North)
@@ -86,6 +88,18 @@
                 }
             }
             return side;
+        }
+
+        /// <summary>
+        /// Получите облицовку, соответствующую заданному углу (0-360). Угол 0 - SOUTH, угол 90 - WEST.
+        /// </summary>
+        /// <param name="angle">угол в радианах</param>
+        public static Pole FromAngle(float angle)
+        {
+            if (angle >= -Glm.Pi45 && angle <= Glm.Pi45) return Pole.North;
+            else if (angle > Glm.Pi45 && angle < Glm.Pi135) return Pole.East;
+            else if (angle < -Glm.Pi45 && angle > -Glm.Pi135) return Pole.West;
+            return Pole.South;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Mvk2.World
     {
         public WorldSettingsNightmare()
         {
-            HasNoSky = true;
+           // HasNoSky = true;
             ActiveRadius = 3;
             NumberChunkSections = 16;
         }

@@ -24,7 +24,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Текстурная карта освещения
         /// </summary>
-        public readonly TextureLightMap LightMap;
+        public TextureLightMap LightMap { get; protected set; }
 
         /// <summary>
         /// Шейдоры для GUI цветных текстур без смещения
@@ -75,11 +75,11 @@ namespace Vge.Renderer
         public RenderMain(WindowMain window) : base(window)
         {
             Texture = new TextureMap(gl);
-            LightMap = new TextureLightMap(gl);
             ShGuiColor = new ShaderGuiColor(gl);
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
             ShLine = new ShaderLine(gl);
+            _Initialize();
         }
 
         /// <summary>
@@ -88,6 +88,14 @@ namespace Vge.Renderer
         public void InitializeFirst()
         {
             _SetTextureSplash(Options.PathTextures + "Splash.png");
+        }
+
+        /// <summary>
+        /// Инициализация различных библиотек
+        /// </summary>
+        protected virtual void _Initialize()
+        {
+            LightMap = new TextureLightMap(gl);
         }
 
         public override void Dispose()

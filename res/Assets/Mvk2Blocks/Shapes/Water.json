@@ -4,7 +4,7 @@
         Still: "Blocks/water_still"
     },
     Element: {
-        TypeColor:4,
+        TypeColor:3,
         Wind:1,
         Faces: [
             { Texture:"Still", Side:"Down", Pause:10 },

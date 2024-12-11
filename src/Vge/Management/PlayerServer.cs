@@ -182,6 +182,7 @@ namespace Vge.Management
             ChunkBase chunk;
             _loadedNull.Clear();
             byte quantityBatch = 0;
+            
             while (_clientChunksSort.Count > 0 && quantityBatch < _desiredBatchSize)
             {
                 index = _clientChunksSort.GetLast();
@@ -200,7 +201,8 @@ namespace Vge.Management
                         SendPacket(new PacketS20ChunkSend());
                     }
                     quantityBatch++;
-
+                    // TODO::2024-12-07 подумать как (PacketS21ChunkData) создание вынести в поток мира!
+                    // В основном потоке загрузка компрессия чанков, занимает примерн 1 мс за чанк
                     SendPacket(new PacketS21ChunkData(chunk, true, uint.MaxValue));
                 }
                 else
@@ -275,18 +277,25 @@ namespace Vge.Management
             ushort idBlock = 0;
             for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
             {
-                if (Ce.Blocks.BlockAlias[i] == "Brol")
+                if (Ce.Blocks.BlockAlias[i] == "Debug")
                 {
                     idBlock = i;
                     break;
                 }
             }
 
+            // Определяем на какую сторону смотрит игрок
+            Pole pole = PoleConvert.FromAngle(Position.Yaw);
+
             WorldServer world = GetWorld();
-            BlockState blockState = world.GetBlockState(packet.GetBlockPos());
+            BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
             BlockBase block = blockState.GetBlock();
+
             BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
-            world.SetBlockState(blockPos, new BlockState(idBlock), world.IsRemote ? 14 : 31);
+            // ВРЕМЕННО!!!
+            blockState = block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, pole, packet.Facing);
+            //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
+            world.SetBlockState(blockPos, blockState, world.IsRemote ? 14 : 31);
         }
 
         /// <summary>
@@ -306,12 +315,14 @@ namespace Vge.Management
                 // Желаемое количество при передаче по сети
                 _batchSizeReceive = Sundry.RecommendedQuantityBatch(packet.Time,
                 packet.Quantity, _batchSizeReceive, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTimeUnpack);
+                //server.Log.Log("bsr:" + _batchSizeReceive + " T:" + packet.Time);
             }
             else
             {
                 // Желаемое количество при распаковке на клиенте
                 _batchSizeUnpack = Sundry.RecommendedQuantityBatch(packet.Time,
                 packet.Quantity, _batchSizeUnpack, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTimeUnpack);
+                //server.Log.Log("bsu:" + _batchSizeUnpack + " T:" + packet.Time);
             }
             // Минимальное используем
             _desiredBatchSize = Mth.Min(_batchSizeReceive, _batchSizeUnpack);

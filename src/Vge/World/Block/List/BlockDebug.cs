@@ -1,4 +1,7 @@
-﻿namespace Vge.World.Block.List
+﻿using Vge.Util;
+using WinGL.Util;
+
+namespace Vge.World.Block.List
 {
     /// <summary>
     /// Универсальный объект твёрдых блоков
@@ -15,5 +18,19 @@
         /// Стороны целого блока для рендера
         /// </summary>
         public override QuadSide[] GetQuads(uint met, int xb, int zb) => _GetQuads((int)met);
+
+        /// <summary>
+        /// Действие перед размещеннием блока, для определения метданных
+        /// </summary>
+        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, 
+            Pole side, Vector3 facing)
+        {
+            // Определяем на какую сторону смотрит игрок
+            if (side == Pole.East) return state.NewMet(2);
+            if (side == Pole.South) return state.NewMet(1);
+            if (side == Pole.North) return state.NewMet(3);
+            return state.NewMet(0);
+        }
+            
     }
 }

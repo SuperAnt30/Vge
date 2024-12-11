@@ -112,9 +112,12 @@ namespace Vge.World.Chunk
 
                 _counterLBS += count;
                 //" Lbs:" + LoadingBatchSize + "|" + _counterLBSprev
+                //int time = (int)(_worldServer.Server.Time() - timeBegin);
                 LoadingBatchSize = Sundry.RecommendedQuantityBatch(
                     (int)(_worldServer.Server.Time() - timeBegin),
                     count, LoadingBatchSize, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTime);
+
+                //_worldServer.Server.Log.Log("Lbs: " + LoadingBatchSize + " t:" + time);
             }
         }
 

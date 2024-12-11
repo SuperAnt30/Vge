@@ -1,4 +1,5 @@
 {
+    АmbientOcclusion: false,
     LightValue: 15,
     Variants: [
         { Shape: "Brol" }

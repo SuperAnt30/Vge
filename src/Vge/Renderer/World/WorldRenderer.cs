@@ -98,18 +98,22 @@ namespace Vge.Renderer.World
             int quantity;
             while (_flagRenderLoopRunning)
             {
-                timeBegin = stopwatch.ElapsedMilliseconds;
-                quantity = _renderQueues.CountForward + _renderAlphaQueues.CountForward;
-
-                if (quantity > 0)
+                // Alpha
+                if (_renderAlphaQueues.CountForward > 0)
                 {
-                    quantity = _RenderQueues(true, _renderQueues)
-                        + _RenderQueues(false, _renderAlphaQueues);
+                    _RenderQueues(false, _renderAlphaQueues);
+                }
+
+                timeBegin = stopwatch.ElapsedMilliseconds;
+
+                if (_renderQueues.CountForward > 0)
+                {
+                    quantity = _RenderQueues(true, _renderQueues);
 
                     //"WR dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
                     _batchChunksTime = (int)(stopwatch.ElapsedMilliseconds - timeBegin);
-                    _desiredBatchSize = Sundry.RecommendedQuantityBatch(_batchChunksTime, 
-                        quantity, _desiredBatchSize, Ce.MaxDesiredBatchSize, Ce.TickTime);
+                    _desiredBatchSize = Sundry.RecommendedQuantityBatch(_batchChunksTime,
+                        quantity, _desiredBatchSize, Ce.MaxDesiredBatchSize, Ce.TickTime * 2);
                 }
                 // Ожидаем сигнала
                 _waitHandler.WaitOne();
@@ -141,6 +145,7 @@ namespace Vge.Renderer.World
                 chunkRender.ClearBufferChunks();
                 if (!_flagRenderLoopRunning) break;
             }
+            list.ClearBackward();
 
             return count;
         }
@@ -228,6 +233,7 @@ namespace Vge.Renderer.World
             int count = _game.Player.FrustumCulling.Count;
             ChunkRender chunkRender;
             int batchCount = 0;
+            int batchCountAlpha = 0;
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _game.Player.FrustumCulling[i];
@@ -238,8 +244,8 @@ namespace Vge.Renderer.World
                     // Можем ли мы в этом тике пополнять партию
                     if (batchCount < _desiredBatchSize)
                     {
-                        // Проверяем надо ли рендер для чанка, и возможно ли по времени
-                        if (chunkRender.IsModifiedRender)
+                        // Проверяем надо ли рендер для чанка, и проверка загрузки рендера
+                        if (chunkRender.IsModifiedRender && _renderQueues.CountBackward < 3)
                         {
                             // Проверяем занят ли чанк уже рендером
                             if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
@@ -252,15 +258,15 @@ namespace Vge.Renderer.World
                                 _renderQueues.Add(chunkRender);
                             }
                         }
-                        // Проверяем надо ли рендер для псевдо чанка, и возможно ли по времени
-                        else if (chunkRender.IsModifiedRenderAlpha)
+                        // Проверяем надо ли рендер для псевдо чанка, и проверка загрузки рендера
+                        else if (chunkRender.IsModifiedRenderAlpha && _renderAlphaQueues.CountBackward < 10)
                         {
                             // Проверяем занят ли чанк уже рендером
                             if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
                             {
                                 // Обновление рендера псевдочанка
                                 Debug.CountUpdateChunckAlpha++;
-                                batchCount++;
+                                batchCountAlpha++;
                                 chunkRender.StartRenderingAlpha();
                                 chunkRender.UpBufferChunks();
                                 _renderAlphaQueues.Add(chunkRender);
@@ -276,7 +282,7 @@ namespace Vge.Renderer.World
                     _arrayChunkRender.Add(chunkRender);
                 }
             }
-            if (batchCount > 0)
+            if (batchCount > 0 || batchCountAlpha > 0)
             {
                 // Сигнализируем, что waitHandler в сигнальном состоянии
                 _waitHandler.Set();
@@ -330,6 +336,11 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxelAlpha()
         {
+           // gl.Enable(GL.GL_DEPTH_TEST);
+            gl.DepthMask(0);
+            gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
+            gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
+
             Render.ShVoxel.Bind(gl);
 
             int count = _arrayChunkRender.Count - 1;
@@ -347,6 +358,10 @@ namespace Vge.Renderer.World
                     chunkRender.DrawAlpha();
                 }
             }
+
+            gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
+            gl.PolygonOffset(0, 0);
+            gl.DepthMask(1);
         }
 
         /// <summary>

@@ -488,7 +488,11 @@ namespace Vge.Renderer.World
                 return _metCheck;
             }
 
-            if (_blockCheck.CullFaceAll) return _blockCheck.Translucent ? -3 : - 2;
+            if (_blockCheck.CullFaceAll 
+                || _blockCheck.IsCullFace((uint)_metCheck, 1)) // Так же проверяем низ, чтоб был полный
+            {
+                return _blockCheck.Translucent ? -3 : -2;
+            }
             return -1;
             
             
@@ -552,21 +556,15 @@ namespace Vge.Renderer.World
         /// </summary>
         /// <param name="bx">0-15</param>
         /// <param name="bz">0-15</param>
-        /// <returns></returns>
-        protected override Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
+        protected override Vector3 _GetBiomeColor(ChunkRender chunk, int bx, int bz)
         {
             // подготовка для теста плавности цвета
-            if (_sideLiquid.TypeColor == 0)
-            {
-                // Нет цвета
-                return ColorWhite;
-            }
-            if (_sideLiquid.TypeColor == 4)
-            {
-                // Свой цвет
-                return Gi.Block.Color;
-            }
-            return ColorWhite;
+            // Нет цвета
+            if (_sideLiquid.TypeColor == 0) return ColorWhite;
+            // Свой цвет
+            if (_sideLiquid.TypeColor == 4) return Gi.Block.Color;
+            // Цвет от биома
+            return chunk.GetColorSideFromBiom(_sideLiquid.TypeColor, bx, bz);
         }
     }
 }

@@ -35,8 +35,7 @@ namespace Vge.World.Block
         public static void Initialization(WindowMain window)
         {
             // Создаём графический объект гдля генерации атласа блокоы
-            //BlockAtlas.CreateImage(64, 16);
-            BlockAtlas.CreateImage(window, 32, 16); // (64, 16);
+            BlockAtlas.CreateImage(window, 64, 16); // (64, 16);
 
             _window = window;
             _window.LScreen.Process(L.T("CreateBlocks"));

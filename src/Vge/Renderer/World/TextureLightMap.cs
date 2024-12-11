@@ -206,6 +206,7 @@ namespace Vge.Renderer.World
                 float cb = 0.25F + lb3 * 0.75F;
                 //}
 
+                // На край смахивает
                 //cr = 0.32F + lb * 0.75F;
                 //cg = 0.28F + lb2 * 0.75F;
                 //cb = 0.25F + lb3 * 0.75F;
@@ -213,23 +214,23 @@ namespace Vge.Renderer.World
                 float light2;
 
                 //if (this.mc.thePlayer.isPotionActive(Potion.nightVision))
-                //{ // зелье ночного виденья
-                //light = 1f;// this.func_180438_a(this.mc.thePlayer, p_78472_1_);
-                //light2 = 1.0F / cr;
+                { // зелье ночного виденья
+                    //light = .3f;// this.func_180438_a(this.mc.thePlayer, p_78472_1_);
+                    //light2 = 1.0F / cr;
 
-                //if (light2 > 1f / cg) light2 = 1f / cg;
-                //if (light2 > 1f / cb) light2 = 1f / cb;
+                    //if (light2 > 1f / cg) light2 = 1f / cg;
+                    //if (light2 > 1f / cb) light2 = 1f / cb;
 
-                //cr = cr * (1f - light) + cr * light2 * light;
-                //cg = cg * (1f - light) + cg * light2 * light;
-                //cb = cb * (1f - light) + cb * light2 * light;
-                //}
+                    //cr = cr * (1f - light) + cr * light2 * light;
+                    //cg = cg * (1f - light) + cg * light2 * light;
+                    //cb = cb * (1f - light) + cb * light2 * light;
+                }
 
                 if (cr > 1f) cr = 1f;
                 if (cg > 1f) cg = 1f;
                 if (cb > 1f) cb = 1f;
 
-                light = .5f;// this.mc.gameSettings.gammaSetting; // яркость экрана  .1 - .5
+                light = .1f;// this.mc.gameSettings.gammaSetting; // яркость экрана  .1 - .5
                 float cr2 = 1f - cr;
                 float cg2 = 1f - cg;
                 float cb2 = 1f - cb;

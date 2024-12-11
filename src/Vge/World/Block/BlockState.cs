@@ -56,6 +56,8 @@ namespace Vge.World.Block
             // id воздуха, но мет данные 1
             Id = 0;
             Met = 1;
+            LightBlock = 0;
+            LightSky = 15;
             return this;
         }
 

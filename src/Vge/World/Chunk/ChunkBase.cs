@@ -336,10 +336,10 @@ namespace Vge.World.Chunk
                 SetBlockStateD(12, h + 5, 5, new BlockState(GlassRed));
                 SetBlockStateD(12, h + 6, 5, new BlockState(GlassGreen));
 
-                SetBlockStateD(11, h - 1, 4, new BlockState(0));
-                SetBlockStateD(11, h - 1, 3, new BlockState(0));
-                SetBlockStateD(12, h - 1, 4, new BlockState(0));
-                SetBlockStateD(12, h - 1, 3, new BlockState(0));
+                SetBlockStateD(11, h - 1, 4, new BlockState(1));
+                SetBlockStateD(11, h - 1, 3, new BlockState(1));
+                SetBlockStateD(12, h - 1, 4, new BlockState(1));
+                SetBlockStateD(12, h - 1, 3, new BlockState(1));
                 SetBlockStateD(11, h - 2, 4, new BlockState(0));
                 SetBlockStateD(11, h - 2, 3, new BlockState(0));
                 SetBlockStateD(12, h - 2, 4, new BlockState(0));
@@ -786,80 +786,6 @@ namespace Vge.World.Chunk
             }
             IsChunkPresent = true;
         }
-
-        /*
-        /// <summary>
-        /// Задать чанк байтами
-        /// </summary>
-        public void SetBinary(byte[] buffer, bool biom, int flagsYAreas)
-        {
-            if (buffer == null)
-            {
-                throw new Exception(Sr.EmptyArrayIsNotAllowed);
-            }
-
-            int sy, i, value;
-            ushort countMet;
-            int count = 0;
-            ushort id, key;
-            uint met;
-            for (sy = 0; sy < NumberSections; sy++)
-            {
-                if ((flagsYAreas & 1 << sy) != 0)
-                {
-                    ChunkStorage storage = StorageArrays[sy];
-                    for (i = 0; i < 4096; i++)
-                    {
-                        storage.LightBlock[i] = buffer[count++];
-                    }
-                    for (i = 0; i < 4096; i++)
-                    {
-                        storage.LightSky[i] = buffer[count++];
-                    }
-
-                    if (buffer[count++] == 0)
-                    {
-                        storage.ClearNotLight();
-                    }
-                    else
-                    {
-                        for (i = 0; i < 4096; i++)
-                        {
-                            value = buffer[count++] | buffer[count++] << 8;
-                            id = (ushort)(value & 0xFFF);
-                            storage.SetData(i, id, (ushort)(value >> 12));
-                            if (!Ce.Blocks.BlocksMetadata[id]) storage.Metadata.Remove((ushort)i);
-                        }
-                        countMet = (ushort)(buffer[count++] | buffer[count++] << 8);
-                        for (i = 0; i < countMet; i++)
-                        {
-                            key = (ushort)(buffer[count++] << 8 | buffer[count++]);
-                            met = (uint)(buffer[count++] << 24 | buffer[count++] << 16
-                                | buffer[count++] << 8 | buffer[count++]);
-                            if (storage.Metadata.ContainsKey(key))
-                            {
-                                storage.Metadata[key] = met;
-                            }
-                            else
-                            {
-                                storage.Metadata.Add(key, met);
-                            }
-                        }
-                    }
-                }
-            }
-            // биом
-            if (biom)
-            {
-                for (i = 0; i < 256; i++)
-                {
-                    count++;
-                    // biome[i] = (EnumBiome)buffer[count++];
-                }
-            }
-            IsChunkPresent = true;
-        }
-        */
 
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Chunk;
@@ -386,7 +387,6 @@ namespace Vge.Renderer.World
                 _sectionsBuffer[y].IsModifiedRender = false;
             }
             _meshDense.StatusRendering();
-            _meshAlpha.StatusRendering();
         }
 
         /// <summary>
@@ -430,6 +430,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Получить соседний чанк, где x и y -1..1
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkRender Chunk(int x, int y) => _chunks[Ce.GetAreaOne8(x, y)];
 
         #endregion
@@ -468,5 +469,20 @@ namespace Vge.Renderer.World
         public void NotRenderingAlpha() => _meshAlpha.IsModifiedRender = false;
 
         #endregion
+
+        /// <summary>
+        /// Получить цвет стороны от по координатам локальным блока 0..15
+        /// </summary>
+        /// <param name="typeColor">Цвет биома, 1 - трава, 2 - листа, 3 - вода</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 GetColorSideFromBiom(byte typeColor, int bx, int bz)
+        {
+            // Трава
+            if (typeColor == 1) return new Vector3(.56f, .73f, .35f);
+            // Вода
+            if (typeColor == 3) return new Vector3(.24f, .45f, .88f);
+
+            return BlockRenderFull.ColorWhite;
+        }
     }
 }

@@ -60,7 +60,6 @@ namespace Vge.World.Chunk
                 }
 
                 chunkRender.SetBinaryZip(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
-                //chunkRender.SetBinary(packet.BufferRead, packet.IsBiom, packet.FlagsYAreas);
 
                 if (isNew || packet.IsBiom)
                 {

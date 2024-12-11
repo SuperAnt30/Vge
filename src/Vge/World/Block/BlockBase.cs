@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Vge.Json;
 using Vge.Renderer.World;
 using Vge.Util;
@@ -296,7 +294,9 @@ namespace Vge.World.Block
         {
             if (IsAction)
             {
-                if (FullBlock) return true;
+                //if (FullBlock)
+                if (!Liquid)
+                    return true;
 
                 //// Если блок не полный, обрабатываем хитбокс блока
                 //AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
@@ -326,7 +326,8 @@ namespace Vge.World.Block
             Shadow = false;
             IsReplaceable = true;
             LightOpacity = 0;
-            //canDropPresent = false;
+
+            _quads = new QuadSide[][] { new QuadSide[] { new QuadSide(0) } };
         }
 
         #endregion
@@ -349,7 +350,7 @@ namespace Vge.World.Block
         public virtual SideLiquid GetSideLiquid(int index) => null;
 
         /// <summary>
-        /// Имеется ли отбраковка конкретноц стороны, конкретного варианта
+        /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
         public virtual bool IsCullFace(uint met, int indexSide) => _cullFaces[met][indexSide];
         /// <summary>
@@ -368,7 +369,7 @@ namespace Vge.World.Block
         /// <param name="met">Мет данные проверяющего блока</param>
         /// <param name="blockSide">Объект соседнего блока</param>
         /// <param name="metSide">Мет данные соседнего блока</param>
-        public bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide)
+        public virtual bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide)
         {
             ulong[] mask = _maskCullFaces[met][indexSide];
             ulong[] maskCheck = blockSide._maskCullFaces[metSide][PoleConvert.Reverse[indexSide]];
@@ -380,7 +381,24 @@ namespace Vge.World.Block
 
         #endregion
 
+        #region Методв для освещения
 
+        /// <summary>
+        /// Сколько света вычитается для прохождения этого блока, зависящий от Metdata
+        /// </summary>
+        public virtual int GetLightOpacity(int met) => LightOpacity;
+        /// <summary>
+        /// Количество излучаемого света (плафон), зависящий от Metdata
+        /// </summary>
+        public virtual int GetLightValue(int met) => LightValue;
+
+        #endregion
+
+        /// <summary>
+        /// Действие перед размещеннием блока, для определения метданных
+        /// </summary>
+        public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
+            => state.NewMet(0);
 
         public override string ToString() => Id.ToString() + " " + Alias;
     }

@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Block
+﻿using System.Runtime.CompilerServices;
+
+namespace Vge.World.Block
 {
     /// <summary>
     /// Различные массивы блоков
@@ -20,10 +22,6 @@
         /// </summary>
         public readonly BlockBase[] BlockObjects;
         /// <summary>
-        /// Массив прозрачности и излучаемости освещения, для ускорения алгоритмов освещения
-        /// </summary>
-        public readonly byte[] BlocksLightOpacity;
-        /// <summary>
         /// Массив нужности случайного тика для блока
         /// </summary>
         public readonly bool[] BlocksRandomTick;
@@ -36,12 +34,27 @@
         /// </summary>
         public readonly int Count;
 
+        /// <summary>
+        /// Массив прозрачности и излучаемости освещения, для ускорения алгоритмов освещения
+        /// </summary>
+        private readonly byte[] _blocksLightOpacity;
+        /// <summary>
+        /// Массив прозрачности зависящий от Metdata блока
+        /// </summary>
+        private readonly bool[] _blocksOpacityMet;
+        /// <summary>
+        /// Массив излучаемости освещения зависящий от Metdata блока
+        /// </summary>
+        private readonly bool[] _blocksLightMet;
+
         public BlockArrays()
         {
             Count = BlocksReg.Table.Count;
             BlockAlias = new string[Count];
             BlockObjects = new BlockBase[Count];
-            BlocksLightOpacity = new byte[Count];
+            _blocksLightOpacity = new byte[Count];
+            _blocksOpacityMet = new bool[Count];
+            _blocksLightMet = new bool[Count];
             BlocksRandomTick = new bool[Count];
             BlocksMetadata = new bool[Count];
 
@@ -51,7 +64,7 @@
             {
                 BlockAlias[id] = BlocksReg.Table.GetAlias(id);
                 BlockObjects[id] = block = BlocksReg.Table[id];
-                BlocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
+                _blocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
                 BlocksRandomTick[id] = block.NeedsRandomTick;
                 BlocksMetadata[id] = block.IsMetadata;
             }
@@ -72,5 +85,65 @@
                 BlockObjects[id].InitializationAfterItemsN3();
             }
         }
+
+        #region Light
+
+        /// <summary>
+        /// Получить прозрачности и излучаемости освещения блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte GetLightOpacity(int index)
+        {
+            if (_blocksOpacityMet[index & 0xFFF] || _blocksLightMet[index & 0xFFF])
+            {
+                // Это временно, потом через метданные запустим
+                return (byte)(BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12) 
+                    | BlockObjects[index & 0xFFF].GetLightValue(index >> 12));
+            }
+            return _blocksLightOpacity[index & 0xFFF];
+        }
+
+        /// <summary>
+        /// Полностью прозрачный ли блок, LightOpacity = 0 = Air
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsTransparent(int index)
+        {
+            if (_blocksOpacityMet[index & 0xFFF])
+            {
+                // Это временно, потом через метданные запустим
+                return BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12) == 0;
+            }
+            return (_blocksLightOpacity[index & 0xFFF] >> 4) == 0;
+        }
+
+        /// <summary>
+        /// Получить прозрачность блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetOpacity(int index)
+        {
+            if (_blocksOpacityMet[index & 0xFFF])
+            {
+                // Это временно, потом через метданные запустим
+                return BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12);
+            }
+            return _blocksLightOpacity[index & 0xFFF] >> 4;
+        }
+
+        /// <summary>
+        /// Получить излучаемости освещения блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetLightValue(int index)
+        {
+            if (_blocksLightMet[index & 0xFFF])
+            {
+                return BlockObjects[index & 0xFFF].GetLightValue(index >> 12);
+            }
+            return _blocksLightOpacity[index & 0xFFF] & 0xF;
+        }
+
+        #endregion
     }
 }

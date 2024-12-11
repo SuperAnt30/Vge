@@ -210,7 +210,7 @@ namespace Vge.World.Light
                                     indexBlock = (yo & 15) << 8 | zo << 4 | xo;
                                     if (chunkStorage.CountBlock != 0)
                                     {
-                                        lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
+                                        lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[indexBlock]);
                                     }
                                     else lo = 0;
                                     if ((lo >> 4) < 14)
@@ -319,7 +319,7 @@ namespace Vge.World.Light
                 if (chunkStorage.CountBlock != 0)
                 {
                     indexBlock = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
-                    lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
+                    lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[indexBlock]);
                     chunkStorage.Light[indexBlock] = (byte)((lo & 0xF) << 4 | chunkStorage.Light[indexBlock] & 15);
                     _arCache[_indexEnd++] = x - _bOffsetX + 32 | y << 6 | z - _bOffsetZ + 32 << 16 | lo << 22;
                 }
@@ -352,7 +352,7 @@ namespace Vge.World.Light
             byte lo = 0;
             if (chunkStorage.CountBlock != 0)
             {
-                lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[index] & 0xFFF];
+                lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[index]);
             }
             // текущаяя яркость
             byte lightOld = (byte)(chunkStorage.Light[index] >> 4);
@@ -569,7 +569,7 @@ namespace Vge.World.Light
                         indexBlock = (y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15);
                         if (chunkStorage.CountBlock != 0)
                         {
-                            lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
+                            lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[indexBlock]);
                         }
                         else lo = 0;
                         lightNew = chunkStorage.Light[indexBlock] & 15;
@@ -765,7 +765,7 @@ namespace Vge.World.Light
                         indexBlock = (y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15);
                         if (chunkStorage.CountBlock != 0)
                         {
-                            lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
+                            lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[indexBlock]);
                         }
                         else lo = 0;
                         lightNew = chunkStorage.Light[indexBlock] >> 4;
@@ -857,7 +857,7 @@ namespace Vge.World.Light
                         indexBlock = (y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15);
                         if (chunkStorage.CountBlock != 0)
                         {
-                            lo = Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[indexBlock] & 0xFFF];
+                            lo = Ce.Blocks.GetLightOpacity(chunkStorage.Data[indexBlock]);
                         }
                         else lo = 0;
                         lightNew = chunkStorage.Light[indexBlock] >> 4;
@@ -1227,7 +1227,7 @@ namespace Vge.World.Light
                                 {
                                     // проверяем блок на яркость, совпадает с lb или нет
                                     lo = (byte)(chunkStorage.IsEmptyData() ? 0
-                                        : (Ce.Blocks.BlocksLightOpacity[chunkStorage.Data[index] & 0xFFF] & 0xF));
+                                        : Ce.Blocks.GetLightValue(chunkStorage.Data[index]));
                                     if (lo != lb)
                                     {
                                         // затемняем

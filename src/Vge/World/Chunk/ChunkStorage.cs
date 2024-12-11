@@ -102,7 +102,7 @@ namespace Vge.World.Chunk
                 ushort value = Data[index];
                 ushort id = (ushort)(value & 0xFFF);
                 return new BlockState(id,
-                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : 0,
+                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)(value >> 12),
                     (byte)(Light[index] >> 4), (byte)(Light[index] & 15));
             }
             catch (Exception ex)

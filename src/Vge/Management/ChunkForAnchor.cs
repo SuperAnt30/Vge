@@ -171,23 +171,24 @@ namespace Vge.Management
         {
             if (NumBlocksToUpdate != 0)
             {
+                IPacket packet;
                 if (NumBlocksToUpdate >= _CountMultyBlocks)
                 {
-                    for (int i = 0; i < _players.Count; i++)
+                    ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
+                    if (chunk != null && chunk.IsSendChunk)
                     {
-                        if (!_players[i].IsLoadingChunks(CurrentChunkX, CurrentChunkY))
+                        packet = new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate);
+                        for (int i = 0; i < _players.Count; i++)
                         {
-                            ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
-                            if (chunk != null && chunk.IsSendChunk)
+                            if (!_players[i].IsLoadingChunks(CurrentChunkX, CurrentChunkY))
                             {
-                                _players[i].SendPacket(new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate));
+                                _players[i].SendPacket(packet);
                             }
                         }
                     }
                 }
                 else
                 {
-                    IPacket packet;
                     if (NumBlocksToUpdate == 1)
                     {
                         int index = _locationOfBlockChange[0];

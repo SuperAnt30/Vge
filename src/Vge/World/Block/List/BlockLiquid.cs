@@ -30,7 +30,7 @@ namespace Vge.World.Block.List
             => BlockRender = Alpha ? Gi.BlockLiquidAlphaRendFull : Gi.BlockLiquidRendFull;
 
         /// <summary>
-        /// Имеется ли отбраковка конкретноц стороны, конкретного варианта
+        /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
         public override bool IsCullFace(uint met, int indexSide) => false;
         /// <summary>
@@ -41,7 +41,10 @@ namespace Vge.World.Block.List
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
         public override bool IsForceDrawNotExtremeFace(uint met, int indexSide) => false;
-
+        /// <summary>
+        /// Проверка масок сторон
+        /// </summary>
+        public override bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide) => false;
 
         /// <summary>
         /// Получить модель

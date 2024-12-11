@@ -4,10 +4,10 @@
         Up: "Blocks/DebugAnim" 
     },
     Elements: [
-        {   From: [ 4, 8, 4 ],
-            To: [ 12, 16, 12 ],
-            Rotate: [45, 0, 0],
-            Translate: [-4, 0, -4],
+        {   From: [ 0, 8, 0 ],
+            To: [ 8, 16, 16 ],
+            #Rotate: [45, 0, 0],
+#            Translate: [-4, 0, -4],
             Faces: [
                 { Texture:"Up", Side:"Up", Uv:[0, 0, 8, 16], Pause:5, UvRotate:true, TypeColor:4},
                 { Texture:"All", Side:"North", Uv:[0, 0, 8, 8]},

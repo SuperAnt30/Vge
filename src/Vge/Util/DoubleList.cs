@@ -46,6 +46,11 @@
         public T GetNext() => vsBackward[index++];
 
         /// <summary>
+        /// Очистить значения в списке которе использует Get 
+        /// </summary>
+        public void ClearBackward() => vsBackward.Clear();
+
+        /// <summary>
         /// Получить следующее значение из списка и присвоить в массиве его null
         /// </summary>
         public T GetNextNull()

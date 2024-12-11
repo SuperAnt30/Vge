@@ -130,6 +130,7 @@
         public const string Side = "Side";
         /// <summary>
         /// Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет. (byte)
+        /// В жидкостях в объекте Element, остальных Face
         /// </summary>
         public const string TypeColor = "TypeColor";
         /// <summary>

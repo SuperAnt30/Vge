@@ -106,7 +106,7 @@ namespace Vge.Renderer.World
         /// _GetBlockSideState
         /// </summary>
         private bool _emptySide;
-        
+
 
         /// <summary>
         /// Создание блока генерации для мира
@@ -239,13 +239,13 @@ namespace Vge.Renderer.World
         /// </summary>
         public virtual void RenderSide()
         {
-            if (Gi.Block.UseNeighborBrightness) _stateLightHis = Light;
+            if (Gi.Block.UseNeighborBrightness) _UseNeighborBrightness();
             else _stateLightHis = -1;
             // ~1.100-1.150
-            
-            _rectangularSides = Gi.Block.GetQuads(Met, PosChunkX, PosChunkZ);
 
+            _rectangularSides = Gi.Block.GetQuads(Met, PosChunkX, PosChunkZ);
             count = _rectangularSides.Length;
+
             for (i = 0; i < count; i++)
             {
                 _rectangularSide = _rectangularSides[i];
@@ -261,13 +261,10 @@ namespace Vge.Renderer.World
 
                     // Смекшировать яркость, в зависимости от требований самой яркой
                     if (_stateLight != _stateLightHis
-                        && Gi.Block.UseNeighborBrightness && _stateLightHis != -1)
+                        && Gi.Block.UseNeighborBrightness && _stateLightHis != -1
+                        && !Gi.Block.IsCullFace(Met, side)) // Отсеять сторону которая целиком закрыла сторону
                     {
-                        s1 = _stateLight >> 4;
-                        s2 = _stateLight & 0x0F;
-                        s3 = _stateLightHis >> 4;
-                        s4 = _stateLightHis & 0x0F;
-                        _stateLight = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
+                        _stateLight = _stateLightHis;
                     }
 
                     _lightPole = _rectangularSide.LightPole;
@@ -293,7 +290,7 @@ namespace Vge.Renderer.World
                     {
                         blockUV.BuildingWind(_rectangularSide.Wind);
                     }
-                    
+
 
                     //if (damagedBlocksValue != -1)
                     //{
@@ -399,7 +396,7 @@ namespace Vge.Renderer.World
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
-                            _resultSide[_indexSide] = _storage.Light[i] 
+                            _resultSide[_indexSide] = _storage.Light[i]
                                 | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
                         }
                         else
@@ -414,12 +411,21 @@ namespace Vge.Renderer.World
                     {
                         // Принудительное рисование стороны, модель которая сторона не касаются краёв
                         _emptySide = false;
-                        _resultSide[_indexSide] = _storage.Light[i];
+                        if (_blockCheck.IsCullFace(_blockCheck.IsMetadata
+                                ? _storage.Metadata[(ushort)index] : (uint)_metCheck, PoleConvert.Reverse[_indexSide]))
+                        {
+                            _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i])
+                                | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
+                        }
+                        else
+                        {
+                            _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]);
+                        }
                     }
                     else if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
                     {
                         _emptySide = false;
-                        _resultSide[_indexSide] = _storage.Light[i] | 256;
+                        _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]);
                     }
                     else
                     {
@@ -483,34 +489,89 @@ namespace Vge.Renderer.World
         /// </summary>
         /// <param name="bx">0-15</param>
         /// <param name="bz">0-15</param>
-        /// <returns></returns>
-        protected virtual Vector3 _GetBiomeColor(ChunkBase chunk, int bx, int bz)
+        protected virtual Vector3 _GetBiomeColor(ChunkRender chunk, int bx, int bz)
         {
             // подготовка для теста плавности цвета
-            if (_rectangularSide.TypeColor == 0)
-            {
-                // Нет цвета
-                return ColorWhite;
-            }
-            if (_rectangularSide.TypeColor == 4)
-            {
-                // Свой цвет
-                return Gi.Block.Color;
-            }
+            // Нет цвета
+            if (_rectangularSide.TypeColor == 0) return ColorWhite;
+            // Свой цвет
+            if (_rectangularSide.TypeColor == 4) return Gi.Block.Color;
+            // Цвет от биома
+            return chunk.GetColorSideFromBiom(_rectangularSide.TypeColor, bx, bz);
+        }
 
-            // подготовка для теста плавности цвета
-            //if (_rectangularSide.IsBiomeColor())
-            //{
-            //    if (_rectangularSide.IsBiomeColorGrass())
-            //    {
-            //        return BlockColorBiome.Grass(chunk.biome[bx << 4 | bz]);
-            //    }
-            //    if (_rectangularSide.IsYourColor())
-            //    {
-            //        return Block.GetColorGuiOrPartFX();
-            //    }
-            //}
-            return ColorWhite;
+        /// <summary>
+        /// Получаем в _stateLightHis самое яркое значение соседнего света как свое собственное
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _UseNeighborBrightness()
+        {
+            _stateLightHis = Light;
+            // Микс
+            for (i = 0; i < 6; i++)
+            {
+                _stateLight = _resultSide[i];
+                // Смекшировать яркость, в зависимости от требований самой яркой
+                if (_stateLight != -1 && _stateLight != _stateLightHis)
+                {
+                    s1 = _stateLightHis >> 4;
+                    s2 = _stateLightHis & 0x0F;
+                    s3 = _stateLight >> 4;
+                    s4 = _stateLight & 0x0F;
+                    _stateLightHis = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Получаем самое яркое значение соседнего света как свое собственное конкретного блока
+        /// </summary>
+        private int _GetSideUseNeighborBrightness(int x, int y, int z, int light)
+        {
+            Vector3i vec;
+            int x0, y0, z0;
+            ChunkStorage chunkStorage;
+            int lightSide;
+            for (int iSide = 0; iSide < 6; iSide++) // Цикл сторон
+            {
+                vec = BlockPos.DirectionVectors[iSide];
+                x0 = x + vec.X;
+                y0 = y + vec.Y;
+                z0 = z + vec.Z;
+                chunkStorage = _GetChunkStorage(x0, y0, z0);
+                if (chunkStorage != null)
+                {
+                    lightSide = chunkStorage.Light[(y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15)];
+                    if (light == -1) light = lightSide;
+                    else if (lightSide != light)
+                    {
+                        s1 = light >> 4;
+                        s2 = light & 0x0F;
+                        s3 = lightSide >> 4;
+                        s4 = lightSide & 0x0F;
+                        light = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
+                    }
+                }
+            }
+            return light;
+        }
+
+        /// <summary>
+        /// Получить чанк данных по локальным координатам -1..16
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ChunkStorage _GetChunkStorage(int x, int y, int z)
+        {
+            if (x >> 4 == 0 && z >> 4 == 0)
+            {
+                return _chunkRender.StorageArrays[y >> 4];
+            }
+            ChunkRender chunkRender = _chunkRender.Chunk(x >> 4, z >> 4);
+            if (chunkRender != null && chunkRender.IsChunkPresent)
+            {
+                return chunkRender.StorageArrays[y >> 4];
+            }
+            return null;
         }
 
         #region AmbientOcclusion
@@ -577,7 +638,7 @@ namespace Vge.Renderer.World
                 _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, -1);
             }
             else// if ( side == 5)
-            { 
+            {
                 _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
                 _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 0, 1);
                 _ambient.Aos[3] = _GetAmbientOcclusionLight(0, -1, 1);
@@ -725,7 +786,7 @@ namespace Vge.Renderer.World
                 aoLight.Aol = 1;
                 return aoLight;
             }
-            
+
             id = id & 0xFFF;
             _blockCheck = Ce.Blocks.BlockObjects[id];
             aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 : 1;
