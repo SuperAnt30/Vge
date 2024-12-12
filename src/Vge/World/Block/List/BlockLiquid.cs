@@ -4,7 +4,8 @@ using WinGL.Util;
 namespace Vge.World.Block.List
 {
     /// <summary>
-    /// Объект жидких блоков
+    /// Объект жидких блоков.
+    /// Всё жидкости должны быть в отдельной маске для смещения защиты от Z-Fighting
     /// </summary>
     public class BlockLiquid : BlockBase
     {
@@ -13,9 +14,10 @@ namespace Vge.World.Block.List
         /// </summary>
         protected SideLiquid[] _sideLiquids;
 
-        public BlockLiquid(bool alpha)
+        public BlockLiquid(bool alphaSort)
         {
-            Alpha = alpha;
+            Alpha = true;
+            AlphaSort = alphaSort;
             Liquid = true;
             FullBlock = false;
             CullFaceAll = true;
@@ -27,7 +29,7 @@ namespace Vge.World.Block.List
         /// Инициализация объекта рендера для блока
         /// </summary>
         protected override void _InitBlockRender()
-            => BlockRender = Alpha ? Gi.BlockLiquidAlphaRendFull : Gi.BlockLiquidRendFull;
+            => BlockRender = Gi.BlockLiquidAlphaRendFull;
 
         /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
@@ -54,18 +56,6 @@ namespace Vge.World.Block.List
             BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
             _sideLiquids = shapeDefinition.RunShapeLiquidFromJson(state, shapes);
             _maskCullFaces = shapeDefinition.MaskCullFaces;
-
-            //base._ShapeDefinition(state, shapes);
-
-            //_sideLiquids = new SideLiquid[]
-            //{
-            //    new SideLiquid(0, 0, 0),
-            //    new SideLiquid(1, 0, 0),
-            //    new SideLiquid(2, 0, 0),
-            //    new SideLiquid(3, 0, 0),
-            //    new SideLiquid(4, 0, 0),
-            //    new SideLiquid(5, 0, 0)
-            //};
         }
 
         /// <summary>

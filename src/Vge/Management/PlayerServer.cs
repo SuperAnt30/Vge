@@ -277,7 +277,7 @@ namespace Vge.Management
             ushort idBlock = 0;
             for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
             {
-                if (Ce.Blocks.BlockAlias[i] == "Debug")
+                if (Ce.Blocks.BlockAlias[i] == "Debug") //Debug GlassBlue
                 {
                     idBlock = i;
                     break;

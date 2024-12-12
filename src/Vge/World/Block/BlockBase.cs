@@ -25,28 +25,10 @@ namespace Vge.World.Block
         /// </summary>
         public BlockRenderFull BlockRender;
 
-        #region Группа
-
-        // У блока может быть один из параметров true FullBlock || Liquid || IsUnique || IsAir
-
-        /// <summary>
-        /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока.
-        /// Жидкости будут false
-        /// </summary>
-        public bool FullBlock { get; protected set; } = true;
-       
-        /// <summary>
-        /// Является ли эта модель не блоком, со всеми сторонами и прозрачной
-        /// </summary>
-        //public bool IsUnique { get; protected set; } = false;
         /// <summary>
         /// Явлыется ли блок небом
         /// </summary>
         public bool IsAir { get; private set; } = false;
-
-        
-
-        #endregion
 
         #region Для логики
 
@@ -101,6 +83,11 @@ namespace Vge.World.Block
         /// Может ли блок сталкиваться
         /// </summary>
         public bool IsCollidable { get; protected set; } = true;
+        /// <summary>
+        /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока.
+        /// Жидкости будут false
+        /// </summary>
+        public bool FullBlock { get; protected set; } = true;
 
         #endregion
 
@@ -119,9 +106,13 @@ namespace Vge.World.Block
         /// </summary>
         public int[] NotLiquidOutside = new int[] { 1024, 0, 0, 0, 0, 0 };
         /// <summary>
-        /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой с сортировкой
+        /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой которой доступна сортировка
         /// </summary>
         public bool Alpha = false;
+        /// <summary>
+        /// Блок имеет альфа текстуру (полупрозрачный), попадает под отдельный слой с сортировкой, если Alpha = true
+        /// </summary>
+        public bool AlphaSort = false;
         /// <summary>
         /// Прозрачный блок, не только альфа, с прозрачной текстурой. 
         /// </summary>

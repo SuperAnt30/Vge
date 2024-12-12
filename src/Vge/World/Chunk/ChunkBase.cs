@@ -167,6 +167,8 @@ namespace Vge.World.Chunk
                         case "Brol": Brol = i; break;
                     }
                 }
+                //Water = Lava;
+                //GlassRed = GlassGreen = GlassBlue = GlassPurple = Glass;
 
                 for (int x = 0; x < 16; x++)
                 {

@@ -43,6 +43,11 @@ namespace Vge.Renderer.World
         /// Количество альфа блоков в чанке
         /// </summary>
         private int _countAlpha;
+        /// <summary>
+        /// Секции сколько в какой альфа блоков для сортировки
+        /// </summary>
+        private readonly ushort[] _sectionsCountAlphaSort;
+
 
         /// <summary>
         /// Соседние чанки, заполняются перед рендером
@@ -69,6 +74,8 @@ namespace Vge.Renderer.World
             _listAlphaBlock = new List<ushort>[NumberSections];
             _sectionsBuffer = new ChunkSectionBuffer[NumberSections];
             _isRenderingSection = new bool[NumberSections];
+            _sectionsCountAlphaSort = new ushort[NumberSections];
+
             for (int index = 0; index < NumberSections; index++)
             {
                 _sectionsBuffer[index] = new ChunkSectionBuffer();
@@ -120,7 +127,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public bool ModifiedToRenderAlpha(int y)
         {
-            if (y >= 0 && y < NumberSections && _listAlphaBlock[y].Count > 0)
+            if (y >= 0 && y < NumberSections && _sectionsCountAlphaSort[y] > 0)
             {
                 _meshAlpha.IsModifiedRender = true;
                 return true;
@@ -184,7 +191,6 @@ namespace Vge.Renderer.World
             }
 
             Gi.BlockRendFull.InitChunk(this);
-            Gi.BlockLiquidRendFull.InitChunk(this);
             Gi.BlockAlphaRendFull.InitChunk(this);
             Gi.BlockLiquidAlphaRendFull.InitChunk(this);
 
@@ -192,12 +198,12 @@ namespace Vge.Renderer.World
             {
                 if (_isRenderingSection[cbY])
                 {
+                    _sectionsCountAlphaSort[cbY] = 0;
                     _listAlphaBlock[cbY].Clear();
                     chunkStorage = StorageArrays[cbY];
                     if (chunkStorage.Data != null && !chunkStorage.IsEmptyData())
                     {
                         Gi.BlockRendFull.InitStorage(cbY);
-                        Gi.BlockLiquidRendFull.InitStorage(cbY);
                         Gi.BlockAlphaRendFull.InitStorage(cbY);
                         Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
                         // Имекется хоть один блок
@@ -232,6 +238,11 @@ namespace Vge.Renderer.World
                                         {
                                             // Имеется видимый альфа блок, заносим в буфер для отельного рендера альфы
                                             _listAlphaBlock[cbY].Add((ushort)(yb << 8 | z << 4 | x));
+                                            if (Gi.Block.AlphaSort)
+                                            {
+                                                // Помечаем только те альфа блоки которые сортируются, образно Лава не сортируется
+                                                _sectionsCountAlphaSort[cbY]++;
+                                            }
                                         }
                                     }
                                     else

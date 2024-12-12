@@ -396,8 +396,15 @@ namespace Vge.Renderer.World
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
-                            _resultSide[_indexSide] = _storage.Light[i]
-                                | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
+                            if (_blockCheck.CullFaceAll)
+                            {
+                                _resultSide[_indexSide] = _storage.Light[i]
+                                    | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
+                            }
+                            else
+                            {
+                                _resultSide[_indexSide] = _storage.Light[i];
+                            }
                         }
                         else
                         {

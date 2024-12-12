@@ -259,7 +259,7 @@ namespace Vge.Renderer.World
                             }
                         }
                         // Проверяем надо ли рендер для псевдо чанка, и проверка загрузки рендера
-                        else if (chunkRender.IsModifiedRenderAlpha && _renderAlphaQueues.CountBackward < 10)
+                        else if (chunkRender.IsModifiedRenderAlpha && _renderAlphaQueues.CountBackward < 4)
                         {
                             // Проверяем занят ли чанк уже рендером
                             if (chunkRender.IsMeshDenseWait && chunkRender.IsMeshAlphaWait)
@@ -336,8 +336,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _DrawVoxelAlpha()
         {
-           // gl.Enable(GL.GL_DEPTH_TEST);
-            gl.DepthMask(0);
+            //gl.DepthMask(0); // Нельзя, так-как пробивает не прозрачный блок
             gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
             gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
 
@@ -361,7 +360,6 @@ namespace Vge.Renderer.World
 
             gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
             gl.PolygonOffset(0, 0);
-            gl.DepthMask(1);
         }
 
         /// <summary>

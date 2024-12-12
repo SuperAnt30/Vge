@@ -15,10 +15,10 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("Limestone", new BlockBase());
             BlocksReg.RegisterBlockClass("Granite", new BlockBase());
             BlocksReg.RegisterBlockClass("Glass", new BlockBase());
-            BlocksReg.RegisterBlockClass("GlassRed", new BlockUniTranslucent());
-            BlocksReg.RegisterBlockClass("GlassGreen", new BlockUniTranslucent());
-            BlocksReg.RegisterBlockClass("GlassBlue", new BlockUniTranslucent());
-            BlocksReg.RegisterBlockClass("GlassPurple", new BlockUniTranslucent());
+            BlocksReg.RegisterBlockClass("GlassRed", new BlockAlpha());
+            BlocksReg.RegisterBlockClass("GlassGreen", new BlockAlpha());
+            BlocksReg.RegisterBlockClass("GlassBlue", new BlockAlpha());
+            BlocksReg.RegisterBlockClass("GlassPurple", new BlockAlpha());
             
             BlocksReg.RegisterBlockClass("FlowerClover", new BlockBase()); // 195
             BlocksReg.RegisterBlockClass("Water", new BlockLiquid(true));
