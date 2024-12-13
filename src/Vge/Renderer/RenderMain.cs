@@ -1,4 +1,6 @@
-﻿using Vge.Renderer.Font;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World;
 using Vge.Util;
@@ -16,15 +18,19 @@ namespace Vge.Renderer
         /// Основной шрифт
         /// </summary>
         public FontBase FontMain { get; private set; }
-
-        /// <summary>
-        /// Объект текстур
-        /// </summary>
-        public readonly TextureMap Texture;
         /// <summary>
         /// Текстурная карта освещения
         /// </summary>
         public TextureLightMap LightMap { get; protected set; }
+
+        /// <summary>
+        /// Объект текстур
+        /// </summary>
+        protected readonly TextureMap _texture;
+        /// <summary>
+        /// Переменные индексов текстур GUI
+        /// </summary>
+        protected TextureIndex _textureIndex;
 
         /// <summary>
         /// Шейдоры для GUI цветных текстур без смещения
@@ -74,7 +80,7 @@ namespace Vge.Renderer
 
         public RenderMain(WindowMain window) : base(window)
         {
-            Texture = new TextureMap(gl);
+            _texture = new TextureMap(gl);
             ShGuiColor = new ShaderGuiColor(gl);
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
@@ -95,6 +101,7 @@ namespace Vge.Renderer
         /// </summary>
         protected virtual void _Initialize()
         {
+            _textureIndex = new TextureIndex();
             LightMap = new TextureLightMap(gl);
         }
 
@@ -147,11 +154,11 @@ namespace Vge.Renderer
 
             // Активация текстуры атласа с размытостью (с Mipmap)
             int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
-            BindTextureAtlasBlocks();
+            BindTextureAtlasBlurry();
             gl.Uniform1(atlasBlurry, 0);
 
             // Активация текстуры атласа с резкостью (без Mipmap)
-            Texture.BindTexture(3, 1);
+            BindTextureAtlasSharpness();
             int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
             gl.Uniform1(atlasSharpness, 1);
 
@@ -175,49 +182,97 @@ namespace Vge.Renderer
 
         #endregion
 
-        #region Texture
-
-        /// <summary>
-        /// Включить текстуру
-        /// </summary>
-        public void TextureEnable() => gl.Enable(GL.GL_TEXTURE_2D);
-        /// <summary>
-        /// Выключить текстуру
-        /// </summary>
-        public void TextureDisable() => gl.Disable(GL.GL_TEXTURE_2D);
+        #region TextureSplash
 
         /// <summary>
         /// Запустить текстуру заставки
         /// </summary>
-        public void BindTextureSplash() => Texture.BindSplash();
+        public void BindTextureSplash()
+        {
+            if (_textureIndex.Splash != 0)
+            {
+                _texture.BindTexture(_textureIndex.Splash);
+            }
+        }
         /// <summary>
         /// Удалить текстуру заставки
         /// </summary>
-        public void DeleteTextureSplash() => Texture.DeleteSplash();
-        /// <summary>
-        /// Запустить текстуру основного виджета
-        /// </summary>
-        public void BindTextureWidgets() => Texture.BindTexture(1);
-        /// <summary>
-        /// Запустить текстуру атласа блоков
-        /// </summary>
-        public void BindTextureAtlasBlocks() => Texture.BindTexture(2);
-
-        /// <summary>
-        /// Запустить текстуру, указав индекс текстуры массива
-        /// </summary>
-        public void BindTexture(int index, uint texture = 0) => Texture.BindTexture(index, texture);
-
-        /// <summary>
-        /// Создать текстуру основного шрифта
-        /// </summary>
-        public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1, this, 0);
+        public void DeleteTextureSplash()
+        {
+            _texture.DeleteTexture(_textureIndex.Splash);
+            _textureIndex.Splash = 0;
+        }
 
         /// <summary>
         /// Задать текстуру заставки
         /// </summary>
         private void _SetTextureSplash(string fileName)
-            => Texture.SetSplash(BufferedFileImage.FileToBufferedImage(fileName));
+            => _textureIndex.Splash = _texture.SetTexture(BufferedFileImage.FileToBufferedImage(fileName));
+
+        #endregion
+
+        #region Texture
+
+        /// <summary>
+        /// Включить текстуру
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void TextureEnable() => gl.Enable(GL.GL_TEXTURE_2D);
+        /// <summary>
+        /// Выключить текстуру
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void TextureDisable() => gl.Disable(GL.GL_TEXTURE_2D);
+        /// <summary>
+        /// Запустить текстуру основного виджета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureWidgets() => _texture.BindTexture(_textureIndex.Widgets);
+        /// <summary>
+        /// Запустить текстуру атласа размытых блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureAtlasBlurry() => _texture.BindTexture(_textureIndex.AtlasBlurry);
+        /// <summary>
+        /// Запустить текстуру атласа блоков с чёткой резкостью
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureAtlasSharpness() => _texture.BindTexture(_textureIndex.AtlasSharpness, 1);
+
+        /// <summary>
+        /// Удалить текстуру атласов
+        /// </summary>
+        public void DeleteTextureAtlases()
+        {
+            _texture.DeleteTexture(_textureIndex.AtlasBlurry);
+            _textureIndex.AtlasBlurry = 0;
+            _texture.DeleteTexture(_textureIndex.AtlasSharpness);
+            _textureIndex.AtlasSharpness = 0;
+        }
+
+        /// <summary>
+        /// Задать текстуру атласа размытых блоков
+        /// </summary>
+        public void AddTextureAtlasBlurry(BufferedImage bufferedImage)
+            => _textureIndex.AtlasBlurry = _texture.SetTexture(bufferedImage);
+
+        /// <summary>
+        /// Задать текстуру атласа блоков с чёткой резкостью
+        /// </summary>
+        public void AddTextureAtlasSharpness(BufferedImage bufferedImage)
+            => _textureIndex.AtlasSharpness = _texture.SetTexture(bufferedImage);
+
+        /// <summary>
+        /// Запустить текстуру, указав индекс текстуры массива
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTexture(uint index, uint texture = 0) => _texture.BindTexture(index, texture);
+
+        /// <summary>
+        /// Создать текстуру основного шрифта
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CreateTextureFontMain(BufferedImage buffered) => FontMain = new FontBase(buffered, 1, this);
 
         #endregion
 
@@ -225,17 +280,17 @@ namespace Vge.Renderer
         /// На финише загрузка в основном потоке
         /// </summary>
         /// <param name="buffereds">буфер всех текстур для биндинга</param>
-        public virtual void AtFinishLoading(BufferedImage[] buffereds)
+        public virtual void AtFinishLoading(Dictionary<string, BufferedImage> buffereds)
         {
-            Texture.SetCount(buffereds.Length);
-            for (int i = 0; i < buffereds.Length; i++)
+            if (buffereds.ContainsKey(EnumTexture.FontMain.ToString()))
             {
-                Texture.SetTexture(i, buffereds[i]);
+                FontMain.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTexture.FontMain.ToString()]));
             }
-            FontMain.CreateMesh(gl);
+            if (buffereds.ContainsKey(EnumTexture.Widgets.ToString()))
+            {
+                _textureIndex.Widgets = _texture.SetTexture(buffereds[EnumTexture.Widgets.ToString()]);
+            }
         }
-
-
 
         #region Draw
 

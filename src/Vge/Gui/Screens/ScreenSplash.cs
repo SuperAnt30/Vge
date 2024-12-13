@@ -69,8 +69,8 @@ namespace Vge.Gui.Screens
         {
             if (isFinish)
             {
-                window.Render.AtFinishLoading(loading.buffereds.ToArray());
-                loading.buffereds.Clear();
+                window.Render.AtFinishLoading(loading.Buffereds);
+                loading.Buffereds.Clear();
                 window.Render.DeleteTextureSplash();
                 window.Readed();
                 window.LScreen.MainMenu();

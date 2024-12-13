@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Vge.Renderer;
 using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.Realms
 {
@@ -14,75 +14,66 @@ namespace Vge.Realms
         /// <summary>
         /// Объект окна малювек
         /// </summary>
-        private readonly WindowMain window;
+        private readonly WindowMain _window;
 
-        public List<BufferedImage> buffereds = new List<BufferedImage>();
+        public Dictionary<string, BufferedImage> Buffereds = new Dictionary<string, BufferedImage>();
 
-        public Loading(WindowMain window) => this.window = window;
+        public Loading(WindowMain window) => _window = window;
 
         /// <summary>
         /// Запустить загрузку в отдельном потоке
         /// </summary>
         public void Starting()
         {
-            Thread myThread = new Thread(Loop) { Name = "Loading" };
+            Thread myThread = new Thread(_Loop) { Name = "Loading" };
             myThread.Start();
         }
 
         /// <summary>
         /// Метод должен работать в отдельном потоке
         /// </summary>
-        private void Loop()
+        private void _Loop()
         {
-            Steps();
+            _Steps();
             OnFinish();
         }
 
         /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public virtual int GetMaxCountSteps() => 3;
+        public virtual int GetMaxCountSteps() => 2;
 
         /// <summary>
         /// Этот метод как раз и реализует список загрузок
         /// </summary>
-        protected virtual void Steps()
+        protected virtual void _Steps()
         {
-            string[] vs = GetFileNameTextures();
             // Основной шрифт
-            window.Render.CreateTextureFontMain(FileToBufferedImage(vs[0]));
+            _window.Render.CreateTextureFontMain(
+                _FileToBufferedImage(EnumTexture.FontMain.ToString(), 
+                Options.PathTextures + EnumTexture.FontMain.ToString() + ".png"));
             OnStep();
             // Виджет Gui
-            FileToBufferedImage(vs[1]);
-            OnStep();
-            // AtlasBlocks c mipmap
-            FileToBufferedImage(vs[2], 0, true);
-            // AtlasBlocks без mipmap
-            FileToBufferedImage(vs[2], 1);
+            _FileToBufferedImage(EnumTexture.Widgets.ToString(), 
+                Options.PathTextures + EnumTexture.Widgets.ToString() + ".png");
             OnStep();
         }
-
-        /// <summary>
-        /// Получить массив имён файл текстур,
-        /// 0 - FontMain основной шрифт
-        /// 1 - Widgets
-        /// 2 - AtlasBlocks
-        /// </summary>
-        protected virtual string[] GetFileNameTextures() => new string[] {
-            Options.PathTextures + "FontMain.png",
-            Options.PathTextures + "Widgets.png",
-            Options.PathTextures + "AtlasBlocks.png"
-        };
 
         /// <summary>
         /// Конвертировать картинку в структуру BufferedImage
         /// и занести в массиф буферов
         /// </summary>
-        protected BufferedImage FileToBufferedImage(string fileName, 
-            uint activeTextureIndex = 0, bool minmap = false)
+        protected BufferedImage _FileToBufferedImage(string key, string fileName)
         {
-            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName, activeTextureIndex, minmap);
-            buffereds.Add(buffered);
+            BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
+            if (Buffereds.ContainsKey(key))
+            {
+                Buffereds[key] = buffered;
+            }
+            else
+            {
+                Buffereds.Add(key, buffered);
+            }
             return buffered;
         }
 

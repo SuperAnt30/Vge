@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using Vge.Util;
 using WinGL.Util;
 
@@ -72,15 +69,13 @@ namespace Vge.World.Block
         public void EndImage()
         {
             // Удаляем текстуры, так-как может быть иной размер
-            _window.Render.Texture.DeleteTexture(2);
-            _window.Render.Texture.DeleteTexture(3);
+            _window.Render.DeleteTextureAtlases();
 
             // Создаём заного текстуры
             BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 1, false);
-            _window.Render.Texture.SetTexture(3, bufferedImage);
-
+            _window.Render.AddTextureAtlasSharpness(bufferedImage);
             bufferedImage = new BufferedImage(_height, _height, _buffer, 0, true);
-            _window.Render.Texture.SetTexture(2, bufferedImage);
+            _window.Render.AddTextureAtlasBlurry(bufferedImage);
 
 #if DEBUG
             // Для отладки сохранить в файл посмотреть как вышло

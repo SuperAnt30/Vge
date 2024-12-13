@@ -1,5 +1,4 @@
 ﻿using Mvk2.Renderer;
-using Mvk2.Util;
 using Vge.Realms;
 using Vge.Util;
 
@@ -13,80 +12,64 @@ namespace Mvk2.Realms
         /// <summary>
         /// Объект окна малювек
         /// </summary>
-        private readonly WindowMvk window;
-
+        private readonly WindowMvk _window;
         /// <summary>
         /// Количество текстур
         /// </summary>
-        private readonly int countTexture;
+        private readonly int _countTexture = 2;
         /// <summary>
         /// Количество звуков
         /// </summary>
-        private readonly int countSample;
+        private readonly int _countSample;
 
         public LoadingMvk(WindowMvk window) : base(window)
         {
-            this.window = window;
-            countTexture = 2;
-            countSample = window.GetAudio().GetCountStep();
+            _window = window;
+            _countSample = window.GetAudio().GetCountStep();
         }
 
         /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public override int GetMaxCountSteps() => base.GetMaxCountSteps() + countTexture + countSample;
-
-        // <summary>
-        /// Получить массив имён файл текстур,
-        /// 0 - FontMain основной шрифт
-        /// 1 - Widgets
-        /// 2 - AtlasBlocks
-        /// </summary>
-        protected override string[] GetFileNameTextures() => new string[] {
-            Options.PathTextures + "FontMain.png",
-            Options.PathTextures + "WidgetsMvk.png",
-            Options.PathTextures + "AtlasBlocks.png",
-        };
+        public override int GetMaxCountSteps() => base.GetMaxCountSteps() + _countTexture + _countSample;
 
         /// <summary>
         /// Этот метод как раз и реализует список загрузок
         /// </summary>
-        protected override void Steps()
+        protected override void _Steps()
         {
             // Загружаем  по умолчанию
-            base.Steps();
-            StepsTextures();
-            StepsSample();
+            base._Steps();
+            _StepsTextures();
+            _StepsSample();
         }
 
         /// <summary>
         /// Шаги текстур
         /// </summary>
-        private void StepsTextures()
+        private void _StepsTextures()
         {
-            RenderMvk renderMvk = window.Render as RenderMvk;
+            RenderMvk renderMvk = _window.Render as RenderMvk;
             // Шрифты
             renderMvk.CreateTextureFontSmall(
-                FileToBufferedImage(Options.PathTextures + "FontSmall.png"));
+                _FileToBufferedImage(EnumTextureMvk.FontSmall.ToString(),
+                Options.PathTextures + EnumTextureMvk.FontSmall.ToString() + ".png"));
             OnStep();
 
             renderMvk.CreateTextureFontLarge(
-                FileToBufferedImage(Options.PathTextures + "FontLarge.png"));
+                _FileToBufferedImage(EnumTextureMvk.FontLarge.ToString(), 
+                Options.PathTextures + EnumTextureMvk.FontLarge.ToString() + ".png"));
             OnStep();
-
-            // Текстуры
-            //FileToBufferedImage(OptionsMvk.PathTextures + "AtlasBlocks.png");
-            //OnStep();
         }
 
         /// <summary>
         /// Шаги звуков
         /// </summary>
-        private void StepsSample()
+        private void _StepsSample()
         {
-            window.GetAudio().Initialize(countSample);
-            window.GetAudio().Step += (sender, e) => OnStep();
-            window.GetAudio().InitializeSample();
+            _window.GetAudio().Initialize(_countSample);
+            _window.GetAudio().Step += (sender, e) => OnStep();
+            _window.GetAudio().InitializeSample();
         }
     }
 }

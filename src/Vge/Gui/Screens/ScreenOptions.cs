@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using System;
+using Vge.Games;
 using Vge.Gui.Controls;
 using Vge.Realms;
 using Vge.Renderer.Font;
@@ -116,7 +117,7 @@ namespace Vge.Gui.Screens
             window.LScreen.Parent(parent, EnumScreenParent.Yes);
         }
 
-        private void ButtonCancel_Click(object sender, System.EventArgs e)
+        private void ButtonCancel_Click(object sender, EventArgs e)
             => window.LScreen.Parent(parent, EnumScreenParent.None);
 
         #endregion

@@ -124,6 +124,12 @@ namespace Vge.Games
             WorldRender = new WorldRenderer(this);
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
+            Key.InChat += _Key_InChat;
+        }
+
+        private void _Key_InChat(object sender, EventArgs e)
+        {
+            window.LScreen.InChat();
         }
 
         /// <summary>

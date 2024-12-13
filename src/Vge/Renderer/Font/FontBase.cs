@@ -1,5 +1,4 @@
 ﻿using System;
-using Vge.Realms;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -19,61 +18,59 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Массив символов
         /// </summary>
-        private readonly Symbol[] items = new Symbol[162];
+        private readonly Symbol[] _items = new Symbol[162];
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа
         /// </summary>
-        private readonly int horiAdvance;
+        private readonly int _horiAdvance;
         /// <summary>
         /// Вертикальное смещение начала следующего глифа 
         /// </summary>
-        private readonly int vertAdvance;
+        private readonly int _vertAdvance;
         /// <summary>
         /// Растояние между буквами в пикселях
         /// </summary>
-        private readonly byte stepFont;
+        private readonly byte _stepFont;
         /// <summary>
         /// Буфер сетки данного шрифта
         /// </summary>
-        private readonly ListFlout buffer = new ListFlout();
+        private readonly ListFlout _buffer = new ListFlout();
         /// <summary>
         /// Сетка шрифта
         /// </summary>
-        private Mesh mesh;
+        private Mesh _mesh;
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа с учётом размера интерфейса
         /// </summary>
-        private int hori;
+        private int _hori;
         /// <summary>
         /// Вертикальное смещение начала следующего глифа с учётом размера интерфейса 
         /// </summary>
-        private int vert;
+        private int _vert;
         /// <summary>
         /// Размера интерфейса
         /// </summary>
-        private int si;
+        private int _si;
         /// <summary>
         /// Стаил шрифта
         /// </summary>
-        private readonly FontStyle style = new FontStyle();
+        private readonly FontStyle _style = new FontStyle();
         /// <summary>
         /// Цвет по умолчанию
         /// </summary>
-        private Vector3 colorText = Gi.ColorText;
+        private Vector3 _colorText = Gi.ColorText;
         /// <summary>
         /// Эффекты к шрифту
         /// </summary>
-        private EnumFontFX fontFX = EnumFontFX.None;
+        private EnumFontFX _fontFX = EnumFontFX.None;
         /// <summary>
         /// Объект рендера
         /// </summary>
-        private readonly RenderMain render;
+        private readonly RenderMain _render;
         /// <summary>
         /// Индест текстурки
         /// </summary>
-        private readonly int texture;
-
-        
+        private uint _texture;
 
         /// <summary>
         /// Класс шрифта
@@ -82,13 +79,12 @@ namespace Vge.Renderer.Font
         /// <param name="stepFont">растояние между буквами в пикселях</param>
         /// <param name="render">объект рендера, только для основного потока</param>
         /// <param name="texture">индест текстурки</param>
-        public FontBase(BufferedImage textureFont, byte stepFont, RenderMain render, int texture)
+        public FontBase(BufferedImage textureFont, byte stepFont, RenderMain render)
         {
-            this.render = render;
-            this.texture = texture;
-            horiAdvance = textureFont.Width >> 4;
-            vertAdvance = textureFont.Height >> 4;
-            this.stepFont = stepFont;
+            _render = render;
+            _horiAdvance = textureFont.Width >> 4;
+            _vertAdvance = textureFont.Height >> 4;
+            _stepFont = stepFont;
             Transfer = new TransferText(this);
 
             string keys = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзиклмнопрстуфхцчшщъыьэюяЁёЙй§";
@@ -108,7 +104,7 @@ namespace Vge.Renderer.Font
                 width = GetWidth(textureFont, index);
                 Symbol symbol = new Symbol(symb, index, width);
                 key = symb;
-                items[Convert(key)] = symbol;
+                _items[Convert(key)] = symbol;
 
                 //index = keys.IndexOf(symb) + 32;
                 //if (index == -1)
@@ -148,22 +144,26 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Создать меш если это надо
         /// </summary>
-        public void CreateMesh(GL gl) => mesh = new MeshGuiColor(gl);
+        public void CreateMesh(GL gl, uint index) 
+        {
+            _texture = index;
+            _mesh = new MeshGuiColor(gl);
+        }
 
         /// <summary>
         /// Обновить размер инерфейса
         /// </summary>
         public void UpdateSizeInterface()
         {
-            si = Gi.Si;
-            hori = horiAdvance * si;
-            vert = vertAdvance * si;
+            _si = Gi.Si;
+            _hori = _horiAdvance * _si;
+            _vert = _vertAdvance * _si;
         }
 
         /// <summary>
         /// Забиндить текстуру шрифта
         /// </summary>
-        public void BindTexture() => render.BindTexture(texture);
+        public void BindTexture() => _render.BindTexture(_texture);
 
         /// <summary>
         /// Получить объект символа
@@ -172,20 +172,20 @@ namespace Vge.Renderer.Font
         {
             try
             {
-                return items[Convert(key)];
+                return _items[Convert(key)];
                 //if (key < 32) return items[0];
                 //return items[key - (key > 1000 ? 929 : 32)];
             }
             catch
             {
-                return items[0];
+                return _items[0];
             }
         }
 
         /// <summary>
         /// Проверить, присутствует ли такой символ
         /// </summary>
-        public bool IsPresent(char key) => !Get(key).Equals(items[0]);
+        public bool IsPresent(char key) => !Get(key).Equals(_items[0]);
 
         #region Width
 
@@ -194,10 +194,10 @@ namespace Vge.Renderer.Font
         /// </summary>
         private byte GetWidth(BufferedImage bi, int index)
         {
-            int x0 = (index & 15) * horiAdvance;
-            int y0 = (index >> 4) * horiAdvance;
-            int x1 = x0 + horiAdvance - 1;
-            int y1 = y0 + horiAdvance;
+            int x0 = (index & 15) * _horiAdvance;
+            int y0 = (index >> 4) * _horiAdvance;
+            int x1 = x0 + _horiAdvance - 1;
+            int y1 = y0 + _horiAdvance;
 
             for (int x = x1; x >= x0; x--)
             {
@@ -220,7 +220,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Получить шаг между символами
         /// </summary>
-        private int GetStepFont() => style.IsBolb() ? stepFont + 1 : stepFont;
+        private int GetStepFont() => _style.IsBolb() ? _stepFont + 1 : _stepFont;
 
         /// <summary>
         /// Узнать ширину текста без размера интерфейса
@@ -240,7 +240,7 @@ namespace Vge.Renderer.Font
                 {
                     // Этап определения стиля шрифта
                     symbol = Get(vc[++i]);
-                    style.SetSymbol(symbol);
+                    _style.SetSymbol(symbol);
                 }
                 else
                 {
@@ -261,7 +261,7 @@ namespace Vge.Renderer.Font
         public string TransferString(string text, int width, bool ellipsis = true)
         {
             int width3dot = WidthString(Ce.Ellipsis);
-            Transfer.Run(text, width - width3dot, si);
+            Transfer.Run(text, width - width3dot, _si);
             string[] strs = Transfer.OutText.Split(TransferText.StringSeparators, StringSplitOptions.None);
             if (strs.Length > 0) text = strs[0];
             if (ellipsis && strs.Length > 1) text += Ce.Ellipsis;
@@ -273,7 +273,7 @@ namespace Vge.Renderer.Font
         /// </summary>
         public string TransferWidth(string text, int width)
         {
-            Transfer.Run(text, width, si);
+            Transfer.Run(text, width, _si);
             return Transfer.OutText;
         }
 
@@ -286,11 +286,11 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void RenderFX()
         {
-            if (fontFX == EnumFontFX.Outline)
+            if (_fontFX == EnumFontFX.Outline)
             {
                 BufferOutline();
             }
-            else if (fontFX == EnumFontFX.Shadow)
+            else if (_fontFX == EnumFontFX.Shadow)
             {
                 BufferShadow();
             }
@@ -302,17 +302,17 @@ namespace Vge.Renderer.Font
         private void BufferShadow()
         {
             // Текст готов, пробую сделать фон на основании текущего буффера
-            int count = buffer.Count;
+            int count = _buffer.Count;
             // Делаем копию
-            buffer.AddCopy(0, count);
+            _buffer.AddCopy(0, count);
             // Делаем смещение в сторону, и центральный последний меняем цвет
             for (int i = 0; i < count; i += 7)
             {
-                buffer[i] = buffer[i] + si;
-                buffer[i + 1] = buffer[i + 1] + si;
-                buffer[i + 4] = buffer[i + count + 4] / 4f;
-                buffer[i + 5] = buffer[i + count + 5] / 4f;
-                buffer[i + 6] = buffer[i + count + 6] / 4f;
+                _buffer[i] = _buffer[i] + _si;
+                _buffer[i + 1] = _buffer[i + 1] + _si;
+                _buffer[i + 4] = _buffer[i + count + 4] / 4f;
+                _buffer[i + 5] = _buffer[i + count + 5] / 4f;
+                _buffer[i + 6] = _buffer[i + count + 6] / 4f;
             }
         }
         /// <summary>
@@ -321,32 +321,32 @@ namespace Vge.Renderer.Font
         private void BufferOutline()
         {
             // Текст готов, пробую сделать фон на основании текущего буффера
-            int count = buffer.Count;
+            int count = _buffer.Count;
             int count2 = count * 2;
             int count3 = count * 3;
             int count4 = count * 4;
 
             // Делаем финишную копию
-            buffer.AddCopy(0, count, count4);
+            _buffer.AddCopy(0, count, count4);
             // Красим первый контур в затемнёный цвет
             for (int i = 0; i < count; i += 7)
             {
-                buffer[i + 4] = buffer[i + count4 + 4] / 4f;
-                buffer[i + 5] = buffer[i + count4 + 5] / 4f;
-                buffer[i + 6] = buffer[i + count4 + 6] / 4f;
+                _buffer[i + 4] = _buffer[i + count4 + 4] / 4f;
+                _buffer[i + 5] = _buffer[i + count4 + 5] / 4f;
+                _buffer[i + 6] = _buffer[i + count4 + 6] / 4f;
             }
             // Делаем ещё 3 копии контура
-            buffer.AddCopy(0, count, count);
-            buffer.AddCopy(0, count, count2);
-            buffer.AddCopy(0, count, count3);
+            _buffer.AddCopy(0, count, count);
+            _buffer.AddCopy(0, count, count2);
+            _buffer.AddCopy(0, count, count3);
 
             // Делаем смещение в 4 стороны
             for (int i = 0; i < count; i += 7)
             {
-                buffer[i + count] = buffer[i] + si;
-                buffer[i + count2] = buffer[i] - si;
-                buffer[i + count3 + 1] = buffer[i + 1] + si;
-                buffer[i + 1] = buffer[i + 1] - si;
+                _buffer[i + count] = _buffer[i] + _si;
+                _buffer[i + count2] = _buffer[i] - _si;
+                _buffer[i + count3 + 1] = _buffer[i + 1] + _si;
+                _buffer[i + 1] = _buffer[i + 1] - _si;
             }
         }
 
@@ -355,12 +355,12 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Шаг смещения вертикали с учётом интерфейса
         /// </summary>
-        public int GetVertStep() => vert + 4 * si;
+        public int GetVertStep() => _vert + 4 * _si;
 
         /// <summary>
         /// Вертикальное смещение начала следующего глифа с учётом размера интерфейса 
         /// </summary>
-        public int GetVert() => vert;
+        public int GetVert() => _vert;
 
         #region Render
 
@@ -388,7 +388,7 @@ namespace Vge.Renderer.Font
             int x0 = x;
             int count = vc.Length;
             int check = count - 1;
-            int y2 = y + vert;
+            int y2 = y + _vert;
             for (int i = 0; i < count; i++)
             {
                 symbol = Get(vc[i]);
@@ -396,12 +396,12 @@ namespace Vge.Renderer.Font
                 {
                     // Этап определения стиля шрифта
                     symbol = Get(vc[++i]);
-                    style.SetSymbol(symbol);
+                    _style.SetSymbol(symbol);
                 }
                 else
                 {
-                    GenBuffer(symbol, x, y, x + hori, y2, colorText.X, colorText.Y, colorText.Z);
-                    if (symbol.Width > 0) x += (symbol.Width + GetStepFont()) * si;
+                    GenBuffer(symbol, x, y, x + _hori, y2, _colorText.X, _colorText.Y, _colorText.Z);
+                    if (symbol.Width > 0) x += (symbol.Width + GetStepFont()) * _si;
                 }
             }
             return x - x0;
@@ -422,9 +422,9 @@ namespace Vge.Renderer.Font
             float u2 = symbol.U2;
 
             float r, g, b;
-            if (style.IsColor())
+            if (_style.IsColor())
             {
-                int index = style.GetColor();
+                int index = _style.GetColor();
                 r = Gi.ColorReg[index];
                 g = Gi.ColorGreen[index];
                 b = Gi.ColorBlue[index];
@@ -436,19 +436,19 @@ namespace Vge.Renderer.Font
                 b = colorB;
             }
             
-            buffer.AddRange(Rectangle(x1, y1, x2, y2, v1, u1, v2, u2, r, g, b));
-            if (style.IsBolb())
+            _buffer.AddRange(Rectangle(x1, y1, x2, y2, v1, u1, v2, u2, r, g, b));
+            if (_style.IsBolb())
             {
-                buffer.AddRange(Rectangle(x1 + si, y1, x2 + si, y2, v1, u1, v2, u2, r, g, b));
+                _buffer.AddRange(Rectangle(x1 + _si, y1, x2 + _si, y2, v1, u1, v2, u2, r, g, b));
             }
-            if (style.IsUnderline())
+            if (_style.IsUnderline())
             {
-                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b));
+                _buffer.AddRange(Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
-            if (style.IsStrikethrough())
+            if (_style.IsStrikethrough())
             {
                 y2 -= (y2 - y1) / 2;
-                buffer.AddRange(Rectangle(x1 - si, y2 - si, x1 + (symbol.Width + 1) * si, y2, 0, 0, .0625f, .0625f, r, g, b));
+                _buffer.AddRange(Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
         }
 
@@ -458,7 +458,7 @@ namespace Vge.Renderer.Font
         private float[] Rectangle(int x1, int y1, int x2, int y2, float v1, float u1, float v2, float u2,
             float r, float g, float b)
         {
-            if (style.IsItalic())
+            if (_style.IsItalic())
             {
                 return new float[]
                 {
@@ -486,10 +486,10 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void ReloadDraw()
         {
-            if (mesh != null)
+            if (_mesh != null)
             {
-                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
-                mesh.Draw();
+                _mesh.Reload(_buffer.GetBufferAll(), _buffer.Count);
+                _mesh.Draw();
             }
         }
 
@@ -498,9 +498,9 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void Reload()
         {
-            if (mesh != null)
+            if (_mesh != null)
             {
-                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
+                _mesh.Reload(_buffer.GetBufferAll(), _buffer.Count);
             }
         }
 
@@ -511,7 +511,7 @@ namespace Vge.Renderer.Font
         {
             if (mesh != null)
             {
-                mesh.Reload(buffer.GetBufferAll(), buffer.Count);
+                mesh.Reload(_buffer.GetBufferAll(), _buffer.Count);
             }
         }
 
@@ -524,18 +524,18 @@ namespace Vge.Renderer.Font
         /// </summary>
         public void Clear(bool isColorDefault = true)
         {
-            buffer.Clear();
-            style.Reset();
+            _buffer.Clear();
+            _style.Reset();
             if (isColorDefault)
             {
-                colorText = Gi.ColorText;
+                _colorText = Gi.ColorText;
             }
         }
 
         /// <summary>
         /// Сколько полигон
         /// </summary>
-        public int ToPoligons() => buffer.Count / 14;
+        public int ToPoligons() => _buffer.Count / 14;
 
         #endregion
 
@@ -544,13 +544,13 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Сбросить стиль
         /// </summary>
-        public void StyleReset() => style.Reset();
+        public void StyleReset() => _style.Reset();
         /// <summary>
         /// Задать цвет по умолчпнию, если не будет выбран стилем
         /// </summary>
         public FontBase SetColor(Vector3 colorText)
         {
-            this.colorText = colorText;
+            this._colorText = colorText;
             return this;
         }
         /// <summary>
@@ -558,7 +558,7 @@ namespace Vge.Renderer.Font
         /// </summary>
         public FontBase SetFontFX(EnumFontFX fontFX)
         {
-            this.fontFX = fontFX;
+            this._fontFX = fontFX;
             return this;
         }
 

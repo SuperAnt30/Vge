@@ -1,7 +1,7 @@
 {
     Texture: {
-        Flow: "Blocks/water_flow",
-        Still: "Blocks/water_still"
+        Flow: "Blocks/WaterFlow",
+        Still: "Blocks/WaterStill"
     },
     Element: {
         TypeColor:3,

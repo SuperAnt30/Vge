@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Collections.Generic;
+using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer
@@ -11,17 +12,11 @@ namespace Vge.Renderer
         /// <summary>
         /// Объект методов OpenGL
         /// </summary>
-        protected GL gl;
-
-        /// <summary>
-        /// Текстур заставки
-        /// </summary>
-        private uint splash = 0;
-
+        private readonly GL gl;
         /// <summary>
         /// Массив текстур
         /// </summary>
-        private uint[] textures;
+        private readonly List<uint> _textures = new List<uint>();
 
         /// <summary>
         /// Создать объект текстур
@@ -30,107 +25,49 @@ namespace Vge.Renderer
         public TextureMap(GL gl) => this.gl = gl;
 
         /// <summary>
-        /// Указать количество текстур
-        /// </summary>
-        public void SetCount(int count) => textures = new uint[count];
-
-        #region Splash
-
-        /// <summary>
-        /// Запустить текстуру заставки
-        /// </summary>
-        public void BindSplash()
-        {
-            if (splash != 0)
-            {
-                gl.ActiveTexture(GL.GL_TEXTURE0);
-                gl.BindTexture(GL.GL_TEXTURE_2D, splash);
-            }
-        }
-
-        /// <summary>
-        /// Удалить текстуру заставки
-        /// </summary>
-        public void DeleteSplash()
-        {
-            if (splash != 0)
-            {
-                gl.DeleteTextures(1, new uint[] { splash });
-            }
-        }
-
-        /// <summary>
         /// Удалить текстуру, указав индекс текстуры массива
         /// </summary>
-        public void DeleteTexture(int index)
+        public void DeleteTexture(uint index)
         {
-            if (index < textures.Length)
+            if (_textures.Contains(index))
             {
-                gl.DeleteTextures(1, new uint[] { textures[index] });
-                textures[index] = 0;
+                gl.DeleteTextures(1, new uint[] { index });
+                _textures.Remove(index);
             }
         }
-
-        /// <summary>
-        /// Внесение в кеш текстур заставки
-        /// </summary>
-        /// <param name="image">рисунок</param>
-        public void SetSplash(BufferedImage image)
-        {
-            uint key = SetTexture(splash, image);
-            if (splash == 0)
-            {
-                splash = key;
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
         /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
-        public void BindTexture(int index, uint texture = 0)
+        public void BindTexture(uint index, uint texture = 0)
         {
-            if (index < textures.Length)
-            {
-                gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
-                gl.BindTexture(GL.GL_TEXTURE_2D, textures[index]);
-            }
+            gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
+            gl.BindTexture(GL.GL_TEXTURE_2D, index);
         }
 
         /// <summary>
         /// Внесение в кеш текстур
         /// </summary>
-        /// <param name="index">индекс текстуры массива</param>
         /// <param name="image">рисунок</param>
-        public void SetTexture(int index, BufferedImage image)
+        /// <param name="index">Индекс, если равен 0 то создать</param>
+        public uint SetTexture(BufferedImage image, uint index = 0)
         {
-            if (index < textures.Length)
+            if (!_textures.Contains(index))
             {
-                uint key = SetTexture(textures[index], image);
-                if (textures[index] == 0)
-                {
-                    textures[index] = key;
-                }
+                index = 0;
             }
-        }
-
-        /// <summary>
-        /// Внесение в кеш текстур
-        /// </summary>
-        private uint SetTexture(uint key, BufferedImage image)
-        {
-            bool isCreate = key == 0;
+            bool isCreate = index == 0;
             if (isCreate)
             {
                 uint[] id = new uint[1];
                 gl.GenTextures(1, id);
-                key = id[0];
+                index = id[0];
+                _textures.Add(index);
             }
             gl.ActiveTexture(GL.GL_TEXTURE0 + image.ActiveTextureIndex);
             //gl.PixelStore(GL.GL_UNPACK_ALIGNMENT, 1);// отключаем ограничение выравнивания байтов
-            gl.BindTexture(GL.GL_TEXTURE_2D, key);
+            gl.BindTexture(GL.GL_TEXTURE_2D, index);
 
             if (isCreate)
             {
@@ -184,9 +121,7 @@ namespace Vge.Renderer
                 gl.TexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, image.Width, image.Height,
                         GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
             }
-            return key;
+            return index;
         }
-
-
     }
 }

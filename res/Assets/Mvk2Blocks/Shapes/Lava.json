@@ -1,7 +1,7 @@
 {
     Texture: {
-        Flow: "Blocks/lava_flow",
-        Still: "Blocks/lava_still",
+        Flow: "Blocks/LavaFlow",
+        Still: "Blocks/LavaStill",
     },
     Element: {
 	Wind:1,

@@ -91,7 +91,11 @@
         /// </summary>
         public virtual void YesNo(ScreenBase parent, string text) 
             => window.ScreenCreate(new ScreenYesNo(window, parent, text), false);
-     
-        
+        /// <summary>
+        /// Создать скрин чата
+        /// </summary>
+        public virtual void InChat() => window.ScreenCreate(new ScreenChat(window));
+
+
     }
 }

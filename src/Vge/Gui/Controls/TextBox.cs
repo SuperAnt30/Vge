@@ -57,6 +57,10 @@ namespace Vge.Gui.Controls
         /// Видимость курсора
         /// </summary>
         private bool isVisibleCursor;
+        /// <summary>
+        /// Фиксированный фокус, к примеру для чата
+        /// </summary>
+        private bool _fixFocus = false;
 
         public TextBox(WindowMain window, FontBase font, int width, string text,
             EnumRestrictions restrictions, int limit = 24) : base(window)
@@ -72,9 +76,18 @@ namespace Vge.Gui.Controls
             SetSize(width, 40);
         }
 
+        /// <summary>
+        /// Сделать фиксированный вокус, чтоб не терять курсор
+        /// </summary>
+        public void FixFocus()
+        {
+            Focus = true;
+            _fixFocus = true;
+        }
+
         #region OnMouse
 
-        
+
         /// <summary>
         /// Нажатие клавиши мышки
         /// </summary>
@@ -106,7 +119,7 @@ namespace Vge.Gui.Controls
                     }
                     IsRender = true;
                 }
-                else if (!enter && Focus)
+                else if (!enter && Focus && !_fixFocus)
                 {
                     // Потерять фокус
                     isVisibleCursor = false;

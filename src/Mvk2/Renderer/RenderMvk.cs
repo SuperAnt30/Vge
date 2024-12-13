@@ -1,5 +1,7 @@
-﻿using Vge.Renderer;
+﻿using System.Collections.Generic;
+using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.World;
 using Vge.Util;
 
 namespace Mvk2.Renderer
@@ -25,24 +27,25 @@ namespace Mvk2.Renderer
 
         public RenderMvk(WindowMvk window) : base(window) => windowMvk = window;
 
+        protected override void _Initialize()
+        {
+            _textureIndex = new TextureIndex();
+            LightMap = new TextureLightMap(gl);
+        }
+
+
         #region Texture
 
         /// <summary>
         /// Создать текстуру Мелкий шрифт
         /// </summary>
-        public void CreateTextureFontSmall(BufferedImage buffered) 
-            => FontSmall = new FontBase(buffered, 1, this, (int)AssetsTexture.FontSmall);
+        public void CreateTextureFontSmall(BufferedImage buffered)
+            => FontSmall = new FontBase(buffered, 1, this);
         /// <summary>
         /// Создать текстуру Крупный шрифт
         /// </summary>
-        public void CreateTextureFontLarge(BufferedImage buffered) 
-            => FontLarge = new FontBase(buffered, 2, this, (int)AssetsTexture.FontLarge);
-
-        /// <summary>
-        /// Запустить текстуру, указав индекс текстуры массива
-        /// </summary>
-        public void BindTexture(AssetsTexture index, uint texture = 0) 
-            => Texture.BindTexture((int)index, texture);
+        public void CreateTextureFontLarge(BufferedImage buffered)
+            => FontLarge = new FontBase(buffered, 2, this);
 
         #endregion
 
@@ -50,11 +53,18 @@ namespace Mvk2.Renderer
         /// На финише загрущика в основном потоке
         /// </summary>
         /// <param name="buffereds">буфер всех текстур для биндинга</param>
-        public override void AtFinishLoading(BufferedImage[] buffereds)
+        public override void AtFinishLoading(Dictionary<string, BufferedImage> buffereds)
         {
             base.AtFinishLoading(buffereds);
-            FontSmall.CreateMesh(gl);
-            FontLarge.CreateMesh(gl);
+
+            if (buffereds.ContainsKey(EnumTextureMvk.FontSmall.ToString()))
+            {
+                FontSmall.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTextureMvk.FontSmall.ToString()]));
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.FontLarge.ToString()))
+            {
+                FontLarge.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
+            }
         }
     }
 }
