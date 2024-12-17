@@ -14,6 +14,20 @@ namespace Vge.Renderer.Huds
         }
 
         /// <summary>
+        /// Включился чат (ScreenChat)
+        /// </summary>
+        public virtual void ChatOn() { }
+
+        /// <summary>
+        /// Выключился чат (ScreenChat)
+        /// </summary>
+        public virtual void ChatOff() { }
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        public virtual void OnResized(int width, int height) { }
+
+        /// <summary>
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>

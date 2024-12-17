@@ -3,6 +3,7 @@ using Vge.Games;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Realms;
 using Vge.Util;
 
 namespace Vge.Management
@@ -163,6 +164,27 @@ namespace Vge.Management
             foreach (PlayerServer player in _players)
             {
                 player.SendPacket(packet);
+            }
+        }
+
+        /// <summary>
+        /// Отправить всем сообщение
+        /// </summary>
+        public void SendToAllMessage(string message)
+            => SendToAll(new PacketS3AMessage(message));
+
+        /// <summary>
+        /// Получаем пакет сообщения от клиента
+        /// </summary>
+        /// <param name="player">Игрок который отправил, null значит через командную сервера</param>
+        /// <param name="packet">Пакет сообщения</param>
+        public void ClientMessage(PlayerServer player, PacketC14Message packet)
+        {
+            if (player != null)
+            {
+                string message = packet.GetCommandSender().GetMessage();
+                Server.Log.Server("<{0}>: {1}", player.Login, message);
+                SendToAllMessage(ChatStyle.Aqua + "[" + player.Login + "] " + ChatStyle.Reset + message);
             }
         }
 
@@ -351,6 +373,7 @@ namespace Vge.Management
                     {
                         // Сокет не закрыт, значит закрытие на стороне сервера, надо отправить сообщение
                         // TODO::2024-10-01 тут можно отправить строковое сообщение игроку до его разрыва связи с его причиной
+                        //player.SendMessage();
                         Server.PlayerDisconnect(player.Socket, player.causeRemove);
                     }
                 }

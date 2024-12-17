@@ -32,6 +32,12 @@ namespace Vge.Renderer
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public virtual void Draw(float timeIndex) { }
 
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public virtual void OnTick(float deltaTime) { }
+
         public virtual void Dispose() { }
     }
 }

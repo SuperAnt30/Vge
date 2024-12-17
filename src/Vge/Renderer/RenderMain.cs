@@ -228,6 +228,7 @@ namespace Vge.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureWidgets() => _texture.BindTexture(_textureIndex.Widgets);
+        
         /// <summary>
         /// Запустить текстуру атласа размытых блоков
         /// </summary>

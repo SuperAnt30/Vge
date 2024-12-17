@@ -55,6 +55,7 @@ namespace Vge
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public virtual void OnTick(float deltaTime) { }
 
         #endregion

@@ -167,6 +167,7 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             // Проверка на разрыв долгий сервера (нет связи)

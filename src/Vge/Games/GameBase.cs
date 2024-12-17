@@ -129,7 +129,7 @@ namespace Vge.Games
 
         private void _Key_InChat(object sender, EventArgs e)
         {
-            window.LScreen.InChat();
+            window.LScreen.Chat();
         }
 
         /// <summary>
@@ -334,6 +334,7 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             // почерёдно получаем пакеты с сервера
@@ -354,7 +355,14 @@ namespace Vge.Games
                 //Filer.EndStartSection("WorldRender.Update", 10);
                 // Обновить рендоровский мир
                 WorldRender.Update();
-               // Filer.EndSection(5);
+                // Filer.EndSection(5);
+
+                // Тут индикация если имеется
+                if (Hud != null)
+                {
+                    Hud.OnTick(deltaTime);
+                }
+
                 // Прошла минута, или 1800 тактов
                 if (_tickCounterClient % 1800 == 0)
                 {
@@ -385,6 +393,18 @@ namespace Vge.Games
         /// Задать время с сервера
         /// </summary>
         public void SetTickCounter(uint time) => TickCounter = time;
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        public void OnResized(int width, int height)
+        {
+            // Тут индикация если имеется
+            if (Hud != null)
+            {
+                Hud.OnResized(width, height);
+            }
+        }
 
         /// <summary>
         /// Метод для прорисовки кадра

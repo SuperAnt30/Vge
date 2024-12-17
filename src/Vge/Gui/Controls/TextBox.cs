@@ -14,65 +14,69 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Смещение от начала рамки до текста
         /// </summary>
-        private const int marginLeft = 12;
+        private const int _marginLeft = 12;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
-        private readonly MeshGuiColor meshBg;
+        private readonly MeshGuiColor _meshBg;
         /// <summary>
         /// Сетка текста
         /// </summary>
-        private readonly MeshGuiColor meshTxt;
+        private readonly MeshGuiColor _meshTxt;
         /// <summary>
         /// Сетка курсора
         /// </summary>
-        private readonly MeshGuiColor meshCursor;
+        private readonly MeshGuiColor _meshCursor;
         /// <summary>
         /// Коэфициент смещения вертикали для текстуры
         /// </summary>
-        private readonly float vk;
+        private readonly float _vk;
         /// <summary>
         /// Ограничения набор символов 
         /// </summary>
-        private readonly EnumRestrictions restrictions;
+        private readonly EnumRestrictions _restrictions;
         /// <summary>
         /// Объект шрифта
         /// </summary>
-        private readonly FontBase font;
+        private readonly FontBase _font;
         /// <summary>
         /// Максимальная длинна 
         /// </summary>
-        private readonly int limit;
+        private readonly int _limit;
 
         /// <summary>
         /// Счётчик для анимации
         /// </summary>
-        private int cursorCounter;
+        private int _cursorCounter;
         /// <summary>
         /// Где стоит курсор номер символа
         /// </summary>
-        private int stepCursor = 0;
+        private int _stepCursor = 0;
         /// <summary>
         /// Видимость курсора
         /// </summary>
-        private bool isVisibleCursor;
+        private bool _isVisibleCursor;
         /// <summary>
         /// Фиксированный фокус, к примеру для чата
         /// </summary>
         private bool _fixFocus = false;
+        /// <summary>
+        /// Нажата ли клавиша контрол
+        /// </summary>
+        private bool _keyControl = false;
 
         public TextBox(WindowMain window, FontBase font, int width, string text,
             EnumRestrictions restrictions, int limit = 24) : base(window)
         {
-            this.limit = limit;
-            this.font = font;
-            this.restrictions = restrictions;
-            meshBg = new MeshGuiColor(gl);
-            meshTxt = new MeshGuiColor(gl);
-            meshCursor = new MeshGuiColor(gl);
-            vk = .078125f; // 40 / 512f;
-            SetText(text);
+            _limit = limit;
+            _font = font;
+            _restrictions = restrictions;
+            _meshBg = new MeshGuiColor(gl);
+            _meshTxt = new MeshGuiColor(gl);
+            _meshCursor = new MeshGuiColor(gl);
+            _vk = .078125f; // 40 / 512f;
+            SetText(_GetConvertCheck(text));
             SetSize(width, 40);
         }
 
@@ -100,32 +104,46 @@ namespace Vge.Gui.Controls
                 {
                     if (!Focus)
                     {
-                        isVisibleCursor = true;
+                        _isVisibleCursor = true;
                         Focus = true;
                     }
                     // Определяем куда установить курсор
-                    int x0 = x / si - PosX;
-                    int w1 = marginLeft;
-                    int count = Text.Length;
-                    stepCursor = count;
-                    for (int i = 1; i <= count; i++)
-                    {
-                        w1 = font.WidthString(Text.Substring(0, i));
-                        if (w1 > x0)
-                        {
-                            stepCursor = i - 1;
-                            break;
-                        }
-                    }
+                    UpCursor(x);
                     IsRender = true;
                 }
                 else if (!enter && Focus && !_fixFocus)
                 {
                     // Потерять фокус
-                    isVisibleCursor = false;
+                    _isVisibleCursor = false;
                     Focus = false;
                     IsRender = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Определяем куда установить курсор, x клик мыши
+        /// </summary>
+        public void UpCursor(int x = int.MaxValue)
+        {
+            int x0 = x / si - PosX;
+            int w1 = _marginLeft;
+            string text = _GetTextDraw();
+            int count = text.Length;
+            _stepCursor = count;
+            for (int i = 1; i <= count; i++)
+            {
+                w1 = _font.WidthString(text.Substring(0, i));
+                if (w1 > x0)
+                {
+                    _stepCursor = i - 1;
+                    break;
+                }
+            }
+            int bias = Text.Length - text.Length;
+            if (bias > 0)
+            {
+                _stepCursor += bias;
             }
         }
 
@@ -139,60 +157,122 @@ namespace Vge.Gui.Controls
             if (id == 8)
             {
                 // back
-                if (stepCursor > 0)
+                if (_stepCursor > 0)
                 {
-                    string text = Text.Substring(0, stepCursor - 1);
-                    if (Text.Length > stepCursor)
+                    string text = Text.Substring(0, _stepCursor - 1);
+                    if (Text.Length > _stepCursor)
                     {
-                        text += Text.Substring(stepCursor);
+                        text += Text.Substring(_stepCursor);
                     }
-                    stepCursor--;
+                    _stepCursor--;
                     SetText(text);
                 }
             }
-            else if (Text.Length < limit && Check(key, id))
+            else if (Text.Length < _limit && _Check(key, id))
             {
-                string text = Text.Substring(0, stepCursor) + key;
-                if (Text.Length > stepCursor)
+                string text = Text.Substring(0, _stepCursor) + key;
+                if (Text.Length > _stepCursor)
                 {
-                    text += Text.Substring(stepCursor);
+                    text += Text.Substring(_stepCursor);
                 }
-                stepCursor++;
+                _stepCursor++;
                 SetText(text);
             }
         }
 
+        public override void OnKeyUp(Keys keys)
+        {
+            if (keys == Keys.ControlKey) _keyControl = false;
+        }
+
         public override void OnKeyDown(Keys keys)
         {
-            if (keys == Keys.Delete)
+            if (keys == Keys.ControlKey)
             {
-                if (stepCursor < Text.Length)
+                _keyControl = true;
+            }
+            else if (keys == Keys.V && _keyControl)
+            {
+                string textClipboard = Clipboard.GetText();
+                if (textClipboard != null && textClipboard != "")
+                {
+                    textClipboard = _GetConvertCheck(textClipboard);
+                    if (textClipboard != "")
+                    {
+                        string message;
+                        if (_stepCursor == Text.Length)
+                        {
+                            message = Text + textClipboard;
+                        }
+                        else if (_stepCursor == 0)
+                        {
+                            message = textClipboard + Text;
+                        }
+                        else
+                        {
+                            message = Text.Substring(0, _stepCursor - 1)
+                                + textClipboard
+                                + Text.Substring(_stepCursor);
+                        }
+
+                        if (message.Length > _limit)
+                        {
+                            message = message.Substring(0, _limit);
+                        }
+                        _stepCursor += textClipboard.Length;
+                        if (_stepCursor > _limit)
+                        {
+                            _stepCursor = _limit;
+                        }
+                        SetText(message);
+                    }
+                }
+            }
+            else if (keys == Keys.Delete)
+            {
+                if (_stepCursor < Text.Length)
                 {
                     string text = "";
-                    if (stepCursor > 0)
+                    if (_stepCursor > 0)
                     {
-                        text = Text.Substring(0, stepCursor);
+                        text = Text.Substring(0, _stepCursor);
                     }
-                    if (Text.Length > stepCursor)
+                    if (Text.Length > _stepCursor)
                     {
-                        text += Text.Substring(stepCursor + 1);
+                        text += Text.Substring(_stepCursor + 1);
                     }
                     SetText(text);
                 }
             }
             else if (keys == Keys.Left)
             {
-                if (stepCursor > 0)
+                if (_stepCursor > 0)
                 {
-                    stepCursor--;
+                    _stepCursor--;
                     IsRender = true;
                 }
             }
             else if (keys == Keys.Right)
             {
-                if (stepCursor < Text.Length)
+                if (_stepCursor < Text.Length)
                 {
-                    stepCursor++;
+                    _stepCursor++;
+                    IsRender = true;
+                }
+            }
+            else if (keys == Keys.Home)
+            {
+                if (_stepCursor > 0)
+                {
+                    _stepCursor = 0;
+                    IsRender = true;
+                }
+            }
+            else if (keys == Keys.End)
+            {
+                if (_stepCursor < Text.Length)
+                {
+                    _stepCursor = Text.Length;
                     IsRender = true;
                 }
             }
@@ -211,9 +291,27 @@ namespace Vge.Gui.Controls
         /// </summary>
         protected virtual void KeyUpDown(bool up) { }
 
-        private bool Check(char key, int id)
+        /// <summary>
+        /// Проверить и сконвертировать сообщение по текущие правила
+        /// </summary>
+        private string _GetConvertCheck(string message)
         {
-            switch (restrictions)
+            string s = "";
+            char key;
+            for(int i = 0; i < message.Length; i++)
+            {
+                key = message[i];
+                if (s.Length < _limit && _Check(key, Convert.ToInt32(key)))
+                {
+                    s += key;
+                }
+            }
+            return s;
+        }
+
+        private bool _Check(char key, int id)
+        {
+            switch (_restrictions)
             {
                 case EnumRestrictions.IpPort:
                     return (id >= 48 && id <= 57) // цифры
@@ -225,7 +323,7 @@ namespace Vge.Gui.Controls
                     || (id >= 65 && id <= 90) // Большие англ
                     || (id >= 97 && id <= 122); // Маленькие англ
                 case EnumRestrictions.All:
-                    return font.IsPresent(key);
+                    return _font.IsPresent(key);
             }
             return false;
         }
@@ -240,6 +338,9 @@ namespace Vge.Gui.Controls
             IsRender = false;
         }
 
+
+        private string _GetTextDraw() => _font.GetStringEndToWidth(Text, Width - 24);
+
         /// <summary>
         /// Прорисовка внутреняя
         /// </summary>
@@ -249,41 +350,58 @@ namespace Vge.Gui.Controls
         {
             // Определяем цвет текста
             Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
-            int biasY = (Height * si - font.GetVert()) / 2;
+            int biasY = (Height * si - _font.GetVert()) / 2;
 
             // Чистим буфер
-            font.Clear();
+            _font.Clear();
             // Указываем опции
-            font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+            _font.SetColor(color).SetFontFX(EnumFontFX.Outline);
 
             // Обрезка текста согласно ширины
-            string text = font.TransferString(Text, Width);
+            string text = _GetTextDraw();
+            int bias = Text.Length - text.Length;
+            int lenght = _stepCursor - bias;
+            if (lenght < 0)
+            {
+                // Тут надо подумать как смещать курсор в начало, 
+                // перемещая текст, это меняем text и перерасчёт верхних строк.
+                // Может это и не надо!... 2024-12-17
+                _stepCursor -= lenght;
+                lenght = 0;
+            }
             // Готовим рендер текста
-            font.RenderString(x + marginLeft * si, y + biasY, text);
+            _font.RenderString(x + _marginLeft * si, y + biasY, text);
 
             // Имеется Outline значит рендерим FX
-            font.RenderFX();
+            _font.RenderFX();
             // Вносим сетку
-            font.Reload(meshTxt);
+            _font.Reload(_meshTxt);
 
             // Сетка фона
-            float v1 = Enabled ? enter ? vk * 4 : vk * 3 : 0f;
-            meshBg.Reload(RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
+            float v1 = Enabled ? enter ? _vk * 4 : _vk * 3 : 0f;
+            _meshBg.Reload(_RectangleTwo(x, y, 0, v1, _vk, 1, 1, 1));
 
-            if (isVisibleCursor)
+            try
             {
-                // Если нужен курсор, то рендерим сетку
-                int w = (PosX + font.WidthString(Text.Substring(0, stepCursor)) + marginLeft) * si;
-                // Чистим буфер
-                font.Clear();
-                // Указываем опции
-                font.SetColor(color).SetFontFX(EnumFontFX.Outline);
-                // Готовим рендер текста
-                font.RenderString(w, y + biasY, stepCursor == Text.Length ? "_" : "|");
-                // Имеется Outline значит рендерим FX
-                font.RenderFX();
-                // Вносим сетку
-                font.Reload(meshCursor);
+                if (_isVisibleCursor)
+                {
+                    // Если нужен курсор, то рендерим сетку
+                    int w = (PosX + _font.WidthString(text.Substring(0, lenght)) + _marginLeft) * si;
+                    // Чистим буфер
+                    _font.Clear();
+                    // Указываем опции
+                    _font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+                    // Готовим рендер текста
+                    _font.RenderString(w, y + biasY, _stepCursor == Text.Length ? "_" : "|");
+                    // Имеется Outline значит рендерим FX
+                    _font.RenderFX();
+                    // Вносим сетку
+                    _font.Reload(_meshCursor);
+                }
+            }
+            catch(Exception ex)
+            {
+                 return;
             }
         }
 
@@ -295,39 +413,43 @@ namespace Vge.Gui.Controls
         {
             // Рисуем фон
             window.Render.BindTextureWidgets();
-            meshBg.Draw();
+            _meshBg.Draw();
             // Рисуем текст
-            font.BindTexture();
-            meshTxt.Draw();
+            _font.BindTexture();
+            _meshTxt.Draw();
 
             // Рисуем контур если имеется
-            if (isVisibleCursor)
+            if (_isVisibleCursor)
             {
-                meshCursor.Draw();
+                _meshCursor.Draw();
             }
         }
 
         #endregion
 
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             if (Focus)
             {
-                cursorCounter++;
+                _cursorCounter++;
 
-                if ((cursorCounter >> 4) % 2 == 0)
+                if ((_cursorCounter >> 4) % 2 == 0)
                 {
-                    if (!isVisibleCursor)
+                    if (!_isVisibleCursor)
                     {
-                        isVisibleCursor = true;
+                        _isVisibleCursor = true;
                         IsRender = true;
                     }
                 }
                 else
                 {
-                    if (isVisibleCursor)
+                    if (_isVisibleCursor)
                     {
-                        isVisibleCursor = false;
+                        _isVisibleCursor = false;
                         IsRender = true;
                     }
                 }
@@ -336,9 +458,9 @@ namespace Vge.Gui.Controls
 
         public override void Dispose()
         {
-            if (meshTxt != null) meshTxt.Dispose();
-            if (meshBg != null) meshBg.Dispose();
-            if (meshCursor != null) meshCursor.Dispose();
+            if (_meshTxt != null) _meshTxt.Dispose();
+            if (_meshBg != null) _meshBg.Dispose();
+            if (_meshCursor != null) _meshCursor.Dispose();
         }
 
         /// <summary>

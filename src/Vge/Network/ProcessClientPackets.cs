@@ -88,6 +88,7 @@ namespace Vge.Network
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
                 case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
+                case 0x3A: _Handle3AMessage((PacketS3AMessage)packet); break;
             }
         }
 
@@ -115,6 +116,12 @@ namespace Vge.Network
                 }
             }
         }
+
+        /// <summary>
+        /// Отправить пакет сообщения основному игроку через защищённую от потоков
+        /// </summary>
+        public void PlayerOwnerPacketMessage(string message)
+            => _packets.Add(new PacketS3AMessage(message));
 
         /// <summary>
         /// Очистить пакеты в двойной буферизации
@@ -214,6 +221,12 @@ namespace Vge.Network
             Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
             Debug.BlockChange = "BlockChange";
         }
+
+        /// <summary>
+        /// Пакет получения сообщения с сервера
+        /// </summary>
+        private void _Handle3AMessage(PacketS3AMessage packet)
+            => Game.Player.PacketMessage(packet);
 
         #endregion
     }

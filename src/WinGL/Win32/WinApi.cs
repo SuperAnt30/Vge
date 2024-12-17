@@ -43,6 +43,9 @@ namespace WinGL.Win32
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalUnlock(IntPtr hMem);
 
+        [DllImport(Kernel32, SetLastError = true)]
+        public static extern int GlobalSize(IntPtr hMem);
+
         #endregion
 
         #region TimePeriod

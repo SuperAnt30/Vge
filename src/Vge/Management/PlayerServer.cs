@@ -239,6 +239,12 @@ namespace Vge.Management
             => server.ResponsePacket(Socket, packet);
 
         /// <summary>
+        /// Отправить системное сообщение конкретному игроку
+        /// </summary>
+        public void SendMessage(string message) 
+            => SendPacket(new PacketS3AMessage(message));
+
+        /// <summary>
         /// Пакет: позиции игрока
         /// </summary>
         public void PacketPlayerPosition(PacketC04PlayerPosition packet)

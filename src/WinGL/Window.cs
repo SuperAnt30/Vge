@@ -47,6 +47,10 @@ namespace WinGL
         /// Массив матрицы для проецирования двумерных координат на экран
         /// </summary>
         public readonly float[] Ortho2D = new float[16];
+        /// <summary>
+        /// Флаг, являет ли раскладка клавиатуры кириллицы
+        /// </summary>
+        public readonly bool KeyCyrillic;
 
         /// <summary>
         /// Объект OpenGL для элемента управления
@@ -115,6 +119,7 @@ namespace WinGL
         /// Флаг перезапуска программы
         /// </summary>
         private bool flagRestart = false;
+        
         /// <summary>
         /// Использовать ли вертикальную сенхронизацию
         /// </summary>
@@ -126,6 +131,7 @@ namespace WinGL
             windowHeigt = Height;
             windowLocationX = LocationX;
             windowLocationY = LocationY;
+            KeyCyrillic = System.Globalization.CultureInfo.CurrentCulture.KeyboardLayoutId == 1049;
         }
 
         /// <summary>

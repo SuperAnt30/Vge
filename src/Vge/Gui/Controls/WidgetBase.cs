@@ -165,21 +165,25 @@
         /// <summary>
         /// Прямоугольник
         /// </summary>
-        protected float[] Rectangle(int x1, float y1, int x2, int y2, float u1, float v1, float u2, float v2, float r, float g, float b)
+        protected float[] _Rectangle(int x1, float y1, int x2, int y2, 
+            float u1, float v1, float u2, float v2, 
+            float r, float g, float b, float a = 1f)
         {
             return new float[]
             {
-                x1, y1, u1, v1, r, g, b,
-                x1, y2, u1, v2, r, g, b,
-                x2, y2, u2, v2, r, g, b,
-                x2, y1, u2, v1, r, g, b
+                x1, y1, u1, v1, r, g, b, a,
+                x1, y2, u1, v2, r, g, b, a,
+                x2, y2, u2, v2, r, g, b, a,
+                x2, y1, u2, v1, r, g, b, a
             };
         }
 
         /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
-        protected float[] RectangleTwo(int width, int height, int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
+        protected float[] _RectangleTwo(int width, int height, int x1, float y1, 
+            float u1, float v1, float vk, 
+            float r, float g, float b, float a = 1f)
         {
             int w = width * si / 2;
             float wf = width / 1024f;
@@ -195,23 +199,25 @@
 
             return new float[]
             {
-                x1, y1, u1, v1, r, g, b,
-                x1, y2, u1, v2, r, g, b,
-                x2, y2, u2, v2, r, g, b,
-                x2, y1, u2, v1, r, g, b,
+                x1, y1, u1, v1, r, g, b, a,
+                x1, y2, u1, v2, r, g, b, a,
+                x2, y2, u2, v2, r, g, b, a,
+                x2, y1, u2, v1, r, g, b, a,
 
-                x2, y1, u3, v1, r, g, b,
-                x2, y2, u3, v2, r, g, b,
-                x3, y2, u4, v2, r, g, b,
-                x3, y1, u4, v1, r, g, b
+                x2, y1, u3, v1, r, g, b, a,
+                x2, y2, u3, v2, r, g, b, a,
+                x3, y2, u4, v2, r, g, b, a,
+                x3, y1, u4, v1, r, g, b, a
             };
         }
 
         /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
-        protected float[] RectangleTwo(int x1, float y1, float u1, float v1, float vk, float r, float g, float b)
-            => RectangleTwo(Width, Height, x1, y1, u1, v1, vk, r, g, b);
+        protected float[] _RectangleTwo(int x1, float y1, 
+            float u1, float v1, float vk, 
+            float r, float g, float b, float a = 1f)
+            => _RectangleTwo(Width, Height, x1, y1, u1, v1, vk, r, g, b, a);
 
         #endregion
     }

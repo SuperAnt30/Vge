@@ -185,7 +185,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Проверить, присутствует ли такой символ
         /// </summary>
-        public bool IsPresent(char key) => !Get(key).Equals(_items[0]);
+        public bool IsPresent(char key) => key == ' ' || !Get(key).Equals(_items[0]);
 
         #region Width
 
@@ -277,6 +277,31 @@ namespace Vge.Renderer.Font
             return Transfer.OutText;
         }
 
+        /// <summary>
+        /// Получить строку с конца по заданной ширине
+        /// </summary>
+        public string GetStringEndToWidth(string text, int width)
+        {
+            char[] vc = text.ToCharArray();
+            int i, w0;
+            int w = 0;
+            int count = vc.Length;
+            count--;
+            for (i = count; i >= 0; i--)
+            {
+                w0 = WidthChar(vc[i]);
+                if (w0 > 0)
+                {
+                    w += w0 + _stepFont;
+                    if (w > width)
+                    {
+                        return text.Substring(i + 1);
+                    }
+                }
+            }
+            return text;
+        }
+
         #endregion
 
         #region FX
@@ -306,7 +331,7 @@ namespace Vge.Renderer.Font
             // Делаем копию
             _buffer.AddCopy(0, count);
             // Делаем смещение в сторону, и центральный последний меняем цвет
-            for (int i = 0; i < count; i += 7)
+            for (int i = 0; i < count; i += 8)
             {
                 _buffer[i] = _buffer[i] + _si;
                 _buffer[i + 1] = _buffer[i + 1] + _si;
@@ -316,7 +341,7 @@ namespace Vge.Renderer.Font
             }
         }
         /// <summary>
-        /// Корректируем буфер с котуром
+        /// Корректируем буфер с контуром
         /// </summary>
         private void BufferOutline()
         {
@@ -329,7 +354,7 @@ namespace Vge.Renderer.Font
             // Делаем финишную копию
             _buffer.AddCopy(0, count, count4);
             // Красим первый контур в затемнёный цвет
-            for (int i = 0; i < count; i += 7)
+            for (int i = 0; i < count; i += 8)
             {
                 _buffer[i + 4] = _buffer[i + count4 + 4] / 4f;
                 _buffer[i + 5] = _buffer[i + count4 + 5] / 4f;
@@ -341,7 +366,7 @@ namespace Vge.Renderer.Font
             _buffer.AddCopy(0, count, count3);
 
             // Делаем смещение в 4 стороны
-            for (int i = 0; i < count; i += 7)
+            for (int i = 0; i < count; i += 8)
             {
                 _buffer[i + count] = _buffer[i] + _si;
                 _buffer[i + count2] = _buffer[i] - _si;
@@ -456,24 +481,24 @@ namespace Vge.Renderer.Font
         /// Нарисовать прямоугольник в 2д, с цветом [2, 2, 3]
         /// </summary>
         private float[] Rectangle(int x1, int y1, int x2, int y2, float v1, float u1, float v2, float u2,
-            float r, float g, float b)
+            float r, float g, float b, float a = 1f)
         {
             if (_style.IsItalic())
             {
                 return new float[]
                 {
-                    x1 + 1.8f, y1, v1, u1, r, g, b,
-                    x1 - 1.8f, y2, v1, u2, r, g, b,
-                    x2 - 1.8f, y2, v2, u2, r, g, b,
-                    x2 + 1.8f, y1, v2, u1, r, g, b
+                    x1 + 1.8f, y1, v1, u1, r, g, b, a,
+                    x1 - 1.8f, y2, v1, u2, r, g, b, a,
+                    x2 - 1.8f, y2, v2, u2, r, g, b, a,
+                    x2 + 1.8f, y1, v2, u1, r, g, b, a
                 };
             }
             return new float[]
             {
-                x1, y1, v1, u1, r, g, b,
-                x1, y2, v1, u2, r, g, b,
-                x2, y2, v2, u2, r, g, b,
-                x2, y1, v2, u1, r, g, b
+                x1, y1, v1, u1, r, g, b, a,
+                x1, y2, v1, u2, r, g, b, a,
+                x2, y2, v2, u2, r, g, b, a,
+                x2, y1, v2, u1, r, g, b, a
             };
         }
 

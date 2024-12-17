@@ -18,6 +18,11 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected int si = 1;
 
+        /// <summary>
+        /// Нужен ли дополнительный рендер
+        /// </summary>
+        protected bool _isRenderAdd = true;
+
         public ScreenBase(WindowMain window) : base(window) => si = Gi.Si;
 
         /// <summary>
@@ -67,6 +72,12 @@ namespace Vge.Gui.Screens
         {
             window.Render.ShaderBindGuiColor();
 
+            if (_isRenderAdd)
+            {
+                _RenderingAdd();
+            }
+            _DrawAdd();
+
             foreach (WidgetBase control in controls)
             {
                 if (control.Visible)
@@ -80,11 +91,21 @@ namespace Vge.Gui.Screens
             }
         }
 
+        /// <summary>
+        /// Дополнительный рендер не контролов
+        /// </summary>
+        protected virtual void _RenderingAdd() { }
+        /// <summary>
+        /// Дополнительная прорисовка не контролов
+        /// </summary>
+        protected virtual void _DrawAdd() { }
+
         #region Tick
 
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             foreach (WidgetBase control in controls)

@@ -4,6 +4,7 @@ using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Realms;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World.Block;
@@ -21,6 +22,11 @@ namespace Vge.Management
         /// Для Pitch предел Пи 1.55, аналог 89гр
         /// </summary>
         public const float Pi89 = 1.55334303f;
+
+        /// <summary>
+        /// Объект кэш чата
+        /// </summary>
+        public readonly ChatList Chat;
 
         /// <summary>
         /// Матрица просмотра Projection * LookAt
@@ -104,6 +110,8 @@ namespace Vge.Management
             _game = game;
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
+            // TODO::2024-12-17 подумать как вынести параметры шрифта чата
+            Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain, 496);
             _UpdateMatrixCamera();
         }
 
@@ -548,6 +556,14 @@ namespace Vge.Management
             }
         }
 
+        /// <summary>
+        /// Пакет получения сообщения с сервера
+        /// </summary>
+        public void PacketMessage(PacketS3AMessage packet)
+        {
+            Chat.AddMessage(packet.Message, Gi.Si);
+        }
+            
         #endregion
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Mvk2.Realms
         /// <summary>
         /// Количество текстур
         /// </summary>
-        private readonly int _countTexture = 2;
+        private readonly int _countTexture = 3;
         /// <summary>
         /// Количество звуков
         /// </summary>
@@ -59,6 +59,10 @@ namespace Mvk2.Realms
             renderMvk.CreateTextureFontLarge(
                 _FileToBufferedImage(EnumTextureMvk.FontLarge.ToString(), 
                 Options.PathTextures + EnumTextureMvk.FontLarge.ToString() + ".png"));
+            OnStep();
+            // Чат Gui
+            _FileToBufferedImage(EnumTextureMvk.Chat.ToString(),
+                Options.PathTextures + EnumTextureMvk.Chat.ToString() + ".png");
             OnStep();
         }
 

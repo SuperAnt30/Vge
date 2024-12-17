@@ -13,7 +13,7 @@
      *     |
      *     +-ScreenMultiplayer *
      *     |
-     *     +-ScreenOptions .
+     *     +-ScreenOptions *
      *     
      * Дополнительные:
      *  |
@@ -24,7 +24,8 @@
      *  +-ScreenInGameMenu *
      *  |
      *  +-ScreenProcess *
-     *  
+     *  |
+     *  +-ScreenChat * (Окно чата)
      */
 
     /// <summary>
@@ -94,7 +95,7 @@
         /// <summary>
         /// Создать скрин чата
         /// </summary>
-        public virtual void InChat() => window.ScreenCreate(new ScreenChat(window));
+        public virtual void Chat() => window.ScreenCreate(new ScreenChat(window));
 
 
     }

@@ -13,19 +13,19 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Объект шрифта
         /// </summary>
-        private readonly FontBase font;
+        private readonly FontBase _font;
         /// <summary>
         /// Размер интерфеса
         /// </summary>
-        private int si;
+        private int _si;
         /// <summary>
         /// Задаваемая ширина
         /// </summary>
-        private int inWidth;
+        private int _inWidth;
         /// <summary>
         /// Задаваемый текст
         /// </summary>
-        private string inText;
+        private string _inText;
 
         /// <summary>
         /// Результат максимальной ширины строки
@@ -40,13 +40,13 @@ namespace Vge.Renderer.Font
         /// </summary>
         public int NumberLines { get; private set; }
 
-        public TransferText(FontBase font) => this.font = font;
+        public TransferText(FontBase font) => _font = font;
 
         public void Run(string text, int width, int si)
         {
-            inText = text;
-            this.si = si;
-            inWidth = width * si;
+            _inText = text;
+            _si = si;
+            _inWidth = width * si;
             Run();
         }
 
@@ -54,11 +54,11 @@ namespace Vge.Renderer.Font
         {
             OutWidth = 0;
             NumberLines = 1;
-            string[] strs = inText.Split(StringSeparators, StringSplitOptions.None);
+            string[] strs = _inText.Split(StringSeparators, StringSplitOptions.None);
 
-            font.Clear(false);
+            _font.Clear(false);
             // Ширина пробела
-            int wspase = font.WidthString(" ") * si;
+            int wspase = _font.WidthString(" ") * _si;
             int w;
             string text = "";
             string[] symbols;
@@ -71,8 +71,8 @@ namespace Vge.Renderer.Font
 
                 foreach (string symbol in symbols)
                 {
-                    int ws = font.WidthString(symbol) * si;
-                    if (w + wspase + ws > inWidth)
+                    int ws = _font.WidthString(symbol) * _si;
+                    if (w + wspase + ws > _inWidth)
                     {
                         if (w > OutWidth) OutWidth = w;
                         NumberLines++;
@@ -89,7 +89,7 @@ namespace Vge.Renderer.Font
                 if (w > OutWidth) OutWidth = w;
             }
             OutText = text;
-            OutWidth /= si;
+            OutWidth /= _si;
         }
 
         /// <summary>

@@ -226,7 +226,29 @@ namespace Vge
         /// </summary>
         protected override void OnKeyPress(char key)
         {
-            if (Screen != null) Screen.OnKeyPress(key);
+            if (Screen != null)
+            {
+                if (KeyCyrillic)
+                {
+                    // Конвертируем кириллицу с Windows-1251 на Unicode
+                    // http://blog.kislenko.net/show.php?id=2045
+                    int id = key;
+                    if (id > 191 && id < 256)
+                    {
+                        id += 848;
+                        key = (char)id;
+                    }
+                    else if (id == 168)
+                    {
+                        key = (char)1025;
+                    }
+                    else if (id == 184)
+                    {
+                        key = (char)1105;
+                    }
+                }
+                Screen.OnKeyPress(key);
+            }
         }
 
         #endregion
@@ -328,6 +350,10 @@ namespace Vge
             if (Screen != null) 
             {
                 Screen.Resized();
+            }
+            if (Game != null)
+            {
+                Game.OnResized(width, height);
             }
         }
 

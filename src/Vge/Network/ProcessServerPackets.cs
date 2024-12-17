@@ -97,6 +97,7 @@ namespace Vge.Network
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
+                    case 0x14: _Handle14Message(sp.Side, (PacketC14Message)sp.Packet); break;
                     case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
                     case 0x20: _Handle20AcknowledgeChunks(sp.Side, (PacketC20AcknowledgeChunks)sp.Packet); break;
                 }
@@ -187,6 +188,12 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null) playerServer.PacketPlayerBlockPlacement(packet);
         }
+
+        /// <summary>
+        /// Пакет передачии сообщения или команды
+        /// </summary>
+        private void _Handle14Message(SocketSide socketSide, PacketC14Message packet)
+            => _server.Players.ClientMessage(_server.Players.FindPlayerBySocket(socketSide), packet);
 
         /// <summary>
         /// Пакет настроек клиента

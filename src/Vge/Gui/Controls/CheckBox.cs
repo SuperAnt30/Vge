@@ -75,7 +75,7 @@ namespace Vge.Gui.Controls
             float u1 = Enabled ? enter ? vk + vk : vk : 0f;
             if (Checked) u1 += HorStepCheck;
 
-            meshBg.Reload(Rectangle(x, y, x + BoxWidth * si, y + Height * si,
+            meshBg.Reload(_Rectangle(x, y, x + BoxWidth * si, y + Height * si,
                 u1, Ver1, u1 + vk, Ver2, 1, 1, 1));
         }
 

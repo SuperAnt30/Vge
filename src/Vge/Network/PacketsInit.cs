@@ -28,6 +28,7 @@ namespace Vge.Network
                 case 0x21: return new PacketS21ChunkData();
                 case 0x22: return new PacketS22MultiBlockChange();
                 case 0x23: return new PacketS23BlockChange();
+                case 0x3A: return new PacketS3AMessage();
             }
 
             return null;
@@ -46,6 +47,7 @@ namespace Vge.Network
                 case 0x04: return new PacketC04PlayerPosition();
                 case 0x07: return new PacketC07PlayerDigging();
                 case 0x08: return new PacketC08PlayerBlockPlacement();
+                case 0x14: return new PacketC14Message();
                 case 0x15: return new PacketC15PlayerSetting();
                 case 0x20: return new PacketC20AcknowledgeChunks();
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 using Vge.Renderer.World;
@@ -24,12 +25,16 @@ namespace Mvk2.Renderer
         /// Объект окна малювек
         /// </summary>
         private readonly WindowMvk windowMvk;
+        /// <summary>
+        /// Переменные индексов текстур GUI для малювек
+        /// </summary>
+        private TextureIndexMvk _textureIndexMvk;
 
         public RenderMvk(WindowMvk window) : base(window) => windowMvk = window;
 
         protected override void _Initialize()
         {
-            _textureIndex = new TextureIndex();
+            _textureIndex = _textureIndexMvk = new TextureIndexMvk();
             LightMap = new TextureLightMap(gl);
         }
 
@@ -46,6 +51,11 @@ namespace Mvk2.Renderer
         /// </summary>
         public void CreateTextureFontLarge(BufferedImage buffered)
             => FontLarge = new FontBase(buffered, 2, this);
+        /// <summary>
+        /// Запустить текстуру чата
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureChat() => _texture.BindTexture(_textureIndexMvk.Chat);
 
         #endregion
 
@@ -64,6 +74,10 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.FontLarge.ToString()))
             {
                 FontLarge.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Chat.ToString()))
+            {
+                _textureIndexMvk.Chat = _texture.SetTexture(buffereds[EnumTextureMvk.Chat.ToString()]);
             }
         }
     }

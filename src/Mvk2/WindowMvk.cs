@@ -20,7 +20,7 @@ namespace Mvk2
         /// <summary>
         /// Объект отвечающий за прорисовку Малювек
         /// </summary>
-        private RenderMvk renderMvk;
+        private RenderMvk _renderMvk;
 
         #region Initialized
 
@@ -54,7 +54,7 @@ namespace Mvk2
         /// <summary>
         /// Получить объект рендера Млювек
         /// </summary>
-        public RenderMvk GetRender() => renderMvk;
+        public RenderMvk GetRender() => _renderMvk;
 
         #region Debug
 
@@ -162,10 +162,10 @@ namespace Mvk2
         public override void UpdateSizeInterface()
         {
             base.UpdateSizeInterface();
-            if (renderMvk != null)
+            if (_renderMvk != null)
             {
-                renderMvk.FontLarge.UpdateSizeInterface();
-                renderMvk.FontSmall.UpdateSizeInterface();
+                _renderMvk.FontLarge.UpdateSizeInterface();
+                _renderMvk.FontSmall.UpdateSizeInterface();
             }
         }
 
@@ -178,8 +178,8 @@ namespace Mvk2
         /// </summary>
         protected override void RenderInitialized()
         {
-            Render = renderMvk = new RenderMvk(this);
-            renderMvk.InitializeFirst();
+            Render = _renderMvk = new RenderMvk(this);
+            _renderMvk.InitializeFirst();
             // Цвет белы, фон загрузчика
             gl.ClearColor(1, 1, 1, 1);
         }

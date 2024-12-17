@@ -284,6 +284,13 @@ namespace WinGL.Win32.User32
         [DllImport(User32)]
         public static extern bool EmptyClipboard();
 
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsClipboardFormatAvailable(uint format);
+
+        [DllImport(User32, SetLastError = true)]
+        public static extern IntPtr GetClipboardData(uint uFormat);
+
         #endregion
 
         #region Windows Messages

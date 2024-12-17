@@ -5,6 +5,7 @@ using Vge.Event;
 using Vge.Gui.Screens;
 using Vge.Network;
 using Vge.Network.Packets.Server;
+using Vge.Realms;
 using Vge.World;
 
 namespace Vge.Games
@@ -131,8 +132,8 @@ namespace Vge.Games
 
         private void _Server_RecieveMessage(object sender, StringEventArgs e)
         {
-            // TODO::2024-08-27 сообщение основному клиенту от сервера
             // Надо учесть потокобезопастность, прилетает из другого потока
+            _packets.PlayerOwnerPacketMessage(ChatStyle.Red + "ERROR: " + ChatStyle.Reset + e.Text);
         }
 
         #endregion
@@ -142,6 +143,7 @@ namespace Vge.Games
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             base.OnTick(deltaTime);

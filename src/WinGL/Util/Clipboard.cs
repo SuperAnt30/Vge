@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using WinGL.Win32;
 using WinGL.Win32.User32;
@@ -86,6 +87,49 @@ namespace WinGL.Util
         static void ThrowWin32()
         {
             throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        public static string GetText()
+        {
+            if (!WinUser.IsClipboardFormatAvailable(cfUnicodeText))
+            {
+                return null;
+            }
+            OpenClipboard();
+
+            IntPtr handle = IntPtr.Zero;
+
+            IntPtr pointer = IntPtr.Zero;
+            try
+            {
+                handle = WinUser.GetClipboardData(cfUnicodeText);
+                if (handle == IntPtr.Zero)
+                {
+                    return null;
+                }
+
+                pointer = WinApi.GlobalLock(handle);
+                if (pointer == IntPtr.Zero)
+                {
+                    return null;
+                }
+
+                var size = WinApi.GlobalSize(handle);
+                var buff = new byte[size];
+
+                Marshal.Copy(pointer, buff, 0, size);
+
+                return Encoding.Unicode.GetString(buff).TrimEnd('\0');
+            }
+            finally
+            {
+                if (pointer != IntPtr.Zero)
+                {
+                    WinApi.GlobalUnlock(handle);
+                }
+
+                WinUser.CloseClipboard();
+            }
         }
     }
 }

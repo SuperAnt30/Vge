@@ -17,11 +17,43 @@ namespace Vge.Renderer.Huds
         /// Текстура карты света
         /// </summary>
         private readonly MeshGuiColor _meshLightMap;
+        /// <summary>
+        /// Чат
+        /// </summary>
+        private readonly PartHubChat _partHubChat;
 
         public HubDebug(GameBase game) : base(game)
         {
             _meshCursor = new MeshGuiLine(game.GetOpenGL());
             _meshLightMap = new MeshGuiColor(game.GetOpenGL());
+            _partHubChat = new PartHubChat(game);
+        }
+
+        /// <summary>
+        /// Включился чат (ScreenChat)
+        /// </summary>
+        public override void ChatOn() => _partHubChat.Hidden = true;
+
+        /// <summary>
+        /// Выключился чат (ScreenChat)
+        /// </summary>
+        public override void ChatOff() => _partHubChat.Hidden = false;
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        public override void OnResized(int width, int height)
+        {
+            _partHubChat.Renderer();
+        }
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void OnTick(float deltaTime)
+        {
+            _partHubChat.OnTick(deltaTime);
         }
 
         /// <summary>
@@ -52,6 +84,7 @@ namespace Vge.Renderer.Huds
             _meshLightMap.Draw();
 
 #endif
+            _partHubChat.Draw(timeIndex);
 
         }
 
@@ -59,6 +92,7 @@ namespace Vge.Renderer.Huds
         {
             _meshCursor.Dispose();
             _meshLightMap.Dispose();
+            _partHubChat.Dispose();
         }
     }
 }

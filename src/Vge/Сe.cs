@@ -33,6 +33,11 @@ public sealed class Ce
     #region Game
 
     /// <summary>
+    /// Время жизни строки чата, в тиках (25 секунд)
+    /// </summary>
+    public const int ChatLineTimeLife = 750;
+
+    /// <summary>
     /// Различные массивы блоков
     /// </summary>
     public static BlockArrays Blocks;

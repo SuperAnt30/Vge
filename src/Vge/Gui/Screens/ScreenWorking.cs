@@ -40,6 +40,7 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Игровой такт
         /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
             if (countStep != countDraw)

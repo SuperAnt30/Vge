@@ -116,7 +116,7 @@ namespace Vge.Gui.Controls
             float v1 = Enabled ? enter ? vk + vk : vk : 0f;
 
             // Рендер фона
-            meshBg.Reload(RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
+            meshBg.Reload(_RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
 
             v1 = Hor1 + (Enabled ? isLeftDown ? Hor + Hor : Hor : 0f);
 
@@ -124,7 +124,7 @@ namespace Vge.Gui.Controls
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
             int px = (int)((Width - SliderWidth) * index) * si;
-            meshBt.Reload(Rectangle(x + px, y, x + px + SliderWidth * si, y + Height * si,
+            meshBt.Reload(_Rectangle(x + px, y, x + px + SliderWidth * si, y + Height * si,
                 v1, Ver1, v1 + Hor, Ver2, 1, 1, 1));
         }
 
