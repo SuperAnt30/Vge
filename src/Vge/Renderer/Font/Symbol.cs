@@ -8,25 +8,25 @@
         /// <summary>
         /// Символ
         /// </summary>
-        public char Symb { get; private set; }
+        public readonly char Symb;
         /// <summary>
         /// Ширина символа
         /// </summary>
-        public byte Width { get; private set; }
+        public readonly byte Width;
 
-        public float U1 { get; private set; }
-        public float U2 { get; private set; }
-        public float V1 { get; private set; }
-        public float V2 { get; private set; }
+        public readonly float V1;
+        public readonly float V2;
+        public readonly float U1;
+        public readonly float U2;
 
         public Symbol(char c, int index, byte width)
         {
             Symb = c;
 
-            U1 = (index >> 4) * .0625f;
-            U2 = U1 + 0.0625f;
-            V1 = (index & 15) * .0625f;
-            V2 = V1 + 0.0625f;
+            V1 = (index >> 4) * .0625f;
+            V2 = V1 + .0625f;
+            U1 = (index & 15) * .0625f;
+            U2 = U1 + .0625f;
 
             Width = width;
         }

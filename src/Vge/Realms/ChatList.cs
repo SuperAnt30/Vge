@@ -29,10 +29,6 @@ namespace Vge.Realms
         /// Шрифт чата, для корректного разбиение на строки
         /// </summary>
         public readonly FontBase Font;
-        /// <summary>
-        /// Ширина чата
-        /// </summary>
-        public readonly int Width;
 
         /// <summary>
         /// Время жизни сообщения в игровых тиках
@@ -43,17 +39,16 @@ namespace Vge.Realms
         /// </summary>
         private uint _tickCounter = 0;
 
-        public ChatList(int timeLife, FontBase font, int width)
+        public ChatList(int timeLife, FontBase font)
         {
             _timeLife = timeLife;
             Font = font;
-            Width = width;
         }
 
         public void OnTick()
         {
             _tickCounter++;
-            if (ChatLines.Count > 0 && _tickCounter - ChatLines[0].timeCreated > _timeLife)
+            if (ChatLines.Count > 0 && _tickCounter - ChatLines[0].TimeCreated > _timeLife)
             {
                 ChatLines.RemoveAt(0);
                 FlagUpdate = true;
@@ -75,7 +70,7 @@ namespace Vge.Realms
         /// <summary>
         /// Занести в массив сообщение
         /// </summary>
-        public void AddMessage(string message, int si)
+        public void AddMessage(string message, int width, int si)
         {
             if (message != "")
             {
@@ -83,7 +78,7 @@ namespace Vge.Realms
                 // Занести в массив чата
                 ChatLines.Add(new ChatLine(message, _tickCounter));
                 TransferText transfer = Font.Transfer;
-                transfer.Run(message, Width, si);
+                transfer.Run(message, width, si);
                 int nl = transfer.NumberLines;
                 if (nl == 1)
                 {

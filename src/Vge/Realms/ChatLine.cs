@@ -8,18 +8,18 @@
         /// <summary>
         /// Время создания
         /// </summary>
-        public uint timeCreated;
+        public readonly uint TimeCreated;
         /// <summary>
         /// сообщение
         /// </summary>
-        public string message;
+        public readonly string Message;
 
         public ChatLine(string message, uint timeCreated)
         {
-            this.message = message;
-            this.timeCreated = timeCreated;
+            Message = message;
+            TimeCreated = timeCreated;
         }
 
-        public override string ToString() => timeCreated.ToString() + "; " + message;
+        public override string ToString() => TimeCreated.ToString() + "; " + Message;
     }
 }

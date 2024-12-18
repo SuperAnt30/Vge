@@ -124,8 +124,8 @@ namespace Vge.Gui.Controls
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
             int px = (int)((Width - SliderWidth) * index) * si;
-            meshBt.Reload(_Rectangle(x + px, y, x + px + SliderWidth * si, y + Height * si,
-                v1, Ver1, v1 + Hor, Ver2, 1, 1, 1));
+            meshBt.Reload(RenderFigure.Rectangle(x + px, y, x + px + SliderWidth * si, y + Height * si,
+                v1, Ver1, v1 + Hor, Ver2));
         }
 
         /// <summary>

@@ -110,8 +110,7 @@ namespace Vge.Management
             _game = game;
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
-            // TODO::2024-12-17 подумать как вынести параметры шрифта чата
-            Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain, 496);
+            Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain);
             _UpdateMatrixCamera();
         }
 
@@ -561,7 +560,7 @@ namespace Vge.Management
         /// </summary>
         public void PacketMessage(PacketS3AMessage packet)
         {
-            Chat.AddMessage(packet.Message, Gi.Si);
+            Chat.AddMessage(packet.Message, Gi.WindowsChatWidthMessage,  Gi.Si);
         }
             
         #endregion

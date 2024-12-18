@@ -47,9 +47,9 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             _labelMessages = new Label(window, 
                 window.Game.Player.Chat.Font, "", true).SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
-            _labelMessages.SetSize(window.Game.Player.Chat.Width, 270);
+            _labelMessages.SetSize(Gi.WindowsChatWidthMessage, Gi.WindowsChatHeightMessage);
             _labelMessages.Multiline();
-            _textBoxMessage = new TextBox(window, window.Render.FontMain, 500, "", TextBox.EnumRestrictions.All, 128);
+            _textBoxMessage = new TextBox(window, window.Render.FontMain, 500, "", TextBox.EnumRestrictions.All, 255);
             _textBoxMessage.FixFocus();
 
             _sentHistoryCursor = window.Game.Player.Chat.SentMessages.Count;
@@ -105,11 +105,12 @@ namespace Vge.Gui.Screens
             else if (keys == Keys.Enter)
             {
                 // Тут действие текста
-                window.Game.Player.Chat.AddMessageHistory(_textBoxMessage.Text);
-                window.Game.TrancivePacket(new PacketC14Message(_textBoxMessage.Text,
-                    window.Game.Player.MovingObject));
-                //_textBoxMessage.SetText("");
-                //_textBoxMessage.UpCursor();
+                if (_textBoxMessage.Text != "")
+                {
+                    window.Game.Player.Chat.AddMessageHistory(_textBoxMessage.Text);
+                    window.Game.TrancivePacket(new PacketC14Message(_textBoxMessage.Text,
+                        window.Game.Player.MovingObject));
+                }
                 _Close();
             }
             else if (keys == Keys.PageUp)

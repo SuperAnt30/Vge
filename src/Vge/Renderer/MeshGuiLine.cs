@@ -34,26 +34,5 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
         }
-
-        /// <summary>
-        /// Прямоугольник из линий
-        /// </summary>
-        public static float[] RectangleLine(int x1, float y1, float x2, float y2, float r, float g, float b, float a)
-        {
-            return new float[]
-            {
-                x1, y1, r, g, b, a,
-                x1, y2, r, g, b, a,
-
-                x1, y2, r, g, b, a,
-                x2, y2, r, g, b, a,
-
-                x2, y2, r, g, b, a,
-                x2, y1, r, g, b, a,
-
-                x2, y1, r, g, b, a,
-                x1, y1, r, g, b, a
-            };
-        }
     }
 }

@@ -212,7 +212,7 @@ namespace Vge.Gui.Controls
             // Если нужен контур, то рендерим сетку
             if (meshLine != null)
             {
-                meshLine.Reload(MeshGuiLine.RectangleLine(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
+                meshLine.Reload(RenderFigure.RectangleLine(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
                     0, 0, 0, .5f));
             }
         }

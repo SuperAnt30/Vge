@@ -369,6 +369,10 @@ namespace Vge
             {
                 Render.FontMain.UpdateSizeInterface();
             }
+            if (Game != null)
+            {
+                Game.OnResized(Gi.Width, Gi.Height);
+            }
         }
 
         #region WindowOverride

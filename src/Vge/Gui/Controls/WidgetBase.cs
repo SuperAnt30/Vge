@@ -163,22 +163,6 @@
         public virtual void Rendering() => IsRender = false;
 
         /// <summary>
-        /// Прямоугольник
-        /// </summary>
-        protected float[] _Rectangle(int x1, float y1, int x2, int y2, 
-            float u1, float v1, float u2, float v2, 
-            float r, float g, float b, float a = 1f)
-        {
-            return new float[]
-            {
-                x1, y1, u1, v1, r, g, b, a,
-                x1, y2, u1, v2, r, g, b, a,
-                x2, y2, u2, v2, r, g, b, a,
-                x2, y1, u2, v1, r, g, b, a
-            };
-        }
-
-        /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
         protected float[] _RectangleTwo(int width, int height, int x1, float y1, 

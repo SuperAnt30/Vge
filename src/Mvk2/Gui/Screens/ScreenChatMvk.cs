@@ -1,6 +1,5 @@
 ﻿using Mvk2;
 using Vge.Renderer;
-using Vge.Renderer.Font;
 
 namespace Vge.Gui.Screens
 {
@@ -19,7 +18,6 @@ namespace Vge.Gui.Screens
         public ScreenChatMvk(WindowMvk window) : base(window)
         {
             _windowMvk = window;
-           // FontBase font = window.Render.FontMain;
             _meshBg = new MeshGuiColor(gl);
         }
 
@@ -43,26 +41,10 @@ namespace Vge.Gui.Screens
 
         protected override void _RenderingAdd()
         {
-            _meshBg.Reload(_Rectangle(8 * si, (Height - 354 - 8) * si,
+            _meshBg.Reload(RenderFigure.Rectangle(8 * si, (Height - 354 - 8) * si,
                 (8 + 512) * si, (Height - 8) * si,
-                0, 0, 1, 354 / 512f, 1, 1, 1, 1));
+                0, 0, 1, 354 / 512f));
             _isRenderAdd = false;
-        }
-
-        /// <summary>
-        /// Прямоугольник
-        /// </summary>
-        protected float[] _Rectangle(int x1, float y1, int x2, int y2,
-            float u1, float v1, float u2, float v2,
-            float r, float g, float b, float a = 1f)
-        {
-            return new float[]
-            {
-                x1, y1, u1, v1, r, g, b, a,
-                x1, y2, u1, v2, r, g, b, a,
-                x2, y2, u2, v2, r, g, b, a,
-                x2, y1, u2, v1, r, g, b, a
-            };
         }
 
         protected override void _DrawAdd()

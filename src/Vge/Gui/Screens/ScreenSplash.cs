@@ -100,10 +100,10 @@ namespace Vge.Gui.Screens
             int w = window.Width / 2;
             int h = (window.Height - 608) / 2 + 512;
             list.Clear();
-            list.AddRange(MeshGuiColor.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
-            list.AddRange(MeshGuiColor.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
+            list.AddRange(RenderFigure.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
+            list.AddRange(RenderFigure.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
             int wcl = countDraw * 600 / max;
-            list.AddRange(MeshGuiColor.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
+            list.AddRange(RenderFigure.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
 
             meshProcess.Reload(list.GetBufferAll(), list.Count);
         }

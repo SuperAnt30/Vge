@@ -28,7 +28,7 @@ namespace Mvk2.Gui.Screens
         {
             int w = window.Width / 2;
             int h = (window.Height - 608) / 2;
-            meshLogo.Reload(MeshGuiColor.Rectangle(w - 512, h, w + 512, h + 512, 0, 0, 1, 1));
+            meshLogo.Reload(RenderFigure.Rectangle(w - 512, h, w + 512, h + 512, 0, 0, 1, 1));
         }
 
         /// <summary>

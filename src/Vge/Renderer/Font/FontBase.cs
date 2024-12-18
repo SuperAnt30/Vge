@@ -441,10 +441,10 @@ namespace Vge.Renderer.Font
         /// </summary>
         private void GenBuffer(Symbol symbol, int x1, int y1, int x2, int y2, float colorR, float colorG, float colorB)
         {
-            float v1 = symbol.V1;
             float u1 = symbol.U1;
-            float v2 = symbol.V2;
+            float v1 = symbol.V1;
             float u2 = symbol.U2;
+            float v2 = symbol.V2;
 
             float r, g, b;
             if (_style.IsColor())
@@ -461,45 +461,39 @@ namespace Vge.Renderer.Font
                 b = colorB;
             }
             
-            _buffer.AddRange(Rectangle(x1, y1, x2, y2, v1, u1, v2, u2, r, g, b));
+            _buffer.AddRange(_Rectangle(x1, y1, x2, y2, u1, v1, u2, v2, r, g, b));
             if (_style.IsBolb())
             {
-                _buffer.AddRange(Rectangle(x1 + _si, y1, x2 + _si, y2, v1, u1, v2, u2, r, g, b));
+                _buffer.AddRange(_Rectangle(x1 + _si, y1, x2 + _si, y2, u1, v1, u2, v2, r, g, b));
             }
             if (_style.IsUnderline())
             {
-                _buffer.AddRange(Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
+                _buffer.AddRange(_Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
             if (_style.IsStrikethrough())
             {
                 y2 -= (y2 - y1) / 2;
-                _buffer.AddRange(Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
+                _buffer.AddRange(_Rectangle(x1 - _si, y2 - _si, x1 + (symbol.Width + 1) * _si, y2, 0, 0, .0625f, .0625f, r, g, b));
             }
         }
 
         /// <summary>
         /// Нарисовать прямоугольник в 2д, с цветом [2, 2, 3]
         /// </summary>
-        private float[] Rectangle(int x1, int y1, int x2, int y2, float v1, float u1, float v2, float u2,
+        private float[] _Rectangle(int x1, int y1, int x2, int y2, float u1, float v1, float u2, float v2,
             float r, float g, float b, float a = 1f)
         {
             if (_style.IsItalic())
             {
                 return new float[]
                 {
-                    x1 + 1.8f, y1, v1, u1, r, g, b, a,
-                    x1 - 1.8f, y2, v1, u2, r, g, b, a,
-                    x2 - 1.8f, y2, v2, u2, r, g, b, a,
-                    x2 + 1.8f, y1, v2, u1, r, g, b, a
+                    x1 + 1.8f, y1, u1, v1, r, g, b, a,
+                    x1 - 1.8f, y2, u1, v2, r, g, b, a,
+                    x2 - 1.8f, y2, u2, v2, r, g, b, a,
+                    x2 + 1.8f, y1, u2, v1, r, g, b, a
                 };
             }
-            return new float[]
-            {
-                x1, y1, v1, u1, r, g, b, a,
-                x1, y2, v1, u2, r, g, b, a,
-                x2, y2, v2, u2, r, g, b, a,
-                x2, y1, v2, u1, r, g, b, a
-            };
+            return RenderFigure.Rectangle(x1, y1, x2, y2, u1, v1, u2, v2, r, g, b, a);
         }
 
         #endregion

@@ -24,6 +24,15 @@ public sealed class Gi
     public static int Si = 1;
 
     /// <summary>
+    /// Ширина текстового окна чата
+    /// </summary>
+    public static int WindowsChatWidthMessage = 496;
+    /// <summary>
+    /// Высота текстового окна чата
+    /// </summary>
+    public static int WindowsChatHeightMessage = 270;
+
+    /// <summary>
     /// Обновить размер инерфейса
     /// </summary>
     public static void UpdateSizeInterface()

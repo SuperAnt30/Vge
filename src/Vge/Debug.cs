@@ -69,7 +69,7 @@ namespace Vge
                     + " a:" + RenderChunckTimeAlpha8.ToString("0.000")
                     + " rch: " + Mth.Average(RenderChunckTime)
                 + "\r\n" + Server
-                + "[Client]: " + Client
+                + ChatStyle.Italic + "[Client]: " + Client
                 + "\r\nDS: " + DebugString + " " + BlockChange
                 + "\r\n" + ChatStyle.Gold + BlockFocus + ChatStyle.Reset
                 + "\r\n" + Text;
@@ -251,7 +251,7 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _chunksActive[i].X * 8;
                 y = yc + _chunksActive[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x, y, x + 8, y + 8, 0, 0, .7f));
+                vs.AddRange(RenderFigure.Rectangle(x, y, x + 8, y + 8, 0, 0, .7f));
             }
             // Зелёный
             for (int i = 0; i < _chunksReady.Length; i++)
@@ -259,7 +259,7 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _chunksReady[i].X * 8;
                 y = yc + _chunksReady[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, .9f, 0));
+                vs.AddRange(RenderFigure.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, .9f, 0));
             }
             // Красный
             for (int i = 0; i < Players.Length; i++)
@@ -267,7 +267,7 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + Players[i].X * 8;
                 y = yc + Players[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x + 1, y + 1, x + 7, y + 7, .9f, 0, 0));
+                vs.AddRange(RenderFigure.Rectangle(x + 1, y + 1, x + 7, y + 7, .9f, 0, 0));
             }
             // Белый
             for (int i = 0; i < _chunksForAnchors.Length; i++)
@@ -275,7 +275,7 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _chunksForAnchors[i].X * 8;
                 y = yc + _chunksForAnchors[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 6, y + 6, .9f, .9f, .9f));
+                vs.AddRange(RenderFigure.Rectangle(x + 2, y + 2, x + 6, y + 6, .9f, .9f, .9f));
             }
             // Голубой
             for (int i = 0; i < _frustumCulling.Length; i++)
@@ -283,7 +283,7 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _frustumCulling[i].X * 8;
                 y = yc + _frustumCulling[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x + 2, y + 2, x + 6, y + 6, 0, .4f, 1));
+                vs.AddRange(RenderFigure.Rectangle(x + 2, y + 2, x + 6, y + 6, 0, .4f, 1));
             }
 
             // Черный
@@ -292,14 +292,14 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _chunksСlient[i].X * 8;
                 y = yc + _chunksСlient[i].Y * 8;
-                vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 5, y + 5, 0, 0, .6f));
+                vs.AddRange(RenderFigure.Rectangle(x + 3, y + 3, x + 5, y + 5, 0, 0, .6f));
             }
             
 
             // Игрок
             x = xc + Player.X * 8;
             y = yc + Player.Y * 8;
-            vs.AddRange(MeshGuiColor.Rectangle(x + 3, y + 3, x + 6, y + 6, .5f, 0, .5f));
+            vs.AddRange(RenderFigure.Rectangle(x + 3, y + 3, x + 6, y + 6, .5f, 0, .5f));
             return true;
         }
 

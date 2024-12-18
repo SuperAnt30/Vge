@@ -137,6 +137,7 @@ namespace Vge.Games
         private void _Socket_Disconnected(object sender, StringEventArgs e)
         {
             _isConnected = false;
+            WorldRender.Stoping();
             _StopAfterTick(e.Text);
         }
 

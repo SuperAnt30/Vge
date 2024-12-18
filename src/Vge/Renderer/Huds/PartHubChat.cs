@@ -14,6 +14,11 @@ namespace Vge.Renderer.Huds
         /// </summary>
         public bool Hidden = false;
 
+        /// <summary>
+        /// Максимальное количество строк в чате
+        /// </summary>
+        protected int _countMaxLine = 24;
+
         private MeshGuiColor _meshText;
         /// <summary>
         /// Объект кэш чата
@@ -60,7 +65,7 @@ namespace Vge.Renderer.Huds
         public override void OnTick(float deltaTime)
         {
             _chat.OnTick();
-            if (_chat.FlagUpdate || _isRender)
+            if (!Hidden && (_chat.FlagUpdate || _isRender))
             {
                 int count = _chat.ChatLines.Count;
                 if (count == 0)
@@ -72,14 +77,31 @@ namespace Vge.Renderer.Huds
                 {
                     _isDrawEmpty = false;
                     FontBase font = _chat.Font;
-                    font.Clear();
-                    font.SetFontFX(EnumFontFX.Outline);// EnumFontFX.Shadow).SetColor(new Vector3(.9f, .9f, .9f));
+                    font.SetFontFX(EnumFontFX.Outline);
                     int h = Gi.Height - 40 * Gi.Si;
+                    if (count > _countMaxLine) count = _countMaxLine;
+                    string[] list = new string[count];
+                    int[] line = new int[count];
                     count--;
+                    int width = Gi.Width / 2 / Gi.Si;
+                    // Готовим массив строк, разбивая их если длинные
                     for (int i = count; i >= 0; i--)
                     {
-                        font.RenderString(10 * Gi.Si, h, _chat.ChatLines[i].message);
-                        h -= font.GetVert() + 4 * Gi.Si;
+                        font.Transfer.Run(_chat.ChatLines[i].Message, width, Gi.Si);
+                        list[i] = font.Transfer.OutText;
+                        line[i] = font.Transfer.NumberLines;
+                    }
+                    // Рисуем
+                    font.Clear();
+                    int number = 0;
+                    for (int i = count; i >= 0; i--)
+                    {
+                        h -= (font.GetVert() + 4 * Gi.Si) * line[i];
+                        font.RenderText(10 * Gi.Si, h, list[i]);
+                        if (++number >= _countMaxLine)
+                        {
+                            break;
+                        }
                     }
                     font.RenderFX();
                     font.Reload(_meshText);

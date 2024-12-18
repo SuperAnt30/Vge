@@ -65,8 +65,8 @@ namespace Vge.Renderer.Huds
             int wc = Gi.Width / 2;
             int hc = Gi.Height / 2;
             List<float> buffer = new List<float>();
-            buffer.AddRange(MeshGuiLine.RectangleLine(wc - 8, hc, wc + 8, hc, 1, 1, 1, 1));
-            buffer.AddRange(MeshGuiLine.RectangleLine(wc, hc - 8, wc, hc + 8, 1, 1, 1, 1));
+            buffer.AddRange(RenderFigure.RectangleLine(wc - 8, hc, wc + 8, hc, 1, 1, 1, 1));
+            buffer.AddRange(RenderFigure.RectangleLine(wc, hc - 8, wc, hc + 8, 1, 1, 1, 1));
             _meshCursor.Reload(buffer.ToArray());
 
             // Для контура надо перекулючится без текстуры
@@ -77,7 +77,7 @@ namespace Vge.Renderer.Huds
 #if DEBUG
 
             // Отладка Карты света
-            _meshLightMap.Reload(MeshGuiColor.Rectangle(Gi.Width - 144, 16, Gi.Width - 16, 144, 0, 0, 1, 1));
+            _meshLightMap.Reload(RenderFigure.Rectangle(Gi.Width - 144, 16, Gi.Width - 16, 144, 0, 0, 1, 1));
             _game.Render.TextureEnable();
             _game.Render.LightMap.BindTexture2dGui();
             _game.Render.ShaderBindGuiColor();

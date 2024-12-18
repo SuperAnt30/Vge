@@ -88,6 +88,11 @@ namespace Vge.Management
                     _PlayerLeftGame(playerServer);
                     Server.Stop();
                 }
+                else
+                {
+                    SendToAllMessage(ChatStyle.Red + string.Format(L.S("PlayerRemove{0}{1}"), 
+                        playerServer.Login, cause));
+                }
             }
         }
 
@@ -239,6 +244,7 @@ namespace Vge.Management
             }
 
             Server.Log.Server(Srl.ServerLoginStart, login, playerServer.Socket);
+            SendToAllMessage(ChatStyle.Yellow + string.Format(L.S("PlayerEntry{0}"), login));
             // Поставить в очередь на cоединение сетевого игрока
             _playerStartList.Add(playerServer);
         }
@@ -371,9 +377,7 @@ namespace Vge.Management
                     _players.Remove(player);
                     if (player.Socket.IsConnect())
                     {
-                        // Сокет не закрыт, значит закрытие на стороне сервера, надо отправить сообщение
-                        // TODO::2024-10-01 тут можно отправить строковое сообщение игроку до его разрыва связи с его причиной
-                        //player.SendMessage();
+                        // Сокет не закрыт, значит закрытие на стороне сервера
                         Server.PlayerDisconnect(player.Socket, player.causeRemove);
                     }
                 }
