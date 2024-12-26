@@ -1,4 +1,4 @@
-﻿namespace Vge.Actions
+﻿namespace Vge.Entity
 {
     /// <summary>
     /// Объект параметров перемещения
@@ -36,7 +36,7 @@
         /// <summary>
         /// Коэффициент ускорения вперёд, для мобов
         /// </summary>
-        public float Speed = .5f;
+        public float Speed = 1;
 
 
         /// <summary>
@@ -69,17 +69,17 @@
         /// <summary>
         /// Перемещение шага влево -1.0 .. +1.0 право
         /// </summary>
-        public float GetMoveStrafe() => (Right ? .5f : 0) - (Left ? .5f : 0);
+        public float GetMoveStrafe() => (Right ? 1 : 0) - (Left ? 1 : 0);
 
         /// <summary>
         /// Перемещение назад 1.0 .. -1.0 вперёд
         /// </summary>
-        public float GetMoveForward() => (Back ? .5f : 0f) - (Forward ? Speed : 0f);
+        public float GetMoveForward() => (Back ? 1 : 0) - (Forward ? Speed : 0);
 
         /// <summary>
         /// Перемещение вертикали вверх 1.0 .. -1.0 вниз
         /// </summary>
-        public float GetMoveVertical() => (Jump ? .5f : 0f) - (Sneak ? .5f : 0);
+        public float GetMoveVertical() => (Jump ? 1 : 0) - (Sneak ? 1 : 0);
 
         public override string ToString()
         {

@@ -67,6 +67,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Позиция соседнего блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos Offset(int i)
         {
             try
@@ -81,6 +82,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Позиция соседнего блока обратной стороны
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetReversal(int i)
         {
             try
@@ -95,6 +97,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Позиция соседнего блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos Offset(Pole pole)
         {
             try
@@ -109,74 +112,91 @@ namespace Vge.World.Block
         /// <summary>
         /// Позиция соседнего блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos Offset(Vector3i vec) => new BlockPos(X + vec.X, Y + vec.Y, Z + vec.Z);
         /// <summary>
         /// Позиция соседнего блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos Offset(int x, int y, int z) => new BlockPos(X + x, Y + y, Z + z);
         /// <summary>
         /// Позиция блока снизу
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetDown() => new BlockPos(X, Y - 1, Z);
         /// <summary>
         /// Позиция блока сверху
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetUp() => new BlockPos(X, Y + 1, Z);
         /// <summary>
         /// Позиция блока сверху
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetUp(int i) => new BlockPos(X, Y + i, Z);
         /// <summary>
         /// Позиция блока восток
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetEast() => new BlockPos(X + 1, Y, Z);
         /// <summary>
         /// Позиция блока запад
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetWest() => new BlockPos(X - 1, Y, Z);
         /// <summary>
         /// Позиция блока юг
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetSouth() => new BlockPos(X, Y, Z + 1);
         /// <summary>
         /// Позиция блока север
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos OffsetNorth() => new BlockPos(X, Y, Z - 1);
-        
+
         /// <summary>
         /// Создать вектор с целыми числами
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3i ToVector3i() => new Vector3i(X, Y, Z);
         /// <summary>
         /// Создать вектор
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 ToVector3() => new Vector3(X, Y, Z);
         /// <summary>
         /// Создать вектор по центру блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 ToVector3Center() => new Vector3(X + .5f, Y + .5f, Z + .5f);
 
         /// <summary>
         /// Получить позицию блока в чанке, 0..15 0..255 0..15
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3i GetPositionInChunk() => new Vector3i(X & 15, Y, Z & 15);
 
         /// <summary>
         /// Получить позицию чанка XZ
-        /// </summary>
+        /// </summary
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2i GetPositionChunk() => new Vector2i(X >> 4, Z >> 4);
 
         /// <summary>
         /// Получить позицию чанка X
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetPositionChunkX() => X >> 4;
         /// <summary>
         /// Получить позицию чанка Y
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetPositionChunkY() => Y >> 4;
         /// <summary>
         /// Получить позицию чанка Z
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetPositionChunkZ() => Z >> 4;
 
         /// <summary>

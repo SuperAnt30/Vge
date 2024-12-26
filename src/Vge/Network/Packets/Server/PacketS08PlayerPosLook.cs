@@ -1,6 +1,4 @@
-﻿using Vge.Entity;
-
-namespace Vge.Network.Packets.Server
+﻿namespace Vge.Network.Packets.Server
 {
     /// <summary>
     /// Пакет расположения игрока, при старте, телепорт, рестарте и тп
@@ -9,22 +7,37 @@ namespace Vge.Network.Packets.Server
     {
         public byte Id => 0x08;
 
-        public EntityPos Position { get; private set; }
+        public float X { get; private set; }
+        public float Y { get; private set; }
+        public float Z { get; private set; }
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
 
-        public PacketS08PlayerPosLook(EntityPos pos)
+        public PacketS08PlayerPosLook(float x, float y, float z, float yaw, float pitch)
         {
-            Position = pos;
+            X = x;
+            Y = y;
+            Z = z;
+            Yaw = yaw;
+            Pitch = pitch;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            Position = new EntityPos();
-            Position.ReadPacket(stream);
+            X = stream.Float();
+            Y = stream.Float();
+            Z = stream.Float();
+            Yaw = stream.Float();
+            Pitch = stream.Float();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            Position.WritePacket(stream);
+            stream.Float(X);
+            stream.Float(Y);
+            stream.Float(Z);
+            stream.Float(Yaw);
+            stream.Float(Pitch);
         }
     }
 }

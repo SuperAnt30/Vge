@@ -33,12 +33,34 @@ namespace Vge.Util
         public Vector3i MinInt() => new Vector3i(Min);
         public Vector3i MaxInt() => new Vector3i(Max);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Clone() => new AxisAlignedBB(Min, Max);
+        
         /// <summary>
         /// Смещает текущую ограничивающую рамку на указанные координаты
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Offset(float x, float y, float z) 
+            => new AxisAlignedBB(Min.X + x, Min.Y + y, Min.Z + z, Max.X + x, Max.Y + y, Max.Z + z);
+
+        /// <summary>
+        /// Смещает текущую ограничивающую рамку на указанные координаты
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Offset(Vector3 bias) => new AxisAlignedBB(Min + bias, Max + bias);
 
+        /// <summary>
+        /// Добавить координату в область как смещение от 0
+        /// </summary>
+        public AxisAlignedBB AddCoordBias(float x, float y, float z)
+        {
+            Vector3 min = new Vector3(Min);
+            Vector3 max = new Vector3(Max);
+            if (x < 0f) min.X += x; else if (x > 0f) max.X += x;
+            if (y < 0f) min.Y += y; else if (y > 0f) max.Y += y;
+            if (z < 0f) min.Z += z; else if (z > 0f) max.Z += z;
+            return new AxisAlignedBB(min, max);
+        }
         /// <summary>
         /// Добавить координату в область как смещение от 0
         /// </summary>
@@ -46,16 +68,9 @@ namespace Vge.Util
         {
             Vector3 min = new Vector3(Min);
             Vector3 max = new Vector3(Max);
-
-            if (pos.X < 0f) min.X += pos.X;
-            else if (pos.X > 0f) max.X += pos.X;
-
-            if (pos.Y < 0f) min.Y += pos.Y;
-            else if (pos.Y > 0f) max.Y += pos.Y;
-
-            if (pos.Z < 0f) min.Z += pos.Z;
-            else if (pos.Z > 0f) max.Z += pos.Z;
-
+            if (pos.X < 0f) min.X += pos.X; else if (pos.X > 0f) max.X += pos.X;
+            if (pos.Y < 0f) min.Y += pos.Y; else if (pos.Y > 0f) max.Y += pos.Y;
+            if (pos.Z < 0f) min.Z += pos.Z; else if (pos.Z > 0f) max.Z += pos.Z;
             return new AxisAlignedBB(min, max);
         }
 
@@ -82,11 +97,18 @@ namespace Vge.Util
         /// <summary>
         /// Возвращает ограничивающую рамку, расширенную указанным вектором
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Expand(Vector3 vec) => new AxisAlignedBB(Min - vec, Max + vec);
+        /// <summary>
+        /// Возвращает ограничивающую рамку, расширенную указанным вектором
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Expand(float vec) => new AxisAlignedBB(Min - vec, Max + vec);
 
         /// <summary>
         /// Возвращает ограничивающую рамку, уменьшенную указанным вектором
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Contract(Vector3 vec) => new AxisAlignedBB(Min + vec, Max - vec);
 
         /// <summary>

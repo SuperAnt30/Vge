@@ -160,6 +160,7 @@ namespace Vge.Games
             World = new WorldClient(this);
             World.TagDebug += World_TagDebug;
             Player.TagDebug += World_TagDebug;
+            Player.WorldStarting();
             _stopwatch.Start();
             //Ce.IsDebugDrawChunks = 
             Ce.IsDebugDraw = true;

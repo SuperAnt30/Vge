@@ -90,13 +90,13 @@ namespace Vge.Renderer.World
             }
             if (!_hiddenChunk)
             {
-                Vector2i posCh = _player.PositionFrame.GetChunkPosition();
+                Vector2i posCh = new Vector2i(Mth.Floor(_player.PosFrameX) >> 4, Mth.Floor(_player.PosFrameZ) >> 4);
                 posCh.X = posCh.X << 4;
                 posCh.Y = posCh.Y << 4;
                 _worldRenderer.Render.ShaderBindLine(_player.View,
-                    posCh.X - _player.PositionFrame.X,
-                    -_player.PositionFrame.Y,
-                    posCh.Y - _player.PositionFrame.Z);
+                    posCh.X - _player.PosFrameX,
+                    -_player.PosFrameY,
+                    posCh.Y - _player.PosFrameZ);
                 _meshChunk.Draw();
             }
         }
@@ -115,7 +115,7 @@ namespace Vge.Renderer.World
             if (moving.IsBlock())
             {
                 _hiddenBlock = false;
-                Vector3 pos = _player.PositionFrame.GetVector3();
+                Vector3 pos = new Vector3(_player.PosFrameX, _player.PosFrameY, _player.PosFrameZ);
 
                 bool compiled = false;
                 if (!_posPrev.Equals(pos))

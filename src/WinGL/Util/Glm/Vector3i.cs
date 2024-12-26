@@ -42,6 +42,13 @@ namespace WinGL.Util
             Z = z;
         }
 
+        public Vector3i(float x, float y, float z)
+        {
+            X = Mth.Floor(x);
+            Y = Mth.Floor(y);
+            Z = Mth.Floor(z);
+        }
+
         public Vector3i(Vector3 v)
         {
             X = Mth.Floor(v.X);

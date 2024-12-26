@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Sockets;
 using System.Threading;
 using Vge.Event;
 using Vge.Management;
@@ -9,7 +8,6 @@ using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World;
-using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Games
@@ -352,7 +350,7 @@ namespace Vge.Games
 
                 WorldServer world = Players.PlayerOwner.GetWorld();
                 int cpx = Players.PlayerOwner.ChunkPositionX;
-                int cpy = Players.PlayerOwner.ChunkPositionY;
+                int cpy = Players.PlayerOwner.ChunkPositionZ;
                 int radius = Players.PlayerOwner.ActiveRadius + FragmentManager.AddOverviewChunkServer;
                 int step = (radius + radius + 1) * (radius + radius + 1);
                 ResponsePacketOwner(new PacketS02LoadingGame((ushort)step));

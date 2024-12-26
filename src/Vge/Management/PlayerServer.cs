@@ -54,22 +54,13 @@ namespace Vge.Management
         public bool IsPlayer => true;
 
         /// <summary>
-        /// Координату X в каком чанке находится
-        /// </summary>
-        public int ChunkPositionX => Position.ChunkPositionX;
-        /// <summary>
-        /// Координата Y в каком чанке находится
-        /// </summary>
-        public int ChunkPositionY => Position.ChunkPositionZ;
-
-        /// <summary>
         /// В какой позиции X чанка было обработка видимых чанков
         /// </summary>
         public int ChunkPosManagedX { get; private set; }
         /// <summary>
         /// В какой позиции Y чанка было обработка видимых чанков
         /// </summary>
-        public int ChunkPosManagedY { get; private set; }
+        public int ChunkPosManagedZ { get; private set; }
 
         /// <summary>
         /// Список координат чанков для загрузки, формируется по дистанции к игроку.
@@ -150,6 +141,22 @@ namespace Vge.Management
         public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
 
+        #region GetSet
+
+        /// <summary>
+        /// Изменить позицию игрока на стороне сервера
+        /// </summary>
+        public void SetPositionServer(float x, float y, float z)
+        {
+            PosX = x;
+            PosY = y;
+            PosZ = z;
+            // Местоположение игрока
+            SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
+        }
+
+        #endregion
+
         #region Update
 
         /// <summary>
@@ -165,8 +172,15 @@ namespace Vge.Management
             {
                 //server.Filer.StartSection("Fragment" + OverviewChunk);
                 GetWorld().Fragment.UpdateMountedMovingAnchor(this);
-                //server.Filer.EndSectionLog();
-                PositionPrev.Set(Position);
+                //server.Filer.EndSection();
+                PosPrevX = PosX;
+                PosPrevY = PosY;
+                PosPrevZ = PosZ;
+            }
+            if (IsRotationChange())
+            {
+                RotationPrevYaw = RotationYaw;
+                RotationPrevPitch = RotationPitch;
             }
 
             _UpdatePlayer();
@@ -249,13 +263,16 @@ namespace Vge.Management
         /// </summary>
         public void PacketPlayerPosition(PacketC04PlayerPosition packet)
         {
-            Position.Set(packet.Position);
-
-            // TODO::2024-11-29 временная смена мира
-            if (IdWorld != packet.World)
+            if (packet.IsPosition)
             {
-                // Смена мира
-                ChangeWorld(packet.World);
+                PosX = packet.X;
+                PosY = packet.Y;
+                PosZ = packet.Z;
+            }
+            if (packet.IsRotate)
+            {
+                RotationYaw = packet.Yaw;
+                RotationPitch = packet.Pitch;
             }
         }
 
@@ -291,7 +308,7 @@ namespace Vge.Management
             }
 
             // Определяем на какую сторону смотрит игрок
-            Pole pole = PoleConvert.FromAngle(Position.Yaw);
+            Pole pole = PoleConvert.FromAngle(RotationYaw);
 
             WorldServer world = GetWorld();
             BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
@@ -355,7 +372,7 @@ namespace Vge.Management
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Местоположение игрока
-            SendPacket(new PacketS08PlayerPosLook(Position));
+            SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
 
@@ -421,11 +438,11 @@ namespace Vge.Management
                     Token = nbt.GetString("Token");
                     TimesExisted = nbt.GetLong("TimesExisted");
                     IdWorld = nbt.GetByte("IdWorld");
-                    PositionPrev.X = Position.X = nbt.GetFloat("PosX");
-                    PositionPrev.Y = Position.Y = nbt.GetFloat("PosY");
-                    PositionPrev.Z = Position.Z = nbt.GetFloat("PosZ");
-                    PositionPrev.Yaw = Position.Yaw = nbt.GetFloat("Yaw");
-                    PositionPrev.Pitch = Position.Pitch = nbt.GetFloat("Pitch");
+                    PosPrevX = PosX = nbt.GetFloat("PosX");
+                    PosPrevY = PosY = nbt.GetFloat("PosY");
+                    PosPrevZ = PosZ = nbt.GetFloat("PosZ");
+                    RotationPrevYaw = RotationYaw = nbt.GetFloat("Yaw");
+                    RotationPrevPitch = RotationPitch = nbt.GetFloat("Pitch");
                     return true;
                 }
                 catch
@@ -446,11 +463,11 @@ namespace Vge.Management
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
             nbt.SetByte("IdWorld", IdWorld);
-            nbt.SetFloat("PosX", Position.X);
-            nbt.SetFloat("PosY", Position.Y);
-            nbt.SetFloat("PosZ", Position.Z);
-            nbt.SetFloat("Yaw", Position.Yaw);
-            nbt.SetFloat("Pitch", Position.Pitch);
+            nbt.SetFloat("PosX", PosX);
+            nbt.SetFloat("PosY", PosY);
+            nbt.SetFloat("PosZ", PosZ);
+            nbt.SetFloat("Yaw", RotationYaw);
+            nbt.SetFloat("Pitch", RotationPitch);
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 
@@ -524,7 +541,7 @@ namespace Vge.Management
         {
             _UpOverviewChunkPrev();
             ChunkPosManagedX = ChunkPositionX;
-            ChunkPosManagedY = ChunkPositionY;
+            ChunkPosManagedZ = ChunkPositionZ;
             _FilterChunkLoadQueueRevers();
         }
 
@@ -537,7 +554,7 @@ namespace Vge.Management
         /// Необходимо ли смещение?
         /// </summary>
         public bool IsAnOffsetNecessary() 
-            => ChunkPositionX != ChunkPosManagedX || ChunkPositionY != ChunkPosManagedY;
+            => ChunkPositionX != ChunkPosManagedX || ChunkPositionZ != ChunkPosManagedZ;
 
         /// <summary>
         /// Фильтрация очереди загрузки фрагментов от центра к краю (реверс)
@@ -560,20 +577,20 @@ namespace Vge.Management
                 }
                 i2 = ChunkPosManagedX - i;
                 i3 = ChunkPosManagedX + i;
-                y = i + ChunkPosManagedY;
+                y = i + ChunkPosManagedZ;
                 for (x = i2; x <= i3; x++)
                 {
                     if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                     if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
-                y = ChunkPosManagedY - i;
+                y = ChunkPosManagedZ - i;
                 for (x = i2; x <= i3; x++)
                 {
                     if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                     if (isClient && _clientChunks.Contains(x, y)) _clientChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
-                i2 = ChunkPosManagedY - i + 1;
-                i3 = ChunkPosManagedY + i - 1;
+                i2 = ChunkPosManagedZ - i + 1;
+                i3 = ChunkPosManagedZ + i - 1;
                 x = i + ChunkPosManagedX;
                 for (y = i2; y <= i3; y++)
                 {
@@ -588,13 +605,13 @@ namespace Vge.Management
                 }
             }
             // Позиция где стоит игрок
-            if (_loadingChunks.Contains(ChunkPosManagedX, ChunkPosManagedY))
+            if (_loadingChunks.Contains(ChunkPosManagedX, ChunkPosManagedZ))
             {
-                _loadingChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
+                _loadingChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedZ));
             }
-            if (isClient && _clientChunks.Contains(ChunkPosManagedX, ChunkPosManagedY))
+            if (isClient && _clientChunks.Contains(ChunkPosManagedX, ChunkPosManagedZ))
             {
-                _clientChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
+                _clientChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedZ));
             }
         }
 

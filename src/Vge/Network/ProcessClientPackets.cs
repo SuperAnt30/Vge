@@ -177,9 +177,13 @@ namespace Vge.Network
         /// </summary>
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
-            Game.Player.Position.Set(packet.Position);
+            Game.Player.PosX = packet.X;
+            Game.Player.PosY = packet.Y;
+            Game.Player.PosZ = packet.Z;
+            Game.Player.RotationYaw = packet.Yaw;
+            Game.Player.RotationPitch = packet.Pitch;
 
-            Debug.Player = Game.Player.Position.GetChunkPosition();
+            Debug.Player = Game.Player.GetChunkPosition();
         }
 
         /// <summary>

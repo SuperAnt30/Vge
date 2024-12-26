@@ -370,14 +370,14 @@ namespace Vge.Renderer.World
             int x = chunkX << 4;
             int z = chunkY << 4;
             shader.SetUniform3(_game.GetOpenGL(), "pos",
-                x - _game.Player.PositionFrame.X,
-                -_game.Player.PositionFrame.Y,
-                z - _game.Player.PositionFrame.Z
+                x - _game.Player.PosFrameX,
+                -_game.Player.PosFrameY,
+                z - _game.Player.PosFrameZ
             );
             shader.SetUniform3(_game.GetOpenGL(), "camera",
-                _game.Player.PositionFrame.X - x,
-                _game.Player.PositionFrame.Y,
-                _game.Player.PositionFrame.Z - z
+                _game.Player.PosFrameX - x,
+                _game.Player.PosFrameY,
+                _game.Player.PosFrameZ - z
             );
         }
 

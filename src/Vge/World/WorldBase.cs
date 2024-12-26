@@ -36,8 +36,16 @@ namespace Vge.World
         /// Объект обработки освещения для мира
         /// </summary>
         public readonly WorldLight Light;
+        /// <summary>
+        /// Объект проверки коллизии
+        /// </summary>
+        public readonly CollisionBase Collision;
 
-        public WorldBase(int numberBlocksToLight) => Light = new WorldLight(this, numberBlocksToLight);
+        public WorldBase(int numberBlocksToLight)
+        {
+            Light = new WorldLight(this, numberBlocksToLight);
+            Collision = new CollisionBase(this);
+        }
 
         /// <summary>
         /// Получить время в тактах объекта Stopwatch с момента запуска проекта

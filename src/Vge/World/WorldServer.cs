@@ -55,6 +55,7 @@ namespace Vge.World
             Settings = worldSettings;
             Rnd = new Rand(server.Settings.Seed);
             ChunkPr = ChunkPrServ = new ChunkProviderServer(this);
+            Collision.Init();
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
 

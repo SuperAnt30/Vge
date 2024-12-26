@@ -8,7 +8,11 @@
         /// <summary>
         /// Блок воздуха
         /// </summary>
-        public BlockAir() => SetAir();
+        public BlockAir()
+        {
+            SetAir();
+            IsCollidable = false;
+        }
 
         /// <summary>
         /// Является ли блок проходимым, т.е. можно ли ходить через него

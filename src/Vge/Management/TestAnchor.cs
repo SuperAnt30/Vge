@@ -18,24 +18,24 @@ namespace Vge.Management
 
         public int ChunkPositionX { get; private set; }
 
-        public int ChunkPositionY { get; private set; }
+        public int ChunkPositionZ { get; private set; }
 
         public int ChunkPosManagedX { get; private set; }
 
-        public int ChunkPosManagedY { get; private set; }
+        public int ChunkPosManagedZ { get; private set; }
 
         public void AddChunk(int chunkPosX, int chunkPosY)
             => _loadingChunks.Add(new ChunkPosition(chunkPosX, chunkPosY));
 
         public bool IsAnOffsetNecessary() 
-            => ChunkPositionX != ChunkPosManagedX || ChunkPositionY != ChunkPosManagedY;
+            => ChunkPositionX != ChunkPosManagedX || ChunkPositionZ != ChunkPosManagedZ;
 
         public bool IsChangeOverview() => false;
 
         public void MountedMovedAnchor()
         {
             ChunkPosManagedX = ChunkPositionX;
-            ChunkPosManagedY = ChunkPositionY;
+            ChunkPosManagedZ = ChunkPositionZ;
             _FilterChunkLoadQueueRevers();
         }
 
@@ -123,18 +123,18 @@ namespace Vge.Management
                 }
                 i2 = ChunkPosManagedX - i;
                 i3 = ChunkPosManagedX + i;
-                y = i + ChunkPosManagedY;
+                y = i + ChunkPosManagedZ;
                 for (x = i2; x <= i3; x++)
                 {
                     if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
-                y = ChunkPosManagedY - i;
+                y = ChunkPosManagedZ - i;
                 for (x = i2; x <= i3; x++)
                 {
                     if (_loadingChunks.Contains(x, y)) _loadingChunksSort.Add(Conv.ChunkXyToIndex(x, y));
                 }
-                i2 = ChunkPosManagedY - i + 1;
-                i3 = ChunkPosManagedY + i - 1;
+                i2 = ChunkPosManagedZ - i + 1;
+                i3 = ChunkPosManagedZ + i - 1;
                 x = i + ChunkPosManagedX;
                 for (y = i2; y <= i3; y++)
                 {
@@ -147,9 +147,9 @@ namespace Vge.Management
                 }
             }
             // Позиция где стоит игрок
-            if (_loadingChunks.Contains(ChunkPosManagedX, ChunkPosManagedY))
+            if (_loadingChunks.Contains(ChunkPosManagedX, ChunkPosManagedZ))
             {
-                _loadingChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedY));
+                _loadingChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedZ));
             }
         }
     }

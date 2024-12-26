@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Management;
 using Vge.Network;
 using Vge.Util;
 using Vge.World.Block;
@@ -14,6 +15,7 @@ namespace Vge.Command
         private readonly EnumForWhat _forWhat;
         private readonly BlockPos _blockPos;
         private readonly ushort _entityId;
+        private PlayerServer _player;
 
         public CommandSender(string message)
         {
@@ -21,6 +23,7 @@ namespace Vge.Command
             _forWhat = EnumForWhat.Null;
             _entityId = 0;
             _blockPos = new BlockPos();
+            _player = null;
         }
 
         public CommandSender(string message, ushort entityId)
@@ -29,18 +32,20 @@ namespace Vge.Command
             _forWhat = EnumForWhat.Entity;
             _entityId = entityId;
             _blockPos = new BlockPos();
+            _player = null;
         }
         public CommandSender(string message, BlockPos blockPos)
         {
-            this._message = message;
+            _message = message;
             _forWhat = EnumForWhat.Entity;
             _entityId = 0;
-            this._blockPos = blockPos;
+            _blockPos = blockPos;
+            _player = null;
         }
 
         public CommandSender(string message, MovingObjectPosition movingObject)
         {
-            this._message = message;
+            _message = message;
             if (movingObject.IsBlock())
             {
                 _forWhat = EnumForWhat.Block;
@@ -60,6 +65,7 @@ namespace Vge.Command
                 _entityId = 0;
                 _blockPos = new BlockPos();
             }
+            _player = null;
         }
 
         /// <summary>
@@ -78,6 +84,18 @@ namespace Vge.Command
         /// ID сущности на которую попал курсор
         /// </summary>
         public ushort GetEntityId() => _entityId;
+        /// <summary>
+        /// Получить объект игрока который использует команду
+        /// </summary>
+        public PlayerServer GetPlayer() => _player;
+        /// <summary>
+        /// Задать объект игрока который использует команду
+        /// </summary>
+        public CommandSender SetPlayer(PlayerServer player)
+        {
+            _player = player;
+            return this;
+        }
 
         /// <summary>
         /// Получить название команды в нижнем регистре

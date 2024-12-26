@@ -1,4 +1,5 @@
-﻿using Vge.Actions;
+﻿using System.Runtime.CompilerServices;
+using Vge.Actions;
 using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
@@ -23,6 +24,32 @@ namespace Vge.Management
         /// </summary>
         public const float Pi89 = 1.55334303f;
 
+        #region PositionFrame 
+
+        /// <summary>
+        /// Позиция этой сущности по оси X
+        /// </summary>
+        public float PosFrameX;
+        /// <summary>
+        /// Позиция этой сущности по оси Y
+        /// </summary>
+        public float PosFrameY;
+        /// <summary>
+        /// Позиция этой сущности по оси Z
+        /// </summary>
+        public float PosFrameZ;
+
+        /// <summary>
+        /// Вращение этой сущности по оси Y
+        /// </summary>
+        public float RotationFrameYaw;
+        /// <summary>
+        /// Вращение этой сущности вверх вниз
+        /// </summary>
+        public float RotationFramePitch;
+
+        #endregion
+
         /// <summary>
         /// Объект кэш чата
         /// </summary>
@@ -32,18 +59,16 @@ namespace Vge.Management
         /// Матрица просмотра Projection * LookAt
         /// </summary>
         public readonly float[] View = new float[16];
-        /// <summary>
-        /// Обект перемещений
-        /// </summary>
-        public readonly MovementInput Movement = new MovementInput();
+        
         /// <summary>
         /// Массив всех видимых чанков 
         /// </summary>
         public readonly ListFast<ChunkRender> FrustumCulling = new ListFast<ChunkRender>();
+
         /// <summary>
-        /// Позиция игрока для камеры
+        /// Выбранный объект
         /// </summary>
-        public readonly EntityPos PositionFrame = new EntityPos();
+        public MovingObjectPosition MovingObject { get; private set; } = new MovingObjectPosition();
 
         /// <summary>
         /// Позиция камеры в блоке для альфа, в зависимости от вида (с глаз, с зади, спереди)
@@ -51,9 +76,9 @@ namespace Vge.Management
         public Vector3i PositionAlphaBlock { get; private set; }
 
         /// <summary>
-        /// Выбранный объект
+        /// Обект перемещений
         /// </summary>
-        public MovingObjectPosition MovingObject { get; private set; } = new MovingObjectPosition();
+        public MovementInput Movement => Physics.Movement;
 
         /// <summary>
         /// Позиция камеры в чанке для альфа, в зависимости от вида (с глаз, с зади, спереди)
@@ -112,6 +137,16 @@ namespace Vge.Management
             Token = game.ToTokenPlayer();
             Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain);
             _UpdateMatrixCamera();
+            Eye = Height * .85f;
+        }
+
+        /// <summary>
+        /// Запуск мира
+        /// </summary>
+        public void WorldStarting()
+        {
+            //Physics = new PhysicsFly(_game.World.Collision, this);
+            Physics = new PhysicsGround(_game.World.Collision, this);
         }
 
         #region Методы от Entity
@@ -137,16 +172,16 @@ namespace Vge.Management
             // Чувствительность мыши
             float speedMouse = Options.MouseSensitivityFloat;
             // Определяем углы смещения
-            float pitch = Position.Pitch - centerBiasY / (float)Gi.Height * speedMouse;
-            float yaw = Position.Yaw + centerBiasX / (float)Gi.Width * speedMouse;
+            float pitch = RotationPitch - centerBiasY / (float)Gi.Height * speedMouse;
+            float yaw = RotationYaw + centerBiasX / (float)Gi.Width * speedMouse;
             
             if (pitch < -Pi89) pitch = -Pi89;
             if (pitch > Pi89) pitch = Pi89;
             if (yaw > Glm.Pi) yaw -= Glm.Pi360;
             if (yaw < -Glm.Pi) yaw += Glm.Pi360;
 
-            Position.Yaw = yaw;
-            Position.Pitch = pitch;
+            RotationYaw = yaw;
+            RotationPitch = pitch;
         }
 
         /// <summary>
@@ -157,8 +192,11 @@ namespace Vge.Management
             Movement.SetStop();
             if (!_game.IsRunNet())
             {
-                PositionPrev.Set(Position);
-                PositionFrame.Set(Position);
+                PosFrameX = PosPrevX = PosX;
+                PosFrameY = PosPrevY = PosY;
+                PosFrameZ = PosPrevZ = PosZ;
+                RotationFrameYaw = RotationPrevYaw = RotationYaw;
+                RotationFramePitch = RotationPrevPitch = RotationPitch;
             }
         }
 
@@ -230,9 +268,9 @@ namespace Vge.Management
         /// </summary>
         private void _UpdateMatrixCamera()
         {
-            Vector3 front = Glm.Ray(PositionFrame.Yaw, PositionFrame.Pitch);
+            Vector3 front = Glm.Ray(RotationFrameYaw, RotationFramePitch);
             Vector3 up = new Vector3(0, 1, 0);
-            Vector3 pos = new Vector3(0, 0, 0);
+            Vector3 pos = new Vector3(0, Eye, 0);
             _rayLook = front;
             Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
             //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
@@ -249,8 +287,8 @@ namespace Vge.Management
         {
             _frustumCulling.Init(View);
 
-            int chunkPosX = Position.ChunkPositionX;
-            int chunkPosZ = Position.ChunkPositionZ;
+            int chunkPosX = ChunkPositionX;
+            int chunkPosZ = ChunkPositionZ;
 
             int i, xc, zc, xb, zb, x1, y1, z1, x2, y2, z2;
             ChunkRender chunk;
@@ -269,10 +307,10 @@ namespace Vge.Management
                 zb = zc << 4;
 
                 x1 = xb - 15;
-                y1 = -Position.PositionY;
+                y1 = -PositionY;
                 z1 = zb - 15;
                 x2 = xb + 15;
-                y2 = _heightChinkFrustumCulling - Position.PositionY;
+                y2 = _heightChinkFrustumCulling - PositionY;
                 z2 = zb + 15;
 
                 if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
@@ -307,8 +345,8 @@ namespace Vge.Management
         {
             int countOC = Ce.OverviewCircles.Length;
 
-            int chunkPosX = Position.ChunkPositionX;
-            int chunkPosZ = Position.ChunkPositionZ;
+            int chunkPosX = ChunkPositionX;
+            int chunkPosZ = ChunkPositionZ;
 
             int i, xc, zc, y1, y2;
             y2 = _game.World.ChunkPr.Settings.NumberSections;
@@ -340,9 +378,37 @@ namespace Vge.Management
         /// </summary>
         public void UpdateFrame(float timeIndex)
         {
-            if (Position.IsChange(PositionFrame))
-            {   
-                PositionFrame.UpdateFrame(timeIndex, Position, PositionPrev);
+            if (PosX != PosFrameX || PosY != PosFrameY || PosZ != PosFrameZ
+                || RotationYaw != RotationFrameYaw || RotationPitch != RotationFramePitch)
+            {
+                if (timeIndex >= 1f)
+                {
+                    if (PosX != PosPrevX) PosFrameX = PosX;
+                    if (PosY != PosPrevY) PosFrameY = PosY;
+                    if (PosZ != PosPrevZ) PosFrameZ = PosZ;
+                    if (RotationYaw != RotationPrevYaw) RotationFrameYaw = RotationYaw;
+                    if (RotationPitch != RotationPrevPitch) RotationFramePitch = RotationPitch;
+                }
+                else
+                {
+                    PosFrameX = PosPrevX + (PosX - PosPrevX) * timeIndex;
+                    PosFrameY = PosPrevY + (PosY - PosPrevY) * timeIndex;
+                    PosFrameZ = PosPrevZ + (PosZ - PosPrevZ) * timeIndex;
+                    float biasYaw = RotationYaw - RotationPrevYaw;
+                    if (biasYaw > Glm.Pi)
+                    {
+                        RotationFrameYaw = RotationPrevYaw + (RotationYaw - Glm.Pi360 - RotationPrevYaw) * timeIndex;
+                    }
+                    else if (biasYaw < -Glm.Pi)
+                    {
+                        RotationFrameYaw = RotationPrevYaw + (RotationYaw + Glm.Pi360 - RotationPrevYaw) * timeIndex;
+                    }
+                    else
+                    {
+                        RotationFrameYaw = RotationPrevYaw + biasYaw * timeIndex;
+                    }
+                    RotationFramePitch = RotationPrevPitch + (RotationPitch - RotationPrevPitch) * timeIndex;
+                }
                 _CameraHasBeenChanged();
             }
             //_game.Log.Log(Position.ToStringPos() + " | "
@@ -356,29 +422,39 @@ namespace Vge.Management
         /// </summary>
         public override void Update()
         {
-            Vector2 motion = Sundry.MotionAngle(
-                Movement.GetMoveStrafe(), Movement.GetMoveForward(),
-                Movement.Sprinting ? 5f : .5f, Position.Yaw);
-
-            // Временно меняем перемещение если это надо
-
-            float x = Position.X + motion.X;
-            float y = Position.Y + Movement.GetMoveVertical();
-            float z = Position.Z + motion.Y;
-            if (x != PositionPrev.X || y != PositionPrev.Y || z != PositionPrev.Z
-                || Position.IsChangeRotate(PositionPrev))
+            if (IsPositionChange())
             {
-                PositionPrev.Set(Position);
-                Position.X = x;
-                Position.Y = y;
-                Position.Z = z;
-                //_game.Log.Log(Position.ToStringPos() + " | "
-                //+ PositionPrev.ToStringPos());
-                //_CameraHasBeenChanged();
-                _game.TrancivePacket(new PacketC04PlayerPosition(
-                    Position, false, Movement.Sprinting, false, IdWorld));
-                Debug.Player = Position.GetChunkPosition();
+                PosPrevX = PosX;
+                PosPrevY = PosY;
+                PosPrevZ = PosZ;
             }
+
+            // Расчитать перемещение в объекте физика
+            Physics.LivingUpdate();
+
+            // Для отправки
+            if (IsRotationChange())
+            {
+                RotationPrevYaw = RotationYaw;
+                RotationPrevPitch = RotationPitch;
+
+                if (Physics.IsMotionChange)
+                {
+                    // И перемещение и вращение
+                    _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, RotationYaw, RotationPitch, false));
+                }
+                else
+                {
+                    // Только вращение
+                    _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch, false));
+                }
+            }
+            else if (Physics.IsMotionChange)
+            {
+                // Только перемещение
+                _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, false));
+            }
+
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)
             {
@@ -397,7 +473,7 @@ namespace Vge.Management
         /// </summary>
         private void _UpdateChunkRenderAlphe()
         {
-            PositionAlphaBlock = new Vector3i(Position.GetVector3());
+            PositionAlphaBlock = new Vector3i(PosX, PosY + Eye, PosZ);
             _positionAlphaChunk = new Vector3i(PositionAlphaBlock.X >> 4, 
                 PositionAlphaBlock.Y >> 4, PositionAlphaBlock.Z >> 4);
 
@@ -407,9 +483,9 @@ namespace Vge.Management
                 _positionAlphaChunkPrev = _positionAlphaChunk;
                 _positionAlphaBlockPrev = PositionAlphaBlock;
 
-                int chX = Position.ChunkPositionX;
-                int chY = Position.PositionY >> 4;
-                int chZ = Position.ChunkPositionZ;
+                int chX = ChunkPositionX;
+                int chY = PositionY >> 4;
+                int chZ = ChunkPositionZ;
                 Vector3i pos;
                 ChunkRender chunk = null;
                 int count = Ce.OverviewAlphaSphere.Length;
@@ -446,9 +522,9 @@ namespace Vge.Management
                 // Если смещение блока
                 _positionAlphaBlockPrev = PositionAlphaBlock;
                 _game.World.ChunkPrClient.ModifiedToRenderAlpha(
-                    Position.ChunkPositionX,
-                    Position.PositionY >> 4,
-                    Position.ChunkPositionZ);
+                    ChunkPositionX,
+                    PositionY >> 4,
+                    ChunkPositionZ);
             }
         }
 
@@ -532,6 +608,7 @@ namespace Vge.Management
             IdWorld = packet.IdWorld;
             _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
             _game.World.Settings.PacketRespawnInWorld(packet);
+            _game.World.Collision.Init();
             _game.WorldRender.RespawnInWorld();
             _heightChinkFrustumCulling = _game.World.ChunkPrClient.Settings.NumberBlocks;
         }
@@ -575,8 +652,8 @@ namespace Vge.Management
         {
             // максимальная дистанция луча
 
-            Vector3 pos = PositionFrame.GetVector3();
-            // pos.Y += GetEyeHeightFrame();
+            Vector3 pos = GetPositionVec();
+            pos.Y += Eye;// GetEyeHeight();
             return _game.World.RayCastBlock(pos, _rayLook, 16, collidable, /*Id,*/ isLiquid);
             // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
         }
@@ -612,9 +689,21 @@ namespace Vge.Management
         protected override long _Time() => _game.Time();
 
         public override string ToString()
-            => Login + " " + Position + " O:" + OverviewChunk
+        {
+            float k = 10f; // 20 tps * .5f ширина блока
+            k = Ce.Tps * .5f;
+            string motion = string.Format("{0:0.00} | {1:0.00} м/с {2} {3}", 
+                Physics.MotionHorizon * k,
+                Physics.MotionVertical * k,
+                new Vector3(Physics.MotionX, Physics.MotionY, Physics.MotionZ),
+                Physics.ToDebugString()
+                );
+
+            return Login + " " + ToStringPositionRotation() + " O:" + OverviewChunk
+                + (OnGround ? " OnGround" : "")
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
-                + Movement;
+                + Movement + "\r\n" + motion;
+        }
 
         /// <summary>
         /// Событие любого объекта с сервера для отладки

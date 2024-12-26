@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Vge.Command;
 using Vge.Games;
 using Vge.Network;
 using Vge.Network.Packets.Client;
@@ -23,6 +24,10 @@ namespace Vge.Management
         public readonly GameServer Server;
 
         /// <summary>
+        /// Менеджер команд
+        /// </summary>
+        private ManagerCommand _managerCommand;
+        /// <summary>
         /// Колекция сетевых игроков
         /// </summary>
         private readonly List<PlayerServer> _players = new List<PlayerServer>();
@@ -42,6 +47,7 @@ namespace Vge.Management
         public PlayerManager(GameServer server)
         {
             Server = server;
+            _managerCommand = new ManagerCommand(server);
         }
 
         #region AddRemoveCount
@@ -137,6 +143,27 @@ namespace Vge.Management
             return null;
         }
 
+        /// <summary>
+        /// Найти объект Игрока по имени, если нет вернёт null
+        /// </summary>
+        public PlayerServer FindPlayerByLogin(string login)
+        {
+            if (PlayerOwner != null && PlayerOwner.Login == login)
+            {
+                // Это владелец
+                return PlayerOwner;
+            }
+            // Проверка сетевых
+            foreach (PlayerServer player in _players)
+            {
+                if (player.Login == login)
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
+
         #endregion
 
         #region All
@@ -189,7 +216,17 @@ namespace Vge.Management
             {
                 string message = packet.GetCommandSender().GetMessage();
                 Server.Log.Server("<{0}>: {1}", player.Login, message);
-                SendToAllMessage(ChatStyle.Aqua + "[" + player.Login + "] " + ChatStyle.Reset + message);
+                if (message != "" && message[0] == '/')
+                {
+                    // Команды
+                    message = _managerCommand.ExecutionCommand(packet.GetCommandSender().SetPlayer(player));
+                    player.SendMessage(message);
+                }
+                else
+                {
+                    // Сообщение
+                    SendToAllMessage(ChatStyle.Aqua + "[" + player.Login + "] " + ChatStyle.Reset + message);
+                }
             }
         }
 
@@ -302,11 +339,11 @@ namespace Vge.Management
                 countPl = 0;
                 if (PlayerOwner != null)
                 {
-                    Debug.Players[countPl++] = PlayerOwner.Position.GetChunkPosition();
+                    Debug.Players[countPl++] = PlayerOwner.GetChunkPosition();
                 }
                 for (int i = 0; i < _players.Count; i++)
                 {
-                    Debug.Players[countPl++] = _players[i].Position.GetChunkPosition();
+                    Debug.Players[countPl++] = _players[i].GetChunkPosition();
                 }
             }
         }

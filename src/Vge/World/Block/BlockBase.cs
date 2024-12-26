@@ -300,6 +300,12 @@ namespace Vge.World.Block
             return false;
         }
 
+        /// <summary>
+        /// Передать список  ограничительных рамок блока
+        /// </summary>
+        public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, uint met)
+            => new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
+
         #endregion
 
         #region Методы для группы

@@ -32,18 +32,18 @@
         /// </summary>
         int ChunkPositionX { get; }
         /// <summary>
-        /// Координата Y в каком чанке находится
+        /// Координата Z в каком чанке находится
         /// </summary>
-        int ChunkPositionY { get; }
+        int ChunkPositionZ { get; }
 
         /// <summary>
         ///  В какой позиции X чанка было обработка видимых чанков
         /// </summary>
         int ChunkPosManagedX { get; }
         /// <summary>
-        ///  В какой позиции Y чанка было обработка видимых чанков
+        ///  В какой позиции Z чанка было обработка видимых чанков
         /// </summary>
-        int ChunkPosManagedY { get; }
+        int ChunkPosManagedZ { get; }
 
         /// <summary>
         /// Возвращает имеется ли хоть один чанк для загрузки
@@ -59,14 +59,14 @@
         /// Добавить якорь в конкретный чанк
         /// </summary>
         /// <param name="chunkPosX">Позиция X чанка</param>
-        /// <param name="chunkPosY">Позиция Y чанка</param>
-        void AddChunk(int chunkPosX, int chunkPosY);
+        /// <param name="chunkPosZ">Позиция Z чанка</param>
+        void AddChunk(int chunkPosX, int chunkPosZ);
         /// <summary>
         /// Удалить якорь из конкретного чанка
         /// </summary>
         /// <param name="chunkPosX">Позиция X чанка</param>
-        /// <param name="chunkPosY">Позиция Y чанка</param>
-        void RemoveChunk(int chunkPosX, int chunkPosY);
+        /// <param name="chunkPosZ">Позиция Z чанка</param>
+        void RemoveChunk(int chunkPosX, int chunkPosZ);
 
         /// <summary>
         /// Установленный перемещенный якорь

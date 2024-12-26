@@ -6,7 +6,7 @@ namespace Vge.Management
     /// <summary>
     /// Абстрактный класс игроков
     /// </summary>
-    public abstract class PlayerBase
+    public abstract class PlayerBase : EntityBase
     {
         /// <summary>
         /// Уникальный порядковый номер игрока
@@ -41,15 +41,6 @@ namespace Vge.Management
         /// Индекс мира, где находится игрок
         /// </summary>
         public byte IdWorld { get; protected set; } = 0;
-
-        /// <summary>
-        /// Позиция игрока
-        /// </summary>
-        public readonly EntityPos Position = new EntityPos();
-        /// <summary>
-        /// Позиция игрока предыдущего такта
-        /// </summary>
-        public readonly EntityPos PositionPrev = new EntityPos();
 
         /// <summary>
         /// Последнее время пинга в милисекундах
@@ -102,11 +93,6 @@ namespace Vge.Management
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
-
-        /// <summary>
-        /// Изменена ли позиция
-        /// </summary>
-        public bool IsPositionChange() => Position.IsChange(PositionPrev);
 
         /// <summary>
         /// Игровой такт

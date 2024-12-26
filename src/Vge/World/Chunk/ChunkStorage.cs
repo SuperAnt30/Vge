@@ -118,6 +118,31 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Получить блок данных, XYZ 0..15 без света
+        /// </summary>
+        public BlockState GetBlockStateNotLight(int x, int y, int z)
+        {
+            ushort index = (ushort)(y << 8 | z << 4 | x);
+            try
+            {
+                ushort value = Data[index];
+                ushort id = (ushort)(value & 0xFFF);
+                return new BlockState(id,
+                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)(value >> 12));
+            }
+            catch (Exception ex)
+            {
+                Logger.Crash("ChunkStorage.GetBlockStateNotLight countBlock {0} countTickBlock {1} index {2} data {3} null\r\n{4}",
+                    CountBlock,
+                    _countTickBlock,
+                    index,
+                    Data == null ? "==" : "!=",
+                    ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Задать данные блока, XYZ 0..15 
         /// index = y << 8 | z << 4 | x
         /// </summary>

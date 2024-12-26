@@ -349,7 +349,7 @@ namespace Vge.Management
                 int radius = anchor.OverviewChunk;
                 int radiusPrev = anchor.OverviewChunkPrev;
                 int chmx = anchor.ChunkPosManagedX;
-                int chmy = anchor.ChunkPosManagedY;
+                int chmy = anchor.ChunkPosManagedZ;
 
                 if (anchor.IsPlayer)
                 {
@@ -377,10 +377,9 @@ namespace Vge.Management
                 // Проверяем смещение чанка на выбранный параметр, если есть начинаем обработку
                 int radius = anchor.OverviewChunk;
                 int chx = anchor.ChunkPositionX;
-                int chy = anchor.ChunkPositionY;
+                int chy = anchor.ChunkPositionZ;
                 int chmx = anchor.ChunkPosManagedX;
-                int chmy = anchor.ChunkPosManagedY;
-
+                int chmy = anchor.ChunkPosManagedZ;
                 // Проверка перемещения обзора чанков у клиента
                 if (anchor.IsPlayer)
                 {
@@ -390,7 +389,6 @@ namespace Vge.Management
                 radius = GetActiveRadiusAddServer(radius, anchor);
                 // Для всех остальных обзор на сервере больше из-за доп шагов генерации мира
                 _UpdateMountedMovingAnchorRadius(false, anchor, chx, chy, chmx, chmy, radius);
-                
                 change = true;
             }
 
@@ -421,7 +419,7 @@ namespace Vge.Management
                     if (_anchors[i].IsActive)
                     {
                         chX = _anchors[i].ChunkPositionX;
-                        chY = _anchors[i].ChunkPositionY;
+                        chY = _anchors[i].ChunkPositionZ;
 
                         for (x = -1; x <= 1; x++)
                         {
@@ -490,21 +488,44 @@ namespace Vge.Management
         private void _UpdateMountedMovingAnchorRadius(bool isClient, IAnchor anchor,
             int chx, int chz, int chmx, int chmz, int radius)
         {
-            int xmin = chx - radius;
-            int xmax = chx + radius;
-            int zmin = chz - radius;
-            int zmax = chz + radius;
-            int xmin2 = chmx - radius;
-            int xmax2 = chmx + radius;
-            int zmin2 = chmz - radius;
-            int zmax2 = chmz + radius;
+            if (Mth.Abs(chx - chmx) < radius && Mth.Abs(chz - chmz) < radius)
+            {
+                // Смещение в пределе радиуса обзора
+                int xmin = chx - radius;
+                int xmax = chx + radius;
+                int zmin = chz - radius;
+                int zmax = chz + radius;
+                int xmin2 = chmx - radius;
+                int xmax2 = chmx + radius;
+                int zmin2 = chmz - radius;
+                int zmax2 = chmz + radius;
 
-            // Определяем добавление
-            _OverviewChunkAddSquare(isClient, anchor, xmin, xmax, zmin, zmax, 
-                xmin2, xmax2, zmin2, zmax2);
-            // Определяем какие убираем
-            _OverviewChunkPutAwaySquare(isClient, anchor, xmin2, xmax2, zmin2, zmax2, 
-                xmin, xmax + 0, zmin, zmax + 0);
+                // Определяем добавление
+                _OverviewChunkAddSquare(isClient, anchor, xmin, xmax, zmin, zmax,
+                    xmin2, xmax2, zmin2, zmax2);
+                // Определяем какие убираем
+                _OverviewChunkPutAwaySquare(isClient, anchor, xmin2, xmax2, zmin2, zmax2,
+                    xmin, xmax + 0, zmin, zmax + 0);
+            }
+            else
+            {
+                // Смещение за пределами обзора, к примеру телепортация
+                // Убрать все чанки принадлежащие
+                int x, z;
+                int xmin = chmx - radius;
+                int xmax = chmx + radius + 1;
+                int zmin = chmz - radius;
+                int zmax = chmz + radius + 1;
+                for (x = xmin; x < xmax; x++)
+                {
+                    for (z = zmin; z < zmax; z++)
+                    {
+                        _ChunkForAnchorRemove(x, z, anchor, isClient);
+                    }
+                }
+                // Добавить все чанки вокруг якоря
+                _OverviewChunkAddAnchor(anchor, radius, isClient);
+            }
         }
 
         #endregion
@@ -789,7 +810,7 @@ namespace Vge.Management
         private void _OverviewChunkAddAnchor(IAnchor anchor, int radius, bool isClient)
         {
             int chx = anchor.ChunkPositionX;
-            int chy = anchor.ChunkPositionY;
+            int chy = anchor.ChunkPositionZ;
             int x, z;
             int xmin = chx - radius;
             int xmax = chx + radius + 1;
@@ -810,7 +831,7 @@ namespace Vge.Management
         private void _OverviewChunkPutAwayAnchor(IAnchor anchor, int radius, bool isClient)
         {
             int chx = anchor.ChunkPositionX;
-            int chy = anchor.ChunkPositionY;
+            int chy = anchor.ChunkPositionZ;
             int x, z;
             int xmin = chx - radius;
             int xmax = chx + radius + 1;

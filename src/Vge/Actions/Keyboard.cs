@@ -80,16 +80,6 @@ namespace Vge.Actions
                         _game.Player.SetOverviewChunk((byte)(_game.Player.OverviewChunk - 1), true);
                     }
                 }
-                else if (keys == Keys.NumPad0)
-                {
-                    _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        _game.Player.Position, false, false, false, 0));
-                }
-                else if (keys == Keys.NumPad1)
-                {
-                    _game.TrancivePacket(new Network.Packets.Client.PacketC04PlayerPosition(
-                        _game.Player.Position, false, false, false, 1));
-                }
             }
         }
 
