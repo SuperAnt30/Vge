@@ -24,6 +24,9 @@ namespace Vge.Network
                 case 0x05: return new PacketS05TableBlocks();
                 case 0x07: return new PacketS07RespawnInWorld();
                 case 0x08: return new PacketS08PlayerPosLook();
+                case 0x0C: return new PacketS0CSpawnPlayer();
+                case 0x13: return new PacketS13DestroyEntities();
+                case 0x14: return new PacketS14EntityMotion();
                 case 0x20: return new PacketS20ChunkSend();
                 case 0x21: return new PacketS21ChunkData();
                 case 0x22: return new PacketS22MultiBlockChange();

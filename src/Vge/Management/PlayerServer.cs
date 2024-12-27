@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using Vge.Entity;
 using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
@@ -249,14 +250,31 @@ namespace Vge.Management
         /// <summary>
         /// Отправить сетевой пакет этому игроку
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendPacket(IPacket packet)
             => server.ResponsePacket(Socket, packet);
 
         /// <summary>
         /// Отправить системное сообщение конкретному игроку
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendMessage(string message) 
             => SendPacket(new PacketS3AMessage(message));
+
+        /// <summary>
+        /// Сущность которую надо удалить у клиента
+        /// </summary>
+        public void SendRemoveEntity(EntityBase entity)
+        {
+            if (entity is PlayerServer)
+            {
+                SendPacket(new PacketS13DestroyEntities(new int[] { entity.Id }));
+            }
+            else
+            {
+                //_destroyedItemsNetCache.Add(entity.Id);
+            }
+        }
 
         /// <summary>
         /// Пакет: позиции игрока

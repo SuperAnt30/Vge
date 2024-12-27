@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using Vge.Entity;
+using Vge.Games;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -85,6 +86,9 @@ namespace Vge.Network
                 case 0x05: _Handle05TableBlocks((PacketS05TableBlocks)packet); break;
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
+                case 0x0C: _Handle0CSpawnPlayer((PacketS0CSpawnPlayer)packet); break;
+                case 0x13: _Handle13DestroyEntities((PacketS13DestroyEntities)packet); break;
+                case 0x14: _Handle14EntityMotion((PacketS14EntityMotion)packet); break;
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
                 case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
@@ -184,6 +188,63 @@ namespace Vge.Network
             Game.Player.RotationPitch = packet.Pitch;
 
             Debug.Player = Game.Player.GetChunkPosition();
+        }
+
+        /// <summary>
+        /// Пакет спавна других игроков
+        /// </summary>
+        private void _Handle0CSpawnPlayer(PacketS0CSpawnPlayer packet)
+        {
+            // Удачный вход сетевого игрока, типа приветствие
+            // Или после смерти
+            //EntityPlayerMP entity = new EntityPlayerMP(ClientMain.World);
+            //entity.SetDataPlayer(packet.GetId(), packet.GetUuid(), packet.GetName());
+            //entity.SetPosLook(packet.GetPos(), packet.GetYaw(), packet.GetPitch());
+            //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
+            //ArrayList list = packet.GetList();
+            //if (list != null && list.Count > 0)
+            //{
+            //    entity.MetaData.UpdateWatchedObjectsFromList(list);
+            //}
+            //ClientMain.World.AddEntityToWorld(entity.Id, entity);
+        }
+
+        /// <summary>
+        /// Пакет удаление сущностей
+        /// </summary>
+        private void _Handle13DestroyEntities(PacketS13DestroyEntities packet)
+        {
+            int count = packet.Ids.Length;
+            for (int i = 0; i < count; i++)
+            {
+                //ClientMain.World.RemoveEntityFromWorld(packet.Ids[i]);
+            }
+        }
+
+        /// <summary>
+        /// Пакет перемещения сущности
+        /// </summary>
+        private void _Handle14EntityMotion(PacketS14EntityMotion packet)
+        {
+           // Game.World
+            //EntityBase entity = ClientMain.World.GetEntityByID(packet.Index);
+            //if (entity != null)
+            {
+                //if (entity is EntityLiving entityLiving)
+                //{
+                //    entityLiving.SetMotionServer(
+                //        packet.GetPos(), packet.GetYaw(), packet.GetPitch(),
+                //        packet.OnGround());
+                //}
+                //else if (entity is EntityItem entityItem)
+                //{
+                //    entityItem.SetMotionServer(packet.GetPos(), packet.OnGround());
+                //}
+                //else if (entity is EntityThrowable entityThrowable)
+                //{
+                //    entityThrowable.SetMotionServer(packet.GetPos(), packet.OnGround());
+                //}
+            }
         }
 
         /// <summary>

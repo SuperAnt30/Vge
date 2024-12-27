@@ -81,6 +81,11 @@ namespace Vge.Management
         public MovementInput Movement => Physics.Movement;
 
         /// <summary>
+        /// Вид камеры с глаз
+        /// </summary>
+        public bool ViewCameraEye = true;
+
+        /// <summary>
         /// Позиция камеры в чанке для альфа, в зависимости от вида (с глаз, с зади, спереди)
         /// </summary>
         private Vector3i _positionAlphaChunk;
@@ -272,6 +277,13 @@ namespace Vge.Management
             Vector3 up = new Vector3(0, 1, 0);
             Vector3 pos = new Vector3(0, Eye, 0);
             _rayLook = front;
+
+            if (!ViewCameraEye)
+            {
+                pos -= front * 5;
+                //Vector3 right = Glm.Cross(front, up);
+                //pos += right * 2;
+            }
             Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
             //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
             //    0.01f, 16 * 22f);
@@ -376,6 +388,7 @@ namespace Vge.Management
         /// <summary>
         /// Обновление в кадре
         /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void UpdateFrame(float timeIndex)
         {
             if (PosX != PosFrameX || PosY != PosFrameY || PosZ != PosFrameZ
@@ -691,7 +704,7 @@ namespace Vge.Management
         public override string ToString()
         {
             float k = 10f; // 20 tps * .5f ширина блока
-            k = Ce.Tps * .5f;
+            k = Ce.Tps;// * .5f;
             string motion = string.Format("{0:0.00} | {1:0.00} м/с {2} {3}", 
                 Physics.MotionHorizon * k,
                 Physics.MotionVertical * k,

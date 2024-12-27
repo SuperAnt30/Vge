@@ -33,6 +33,7 @@ namespace Vge.Util
         /// <summary>
         /// Добавить значение без проверки размера
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddNotCheckSize(T item) => _buffer[Count++] = item;
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace Vge.Util
         /// <summary>
         /// Удалить последнее значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveLast()
         {
             if (Count > 0) Count--;

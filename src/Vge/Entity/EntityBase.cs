@@ -9,6 +9,11 @@ namespace Vge.Entity
     /// </summary>
     public abstract class EntityBase
     {
+        /// <summary>
+        /// Уникальный порядковый номер игрока
+        /// </summary>
+        public int Id { get; protected set; }
+
         #region Переменные для Position и Rotation
 
         #region Position 
@@ -86,11 +91,11 @@ namespace Vge.Entity
         /// <summary>
         /// Пол ширина сущности
         /// </summary>
-        public float Width { get; protected set; } = .6f;
+        public float Width { get; protected set; } = .3f;// .6f;
         /// <summary>
         /// Высота сущности
         /// </summary>
-        public float Height { get; protected set; } = 3.6f;
+        public float Height { get; protected set; } = 1.8f;//3.6f;
         /// <summary>
         /// Высота глаз
         /// </summary>
@@ -143,6 +148,52 @@ namespace Vge.Entity
         public string ToStringPositionRotation()
             => string.Format("{0:0.00}; {1:0.00}; {2:0.00} Y:{3:0.00} P:{4:0.00}",
                 PosX, PosY, PosZ, Glm.Degrees(RotationYaw), Glm.Degrees(RotationPitch));
+
+        /// <summary>
+        /// Получить угол Yaw для кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetRotationFrameYaw(float timeIndex)
+        {
+            if (timeIndex >= 1.0f || RotationPrevYaw == RotationYaw) return RotationYaw;
+            return RotationPrevYaw + (RotationYaw - RotationPrevYaw) * timeIndex;
+        }
+
+        /// <summary>
+        /// Получить угол Pitch для кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetRotationFramePitch(float timeIndex)
+        {
+            if (timeIndex >= 1.0f || RotationPrevPitch == RotationPitch) return RotationPitch;
+            return RotationPrevPitch + (RotationPitch - RotationPrevPitch) * timeIndex;
+        }
+
+        /// <summary>
+        /// Получить растояние до сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float Distance(EntityBase entity)
+        {
+            float x = PosX - entity.PosX;
+            float y = PosY - entity.PosY;
+            float z = PosZ - entity.PosZ;
+            return Mth.Sqrt(x * x + y * y + z * z);
+        }
+
+        /// <summary>
+        /// Получить растояние до сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float Distance(Vector3 vec)
+        {
+            float x = PosX - vec.X;
+            float y = PosY - vec.Y;
+            float z = PosZ - vec.Z;
+            return Mth.Sqrt(x * x + y * y + z * z);
+        }
 
         #endregion
 

@@ -2,6 +2,7 @@
 using System.Threading;
 using Vge.Games;
 using Vge.Renderer.Shaders;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -13,6 +14,11 @@ namespace Vge.Renderer.World
     /// </summary>
     public class WorldRenderer : WarpRenderer
     {
+        /// <summary>
+        /// Объект рендера всех сущностей
+        /// </summary>
+        public readonly EntitiesRenderer Entities;
+
         /// <summary>
         /// Объект OpenGL для элемента управления
         /// </summary>
@@ -61,6 +67,7 @@ namespace Vge.Renderer.World
             gl = GetOpenGL();
             _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
             _cursorRender = new CursorRender(game.Player, this);
+            Entities = new EntitiesRenderer(game);
         }
 
         /// <summary>
@@ -205,12 +212,14 @@ namespace Vge.Renderer.World
             _DrawVoxelDense(timeIndex);
 
             // Сущности
+            Entities.Draw(timeIndex);
             //DrawEntities(timeIndex);
 
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
 
             // Прорисовка вид не с руки, а видим себя
+            Entities.DrawOwner(timeIndex);
 
             // Облака
             //DrawClouds(timeIndex);
@@ -383,6 +392,7 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
+            Entities.Dispose();
             _cursorRender.Dispose();
         }
 

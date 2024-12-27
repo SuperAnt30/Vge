@@ -8,10 +8,7 @@ namespace Vge.Management
     /// </summary>
     public abstract class PlayerBase : EntityBase
     {
-        /// <summary>
-        /// Уникальный порядковый номер игрока
-        /// </summary>
-        public int Id { get; protected set; }
+        
         /// <summary>
         /// Псевдоним игрока
         /// </summary>

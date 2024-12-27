@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using Vge.Entity;
+using Vge.Games;
 using Vge.Management;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -26,6 +27,10 @@ namespace Vge.World
         /// Объект управляет всеми чанками которые надо загрузить или выгрузить
         /// </summary>
         public readonly FragmentManager Fragment;
+        /// <summary>
+        /// Трекер сущностей
+        /// </summary>
+        public readonly EntityTracker Tracker;
         /// <summary>
         /// Посредник серверного чанка
         /// </summary>

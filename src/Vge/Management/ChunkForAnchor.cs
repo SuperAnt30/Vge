@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.World;

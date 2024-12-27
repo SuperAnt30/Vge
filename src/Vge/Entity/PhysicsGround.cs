@@ -35,12 +35,12 @@ namespace Vge.Entity
                 if (Entity.OnGround && _jumpTicks == 0)
                 {
                     _jumpTicks = 10;
-                    MotionY = .608f;// .84f; при 20 tps
+                    MotionY = .304f;// .608f;// .84f; при 20 tps
                     if (Movement.Sprinting)
                     {
                         // Если прыжок с бегом, то скорость увеличивается
-                        MotionX += Glm.Sin(Entity.RotationYaw) * .4f;
-                        MotionZ -= Glm.Cos(Entity.RotationYaw) * .4f;
+                        MotionX += Glm.Sin(Entity.RotationYaw) * .2f; // .4f;
+                        MotionZ -= Glm.Cos(Entity.RotationYaw) * .2f; // .4f;
                     }
                 }
             }
@@ -61,12 +61,12 @@ namespace Vge.Entity
 
                 // корректировка скорости, с трением
                 //friction = GetAIMoveSpeed(strafe, forward) * param;
-                
-                float speed = .133f; // .2f при 20 tps
+
+                float speed = .0335f;// .067f;// .133f; // .2f при 20 tps
                 speed = Mth.Max(speed * Mth.Abs(Movement.GetMoveStrafe()), 
                     speed * Mth.Abs(Movement.GetMoveForward()));
                 if (Movement.Sneak) speed *= .3f;
-                else if (Movement.Sprinting) speed *= 1.3f;
+                else if (Movement.Sprinting) speed *= 2.0f;
                 friction = speed * 0.16277136f / (study * study * study);
             }
 
@@ -99,7 +99,7 @@ namespace Vge.Entity
             }
 
             // Параметр падение 
-            MotionY -= .077f;// .16f;  при 20 tps // minecraft .08f
+            MotionY -= .038f;// .077f;// .16f;  при 20 tps // minecraft .08f
 
             // Трение воздуха
             MotionX *= study * .98f;
