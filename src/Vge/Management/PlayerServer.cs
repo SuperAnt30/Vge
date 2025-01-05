@@ -138,6 +138,9 @@ namespace Vge.Management
                 = _desiredBatchSize = Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
+#if PhysicsServer
+            Physics = new PhysicsGround(GetWorld().Collision, this);
+#endif
         }
 
         /// <summary>
@@ -146,7 +149,7 @@ namespace Vge.Management
         public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
 
-        #region Tracker
+#region Tracker
 
         /// <summary>
         /// Была ли смена обзора чанков, для трекера
@@ -158,9 +161,9 @@ namespace Vge.Management
         /// </summary>
         public override void MadeOverviewChunkChanged() => _flagOverviewChunkChanged = false;
 
-        #endregion
+#endregion
 
-        #region GetSet
+#region GetSet
 
         /// <summary>
         /// Изменить позицию игрока на стороне сервера
@@ -174,9 +177,9 @@ namespace Vge.Management
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
 
         /// <summary>
         /// Игровой такт
@@ -185,6 +188,17 @@ namespace Vge.Management
         {
             // Добавить время к игроку
             TimesExisted += server.DeltaTime;
+
+#if PhysicsServer
+            // Расчитать перемещение в объекте физика
+            Physics.LivingUpdate();
+            if (Physics.IsMotionChange)
+            {
+                // Только перемещение
+                SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ));
+                LevelMotionChange = 1;
+            }
+#endif
 
             // Тут надо анализ сделать было ли перемещение
             if (IsPositionChange() || IsChangeOverview())
@@ -261,9 +275,9 @@ namespace Vge.Management
             }
         }
 
-        #endregion
+#endregion
 
-        #region Packet
+#region Packet
 
         /// <summary>
         /// Отправить сетевой пакет этому игроку
@@ -352,7 +366,7 @@ namespace Vge.Management
             BlockBase block = blockState.GetBlock();
 
             BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
-            // ВРЕМЕННО!!!
+            // TODO::ВРЕМЕННО!!!
             blockState = block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, pole, packet.Facing);
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
             world.SetBlockState(blockPos, blockState, world.IsRemote ? 14 : 31);
@@ -392,9 +406,9 @@ namespace Vge.Management
             _desiredBatchSize = Mth.Min(_batchSizeReceive, _batchSizeUnpack);
         }
 
-        #endregion
+#endregion
 
-        #region JoinLeftGame
+#region JoinLeftGame
 
         /// <summary>
         /// Пройдены все проверки, отправляем нужные пакеты игроку
@@ -437,9 +451,9 @@ namespace Vge.Management
             WriteToFile();
         }
 
-        #endregion
+#endregion
 
-        #region World
+#region World
 
         /// <summary>
         /// Получить мир в котором находится игрок
@@ -462,9 +476,9 @@ namespace Vge.Management
             MountedMovedAnchor();
         }
 
-        #endregion
+#endregion
 
-        #region WriteRead
+#region WriteRead
 
         /// <summary>
         /// Прочесть данные игрока с файла, возращает true если файл существола
@@ -512,9 +526,9 @@ namespace Vge.Management
             NBTTools.WriteToFile(nbt, pathName, true);
         }
 
-        #endregion
+#endregion
 
-        #region ChunkAddRemove
+#region ChunkAddRemove
 
         /// <summary>
         /// Добавить игрока в конкретный чанк для клиента
@@ -531,9 +545,9 @@ namespace Vge.Management
             SendPacket(new PacketS21ChunkData(chunkPosX, chunkPosY));
         }
 
-        #endregion
+#endregion
 
-        #region Anchor
+#region Anchor
 
         /// <summary>
         /// Проверить имеется ли чанк в загрузке (loadingChunksSort)
@@ -656,7 +670,31 @@ namespace Vge.Management
             }
         }
 
-        #endregion
+#endregion
+
+#region Input физика на сервере
+#if PhysicsServer
+
+        public void PacketInput(PacketC0CInput packet)
+        {
+            Physics.Movement.Forward = packet.Forward;
+            Physics.Movement.Back = packet.Back;
+            Physics.Movement.Left = packet.Left;
+            Physics.Movement.Right = packet.Right;
+            Physics.Movement.Jump = packet.Jump;
+            Physics.Movement.Sneak = packet.Sneak;
+            Physics.Movement.Sprinting = packet.Sprinting;
+        }
+
+        public void PacketInputRotate(PacketC0DInputRotate packet)
+        {
+            RotationYaw = packet.Yaw;
+            RotationPitch = packet.Pitch;
+            LevelMotionChange = 1;
+        }
+
+#endif
+#endregion
 
         /// <summary>
         /// Получить время в милисекундах с сервера

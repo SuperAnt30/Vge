@@ -193,8 +193,13 @@ namespace Vge.Network
             Game.Player.PosX = packet.X;
             Game.Player.PosY = packet.Y;
             Game.Player.PosZ = packet.Z;
-            Game.Player.RotationYaw = packet.Yaw;
-            Game.Player.RotationPitch = packet.Pitch;
+#if PhysicsServer
+            if (packet.IsRotate)
+#endif
+            {
+                Game.Player.RotationYaw = packet.Yaw;
+                Game.Player.RotationPitch = packet.Pitch;
+            }
 
             Debug.Player = Game.Player.GetChunkPosition();
         }
@@ -324,6 +329,6 @@ namespace Vge.Network
         private void _Handle3AMessage(PacketS3AMessage packet)
             => Game.Player.PacketMessage(packet);
 
-        #endregion
+#endregion
     }
 }

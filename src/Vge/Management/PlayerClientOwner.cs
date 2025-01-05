@@ -161,6 +161,7 @@ namespace Vge.Management
         public void ActionStop()
         {
             Movement.SetStop();
+            InputKeyMove();
             if (!_game.IsRunNet())
             {
                 PosFrameX = PosPrevX = PosX;
@@ -394,7 +395,16 @@ namespace Vge.Management
             //    + PositionPrev.ToStringPos() + " | "
             //    + PositionFrame.ToStringPos());
         }
-         
+
+        /// <summary>
+        /// Нажатие или отпускание инпута управления
+        /// </summary>
+        public void InputKeyMove()
+        {
+#if PhysicsServer
+            _game.TrancivePacket(new PacketC0CInput(Movement));
+#endif
+        }
 
         /// <summary>
         /// Игровой такт
@@ -407,7 +417,15 @@ namespace Vge.Management
                 PosPrevY = PosY;
                 PosPrevZ = PosZ;
             }
-
+#if PhysicsServer
+            if (IsRotationChange())
+            {
+                // Только вращение
+                _game.TrancivePacket(new PacketC0DInputRotate(RotationYaw, RotationPitch));
+                RotationPrevYaw = RotationYaw;
+                RotationPrevPitch = RotationPitch;
+            }
+#else
             // Расчитать перемещение в объекте физика
             Physics.LivingUpdate();
 
@@ -433,6 +451,7 @@ namespace Vge.Management
                 // Только перемещение
                 _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, false));
             }
+#endif
 
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)

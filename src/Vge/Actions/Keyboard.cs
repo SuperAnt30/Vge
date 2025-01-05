@@ -48,14 +48,14 @@ namespace Vge.Actions
 
                 switch (keys)
                 {
-                    case Keys.W: _game.Player.Movement.Forward = true; break;
-                    case Keys.E: _game.Player.Movement.Forward = true; break;
-                    case Keys.A: _game.Player.Movement.Left = true; break;
-                    case Keys.D: _game.Player.Movement.Right = true; break;
-                    case Keys.S: _game.Player.Movement.Back = true; break;
-                    case Keys.Space: _game.Player.Movement.Jump = true; break;
-                    case Keys.ShiftKey: _game.Player.Movement.Sneak = true; break;
-                    case Keys.ControlKey: _game.Player.Movement.Sprinting = true; break;
+                    case Keys.W: _game.Player.Movement.Forward = true; _game.Player.InputKeyMove(); break;
+                    case Keys.E: _game.Player.Movement.Forward = true; _game.Player.InputKeyMove(); break;
+                    case Keys.A: _game.Player.Movement.Left = true; _game.Player.InputKeyMove(); break;
+                    case Keys.D: _game.Player.Movement.Right = true; _game.Player.InputKeyMove(); break;
+                    case Keys.S: _game.Player.Movement.Back = true; _game.Player.InputKeyMove(); break;
+                    case Keys.Space: _game.Player.Movement.Jump = true; _game.Player.InputKeyMove(); break;
+                    case Keys.ShiftKey: _game.Player.Movement.Sneak = true; _game.Player.InputKeyMove(); break;
+                    case Keys.ControlKey: _game.Player.Movement.Sprinting = true; _game.Player.InputKeyMove(); break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
 
                     case Keys.T: case Keys.Oemtilde: _OnInChat(); break; // Окно чата Клавиша "T" или "~"
@@ -103,13 +103,14 @@ namespace Vge.Actions
                     case Keys.W:
                         _game.Player.Movement.Forward = false;
                         _game.Player.Movement.Sprinting = false;
+                        _game.Player.InputKeyMove();
                         break;
-                    case Keys.A: _game.Player.Movement.Left = false; break;
-                    case Keys.D: _game.Player.Movement.Right = false; break;
-                    case Keys.S: _game.Player.Movement.Back = false; break;
-                    case Keys.Space: _game.Player.Movement.Jump = false; break;
-                    case Keys.ShiftKey: _game.Player.Movement.Sneak = false; break;
-                    case Keys.ControlKey: _game.Player.Movement.Sprinting = false; break;
+                    case Keys.A: _game.Player.Movement.Left = false; _game.Player.InputKeyMove(); break;
+                    case Keys.D: _game.Player.Movement.Right = false; _game.Player.InputKeyMove(); break;
+                    case Keys.S: _game.Player.Movement.Back = false; _game.Player.InputKeyMove(); break;
+                    case Keys.Space: _game.Player.Movement.Jump = false; _game.Player.InputKeyMove(); break;
+                    case Keys.ShiftKey: _game.Player.Movement.Sneak = false; _game.Player.InputKeyMove(); break;
+                    case Keys.ControlKey: _game.Player.Movement.Sprinting = false; _game.Player.InputKeyMove(); break;
                 }
             }
         }
