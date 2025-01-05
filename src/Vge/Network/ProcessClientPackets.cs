@@ -1,5 +1,6 @@
 ﻿using Vge.Entity;
 using Vge.Games;
+using Vge.Management;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -84,6 +85,7 @@ namespace Vge.Network
                 case 0x03: _Handle03JoinGame((PacketS03JoinGame)packet); break;
                 case 0x04: _Handle04TimeUpdate((PacketS04TimeUpdate)packet); break;
                 case 0x05: _Handle05TableBlocks((PacketS05TableBlocks)packet); break;
+                case 0x06: _Handle06PlayerEntryRemove((PacketS06PlayerEntryRemove)packet); break;
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
                 case 0x0C: _Handle0CSpawnPlayer((PacketS0CSpawnPlayer)packet); break;
@@ -170,6 +172,13 @@ namespace Vge.Network
         private void _Handle05TableBlocks(PacketS05TableBlocks packet)
             => BlocksReg.Correct(new CorrectTable(packet.Blocks));
 
+
+        /// <summary>
+        /// Пакет игрок зашёл или вышел из сервера, для чата
+        /// </summary>
+        private void _Handle06PlayerEntryRemove(PacketS06PlayerEntryRemove packet)
+            => Game.PlayerEntryRemove(packet);
+
         /// <summary>
         /// Пакет Возраждение в мире
         /// </summary>
@@ -195,18 +204,30 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0CSpawnPlayer(PacketS0CSpawnPlayer packet)
         {
-            // Удачный вход сетевого игрока, типа приветствие
+            // Игрок в видимости обзора, надо заспавнить
             // Или после смерти
-            //EntityPlayerMP entity = new EntityPlayerMP(ClientMain.World);
-            //entity.SetDataPlayer(packet.GetId(), packet.GetUuid(), packet.GetName());
-            //entity.SetPosLook(packet.GetPos(), packet.GetYaw(), packet.GetPitch());
-            //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
-            //ArrayList list = packet.GetList();
-            //if (list != null && list.Count > 0)
-            //{
-            //    entity.MetaData.UpdateWatchedObjectsFromList(list);
-            //}
-            //ClientMain.World.AddEntityToWorld(entity.Id, entity);
+            if (Game.Player.IdWorld == packet.IdWorld)
+            {
+                // После проверки, что оба в одном мире
+
+                PlayerClient player = new PlayerClient(Game);
+                player.SetDataPlayer(packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
+                player.PosPrevX = player.PosX = packet.X;
+                player.PosPrevY = player.PosY = packet.Y;
+                player.PosPrevZ = player.PosZ = packet.Z;
+                player.RotationPrevYaw = player.RotationYaw = packet.Yaw;
+                player.RotationPrevPitch = player.RotationPitch = packet.Pitch;
+                player.OnGround = packet.OnGround;
+
+                //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
+                //ArrayList list = packet.GetList();
+                //if (list != null && list.Count > 0)
+                //{
+                //    entity.MetaData.UpdateWatchedObjectsFromList(list);
+                //}
+
+                Game.World.SpawnEntityInWorld(player);
+            }
         }
 
         /// <summary>
@@ -217,7 +238,7 @@ namespace Vge.Network
             int count = packet.Ids.Length;
             for (int i = 0; i < count; i++)
             {
-                //ClientMain.World.RemoveEntityFromWorld(packet.Ids[i]);
+                 Game.World.RemoveEntityInWorld(packet.Ids[i]);
             }
         }
 
@@ -227,9 +248,19 @@ namespace Vge.Network
         private void _Handle14EntityMotion(PacketS14EntityMotion packet)
         {
            // Game.World
-            //EntityBase entity = ClientMain.World.GetEntityByID(packet.Index);
-            //if (entity != null)
+            EntityBase entity = Game.World.GetEntityByID(packet.Index);
+            if (entity != null)
             {
+                entity.UpdatePrev();
+
+                entity.PosX = packet.X;
+                entity.PosY = packet.Y;
+                entity.PosZ = packet.Z;
+                entity.RotationYaw = packet.Yaw;
+                entity.RotationPitch = packet.Pitch;
+                entity.OnGround = packet.OnGround;
+
+                entity.LevelMotionChange = 2;
                 //if (entity is EntityLiving entityLiving)
                 //{
                 //    entityLiving.SetMotionServer(

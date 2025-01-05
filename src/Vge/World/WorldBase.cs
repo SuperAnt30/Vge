@@ -1,4 +1,6 @@
-﻿using Vge.Util;
+﻿using Vge.Entity;
+using Vge.Management;
+using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Light;
@@ -31,6 +33,21 @@ namespace Vge.World
         /// Настройки мира
         /// </summary>
         public WorldSettings Settings { get; protected set; }
+
+        /// <summary>
+        /// Список всех сущностей во всех загруженных в данный момент чанках 
+        /// EntityBase
+        /// </summary>
+        public MapEntity<EntityBase> LoadedEntityList { get; protected set; } = new MapEntity<EntityBase>();
+        /// <summary>
+        /// Список сущностей которые надо выгрузить
+        /// </summary>
+        //public MapListEntity UnloadedEntityList { get; protected set; } = new MapListEntity();
+        /// <summary>
+        /// Список игроков в мире
+        /// </summary>
+        public ListMessy<PlayerBase> PlayerEntities { get; protected set; } = new ListMessy<PlayerBase>();
+
 
         /// <summary>
         /// Объект обработки освещения для мира
@@ -140,6 +157,51 @@ namespace Vge.World
         /// Отметить блоки для изминения
         /// </summary>
         public virtual void MarkBlockRangeForModified(int x0, int z0, int x1, int z1) { }
+
+        #endregion
+
+        #region Entity
+
+        /// <summary>
+        /// Вызывается, когда объект появляется в мире. Это включает в себя игроков
+        /// </summary>
+        public virtual void SpawnEntityInWorld(EntityBase entity)
+            => _OnEntityAdded(entity);
+
+        /// <summary>
+        /// Удаление сущности в текущем мире
+        /// </summary>
+        public virtual void RemoveEntityInWorld(EntityBase entity)
+            => _OnEntityRemoved(entity);
+
+        protected virtual void _OnEntityAdded(EntityBase entity)
+        {
+            if (entity is PlayerBase player)
+            {
+                PlayerEntities.Add(player);
+                //TODO::2023-07-07 Флаг сна всех игроков
+                //UpdateAllPlayersSleepingFlag();
+            }
+            LoadedEntityList.Add(entity.Id, entity);
+        }
+
+        /// <summary>
+        /// Вызывается для всех World, когда сущность выгружается или уничтожается. 
+        /// В клиентских мирах освобождает любые загруженные текстуры.
+        /// В серверных мирах удаляет сущность из трекера сущностей.
+        /// </summary>
+        protected virtual void _OnEntityRemoved(EntityBase entity)
+        {
+            // entity.SetDead();
+            if (entity is PlayerBase player)
+            {
+                PlayerEntities.Remove(player);
+                //TODO::2023-07-07 Флаг сна всех игроков
+                //UpdateAllPlayersSleepingFlag();
+                
+            }
+            LoadedEntityList.Remove(entity.Id, entity);
+        }
 
         #endregion
 

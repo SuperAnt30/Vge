@@ -25,10 +25,10 @@ namespace Vge.Entity
             // счётчик прыжка
             if (_jumpTicks > 0) _jumpTicks--;
 
-            // Если мелочь убираем
-            if (Mth.Abs(MotionX) < .005f) MotionX = 0;
-            if (Mth.Abs(MotionY) < .005f) MotionY = 0;
-            if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
+            //// Если мелочь убираем
+            //if (Mth.Abs(MotionX) < .005f) MotionX = 0;
+            //if (Mth.Abs(MotionY) < .005f) MotionY = 0;
+            //if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
 
             if (Movement.Jump)
             {
@@ -79,6 +79,11 @@ namespace Vge.Entity
 
             // Проверка кализии
             _CheckMoveCollidingEntity();
+
+            // Если мелочь убираем
+            if (Mth.Abs(MotionX) < .005f) MotionX = 0;
+            if (Mth.Abs(MotionY) < .005f) MotionY = 0;
+            if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
 
             // Фиксируем перемещение
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;

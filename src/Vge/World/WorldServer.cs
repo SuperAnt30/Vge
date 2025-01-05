@@ -30,7 +30,7 @@ namespace Vge.World
         /// <summary>
         /// Трекер сущностей
         /// </summary>
-        public readonly EntityTracker Tracker;
+        public readonly EntityTrackerManager Tracker;
         /// <summary>
         /// Посредник серверного чанка
         /// </summary>
@@ -63,7 +63,7 @@ namespace Vge.World
             Collision.Init();
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
-
+            Tracker = new EntityTrackerManager(this);
 
             if (idWorld == 0)
             {
@@ -98,6 +98,10 @@ namespace Vge.World
 
             // Обработка фрагментов в конце такта
             _FragmentEnd();
+
+            Filer.StartSection("Tracker");
+            Tracker.Update();
+            Filer.EndSection();
 
             _timeTick = (short)((_timeTick * 3 + (Server.Time() - timeBegin)) / 4);
         }
@@ -198,6 +202,22 @@ namespace Vge.World
             Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
             ChunkPrServ.UnloadingRequiredChunksFromQueue();
             Filer.EndSection();
+        }
+
+        #endregion
+
+        #region Entity
+
+        protected override void _OnEntityAdded(EntityBase entity)
+        {
+            base._OnEntityAdded(entity);
+            Tracker.EntityAdd(entity);
+        }
+
+        protected override void _OnEntityRemoved(EntityBase entity)
+        {
+            base._OnEntityRemoved(entity);
+            Tracker.UntrackEntity(entity);
         }
 
         #endregion

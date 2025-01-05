@@ -213,7 +213,6 @@ namespace Vge.Renderer.World
 
             // Сущности
             Entities.Draw(timeIndex);
-            //DrawEntities(timeIndex);
 
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();

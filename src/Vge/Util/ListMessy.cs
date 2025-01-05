@@ -99,6 +99,7 @@ namespace Vge.Util
                     if (last != i)
                     {
                         _buffer[i] = _buffer[last];
+                        _buffer[last] = default(T);
                     }
                     Count--;
                     return true;
@@ -118,6 +119,7 @@ namespace Vge.Util
                 if (last != index)
                 {
                     _buffer[index] = _buffer[last];
+                    _buffer[last] = default(T);
                 }
                 Count--;
                 return true;
@@ -131,7 +133,11 @@ namespace Vge.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveLast()
         {
-            if (Count > 0) Count--;
+            if (Count > 0)
+            {
+                _buffer[Count - 1] = default(T);
+                Count--;
+            }
         }
 
         /// <summary>

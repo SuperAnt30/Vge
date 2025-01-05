@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Vge.Actions;
@@ -48,7 +49,7 @@ namespace Vge.Games
         /// <summary>
         /// Объект игрока для клиента
         /// </summary>
-        public readonly PlayerClient Player;
+        public readonly PlayerClientOwner Player;
         /// <summary>
         /// Клиентский объект мира
         /// </summary>
@@ -57,6 +58,10 @@ namespace Vge.Games
         /// Рендер мира
         /// </summary>
         public readonly WorldRenderer WorldRender;
+        /// <summary>
+        /// Список игроков во всех мирах, для чата 
+        /// </summary>
+        public readonly Dictionary<int, string> Players = new Dictionary<int, string>();
 
         /// <summary>
         /// Увеличивается каждый тик 
@@ -120,7 +125,7 @@ namespace Vge.Games
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
-            Player = new PlayerClient(this);
+            Player = new PlayerClientOwner(this);
             WorldRender = new WorldRenderer(this);
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
@@ -439,6 +444,30 @@ namespace Vge.Games
         /// Отправить пакет на сервер
         /// </summary>
         public virtual void TrancivePacket(IPacket packet) { }
+
+        /// <summary>
+        /// Сетевой игрок зашёл или вышел из игры сервера, для чата
+        /// </summary>
+        public void PlayerEntryRemove(PacketS06PlayerEntryRemove packet)
+        {
+            if (packet.Login == "")
+            {
+                // Remove
+                Players.Remove(packet.Index);
+            }
+            else
+            {
+                // Entry
+                if (Players.ContainsKey(packet.Index))
+                {
+                    Players[packet.Index] = packet.Login;
+                }
+                else
+                {
+                    Players.Add(packet.Index, packet.Login);
+                }
+            }
+        }
 
         #endregion
 

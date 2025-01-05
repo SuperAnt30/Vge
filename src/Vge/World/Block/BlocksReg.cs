@@ -31,15 +31,10 @@ namespace Vge.World.Block
         /// </summary>
         private static Dictionary<string, JsonCompound> _parentStats = new Dictionary<string, JsonCompound>();
         
-
-        public static void Initialization(WindowMain window)
+        public static void InitializationBegin(WindowMain window)
         {
             // Создаём графический объект гдля генерации атласа блокоы
             BlockAtlas.CreateImage(window, 64, 16); // (64, 16);
-
-            _window = window;
-            _window.LScreen.Process(L.T("CreateBlocks"));
-            _window.DrawFrame();
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
@@ -53,6 +48,18 @@ namespace Vge.World.Block
 
             // Отладочный
             RegisterBlockClass("Debug", new BlockDebug());
+        }
+
+        public static void Initialization(WindowMain window)
+        {
+            // Создаём графический объект гдля генерации атласа блокоы
+            //BlockAtlas.CreateImage(window, 64, 16); // (64, 16);
+
+            _window = window;
+            _window.LScreen.Process(L.T("CreateBlocks"));
+            _window.DrawFrame();
+
+            InitializationBegin(window);
         }
 
         public static void InitializationEnd() 

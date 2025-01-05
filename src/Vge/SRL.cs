@@ -55,6 +55,8 @@ internal sealed class Srl
     internal const string ServerInvalidToken = "Токен [{1}] никнейма [{0}] отличается с прошлого входа в игру.";
     internal const string ServerLoginStart = "Сетевой игрок [{0}]:[{1}] вошёл в игру.";
     internal const string ServerLoginStartOwner = "Игрок владелец [{0}] вошёл в игру.";
+    internal const string EntityAlreadyBeingTracked = "Сущность [{0}] уже отслеживается!.";
+    internal const string DetectingObjectTrackingError = "Обнаружение ошибки отслеживания объекта: {0}";
 
     #endregion
 

@@ -12,24 +12,28 @@ namespace Vge.Network.Packets.Server
         public int Index { get; private set; }
         public string Uuid { get; private set; }
         public string Login { get; private set; }
+        public byte IdWorld { get; private set; }
         public float X { get; private set; }
         public float Y { get; private set; }
         public float Z { get; private set; }
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
+        public bool OnGround { get; private set; }
         //private ItemStack[] stacks;
         //private ArrayList list;
 
-        public PacketS0CSpawnPlayer(PlayerServer entity)
+        public PacketS0CSpawnPlayer(PlayerServer player)
         {
-            Uuid = entity.UUID;
-            Index = entity.Id;
-            Login = entity.Login;
-            X = entity.PosX;
-            Y = entity.PosY;
-            Z = entity.PosZ;
-            Yaw = entity.RotationYaw;
-            Pitch = entity.RotationPitch;
+            Uuid = player.UUID;
+            Index = player.Id;
+            Login = player.Login;
+            IdWorld = player.IdWorld;
+            X = player.PosX;
+            Y = player.PosY;
+            Z = player.PosZ;
+            Yaw = player.RotationYaw;
+            Pitch = player.RotationPitch;
+            OnGround = player.OnGround;
             //stacks = entity.Inventory.GetCurrentItemAndCloth();
             //list = entity.MetaData.GetAllWatched();
         }
@@ -39,11 +43,13 @@ namespace Vge.Network.Packets.Server
             Uuid = stream.String();
             Index = stream.Int();
             Login = stream.String();
+            IdWorld = stream.Byte();
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
             Yaw = stream.Float();
             Pitch = stream.Float();
+            OnGround = stream.Bool();
             //int count = stream.ReadByte();
             //stacks = new ItemStack[count];
             //for (int i = 0; i < count; i++)
@@ -58,11 +64,13 @@ namespace Vge.Network.Packets.Server
             stream.String(Uuid);
             stream.Int(Index);
             stream.String(Login);
+            stream.Byte(IdWorld);
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
             stream.Float(Yaw);
             stream.Float(Pitch);
+            stream.Bool(OnGround);
             //int count = stacks.Length;
             //stream.WriteByte((byte)count);
             //for (int i = 0; i < count; i++)

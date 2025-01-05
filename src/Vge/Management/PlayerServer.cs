@@ -33,7 +33,7 @@ namespace Vge.Management
         /// <summary>
         /// Указать причину удаления
         /// </summary>
-        public string causeRemove = "";
+        public string CauseRemove = "";
         /// <summary>
         /// Сколько мили секунд эта сущность прожила
         /// </summary>
@@ -117,6 +117,10 @@ namespace Vge.Management
         /// Имя пути к папке игрока
         /// </summary>
         private readonly string pathName;
+        /// <summary>
+        /// Смена обзора чанков, для трекера
+        /// </summary>
+        private bool _flagOverviewChunkChanged;
 
         /// <summary>
         /// Создать сетевого
@@ -141,6 +145,20 @@ namespace Vge.Management
         /// </summary>
         public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
+
+        #region Tracker
+
+        /// <summary>
+        /// Была ли смена обзора чанков, для трекера
+        /// </summary>
+        public override bool IsOverviewChunkChanged() => _flagOverviewChunkChanged;
+
+        /// <summary>
+        /// Сделана смена обзора чанков, для трекера
+        /// </summary>
+        public override void MadeOverviewChunkChanged() => _flagOverviewChunkChanged = false;
+
+        #endregion
 
         #region GetSet
 
@@ -292,6 +310,7 @@ namespace Vge.Management
                 RotationYaw = packet.Yaw;
                 RotationPitch = packet.Pitch;
             }
+            LevelMotionChange = 1;
         }
 
         /// <summary>
@@ -343,7 +362,11 @@ namespace Vge.Management
         /// Пакет: Параметры игрока
         /// </summary>
         public void PacketPlayerSetting(PacketC15PlayerSetting packet)
-            => SetOverviewChunk(packet.OverviewChunk);
+        {
+            SetOverviewChunk(packet.OverviewChunk);
+            // Изменён обзор корректировка трекеров сущностей
+            _flagOverviewChunkChanged = true;
+        }
         
         /// <summary>
         /// Пакет: Подтверждение фрагментов

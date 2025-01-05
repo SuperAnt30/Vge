@@ -1,14 +1,12 @@
 ﻿using Vge.Entity;
-using WinGL.Util;
 
 namespace Vge.Management
 {
     /// <summary>
-    /// Абстрактный класс игроков
+    /// Абстрактный класс игрока
     /// </summary>
     public abstract class PlayerBase : EntityBase
     {
-        
         /// <summary>
         /// Псевдоним игрока
         /// </summary>
@@ -90,10 +88,5 @@ namespace Vge.Management
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
-
-        /// <summary>
-        /// Игровой такт
-        /// </summary>
-        public virtual void Update() { }
     }
 }

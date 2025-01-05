@@ -1,5 +1,6 @@
 ﻿using Vge.Entity;
 using Vge.Games;
+using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World.Entity
@@ -14,12 +15,12 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly GL gl;
 
-        private HitboxEntityRender _owner;
+        private HitboxEntityRender _hitbox;
 
         public EntitiesRenderer(GameBase game) : base(game)
         {
             gl = GetOpenGL();
-            _owner = new HitboxEntityRender(gl, _game.Player);
+            _hitbox = new HitboxEntityRender(gl);
         }
 
         /// <summary>
@@ -28,8 +29,25 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-
-            
+            int count = _game.World.LoadedEntityList.Count;
+            EntityBase entity;
+            int playerId = _game.Player.Id;
+            float x = _game.Player.PosFrameX;
+            float y = _game.Player.PosFrameY;
+            float z = _game.Player.PosFrameZ;
+            for (int i = 0; i < count; i++)
+            {
+                entity = _game.World.LoadedEntityList.GetAt(i) as EntityBase;
+                int entityId = entity.Id;
+                if (entityId != playerId)
+                {
+                    _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 
+                        entity.GetPosFrameX(timeIndex) - x,
+                        entity.GetPosFrameY(timeIndex) - y,
+                        entity.GetPosFrameZ(timeIndex) - z);
+                    _hitbox.Draw(timeIndex, entity);
+                }
+            }
         }
 
         /// <summary>
@@ -39,12 +57,12 @@ namespace Vge.Renderer.World.Entity
         public void DrawOwner(float timeIndex)
         {
             _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
-            _owner.Draw(timeIndex);
+            _hitbox.Draw(timeIndex, _game.Player);
         }
 
         public override void Dispose()
         {
-            _owner.Dispose();
+            _hitbox.Dispose();
         }
 
         private void _RenderEntity(EntityBase entity, float timeIndex)

@@ -7,19 +7,18 @@ namespace Vge.Entity
     /// <summary>
     /// Карта объектов прослеживания конкретных сущностей
     /// </summary>
-    public class MapEntityTrackerEntry
+    public class MapEntity<T>
     {
-        private readonly Dictionary<int, EntityTrackerEntry> _map = new Dictionary<int, EntityTrackerEntry>();
-        private readonly ListMessy<EntityTrackerEntry> _list = new ListMessy<EntityTrackerEntry>();
+        private readonly Dictionary<int, T> _map = new Dictionary<int, T>();
+        private readonly ListMessy<T> _list = new ListMessy<T>();
 
         /// <summary>
         /// Добавить трек
         /// </summary>
-        public void Add(EntityTrackerEntry entity)
+        public void Add(int id, T entity)
         {
             if (!_list.Contains(entity))
             {
-                int id = entity.TrackedEntity.Id;
                 if (_map.ContainsKey(id))
                 {
                     _list.Remove(_map[id]);
@@ -33,9 +32,9 @@ namespace Vge.Entity
         /// <summary>
         /// Удалить трек
         /// </summary>
-        public void Remove(EntityTrackerEntry entity)
+        public void Remove(int id, T entity)
         {
-            _map.Remove(entity.TrackedEntity.Id);
+            _map.Remove(id);
             _list.Remove(entity);
         }
 
@@ -54,18 +53,18 @@ namespace Vge.Entity
         /// Получить объект по порядковому номеру списка
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public EntityTrackerEntry GetAt(int index)
+        public T GetAt(int index)
         {
             if (index >= 0 && index < Count) return _list[index];
-            return null;
+            return default(T);
         }
 
         /// <summary>
         /// Получить объект по id сущности
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public EntityTrackerEntry Get(int id) 
-            => _map.ContainsKey(id) ? _map[id] : null;
+        public T Get(int id)
+            => _map.ContainsKey(id) ? _map[id] : default(T);
 
         public override string ToString() => _list.Count.ToString();
     }

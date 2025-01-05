@@ -1,4 +1,5 @@
-﻿using Vge.Event;
+﻿using Vge.Entity;
+using Vge.Event;
 using Vge.Games;
 using Vge.Renderer.World;
 using Vge.Util;
@@ -56,6 +57,18 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
+            int count = LoadedEntityList.Count;
+            EntityBase entity;
+            int playerId = Game.Player.Id;
+            for (int i = 0; i < count; i++)
+            {
+                entity = LoadedEntityList.GetAt(i) as EntityBase;
+                if (entity.Id != playerId)
+                {
+                    entity.Update();
+                }
+            }
+
             if (Ce.IsDebugDrawChunks && _flagDebugChunkMappingChanged)
             {
                 _flagDebugChunkMappingChanged = false;
@@ -114,7 +127,32 @@ namespace Vge.World
 
         #endregion
 
-        public override void DebugString(string logMessage, params object[] args) 
+        #region Entity
+
+        /// <summary>
+        /// Возвращает сущностьь с заданным идентификатором или null, если он не существует в этом мире.
+        /// </summary>
+        public EntityBase GetEntityByID(int id)
+        {
+            if (id == Game.Player.Id) return Game.Player;
+            return LoadedEntityList.Get(id) as EntityBase;
+        }
+
+        /// <summary>
+        /// Удаление сущности по индексу в текущем мире
+        /// </summary>
+        public void RemoveEntityInWorld(int id)
+        {
+            EntityBase entity = GetEntityByID(id);
+            if (entity != null)
+            {
+                RemoveEntityInWorld(entity);
+            }
+        }
+
+        #endregion
+
+        public override void DebugString(string logMessage, params object[] args)
             => Debug.DebugString = string.Format(logMessage, args);
 
         public override string ToString() => ChunkPrClient.ToString();

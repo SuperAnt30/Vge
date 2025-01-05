@@ -101,7 +101,7 @@ namespace Vge.Gui.Screens
 
         #region Clicks
 
-        private void ButtonNet_Click(object sender, System.EventArgs e)
+        private void ButtonNet_Click(object sender, EventArgs e)
         {
             if (window.Game != null && window.Game is GameLocal gameLocal)
             {
@@ -110,7 +110,7 @@ namespace Vge.Gui.Screens
             }
         }
 
-        private void ButtonDone_Click(object sender, System.EventArgs e)
+        private void ButtonDone_Click(object sender, EventArgs e)
         {
             // Сохраняем настроки
             SaveOptions();

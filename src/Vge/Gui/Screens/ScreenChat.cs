@@ -1,4 +1,6 @@
-﻿using Vge.Gui.Controls;
+﻿using System;
+using System.Collections.Generic;
+using Vge.Gui.Controls;
 using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
 using WinGL.Actions;
@@ -25,6 +27,10 @@ namespace Vge.Gui.Screens
         /// Строка списка сообщений
         /// </summary>
         private Label _labelMessages;
+        /// <summary>
+        /// Массив игроков
+        /// </summary>
+        private Label[] _labelplayer;
 
         /// <summary>
         /// Контрол написания текста
@@ -53,10 +59,22 @@ namespace Vge.Gui.Screens
             _textBoxMessage.FixFocus();
 
             _sentHistoryCursor = window.Game.Player.Chat.SentMessages.Count;
+
+            _labelplayer = new Label[window.Game.Players.Count];
+            int i = 0;
+            foreach (KeyValuePair<int, string> entry in window.Game.Players)
+            {
+                _labelplayer[i] = new Label(window, font, 160, 40, entry.Value);
+                _labelplayer[i++].Click += _ScreenChat_Click;
+            }
+
             _PageUpdate();
 
             window.Game.Hud.ChatOn();
         }
+
+        private void _ScreenChat_Click(object sender, EventArgs e)
+            => _textBoxMessage.SetText(((Label)sender).Text + ": " + _textBoxMessage.Text);
 
         protected void _Close() => window.LScreen.Close();
 
@@ -81,6 +99,10 @@ namespace Vge.Gui.Screens
             base.OnInitialize();
             AddControls(_textBoxMessage);
             AddControls(_labelMessages);
+            for (int i = 0; i < _labelplayer.Length; i++)
+            {
+                AddControls(_labelplayer[i]);
+            }
             _UpMessages();
         }
 
@@ -94,6 +116,12 @@ namespace Vge.Gui.Screens
             int h = Height / 2;
             _textBoxMessage.SetPosition(8, Height - 48);
             _labelMessages.SetPosition(16, Height - 324);
+
+            int w2 = Width - 172;
+            for (int i = 0; i < _labelplayer.Length; i++)
+            {
+                _labelplayer[i].SetPosition(w2, 164 + i * 20);
+            }
         }
 
         public override void OnKeyDown(Keys keys)

@@ -87,7 +87,7 @@ namespace Vge.Management
         {
             if (playerServer != null)
             {
-                playerServer.causeRemove = cause;
+                playerServer.CauseRemove = cause;
                 _playerRemoveList.Add(playerServer.Id);
                 if (playerServer.Owner)
                 {
@@ -279,9 +279,6 @@ namespace Vge.Management
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.InvalidToken));
                 return;
             }
-
-            Server.Log.Server(Srl.ServerLoginStart, login, playerServer.Socket);
-            SendToAllMessage(ChatStyle.Yellow + string.Format(L.S("PlayerEntry{0}"), login));
             // Поставить в очередь на cоединение сетевого игрока
             _playerStartList.Add(playerServer);
         }
@@ -395,8 +392,30 @@ namespace Vge.Management
                 if (!player.Owner)
                 {
                     // Если это не владелец то добавляем в массив сетевых игроков
+                    Server.Log.Server(Srl.ServerLoginStart, player.Login, player.Socket);
+                    SendToAllMessage(ChatStyle.Yellow + string.Format(L.S("PlayerEntry{0}"), player.Login));
+                    // Отправить всем игрокам, чтоб добавить в чат
+                    SendToAll(new PacketS06PlayerEntryRemove(player.Id, player.Login));
                     _players.Add(player);
+
+                    // Отправить этому игроку владельца
+                    if (PlayerOwner != null)
+                    {
+                        player.SendPacket(new PacketS06PlayerEntryRemove(PlayerOwner.Id, PlayerOwner.Login));
+                    }
+                    // Отправить этому игроку всех игроков которые уже играют
+                    for (int i = 0; i < _players.Count; i++)
+                    {
+                        player.SendPacket(new PacketS06PlayerEntryRemove(_players[i].Id, _players[i].Login));
+                    }
                 }
+                else
+                {
+                    // Если владелец, просто добавим себя в списке чата, на случай если включится сеть
+                    // Можно по сути и не вносить...
+                    PlayerOwner.SendPacket(new PacketS06PlayerEntryRemove(PlayerOwner.Id, PlayerOwner.Login));
+                }
+                player.GetWorld().SpawnEntityInWorld(player);
                 player.JoinGame();
             }
         }
@@ -415,9 +434,12 @@ namespace Vge.Management
                     if (player.Socket.IsConnect())
                     {
                         // Сокет не закрыт, значит закрытие на стороне сервера
-                        Server.PlayerDisconnect(player.Socket, player.causeRemove);
+                        Server.PlayerDisconnect(player.Socket, player.CauseRemove);
                     }
+                    // Отправить всем игрокам, чтоб убрать с чата
+                    SendToAll(new PacketS06PlayerEntryRemove(player.Id));
                 }
+                player.GetWorld().RemoveEntityInWorld(player);
                 player.LeftGame();
             }
         }

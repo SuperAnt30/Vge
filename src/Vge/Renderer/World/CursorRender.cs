@@ -18,7 +18,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Объект игрока на клиенте
         /// </summary>
-        private readonly PlayerClient _player;
+        private readonly PlayerClientOwner _player;
         /// <summary>
         /// Сетка курсора
         /// </summary>
@@ -52,7 +52,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private ushort _numberBlocks;
 
-        public CursorRender(PlayerClient player, WorldRenderer worldRenderer)
+        public CursorRender(PlayerClientOwner player, WorldRenderer worldRenderer)
         {
             _worldRenderer = worldRenderer;
             _player = player;
