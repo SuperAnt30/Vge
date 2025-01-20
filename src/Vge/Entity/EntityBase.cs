@@ -13,6 +13,10 @@ namespace Vge.Entity
         /// Уникальный порядковый номер игрока
         /// </summary>
         public int Id { get; protected set; }
+        /// <summary>
+        /// Сущность мертва, не активна
+        /// </summary>
+        public bool IsDead { get; protected set; } = false;
 
         #region Переменные для Position и Rotation
 
@@ -110,7 +114,13 @@ namespace Vge.Entity
         /// <summary>
         /// На земле
         /// </summary>
-        public bool OnGround = true;
+        public bool OnGround = false;
+
+        /// <summary>
+        /// Задать индекс
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEntityId(int id) => Id = id;
 
         #region Методы для Position и Rotation
 
@@ -299,11 +309,39 @@ namespace Vge.Entity
         #endregion
 
         /// <summary>
+        /// Будет уничтожен следующим тиком
+        /// </summary>
+        public virtual void SetDead() => IsDead = true;
+        /// <summary>
+        /// Получить название для рендеринга
+        /// </summary>
+        public virtual string GetName() => "";
+
+        /// <summary>
         /// Игровой такт
         /// </summary>
         public virtual void Update() { }
 
-        
-
+        /// <summary>
+        /// Получить массив XZ с вращением
+        /// Не исползуется, для примера будущей детальной коллизии для урона
+        /// </summary>
+        public Vector3[] ToVector3Array(float motionX, float motionY, float motionZ)
+        {
+            AxisAlignedBB axis = new AxisAlignedBB(-Width, 0, -Width, Width, Height, Width);
+            Vector3[] vectors = axis.ToVector3Array();
+            motionX += PosX;
+            motionY += PosY;
+            motionZ += PosZ;
+            Vector3 vec;
+            for (int i = 0; i < 8; i++)
+            {
+                vec = Glm.Rotate(vectors[i], RotationYaw, new Vector3(0, -1, 0));
+                vectors[i].X = vec.X + motionX;
+                vectors[i].Y = vec.Y + motionY;
+                vectors[i].Z = vec.Z + motionZ;
+            }
+            return vectors;
+        }
     }
 }

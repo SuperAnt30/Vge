@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Vge.Entity;
+using Vge.Entity.List;
 using Vge.Games;
 using Vge.NBT;
 using Vge.Network;
@@ -112,15 +113,19 @@ namespace Vge.Management
         /// <summary>
         /// Основной сервер
         /// </summary>
-        private readonly GameServer server;
+        private readonly GameServer _server;
         /// <summary>
         /// Имя пути к папке игрока
         /// </summary>
-        private readonly string pathName;
+        private readonly string _pathName;
         /// <summary>
         /// Смена обзора чанков, для трекера
         /// </summary>
         private bool _flagOverviewChunkChanged;
+        /// <summary>
+        /// Список сущностей не игрок, которые в ближайшем тике будут удалены
+        /// </summary>
+        private ListMessy<int> _destroyedItemsNetCache = new ListMessy<int>();
 
         /// <summary>
         /// Создать сетевого
@@ -130,13 +135,14 @@ namespace Vge.Management
             Login = login;
             Token = GetHash(token);
             Socket = socket;
-            this.server = server;
+            _server = server;
             UUID = GetHash(login);
-            pathName = server.Settings.PathPlayers + UUID + ".dat";
+            _pathName = server.Settings.PathPlayers + UUID + ".dat";
             Owner = socket == null;
             _batchSizeReceive = _batchSizeUnpack 
                 = _desiredBatchSize = Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
+            Eye = Height * .85f;
             _lastTimeServer = server.Time();
 #if PhysicsServer
             Physics = new PhysicsGround(GetWorld().Collision, this);
@@ -187,7 +193,7 @@ namespace Vge.Management
         public override void Update()
         {
             // Добавить время к игроку
-            TimesExisted += server.DeltaTime;
+            TimesExisted += _server.DeltaTime;
 
 #if PhysicsServer
             // Расчитать перемещение в объекте физика
@@ -214,6 +220,13 @@ namespace Vge.Management
             {
                 RotationPrevYaw = RotationYaw;
                 RotationPrevPitch = RotationPitch;
+            }
+
+            // Отправляем запрос на удаление сущностей которые не видим
+            if (_destroyedItemsNetCache.Count > 0)
+            {
+                SendPacket(new PacketS13DestroyEntities(_destroyedItemsNetCache.ToArray()));
+                _destroyedItemsNetCache.Clear();
             }
 
             _UpdatePlayer();
@@ -284,7 +297,7 @@ namespace Vge.Management
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendPacket(IPacket packet)
-            => server.ResponsePacket(Socket, packet);
+            => _server.ResponsePacket(Socket, packet);
 
         /// <summary>
         /// Отправить системное сообщение конкретному игроку
@@ -304,7 +317,7 @@ namespace Vge.Management
             }
             else
             {
-                //_destroyedItemsNetCache.Add(entity.Id);
+                _destroyedItemsNetCache.Add(entity.Id);
             }
         }
 
@@ -336,10 +349,19 @@ namespace Vge.Management
             // Уничтожение блока
             WorldServer world = GetWorld();
             BlockState blockState = world.GetBlockState(packet.GetBlockPos());
-            BlockBase block = blockState.GetBlock();
-
-            world.SetBlockToAir(packet.GetBlockPos(), world.IsRemote ? 14 : 31);
-            //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
+            if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
+            {
+                BlockBase block = blockState.GetBlock();
+                world.SetBlockToAir(packet.GetBlockPos(), world.IsRemote ? 14 : 31);
+                //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
+            }
+            else
+            {
+                // Временно спавн моба
+                EntityThrowable entity = new EntityThrowable(world.Collision, this);
+                entity.SetEntityId(_server.LastEntityId());
+                world.SpawnEntityInWorld(entity);
+            }
         }
 
         /// <summary>
@@ -423,7 +445,7 @@ namespace Vge.Management
                 SendPacket(new PacketS05TableBlocks(Ce.Blocks.BlockAlias));
             }
             // Тикущий счётчик тика сервера
-            SendPacket(new PacketS04TimeUpdate(server.TickCounter));
+            SendPacket(new PacketS04TimeUpdate(_server.TickCounter));
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Местоположение игрока
@@ -459,7 +481,7 @@ namespace Vge.Management
         /// Получить мир в котором находится игрок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public WorldServer GetWorld() => server.Worlds.GetWorld(IdWorld);
+        public WorldServer GetWorld() => _server.Worlds.GetWorld(IdWorld);
 
         /// <summary>
         /// Смена мира, передаём новый id мира
@@ -485,11 +507,11 @@ namespace Vge.Management
         /// </summary>
         public bool ReadFromFile()
         {
-            if (File.Exists(pathName))
+            if (File.Exists(_pathName))
             {
                 try
                 {
-                    TagCompound nbt = NBTTools.ReadFromFile(pathName, true);
+                    TagCompound nbt = NBTTools.ReadFromFile(_pathName, true);
                     Token = nbt.GetString("Token");
                     TimesExisted = nbt.GetLong("TimesExisted");
                     IdWorld = nbt.GetByte("IdWorld");
@@ -513,7 +535,7 @@ namespace Vge.Management
         /// </summary>
         public void WriteToFile()
         {
-            GameFile.CheckPath(server.Settings.PathPlayers);
+            GameFile.CheckPath(_server.Settings.PathPlayers);
             TagCompound nbt = new TagCompound();
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
@@ -523,7 +545,7 @@ namespace Vge.Management
             nbt.SetFloat("PosZ", PosZ);
             nbt.SetFloat("Yaw", RotationYaw);
             nbt.SetFloat("Pitch", RotationPitch);
-            NBTTools.WriteToFile(nbt, pathName, true);
+            NBTTools.WriteToFile(nbt, _pathName, true);
         }
 
 #endregion
@@ -699,7 +721,7 @@ namespace Vge.Management
         /// <summary>
         /// Получить время в милисекундах с сервера
         /// </summary>
-        protected override long _Time() => server.Time();
+        protected override long _Time() => _server.Time();
 
         /// <summary>
         /// Получить хэш по строке

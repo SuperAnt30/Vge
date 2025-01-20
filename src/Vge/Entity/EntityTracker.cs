@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.List;
 using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets.Server;
@@ -111,7 +112,7 @@ namespace Vge.Entity
                 SendPacketPlayers(new PacketS14EntityMotion(TrackedEntity));
                 TrackedEntity.LevelMotionChange = 0;
             }
-          
+
             //else if (TrackedEntity is EntityItem entityItem)
             //{
             //    if (entityItem.IsMoving)
@@ -119,10 +120,11 @@ namespace Vge.Entity
             //        SendPacketPlayers(new PacketS14EntityMotion(entityItem));
             //    }
             //}
-            //else if (TrackedEntity is EntityThrowable entityThrowable)
-            //{
-            //    SendPacketPlayers(new PacketS14EntityMotion(entityThrowable));
-            //}
+            //else 
+            if (TrackedEntity is EntityThrowable entityThrowable)
+            {
+                SendPacketPlayers(new PacketS14EntityMotion(entityThrowable));
+            }
 
             //if (TrackedEntity.MetaData.IsChanged) //UpdateCounter % UpdateFrequency == 0)
             //{
@@ -137,15 +139,14 @@ namespace Vge.Entity
         /// </summary>
         private IPacket _PacketSpawn()
         {
-            //if ((TrackedEntity.GetEntityType() == EnumEntities.Player || TrackedEntity.GetEntityType() == EnumEntities.PlayerInvisible)
-            //    && TrackedEntity is EntityPlayerServer entityPlayerServer)
-            //{
-                return new PacketS0CSpawnPlayer((PlayerServer)TrackedEntity);
-            //}
-            //else
-            //{
-            //    return new PacketS0FSpawnMob(TrackedEntity);
-            //}
+            if (TrackedEntity is PlayerServer playerServer)
+            {
+                return new PacketS0CSpawnPlayer((PlayerServer)playerServer);
+            }
+            else
+            {
+                return new PacketS0FSpawnMob(TrackedEntity);
+            }
         }
 
         #region Send
@@ -215,5 +216,16 @@ namespace Vge.Entity
             => obj is EntityTracker entityTracker ? entityTracker.TrackedEntity.Id == TrackedEntity.Id : false;
 
         public override int GetHashCode() => TrackedEntity.Id;
+
+        public override string ToString()
+        {
+            string list = "";
+            for (int i = 0; i < _trackingPlayers.Count; i++)
+            {
+                list += _trackingPlayers[i].Id + ", ";
+            }
+            return string.Format("#{0} {1} c:{2} ({3})", 
+                TrackedEntity.Id, TrackedEntity.GetName(), _trackingPlayers.Count, list);
+        }
     }
 }

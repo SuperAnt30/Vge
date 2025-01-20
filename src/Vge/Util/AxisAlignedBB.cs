@@ -6,7 +6,7 @@ namespace Vge.Util
 {
     /// <summary>
     /// Выровненные по осям ограничивающие рамки
-    /// Axis-aligned bounding boxes
+    /// Axis-aligned bounding boxes 
     /// </summary>
     public class AxisAlignedBB
     {
@@ -311,6 +311,48 @@ namespace Vge.Util
             float z = Max.Z - Min.Z;
             return (x + y + z) / 3f;
         }
+
+        #region Для коллизии Gjk или Sat
+
+        /// <summary>
+        /// Получить массив XZ
+        ///   1 +-----+ 2
+        ///    /     /
+        /// 0 +-----+ 3
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector2[] ToVector2Array()
+            => new Vector2[]
+            {
+                new Vector2(Min.X, Min.Z),
+                new Vector2(Min.X, Max.Z),
+                new Vector2(Max.X, Max.Z),
+                new Vector2(Max.X, Min.Z)
+            };
+
+        /// <summary>
+        /// Получить массив XZ
+        ///   5 +-----+ 6
+        ///    /     /|
+        /// 4 +-----+7+ 2
+        ///   |     |/
+        /// 0 +-----+ 3
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3[] ToVector3Array()
+            => new Vector3[]
+            {
+                new Vector3(Min),
+                new Vector3(Min.X, Min.Y, Max.Z),
+                new Vector3(Max.X, Min.Y, Max.Z),
+                new Vector3(Max.X, Min.Y, Min.Z),
+                new Vector3(Min.X, Max.Y, Min.Z),
+                new Vector3(Min.X, Max.Y, Max.Z),
+                new Vector3(Max),
+                new Vector3(Max.X, Max.Y, Min.Z),
+            };
+
+        #endregion
 
         #region IntermediateWith
 

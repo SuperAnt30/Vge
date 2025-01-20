@@ -52,7 +52,7 @@ namespace Vge.World
         /// /*за исключением переданного столкновения сущности.*/
         /// </summary>
         /// <param name="aabb">проверяемая рамка</param>
-        public List<AxisAlignedBB> GetCollidingBoundingBoxes(AxisAlignedBB aabb)
+        public List<AxisAlignedBB> GetCollidingBoundingBoxes(AxisAlignedBB aabb, int id)
         {
             List<AxisAlignedBB> list = new List<AxisAlignedBB>();
             Vector3i min = aabb.MinInt();
@@ -76,6 +76,20 @@ namespace Vge.World
                     }
                 }
             }
+
+            // Добавим сущностей
+            // TODO::2025-01-20 сущности колизии выборка из чанков
+            int count = _world.LoadedEntityList.Count;
+            EntityBase entity;
+            for (int i = 0; i < count; i++)
+            {
+                entity = _world.LoadedEntityList.GetAt(i) as EntityBase;
+                if (entity.Id != id)
+                {
+                    list.Add(entity.GetBoundingBox());
+                }
+            }
+
             return list;
         }
 

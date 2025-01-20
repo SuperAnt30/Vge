@@ -292,7 +292,7 @@ namespace Vge
         protected override void OnOpenGlDraw()
         {
             base.OnOpenGlDraw();
-
+            //Console.WriteLine(ticker.Interpolation);
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
            // gl.ClearColor(.7f, .4f, .4f, 1f);
             gl.Enable(GL.GL_DEPTH_TEST);

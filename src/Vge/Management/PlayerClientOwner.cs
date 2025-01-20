@@ -52,6 +52,21 @@ namespace Vge.Management
         /// </summary>
         public MovementInput Movement => Physics.Movement;
 
+#if PhysicsServer
+        /// <summary>
+        /// Позиция этой сущности по оси X
+        /// </summary>
+        public float PosPacketX;
+        /// <summary>
+        /// Позиция этой сущности по оси Y
+        /// </summary>
+        public float PosPacketY;
+        /// <summary>
+        /// Позиция этой сущности по оси Z
+        /// </summary>
+        public float PosPacketZ;
+#endif
+
         /// <summary>
         /// Вид камеры с глаз
         /// </summary>
@@ -187,6 +202,11 @@ namespace Vge.Management
                 if (MovingObject.IsBlock())
                 {
                     _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
+                }
+                else
+                {
+                    // Типа броска
+                    _game.TrancivePacket(new PacketC07PlayerDigging(new BlockPos(), PacketC07PlayerDigging.EnumDigging.About));
                 }
             }
         }
@@ -411,13 +431,15 @@ namespace Vge.Management
         /// </summary>
         public override void Update()
         {
-            if (IsPositionChange())
-            {
-                PosPrevX = PosX;
-                PosPrevY = PosY;
-                PosPrevZ = PosZ;
-            }
 #if PhysicsServer
+
+            PosPrevX = PosX;
+            PosPrevY = PosY;
+            PosPrevZ = PosZ;
+            PosX = PosPacketX;
+            PosY = PosPacketY;
+            PosZ = PosPacketZ;
+
             if (IsRotationChange())
             {
                 // Только вращение
@@ -426,6 +448,12 @@ namespace Vge.Management
                 RotationPrevPitch = RotationPitch;
             }
 #else
+            if (IsPositionChange())
+            {
+                PosPrevX = PosX;
+                PosPrevY = PosY;
+                PosPrevZ = PosZ;
+            }
             // Расчитать перемещение в объекте физика
             Physics.LivingUpdate();
 

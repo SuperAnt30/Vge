@@ -99,6 +99,7 @@ namespace Vge.World
             // Обработка фрагментов в конце такта
             _FragmentEnd();
 
+            _UpdateEntities();
             Filer.StartSection("Tracker");
             Tracker.Update();
             Filer.EndSection();
@@ -235,6 +236,7 @@ namespace Vge.World
         #endregion
 
         public override string ToString() => "World-" + IdWorld 
-            + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString();
+            + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
+            + "\r\n" + Tracker;
     }
 }

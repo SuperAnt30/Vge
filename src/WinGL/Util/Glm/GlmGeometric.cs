@@ -15,24 +15,15 @@ namespace WinGL.Util
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector2 x, Vector2 y)
-        {
-            Vector2 tmp = new Vector2(x * y);
-            return tmp.X + tmp.Y;
-        }
+            => x.X * y.X + x.Y * y.Y;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector3 x, Vector3 y)
-        {
-            Vector3 tmp = new Vector3(x * y);
-            return tmp.X + tmp.Y + tmp.Z;
-        }
+            => x.X * y.X + x.Y * y.Y + x.Z * y.Z;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector4 x, Vector4 y)
-        {
-            Vector4 tmp = new Vector4(x * y);
-            return tmp.X + tmp.Y + tmp.Z + tmp.W;
-        }
+            => x.X * y.X + x.Y * y.Y + x.Z * y.Z + x.W * y.W;
 
         /// <summary>
         /// Получить растояние между двумя точками

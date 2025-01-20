@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿//#define TPS20
+using Vge.Util;
 using Vge.World;
 using WinGL.Util;
 
@@ -9,13 +10,103 @@ namespace Vge.Entity
     /// </summary>
     public class PhysicsGround : PhysicsBase
     {
+#if TPS20
+        // TPS 20 
+          
+        /// <summary>
+        /// Параметр падения
+        /// </summary>
+        private const float _gravity = .08f;
+        /// <summary>
+        /// Сопротивление воздуха
+        /// </summary>
+        private const float _airDrag = .98f;
+        /// <summary>
+        /// Ускорение в воздухе
+        /// </summary>
+        private const float _airborneAcceleration = .02f;
+        /// <summary>
+        /// Скорость
+        /// </summary>
+        private const float _speed = .1f;
+        /// <summary>
+        /// Ускорение при прыжке в высоту
+        /// </summary>
+        private const float _airborneJumpInHeight = .42f;
+        /// <summary>
+        /// Повторный прыжок через количество тиков
+        /// </summary>
+        private const byte _reJump = 10;
+
+#else
+
+        // 30 TPS
+        /// <summary>
+        /// Параметр падения
+        /// </summary>
+        private const float _gravity = .039f;
+        /// <summary>
+        /// Сопротивление воздуха
+        /// </summary>
+        private const float _airDrag = .9869f;
+        /// <summary>
+        /// Ускорение в воздухе
+        /// </summary>
+        private const float _airborneAcceleration = .01333f;
+        /// <summary>
+        /// Скорость
+        /// </summary>
+        private const float _speed = .0667f;
+        /// <summary>
+        /// Ускорение при прыжке в высоту
+        /// </summary>
+        private const float _airborneJumpInHeight = .3013f;
+        /// <summary>
+        /// Повторный прыжок через количество тиков
+        /// </summary>
+        private const byte _reJump = 15;
+
+#endif
+
+        
+        /// <summary>
+        /// Скользкость по умолчанию
+        /// </summary>
+        private const float _defaultSlipperiness = .6f;
+        /// <summary>
+        /// Скорость бега
+        /// </summary>
+        private const float _sprintSpeed = .3f;
+        /// <summary>
+        /// Скорость подкрадывания
+        /// </summary>
+        private const float _sneakSpeed = .3f;
+        /// <summary>
+        /// Ускорение при прыжке с бегом в длину
+        /// </summary>
+        private const float _airborneJumpInLength = .2f;
+
         /// <summary>
         /// Количество тактов для запрета повторного прыжка
         /// </summary>
         private int _jumpTicks = 0;
 
-        public PhysicsGround(CollisionBase collision, EntityBase entity) 
-            : base(collision, entity) { }
+        /// <summary>
+        /// Инерция в воздухе
+        /// </summary>
+        private readonly float _airborneInertia;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="collision"></param>
+        /// <param name="entity"></param>
+        /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
+        public PhysicsGround(CollisionBase collision, EntityBase entity, bool inputMovement = true) 
+            : base(collision, entity)
+        {
+            _airborneInertia = inputMovement ? .91f : _airDrag;
+        }
 
         /// <summary>
         /// Обновить данные в такте игры
@@ -25,22 +116,17 @@ namespace Vge.Entity
             // счётчик прыжка
             if (_jumpTicks > 0) _jumpTicks--;
 
-            //// Если мелочь убираем
-            //if (Mth.Abs(MotionX) < .005f) MotionX = 0;
-            //if (Mth.Abs(MotionY) < .005f) MotionY = 0;
-            //if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
-
             if (Movement.Jump)
             {
                 if (Entity.OnGround && _jumpTicks == 0)
                 {
-                    _jumpTicks = 10;
-                    MotionY = .304f;// .608f;// .84f; при 20 tps
+                    _jumpTicks = _reJump;
+                    MotionY = _airborneJumpInHeight;
                     if (Movement.Sprinting)
                     {
                         // Если прыжок с бегом, то скорость увеличивается
-                        MotionX += Glm.Sin(Entity.RotationYaw) * .2f; // .4f;
-                        MotionZ -= Glm.Cos(Entity.RotationYaw) * .2f; // .4f;
+                        MotionX += Glm.Sin(Entity.RotationYaw) * _airborneJumpInLength;
+                        MotionZ -= Glm.Cos(Entity.RotationYaw) * _airborneJumpInLength;
                     }
                 }
             }
@@ -49,36 +135,51 @@ namespace Vge.Entity
                 _jumpTicks = 0;
             }
 
-            // Трение
-            float friction = .04f;
-            // Изучаем корректировки по трению где идём
-            float study = 0.91f; // для воздух
+            // Ускорение
+            float acceleration;
+            // Параметр инерции
+            float inertia;
             // Трение с блоком
             if (Entity.OnGround)
             {
-                // трение воздуха
-                study *= (.6f); // блок под ногами
+                // трение блока под ногами
+                inertia = _airborneInertia * _defaultSlipperiness; // блок под ногами
 
                 // корректировка скорости, с трением
                 //friction = GetAIMoveSpeed(strafe, forward) * param;
 
-                float speed = .0335f;// .067f;// .133f; // .2f при 20 tps
+                // Скорость
+                float speed = _speed;
                 speed = Mth.Max(speed * Mth.Abs(Movement.GetMoveStrafe()), 
                     speed * Mth.Abs(Movement.GetMoveForward()));
-                if (Movement.Sneak) speed *= .3f;
-                else if (Movement.Sprinting) speed *= 2.0f;
-                friction = speed * 0.16277136f / (study * study * study);
+                if (Movement.Sneak) speed *= _sneakSpeed;
+                else if (Movement.Sprinting) speed += speed * _sprintSpeed;
+
+                // Ускорение
+                acceleration = speed * 0.16277136f / (inertia * inertia * inertia);
+            }
+            else
+            {
+                // трение блока в воздухе
+                inertia = _airborneInertia;
+                // Ускорение
+                acceleration = _airborneAcceleration;
+                if (Movement.Sprinting) acceleration += acceleration * _sprintSpeed;
             }
 
             Vector2 motion = Sundry.MotionAngle(
-                Movement.GetMoveStrafe(), Movement.GetMoveForward(),
-                friction, Entity.RotationYaw);
+                Movement.GetMoveStrafe() * .98f,
+                Movement.GetMoveForward() * .98f,
+                acceleration, Entity.RotationYaw);
             MotionX += motion.X;
             MotionZ += motion.Y;
-            s = motion.Y;
 
+            //System.Console.Write("BMX:");
+            //System.Console.Write(MotionX);
             // Проверка кализии
             _CheckMoveCollidingEntity();
+            //System.Console.Write(" EMX:");
+            //System.Console.WriteLine(MotionX);
 
             // Если мелочь убираем
             if (Mth.Abs(MotionX) < .005f) MotionX = 0;
@@ -94,27 +195,34 @@ namespace Vge.Entity
                 Entity.PosY += MotionY;
                 Entity.PosZ += MotionZ;
                 MotionHorizon = Glm.Distance(new Vector2(MotionX, MotionZ));
-                if (MotionHorizon > s) s = MotionHorizon;
                 MotionVertical = Mth.Abs(MotionY);
                 Debug.Player = Entity.GetChunkPosition();
+
+                //System.Console.Write("Y:");
+                //System.Console.Write(Entity.PosY);
+                //System.Console.Write(" X:");
+                //System.Console.Write(Entity.PosX);
+                //System.Console.Write(" MY:");
+                //System.Console.Write(MotionY);
+                //System.Console.Write(" MX:");
+                //System.Console.WriteLine(MotionX);
             }
             else
             {
                 MotionHorizon = MotionVertical = 0;
             }
-
             // Параметр падение 
-            MotionY -= .038f;// .077f;// .16f;  при 20 tps // minecraft .08f
+            MotionY -= _gravity; // minecraft .08f
 
-            // Трение воздуха
-            MotionX *= study * .98f;
-            MotionY *= .98f;
-            MotionZ *= study * .98f;
-           // s = study;
+            // Инерция
+            MotionX *= inertia;
+            MotionY *= _airDrag;
+            MotionZ *= inertia;
+
+            //if (Entity.OnGround && MotionY < -_gravity)
+            //{
+            //    MotionY *= _hz;
+            //}
         }
-
-        private float s;
-
-        public override string ToDebugString() => s.ToString("0.000");
     }
 }

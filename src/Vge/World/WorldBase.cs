@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System;
+using Vge.Entity;
 using Vge.Management;
 using Vge.Util;
 using Vge.World.Block;
@@ -42,7 +43,7 @@ namespace Vge.World
         /// <summary>
         /// Список сущностей которые надо выгрузить
         /// </summary>
-        //public MapListEntity UnloadedEntityList { get; protected set; } = new MapListEntity();
+        public ListMessy<EntityBase> UnloadedEntityList { get; protected set; } = new ListMessy<EntityBase>();
         /// <summary>
         /// Список игроков в мире
         /// </summary>
@@ -172,7 +173,10 @@ namespace Vge.World
         /// Удаление сущности в текущем мире
         /// </summary>
         public virtual void RemoveEntityInWorld(EntityBase entity)
-            => _OnEntityRemoved(entity);
+        {
+            entity.SetDead();
+            _OnEntityRemoved(entity);
+        }
 
         protected virtual void _OnEntityAdded(EntityBase entity)
         {
@@ -192,7 +196,7 @@ namespace Vge.World
         /// </summary>
         protected virtual void _OnEntityRemoved(EntityBase entity)
         {
-            // entity.SetDead();
+            entity.SetDead();
             if (entity is PlayerBase player)
             {
                 PlayerEntities.Remove(player);
@@ -201,6 +205,70 @@ namespace Vge.World
                 
             }
             LoadedEntityList.Remove(entity.Id, entity);
+        }
+
+        /// <summary>
+        /// Обновляет (и очищает) объекты и объекты чанка 
+        /// </summary>
+        protected virtual void _UpdateEntities()
+        {
+            // колекция для удаления
+          //  MapListEntity entityRemove = new MapListEntity();
+
+            //profiler.StartSection("EntitiesUnloadedList");
+
+            //// Выгружаем сущности которые имеются в списке выгрузки
+            //LoadedEntityList.RemoveRange(UnloadedEntityList);
+            //entityRemove.AddRange(UnloadedEntityList);
+            //UnloadedEntityList.Clear();
+
+            //profiler.EndStartSection("EntityTick");
+
+
+            // Пробегаем по всем сущностям и обрабатываеи их такт
+            for (int i = 0; i < LoadedEntityList.Count; i++)
+            {
+                EntityBase entity = LoadedEntityList.GetAt(i);
+
+                if (entity != null && !(entity is PlayerServer))
+                {
+                    if (!entity.IsDead)
+                    {
+                        try
+                        {
+                            entity.Update();
+                    //        UpdateEntity(entity);
+                        }
+                        catch (Exception ex)
+                        {
+                    //        Logger.Crach(ex);
+                            throw;
+                        }
+                    }
+                    else
+                    {
+                        UnloadedEntityList.Add(entity);
+                        //entityRemove.Add(entity);
+                    }
+                }
+            }
+
+            //profiler.EndStartSection("EntityRemove");
+
+            // Удаляем 
+            while (UnloadedEntityList.Count > 0)
+            {
+                EntityBase entity = UnloadedEntityList[UnloadedEntityList.Count - 1];
+                UnloadedEntityList.RemoveLast();
+                //if (entity.AddedToChunk && ChunkPr.IsChunkLoaded(entity.PositionChunk))
+                //{
+                //    GetChunk(entity.PositionChunk).RemoveEntity(entity);
+                //}
+                LoadedEntityList.Remove(entity.Id, entity);
+                _OnEntityRemoved(entity);
+            }
+
+            //profiler.EndSection();
         }
 
         #endregion

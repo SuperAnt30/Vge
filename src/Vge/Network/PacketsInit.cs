@@ -26,6 +26,7 @@ namespace Vge.Network
                 case 0x07: return new PacketS07RespawnInWorld();
                 case 0x08: return new PacketS08PlayerPosLook();
                 case 0x0C: return new PacketS0CSpawnPlayer();
+                case 0x0F: return new PacketS0FSpawnMob();
                 case 0x13: return new PacketS13DestroyEntities();
                 case 0x14: return new PacketS14EntityMotion();
                 case 0x20: return new PacketS20ChunkSend();

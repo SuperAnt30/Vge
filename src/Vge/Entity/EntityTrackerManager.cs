@@ -67,10 +67,10 @@ namespace Vge.Entity
             //{
             //    AddEntityToTracker(entity, 64, 20, true); // item
             //}
-            //else
-            //{
-            //    AddEntityToTracker(entity, 128, 10, false);
-            //}
+            else
+            {
+                _AddEntityToTracker(entity, 128);
+            }
         }
 
         /// <summary>
@@ -211,6 +211,16 @@ namespace Vge.Entity
             {
                 World.Server.Log.Error(Srl.DetectingObjectTrackingError, ex.Message);
             }
+        }
+
+        public override string ToString()
+        {
+            string list = "";
+            for (int i = 0; i < _trackedEntities.Count; i++)
+            {
+                list += "[" + _trackedEntities.GetAt(i).ToString() + "] ";
+            }
+            return "Tracker: " + _trackedEntities.Count + " " + list;
         }
     }
 }

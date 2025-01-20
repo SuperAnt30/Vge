@@ -1,4 +1,5 @@
 ﻿using Vge.Entity;
+using Vge.Entity.List;
 using Vge.Games;
 using Vge.Management;
 using Vge.Network.Packets;
@@ -89,6 +90,7 @@ namespace Vge.Network
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
                 case 0x0C: _Handle0CSpawnPlayer((PacketS0CSpawnPlayer)packet); break;
+                case 0x0F: _Handle0FSpawnMob((PacketS0FSpawnMob)packet); break;
                 case 0x13: _Handle13DestroyEntities((PacketS13DestroyEntities)packet); break;
                 case 0x14: _Handle14EntityMotion((PacketS14EntityMotion)packet); break;
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
@@ -190,16 +192,28 @@ namespace Vge.Network
         /// </summary>
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
-            Game.Player.PosX = packet.X;
-            Game.Player.PosY = packet.Y;
-            Game.Player.PosZ = packet.Z;
 #if PhysicsServer
             if (packet.IsRotate)
-#endif
             {
+                Game.Player.PosX = packet.X;
+                Game.Player.PosY = packet.Y;
+                Game.Player.PosZ = packet.Z;
                 Game.Player.RotationYaw = packet.Yaw;
                 Game.Player.RotationPitch = packet.Pitch;
             }
+            else
+            {
+                Game.Player.PosPacketX = packet.X;
+                Game.Player.PosPacketY = packet.Y;
+                Game.Player.PosPacketZ = packet.Z;
+            }
+#else
+            Game.Player.PosX = packet.X;
+            Game.Player.PosY = packet.Y;
+            Game.Player.PosZ = packet.Z;
+            Game.Player.RotationYaw = packet.Yaw;
+            Game.Player.RotationPitch = packet.Pitch;
+#endif
 
             Debug.Player = Game.Player.GetChunkPosition();
         }
@@ -233,6 +247,21 @@ namespace Vge.Network
 
                 Game.World.SpawnEntityInWorld(player);
             }
+        }
+
+        /// <summary>
+        ///  Пакет спавна мобов
+        /// </summary>
+        private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
+        {
+            EntityThrowable entity = new EntityThrowable();
+            entity.SetEntityId(packet.Index);
+            entity.PosPrevX = entity.PosX = packet.X;
+            entity.PosPrevY = entity.PosY = packet.Y;
+            entity.PosPrevZ = entity.PosZ = packet.Z;
+            entity.RotationPrevYaw = entity.RotationYaw = packet.Yaw;
+            entity.RotationPrevPitch = entity.RotationPitch = packet.Pitch;
+            Game.World.SpawnEntityInWorld(entity);
         }
 
         /// <summary>

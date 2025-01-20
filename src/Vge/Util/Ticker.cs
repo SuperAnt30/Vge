@@ -194,6 +194,7 @@ namespace Vge.Util
                 if (sleepFrame < sleepTick) Thread.Sleep(sleepFrame);
                 else Thread.Sleep(sleepTick);
             }
+            //Console.WriteLine(Interpolation);
         }
 
         /// <summary>

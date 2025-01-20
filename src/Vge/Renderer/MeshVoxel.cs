@@ -104,13 +104,14 @@ namespace Vge.Renderer
         /// </summary>
         public void Reload()
         {
+            // GL_STREAM_DRAW , GL_STATIC_DRAW, GL_DYNAMIC_DRAW
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferFloat.Size, _bufferFloat.Buffer, GL.GL_STATIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferFloat.Size, _bufferFloat.Buffer, GL.GL_DYNAMIC_DRAW);// GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferByte.Size, _bufferByte.Buffer, GL.GL_STATIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferByte.Size, _bufferByte.Buffer, GL.GL_DYNAMIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STREAM_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
         }
 
         public override void Delete()

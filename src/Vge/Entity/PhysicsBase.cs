@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
+using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -25,15 +26,15 @@ namespace Vge.Entity
         /// <summary>
         /// Перемещение за текущий такт по координте X
         /// </summary>
-        public float MotionX { get; protected set; }
+        public float MotionX;// { get; protected set; }
         /// <summary>
         /// Перемещение за текущий такт по координте Y
         /// </summary>
-        public float MotionY { get; protected set; }
+        public float MotionY;// { get; protected set; }
         /// <summary>
         /// Перемещение за текущий такт по координте Z
         /// </summary>
-        public float MotionZ { get; protected set; }
+        public float MotionZ;// { get; protected set; }
 
         /// <summary>
         /// Перемещение по горизонту
@@ -77,10 +78,12 @@ namespace Vge.Entity
             float y = y0;
             float z = z0;
             AxisAlignedBB aabbEntity = boundingBox.Clone();
-            List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x, y, z));
+            List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x, y, z), Entity.Id);
 
             // Находим смещение по Y
             foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity, y);
+            //TODO:: Отскок от препятствия
+            //if (y0 != y) y = (y - y0 + y) * .5f;
             aabbEntity = aabbEntity.Offset(0, y, 0);
 
             // Не прыгаем (момент взлёта)
@@ -88,13 +91,18 @@ namespace Vge.Entity
 
             // Находим смещение по X
             foreach (AxisAlignedBB axis in aabbs) x = axis.CalculateXOffset(aabbEntity, x);
+            //TODO:: Отскок от препятствия
+            //if (x0 != x) x = (x - x0 + x) * .5f;
             aabbEntity = aabbEntity.Offset(x, 0, 0);
 
             // Находим смещение по Z
             foreach (AxisAlignedBB axis in aabbs) z = axis.CalculateZOffset(aabbEntity, z);
+            //TODO:: Отскок от препятствия
+            //if (z0 != z) z = (z - z0 + z) * .5f;
             aabbEntity = aabbEntity.Offset(0, 0, z);
 
-            float StepHeight = 1.2f;
+            // Авто прыжок
+            float StepHeight = 0.7f;// 1.2f;
             // Запуск проверки авто прыжка
             if (StepHeight > 0f && isNotJump && (x0 != x || z0 != z))
             {
@@ -108,7 +116,7 @@ namespace Vge.Entity
                 if (Movement.Sneak) stepHeight *= 0.5f;
 
                 y = stepHeight;
-                aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x0, y, z0));
+                aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x0, y, z0), Entity.Id);
                 AxisAlignedBB aabbEntity2 = boundingBox.Clone();
                 AxisAlignedBB aabb = aabbEntity2.AddCoordBias(x0, 0, z0);
 
@@ -175,7 +183,6 @@ namespace Vge.Entity
                     y = 0;
                 }
             }
-
             Entity.OnGround = y0 != y && y0 < 0.0f;
 
             MotionX = x;

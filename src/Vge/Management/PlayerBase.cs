@@ -88,5 +88,10 @@ namespace Vge.Management
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
 
         #endregion
+
+        /// <summary>
+        /// Получить название для рендеринга
+        /// </summary>
+        public override string GetName() => Login;
     }
 }
