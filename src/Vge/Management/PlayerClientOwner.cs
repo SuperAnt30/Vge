@@ -131,8 +131,9 @@ namespace Vge.Management
         /// </summary>
         public void WorldStarting()
         {
-            //Physics = new PhysicsFly(_game.World.Collision, this);
-            Physics = new PhysicsGround(_game.World.Collision, this);
+            //Physics = new PhysicsFly(_game.World.Collision, this, true);
+            //Physics = new PhysicsGround(_game.World.Collision, this);
+            Physics = new PhysicsPlayer(_game.World.Collision, this);
         }
 
         #region Методы от Entity

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
-using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -13,7 +12,7 @@ namespace Vge.Entity
         /// <summary>
         /// Обект перемещений
         /// </summary>
-        public readonly MovementInput Movement = new MovementInput();
+        public readonly MovementInput Movement;
         /// <summary>
         /// Сущность к которой прекреплена физика
         /// </summary>
@@ -26,15 +25,15 @@ namespace Vge.Entity
         /// <summary>
         /// Перемещение за текущий такт по координте X
         /// </summary>
-        public float MotionX;// { get; protected set; }
+        public float MotionX;
         /// <summary>
         /// Перемещение за текущий такт по координте Y
         /// </summary>
-        public float MotionY;// { get; protected set; }
+        public float MotionY;
         /// <summary>
         /// Перемещение за текущий такт по координте Z
         /// </summary>
-        public float MotionZ;// { get; protected set; }
+        public float MotionZ;
 
         /// <summary>
         /// Перемещение по горизонту
@@ -49,11 +48,47 @@ namespace Vge.Entity
         /// Было ли перемещение
         /// </summary>
         public bool IsMotionChange { get; protected set; } = false;
+        /// <summary>
+        /// Будет ли эта сущность проходить сквозь блоки
+        /// </summary>
+        public bool NoClip { get; protected set; } = false;
 
+        /// <summary>
+        /// Имеется ли сила для движения
+        /// </summary>
+        protected readonly bool _isForceForMovement;
+        /// <summary>
+        /// Коэффициент отскока, 0 нет отскока, 1 максимальный
+        /// </summary>
+        protected readonly float _rebound;
+        /// <summary>
+        /// Имеется ли отскок
+        /// </summary>
+        protected readonly bool _isRebound;
+
+        /// <summary>
+        /// Физика для сущности которая имеет силу для перемещения
+        /// </summary>
+        /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
         public PhysicsBase(CollisionBase collision, EntityBase entity)
         {
             Collision = collision;
             Entity = entity;
+            Movement = new MovementInput();
+            _isForceForMovement = true;
+        }
+
+        /// <summary>
+        /// Физика для предмета которые не имеет силы для перемещения но может имет отскок от предметов
+        /// </summary>
+        /// <param name="rebound">Коэффициент отскока, 0 нет отскока, 1 максимальный</param>
+        public PhysicsBase(CollisionBase collision, EntityBase entity, float rebound)
+        {
+            Collision = collision;
+            Entity = entity;
+            _rebound = rebound;
+           // if (_rebound > 1) _rebound = 1;
+            _isRebound = _rebound != 0;
         }
 
         public virtual string ToDebugString() => "";
@@ -64,130 +99,68 @@ namespace Vge.Entity
         public virtual void LivingUpdate() { }
 
         /// <summary>
+        /// Отрегулировать движение для подкрадывания
+        /// </summary>
+        protected virtual void _AdjustMovementForSneaking(AxisAlignedBB boundingBox) { }
+
+        /// <summary>
+        /// Фиксация возможен ли авто прыжок
+        /// </summary>
+        protected virtual void _AutoNotJump(float y) { }
+        /// <summary>
+        /// Авто прыжок
+        /// </summary>
+        protected virtual void _AutoJump(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z) { }
+
+        /// <summary>
         /// Проверка перемещения со столкновением
         /// </summary>
         protected void _CheckMoveCollidingEntity()
         {
-            AxisAlignedBB boundingBox = Entity.GetBoundingBox();
-           
-            float x0 = MotionX;
-            float y0 = MotionY;
-            float z0 = MotionZ;
-
-            float x = x0;
-            float y = y0;
-            float z = z0;
-            AxisAlignedBB aabbEntity = boundingBox.Clone();
-            List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x, y, z), Entity.Id);
-
-            // Находим смещение по Y
-            foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity, y);
-            //TODO:: Отскок от препятствия
-            //if (y0 != y) y = (y - y0 + y) * .5f;
-            aabbEntity = aabbEntity.Offset(0, y, 0);
-
-            // Не прыгаем (момент взлёта)
-            bool isNotJump = Entity.OnGround || MotionY != y && MotionY < 0f;
-
-            // Находим смещение по X
-            foreach (AxisAlignedBB axis in aabbs) x = axis.CalculateXOffset(aabbEntity, x);
-            //TODO:: Отскок от препятствия
-            //if (x0 != x) x = (x - x0 + x) * .5f;
-            aabbEntity = aabbEntity.Offset(x, 0, 0);
-
-            // Находим смещение по Z
-            foreach (AxisAlignedBB axis in aabbs) z = axis.CalculateZOffset(aabbEntity, z);
-            //TODO:: Отскок от препятствия
-            //if (z0 != z) z = (z - z0 + z) * .5f;
-            aabbEntity = aabbEntity.Offset(0, 0, z);
-
-            // Авто прыжок
-            float StepHeight = 0.7f;// 1.2f;
-            // Запуск проверки авто прыжка
-            if (StepHeight > 0f && isNotJump && (x0 != x || z0 != z))
+            if (!NoClip)
             {
-                // Кэш для откада, если авто прыжок не допустим
-                float monCacheX = x;
-                float monCacheY = y;
-                float monCacheZ = z;
+                AxisAlignedBB boundingBox = Entity.GetBoundingBox();
 
-                float stepHeight = StepHeight;
-                // Если сидим авто прыжок в двое ниже
-                if (Movement.Sneak) stepHeight *= 0.5f;
+                _AdjustMovementForSneaking(boundingBox);
 
-                y = stepHeight;
-                aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x0, y, z0), Entity.Id);
-                AxisAlignedBB aabbEntity2 = boundingBox.Clone();
-                AxisAlignedBB aabb = aabbEntity2.AddCoordBias(x0, 0, z0);
+                float x = MotionX;
+                float y = MotionY;
+                float z = MotionZ;
+
+                AxisAlignedBB aabbEntity = boundingBox.Clone();
+                List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(x, y, z), Entity.Id);
 
                 // Находим смещение по Y
-                float y2 = y;
-                foreach (AxisAlignedBB axis in aabbs) y2 = axis.CalculateYOffset(aabb, y2);
-                aabbEntity2 = aabbEntity2.Offset(0, y2, 0);
-
-                // Находим смещение по X
-                float x2 = x0;
-                foreach (AxisAlignedBB axis in aabbs) x2 = axis.CalculateXOffset(aabbEntity2, x2);
-                aabbEntity2 = aabbEntity2.Offset(x2, 0, 0);
-
-                // Находим смещение по Z
-                float z2 = z0;
-                foreach (AxisAlignedBB axis in aabbs) z2 = axis.CalculateZOffset(aabbEntity2, z2);
-                aabbEntity2 = aabbEntity2.Offset(0, 0, z2);
-
-                AxisAlignedBB aabbEntity3 = boundingBox.Clone();
-
-                // Находим смещение по Y
-                float y3 = y;
-                foreach (AxisAlignedBB axis in aabbs) y3 = axis.CalculateYOffset(aabbEntity3, y3);
-                aabbEntity3 = aabbEntity3.Offset(0, y3, 0);
-
-                // Находим смещение по X
-                float x3 = x0;
-                foreach (AxisAlignedBB axis in aabbs) x3 = axis.CalculateXOffset(aabbEntity3, x3);
-                aabbEntity3 = aabbEntity3.Offset(x3, 0, 0);
-
-                // Находим смещение по Z
-                float z3 = z0;
-                foreach (AxisAlignedBB axis in aabbs) z3 = axis.CalculateZOffset(aabbEntity3, z3);
-                aabbEntity3 = aabbEntity3.Offset(0, 0, z3);
-
-                if (x2 * x2 + z2 * z2 > x3 * x3 + z3 * z3)
-                {
-                    x = x2;
-                    z = z2;
-                    aabbEntity = aabbEntity2;
-                }
-                else
-                {
-                    x = x3;
-                    z = z3;
-                    aabbEntity = aabbEntity3;
-                }
-                y = -stepHeight;
-
-                // Находим итоговое смещение по Y
                 foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity, y);
+                // Отскок от препятствия
+                if (_isRebound && MotionY != y && MotionY < PhysicsGround.GravityRebound)
+                {
+                    float y0 = -(MotionY + PhysicsGround.GravityRebound) * _rebound;
+                    if (y0 > y) y = y0;
+                }
+                aabbEntity = aabbEntity.Offset(0, y, 0);
 
-                if (monCacheX * monCacheX + monCacheZ * monCacheZ >= x * x + z * z)
-                {
-                    // Нет авто прыжка, откатываем значение обратно
-                    x = monCacheX;
-                    y = monCacheY;
-                    z = monCacheZ;
-                }
-                else
-                {
-                    // Авто прыжок
-                    Entity.PosY += y + stepHeight;
-                    y = 0;
-                }
+                _AutoNotJump(y);
+
+                // Находим смещение по X
+                foreach (AxisAlignedBB axis in aabbs) x = axis.CalculateXOffset(aabbEntity, x);
+                // Отскок от препятствия
+                if (_isRebound && MotionX != x) x = -MotionX * _rebound;
+                aabbEntity = aabbEntity.Offset(x, 0, 0);
+
+                // Находим смещение по Z
+                foreach (AxisAlignedBB axis in aabbs) z = axis.CalculateZOffset(aabbEntity, z);
+                // Отскок от препятствия
+                if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
+
+                _AutoJump(boundingBox, ref x, ref y, ref z);
+
+                Entity.OnGround = MotionY != y && MotionY < 0.0f;
+
+                MotionX = x;
+                MotionY = y;
+                MotionZ = z;
             }
-            Entity.OnGround = y0 != y && y0 < 0.0f;
-
-            MotionX = x;
-            MotionY = y;
-            MotionZ = z;
         }
     }
 }

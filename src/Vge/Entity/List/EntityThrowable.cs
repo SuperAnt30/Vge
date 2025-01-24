@@ -39,7 +39,7 @@ namespace Vge.Entity.List
             PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw) * .32f;
             PosY = entityThrower.PosY + entityThrower.Eye - .2f;
 
-            Physics = new PhysicsGround(collision, this, false);
+            Physics = new PhysicsGround(collision, this, .9f);
             //Physics.Movement.Forward = true;
             //Physics.Movement.Sprinting = true;
             float pitchxz = Glm.Cos(entityThrower.RotationPitch);
@@ -58,7 +58,7 @@ namespace Vge.Entity.List
         {
             if (Physics != null)
             {
-                if (_age > 120)
+                if (_age > 300)
                 {
                     SetDead();
                     return;
@@ -68,11 +68,11 @@ namespace Vge.Entity.List
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
-                if (OnGround || !Physics.IsMotionChange)
-                {
-                    Physics.Movement.Forward = false;
-                    Physics.Movement.Sprinting = false;
-                }
+                //if (OnGround || !Physics.IsMotionChange)
+                //{
+                //    Physics.Movement.Forward = false;
+                //    Physics.Movement.Sprinting = false;
+                //}
                 if (IsPositionChange())
                 {
                     float x = -Physics.MotionX;

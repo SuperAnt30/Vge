@@ -229,9 +229,9 @@ namespace Vge.Network
         /// <summary>
         /// Записать тип float (точность 0,0001) 4 байта
         /// </summary>
-        public void Float(float value)
-            => Int((int)(value * 10000)); // Этот быстрее на ~10-20%
-        // => Write(BitConverter.GetBytes(value), 0, 4);
+        public void Float(float value) 
+            //=> Int((int)(value * 10000)); // Этот быстрее на ~10-20%
+            => Add(BitConverter.GetBytes(value));
 
         #endregion
     }

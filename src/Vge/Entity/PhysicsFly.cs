@@ -9,8 +9,16 @@ namespace Vge.Entity
     /// </summary>
     public class PhysicsFly : PhysicsBase
     {
+        /// <summary>
+        /// Физика без гравитации, для полёта 
+        /// </summary>
+        /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
         public PhysicsFly(CollisionBase collision, EntityBase entity) 
-            : base(collision, entity) { }
+            : base(collision, entity)
+        {
+            NoClip = true;
+        }
+        
 
         /// <summary>
         /// Обновить данные в такте игры
@@ -86,5 +94,6 @@ namespace Vge.Entity
             MotionY *= .6f;
             MotionZ *= study;
         }
+
     }
 }

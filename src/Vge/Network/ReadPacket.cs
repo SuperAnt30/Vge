@@ -129,8 +129,8 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть тип float (точность 0,0001) 4 байта
         /// </summary>
-        public float Float() => Int() / 10000f; // Этот быстрее на ~10-20%
-        //public float Float() => BitConverter.ToSingle(new byte[] { Byte(), Byte(), Byte(), Byte() }, 0);
+        //public float Float() => Int() / 10000f; // Этот быстрее на ~10-20%
+        public float Float() => BitConverter.ToSingle(new byte[] { Byte(), Byte(), Byte(), Byte() }, 0);
 
         #endregion
 

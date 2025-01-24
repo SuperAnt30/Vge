@@ -104,6 +104,12 @@ namespace Vge.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Expand(float vec) => new AxisAlignedBB(Min - vec, Max + vec);
+        /// <summary>
+        /// Возвращает ограничивающую рамку, расширенную указанным вектором
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Expand(float x, float y, float z) 
+            => new AxisAlignedBB(Min.X - x, Min.Y - y, Min.Z - z, Max.X + x, Max.Y + y, Max.Z + z);
 
         /// <summary>
         /// Возвращает ограничивающую рамку, уменьшенную указанным вектором

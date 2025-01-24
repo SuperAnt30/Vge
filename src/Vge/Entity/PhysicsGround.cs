@@ -1,4 +1,5 @@
 ﻿//#define TPS20
+using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -67,8 +68,11 @@ namespace Vge.Entity
         private const byte _reJump = 15;
 
 #endif
+        /// <summary>
+        /// Отскок от гравитации горизонта
+        /// </summary>
+        public const float GravityRebound = _gravity * 2f;
 
-        
         /// <summary>
         /// Скользкость по умолчанию
         /// </summary>
@@ -90,6 +94,18 @@ namespace Vge.Entity
         /// Количество тактов для запрета повторного прыжка
         /// </summary>
         private int _jumpTicks = 0;
+        /// <summary>
+        /// Не прыгаем (момент взлёта)
+        /// </summary>
+        private bool _isNotJump;
+        /// <summary>
+        /// Высота авто прыжка
+        /// </summary>
+        private float _heightAutoJump;
+        /// <summary>
+        /// Имеется ли авто прыжок
+        /// </summary>
+        private bool _isAutoJump;
 
         /// <summary>
         /// Инерция в воздухе
@@ -97,15 +113,26 @@ namespace Vge.Entity
         private readonly float _airborneInertia;
 
         /// <summary>
-        /// 
+        /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
-        /// <param name="collision"></param>
-        /// <param name="entity"></param>
-        /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
-        public PhysicsGround(CollisionBase collision, EntityBase entity, bool inputMovement = true) 
-            : base(collision, entity)
+        public PhysicsGround(CollisionBase collision, EntityBase entity) 
+            : base(collision, entity) => _airborneInertia = .91f;
+
+        /// <summary>
+        /// Физика для предмета которые не имеет силы для перемещения но может имет отскок от предметов
+        /// </summary>
+        /// <param name="rebound">Коэффициент отскока, 0 нет отскока, 1 максимальный</param>
+        public PhysicsGround(CollisionBase collision, EntityBase entity, float rebound)
+            : base(collision, entity, rebound) => _airborneInertia = _airDrag;
+
+        /// <summary>
+        /// Задать высоту автопрыжка, если 0 нет авто прыжка
+        /// </summary>
+        public PhysicsGround SetHeightAutoJump(float height)
         {
-            _airborneInertia = inputMovement ? .91f : _airDrag;
+            _heightAutoJump = height;
+            _isAutoJump = height != 0;
+            return this;
         }
 
         /// <summary>
@@ -113,26 +140,30 @@ namespace Vge.Entity
         /// </summary>
         public override void LivingUpdate()
         {
-            // счётчик прыжка
-            if (_jumpTicks > 0) _jumpTicks--;
-
-            if (Movement.Jump)
+            // Если имеется сила для движения, тогда проверяем наличие прыжка
+            if (_isForceForMovement)
             {
-                if (Entity.OnGround && _jumpTicks == 0)
+                // счётчик прыжка
+                if (_jumpTicks > 0) _jumpTicks--;
+
+                if (Movement.Jump)
                 {
-                    _jumpTicks = _reJump;
-                    MotionY = _airborneJumpInHeight;
-                    if (Movement.Sprinting)
+                    if (Entity.OnGround && _jumpTicks == 0)
                     {
-                        // Если прыжок с бегом, то скорость увеличивается
-                        MotionX += Glm.Sin(Entity.RotationYaw) * _airborneJumpInLength;
-                        MotionZ -= Glm.Cos(Entity.RotationYaw) * _airborneJumpInLength;
+                        _jumpTicks = _reJump;
+                        MotionY = _airborneJumpInHeight;
+                        if (Movement.Sprinting)
+                        {
+                            // Если прыжок с бегом, то скорость увеличивается
+                            MotionX += Glm.Sin(Entity.RotationYaw) * _airborneJumpInLength;
+                            MotionZ -= Glm.Cos(Entity.RotationYaw) * _airborneJumpInLength;
+                        }
                     }
                 }
-            }
-            else
-            {
-                _jumpTicks = 0;
+                else
+                {
+                    _jumpTicks = 0;
+                }
             }
 
             // Ускорение
@@ -150,10 +181,14 @@ namespace Vge.Entity
 
                 // Скорость
                 float speed = _speed;
-                speed = Mth.Max(speed * Mth.Abs(Movement.GetMoveStrafe()), 
-                    speed * Mth.Abs(Movement.GetMoveForward()));
-                if (Movement.Sneak) speed *= _sneakSpeed;
-                else if (Movement.Sprinting) speed += speed * _sprintSpeed;
+                // Если имеется сила для движения, тогда корректируем наличие скорости
+                if (_isForceForMovement)
+                {
+                    speed = Mth.Max(speed * Mth.Abs(Movement.GetMoveStrafe()),
+                        speed * Mth.Abs(Movement.GetMoveForward()));
+                    if (Movement.Sneak) speed *= _sneakSpeed;
+                    else if (Movement.Sprinting) speed += speed * _sprintSpeed;
+                }
 
                 // Ускорение
                 acceleration = speed * 0.16277136f / (inertia * inertia * inertia);
@@ -164,22 +199,21 @@ namespace Vge.Entity
                 inertia = _airborneInertia;
                 // Ускорение
                 acceleration = _airborneAcceleration;
-                if (Movement.Sprinting) acceleration += acceleration * _sprintSpeed;
+                if (_isForceForMovement && Movement.Sprinting) acceleration += acceleration * _sprintSpeed;
+            }
+            // Если имеется сила для движения, задаём вектор передвижения
+            if (_isForceForMovement)
+            {
+                Vector2 motion = Sundry.MotionAngle(
+                    Movement.GetMoveStrafe() * .98f,
+                    Movement.GetMoveForward() * .98f,
+                    acceleration, Entity.RotationYaw);
+                MotionX += motion.X;
+                MotionZ += motion.Y;
             }
 
-            Vector2 motion = Sundry.MotionAngle(
-                Movement.GetMoveStrafe() * .98f,
-                Movement.GetMoveForward() * .98f,
-                acceleration, Entity.RotationYaw);
-            MotionX += motion.X;
-            MotionZ += motion.Y;
-
-            //System.Console.Write("BMX:");
-            //System.Console.Write(MotionX);
-            // Проверка кализии
+            // Проверка каллизии
             _CheckMoveCollidingEntity();
-            //System.Console.Write(" EMX:");
-            //System.Console.WriteLine(MotionX);
 
             // Если мелочь убираем
             if (Mth.Abs(MotionX) < .005f) MotionX = 0;
@@ -218,11 +252,107 @@ namespace Vge.Entity
             MotionX *= inertia;
             MotionY *= _airDrag;
             MotionZ *= inertia;
+        }
 
-            //if (Entity.OnGround && MotionY < -_gravity)
-            //{
-            //    MotionY *= _hz;
-            //}
+        /// <summary>
+        /// Фиксация возможен ли авто прыжок
+        /// </summary>
+        protected override void _AutoNotJump(float y)
+        {
+            if (_isAutoJump)
+            {
+                // Не прыгаем (момент взлёта)
+                _isNotJump = Entity.OnGround || MotionY != y && MotionY < 0f;
+            }
+        }
+        /// <summary>
+        /// Авто прыжок
+        /// </summary>
+        protected override void _AutoJump(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z)
+        {
+            // Запуск проверки авто прыжка
+            if (_isAutoJump && _isNotJump && (MotionX != x || MotionZ != z))
+            {
+                // Кэш для откада, если авто прыжок не допустим
+                float monCacheX = x;
+                float monCacheY = y;
+                float monCacheZ = z;
+
+                float heightAutoJump = _heightAutoJump;
+                // Если сидим авто прыжок в двое ниже
+                if (_isForceForMovement && Movement.Sneak)
+                {
+                    heightAutoJump *= 0.5f;
+                }
+
+                y = heightAutoJump;
+                List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ), Entity.Id);
+                AxisAlignedBB aabbEntity2 = boundingBox.Clone();
+                AxisAlignedBB aabb = aabbEntity2.AddCoordBias(MotionX, 0, MotionZ);
+
+                // Находим смещение по Y
+                float y2 = y;
+                foreach (AxisAlignedBB axis in aabbs) y2 = axis.CalculateYOffset(aabb, y2);
+                aabbEntity2 = aabbEntity2.Offset(0, y2, 0);
+
+                // Находим смещение по X
+                float x2 = MotionX;
+                foreach (AxisAlignedBB axis in aabbs) x2 = axis.CalculateXOffset(aabbEntity2, x2);
+                aabbEntity2 = aabbEntity2.Offset(x2, 0, 0);
+
+                // Находим смещение по Z
+                float z2 = MotionZ;
+                foreach (AxisAlignedBB axis in aabbs) z2 = axis.CalculateZOffset(aabbEntity2, z2);
+                aabbEntity2 = aabbEntity2.Offset(0, 0, z2);
+
+                AxisAlignedBB aabbEntity3 = boundingBox.Clone();
+
+                // Находим смещение по Y
+                float y3 = y;
+                foreach (AxisAlignedBB axis in aabbs) y3 = axis.CalculateYOffset(aabbEntity3, y3);
+                aabbEntity3 = aabbEntity3.Offset(0, y3, 0);
+
+                // Находим смещение по X
+                float x3 = MotionX;
+                foreach (AxisAlignedBB axis in aabbs) x3 = axis.CalculateXOffset(aabbEntity3, x3);
+                aabbEntity3 = aabbEntity3.Offset(x3, 0, 0);
+
+                // Находим смещение по Z
+                float z3 = MotionZ;
+                foreach (AxisAlignedBB axis in aabbs) z3 = axis.CalculateZOffset(aabbEntity3, z3);
+                aabbEntity3 = aabbEntity3.Offset(0, 0, z3);
+
+                y = -heightAutoJump;
+
+                if (x2 * x2 + z2 * z2 > x3 * x3 + z3 * z3)
+                {
+                    x = x2;
+                    z = z2;
+                    // Находим итоговое смещение по Y
+                    foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity2, y);
+                }
+                else
+                {
+                    x = x3;
+                    z = z3;
+                    // Находим итоговое смещение по Y
+                    foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity3, y);
+                }
+
+                if (monCacheX * monCacheX + monCacheZ * monCacheZ >= x * x + z * z)
+                {
+                    // Нет авто прыжка, откатываем значение обратно
+                    x = monCacheX;
+                    y = monCacheY;
+                    z = monCacheZ;
+                }
+                else
+                {
+                    // Авто прыжок
+                    Entity.PosY += y + heightAutoJump;
+                    y = 0;
+                }
+            }
         }
     }
 }
