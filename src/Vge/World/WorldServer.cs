@@ -81,6 +81,12 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Внести лог
+        /// </summary>
+        public override void SetLog(string logMessage, params object[] args) 
+            => Filer.Log.Server(logMessage, args);
+
+        /// <summary>
         /// Такт выполнения
         /// </summary>
         public void Update()
@@ -99,8 +105,9 @@ namespace Vge.World
             // Обработка фрагментов в конце такта
             _FragmentEnd();
 
+            Filer.StartSection("Entities");
             _UpdateEntities();
-            Filer.StartSection("Tracker");
+            Filer.EndStartSection("Tracker");
             Tracker.Update();
             Filer.EndSection();
 
@@ -220,6 +227,32 @@ namespace Vge.World
             base._OnEntityRemoved(entity);
             Tracker.UntrackEntity(entity);
         }
+
+        /// <summary>
+        /// Удаление игрока в текущем мире для перехода в другой мир
+        /// </summary>
+        public void RemovePlayerInWorldForNextWorld(PlayerServer player)
+        {
+            Fragment.RemoveAnchor(player);
+            player.SetDead();
+            _OnEntityRemoved(player);
+            LoadedEntityList.Remove(player.Id, player);
+        }
+
+        /// <summary>
+        /// Игрок переходит в другой мир
+        /// </summary>
+        public void PlayerForNextWorld(PlayerServer player)
+        {
+            Fragment.AddAnchor(player);
+            SpawnEntityInWorld(player);
+        }
+
+        /// <summary>
+        /// Флаг для отладки сервера
+        /// </summary>
+        protected override void _FlagDebugChunkProviderServer() 
+            => Fragment.flagDebugChunkProviderServer = true;
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿using Vge.Util;
+﻿using System;
 using Vge.World;
 using WinGL.Util;
 
@@ -17,11 +17,25 @@ namespace Vge.Entity.List
         /// Сколько тиков жизни
         /// </summary>
         private int _age = 0;
+        /// <summary>
+        /// Вес сущности
+        /// </summary>
+        private readonly float _weight;
 
-        public EntityThrowable()
+        public EntityThrowable(EnumEntity type)
         {
-            Width = .125f;
-            Height = .25f;
+            if (type == EnumEntity.Stone)
+            {
+                Width = .125f;
+                Height = .25f;
+                _weight = 25;
+            }
+            else
+            {
+                Width = .5f;
+                Height = 1f;
+                _weight = 100;
+            }
         }
 
         /// <summary>
@@ -29,17 +43,43 @@ namespace Vge.Entity.List
         /// </summary>
         /// <param name="entityThrower">Кто метнул</param>
         /// <param name="speedThrower">Скорость метания</param>
-        public EntityThrowable(CollisionBase collision, EntityBase entityThrower, float speedThrower = .9f)
+        public EntityThrowable(EnumEntity type, CollisionBase collision, 
+            EntityBase entityThrower, float speedThrower = .49f)
         {
             EntityThrower = entityThrower;
-            Width = .125f;
-            Height = .25f;
+            Type = type;
+            if (type == EnumEntity.Stone)
+            {
+                Width = .125f;
+                Height = .25f;
+                _weight = 25;
+                Physics = new PhysicsGround(collision, this, .9f);
+                speedThrower = .6f;
+            }
+            else
+            {
+                Width = .5f;
+                Height = 1f;
+                _weight = 100;
+                Physics = new PhysicsGround(collision, this, 0);
+                speedThrower = .4f;
+            }
 
-            PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw) * .32f;
-            PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw) * .32f;
-            PosY = entityThrower.PosY + entityThrower.Eye - .2f;
+            // с боку
+            //PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw);// * .4f;
+            //PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw);// * .4f;
+            // спереди
+            //PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw);
+            //PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw);
+            //PosY = entityThrower.PosY + entityThrower.Eye - .2f;
+            // вверх
+            PosX = entityThrower.PosX;
+            PosZ = entityThrower.PosZ;
+            PosY = entityThrower.PosY + entityThrower.Height + .2f;
 
-            Physics = new PhysicsGround(collision, this, .9f);
+            //Physics = new PhysicsGround(collision, this, .9f);
+            //Physics.SetImpulse(.5f);
+
             //Physics.Movement.Forward = true;
             //Physics.Movement.Sprinting = true;
             float pitchxz = Glm.Cos(entityThrower.RotationPitch);
@@ -54,39 +94,53 @@ namespace Vge.Entity.List
             //Motion = motion;
         }
 
+        /// <summary>
+        /// Вес сущности для определения импулса между сущностями,
+        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
+        /// </summary>
+        public override float GetWeight() => _weight;
+
         public override void Update()
         {
             if (Physics != null)
             {
-                if (_age > 300)
+                if (_age > 1800)
                 {
                     SetDead();
                     return;
                 }
                 _age++;
 
-                // Расчитать перемещение в объекте физика
-                Physics.LivingUpdate();
-
-                //if (OnGround || !Physics.IsMotionChange)
-                //{
-                //    Physics.Movement.Forward = false;
-                //    Physics.Movement.Sprinting = false;
-                //}
-                if (IsPositionChange())
+                if (!Physics.IsPhysicSleep())
                 {
-                    float x = -Physics.MotionX;
-                    float z = -Physics.MotionZ;
-                    RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
-                    RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
+                    //Console.Write(PosX);
+                    //Console.Write(" ");
+                    //Console.Write(PosY);
+                    //Console.Write(" ");
+                    //Console.WriteLine(PosZ);
 
-                    // RotationYaw = Glm.WrapAngleToPi(RotationYaw + Glm.Pi45);
-                    PosPrevX = PosX;
-                    PosPrevY = PosY;
-                    PosPrevZ = PosZ;
-                    RotationPrevYaw = RotationYaw;
-                    RotationPrevPitch = RotationPitch;
+                    // Расчитать перемещение в объекте физика
+                    Physics.LivingUpdate();
 
+                    if (IsPositionChange())
+                    {
+                        float x = -Physics.MotionX;
+                        float z = -Physics.MotionZ;
+                        RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
+                        RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
+
+                        // RotationYaw = Glm.WrapAngleToPi(RotationYaw + Glm.Pi45);
+                        PosPrevX = PosX;
+                        PosPrevY = PosY;
+                        PosPrevZ = PosZ;
+                        RotationPrevYaw = RotationYaw;
+                        RotationPrevPitch = RotationPitch;
+                        LevelMotionChange = 2;
+                    }
+                    else if (Physics.IsPhysicAlmostSleep())
+                    {
+                        LevelMotionChange = 2;
+                    }
                 }
             }
         }

@@ -93,5 +93,11 @@ namespace Vge.Management
         /// Получить название для рендеринга
         /// </summary>
         public override string GetName() => Login;
+
+        /// <summary>
+        /// Вес сущности для определения импулса между сущностями,
+        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
+        /// </summary>
+        public override float GetWeight() => 80;
     }
 }

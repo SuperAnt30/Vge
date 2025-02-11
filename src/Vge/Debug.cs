@@ -53,6 +53,8 @@ namespace Vge
         /// </summary>
         public static string BlockFocus = "";
 
+        public static string FrizFps = "";
+
         public void SetTpsFps(int fps, float speedFrame, int tps, float speedTick, float speedTickMax,
             int countUpdateChunk, int countUpdateChunkAlpha)
         {
@@ -63,6 +65,7 @@ namespace Vge
         public string ToText()
         {
             return StrTpsFps
+                + "\r\n" + FrizFps
                 + "\r\nAudio: " + Audio
                 + "\r\nMesh Id: " + MeshId + " C: " + MeshCount + " FC: " + CountMeshFC 
                     + " RCh: " + RenderChunckTime8.ToString("0.000")
@@ -110,10 +113,10 @@ namespace Vge
             {
                 _flagBlockDraw = true;
                 IChunkPosition[] ar = (IChunkPosition[])e.Tag;
-                _chunksReady = new Vector2i[ar.Length];
+                _chunksReady = new Vector3i[ar.Length];
                 for (int i = 0; i < ar.Length; i++)
                 {
-                    _chunksReady[i] = new Vector2i(ar[i].CurrentChunkX, ar[i].CurrentChunkY);
+                    _chunksReady[i] = new Vector3i(ar[i].CurrentChunkX, ar[i].CurrentChunkY, (int)ar[i].Tag);
                 }
                 _flagBlockDraw = false;
                 _renderChunks = true;
@@ -142,8 +145,6 @@ namespace Vge
                 _flagBlockDraw = false;
                 _renderChunks = true;
             }
-
-            
         }
 
         public enum Key
@@ -176,7 +177,7 @@ namespace Vge
         }
 
         /// <summary>
-        /// Игроки на сервере
+        /// Сущности на сервере
         /// </summary>
         public static Vector2i[] Players = new Vector2i[0];
         /// <summary>
@@ -192,7 +193,7 @@ namespace Vge
         /// Готовые чанкина на сервере
         /// Зелёный
         /// </summary>
-        private static Vector2i[] _chunksReady = new Vector2i[0];
+        private static Vector3i[] _chunksReady = new Vector3i[0];
         /// <summary>
         /// Чанки на сервере которые пренадлежат якорям, которые могут отправлять якорям изменения
         /// Белый
@@ -259,7 +260,9 @@ namespace Vge
                 if (_flagBlockDraw) return false;
                 x = xc + _chunksReady[i].X * 8;
                 y = yc + _chunksReady[i].Y * 8;
-                vs.AddRange(RenderFigure.Rectangle(x + 1, y + 1, x + 7, y + 7, 0, .9f, 0));
+                vs.AddRange(RenderFigure.Rectangle(x + 1, y + 1, x + 7, y + 7,
+                    _chunksReady[i].Z == 0 ? 0 : .9f,
+                    _chunksReady[i].Z == 0 ? .9f : 0, 0));
             }
             // Красный
             for (int i = 0; i < Players.Length; i++)
@@ -295,7 +298,6 @@ namespace Vge
                 vs.AddRange(RenderFigure.Rectangle(x + 3, y + 3, x + 5, y + 5, 0, 0, .6f));
             }
             
-
             // Игрок
             x = xc + Player.X * 8;
             y = yc + Player.Y * 8;

@@ -5,10 +5,16 @@
         public int CurrentChunkX { get; }
         public int CurrentChunkY { get; }
 
+        /// <summary>
+        /// Дополнительные данные
+        /// </summary>
+        public object Tag { get; }
+
         public ChunkPosition(int x, int y)
         {
             CurrentChunkX = x;
             CurrentChunkY = y;
+            Tag = null;
         }
 
         public override bool Equals(object obj)

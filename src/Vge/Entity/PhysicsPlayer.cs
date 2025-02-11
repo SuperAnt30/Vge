@@ -32,19 +32,19 @@ namespace Vge.Entity
                 float x = MotionX;
                 float z = MotionZ;
 
-                while (x != 0 && Collision.GetCollidingBoundingBoxes(boundingBox.Offset(x, -1, 0), Entity.Id).Count == 0)
+                while (x != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -1, 0)))
                 {
                     if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
                     else if (x > 0f) x -= _stepAmfs;
                     else x += _stepAmfs;
                 }
-                while (z != 0 && Collision.GetCollidingBoundingBoxes(boundingBox.Offset(0, -1, z), Entity.Id).Count == 0)
+                while (z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(0, -1, z)))
                 {
                     if (z < _stepAmfs && z >= -_stepAmfs) z = 0f;
                     else if (z > 0f) z -= _stepAmfs;
                     else z += _stepAmfs;
                 }
-                while (x != 0 && z != 0 && Collision.GetCollidingBoundingBoxes(boundingBox.Offset(x, -1, z), Entity.Id).Count == 0)
+                while (x != 0 && z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -1, z)))
                 {
                     if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
                     else if (x > 0f) x -= _stepAmfs;

@@ -202,7 +202,9 @@ namespace Vge.Games
             Player.SetOverviewChunk(Options.OverviewChunk, false);
             // Запущена игра
             StartedGame();
-             _flagTick = true;
+
+            World.SpawnEntityInWorld(Player);
+            _flagTick = true;
         }
 
         /// <summary>
@@ -354,7 +356,7 @@ namespace Vge.Games
 
                 //Filer.StartSection("Player.Update");
                 // Обновить игрока
-                Player.Update();
+                //Player.Update();
                // Filer.EndStartSection("World.Update", 10);
                 // Обновить мир
                 World.Update();

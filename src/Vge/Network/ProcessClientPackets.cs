@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿//#define PhysicsServer
+using Vge.Entity;
 using Vge.Entity.List;
 using Vge.Games;
 using Vge.Management;
@@ -208,11 +209,22 @@ namespace Vge.Network
                 Game.Player.PosPacketZ = packet.Z;
             }
 #else
-            Game.Player.PosX = packet.X;
-            Game.Player.PosY = packet.Y;
-            Game.Player.PosZ = packet.Z;
-            Game.Player.RotationYaw = packet.Yaw;
-            Game.Player.RotationPitch = packet.Pitch;
+            if (packet.Impulse)
+            {
+                Game.Player.Physics.ImpulseX = packet.X;
+                Game.Player.Physics.ImpulseY = packet.Y;
+                Game.Player.Physics.ImpulseZ = packet.Z;
+            }
+            else
+            {
+                Game.Player.PosX = packet.X;
+                Game.Player.PosY = packet.Y;
+                Game.Player.PosZ = packet.Z;
+                Game.Player.RotationPrevYaw = Game.Player.RotationYaw = packet.Yaw;
+                Game.Player.RotationPrevPitch = Game.Player.RotationPitch = packet.Pitch;
+            }
+            Game.Player.Physics.AwakenPhysics();
+
 #endif
 
             Debug.Player = Game.Player.GetChunkPosition();
@@ -254,7 +266,7 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
-            EntityThrowable entity = new EntityThrowable();
+            EntityThrowable entity = new EntityThrowable(packet.Type);
             entity.SetEntityId(packet.Index);
             entity.PosPrevX = entity.PosX = packet.X;
             entity.PosPrevY = entity.PosY = packet.Y;
@@ -293,6 +305,7 @@ namespace Vge.Network
                 entity.RotationYaw = packet.Yaw;
                 entity.RotationPitch = packet.Pitch;
                 entity.OnGround = packet.OnGround;
+                entity.SetPhysicsSleepDebug(packet.Sleep);
 
                 entity.LevelMotionChange = 2;
                 //if (entity is EntityLiving entityLiving)

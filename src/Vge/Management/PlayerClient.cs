@@ -42,6 +42,7 @@ namespace Vge.Management
         {
             _game = game;
             Eye = Height * .85f;
+            Type = Entity.EnumEntity.Player;
         }
 
         /// <summary>

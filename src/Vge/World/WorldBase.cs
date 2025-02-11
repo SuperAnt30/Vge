@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Management;
 using Vge.Util;
@@ -66,6 +67,11 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Внести лог
+        /// </summary>
+        public virtual void SetLog(string logMessage, params object[] args) { }
+
+        /// <summary>
         /// Получить время в тактах объекта Stopwatch с момента запуска проекта
         /// </summary>
         public virtual long ElapsedTicks() => 0;
@@ -75,11 +81,13 @@ namespace Vge.World
         /// <summary>
         /// Получить чанк по координатам чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkBase GetChunk(int chunkPosX, int chunkPosY) 
             => ChunkPr.GetChunk(chunkPosX, chunkPosY);
         /// <summary>
         /// Получить чанк по координатам чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkBase GetChunk(Vector2i chunkPos)
             => ChunkPr.GetChunk(chunkPos);
 
@@ -196,7 +204,6 @@ namespace Vge.World
         /// </summary>
         protected virtual void _OnEntityRemoved(EntityBase entity)
         {
-            entity.SetDead();
             if (entity is PlayerBase player)
             {
                 PlayerEntities.Remove(player);
@@ -204,7 +211,6 @@ namespace Vge.World
                 //UpdateAllPlayersSleepingFlag();
                 
             }
-            LoadedEntityList.Remove(entity.Id, entity);
         }
 
         /// <summary>
@@ -230,25 +236,15 @@ namespace Vge.World
             {
                 EntityBase entity = LoadedEntityList.GetAt(i);
 
-                if (entity != null && !(entity is PlayerServer))
+                if (entity != null)
                 {
                     if (!entity.IsDead)
                     {
-                        try
-                        {
-                            entity.Update();
-                    //        UpdateEntity(entity);
-                        }
-                        catch (Exception ex)
-                        {
-                    //        Logger.Crach(ex);
-                            throw;
-                        }
+                        _UpdateEntity(entity);
                     }
                     else
                     {
                         UnloadedEntityList.Add(entity);
-                        //entityRemove.Add(entity);
                     }
                 }
             }
@@ -260,16 +256,72 @@ namespace Vge.World
             {
                 EntityBase entity = UnloadedEntityList[UnloadedEntityList.Count - 1];
                 UnloadedEntityList.RemoveLast();
-                //if (entity.AddedToChunk && ChunkPr.IsChunkLoaded(entity.PositionChunk))
-                //{
-                //    GetChunk(entity.PositionChunk).RemoveEntity(entity);
-                //}
+                if (entity.AddedToChunk)
+                {
+                    ChunkBase chunk = GetChunk(entity.ChunkPositionX, entity.ChunkPositionZ);
+                    if (chunk != null)
+                    {
+                        chunk.RemoveEntity(entity);
+                    }
+                    // Для отладки
+                    _FlagDebugChunkProviderServer();
+                }
                 LoadedEntityList.Remove(entity.Id, entity);
                 _OnEntityRemoved(entity);
             }
 
             //profiler.EndSection();
         }
+
+        protected virtual void _UpdateEntity(EntityBase entity)
+        {
+            if (entity.AddedToChunk)
+            {
+                entity.Update();
+            }
+
+            // Добавление сущности в чанк или выгрузка
+            int cx = entity.ChunkPositionX;
+            int cy = entity.ChunkPositionY;
+            int cz = entity.ChunkPositionZ;
+            bool check = !entity.AddedToChunk || cx != entity.ChunkPositionPrevX || cz != entity.ChunkPositionPrevZ;
+            if (check || cy != entity.ChunkPositionPrevY)
+            {
+                ChunkBase chunk = null;
+                if (entity.AddedToChunk)
+                {
+                    chunk = GetChunk(entity.ChunkPositionPrevX, entity.ChunkPositionPrevZ);
+                    // Удаляем из старого псевдо чанка
+                    if (chunk != null)
+                    {
+                        chunk.RemoveEntityAtIndex(entity, entity.ChunkPositionPrevY);
+                    }
+                }
+                if (check)
+                {
+                    // Если была смена чанка
+                    chunk = GetChunk(cx, cz);
+                }
+                if (chunk != null)
+                {
+                    // Добавляем в новый псевдочанк
+                    entity.AddedToChunk = true;
+                    chunk.AddEntity(entity, cx, cy, cz);
+                }
+                else
+                {
+                    // Если нет чанка помечаем что сущность без чанка
+                    entity.AddedToChunk = false;
+                }
+                // Для отладки
+                _FlagDebugChunkProviderServer();
+            }
+        }
+
+        /// <summary>
+        /// Флаг для отладки сервера
+        /// </summary>
+        protected virtual void _FlagDebugChunkProviderServer() { }
 
         #endregion
 

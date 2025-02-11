@@ -12,9 +12,23 @@
         public float Z { get; private set; }
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
-#if PhysicsServer
-        public bool IsRotate { get; private set; }
-#endif
+        public bool Impulse { get; private set; }
+
+        /// <summary>
+        /// Задать импульс игроку
+        /// </summary>
+        public PacketS08PlayerPosLook(float x, float y, float z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            Yaw = Pitch = 0;
+            Impulse = true;
+        }
+
+        /// <summary>
+        /// Задать расположение игроку
+        /// </summary>
         public PacketS08PlayerPosLook(float x, float y, float z, float yaw, float pitch)
         {
             X = x;
@@ -22,18 +36,7 @@
             Z = z;
             Yaw = yaw;
             Pitch = pitch;
-#if PhysicsServer
-            IsRotate = true;
-        }
-
-        public PacketS08PlayerPosLook(float x, float y, float z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-            Yaw = Pitch = 0;
-            IsRotate = false;
-#endif
+            Impulse = false;
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -41,10 +44,8 @@
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
-#if PhysicsServer
-            IsRotate = stream.Bool();
-            if (IsRotate)
-#endif
+            Impulse = stream.Bool();
+            if (!Impulse)
             {
                 Yaw = stream.Float();
                 Pitch = stream.Float();
@@ -56,10 +57,8 @@
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
-#if PhysicsServer
-            stream.Bool(IsRotate);
-            if (IsRotate)
-#endif
+            stream.Bool(Impulse);
+            if (!Impulse)
             {
                 stream.Float(Yaw);
                 stream.Float(Pitch);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define PhysicsServer
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -134,6 +135,7 @@ namespace Vge.Management
         {
             Login = login;
             Token = GetHash(token);
+            Type = EnumEntity.Player;
             Socket = socket;
             _server = server;
             UUID = GetHash(login);
@@ -145,7 +147,8 @@ namespace Vge.Management
             Eye = Height * .85f;
             _lastTimeServer = server.Time();
 #if PhysicsServer
-            Physics = new PhysicsGround(GetWorld().Collision, this);
+            Physics = new PhysicsPlayer(GetWorld().Collision, this);
+            Physics.SetImpulse(.8f);
 #endif
         }
 
@@ -198,7 +201,7 @@ namespace Vge.Management
 #if PhysicsServer
             // Расчитать перемещение в объекте физика
             Physics.LivingUpdate();
-            if (Physics.IsMotionChange)
+           // if (Physics.IsMotionChange)
             {
                 // Только перемещение
                 SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ));
@@ -340,6 +343,9 @@ namespace Vge.Management
             LevelMotionChange = 1;
         }
 
+
+        private bool isBox = true;
+
         /// <summary>
         /// Пакет: Игрок копает / ломает
         /// </summary>
@@ -357,8 +363,10 @@ namespace Vge.Management
             }
             else
             {
-                // Временно спавн моба
-                EntityThrowable entity = new EntityThrowable(world.Collision, this);
+                // TODO::2025-02-10 Временно спавн моба
+                EntityThrowable entity = new EntityThrowable(
+                    isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this);
+               // isBox = !isBox;
                 entity.SetEntityId(_server.LastEntityId());
                 world.SpawnEntityInWorld(entity);
             }
@@ -448,17 +456,18 @@ namespace Vge.Management
             SendPacket(new PacketS04TimeUpdate(_server.TickCounter));
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
+
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
+            
+            // Вносим в менеджер фрагментов игрока
+            GetWorld().Fragment.AddAnchor(this);
 
             // Установленный перемещенный якорь
             MountedMovedAnchor();
 
-            // Вносим в менеджер фрагментов игрока
-            GetWorld().Fragment.AddAnchor(this);
-            
             //
             //isPos = true;
         }
@@ -488,12 +497,13 @@ namespace Vge.Management
         /// </summary>
         public void ChangeWorld(byte newIdWorld)
         {
-            GetWorld().Fragment.RemoveAnchor(this);
+            GetWorld().RemovePlayerInWorldForNextWorld(this);
             // Смена id мира
             IdWorld = newIdWorld;
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Вносим в менеджер фрагментов игрока
-            GetWorld().Fragment.AddAnchor(this);
+            IsDead = false;
+            GetWorld().PlayerForNextWorld(this);
             // Установленный перемещенный якорь
             MountedMovedAnchor();
         }
@@ -692,9 +702,9 @@ namespace Vge.Management
             }
         }
 
-#endregion
+        #endregion
 
-#region Input физика на сервере
+        #region Input физика на сервере
 #if PhysicsServer
 
         public void PacketInput(PacketC0CInput packet)
@@ -716,7 +726,13 @@ namespace Vge.Management
         }
 
 #endif
-#endregion
+        #endregion
+
+        /// <summary>
+        /// Задать импульс
+        /// </summary>
+        public override void SetPhysicsImpulse(float x, float y, float z)
+            => SendPacket(new PacketS08PlayerPosLook(x, y, z));
 
         /// <summary>
         /// Получить время в милисекундах с сервера

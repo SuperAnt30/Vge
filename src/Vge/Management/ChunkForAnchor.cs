@@ -24,6 +24,11 @@ namespace Vge.Management
         public readonly WorldServer World;
 
         /// <summary>
+        /// Дополнительные данные
+        /// </summary>
+        public object Tag { get; }
+
+        /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
         public int CurrentChunkX { get; private set; }

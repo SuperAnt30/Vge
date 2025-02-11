@@ -18,7 +18,7 @@ namespace Vge.Util
         /// <summary>
         /// Объект лога
         /// </summary>
-        private readonly Logger _log;
+        public readonly Logger Log;
         /// <summary>
         /// Получает частоту таймера в виде количества тактов в милисекунду
         /// </summary>
@@ -34,7 +34,7 @@ namespace Vge.Util
 
         public Profiler(Logger log, string prefix = "")
         {
-            _log = log;
+            Log = log;
             _prefix = prefix;
             _timerFrequency = Stopwatch.Frequency / 1000;
             _stopwatch.Start();
@@ -62,7 +62,7 @@ namespace Vge.Util
                 long time = _stopwatch.ElapsedMilliseconds;
                 if (time > stepTime)
                 {
-                    _log.Log(Srl.SomethingIsTooLong, _prefix, _profilingSection, time);
+                    Log.Log(Srl.SomethingIsTooLong, _prefix, _profilingSection, time);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Vge.Util
             if (_profilingEnabled)
             {
                 _profilingEnabled = false;
-                _log.Log(Srl.EndSectionTime, _prefix,
+                Log.Log(Srl.EndSectionTime, _prefix,
                     _profilingSection, _stopwatch.ElapsedTicks / (float)_timerFrequency);
             }
         }

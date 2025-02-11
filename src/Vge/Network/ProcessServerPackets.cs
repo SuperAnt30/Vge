@@ -1,4 +1,6 @@
-﻿using Vge.Games;
+﻿//#define PhysicsServer
+using Vge.Entity;
+using Vge.Games;
 using Vge.Management;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
@@ -99,6 +101,7 @@ namespace Vge.Network
                 switch (sp.Packet.Id)
                 {
                     case 0x02: _Handle02LoginStart(sp.Side, (PacketC02LoginStart)sp.Packet); break;
+                    case 0x03: _Handle03UseEntity(sp.Side, (PacketC03UseEntity)sp.Packet); break;
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
@@ -170,6 +173,29 @@ namespace Vge.Network
         private void _Handle02LoginStart(SocketSide socketSide, PacketC02LoginStart packet)
             => _server.Players.LoginStart(socketSide, packet);
 
+        /// <summary>
+        /// Пакет взаимодействие с сущностью
+        /// </summary>
+        private void _Handle03UseEntity(SocketSide socketSide, PacketC03UseEntity packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            if (playerServer != null)
+            {
+                EntityBase entity = playerServer.GetWorld().LoadedEntityList.Get(packet.Index);
+                if (entity != null)
+                {
+                    if (packet.Action == PacketC03UseEntity.EnumAction.Inpulse)
+                    {
+                        entity.SetPhysicsImpulse(packet.X, packet.Y, packet.Z);
+                    }
+                    else if (packet.Action == PacketC03UseEntity.EnumAction.Awaken)
+                    {
+                        entity.AwakenPhysicSleep();
+                    }
+                }
+            }
+        }
+        
         /// <summary>
         /// Пакет позиции игрока
         /// </summary>

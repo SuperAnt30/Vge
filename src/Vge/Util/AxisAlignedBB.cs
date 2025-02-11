@@ -52,6 +52,7 @@ namespace Vge.Util
         /// <summary>
         /// Добавить координату в область как смещение от 0
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB AddCoordBias(float x, float y, float z)
         {
             Vector3 min = new Vector3(Min);
@@ -62,8 +63,9 @@ namespace Vge.Util
             return new AxisAlignedBB(min, max);
         }
         /// <summary>
-        /// Добавить координату в область как смещение от 0
+        /// Добавить вектор смещения
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB AddCoordBias(Vector3 pos)
         {
             Vector3 min = new Vector3(Min);
@@ -77,22 +79,40 @@ namespace Vge.Util
         /// <summary>
         /// Добавить координату в область
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB AddCoord(Vector3 pos)
         {
             Vector3 min = new Vector3(Min);
             Vector3 max = new Vector3(Max);
-
-            if (pos.X < min.X) min.X = pos.X;
-            else if (pos.X > max.X) max.X = pos.X;
-
-            if (pos.Y < min.Y) min.Y = pos.Y;
-            else if (pos.Y > max.Y) max.Y = pos.Y;
-
-            if (pos.Z < min.Z) min.Z = pos.Z;
-            else if (pos.Z > max.Z) max.Z = pos.Z;
-
+            if (pos.X < min.X) min.X = pos.X; else if (pos.X > max.X) max.X = pos.X;
+            if (pos.Y < min.Y) min.Y = pos.Y; else if (pos.Y > max.Y) max.Y = pos.Y;
+            if (pos.Z < min.Z) min.Z = pos.Z; else if (pos.Z > max.Z) max.Z = pos.Z;
             return new AxisAlignedBB(min, max);
         }
+
+        /// <summary>
+        /// Использовать низ, Y должен быть только отрицательный
+        /// +-----+
+        /// |     | Это рамка была
+        /// +-----+
+        /// |     | Эта рамка будет
+        /// +-----+
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Down(float y)
+            => new AxisAlignedBB(Min.X, Min.Y + y, Min.Z, Max.X, Min.Y, Max.Z);
+
+        /// <summary>
+        /// Использовать вверх, Y должен быть только положительный
+        /// +-----+
+        /// |     | Эта рамка будет
+        /// +-----+
+        /// |     | Это рамка была
+        /// +-----+
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Up(float y)
+            => new AxisAlignedBB(Min.X, Max.Y, Min.Z, Max.X, Max.Y + y, Max.Z);
 
         /// <summary>
         /// Возвращает ограничивающую рамку, расширенную указанным вектором
@@ -116,6 +136,20 @@ namespace Vge.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Contract(Vector3 vec) => new AxisAlignedBB(Min + vec, Max - vec);
+
+        /// <summary>
+        /// Возвращает ограничивающую рамку, пересечения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Intersection(AxisAlignedBB aabb)
+            => new AxisAlignedBB(Mth.Max(Min.X, aabb.Min.X), Mth.Max(Min.Y, aabb.Min.Y), Mth.Max(Min.Z, aabb.Min.Z),
+                Mth.Min(Max.X, aabb.Max.X), Mth.Min(Max.Y, aabb.Max.Y), Mth.Min(Max.Z, aabb.Max.Z));
+
+        /// <summary>
+        /// Вернуть размер коробки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 GetSize() => Max - Min;
 
         /// <summary>
         /// Если экземпляр и ограничивающие рамки аргумента перекрываются в измерениях Y и Z, 
@@ -290,13 +324,19 @@ namespace Vge.Util
         public bool IntersectsWith(AxisAlignedBB other) => other.Max.X > Min.X && other.Min.X < Max.X
                 ? (other.Max.Y > Min.Y && other.Min.Y < Max.Y ? other.Max.Z > Min.Z && other.Min.Z < Max.Z : false)
                 : false;
-
         /// <summary>
         /// Возвращает, пересекается ли данная ограничивающая рамка с блоком
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IntersectsWith(BlockPos blockPos) => blockPos.X + 1 > Min.X && blockPos.X < Max.X
                 ? (blockPos.Y + 1 > Min.Y && blockPos.Y < Max.Y ? blockPos.Z + 1 > Min.Z && blockPos.Z < Max.Z : false)
+                : false;
+        /// <summary>
+        /// Возвращает, пересекается ли данная ограничивающая рамка с блоком
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IntersectsWith(int x, int y, int z) => x + 1 > Min.X && x < Max.X
+                ? (y + 1 > Min.Y && y < Max.Y ? z + 1 > Min.Z && z < Max.Z : false)
                 : false;
 
         /// <summary>

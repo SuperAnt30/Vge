@@ -57,7 +57,7 @@ namespace Vge.Entity
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;
             if (IsMotionChange)
             {
-                _CheckMoveCollidingEntity();
+                _CheckMoveColliding();
 
                 // Фиксируем перемещение
                 IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;

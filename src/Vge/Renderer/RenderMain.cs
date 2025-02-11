@@ -306,8 +306,8 @@ namespace Vge.Renderer
 
             // Код с фиксированной функцией может использовать альфа-тестирование
             // Чтоб корректно прорисовывался кактус
-            gl.AlphaFunc(GL.GL_GREATER, 0.1f);
             gl.Enable(GL.GL_ALPHA_TEST);
+            gl.AlphaFunc(GL.GL_GREATER, 0.1f);
         }
 
         public virtual void DrawBegin()
@@ -343,7 +343,17 @@ namespace Vge.Renderer
                     _fps = 0;
                     _tps = 0;
                 }
-                _speedFrameAll += (float)(window.TimeTicks() - _timeBegin) / Ticker.TimerFrequency;
+                float timeFrame = (float)(window.TimeTicks() - _timeBegin) / Ticker.TimerFrequency;
+                _speedFrameAll += timeFrame;
+                Debug.FrizFps += timeFrame < 4 ? "." : timeFrame < 8 ? "," : timeFrame < 17 ? ":" : "|";
+                if (Debug.FrizFps.Length > 240) Debug.FrizFps = Debug.FrizFps.Substring(1);
+                //System.Console.Write(" MX:");
+                if (timeFrame > 8)
+                {
+                    System.Console.WriteLine(timeFrame);
+                }
+
+                //_speedFrameAll += (float)(window.TimeTicks() - _timeBegin) / Ticker.TimerFrequency;
             }
         }
 

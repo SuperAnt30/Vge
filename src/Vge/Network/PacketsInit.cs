@@ -1,4 +1,5 @@
-﻿using Vge.Network.Packets;
+﻿//#define PhysicsServer
+using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 
@@ -49,6 +50,7 @@ namespace Vge.Network
                 case 0x00: return new Packet00PingPong();
                 case 0x01: return new Packet01KeepAlive();
                 case 0x02: return new PacketC02LoginStart();
+                case 0x03: return new PacketC03UseEntity();
                 case 0x04: return new PacketC04PlayerPosition();
                 case 0x07: return new PacketC07PlayerDigging();
                 case 0x08: return new PacketC08PlayerBlockPlacement();

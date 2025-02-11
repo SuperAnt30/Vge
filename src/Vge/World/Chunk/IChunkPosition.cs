@@ -10,5 +10,9 @@
         /// Позиция Y текущего чанка
         /// </summary>
         int CurrentChunkY { get; }
+        /// <summary>
+        /// Дополнительные данные
+        /// </summary>
+        object Tag { get; }
     }
 }

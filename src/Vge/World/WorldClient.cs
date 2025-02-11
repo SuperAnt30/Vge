@@ -45,6 +45,12 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Внести лог
+        /// </summary>
+        public override void SetLog(string logMessage, params object[] args)
+            => Filer.Log.Client(logMessage, args);
+
+        /// <summary>
         /// Получить время в тактах объекта Stopwatch с момента запуска проекта
         /// </summary>
         public override long ElapsedTicks() => Game.ElapsedTicks();
@@ -57,18 +63,10 @@ namespace Vge.World
         /// </summary>
         public void Update()
         {
-            int count = LoadedEntityList.Count;
-            EntityBase entity;
-            int playerId = Game.Player.Id;
-            for (int i = 0; i < count; i++)
-            {
-                entity = LoadedEntityList.GetAt(i) as EntityBase;
-                if (entity.Id != playerId)
-                {
-                    entity.Update();
-                }
-            }
-
+            Filer.StartSection("Entities");
+            _UpdateEntities();
+            Filer.EndSection();
+            
             if (Ce.IsDebugDrawChunks && _flagDebugChunkMappingChanged)
             {
                 _flagDebugChunkMappingChanged = false;

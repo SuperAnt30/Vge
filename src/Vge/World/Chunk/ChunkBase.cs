@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Light;
@@ -16,6 +19,17 @@ namespace Vge.World.Chunk
         /// Исходящий буфер памяти для Zip
         /// </summary>
         private readonly static MemoryStream _bigStreamOut = new MemoryStream();
+
+        /// <summary>
+        /// Дополнительные данные
+        /// </summary>
+        public object Tag
+        {
+            get
+            { 
+                return CountEntity();
+            }
+        }
 
         /// <summary>
         /// Опции высот чанка
@@ -64,6 +78,16 @@ namespace Vge.World.Chunk
         public readonly ChunkLight Light;
 
         /// <summary>
+        /// Список сущностей в каждом псевдочанке
+        /// </summary>
+        public readonly MapEntity<EntityBase>[] ListEntities;
+
+        /// <summary>
+        /// Имеет ли этот фрагмент какие-либо сущности и, следовательно, требует сохранения на каждом тике
+        /// </summary>
+        private bool _hasEntities;
+
+        /// <summary>
         /// Установите значение true, если чанк был изменен и нуждается в внутреннем обновлении. Для сохранения
         /// </summary>
         private bool _isModified;
@@ -107,9 +131,11 @@ namespace Vge.World.Chunk
             Settings = settings;
             NumberSections = Settings.NumberSections;
             StorageArrays = new ChunkStorage[NumberSections];
+            ListEntities = new MapEntity<EntityBase>[NumberSections];
             for (int index = 0; index < NumberSections; index++)
             {
                 StorageArrays[index] = new ChunkStorage(KeyCash, index);
+                ListEntities[index] = new MapEntity<EntityBase>();
             }
             Light = new ChunkLight(this);
         }
@@ -692,6 +718,8 @@ namespace Vge.World.Chunk
                 if (isModifyRender)
                 {
                     World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                    // Пробуждение сущности
+                    _AwakenEntitiesTouching(blockPos);
                 }
 
                 if (World.IsRemote)
@@ -706,7 +734,12 @@ namespace Vge.World.Chunk
             }
             else if (blockState.Met != blockStateOld.Met) // Метданные разные
             {
-                if (isModifyRender) World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                if (isModifyRender)
+                {
+                    World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                    // Пробуждение сущности
+                    _AwakenEntitiesTouching(blockPos);
+                }
             }
 
             //if (!World.IsRemote && blockOld != block)
@@ -737,6 +770,204 @@ namespace Vge.World.Chunk
             int index = (y & 15) << 8 | z << 4 | x;
             ChunkStorage storage = StorageArrays[y >> 4];
             storage.SetData(index, blockState.Id, blockState.Met);
+        }
+
+        #endregion
+
+        #region Entity
+
+        /// <summary>
+        /// Добавить сущность в чанк
+        /// </summary>
+        public void AddEntity(EntityBase entity, int cx, int cy, int cz)
+        {
+            _hasEntities = true;
+            if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
+            entity.SetPositionChunk(cx, cy, cz);
+            ListEntities[cy].Add(entity.Id, entity);
+        }
+
+        /// <summary>
+        /// Удаляет сущность из конкретного псевдочанка
+        /// </summary>
+        /// <param name="entity">сущность</param>
+        /// <param name="cy">уровень псевдочанка</param>
+        public void RemoveEntityAtIndex(EntityBase entity, int cy)
+        {
+            if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
+            ListEntities[cy].Remove(entity.Id, entity);
+        }
+
+        /// <summary>
+        /// Удаляет сущность, используя его координату y в качестве индекса
+        /// </summary>
+        /// <param name="entity">сущность</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveEntity(EntityBase entity) => RemoveEntityAtIndex(entity, entity.ChunkPositionY);
+
+        /// <summary>
+        /// Получить количество сущностей в чанке
+        /// </summary>
+        public int CountEntity()
+        {
+            int count = 0;
+            for (int y = 0; y < NumberSections; y++)
+            {
+                count += ListEntities[y].Count;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Пробудить все сущности данного чанка
+        /// </summary>
+        //public void AwakenAllEntities()
+        //{
+        //    for (int y = 0; y < NumberSections; y++)
+        //    {
+        //        for (int i = 0; i < ListEntities[y].Count; i++)
+        //        {
+        //            ListEntities[y].GetAt(i).AwakenPhysicSleep();
+        //        }
+        //    }
+        //}
+
+        /// <summary>
+        /// Заполнить список сущностей, которые сталкиваются с aabb
+        /// </summary>
+        /// <param name="aabb">проверяемая рамка для пополнения списка</param>
+        /// <param name="id">исключение ID сущности</param>
+        public void FillInEntityBoundingBoxes(List<EntityBase> list,
+            AxisAlignedBB aabb, int minY, int maxY, int id)
+        {
+            EntityBase entity;
+            for (int cy = minY; cy <= maxY; cy++)
+            {
+                for (int i = 0; i < ListEntities[cy].Count; i++)
+                {
+                    entity = ListEntities[cy].GetAt(i);
+                    if (entity.Id != id && !entity.IsDead && entity.GetBoundingBox().IntersectsWith(aabb))
+                    {
+                        // Если пересекается вносим в список
+                        list.Add(entity);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Заполнить список сущностей, которые могут находится в секторах чанка
+        /// </summary>
+        /// <param name="id">исключение ID сущности</param>
+        public void FillInEntityBoundingBoxesFromSector(List<EntityBase> list, int minY, int maxY, int id)
+        {
+            EntityBase entity;
+            for (int cy = minY; cy <= maxY; cy++)
+            {
+                for (int i = 0; i < ListEntities[cy].Count; i++)
+                {
+                    entity = ListEntities[cy].GetAt(i);
+                    if (entity.Id != id && !entity.IsDead)
+                    {
+                        // Если пересекается вносим в список
+                        list.Add(entity);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Пробудить сущности соприкасающих с блоком и проверить 
+        /// соседние чанки если блок коснулся xz = 0 || 15
+        /// </summary>
+        private void _AwakenEntitiesTouching(BlockPos blockPos)
+        {
+            int x = blockPos.X;
+            int y = blockPos.Y + 1;
+            int z = blockPos.Z;
+            int cy = y >> 4;
+
+            if (cy >= NumberSections) cy = NumberSections - 1;
+
+            EntityBase entity;
+            for (int i = 0; i < ListEntities[cy].Count; i++)
+            {
+                entity = ListEntities[cy].GetAt(i);
+                if (!entity.IsDead && entity.IsPhysicSleep())
+                {
+                    if (entity.GetBoundingBox().IntersectsWith(x, y, z))
+                    {
+                        entity.AwakenPhysicSleep();
+                    }
+                }
+            }
+
+            int bx = x & 15;
+            int bz = z & 15;
+
+            // Нужен соседний чанк
+            if (bx == 0)
+            {
+                ChunkBase chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY);
+                if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z);
+                if (bz == 0)
+                {
+                    chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY - 1);
+                    if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z - 1);
+                }
+                else if (bz == 15)
+                {
+                    chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY + 1);
+                    if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z + 1);
+                }
+            }
+            else if (bx == 15)
+            {
+                ChunkBase chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY);
+                if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z);
+                if (bz == 0)
+                {
+                    chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY - 1);
+                    if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z - 1);
+                }
+                else if (bz == 15)
+                {
+                    chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY + 1);
+                    if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z + 1);
+                }
+            }
+            else if (bz == 0)
+            {
+                ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY - 1);
+                if (chunk != null) chunk.AwakenEntitiesTouching(x, y, z - 1);
+            }
+            else if (bz == 15)
+            {
+                ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY + 1);
+                if (chunk != null) chunk.AwakenEntitiesTouching(x, y, z + 1);
+            }
+        }
+
+        /// <summary>
+        /// Пробудить сущности соприкасающих с блоком
+        /// </summary>
+        public void AwakenEntitiesTouching(int x, int y, int z)
+        {
+            int cy = y >> 4;
+            if (cy >= NumberSections) cy = NumberSections - 1;
+            int count = ListEntities[cy].Count;
+            EntityBase entity;
+            for (int i = 0; i < count; i++)
+            {
+                entity = ListEntities[cy].GetAt(i);
+                if (!entity.IsDead && entity.IsPhysicSleep())
+                {
+                    if (entity.GetBoundingBox().IntersectsWith(x, y, z))
+                    {
+                        entity.AwakenPhysicSleep();
+                    }
+                }
+            }
         }
 
         #endregion

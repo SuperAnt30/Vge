@@ -17,7 +17,7 @@ namespace Vge.Entity
         /// <summary>
         /// Параметр падения
         /// </summary>
-        private const float _gravity = .08f;
+        public const float Gravity = .08f;
         /// <summary>
         /// Сопротивление воздуха
         /// </summary>
@@ -45,7 +45,7 @@ namespace Vge.Entity
         /// <summary>
         /// Параметр падения
         /// </summary>
-        private const float _gravity = .039f;
+        public const float Gravity = .039f;
         /// <summary>
         /// Сопротивление воздуха
         /// </summary>
@@ -71,7 +71,7 @@ namespace Vge.Entity
         /// <summary>
         /// Отскок от гравитации горизонта
         /// </summary>
-        public const float GravityRebound = _gravity * 2f;
+        public const float GravityRebound = Gravity * 2f;
 
         /// <summary>
         /// Скользкость по умолчанию
@@ -166,6 +166,23 @@ namespace Vge.Entity
                 }
             }
 
+            // TODO::2025-02-10 сделать лимит по максимальному импульсу
+            if (ImpulseX != 0)
+            {
+                MotionX += ImpulseX;
+                ImpulseX = 0;
+            }
+            if (ImpulseY != 0)
+            {
+                MotionY += ImpulseY;
+                ImpulseY = 0;
+            }
+            if (ImpulseZ != 0)
+            {
+                MotionZ += ImpulseZ;
+                ImpulseZ = 0;
+            }
+
             // Ускорение
             float acceleration;
             // Параметр инерции
@@ -213,7 +230,7 @@ namespace Vge.Entity
             }
 
             // Проверка каллизии
-            _CheckMoveCollidingEntity();
+            _CheckMoveColliding();
 
             // Если мелочь убираем
             if (Mth.Abs(MotionX) < .005f) MotionX = 0;
@@ -230,23 +247,29 @@ namespace Vge.Entity
                 Entity.PosZ += MotionZ;
                 MotionHorizon = Glm.Distance(new Vector2(MotionX, MotionZ));
                 MotionVertical = Mth.Abs(MotionY);
+                AwakenPhysics();
+
                 Debug.Player = Entity.GetChunkPosition();
 
-                //System.Console.Write("Y:");
-                //System.Console.Write(Entity.PosY);
-                //System.Console.Write(" X:");
-                //System.Console.Write(Entity.PosX);
-                //System.Console.Write(" MY:");
-                //System.Console.Write(MotionY);
-                //System.Console.Write(" MX:");
-                //System.Console.WriteLine(MotionX);
+                //if (Entity.Type == EnumEntity.Stone)
+                //{
+                //    System.Console.Write("Y:");
+                //    System.Console.Write(Entity.PosY);
+                //    System.Console.Write(" X:");
+                //    System.Console.Write(Entity.PosX);
+                //    System.Console.Write(" MY:");
+                //    System.Console.Write(MotionY);
+                //    System.Console.Write(" MX:");
+                //    System.Console.WriteLine(MotionX);
+                //}
             }
             else
             {
                 MotionHorizon = MotionVertical = 0;
+                if (_indexSleep > 0) _indexSleep--;
             }
             // Параметр падение 
-            MotionY -= _gravity; // minecraft .08f
+            MotionY -= Gravity; // minecraft .08f
 
             // Инерция
             MotionX *= inertia;
@@ -286,7 +309,7 @@ namespace Vge.Entity
                 }
 
                 y = heightAutoJump;
-                List<AxisAlignedBB> aabbs = Collision.GetCollidingBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ), Entity.Id);
+                List<AxisAlignedBB> aabbs = Collision.GetStaticBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ));
                 AxisAlignedBB aabbEntity2 = boundingBox.Clone();
                 AxisAlignedBB aabb = aabbEntity2.AddCoordBias(MotionX, 0, MotionZ);
 

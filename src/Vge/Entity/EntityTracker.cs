@@ -107,10 +107,10 @@ namespace Vge.Entity
                 }
             }
                 
-            if (TrackedEntity.LevelMotionChange == 1)
+            if (TrackedEntity.LevelMotionChange > 0)
             {
                 SendPacketPlayers(new PacketS14EntityMotion(TrackedEntity));
-                TrackedEntity.LevelMotionChange = 0;
+                TrackedEntity.LevelMotionChange--;
             }
 
             //else if (TrackedEntity is EntityItem entityItem)
@@ -121,10 +121,10 @@ namespace Vge.Entity
             //    }
             //}
             //else 
-            if (TrackedEntity is EntityThrowable entityThrowable)
-            {
-                SendPacketPlayers(new PacketS14EntityMotion(entityThrowable));
-            }
+            //if (TrackedEntity is EntityThrowable entityThrowable)
+            //{
+            //    SendPacketPlayers(new PacketS14EntityMotion(entityThrowable));
+            //}
 
             //if (TrackedEntity.MetaData.IsChanged) //UpdateCounter % UpdateFrequency == 0)
             //{

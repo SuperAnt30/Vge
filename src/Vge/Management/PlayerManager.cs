@@ -317,17 +317,12 @@ namespace Vge.Management
         /// </summary>
         public void Update()
         {
-            int countPl = 0;
-            // Обновление игроков
-            if (PlayerOwner != null)
-            {
-                countPl++;
-                _PlayerServerUpdate(PlayerOwner);
-            }
+            int countPl = PlayerOwner != null ? 1 : 0;
+            // Только сетевые игроки
             for (int i = 0; i < _players.Count; i++)
             {
                 countPl++;
-                _PlayerServerUpdate(_players[i]);
+                _PlayerServerUpdateTimeOut(_players[i]);
             }
             // Отладка
             if (Ce.IsDebugDrawChunks)
@@ -346,19 +341,15 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Обновление раз в тик на сервере
+        /// Обновление раз в тик на сервере для проверки таймаута
         /// </summary>
-        private void _PlayerServerUpdate(PlayerServer entityPlayer)
+        private void _PlayerServerUpdateTimeOut(PlayerServer entityPlayer)
         {
             // Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
             if (!entityPlayer.Owner && entityPlayer.TimeOut())
             {
                 // На сервере пометка убрать
                 PlayerRemove(entityPlayer, Sr.TimeOut);
-            }
-            else
-            {
-                entityPlayer.Update();
             }
         }
 

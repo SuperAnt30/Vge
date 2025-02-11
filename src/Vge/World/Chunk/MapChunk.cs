@@ -21,9 +21,6 @@ namespace Vge.World.Chunk
         /// </summary>
         private readonly Dictionary<ulong, Region> _map = new Dictionary<ulong, Region>();
 
-        private int _x, _y;
-        private ulong _xy;
-
         /// <summary>
         /// Перерасчитать количество
         /// </summary>
@@ -56,14 +53,14 @@ namespace Vge.World.Chunk
         /// </summary>
         public void Add(IChunkPosition value)
         {
-            _x = value.CurrentChunkX;
-            _y = value.CurrentChunkY;
-            _xy = ((ulong)((uint)_x >> 5) << 32) | ((uint)_y >> 5);
-            if (!_map.ContainsKey(_xy))
+            int x = value.CurrentChunkX;
+            int y = value.CurrentChunkY;
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+            if (!_map.ContainsKey(xy))
             {
-                _map.Add(_xy, new Region());
+                _map.Add(xy, new Region());
             }
-            if (_map[_xy].Set(_x, _y, value))
+            if (_map[xy].Set(x, y, value))
             {
                 Count++;
             }
@@ -77,13 +74,13 @@ namespace Vge.World.Chunk
             IChunkPosition chunk = Get(x, y);
             if (chunk != null)
             {
-                _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-                if (_map[_xy].Remove(x, y))
+                ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+                if (_map[xy].Remove(x, y))
                 {
                     Count--;
-                    if (_map[_xy].Count == 0)
+                    if (_map[xy].Count == 0)
                     {
-                        _map.Remove(_xy);
+                        _map.Remove(xy);
                     }
                 }
             }
@@ -94,10 +91,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public IChunkPosition Get(int x, int y)
         {
-            _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-            if (_map.ContainsKey(_xy))
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+            if (_map.ContainsKey(xy))
             {
-                return _map[_xy].Get(x, y);
+                return _map[xy].Get(x, y);
             }
             return null;
         }
@@ -113,10 +110,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public bool Contains(int x, int y)
         {
-            _xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
-            if (_map.ContainsKey(_xy))
+            ulong xy = ((ulong)((uint)x >> 5) << 32) | ((uint)y >> 5);
+            if (_map.ContainsKey(xy))
             {
-                return _map[_xy].Contains(x, y);
+                return _map[xy].Contains(x, y);
             }
             return false;
         }
@@ -164,8 +161,6 @@ namespace Vge.World.Chunk
 
             private readonly IChunkPosition[] _buffer = new IChunkPosition[1024];
 
-            private int _index;
-
             /// <summary>
             /// Проверить наличие чанка
             /// </summary>
@@ -181,16 +176,16 @@ namespace Vge.World.Chunk
             /// </summary>
             public bool Set(int x, int y, IChunkPosition value)
             {
-                _index = (y & 31) << 5 | (x & 31);
-                if (_buffer[_index] == null)
+                int index = (y & 31) << 5 | (x & 31);
+                if (_buffer[index] == null)
                 {
                     // Создаём
                     Count++;
-                    _buffer[_index] = value;
+                    _buffer[index] = value;
                     return true;
                 }
                 // Перезаписываем
-                _buffer[_index] = value;
+                _buffer[index] = value;
                 return false;
             }
 
@@ -199,11 +194,11 @@ namespace Vge.World.Chunk
             /// </summary>
             public bool Remove(int x, int y)
             {
-                _index = (y & 31) << 5 | (x & 31);
-                if (_buffer[_index] != null)
+                int index = (y & 31) << 5 | (x & 31);
+                if (_buffer[index] != null)
                 {
                     // Удаляем
-                    _buffer[_index] = null;
+                    _buffer[index] = null;
                     Count--;
                     return true;
                 }
@@ -228,10 +223,10 @@ namespace Vge.World.Chunk
             public IChunkPosition[] ToArrayDebug()
             {
                 IChunkPosition[] ar = new IChunkPosition[Count];
-                _index = 0;
+                int index = 0;
                 for (int i = 0; i < 1024; i++)
                 {
-                    if (_buffer[i] != null) ar[_index++] = _buffer[i];
+                    if (_buffer[i] != null) ar[index++] = _buffer[i];
                 }
                 return ar;
             }

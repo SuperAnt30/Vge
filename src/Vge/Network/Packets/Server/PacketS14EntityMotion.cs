@@ -16,6 +16,7 @@ namespace Vge.Network.Packets.Server
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
         public bool OnGround { get; private set; }
+        public bool Sleep { get; private set; } // временно
 
         public PacketS14EntityMotion(EntityBase entity)
         {
@@ -26,6 +27,7 @@ namespace Vge.Network.Packets.Server
             Yaw = entity.RotationYaw;
             Pitch = entity.RotationPitch;
             OnGround = entity.OnGround;
+            Sleep = entity.IsPhysicSleepDebug();
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -37,6 +39,7 @@ namespace Vge.Network.Packets.Server
             Yaw = stream.Float();
             Pitch = stream.Float();
             OnGround = stream.Bool();
+            Sleep = stream.Bool();
         }
 
         public void WritePacket(WritePacket stream)
@@ -48,6 +51,7 @@ namespace Vge.Network.Packets.Server
             stream.Float(Yaw);
             stream.Float(Pitch);
             stream.Bool(OnGround);
+            stream.Bool(Sleep);
         }
     }
 }

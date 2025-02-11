@@ -20,6 +20,10 @@ namespace Vge.Entity
         /// </summary>
         public int Id { get; protected set; }
         /// <summary>
+        /// Тип сущности
+        /// </summary>
+        public EnumEntity Type { get; protected set; }
+        /// <summary>
         /// Сущность мертва, не активна
         /// </summary>
         public bool IsDead { get; protected set; } = false;
@@ -78,18 +82,35 @@ namespace Vge.Entity
 
         #endregion
 
+        #region Chunk
+
         /// <summary>
-        /// Координату X в каком чанке находится
+        /// Координату X в каком чанке находится перерасчётес с PosX
         /// </summary>
         public int ChunkPositionX => Mth.Floor(PosX) >> 4;
         /// <summary>
-        /// Координата Z в каком чанке находится
+        /// Координата Y в каком чанке находится перерасчётес с PosY
+        /// </summary>
+        public int ChunkPositionY => Mth.Floor(PosY) >> 4;
+        /// <summary>
+        /// Координата Z в каком чанке находится перерасчётес с PosZ
         /// </summary>
         public int ChunkPositionZ => Mth.Floor(PosZ) >> 4;
+
         /// <summary>
-        /// Координата Y
+        /// Координату X в каком чанке находится перерасчётес с PosX
         /// </summary>
-        public int PositionY => Mth.Floor(PosY);
+        public int ChunkPositionPrevX { get; private set; }
+        /// <summary>
+        /// Координата Y в каком чанке находится перерасчётес с PosY
+        /// </summary>
+        public int ChunkPositionPrevY { get; private set; }
+        /// <summary>
+        /// Координата Z в каком чанке находится перерасчётес с PosZ
+        /// </summary>
+        public int ChunkPositionPrevZ { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -97,12 +118,17 @@ namespace Vge.Entity
         /// Объект физики
         /// </summary>
         public PhysicsBase Physics { get; protected set; }
-        
+
         /// <summary>
         /// Уровень перемещение. Для сервера 1 и 0 чтоб передвавать клиентам перемещение.
         /// Для клиента 2 - 0, чтоб минимизировать запросы.
         /// </summary>
         public byte LevelMotionChange;
+
+        /// <summary>
+        /// Был ли эта сущность добавлена в чанк, в котором он находится? 
+        /// </summary>
+        public bool AddedToChunk;
 
         /// <summary>
         /// Пол ширина сущности
@@ -123,10 +149,36 @@ namespace Vge.Entity
         public bool OnGround = false;
 
         /// <summary>
+        /// Спит ли физика, для отладки если Physics == null
+        /// </summary>
+        private bool _physicSleepDebug;
+
+        /// <summary>
         /// Задать индекс
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEntityId(int id) => Id = id;
+
+        #region Методы для Position Chunk
+
+        /// <summary>
+        /// Получить координаты чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector2i GetChunkPosition() => new Vector2i(ChunkPositionX, ChunkPositionZ);
+
+        /// <summary>
+        /// Задать координаты чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetPositionChunk(int x, int y, int z)
+        {
+            ChunkPositionPrevX = x;
+            ChunkPositionPrevY = y;
+            ChunkPositionPrevZ = z;
+        }
+
+        #endregion
 
         #region Методы для Position и Rotation
 
@@ -135,12 +187,6 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetPositionVec() => new Vector3(PosX, PosY, PosZ);
-
-        /// <summary>
-        /// Получить координаты чанка
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector2i GetChunkPosition() => new Vector2i(ChunkPositionX, ChunkPositionZ);
 
         /// <summary>
         /// Изменена ли позиция
@@ -286,6 +332,8 @@ namespace Vge.Entity
 
         #endregion
 
+        #region AxisAlignedBB
+
         /// <summary>
         /// Получить ограничительную рамку сущности
         /// </summary>
@@ -299,6 +347,153 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB GetBoundingBox(float x, float y, float z) 
             => new AxisAlignedBB(x - Width, y, z - Width, x + Width, y + Height, z + Width);
+
+        /// <summary>
+        /// Возвращает, пересекается ли данная ограничивающая рамка с этой сущностью
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IntersectsWith(AxisAlignedBB other) => GetBoundingBox().IntersectsWith(other);
+
+        #endregion
+
+        #region Physic
+
+        /// <summary>
+        /// Пробудить физику
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AwakenPhysicSleep()
+        {
+            if (Physics != null)
+            {
+                Physics.AwakenPhysics();
+            }
+        }
+
+        /// <summary>
+        /// Пробудить физику выбранной сущности.
+        /// Текущаяя сущность выступает в роли заказчика физики,
+        /// так-как она может быть на сервере или на клиенте у игроков
+        /// </summary>
+        public void AwakenPhysicSleep(EntityBase entity)
+        {
+            entity.AwakenPhysicSleep();
+            _SetAwakenPhysicSleep(entity.Id);
+        }
+
+        /// <summary>
+        /// Задать выбранной сущности импульс
+        /// </summary>
+        protected virtual void _SetAwakenPhysicSleep(int id) { }
+
+        /// <summary>
+        /// Спит ли физика, если физики нет, не спит (false)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPhysicSleep() 
+            => Physics != null ? Physics.IsPhysicSleep() : false;
+
+        /// <summary>
+        /// Спит ли физика для отладки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPhysicSleepDebug()
+            => Physics != null ? Physics.IsPhysicSleep() : _physicSleepDebug;
+
+        /// <summary>
+        /// Сон физики для отладки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetPhysicsSleepDebug(bool sleep) => _physicSleepDebug = sleep;
+
+        /// <summary>
+        /// Задать импульс
+        /// </summary>
+        public virtual void SetPhysicsImpulse(float x, float y, float z)
+        {
+            if (Physics != null)
+            {
+                Physics.ImpulseX += x;
+                Physics.ImpulseY += y;
+                Physics.ImpulseZ += z;
+
+                if  (Physics.IsPhysicSleep()) Physics.AwakenPhysics();
+            }
+        }
+
+        /// <summary>
+        /// Задать выбранной сущности импульс
+        /// </summary>
+        protected virtual void _SetEntityPhysicsImpulse(int id, float x, float y, float z) { }
+
+        /// <summary>
+        /// Задать импулс выбранной сущности.
+        /// Текущаяя сущность выступает в роли заказчика физики,
+        /// так-как она может быть на сервере или на клиенте у игроков
+        /// </summary>
+        public void SetEntityPhysicsImpulse(EntityBase entity, float x, float y, float z)
+        {
+            entity.SetPhysicsImpulse(x, y, z);
+            _SetEntityPhysicsImpulse(entity.Id, x, y, z);
+        }
+
+        /// <summary>
+        /// Применяет скорость к каждому из объектов, отталкивая их друг от друга. На сервере!
+        /// </summary>
+        public void ApplyEntityCollision(EntityBase entityIn)
+        {
+            if (!entityIn.NoClip() && !NoClip())
+            {
+                float x = entityIn.PosX - PosX;
+                float z = entityIn.PosZ - PosZ;
+
+                float k = Mth.Max(Mth.Abs(x), Mth.Abs(z));
+
+                if (k >= 0.00999999f)
+                {
+                    k = Mth.Sqrt(k);
+                    x /= k;
+                    z /= k;
+                    float k2 = 1f / k;
+                    if (k2 > 1f) k2 = 1f;
+
+                    x *= k2;
+                    z *= k2;
+                    x *= .05f;
+                    z *= .05f;
+
+                    SetPhysicsImpulse(-x, 0, -z);
+                    SetEntityPhysicsImpulse(entityIn, x, 0, z);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Будет ли эта сущность проходить сквозь блоки
+        /// </summary>
+        public virtual bool NoClip() => false;
+        /// <summary>
+        /// Возвращает true, если этот объект можно толкать и толкает другие объекты при столкновении
+        /// </summary>
+        public virtual bool CanBePushed() => true;
+        /// <summary>
+        /// Вес сущности для определения импулса между сущностями,
+        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
+        /// </summary>
+        public virtual float GetWeight() => 0;
+        /// <summary>
+        /// Получить коэффициент силы импульса к сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetWeightImpulse(EntityBase entity)
+        {
+            float ew = entity.GetWeight();
+            float f = GetWeight() + ew;
+            if (f == 0) return 1f;
+            return ew / f;
+        }
+
+        #endregion
 
         #region Tracker
 

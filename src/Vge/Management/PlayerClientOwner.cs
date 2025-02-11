@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿//#define PhysicsServer
+using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
@@ -131,8 +132,9 @@ namespace Vge.Management
         /// </summary>
         public void WorldStarting()
         {
-            //Physics = new PhysicsFly(_game.World.Collision, this, true);
+            //Physics = new PhysicsFly(_game.World.Collision, this);
             //Physics = new PhysicsGround(_game.World.Collision, this);
+
             Physics = new PhysicsPlayer(_game.World.Collision, this);
         }
 
@@ -169,6 +171,8 @@ namespace Vge.Management
 
             RotationYaw = yaw;
             RotationPitch = pitch;
+
+            Physics.AwakenPhysics();
         }
 
         /// <summary>
@@ -307,10 +311,10 @@ namespace Vge.Management
                 zb = zc << 4;
 
                 x1 = xb - 15;
-                y1 = -PositionY;
+                y1 = -Mth.Floor(PosY);
                 z1 = zb - 15;
                 x2 = xb + 15;
-                y2 = _heightChinkFrustumCulling - PositionY;
+                y2 = _heightChinkFrustumCulling + y1;
                 z2 = zb + 15;
 
                 if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
@@ -422,6 +426,7 @@ namespace Vge.Management
         /// </summary>
         public void InputKeyMove()
         {
+            Physics.AwakenPhysics();
 #if PhysicsServer
             _game.TrancivePacket(new PacketC0CInput(Movement));
 #endif
@@ -455,30 +460,33 @@ namespace Vge.Management
                 PosPrevY = PosY;
                 PosPrevZ = PosZ;
             }
-            // Расчитать перемещение в объекте физика
-            Physics.LivingUpdate();
-
-            // Для отправки
-            if (IsRotationChange())
+            if (!Physics.IsPhysicSleep())
             {
-                RotationPrevYaw = RotationYaw;
-                RotationPrevPitch = RotationPitch;
+                // Расчитать перемещение в объекте физика
+                Physics.LivingUpdate();
 
-                if (Physics.IsMotionChange)
+                // Для отправки
+                if (IsRotationChange())
                 {
-                    // И перемещение и вращение
-                    _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, RotationYaw, RotationPitch, false));
+                    RotationPrevYaw = RotationYaw;
+                    RotationPrevPitch = RotationPitch;
+
+                    if (Physics.IsMotionChange)
+                    {
+                        // И перемещение и вращение
+                        _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, RotationYaw, RotationPitch, false));
+                    }
+                    else
+                    {
+                        // Только вращение
+                        _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch, false));
+                    }
                 }
-                else
+                else if (Physics.IsMotionChange)
                 {
-                    // Только вращение
-                    _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch, false));
+                    // Только перемещение
+                    _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, false));
                 }
-            }
-            else if (Physics.IsMotionChange)
-            {
-                // Только перемещение
-                _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, false));
             }
 #endif
 
@@ -511,7 +519,7 @@ namespace Vge.Management
                 _positionAlphaBlockPrev = PositionAlphaBlock;
 
                 int chX = ChunkPositionX;
-                int chY = PositionY >> 4;
+                int chY = ChunkPositionY;
                 int chZ = ChunkPositionZ;
                 Vector3i pos;
                 ChunkRender chunk = null;
@@ -549,9 +557,7 @@ namespace Vge.Management
                 // Если смещение блока
                 _positionAlphaBlockPrev = PositionAlphaBlock;
                 _game.World.ChunkPrClient.ModifiedToRenderAlpha(
-                    ChunkPositionX,
-                    PositionY >> 4,
-                    ChunkPositionZ);
+                    ChunkPositionX, ChunkPositionY, ChunkPositionZ);
             }
         }
 
@@ -625,6 +631,18 @@ namespace Vge.Management
 
         #endregion
 
+        /// <summary>
+        /// Задать выбранной сущности импульс
+        /// </summary>
+        protected override void _SetEntityPhysicsImpulse(int id, float x, float y, float z)
+            => _game.TrancivePacket(new PacketC03UseEntity(id, x, y, z));
+
+        /// <summary>
+        /// Задать выбранной сущности импульс
+        /// </summary>
+        protected override void _SetAwakenPhysicSleep(int id)
+            => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
+
         #region Packet
 
         /// <summary>
@@ -681,7 +699,7 @@ namespace Vge.Management
 
             Vector3 pos = GetPositionVec();
             pos.Y += Eye;// GetEyeHeight();
-            return _game.World.RayCastBlock(pos, _rayLook, 16, collidable, /*Id,*/ isLiquid);
+            return _game.World.RayCastBlock(pos, _rayLook, 8, collidable, /*Id,*/ isLiquid);
             // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
         }
 
