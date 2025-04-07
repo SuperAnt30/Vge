@@ -35,6 +35,7 @@ internal sealed class Srl
 
     internal const string TheConnectionIsBroken = "Связь разорвана";
     internal const string TheConnectionWasBrokenDueToAnError = "Связь разорвана из-за ошибки. {0}";
+    internal const string TheConnectionWasCreatedSoWhereItShouldBeMissing = "Соединение было создано, там где должно отсутствовать";
 
     #endregion
 

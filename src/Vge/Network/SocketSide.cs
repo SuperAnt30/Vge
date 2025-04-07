@@ -97,6 +97,12 @@ namespace Vge.Network
                     };
                     socket.Connect(ip, port);
                 }
+                else
+                {
+                    // Соединение было создано, там где должно отсутствовать
+                    OnError(new ErrorEventArgs(new Exception(Srl.TheConnectionWasCreatedSoWhereItShouldBeMissing)));
+                    return;
+                }
             }
             catch (SocketException e)
             {
