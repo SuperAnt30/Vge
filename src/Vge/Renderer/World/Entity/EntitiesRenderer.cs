@@ -37,9 +37,8 @@ namespace Vge.Renderer.World.Entity
             float z = _game.Player.PosFrameZ;
             for (int i = 0; i < count; i++)
             {
-                entity = _game.World.LoadedEntityList.GetAt(i) as EntityBase;
-                int entityId = entity.Id;
-                if (entityId != playerId)
+                entity = _game.World.LoadedEntityList.GetAt(i);// as EntityBase;
+                if (entity.Id != playerId)
                 {
                     _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 
                         entity.GetPosFrameX(timeIndex) - x,
@@ -65,14 +64,14 @@ namespace Vge.Renderer.World.Entity
             _hitbox.Dispose();
         }
 
-        private void _RenderEntity(EntityBase entity, float timeIndex)
-        {
-            _game.WorldRender.Render.ShaderBindLine(_game.Player.View,
-                _game.Player.PosFrameX,
-                _game.Player.PosFrameY,
-                _game.Player.PosFrameZ);
-           // _owner.Draw();
-        }
+        //private void _RenderEntity(EntityBase entity, float timeIndex)
+        //{
+        //    _game.WorldRender.Render.ShaderBindLine(_game.Player.View,
+        //        _game.Player.PosFrameX,
+        //        _game.Player.PosFrameY,
+        //        _game.Player.PosFrameZ);
+        //   // _owner.Draw();
+        //}
 
     }
 }

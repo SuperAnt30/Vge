@@ -1,4 +1,5 @@
 ﻿//#define PhysicsServer
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
@@ -37,6 +38,15 @@ namespace Vge.Management
         /// Массив всех видимых чанков 
         /// </summary>
         public readonly ListFast<ChunkRender> FrustumCulling = new ListFast<ChunkRender>();
+
+        /// <summary>
+        /// Смещения вращение по оси Y в радианах, мышью до такта
+        /// </summary>
+        public float RotationYawBiasInput;
+        /// <summary>
+        /// Смещения вращение вверх вниз в радианах, мышью до такта
+        /// </summary>
+        public float RotationPitchBiasInput;
 
         /// <summary>
         /// Выбранный объект
@@ -156,23 +166,16 @@ namespace Vge.Management
         /// <param name="centerBiasY">растояние по Y от центра</param>
         public void MouseMove(int centerBiasX, int centerBiasY)
         {
-            if (centerBiasX == 0 && centerBiasY == 0) return;
-
-            // Чувствительность мыши
-            float speedMouse = Options.MouseSensitivityFloat;
-            // Определяем углы смещения
-            float pitch = RotationPitch - centerBiasY / (float)Gi.Height * speedMouse;
-            float yaw = RotationYaw + centerBiasX / (float)Gi.Width * speedMouse;
-            
-            if (pitch < -Pi89) pitch = -Pi89;
-            if (pitch > Pi89) pitch = Pi89;
-            if (yaw > Glm.Pi) yaw -= Glm.Pi360;
-            if (yaw < -Glm.Pi) yaw += Glm.Pi360;
-
-            RotationYaw = yaw;
-            RotationPitch = pitch;
-
-            Physics.AwakenPhysics();
+            if (centerBiasX != 0 || centerBiasY != 0)
+            {
+                // Чувствительность мыши
+                float speedMouse = Options.MouseSensitivityFloat;
+                // Определяем углы смещения
+                RotationPitchBiasInput -= centerBiasY / (float)Gi.Height * speedMouse;
+                RotationYawBiasInput += centerBiasX / (float)Gi.Width * speedMouse;
+                // Пробуждаем физику
+                Physics.AwakenPhysics();
+            }
         }
 
         /// <summary>
@@ -189,10 +192,13 @@ namespace Vge.Management
                 PosFrameZ = PosPrevZ = PosZ;
                 RotationFrameYaw = RotationPrevYaw = RotationYaw;
                 RotationFramePitch = RotationPrevPitch = RotationPitch;
+                RotationYawBiasInput = RotationPitchBiasInput = 0;
             }
         }
 
         #endregion
+
+            
 
         #region Действие рук, левый или правый клик
 
@@ -466,10 +472,21 @@ namespace Vge.Management
                 Physics.LivingUpdate();
 
                 // Для отправки
-                if (IsRotationChange())
+                if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
                 {
                     RotationPrevYaw = RotationYaw;
                     RotationPrevPitch = RotationPitch;
+
+                    RotationPitch += RotationPitchBiasInput;
+                    if (RotationPitch < -Pi89) RotationPitch = -Pi89;
+                    else if (RotationPitch > Pi89) RotationPitch = Pi89;
+
+                    RotationYaw += RotationYawBiasInput;
+                    if (RotationYaw > Glm.Pi) RotationYaw -= Glm.Pi360;
+                    else if (RotationYaw < -Glm.Pi) RotationYaw += Glm.Pi360;
+
+                    // Обнуляем смещение вращения
+                    RotationYawBiasInput = RotationPitchBiasInput = 0;
 
                     if (Physics.IsMotionChange)
                     {
