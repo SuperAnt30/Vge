@@ -17,6 +17,8 @@ namespace Vge.Network.Packets.Server
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
 
+        private bool _isLiving;
+
         public PacketS0FSpawnMob(EntityBase entity)
         {
             Index = entity.Id;
@@ -24,8 +26,18 @@ namespace Vge.Network.Packets.Server
             X = entity.PosX;
             Y = entity.PosY;
             Z = entity.PosZ;
-            Yaw = entity.RotationYaw;
-            Pitch = entity.RotationPitch;
+
+            if (entity is EntityLiving entityLiving)
+            {
+                _isLiving = true;
+                Yaw = entityLiving.RotationYaw;
+                Pitch = entityLiving.RotationPitch;
+            }
+            else
+            {
+                _isLiving = false;
+                Yaw = Pitch = 0;
+            }
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -35,8 +47,12 @@ namespace Vge.Network.Packets.Server
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
-            Yaw = stream.Float();
-            Pitch = stream.Float();
+            _isLiving = stream.Bool();
+            if (_isLiving)
+            {
+                Yaw = stream.Float();
+                Pitch = stream.Float();
+            }
         }
 
         public void WritePacket(WritePacket stream)
@@ -46,8 +62,12 @@ namespace Vge.Network.Packets.Server
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
-            stream.Float(Yaw);
-            stream.Float(Pitch);
+            stream.Bool(_isLiving);
+            if (_isLiving)
+            {
+                stream.Float(Yaw);
+                stream.Float(Pitch);
+            }
         }
     }
 }

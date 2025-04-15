@@ -1,5 +1,4 @@
-﻿using System;
-using Vge.World;
+﻿using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Entity.List
@@ -12,7 +11,7 @@ namespace Vge.Entity.List
         /// <summary>
         /// Кто метнул предмет
         /// </summary>
-        public EntityBase EntityThrower { get; private set; }
+        public EntityLiving EntityThrower { get; private set; }
         /// <summary>
         /// Сколько тиков жизни
         /// </summary>
@@ -43,8 +42,8 @@ namespace Vge.Entity.List
         /// </summary>
         /// <param name="entityThrower">Кто метнул</param>
         /// <param name="speedThrower">Скорость метания</param>
-        public EntityThrowable(EnumEntity type, CollisionBase collision, 
-            EntityBase entityThrower, float speedThrower = .49f)
+        public EntityThrowable(EnumEntity type, CollisionBase collision,
+            EntityLiving entityThrower, float speedThrower = .49f)
         {
             EntityThrower = entityThrower;
             Type = type;
@@ -124,17 +123,18 @@ namespace Vge.Entity.List
 
                     if (IsPositionChange())
                     {
-                        float x = -Physics.MotionX;
-                        float z = -Physics.MotionZ;
-                        RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
-                        RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
+                        //float x = -Physics.MotionX;
+                        //float z = -Physics.MotionZ;
 
-                        // RotationYaw = Glm.WrapAngleToPi(RotationYaw + Glm.Pi45);
+                        //RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
+                        //RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
+                        //RotationPrevYaw = RotationYaw;
+                        //RotationPrevPitch = RotationPitch;
+
                         PosPrevX = PosX;
                         PosPrevY = PosY;
                         PosPrevZ = PosZ;
-                        RotationPrevYaw = RotationYaw;
-                        RotationPrevPitch = RotationPitch;
+                        
                         LevelMotionChange = 2;
                     }
                     else if (Physics.IsPhysicAlmostSleep())

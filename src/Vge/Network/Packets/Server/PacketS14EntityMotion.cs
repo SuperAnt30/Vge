@@ -18,16 +18,28 @@ namespace Vge.Network.Packets.Server
         public bool OnGround { get; private set; }
         public bool Sleep { get; private set; } // временно
 
+        private bool _isLiving;
+
         public PacketS14EntityMotion(EntityBase entity)
         {
             Index = entity.Id;
             X = entity.PosX;
             Y = entity.PosY;
             Z = entity.PosZ;
-            Yaw = entity.RotationYaw;
-            Pitch = entity.RotationPitch;
             OnGround = entity.OnGround;
             Sleep = entity.IsPhysicSleepDebug();
+
+            if (entity is EntityLiving entityLiving)
+            {
+                _isLiving = true;
+                Yaw = entityLiving.RotationYaw;
+                Pitch = entityLiving.RotationPitch;
+            }
+            else
+            {
+                _isLiving = false;
+                Yaw = Pitch = 0;
+            }
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -36,10 +48,14 @@ namespace Vge.Network.Packets.Server
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
-            Yaw = stream.Float();
-            Pitch = stream.Float();
             OnGround = stream.Bool();
             Sleep = stream.Bool();
+            _isLiving = stream.Bool();
+            if (_isLiving)
+            {
+                Yaw = stream.Float();
+                Pitch = stream.Float();
+            }
         }
 
         public void WritePacket(WritePacket stream)
@@ -48,10 +64,14 @@ namespace Vge.Network.Packets.Server
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
-            stream.Float(Yaw);
-            stream.Float(Pitch);
             stream.Bool(OnGround);
             stream.Bool(Sleep);
+            stream.Bool(_isLiving);
+            if (_isLiving)
+            {
+                stream.Float(Yaw);
+                stream.Float(Pitch);
+            }
         }
     }
 }

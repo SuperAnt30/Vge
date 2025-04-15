@@ -53,19 +53,13 @@ namespace Vge.Entity
         /// <summary>
         /// Ускорение в воздухе
         /// </summary>
-        private const float _airborneAcceleration = .01333f;
+        protected const float _airborneAcceleration = .01333f;
         /// <summary>
         /// Скорость
         /// </summary>
-        private const float _speed = .0667f;
-        /// <summary>
-        /// Ускорение при прыжке в высоту
-        /// </summary>
-        private const float _airborneJumpInHeight = .3013f;
-        /// <summary>
-        /// Повторный прыжок через количество тиков
-        /// </summary>
-        private const byte _reJump = 15;
+        protected const float _speed = .0667f;
+        
+        
 
 #endif
         /// <summary>
@@ -77,23 +71,8 @@ namespace Vge.Entity
         /// Скользкость по умолчанию
         /// </summary>
         private const float _defaultSlipperiness = .6f;
-        /// <summary>
-        /// Скорость бега
-        /// </summary>
-        private const float _sprintSpeed = .3f;
-        /// <summary>
-        /// Скорость подкрадывания
-        /// </summary>
-        private const float _sneakSpeed = .3f;
-        /// <summary>
-        /// Ускорение при прыжке с бегом в длину
-        /// </summary>
-        private const float _airborneJumpInLength = .2f;
-
-        /// <summary>
-        /// Количество тактов для запрета повторного прыжка
-        /// </summary>
-        private int _jumpTicks = 0;
+        
+        
         /// <summary>
         /// Не прыгаем (момент взлёта)
         /// </summary>
@@ -115,7 +94,7 @@ namespace Vge.Entity
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
-        public PhysicsGround(CollisionBase collision, EntityBase entity) 
+        protected PhysicsGround(CollisionBase collision, EntityBase entity) 
             : base(collision, entity) => _airborneInertia = .91f;
 
         /// <summary>
@@ -141,30 +120,7 @@ namespace Vge.Entity
         public override void LivingUpdate()
         {
             // Если имеется сила для движения, тогда проверяем наличие прыжка
-            if (_isForceForMovement)
-            {
-                // счётчик прыжка
-                if (_jumpTicks > 0) _jumpTicks--;
-
-                if (Movement.Jump)
-                {
-                    if (Entity.OnGround && _jumpTicks == 0)
-                    {
-                        _jumpTicks = _reJump;
-                        MotionY = _airborneJumpInHeight;
-                        if (Movement.Sprinting)
-                        {
-                            // Если прыжок с бегом, то скорость увеличивается
-                            MotionX += Glm.Sin(Entity.RotationYaw) * _airborneJumpInLength;
-                            MotionZ -= Glm.Cos(Entity.RotationYaw) * _airborneJumpInLength;
-                        }
-                    }
-                }
-                else
-                {
-                    _jumpTicks = 0;
-                }
-            }
+            _LivingUpdateJump();
 
             // TODO::2025-02-10 сделать лимит по максимальному импульсу
             if (ImpulseX != 0)
@@ -196,16 +152,8 @@ namespace Vge.Entity
                 // корректировка скорости, с трением
                 //friction = GetAIMoveSpeed(strafe, forward) * param;
 
-                // Скорость
-                float speed = _speed;
                 // Если имеется сила для движения, тогда корректируем наличие скорости
-                if (_isForceForMovement)
-                {
-                    speed = Mth.Max(speed * Mth.Abs(Movement.GetMoveStrafe()),
-                        speed * Mth.Abs(Movement.GetMoveForward()));
-                    if (Movement.Sneak) speed *= _sneakSpeed;
-                    else if (Movement.Sprinting) speed += speed * _sprintSpeed;
-                }
+                float speed = _LivingUpdateSpeed();
 
                 // Ускорение
                 acceleration = speed * 0.16277136f / (inertia * inertia * inertia);
@@ -215,19 +163,10 @@ namespace Vge.Entity
                 // трение блока в воздухе
                 inertia = _airborneInertia;
                 // Ускорение
-                acceleration = _airborneAcceleration;
-                if (_isForceForMovement && Movement.Sprinting) acceleration += acceleration * _sprintSpeed;
+                acceleration = _LivingUpdateSprinting();
             }
             // Если имеется сила для движения, задаём вектор передвижения
-            if (_isForceForMovement)
-            {
-                Vector2 motion = Sundry.MotionAngle(
-                    Movement.GetMoveStrafe() * .98f,
-                    Movement.GetMoveForward() * .98f,
-                    acceleration, Entity.RotationYaw);
-                MotionX += motion.X;
-                MotionZ += motion.Y;
-            }
+            _LivingUpdateMotion(acceleration);
 
             // Проверка каллизии
             _CheckMoveColliding();
@@ -249,7 +188,7 @@ namespace Vge.Entity
                 MotionVertical = Mth.Abs(MotionY);
                 AwakenPhysics();
 
-                Debug.Player = Entity.GetChunkPosition();
+                //Debug.Player = Entity.GetChunkPosition();
 
                 //if (Entity.Type == EnumEntity.Stone)
                 //{
@@ -303,7 +242,7 @@ namespace Vge.Entity
 
                 float heightAutoJump = _heightAutoJump;
                 // Если сидим авто прыжок в двое ниже
-                if (_isForceForMovement && Movement.Sneak)
+                if (_IsMovementSneak())
                 {
                     heightAutoJump *= 0.5f;
                 }
@@ -377,5 +316,34 @@ namespace Vge.Entity
                 }
             }
         }
+
+        #region Living
+
+        /// <summary>
+        /// Проверяем наличие прыжка для живой сущности
+        /// </summary>
+        protected virtual void _LivingUpdateJump() { }
+
+        /// <summary>
+        /// Определяем и передаём скорость перемещения для живой сущности
+        /// </summary>
+        protected virtual float _LivingUpdateSpeed() => _speed;
+
+        /// <summary>
+        /// Проверяем наличие ускорения для живой сущности, возвращает скорость
+        /// </summary>
+        protected virtual float _LivingUpdateSprinting() => _airborneAcceleration;
+
+        /// <summary>
+        /// Если имеется задаём вектор передвижени для живой сущности
+        /// </summary>
+        protected virtual void _LivingUpdateMotion(float acceleration) { }
+
+        /// <summary>
+        /// Сидит ли сущность
+        /// </summary>
+        protected virtual bool _IsMovementSneak() => false;
+
+        #endregion
     }
 }

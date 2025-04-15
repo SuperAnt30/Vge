@@ -5,7 +5,7 @@ namespace Vge.Management
     /// <summary>
     /// Абстрактный класс игрока
     /// </summary>
-    public abstract class PlayerBase : EntityBase
+    public abstract class PlayerBase : EntityLiving
     {
         /// <summary>
         /// Псевдоним игрока

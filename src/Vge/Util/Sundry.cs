@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using WinGL.Util;
 
 namespace Vge.Util
@@ -107,6 +108,7 @@ namespace Vge.Util
         /// <summary>
         /// Определение вращения
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 MotionAngle(float strafe, float forward, float friction, float yaw)
         {
             Vector2 motion = new Vector2(0);

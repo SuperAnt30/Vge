@@ -271,8 +271,8 @@ namespace Vge.Network
             entity.PosPrevX = entity.PosX = packet.X;
             entity.PosPrevY = entity.PosY = packet.Y;
             entity.PosPrevZ = entity.PosZ = packet.Z;
-            entity.RotationPrevYaw = entity.RotationYaw = packet.Yaw;
-            entity.RotationPrevPitch = entity.RotationPitch = packet.Pitch;
+            //entity.RotationPrevYaw = entity.RotationYaw = packet.Yaw;
+            //entity.RotationPrevPitch = entity.RotationPitch = packet.Pitch;
             Game.World.SpawnEntityInWorld(entity);
         }
 
@@ -302,18 +302,20 @@ namespace Vge.Network
                 entity.PosX = packet.X;
                 entity.PosY = packet.Y;
                 entity.PosZ = packet.Z;
-                entity.RotationYaw = packet.Yaw;
-                entity.RotationPitch = packet.Pitch;
+                
                 entity.OnGround = packet.OnGround;
                 entity.SetPhysicsSleepDebug(packet.Sleep);
-
                 entity.LevelMotionChange = 2;
-                //if (entity is EntityLiving entityLiving)
-                //{
-                //    entityLiving.SetMotionServer(
-                //        packet.GetPos(), packet.GetYaw(), packet.GetPitch(),
-                //        packet.OnGround());
-                //}
+
+                if (entity is EntityLiving entityLiving)
+                {
+                    entityLiving.RotationYaw = packet.Yaw;
+                    entityLiving.RotationPitch = packet.Pitch;
+
+                    //entityLiving.SetMotionServer(
+                    //    packet.GetPos(), packet.GetYaw(), packet.GetPitch(),
+                    //    packet.OnGround());
+                }
                 //else if (entity is EntityItem entityItem)
                 //{
                 //    entityItem.SetMotionServer(packet.GetPos(), packet.OnGround());

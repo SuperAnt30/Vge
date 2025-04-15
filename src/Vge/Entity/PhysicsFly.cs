@@ -10,12 +10,18 @@ namespace Vge.Entity
     public class PhysicsFly : PhysicsBase
     {
         /// <summary>
+        /// Живая сущность, игрок или моб
+        /// </summary>
+        private readonly EntityLiving _entityLiving;
+
+        /// <summary>
         /// Физика без гравитации, для полёта 
         /// </summary>
         /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
-        public PhysicsFly(CollisionBase collision, EntityBase entity) 
+        public PhysicsFly(CollisionBase collision, EntityLiving entity) 
             : base(collision, entity)
         {
+            _entityLiving = entity;
             NoClip = true;
         }
         
@@ -40,7 +46,7 @@ namespace Vge.Entity
                //.5951f 
                .39673f
                * speed * (Movement.Sprinting ? 5f : 1f),
-               Entity.RotationYaw);
+               _entityLiving.RotationYaw);
 
             // Временно меняем перемещение если это надо
             MotionX += motion.X;

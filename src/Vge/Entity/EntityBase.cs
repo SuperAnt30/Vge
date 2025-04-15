@@ -28,9 +28,7 @@ namespace Vge.Entity
         /// </summary>
         public bool IsDead { get; protected set; } = false;
 
-        #region Переменные для Position и Rotation
-
-        #region Position 
+        #region Переменные для Position
 
         /// <summary>
         /// Позиция этой сущности по оси X
@@ -46,19 +44,6 @@ namespace Vge.Entity
         public float PosZ;
 
         /// <summary>
-        /// Вращение этой сущности по оси Y в радианах
-        /// </summary>
-        public float RotationYaw;
-        /// <summary>
-        /// Вращение этой сущности вверх вниз в радианах
-        /// </summary>
-        public float RotationPitch;
-
-        #endregion
-
-        #region PositionPrev
-
-        /// <summary>
         /// Позиция этой сущности по оси X в прошлом такте
         /// </summary>
         public float PosPrevX;
@@ -70,19 +55,6 @@ namespace Vge.Entity
         /// Позиция этой сущности по оси Z в прошлом такте
         /// </summary>
         public float PosPrevZ;
-
-        /// <summary>
-        /// Вращение этой сущности по оси Y в прошлом такте
-        /// </summary>
-        public float RotationPrevYaw;
-        /// <summary>
-        /// Вращение этой сущности вверх вниз в прошлом такте
-        /// </summary>
-        public float RotationPrevPitch;
-
-        #endregion
-
-        #region Chunk
 
         /// <summary>
         /// Координату X в каком чанке находится перерасчётес с PosX
@@ -112,8 +84,6 @@ namespace Vge.Entity
 
         #endregion
 
-        #endregion
-
         /// <summary>
         /// Объект физики
         /// </summary>
@@ -138,11 +108,7 @@ namespace Vge.Entity
         /// Высота сущности
         /// </summary>
         public float Height { get; protected set; } = 1.8f;//3.6f;
-        /// <summary>
-        /// Высота глаз
-        /// </summary>
-        public float Eye { get; protected set; }
-
+        
         /// <summary>
         /// На земле
         /// </summary>
@@ -196,26 +162,11 @@ namespace Vge.Entity
             => PosX != PosPrevX || PosY != PosPrevY || PosZ != PosPrevZ;
 
         /// <summary>
-        /// Изменено ли вращение
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsRotationChange()
-            => RotationYaw != RotationPrevYaw || RotationPitch != RotationPrevPitch;
-
-        /// <summary>
         /// Вернуть строку расположения
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToStringPosition()
             => string.Format("{0:0.00}; {1:0.00}; {2:0.00}", PosX, PosY, PosZ);
-
-        /// <summary>
-        /// Вернуть строку расположения и вращения
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ToStringPositionRotation()
-            => string.Format("{0:0.00}; {1:0.00}; {2:0.00} Y:{3:0.00} P:{4:0.00}",
-                PosX, PosY, PosZ, Glm.Degrees(RotationYaw), Glm.Degrees(RotationPitch));
 
         /// <summary>
         /// Получить позицию X для кадра
@@ -248,37 +199,6 @@ namespace Vge.Entity
         {
             if (timeIndex >= 1.0f || PosPrevZ == PosZ) return PosZ;
             return PosPrevZ + (PosZ - PosPrevZ) * timeIndex;
-        }
-
-        /// <summary>
-        /// Получить угол Yaw для кадра
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetRotationFrameYaw(float timeIndex)
-        {
-            if (timeIndex >= 1.0f || RotationPrevYaw == RotationYaw) return RotationYaw;
-            float biasYaw = RotationYaw - RotationPrevYaw;
-            if (biasYaw > Glm.Pi)
-            {
-                return RotationPrevYaw + (RotationYaw - Glm.Pi360 - RotationPrevYaw) * timeIndex;
-            }
-            if (biasYaw < -Glm.Pi)
-            {
-                return RotationPrevYaw + (RotationYaw + Glm.Pi360 - RotationPrevYaw) * timeIndex;
-            }
-            return RotationPrevYaw + biasYaw * timeIndex;
-        }
-
-        /// <summary>
-        /// Получить угол Pitch для кадра
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetRotationFramePitch(float timeIndex)
-        {
-            if (timeIndex >= 1.0f || RotationPrevPitch == RotationPitch) return RotationPitch;
-            return RotationPrevPitch + (RotationPitch - RotationPrevPitch) * timeIndex;
         }
 
         /// <summary>
@@ -326,8 +246,6 @@ namespace Vge.Entity
             PosPrevX = PosX;
             PosPrevY = PosY;
             PosPrevZ = PosZ;
-            RotationPrevYaw = RotationYaw;
-            RotationPrevPitch = RotationPitch;
         }
 
         #endregion
@@ -527,22 +445,22 @@ namespace Vge.Entity
         /// Получить массив XZ с вращением
         /// Не исползуется, для примера будущей детальной коллизии для урона
         /// </summary>
-        public Vector3[] ToVector3Array(float motionX, float motionY, float motionZ)
-        {
-            AxisAlignedBB axis = new AxisAlignedBB(-Width, 0, -Width, Width, Height, Width);
-            Vector3[] vectors = axis.ToVector3Array();
-            motionX += PosX;
-            motionY += PosY;
-            motionZ += PosZ;
-            Vector3 vec;
-            for (int i = 0; i < 8; i++)
-            {
-                vec = Glm.Rotate(vectors[i], RotationYaw, new Vector3(0, -1, 0));
-                vectors[i].X = vec.X + motionX;
-                vectors[i].Y = vec.Y + motionY;
-                vectors[i].Z = vec.Z + motionZ;
-            }
-            return vectors;
-        }
+        //public Vector3[] ToVector3Array(float motionX, float motionY, float motionZ)
+        //{
+        //    AxisAlignedBB axis = new AxisAlignedBB(-Width, 0, -Width, Width, Height, Width);
+        //    Vector3[] vectors = axis.ToVector3Array();
+        //    motionX += PosX;
+        //    motionY += PosY;
+        //    motionZ += PosZ;
+        //    Vector3 vec;
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        vec = Glm.Rotate(vectors[i], RotationYaw, new Vector3(0, -1, 0));
+        //        vectors[i].X = vec.X + motionX;
+        //        vectors[i].Y = vec.Y + motionY;
+        //        vectors[i].Z = vec.Z + motionZ;
+        //    }
+        //    return vectors;
+        //}
     }
 }

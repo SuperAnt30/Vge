@@ -6,19 +6,18 @@ namespace Vge.Entity
     /// <summary>
     /// Физика для игрока
     /// </summary>
-    public class PhysicsPlayer : PhysicsGround
+    public class PhysicsPlayer : PhysicsGroundLiving
     {
         /// <summary>
         /// Шаг проверки смещения для защиты от падения, для метода _AdjustMovementForSneaking
         /// </summary>
         private const float _stepAmfs = .0625f;
 
-        public PhysicsPlayer(CollisionBase collision, EntityBase entity) 
+        public PhysicsPlayer(CollisionBase collision, EntityLiving entity) 
             : base(collision, entity)
         {
             SetHeightAutoJump(.2f);
         }
-
 
         /// <summary>
         /// Отрегулировать движение для подкрадывания

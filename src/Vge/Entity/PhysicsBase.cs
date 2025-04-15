@@ -68,10 +68,6 @@ namespace Vge.Entity
         public bool NoClip { get; protected set; } = false;
 
         /// <summary>
-        /// Имеется ли сила для движения
-        /// </summary>
-        protected readonly bool _isForceForMovement;
-        /// <summary>
         /// Коэффициент рикошета, 0 нет отскока, 1 максимальный
         /// </summary>
         protected readonly float _rebound;
@@ -93,7 +89,6 @@ namespace Vge.Entity
             Collision = collision;
             Entity = entity;
             Movement = new MovementInput();
-            _isForceForMovement = true;
             AwakenPhysics();
         }
 
