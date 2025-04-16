@@ -349,6 +349,13 @@ namespace Vge.Management
         }
 
         /// <summary>
+        /// Возвращает true, если прямоугольник находится внутри всех 6 плоскостей отсечения,
+        /// в противном случае возвращает false.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsBoxInFrustum(AxisAlignedBB aabb) => _frustumCulling.IsBoxInFrustum(aabb);
+
+        /// <summary>
         /// Помечаем на перерендер всех чанков в округ игрока
         /// </summary>
         public void RerenderAllChunks()

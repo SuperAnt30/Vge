@@ -260,6 +260,13 @@ namespace Vge.Entity
             => new AxisAlignedBB(PosX - Width, PosY, PosZ - Width, PosX + Width, PosY + Height, PosZ + Width);
 
         /// <summary>
+        /// Получить ограничительную рамку сущности со смещением
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB GetBoundingBoxOffset(float x, float y, float z)
+            => new AxisAlignedBB(PosX - Width + x, PosY + y, PosZ - Width + z, PosX + Width + x, PosY + Height + y, PosZ + Width + z);
+
+        /// <summary>
         /// Получить ограничительную рамку на выбранной позиции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

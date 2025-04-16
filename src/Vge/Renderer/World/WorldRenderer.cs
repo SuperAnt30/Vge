@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading;
+using Vge.Entity;
 using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World.Entity;
@@ -67,7 +68,7 @@ namespace Vge.Renderer.World
             gl = GetOpenGL();
             _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
             _cursorRender = new CursorRender(game.Player, this);
-            Entities = new EntitiesRenderer(game);
+            Entities = new EntitiesRenderer(game, _arrayChunkRender);
         }
 
         /// <summary>
@@ -396,6 +397,7 @@ namespace Vge.Renderer.World
         }
 
         public override string ToString()
-            => "WR dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
+            => "WR E:" + Entities.CountEntitiesFC 
+            + "  dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
     }
 }

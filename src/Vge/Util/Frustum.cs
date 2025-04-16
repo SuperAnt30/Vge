@@ -42,27 +42,38 @@ namespace Vge.Util
 
         public bool IsBoxInFrustum(float x1, float y1, float z1, float x2, float y2, float z2)
         {
-            if (!_check(_frustum0, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_check(_frustum1, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_check(_frustum2, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_check(_frustum3, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_check(_frustum4, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_check(_frustum5, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum0, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum1, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum2, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum3, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum4, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_Check(_frustum5, x1, y1, z1, x2, y2, z2)) return false;
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool _check(float[] frustum, float x1, float y1, float z1, float x2, float y2, float z2)
+        private bool _Check(float[] frustum, float x1, float y1, float z1, float x2, float y2, float z2)
         {
-            if ((frustum[0] * x1 + frustum[1] * y1 + frustum[2] * z1 + frustum[3] <= 0)
-                   && (frustum[0] * x2 + frustum[1] * y1 + frustum[2] * z1 + frustum[3] <= 0)
-                   && (frustum[0] * x1 + frustum[1] * y2 + frustum[2] * z1 + frustum[3] <= 0)
-                   && (frustum[0] * x2 + frustum[1] * y2 + frustum[2] * z1 + frustum[3] <= 0)
-                   && (frustum[0] * x1 + frustum[1] * y1 + frustum[2] * z2 + frustum[3] <= 0)
-                   && (frustum[0] * x2 + frustum[1] * y1 + frustum[2] * z2 + frustum[3] <= 0)
-                   && (frustum[0] * x1 + frustum[1] * y2 + frustum[2] * z2 + frustum[3] <= 0)
-                   && (frustum[0] * x2 + frustum[1] * y2 + frustum[2] * z2 + frustum[3] <= 0)
-                   ) return false;
+            x1 *= frustum[0];
+            y1 *= frustum[1];
+            z1 *= frustum[2];
+            if (x1 + y1 + z1 + frustum[3] <= 0)
+            {
+                x2 *= frustum[0];
+                if (x2 + y1 + z1 + frustum[3] <= 0)
+                {
+                    y2 *= frustum[1];
+                    if (x1 + y2 + z1 + frustum[3] <= 0 && x2 + y2 + z1 + frustum[3] <= 0)
+                    {
+                        z2 *= frustum[2];
+                        if (x1 + y1 + z2 + frustum[3] <= 0 && x2 + y1 + z2 + frustum[3] <= 0
+                            && x1 + y2 + z2 + frustum[3] <= 0 && x2 + y2 + z2 + frustum[3] <= 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
 
@@ -70,6 +81,7 @@ namespace Vge.Util
         /// Возвращает true, если прямоугольник находится внутри всех 6 плоскостей отсечения,
         /// в противном случае возвращает false.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBoxInFrustum(AxisAlignedBB aabb)
             => IsBoxInFrustum(aabb.Min.X, aabb.Min.Y, aabb.Min.Z, aabb.Max.X, aabb.Max.Y, aabb.Max.Z);
     }

@@ -21,13 +21,13 @@ namespace Vge.World.Chunk
         private readonly static MemoryStream _bigStreamOut = new MemoryStream();
 
         /// <summary>
-        /// Дополнительные данные
+        /// Дополнительные данные покуда для отладки
         /// </summary>
         public object Tag
         {
             get
-            { 
-                return CountEntity();
+            {
+                return CountEntities;
             }
         }
 
@@ -81,6 +81,11 @@ namespace Vge.World.Chunk
         /// Список сущностей в каждом псевдочанке
         /// </summary>
         public readonly MapEntity<EntityBase>[] ListEntities;
+
+        /// <summary>
+        /// Количество сущностей в чанке
+        /// </summary>
+        public int CountEntities { get; private set; } = 0;
 
         /// <summary>
         /// Имеет ли этот фрагмент какие-либо сущности и, следовательно, требует сохранения на каждом тике
@@ -785,6 +790,7 @@ namespace Vge.World.Chunk
             if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
             entity.SetPositionChunk(cx, cy, cz);
             ListEntities[cy].Add(entity.Id, entity);
+            CountEntities++;
         }
 
         /// <summary>
@@ -796,6 +802,7 @@ namespace Vge.World.Chunk
         {
             if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
             ListEntities[cy].Remove(entity.Id, entity);
+            CountEntities--;
         }
 
         /// <summary>
@@ -806,15 +813,16 @@ namespace Vge.World.Chunk
         public void RemoveEntity(EntityBase entity) => RemoveEntityAtIndex(entity, entity.ChunkPositionY);
 
         /// <summary>
-        /// Получить количество сущностей в чанке
+        /// Получить перерасчёт количество сущностей в чанке
         /// </summary>
-        public int CountEntity()
+        public int GetCountEntities()
         {
             int count = 0;
             for (int y = 0; y < NumberSections; y++)
             {
                 count += ListEntities[y].Count;
             }
+            CountEntities = count;
             return count;
         }
 
