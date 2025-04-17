@@ -51,24 +51,20 @@ namespace Vge.Renderer.World.Entity
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
-                if (chunkRender.CountEntities > 0)
+                countEntity = chunkRender.ListEntities.Count;
+                if (countEntity > 0)
                 {
-                    countSector = chunkRender.ListEntities.Length;
-                    for (int j = 0; j < countSector; j++)
+                    for (int j = 0; j < countEntity; j++)
                     {
-                        countEntity = chunkRender.ListEntities[j].Count;
-                        for (int k = 0; k < countEntity; k++)
+                        entity = chunkRender.ListEntities.GetAt(j);
+                        if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
-                            entity = chunkRender.ListEntities[j].GetAt(k);
-                            if (entity.Id != playerId && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
-                            {
-                                _game.WorldRender.Render.ShaderBindLine(_game.Player.View,
-                                    entity.GetPosFrameX(timeIndex) - x,
-                                    entity.GetPosFrameY(timeIndex) - y,
-                                    entity.GetPosFrameZ(timeIndex) - z);
-                                _hitbox.Draw(timeIndex, entity);
-                                CountEntitiesFC++;
-                            }
+                            _game.WorldRender.Render.ShaderBindLine(_game.Player.View,
+                                entity.GetPosFrameX(timeIndex) - x,
+                                entity.GetPosFrameY(timeIndex) - y,
+                                entity.GetPosFrameZ(timeIndex) - z);
+                            _hitbox.Draw(timeIndex, entity);
+                            CountEntitiesFC++;
                         }
                     }
                 }

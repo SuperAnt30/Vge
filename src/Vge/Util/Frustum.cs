@@ -39,35 +39,35 @@ namespace Vge.Util
             frustum[3] = v3 / f;
         }
 
-
-        public bool IsBoxInFrustum(float x1, float y1, float z1, float x2, float y2, float z2)
-        {
-            if (!_Check(_frustum0, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_Check(_frustum1, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_Check(_frustum2, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_Check(_frustum3, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_Check(_frustum4, x1, y1, z1, x2, y2, z2)) return false;
-            if (!_Check(_frustum5, x1, y1, z1, x2, y2, z2)) return false;
-            return true;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool _Check(float[] frustum, float x1, float y1, float z1, float x2, float y2, float z2)
+        private bool _CheckBox(float[] frustum, float x1, float y1, float z1, float x2, float y2, float z2)
         {
+            // Вычислить уравнение плоскости и проверить, находится ли точка за стороной пирамиды
+            //if ((frustum[0] * x1 + frustum[1] * y1 + frustum[2] * z1 + frustum[3] <= 0)
+            //       && (frustum[0] * x2 + frustum[1] * y1 + frustum[2] * z1 + frustum[3] <= 0)
+            //       && (frustum[0] * x1 + frustum[1] * y2 + frustum[2] * z1 + frustum[3] <= 0)
+            //       && (frustum[0] * x2 + frustum[1] * y2 + frustum[2] * z1 + frustum[3] <= 0)
+            //       && (frustum[0] * x1 + frustum[1] * y1 + frustum[2] * z2 + frustum[3] <= 0)
+            //       && (frustum[0] * x2 + frustum[1] * y1 + frustum[2] * z2 + frustum[3] <= 0)
+            //       && (frustum[0] * x1 + frustum[1] * y2 + frustum[2] * z2 + frustum[3] <= 0)
+            //       && (frustum[0] * x2 + frustum[1] * y2 + frustum[2] * z2 + frustum[3] <= 0)
+            //       ) return false;
+
             x1 *= frustum[0];
             y1 *= frustum[1];
             z1 *= frustum[2];
-            if (x1 + y1 + z1 + frustum[3] <= 0)
+            float w = frustum[3];
+            if (x1 + y1 + z1 + w <= 0)
             {
                 x2 *= frustum[0];
-                if (x2 + y1 + z1 + frustum[3] <= 0)
+                if (x2 + y1 + z1 + w <= 0)
                 {
                     y2 *= frustum[1];
-                    if (x1 + y2 + z1 + frustum[3] <= 0 && x2 + y2 + z1 + frustum[3] <= 0)
+                    if (x1 + y2 + z1 + w <= 0 && x2 + y2 + z1 + w <= 0)
                     {
                         z2 *= frustum[2];
-                        if (x1 + y1 + z2 + frustum[3] <= 0 && x2 + y1 + z2 + frustum[3] <= 0
-                            && x1 + y2 + z2 + frustum[3] <= 0 && x2 + y2 + z2 + frustum[3] <= 0)
+                        if (x1 + y1 + z2 + w <= 0 && x2 + y1 + z2 + w <= 0
+                            && x1 + y2 + z2 + w <= 0 && x2 + y2 + z2 + w <= 0)
                         {
                             return false;
                         }
@@ -81,8 +81,45 @@ namespace Vge.Util
         /// Возвращает true, если прямоугольник находится внутри всех 6 плоскостей отсечения,
         /// в противном случае возвращает false.
         /// </summary>
+        public bool IsBoxInFrustum(float x1, float y1, float z1, float x2, float y2, float z2)
+        {
+            if (!_CheckBox(_frustum0, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_CheckBox(_frustum1, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_CheckBox(_frustum2, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_CheckBox(_frustum3, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_CheckBox(_frustum4, x1, y1, z1, x2, y2, z2)) return false;
+            if (!_CheckBox(_frustum5, x1, y1, z1, x2, y2, z2)) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Возвращает true, если прямоугольник находится внутри всех 6 плоскостей отсечения,
+        /// в противном случае возвращает false.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBoxInFrustum(AxisAlignedBB aabb)
             => IsBoxInFrustum(aabb.Min.X, aabb.Min.Y, aabb.Min.Z, aabb.Max.X, aabb.Max.Y, aabb.Max.Z);
+
+        /// <summary>
+        /// Вычислить уравнение плоскости и проверить, находится ли точка за стороной пирамиды
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckPoint(float[] frustum, float x, float y, float z)
+            => frustum[0] * x + frustum[1] * y + frustum[2] * z + frustum[3] > 0;
+
+        /// <summary>
+        /// Возвращает true, если точка находится внутри всех 6 плоскостей отсечения,
+        /// в противном случае возвращает false.
+        /// </summary>
+        public bool IsPointInFrustum(float x, float y, float z)
+        {
+            if (!_CheckPoint(_frustum0, x, y, z)) return false;
+            if (!_CheckPoint(_frustum1, x, y, z)) return false;
+            if (!_CheckPoint(_frustum2, x, y, z)) return false;
+            if (!_CheckPoint(_frustum3, x, y, z)) return false;
+            if (!_CheckPoint(_frustum4, x, y, z)) return false;
+            if (!_CheckPoint(_frustum5, x, y, z)) return false;
+            return true;
+        }
     }
 }

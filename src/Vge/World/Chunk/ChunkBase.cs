@@ -27,7 +27,7 @@ namespace Vge.World.Chunk
         {
             get
             {
-                return CountEntities;
+                return ListEntities.Count;
             }
         }
 
@@ -80,12 +80,11 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Список сущностей в каждом псевдочанке
         /// </summary>
-        public readonly MapEntity<EntityBase>[] ListEntities;
-
+        public readonly MapEntity<EntityBase>[] ListEntitiesSection;
         /// <summary>
-        /// Количество сущностей в чанке
+        /// Список всех сущностей в текущем чанке
         /// </summary>
-        public int CountEntities { get; private set; } = 0;
+        public readonly MapEntity<EntityBase> ListEntities = new MapEntity<EntityBase>();
 
         /// <summary>
         /// Имеет ли этот фрагмент какие-либо сущности и, следовательно, требует сохранения на каждом тике
@@ -136,11 +135,11 @@ namespace Vge.World.Chunk
             Settings = settings;
             NumberSections = Settings.NumberSections;
             StorageArrays = new ChunkStorage[NumberSections];
-            ListEntities = new MapEntity<EntityBase>[NumberSections];
+            ListEntitiesSection = new MapEntity<EntityBase>[NumberSections];
             for (int index = 0; index < NumberSections; index++)
             {
                 StorageArrays[index] = new ChunkStorage(KeyCash, index);
-                ListEntities[index] = new MapEntity<EntityBase>();
+                ListEntitiesSection[index] = new MapEntity<EntityBase>();
             }
             Light = new ChunkLight(this);
         }
@@ -789,8 +788,8 @@ namespace Vge.World.Chunk
             _hasEntities = true;
             if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
             entity.SetPositionChunk(cx, cy, cz);
-            ListEntities[cy].Add(entity.Id, entity);
-            CountEntities++;
+            ListEntitiesSection[cy].Add(entity.Id, entity);
+            ListEntities.Add(entity.Id, entity);
         }
 
         /// <summary>
@@ -801,8 +800,8 @@ namespace Vge.World.Chunk
         public void RemoveEntityAtIndex(EntityBase entity, int cy)
         {
             if (cy < 0) cy = 0; else if (cy >= NumberSections) cy = NumberSections - 1;
-            ListEntities[cy].Remove(entity.Id, entity);
-            CountEntities--;
+            ListEntitiesSection[cy].Remove(entity.Id, entity);
+            ListEntities.Remove(entity.Id, entity);
         }
 
         /// <summary>
@@ -813,32 +812,15 @@ namespace Vge.World.Chunk
         public void RemoveEntity(EntityBase entity) => RemoveEntityAtIndex(entity, entity.ChunkPositionY);
 
         /// <summary>
-        /// Получить перерасчёт количество сущностей в чанке
-        /// </summary>
-        public int GetCountEntities()
-        {
-            int count = 0;
-            for (int y = 0; y < NumberSections; y++)
-            {
-                count += ListEntities[y].Count;
-            }
-            CountEntities = count;
-            return count;
-        }
-
-        /// <summary>
         /// Пробудить все сущности данного чанка
         /// </summary>
-        //public void AwakenAllEntities()
-        //{
-        //    for (int y = 0; y < NumberSections; y++)
-        //    {
-        //        for (int i = 0; i < ListEntities[y].Count; i++)
-        //        {
-        //            ListEntities[y].GetAt(i).AwakenPhysicSleep();
-        //        }
-        //    }
-        //}
+        public void AwakenAllEntities()
+        {
+            for (int i = 0; i < ListEntities.Count; i++)
+            {
+                ListEntities.GetAt(i).AwakenPhysicSleep();
+            }
+        }
 
         /// <summary>
         /// Заполнить список сущностей, которые сталкиваются с aabb
@@ -851,9 +833,9 @@ namespace Vge.World.Chunk
             EntityBase entity;
             for (int cy = minY; cy <= maxY; cy++)
             {
-                for (int i = 0; i < ListEntities[cy].Count; i++)
+                for (int i = 0; i < ListEntitiesSection[cy].Count; i++)
                 {
-                    entity = ListEntities[cy].GetAt(i);
+                    entity = ListEntitiesSection[cy].GetAt(i);
                     if (entity.Id != id && !entity.IsDead && entity.GetBoundingBox().IntersectsWith(aabb))
                     {
                         // Если пересекается вносим в список
@@ -872,9 +854,9 @@ namespace Vge.World.Chunk
             EntityBase entity;
             for (int cy = minY; cy <= maxY; cy++)
             {
-                for (int i = 0; i < ListEntities[cy].Count; i++)
+                for (int i = 0; i < ListEntitiesSection[cy].Count; i++)
                 {
-                    entity = ListEntities[cy].GetAt(i);
+                    entity = ListEntitiesSection[cy].GetAt(i);
                     if (entity.Id != id && !entity.IsDead)
                     {
                         // Если пересекается вносим в список
@@ -898,9 +880,9 @@ namespace Vge.World.Chunk
             if (cy >= NumberSections) cy = NumberSections - 1;
 
             EntityBase entity;
-            for (int i = 0; i < ListEntities[cy].Count; i++)
+            for (int i = 0; i < ListEntitiesSection[cy].Count; i++)
             {
-                entity = ListEntities[cy].GetAt(i);
+                entity = ListEntitiesSection[cy].GetAt(i);
                 if (!entity.IsDead && entity.IsPhysicSleep())
                 {
                     if (entity.GetBoundingBox().IntersectsWith(x, y, z))
@@ -963,11 +945,11 @@ namespace Vge.World.Chunk
         {
             int cy = y >> 4;
             if (cy >= NumberSections) cy = NumberSections - 1;
-            int count = ListEntities[cy].Count;
+            int count = ListEntitiesSection[cy].Count;
             EntityBase entity;
             for (int i = 0; i < count; i++)
             {
-                entity = ListEntities[cy].GetAt(i);
+                entity = ListEntitiesSection[cy].GetAt(i);
                 if (!entity.IsDead && entity.IsPhysicSleep())
                 {
                     if (entity.GetBoundingBox().IntersectsWith(x, y, z))
