@@ -73,9 +73,12 @@ namespace Vge.Games
             _socket.Connected += _Socket_Connected;
             _socket.Disconnected += _Socket_Disconnected;
 
-            // Запуск поток для синхронной связи по сокету
-            Thread myThread = new Thread(_NetThread) { Name = "GameNetwork" };
-            myThread.Start();
+            if (_socket.SocketRun())
+            {
+                // Запуск поток для синхронной связи по сокету
+                Thread myThread = new Thread(_NetThread) { Name = "GameNetwork" };
+                myThread.Start();
+            }
         }
 
         /// <summary>

@@ -72,6 +72,30 @@ namespace Vge.Network
         }
 
         /// <summary>
+        /// Запустить сокет
+        /// </summary>
+        public bool SocketRun()
+        {
+            try
+            {
+                if (socket == null)
+                {
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                    {
+                        NoDelay = Ce.NoDelay
+                    };
+                    socket.Connect(ip, port);
+                    return true;
+                }
+            }
+            catch (SocketException e)
+            {
+                OnError(new ErrorEventArgs(e));
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Ответ готовности сообщения
         /// </summary>
         private void ReceivingBytes_Receive(object sender, PacketBufferEventArgs e)
@@ -87,26 +111,10 @@ namespace Vge.Network
         /// </summary>
         public void Connect()
         {
-            try
+            if (socket == null)
             {
-                if (socket == null)
-                {
-                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-                    {
-                        NoDelay = Ce.NoDelay
-                    };
-                    socket.Connect(ip, port);
-                }
-                else
-                {
-                    // Соединение было создано, там где должно отсутствовать
-                    OnError(new ErrorEventArgs(new Exception(Srl.TheConnectionWasCreatedSoWhereItShouldBeMissing)));
-                    return;
-                }
-            }
-            catch (SocketException e)
-            {
-                OnError(new ErrorEventArgs(e));
+                // Соединение отсутствует
+                OnError(new ErrorEventArgs(new Exception(Srl.NoConnection)));
                 return;
             }
 
