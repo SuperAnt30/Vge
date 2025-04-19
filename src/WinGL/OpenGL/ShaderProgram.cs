@@ -118,8 +118,11 @@ namespace WinGL.OpenGL
         public void SetUniform4(GL gl, string uniformName, float v1, float v2, float v3, float v4)
             => gl.Uniform4(GetUniformLocation(gl, uniformName), v1, v2, v3, v4);
 
-        public void SetUniformMatrix4(GL gl, string uniformName, float[] m)
-            => gl.UniformMatrix4(GetUniformLocation(gl, uniformName), 1, false, m);
+        public void SetUniformMatrix4(GL gl, string uniformName, float[] m, int count = 1)
+            => gl.UniformMatrix4(GetUniformLocation(gl, uniformName), count, false, m);
+
+        public void SetUniformMatrix4x3(GL gl, string uniformName, float[] m, int count)
+            => gl.UniformMatrix4x3(GetUniformLocation(gl, uniformName), count, false, m);
 
         //public int GetUniformLocation(GL gl, string uniformName)
         //    => gl.GetUniformLocation(ShaderProgramObject, uniformName);

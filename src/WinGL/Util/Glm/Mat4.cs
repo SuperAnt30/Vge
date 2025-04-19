@@ -52,6 +52,20 @@ namespace WinGL.Util
         }
 
         /// <summary>
+        /// Создать матрицу сразу со смещением
+        /// </summary>
+        public Mat4(float x, float y, float z)
+        {
+            _cols = new[]
+            {
+                new Vector4(1, 0, 0, 0),
+                new Vector4(0, 1, 0, 0),
+                new Vector4(0, 0, 1, 0),
+                new Vector4(x, y, z, 1),
+            };
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="mat4"/> struct.
         /// The matrix is initialised with the <paramref name="cols"/>.
         /// </summary>
@@ -135,11 +149,14 @@ namespace WinGL.Util
         /// <summary>
         /// Returns the matrix as a flat array of elements, column major.
         /// </summary>
-        /// <returns></returns>
         public float[] ToArray()
-        {
-            return _cols.SelectMany(v => v.ToArray()).ToArray();
-        }
+            => _cols.SelectMany(v => v.ToArray()).ToArray();
+
+        /// <summary>
+        /// Вернуть массив элементов матрицы, 4*3
+        /// </summary>
+        public float[] ToArray4x3()
+            => _cols.SelectMany(v => v.ToArray3()).ToArray();
 
         /// <summary>
         /// Передать все данные в входящий массив не создавая ни структур ни массивов

@@ -106,6 +106,8 @@ namespace WinGL.OpenGL
         private glUniform4f delegateUniform4;
         private delegate void glUniformMatrix4fv(int location, int count, bool transpose, float[] value);
         private glUniformMatrix4fv delegateUniformMatrix4;
+        private delegate void glUniformMatrix4x3fv(int location, int count, bool transpose, float[] value);
+        private glUniformMatrix4x3fv delegateUniformMatrix4x3;
         private delegate int glGetUniformLocation(uint program, string name);
         private glGetUniformLocation delegateGetUniformLocation;
         private delegate void glGenerateMipmapEXT(uint target);
@@ -361,6 +363,12 @@ namespace WinGL.OpenGL
             if (delegateUniformMatrix4 == null)
                 delegateUniformMatrix4 = GetDelegate<glUniformMatrix4fv>() as glUniformMatrix4fv;
             delegateUniformMatrix4(location, count, transpose, value);
+        }
+        public void UniformMatrix4x3(int location, int count, bool transpose, float[] value)
+        {
+            if (delegateUniformMatrix4x3 == null)
+                delegateUniformMatrix4x3 = GetDelegate<glUniformMatrix4x3fv>() as glUniformMatrix4x3fv;
+            delegateUniformMatrix4x3(location, count, transpose, value);
         }
         public int GetUniformLocation(uint program, string name)
         {

@@ -306,6 +306,13 @@ namespace WinGL.Util
             return result;
         }
 
+        public static Mat4 Translate(Mat4 m, float x, float y, float z)
+        {
+            Mat4 result = m;
+            result[3] = m[0] * x + m[1] * y + m[2] * z + m[3];
+            return result;
+        }
+
         /// <summary>
         /// Creates a matrix for a symmetric perspective-view frustum with far plane 
         /// at infinite for graphics hardware that doesn't support depth clamping.

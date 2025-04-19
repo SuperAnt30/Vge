@@ -33,7 +33,7 @@ namespace Vge.Management
         /// Матрица просмотра Projection * LookAt
         /// </summary>
         public readonly float[] View = new float[16];
-        
+
         /// <summary>
         /// Массив всех видимых чанков 
         /// </summary>

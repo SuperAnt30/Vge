@@ -219,7 +219,7 @@ namespace Vge.Renderer.World
             _cursorRender.RenderDraw();
 
             // Прорисовка вид не с руки, а видим себя
-            Entities.DrawOwner(timeIndex);
+           // Entities.DrawOwner(timeIndex);
 
             // Облака
             //DrawClouds(timeIndex);

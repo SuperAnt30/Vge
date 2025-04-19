@@ -48,6 +48,10 @@ namespace Vge.Renderer
         /// Шейдоры для 3d линий с альфа цветом
         /// </summary>
         public readonly ShaderLine ShLine;
+        /// <summary>
+        /// Шейдоры для сущностей
+        /// </summary>
+        public readonly ShaderEntity ShEntity;
 
         /// <summary>
         /// Время выполнения кадра
@@ -84,6 +88,7 @@ namespace Vge.Renderer
             ShGuiColor = new ShaderGuiColor(gl);
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
+            ShEntity = new ShaderEntity(gl);
             ShLine = new ShaderLine(gl);
             _Initialize();
         }
@@ -110,6 +115,7 @@ namespace Vge.Renderer
             ShGuiColor.Delete(gl);
             ShGuiLine.Delete(gl);
             ShVoxel.Delete(gl);
+            ShEntity.Delete(gl);
             ShLine.Delete(gl);
         }
 
@@ -168,6 +174,17 @@ namespace Vge.Renderer
             gl.Uniform1(lightMap, 2);
 
            // gl.ActiveTexture(GL.GL_TEXTURE0);
+        }
+
+        /// <summary>
+        /// Связать шейдер Entity
+        /// </summary>
+        public void ShaderBindEntity(float[] view, float posX, float posY, float posZ, float[] m)
+        {
+            ShEntity.Bind(gl);
+            ShEntity.SetUniformMatrix4(gl, "view", view);
+            ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
+            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, 2);
         }
 
         /// <summary>

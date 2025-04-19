@@ -88,6 +88,8 @@ namespace WinGL.Util
 
         public float[] ToArray() => new[] { X, Y, Z, W };
 
+        public float[] ToArray3() => new[] { X, Y, Z };
+
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
         /// The Difference is detected by the different values
