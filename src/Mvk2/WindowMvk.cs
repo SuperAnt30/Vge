@@ -12,6 +12,7 @@ using Vge.World;
 using Mvk2.World;
 using WinGL.Util;
 using Mvk2.World.Block;
+using Mvk2.Entity;
 
 namespace Mvk2
 {
@@ -200,6 +201,15 @@ namespace Mvk2
         {
             base._InitializationBlocks();
             BlocksRegMvk.Initialization();
+        }
+
+        /// <summary>
+        /// Инициализация модели сущностей
+        /// </summary>
+        protected override void _InitializationModelsEntities()
+        {
+            base._InitializationModelsEntities();
+            ModelEntitiesRegMvk.Initialization();
         }
 
         #endregion

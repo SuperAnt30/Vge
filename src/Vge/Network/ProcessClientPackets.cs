@@ -86,7 +86,7 @@ namespace Vge.Network
             {
                 case 0x03: _Handle03JoinGame((PacketS03JoinGame)packet); break;
                 case 0x04: _Handle04TimeUpdate((PacketS04TimeUpdate)packet); break;
-                case 0x05: _Handle05TableBlocks((PacketS05TableBlocks)packet); break;
+                case 0x05: _Handle05Tables((PacketS05Tables)packet); break;
                 case 0x06: _Handle06PlayerEntryRemove((PacketS06PlayerEntryRemove)packet); break;
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
@@ -170,11 +170,13 @@ namespace Vge.Network
             => Game.SetTickCounter(packet.Time);
 
         /// <summary>
-        /// Пакет передать таблицу блоков
+        /// Пакет передать таблицы блоков, сущностей
         /// </summary>
-        private void _Handle05TableBlocks(PacketS05TableBlocks packet)
-            => BlocksReg.Correct(new CorrectTable(packet.Blocks));
-
+        private void _Handle05Tables(PacketS05Tables packet)
+        {
+            BlocksReg.Correct(new CorrectTable(packet.Blocks));
+            ModelEntitiesReg.Correct(new CorrectTable(packet.Entities));
+        }
 
         /// <summary>
         /// Пакет игрок зашёл или вышел из сервера, для чата

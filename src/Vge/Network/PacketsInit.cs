@@ -22,7 +22,7 @@ namespace Vge.Network
                 case 0x02: return new PacketS02LoadingGame();
                 case 0x03: return new PacketS03JoinGame();
                 case 0x04: return new PacketS04TimeUpdate();
-                case 0x05: return new PacketS05TableBlocks();
+                case 0x05: return new PacketS05Tables();
                 case 0x06: return new PacketS06PlayerEntryRemove();
                 case 0x07: return new PacketS07RespawnInWorld();
                 case 0x08: return new PacketS08PlayerPosLook();

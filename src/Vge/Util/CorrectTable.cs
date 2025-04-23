@@ -1,36 +1,36 @@
 ﻿using System.Collections.Generic;
 using Vge.NBT;
 
-namespace Vge.World.Block
+namespace Vge.Util
 {
     /// <summary>
-    /// Корректировочная таблица блоков, после загрузки
+    /// Корректировочная таблица, после загрузки
     /// </summary>
     public class CorrectTable
     {
         /// <summary>
-        /// Массив блоков
+        /// Массив объектов
         /// </summary>
-        public string[] LoadBlocks { get; private set; } = new string[] { };
+        public string[] LoadObjects { get; private set; } = new string[] { };
 
         public CorrectTable() { }
-        public CorrectTable(string[] blocks) => LoadBlocks = blocks;
+        public CorrectTable(string[] objects) => LoadObjects = objects;
 
         /// <summary>
         /// Корректировка блоков после регистрации и загрузки
         /// </summary>
-        public void CorrectRegLoad(BlockRegTable table)
+        public void CorrectRegLoad(IRegTable table)
         {
             List<int> listNull = new List<int>();
             List<string> list = new List<string>();
             List<string> listNew = new List<string>();
             int i, j, count;
             // Проверка тех что загрузили
-            count = LoadBlocks.Length;
+            count = LoadObjects.Length;
             for (i = 0; i < count; i++)
             {
-                list.Add(LoadBlocks[i]);
-                if (table.Get(LoadBlocks[i]) == -1)
+                list.Add(LoadObjects[i]);
+                if (table.Get(LoadObjects[i]) == -1)
                 {
                     // Отсутствующие помечаем для замены
                     listNull.Add(i);
@@ -54,7 +54,7 @@ namespace Vge.World.Block
                 }
                 if (!b)
                 {
-                    // Новый блок
+                    // Новый объект
                     if (listNull.Count > 0)
                     {
                         // Вписываем в старый
@@ -69,38 +69,38 @@ namespace Vge.World.Block
                 }
             }
 
-            LoadBlocks = list.ToArray();
+            LoadObjects = list.ToArray();
             // Теперь надо регистрационную таблицу пересортировать
-            table.Sort(LoadBlocks);
+            table.Sort(LoadObjects);
         }
 
         /// <summary>
-        /// Сохранить таблицу блоков
+        /// Сохранить таблицу
         /// </summary>
-        public void Write(TagCompound nbt)
+        public void Write(string alias, TagCompound nbt)
         {
-            if (LoadBlocks.Length > 0)
+            if (LoadObjects.Length > 0)
             {
                 TagList tagListBlocks = new TagList();
-                for (int i = 0; i < LoadBlocks.Length; i++)
+                for (int i = 0; i < LoadObjects.Length; i++)
                 {
-                    tagListBlocks.AppendTag(new TagString(LoadBlocks[i]));
+                    tagListBlocks.AppendTag(new TagString(LoadObjects[i]));
                 }
-                nbt.SetTag("TableBlocks", tagListBlocks);
+                nbt.SetTag(alias, tagListBlocks);
             }
         }
 
         /// <summary>
-        /// Прочитать таблицу блоков
+        /// Прочитать таблицу
         /// </summary>
-        public void Read(TagCompound nbt)
+        public void Read(string alias, TagCompound nbt)
         {
-            TagList tagListBlocks = nbt.GetTagList("TableBlocks", 8);
+            TagList tagListBlocks = nbt.GetTagList(alias, 8);
             int count = tagListBlocks.TagCount();
-            LoadBlocks = new string[count];
+            LoadObjects = new string[count];
             for (int i = 0; i < count; i++)
             {
-                LoadBlocks[i] = tagListBlocks.GetStringTagAt(i);
+                LoadObjects[i] = tagListBlocks.GetStringTagAt(i);
             }
         }
     }

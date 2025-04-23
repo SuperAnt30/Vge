@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Block;
+using Vge.Entity;
 using Vge.Games;
 using Vge.World;
 using Vge.World.Block;
@@ -16,8 +17,9 @@ namespace Mvk2.World
         public override void Init(GameServer server)
         {
             base.Init(server);
-            BlocksReg.Correct(server.Settings.Table);
-            
+            BlocksReg.Correct(server.Settings.TableBlocks);
+            ModelEntitiesReg.Correct(server.Settings.TableEntities);
+
             //Blocks.InitializationAfterItems();
 
             _worldServers[0] = new WorldServer(server, 0, new WorldSettingsNightmare());

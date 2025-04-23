@@ -42,10 +42,14 @@ namespace Vge.Util
         /// Путь к папке фигур блока
         /// </summary>
         public static string PathShapeBlocks { get; private set; }
+        /// <summary>
+        /// Путь к папке данных сущностей
+        /// </summary>
+        public static string PathEntities { get; private set; }
 
         #endregion
 
-        
+
 
         /// <summary>
         /// Размер интерфеса с учётом размера окна
@@ -135,6 +139,7 @@ namespace Vge.Util
             PathTextures = PathAssets + PrefixPath + "Textures" + Path.DirectorySeparatorChar;
             PathBlocks = PathAssets + PrefixPath + "Blocks" + Path.DirectorySeparatorChar;
             PathShapeBlocks = PathBlocks + "Shapes" + Path.DirectorySeparatorChar;
+            PathEntities = PathAssets + PrefixPath + "Entities" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
             // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()

@@ -24,17 +24,32 @@ namespace Vge.World.Block
         /// </summary>
         public static readonly GeneratingBlockAtlas BlockAtlas = new GeneratingBlockAtlas();
 
-        private static WindowMain _window;
-
         /// <summary>
         /// Справочник родлителей стат блока
         /// </summary>
         private static Dictionary<string, JsonCompound> _parentStats = new Dictionary<string, JsonCompound>();
-        
-        public static void InitializationBegin(WindowMain window)
+
+        /// <summary>
+        /// Инициализация блоков, если window не указывать, прорисовки о статусе не будет (для сервера)
+        /// </summary>
+        public static void Initialization(WindowMain window = null)
+        {
+            if (window != null)
+            {
+                window.LScreen.Process(L.T("CreateBlocks"));
+                window.DrawFrame();
+            }
+
+            _InitializationBegin();
+        }
+
+        /// <summary>
+        /// Перед инициализацией
+        /// </summary>
+        private static void _InitializationBegin()
         {
             // Создаём графический объект гдля генерации атласа блокоы
-            BlockAtlas.CreateImage(window, 64, 16); // (64, 16);
+            BlockAtlas.CreateImage(64, 16);
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
@@ -50,23 +65,10 @@ namespace Vge.World.Block
             RegisterBlockClass("Debug", new BlockDebug());
         }
 
-        public static void Initialization(WindowMain window)
-        {
-            // Создаём графический объект гдля генерации атласа блокоы
-            //BlockAtlas.CreateImage(window, 64, 16); // (64, 16);
-
-            _window = window;
-            _window.LScreen.Process(L.T("CreateBlocks"));
-            _window.DrawFrame();
-
-            InitializationBegin(window);
-        }
-
-        public static void InitializationEnd() 
-        {
-            // Финишируем атлас
-            BlockAtlas.EndImage();
-        }
+        /// <summary>
+        /// Инициализация атласа блоков, после инициализации блоков
+        /// </summary>
+        public static void InitializationAtlas(WindowMain window) => BlockAtlas.EndImage(window);
 
         /// <summary>
         /// Корректировка блоков после загрузки, если загрузки нет,

@@ -450,7 +450,7 @@ namespace Vge.Management
             // Таблицу блоков если не владелец
             if (!Owner)
             {
-                SendPacket(new PacketS05TableBlocks(Ce.Blocks.BlockAlias));
+                SendPacket(new PacketS05Tables(Ce.Blocks.BlockAlias, Ce.ModelEntities.ModelEntitiesAlias));
             }
             // Тикущий счётчик тика сервера
             SendPacket(new PacketS04TimeUpdate(_server.TickCounter));

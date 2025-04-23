@@ -12,6 +12,7 @@ using Vge.Event;
 using Vge.Gui.Screens;
 using Vge.World;
 using Vge.World.Block;
+using Vge.Entity;
 
 namespace Vge
 {
@@ -490,14 +491,19 @@ namespace Vge
         /// Инициализация блоков
         /// </summary>
         protected virtual void _InitializationBlocks() => BlocksReg.Initialization(this);
+        /// <summary>
+        /// Инициализация модели сущностей
+        /// </summary>
+        protected virtual void _InitializationModelsEntities() => ModelEntitiesReg.Initialization(this);
 
         /// <summary>
-        /// Инициализация блоков и атласа
+        /// Инициализация блоков, атласа, модели сущностей
         /// </summary>
-        private void _InitializationBlocksAndAtlas()
+        private void _InitializationBlocksAtlasEntities()
         {
             _InitializationBlocks();
-            BlocksReg.InitializationEnd();
+            BlocksReg.InitializationAtlas(this);
+            _InitializationModelsEntities();
         }
 
         /// <summary>
@@ -507,7 +513,7 @@ namespace Vge
         {
             if (Game == null)
             {
-                _InitializationBlocksAndAtlas();
+                _InitializationBlocksAtlasEntities();
                 LScreen.Process(L.T("Connection") + Ce.Ellipsis);
                 Game = new GameNet(this, ipAddress, port);
                 GameRun();
@@ -521,7 +527,7 @@ namespace Vge
         {
             if (Game == null)
             {
-                _InitializationBlocksAndAtlas();
+                _InitializationBlocksAtlasEntities();
                 LScreen.Working();
                 Game = new GameLocal(this, gameSettings, CreateAllWorlds());
                 GameRun();

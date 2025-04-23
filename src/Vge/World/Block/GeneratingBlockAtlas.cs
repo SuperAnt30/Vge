@@ -45,8 +45,6 @@ namespace Vge.World.Block
         /// </summary>
         private int _textureAtlasBlockCount = 64;
 
-        private WindowMain _window;
-
         //private readonly Logger _logger = new Logger("Debug");
         //private readonly Profiler _profiler;
 
@@ -57,9 +55,8 @@ namespace Vge.World.Block
         /// </summary>
         /// <param name="textureAtlasBlockCount">Количество спрайтов на стороне текстурного атласа</param>
         /// <param name="textureBlockSize">Размер спрайта в px</param>
-        public void CreateImage(WindowMain window, int textureAtlasBlockCount, int textureBlockSize)
+        public void CreateImage(int textureAtlasBlockCount, int textureBlockSize)
         {
-            _window = window;
             Ce.TextureAtlasBlockCount = _textureAtlasBlockCount = textureAtlasBlockCount;
             Ce.ShaderAnimOffset = 1f / Ce.TextureAtlasBlockCount;
             _textureBlockSize = textureBlockSize;
@@ -69,16 +66,16 @@ namespace Vge.World.Block
             _mask = new bool[_textureAtlasBlockCount, _textureAtlasBlockCount];
         }
 
-        public void EndImage()
+        public void EndImage(WindowMain window)
         {
             // Удаляем текстуры, так-как может быть иной размер
-            _window.Render.DeleteTextureAtlases();
+            window.Render.DeleteTextureAtlases();
 
             // Создаём заного текстуры
             BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 1, false);
-            _window.Render.AddTextureAtlasSharpness(bufferedImage);
+            window.Render.AddTextureAtlasSharpness(bufferedImage);
             bufferedImage = new BufferedImage(_height, _height, _buffer, 0, true);
-            _window.Render.AddTextureAtlasBlurry(bufferedImage);
+            window.Render.AddTextureAtlasBlurry(bufferedImage);
 
 #if DEBUG
             // Для отладки сохранить в файл посмотреть как вышло

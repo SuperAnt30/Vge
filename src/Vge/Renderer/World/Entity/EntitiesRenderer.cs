@@ -92,10 +92,18 @@ namespace Vge.Renderer.World.Entity
                                 // TODO::SceletAnim #4 Тут вращение по анимации
                                 if (yaw != 0)
                                 {
-                                    m1 = Glm.Rotate(m1, -yaw, new Vector3(0, 1, 0));
+                                    // Это два действия типа анимация
+                                    m1 = Glm.Rotate(m1, -yaw, new Vector3(0, 1, 0)); 
                                     m1 = Glm.Translate(m1, 0, 0, -0.5f);
-                                    m2 = Glm.Rotate(m2, -yaw, new Vector3(0, 1, 0));
-                                    m2 = Glm.Translate(m2, 0, 1.53f, 0);
+
+                                    // Последующая кость, наследуюет всё с учётом прошлой анимации
+                                    m2 = new Mat4(m1);
+
+                                    // m2 = Glm.Rotate(m2, -yaw, new Vector3(0, 1, 0));
+                                    //m2 = Glm.Translate(m2, 0, 1.53f, 0);
+
+                                    // Добавляет смещение стартовое (Local space)
+                                    m2 = Glm.Translate(m2, 0, 1f, -.3f);
                                 }
                                 if (pitch != 0) m2 = Glm.Rotate(m2, pitch, new Vector3(1, 0, 0));
                             }
