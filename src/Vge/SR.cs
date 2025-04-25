@@ -61,6 +61,13 @@ internal sealed class Sr
     internal const string ErrorReadJsonBlockShape = "Ошибка чтения из json, фигура {1} блока {0}";
     internal const string ErrorReadJsonNotFacesShape = "Ошибка чтения из json, не хватает сторон для фигуры {0}";
     internal const string FileMissingJsonBlock = "Отсутствует файл json, блока {0}";
+    internal const string ErrorReadJsonEntityStat = "Ошибка чтения из json, параметров сущности {0}";
+    internal const string FileMissingJsonEntity = "Отсутствует файл json, сущности {0}";
+    internal const string FileMissingModelJsonEntity = "Отсутствует модель в файле json сущности {0}";
+    internal const string FileMissingModelEntity = "Отсутствует файл модели сущности {0}";
+    internal const string ErrorReadJsonModelEntity = "Ошибка чтения из json, параметра {1} сущности {0}";
+    internal const string RequiredParameterIsMissingEntity = "Отсутствует требуемый параметр {1} сущности {0}";
 
+    
     #endregion
 }

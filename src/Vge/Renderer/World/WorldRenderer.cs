@@ -213,18 +213,21 @@ namespace Vge.Renderer.World
             _DrawVoxelDense(timeIndex);
 
             // Сущности
+            gl.Disable(GL.GL_CULL_FACE);
             Entities.Draw(timeIndex);
+            
 
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
 
             // Прорисовка вид не с руки, а видим себя
-           // Entities.DrawOwner(timeIndex);
+            Entities.DrawOwner(timeIndex);
 
             // Облака
             //DrawClouds(timeIndex);
 
             // Рисуем воксели альфа
+            gl.Enable(GL.GL_CULL_FACE);
             _DrawVoxelAlpha();
 
            
@@ -306,6 +309,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShaderBindVoxels(_game.Player.View, timeIndex,
                 _overviewBlock, .4f, .4f, .7f, 5);
+            Render.BindTextureAtlasBlocks();
 
             if (Debug.IsDrawVoxelLine)
             {
@@ -350,6 +354,7 @@ namespace Vge.Renderer.World
             gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
 
             Render.ShVoxel.Bind(gl);
+            Render.BindTextureAtlasBlocks();
 
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;

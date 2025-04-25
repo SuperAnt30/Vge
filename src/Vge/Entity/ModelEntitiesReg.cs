@@ -11,9 +11,18 @@ namespace Vge.Entity
     public sealed class ModelEntitiesReg
     {
         /// <summary>
+        /// Флаг, для рендера, если сервер, установить false.
+        /// Для игнорирование моделей и текстур
+        /// </summary>
+        public static bool FlagRender = true;
+        /// <summary>
         /// Таблица моделей сущностей для регистрации
         /// </summary>
         public static readonly ModelEntitiesRegTable Table = new ModelEntitiesRegTable();
+        /// <summary>
+        /// Справочник всех моделей
+        /// </summary>
+        public static readonly Dictionary<string, JsonCompound> Models = new Dictionary<string, JsonCompound>();
 
         /// <summary>
         /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
@@ -34,24 +43,12 @@ namespace Vge.Entity
         /// </summary>
         private static void _InitializationBegin()
         {
-            // Создаём графический объект гдля генерации атласа блокоы
-            //BlockAtlas.CreateImage(64, 16);
-
             // Очистить таблицы и вспомогательные данные json
             _Clear();
 
             // Регистрация обязательных сущностей
-            // Воздух
-            //string alias = "Air";
-            //BlockAir blockAir = new BlockAir();
-            //blockAir.InitAliasAndJoinN1(alias, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
-            //Table.Add(alias, blockAir);
-
             // Отладочный
-            //RegisterBlockClass("Debug", new BlockDebug());
-
             RegisterModelEntityClass("Chicken");
-
         }
 
         /// <summary>
@@ -81,6 +78,7 @@ namespace Vge.Entity
         {
             // Очистить массивы регистрации
             Table.Clear();
+            Models.Clear();
         }
 
         /// <summary>
@@ -88,51 +86,54 @@ namespace Vge.Entity
         /// </summary>
         public static void RegisterModelEntityClass(string alias)
         {
-            JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".bbmodel");
-            JsonCompound state;
-            List<JsonKeyValue> shapes = new List<JsonKeyValue>();
+            JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".json");
+            
             if (jsonRead.IsThereFile)
             {
-                //state = _ParentState(jsonRead.Compound);
-                //if (state.IsKey(Ctb.Variants))
-                //{
-                //    JsonArray variants = state.GetArray(Ctb.Variants);
-                //    bool bodyShape = false;
-                //    foreach (JsonCompound variant in variants.Items)
-                //    {
-                //        string shapeName = variant.GetString(Ctb.Shape);
-                //        foreach (JsonKeyValue shape in shapes)
-                //        {
-                //            if (shape.IsKey(shapeName))
-                //            {
-                //                bodyShape = true;
-                //                break;
-                //            }
-                //        }
-                //        if (bodyShape)
-                //        {
-                //            bodyShape = false;
-                //        }
-                //        else
-                //        {
-                //            shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
-                //        }
-                //    }
-                //}
-                //if (state.IsKey(Ctb.Variant))
-                //{
-                //    string shapeName = state.GetString(Ctb.Variant);
-                //    shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
-                //}
+                ModelEntity modelEntity = new ModelEntity(alias);
+
+                if (FlagRender)
+                {
+                    string modelFile = jsonRead.Compound.GetString(Cte.Model);
+                    if (modelFile == "")
+                    {
+                        // Отсутствует модель в файле json сущности
+                        throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
+                    }
+                    JsonCompound model = _GetModel(modelFile);
+                    modelEntity.ReadStateFromJson(jsonRead.Compound, model);
+                }
+                else
+                {
+                    modelEntity.ReadStateFromJson(jsonRead.Compound);
+                }
+                Table.Add(alias, modelEntity);
             }
             else
             {
-                throw new Exception(Sr.GetString(Sr.FileMissingJsonBlock, alias));
+                // Отсутствует файл json, сущности
+                throw new Exception(Sr.GetString(Sr.FileMissingJsonEntity, alias));
             }
-            Table.Add(alias, new ModelEntity());
+        }
 
-            //_window.LScreen.Process("Block init " + alias);
-            //_window.DrawFrame();
+        /// <summary>
+        /// Получить модель, если уже имеется, если нет, добавить в кеш
+        /// </summary>
+        private static JsonCompound _GetModel(string name)
+        {
+            if (Models.ContainsKey(name))
+            {
+                return Models[name];
+            }
+            // Добавляем фигуру
+            JsonRead jsonRead = new JsonRead(Options.PathModelEntities + name + ".bbmodel");
+            if (jsonRead.IsThereFile)
+            {
+                Models.Add(name, jsonRead.Compound);
+                return jsonRead.Compound;
+            }
+            // Отсутствует файл модели сущности
+            throw new Exception(Sr.GetString(Sr.FileMissingModelEntity, name));
         }
     }
 }

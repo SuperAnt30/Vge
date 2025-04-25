@@ -13,7 +13,7 @@
             _type = value.GetIdType();
         }
 
-        public bool IsKey(string key) => Key == key;
+        public bool IsKey(string key) => Key.ToLower() == key.ToLower();
 
         public bool GetBool() => _type == 0 ? ((JsonValue)Value).GetBool() : false;
 

@@ -16,14 +16,14 @@ namespace Vge.World.Block
         /// </summary>
         public static readonly BlockRegTable Table = new BlockRegTable();
         /// <summary>
-        /// Справочник всех форм
-        /// </summary>
-        public static readonly Dictionary<string, JsonCompound> Shapes = new Dictionary<string, JsonCompound>();
-        /// <summary>
         /// Объект генерации атласа блоков
         /// </summary>
         public static readonly GeneratingBlockAtlas BlockAtlas = new GeneratingBlockAtlas();
 
+        /// <summary>
+        /// Справочник всех форм
+        /// </summary>
+        private static readonly Dictionary<string, JsonCompound> _shapes = new Dictionary<string, JsonCompound>();
         /// <summary>
         /// Справочник родлителей стат блока
         /// </summary>
@@ -101,7 +101,7 @@ namespace Vge.World.Block
             Table.Clear();
             // Очистить вспомогательные данные json
             _parentStats.Clear();
-            Shapes.Clear();
+            _shapes.Clear();
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace Vge.World.Block
         public static void RegisterBlockClass(string alias, BlockBase blockObject)
         {
             JsonRead jsonRead = new JsonRead(Options.PathBlocks + alias + ".json");
-            JsonCompound state;
-            List<JsonKeyValue> shapes = new List<JsonKeyValue>();
+            
             if (jsonRead.IsThereFile)
             {
-                state = _ParentState(jsonRead.Compound);
+                JsonCompound state = _ParentState(jsonRead.Compound);
+                List<JsonKeyValue> shapes = new List<JsonKeyValue>();
                 if (state.IsKey(Ctb.Variants))
                 {
                     JsonArray variants = state.GetArray(Ctb.Variants);
@@ -145,14 +145,14 @@ namespace Vge.World.Block
                     string shapeName = state.GetString(Ctb.Variant);
                     shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
                 }
+                blockObject.InitAliasAndJoinN1(alias, state, new JsonCompound(shapes.ToArray()));
+                Table.Add(alias, blockObject);
             }
             else
             {
                 throw new Exception(Sr.GetString(Sr.FileMissingJsonBlock, alias));
             }
-            blockObject.InitAliasAndJoinN1(alias, state, new JsonCompound(shapes.ToArray()));
-            Table.Add(alias, blockObject);
-
+            
             //_window.LScreen.Process("Block init " + alias);
             //_window.DrawFrame();
         }
@@ -164,7 +164,7 @@ namespace Vge.World.Block
         /// </summary>
         private static JsonCompound _GetShape(string name)
         {
-            if(name != "" && !Shapes.ContainsKey(name))
+            if(name != "" && !_shapes.ContainsKey(name))
             {
                 // Добавляем фигуру
                 JsonRead jsonRead = new JsonRead(Options.PathShapeBlocks + name + ".json");
@@ -185,10 +185,10 @@ namespace Vge.World.Block
             if (parent != "")
             {
                 // Имеется родитель
-                if (Shapes.ContainsKey(parent))
+                if (_shapes.ContainsKey(parent))
                 {
                     // Имеется в справочнике
-                    return _SetChildState(Shapes[parent], compound);
+                    return _SetChildState(_shapes[parent], compound);
                 }
                 else
                 {
@@ -196,7 +196,7 @@ namespace Vge.World.Block
                     if (jsonRead.IsThereFile)
                     {
                         JsonCompound state = _ParentShape(jsonRead.Compound);
-                        Shapes.Add(parent, state);
+                        _shapes.Add(parent, state);
                         return _SetChildState(state, compound);
                     }
                 }

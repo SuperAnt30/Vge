@@ -41,7 +41,10 @@ namespace Vge.World.Block
         /// </summary>
         public byte BiomeColor = 0;
 
-        private readonly BlockBase _block;
+        /// <summary>
+        /// Псевдоним блока
+        /// </summary>
+        private readonly string _alias;
         /// <summary>
         /// Объект данных готовой фигуры
         /// </summary>
@@ -68,7 +71,7 @@ namespace Vge.World.Block
         /// </summary>
         private int _indexQ;
 
-        public BlockShapeDefinition(BlockBase block) => _block = block;
+        public BlockShapeDefinition(string alias) => _alias = alias;
 
         /// <summary>
         /// Запустить определение жидкой формы
@@ -96,7 +99,7 @@ namespace Vge.World.Block
             }
             catch (Exception ex)
             {
-                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _block.Alias, _log), ex);
+                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _alias, _log), ex);
             }
 
             return new SideLiquid[0];
@@ -135,7 +138,7 @@ namespace Vge.World.Block
             }
             catch (Exception ex)
             {
-                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _block.Alias, _log), ex);
+                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockShape, _alias, _log), ex);
             }
 
             return new QuadSide[][] { new QuadSide[] { new QuadSide() } };
@@ -291,7 +294,7 @@ namespace Vge.World.Block
             {
                 if (sideLiquids[i] == null)
                 {
-                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonNotFacesShape, _block.Alias));
+                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonNotFacesShape, _alias));
                 }
             }
             

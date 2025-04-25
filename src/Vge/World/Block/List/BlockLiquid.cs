@@ -53,7 +53,7 @@ namespace Vge.World.Block.List
         /// </summary>
         protected override void _ShapeDefinition(JsonCompound state, JsonCompound shapes)
         {
-            BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
+            BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(Alias);
             _sideLiquids = shapeDefinition.RunShapeLiquidFromJson(state, shapes);
             _maskCullFaces = shapeDefinition.MaskCullFaces;
         }

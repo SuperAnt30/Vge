@@ -10,6 +10,6 @@ namespace Vge.Renderer
         public MeshEntity(GL gl) : base(gl) { }
 
         protected override void _InitAtributs()
-            => _InitAtributs(new int[] { 3, 2, 4, 1 });
+            => _InitAtributs(new int[] { 3, 2, 1 });
     }
 }

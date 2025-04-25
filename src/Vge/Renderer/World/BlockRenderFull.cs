@@ -591,14 +591,14 @@ namespace Vge.Renderer.World
         {
             if (side == 0)
             {
-                _ambient.Aos[0] = _GetAmbientOcclusionLight(1, 1, 0);
-                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, 1);
-                _ambient.Aos[2] = _GetAmbientOcclusionLight(-1, 1, 0);
-                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, 1, -1);
-                _ambient.Aos[4] = _GetAmbientOcclusionLight(-1, 1, -1);
-                _ambient.Aos[5] = _GetAmbientOcclusionLight(-1, 1, 1);
-                _ambient.Aos[6] = _GetAmbientOcclusionLight(1, 1, 1);
-                _ambient.Aos[7] = _GetAmbientOcclusionLight(1, 1, -1);
+                _ambient.Aos[2] = _GetAmbientOcclusionLight(1, 1, 0);
+                _ambient.Aos[3] = _GetAmbientOcclusionLight(0, 1, 1);
+                _ambient.Aos[0] = _GetAmbientOcclusionLight(-1, 1, 0);
+                _ambient.Aos[1] = _GetAmbientOcclusionLight(0, 1, -1);
+                _ambient.Aos[6] = _GetAmbientOcclusionLight(-1, 1, -1);
+                _ambient.Aos[7] = _GetAmbientOcclusionLight(-1, 1, 1);
+                _ambient.Aos[4] = _GetAmbientOcclusionLight(1, 1, 1);
+                _ambient.Aos[5] = _GetAmbientOcclusionLight(1, 1, -1);
             }
             else if (side == 1)
             {

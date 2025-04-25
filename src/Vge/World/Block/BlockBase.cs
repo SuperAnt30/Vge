@@ -248,7 +248,7 @@ namespace Vge.World.Block
         /// </summary>
         protected virtual void _ShapeDefinition(JsonCompound state, JsonCompound shapes)
         {
-            BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(this);
+            BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(Alias);
             _quads = shapeDefinition.RunShapeFromJson(state, shapes);
             BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
             CullFaceAll = shapeDefinition.CullFaceAll;

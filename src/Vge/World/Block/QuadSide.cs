@@ -91,11 +91,11 @@ namespace Vge.World.Block
             switch (pole)
             {
                 case Pole.Up:
-                    Vertex[0].X = Vertex[1].X = x1;
-                    Vertex[2].X = Vertex[3].X = x2;
+                    Vertex[0].X = Vertex[1].X = x2;
+                    Vertex[2].X = Vertex[3].X = x1;
                     Vertex[0].Y = Vertex[1].Y = Vertex[2].Y = Vertex[3].Y = y2;
-                    Vertex[0].Z = Vertex[3].Z = z1;
-                    Vertex[1].Z = Vertex[2].Z = z2;
+                    Vertex[0].Z = Vertex[3].Z = z2;
+                    Vertex[1].Z = Vertex[2].Z = z1;
                     break;
                 case Pole.Down:
                     Vertex[0].X = Vertex[1].X = x2;

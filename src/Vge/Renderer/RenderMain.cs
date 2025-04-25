@@ -158,6 +158,27 @@ namespace Vge.Renderer
             int wind = (int)window.Time() / 48 & 0x7F;
             ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
 
+            //// Активация текстуры атласа с размытостью (с Mipmap)
+            //int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
+            //BindTextureAtlasBlurry();
+            //gl.Uniform1(atlasBlurry, 0);
+
+            //// Активация текстуры атласа с резкостью (без Mipmap)
+            //BindTextureAtlasSharpness();
+            //int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
+            //gl.Uniform1(atlasSharpness, 1);
+
+            //// Активация текстуры карты света
+            //LightMap.BindTexture();
+            //int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
+            //gl.Uniform1(lightMap, 2);
+        }
+
+        /// <summary>
+        /// Биндим атлас текстур
+        /// </summary>
+        public void BindTextureAtlasBlocks()
+        {
             // Активация текстуры атласа с размытостью (с Mipmap)
             int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
             BindTextureAtlasBlurry();
@@ -172,8 +193,6 @@ namespace Vge.Renderer
             LightMap.BindTexture();
             int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
             gl.Uniform1(lightMap, 2);
-
-           // gl.ActiveTexture(GL.GL_TEXTURE0);
         }
 
         /// <summary>
@@ -279,6 +298,11 @@ namespace Vge.Renderer
         /// </summary>
         public void AddTextureAtlasSharpness(BufferedImage bufferedImage)
             => _textureIndex.AtlasSharpness = _texture.SetTexture(bufferedImage);
+
+        /// <summary>
+        /// Задать текстуру
+        /// </summary>
+        public uint SetTexture(BufferedImage bufferedImage) => _texture.SetTexture(bufferedImage);
 
         /// <summary>
         /// Запустить текстуру, указав индекс текстуры массива

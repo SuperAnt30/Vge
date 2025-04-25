@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Vge.Util
@@ -13,6 +14,16 @@ namespace Vge.Util
         public static BufferedImage FileToBufferedImage(string fileName)
         {
             Bitmap bitmap = Image.FromFile(fileName) as Bitmap;
+            return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
+        }
+
+        /// <summary>
+        /// Конвертировать картинку в структуру BufferedImage
+        /// </summary>
+        public static BufferedImage FileToBufferedImage(byte[] bufferPng)
+        {
+            Bitmap bitmap = Image.FromStream(new MemoryStream(bufferPng)) as Bitmap;
+            //bitmap.Save("c.png", ImageFormat.Png);
             return new BufferedImage(bitmap.Width, bitmap.Height, BitmapToByteArray(bitmap));
         }
 

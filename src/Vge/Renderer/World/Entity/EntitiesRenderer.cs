@@ -33,7 +33,7 @@ namespace Vge.Renderer.World.Entity
         {
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
-            _entityRender = new EntityRender(gl);
+            //_entityRender = new EntityRender(gl);
             _arrayChunkRender = arrayChunkRender;
         }
 
@@ -43,6 +43,7 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
+            
             int count = _arrayChunkRender.Count;
             int countEntity;
             ChunkRender chunkRender;
@@ -51,6 +52,14 @@ namespace Vge.Renderer.World.Entity
             float x = _game.Player.PosFrameX;
             float y = _game.Player.PosFrameY;
             float z = _game.Player.PosFrameZ;
+
+
+            if (_entityRender == null)
+            {
+                uint texture = Render.SetTexture(Ce.ModelEntities.ModelEntitiesObjects[0].Textures[1]);
+                _entityRender = new EntityRender(gl, texture);
+            }
+
 
             CountEntitiesFC = 0;
             for (int i = 0; i < count; i++)
@@ -64,13 +73,14 @@ namespace Vge.Renderer.World.Entity
                         entity = chunkRender.ListEntities.GetAt(j);
                         //if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
-                            _game.WorldRender.Render.ShaderBindLine(_game.Player.View,
+                            
+                            Render.ShaderBindLine(_game.Player.View,
                                 entity.GetPosFrameX(timeIndex) - x,
                                 entity.GetPosFrameY(timeIndex) - y,
                                 entity.GetPosFrameZ(timeIndex) - z);
                             _hitbox.Draw(timeIndex, entity);
 
-
+                            Render.BindTexture(_entityRender.Texture);
                             // Матрица анимации первой кости
                             Mat4 m1 = Mat4.Identity();
 
@@ -94,7 +104,7 @@ namespace Vge.Renderer.World.Entity
                                 {
                                     // Это два действия типа анимация
                                     m1 = Glm.Rotate(m1, -yaw, new Vector3(0, 1, 0)); 
-                                    m1 = Glm.Translate(m1, 0, 0, -0.5f);
+                                   // m1 = Glm.Translate(m1, 0, 0, -0.5f);
 
                                     // Последующая кость, наследуюет всё с учётом прошлой анимации
                                     m2 = new Mat4(m1);
@@ -111,7 +121,7 @@ namespace Vge.Renderer.World.Entity
                             List<float> list = new List<float>(m1.ToArray4x3());
                             list.AddRange(m2.ToArray4x3());
 
-                            _game.WorldRender.Render.ShaderBindEntity(_game.Player.View,
+                            Render.ShaderBindEntity(_game.Player.View,
                                 entity.GetPosFrameX(timeIndex) - x,
                                 entity.GetPosFrameY(timeIndex) - y,
                                 entity.GetPosFrameZ(timeIndex) - z,
@@ -132,8 +142,8 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void DrawOwner(float timeIndex)
         {
-            _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
-            _hitbox.Draw(timeIndex, _game.Player);
+            //_game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
+            //_hitbox.Draw(timeIndex, _game.Player);
         }
 
         public override void Dispose()

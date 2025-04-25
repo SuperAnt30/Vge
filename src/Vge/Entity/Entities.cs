@@ -1,6 +1,5 @@
 ﻿using System;
 using Vge.World;
-
 namespace Vge.Entity
 {
     /// <summary>
