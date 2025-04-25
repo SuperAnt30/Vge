@@ -203,7 +203,7 @@ namespace Vge.Renderer
             ShEntity.Bind(gl);
             ShEntity.SetUniformMatrix4(gl, "view", view);
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
-            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, 2);
+            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, 24);
         }
 
         /// <summary>

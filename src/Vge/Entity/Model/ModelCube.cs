@@ -5,16 +5,8 @@ namespace Vge.Entity.Model
     /// <summary>
     /// Объект куба части моба для скелетной анимации
     /// </summary>
-    public class ModelCube
+    public class ModelCube : ModelElement
     {
-        /// <summary>
-        /// Идентификационный номер для определения дерева, из Blockbench
-        /// </summary>
-        public readonly string Uuid;
-        /// <summary>
-        /// Имя куба из Blockbench
-        /// </summary>
-        public readonly string Name;
         /// <summary>
         /// Количество сторон
         /// </summary>
@@ -47,32 +39,6 @@ namespace Vge.Entity.Model
         public float ToZ;
 
         /// <summary>
-        /// Вращение по X
-        /// </summary>
-        public float RotationX;
-        /// <summary>
-        /// Вращение по Y
-        /// </summary>
-        public float RotationY;
-        /// <summary>
-        /// Вращение по Z
-        /// </summary>
-        public float RotationZ;
-
-        /// <summary>
-        /// Центральная точка для вращения по X
-        /// </summary>
-        public float OriginX;
-        /// <summary>
-        /// Центральная точка для вращения по Y
-        /// </summary>
-        public float OriginY;
-        /// <summary>
-        /// Центральная точка для вращения по Z
-        /// </summary>
-        public float OriginZ;
-
-        /// <summary>
         /// Ширина
         /// </summary>
         public readonly int Width;
@@ -81,10 +47,8 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly int Height;
 
-        public ModelCube(string uuid, string name, int width, int height)
+        public ModelCube(string uuid, string name, int width, int height) : base(uuid, name)
         {
-            Uuid = uuid;
-            Name = name;
             Width = width;
             Height = height;
         }
@@ -104,20 +68,6 @@ namespace Vge.Entity.Model
         }
 
         /// <summary>
-        /// Повернуть куб если это необходимо
-        /// </summary>
-        public void SetRotation(float[] rotation, float[] origin)
-        {
-            RotationX = rotation[0];
-            RotationY = rotation[1];
-            RotationZ = rotation[2];
-
-            OriginX = origin[0];
-            OriginY = origin[1];
-            OriginZ = origin[2];
-        }
-
-        /// <summary>
         /// Сгенерировать буффер
         /// </summary>
         public void GenBuffer(List<float> buffer)
@@ -127,7 +77,5 @@ namespace Vge.Entity.Model
                 Faces[i].GenBuffer(buffer, this);
             }
         }
-
-        public override string ToString() => Name + " " + Uuid;
     }
 }

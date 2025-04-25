@@ -115,6 +115,14 @@
 
         #endregion
 
+        #region Outliner
+
+        /// <summary>
+        /// Дети древо скелета. ([])
+        /// </summary>
+        public const string Children = "children";
+
+        #endregion
 
     }
 }

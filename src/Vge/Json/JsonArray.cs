@@ -15,6 +15,19 @@
         /// </summary>
         public int GetCount() => Items.Length;
 
+        /// <summary>
+        /// Имеется в выбранной ячейке переменная
+        /// </summary>
+        public bool IsValue(int index) => Items[index].IsValue();
+        /// <summary>
+        /// Получить выбранной ячейке ввиде переменной
+        /// </summary>
+        public JsonValue GetValue(int index) => (JsonValue)Items[index];
+        /// <summary>
+        /// Получить выбранной ячейке ввиде объекта
+        /// </summary>
+        public JsonCompound GetCompound(int index) => (JsonCompound)Items[index];
+
         public JsonCompound[] ToArrayObject()
         {
             int count = Items != null ? Items.Length : 0;

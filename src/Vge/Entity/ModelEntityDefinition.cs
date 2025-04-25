@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
-using Vge.World.Block;
 
 namespace Vge.Entity
 {
@@ -29,6 +28,10 @@ namespace Vge.Entity
         /// Список кубов
         /// </summary>
         private readonly List<ModelCube> _cubes = new List<ModelCube>();
+        /// <summary>
+        /// Список костей они же папки
+        /// </summary>
+        private readonly List<ModelElement> _bones = new List<ModelElement>();
 
         /// <summary>
         /// Для краша, название раздела
@@ -43,6 +46,10 @@ namespace Vge.Entity
         /// Высота
         /// </summary>
         private int _height;
+        /// <summary>
+        /// Индекс кости, для шейдора
+        /// </summary>
+        private byte _boneIndex = 0;
 
         public ModelEntityDefinition(string alias) => _alias = alias;
 
@@ -79,12 +86,16 @@ namespace Vge.Entity
 
                 // Древо скелета
                 _log = Cte.Outliner;
-                JsonCompound[] outliner = model.GetArray(Cte.Outliner).ToArrayObject();
-                if (outliner.Length == 0)
+                _Outliner(model.GetArray(Cte.Outliner), _bones, _boneIndex);
+
+                // Генерируем буффер
+                List<float> list = new List<float>();
+                foreach(ModelCube cube in _cubes)
                 {
-                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, _alias, _log));
+                    cube.GenBuffer(list);
                 }
-                _Outliner(outliner);
+                Buffer = list.ToArray();
+                return;
             }
             catch (Exception ex)
             {
@@ -119,22 +130,20 @@ namespace Vge.Entity
         /// </summary>
         private void _Cubes(JsonCompound[] elements)
         {
-            List<float> list = new List<float>();
-
             for (int i = 0; i < elements.Length; i++)
             {
-                _log = "NameUuid";
+                _log = "CubeNameUuid";
                 ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
                     elements[i].GetString(Cte.Name), _width, _height);
 
-                _log = "FromTo";
+                _log = "CubeFromTo";
                 cube.SetPosition(
                     elements[i].GetArray(Cte.From).ToArrayFloat(),
                     elements[i].GetArray(Cte.To).ToArrayFloat()
                     );
                 if (elements[i].IsKey(Cte.Rotation))
                 {
-                    _log = "RotationOrigin";
+                    _log = "CubeRotationOrigin";
                     cube.SetRotation(
                         elements[i].GetArray(Cte.Rotation).ToArrayFloat(),
                         elements[i].GetArray(Cte.Origin).ToArrayFloat()
@@ -145,59 +154,142 @@ namespace Vge.Entity
                 JsonCompound faces = elements[i].GetObject(Cte.Faces);
 
                 // Собираем 6 сторон текстур
-                _Face(cube, faces, Pole.North, Cte.North);
-                _Face(cube, faces, Pole.South, Cte.South);
-                _Face(cube, faces, Pole.West, Cte.West);
-                _Face(cube, faces, Pole.East, Cte.East);
-                _Face(cube, faces, Pole.Up, Cte.Up);
-                _Face(cube, faces, Pole.Down, Cte.Down);
-
-                cube.GenBuffer(list);
+                _log = Cte.Up;
+                cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up, 
+                    faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.Down;
+                cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down, 
+                    faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.East;
+                cube.Faces[(int)Pole.East] = new ModelFace(Pole.East, 
+                    faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.West;
+                cube.Faces[(int)Pole.West] = new ModelFace(Pole.West, 
+                    faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.North;
+                cube.Faces[(int)Pole.North] = new ModelFace(Pole.North, 
+                    faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.South;
+                cube.Faces[(int)Pole.South] = new ModelFace(Pole.South, 
+                    faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
 
                 _cubes.Add(cube);
             }
-
-            Buffer = list.ToArray();
-        }
-
-        private void _Face(ModelCube cube, JsonCompound faces, Pole side, string key)
-        {
-            _log = key;
-            cube.Faces[(int)side] = new ModelFace(side, faces.GetObject(key).GetArray(Cte.Uv).ToArrayFloat());
         }
 
         /// <summary>
         /// Строим древо скелета
         /// </summary>
-        private void _Outliner(JsonCompound[] outliner)
+        private void _Outliner(JsonArray outliner, List<ModelElement> bones, byte boneIndex)
         {
+            int count = outliner.GetCount();
+            for (int i = 0; i < count; i++)
+            {
+                if (outliner.IsValue(i))
+                {
+                    // Переменная, значит куб
+                    string uuid = outliner.GetValue(i).ToString();
+                    ModelCube cube = _FindCune(uuid);
+                    if (cube != null)
+                    {
+                        cube.BoneIndex = boneIndex;
+                        bones.Add(cube);
+                    }
+                }
+                else
+                {
+                    // Объект, значит папка
+                    JsonCompound compound = outliner.GetCompound(i);
+                    _log = "BoneNameUuid";
+                    ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
+                        compound.GetString(Cte.Name), _boneIndex++);
 
+                    if (compound.IsKey(Cte.Origin))
+                    {
+                        _log = "BoneRotationOrigin";
+                        float[] rotation = compound.IsKey(Cte.Rotation)
+                            ? compound.GetArray(Cte.Rotation).ToArrayFloat()
+                            : new float[] { 0, 0, 0 };
+                        bone.SetRotation(rotation, compound.GetArray(Cte.Origin).ToArrayFloat());
+                    }
+
+                    _log = Cte.Children;
+                    JsonArray children = compound.GetArray(Cte.Children);
+                    if (children.GetCount() > 0)
+                    {
+                        // Имеются детишки
+                        _Outliner(children, bone.Children, bone.BoneIndex);
+                    }
+
+                    bones.Add(bone);
+                }
+            }
         }
 
-
-
+        /// <summary>
+        /// Найти модель куба, если нет вернуть null
+        /// </summary>
+        private ModelCube _FindCune(string uuid)
+        {
+            foreach(ModelCube cube in _cubes)
+            {
+                if (cube.Uuid.Equals(uuid))
+                {
+                    return cube;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
-        /// Прямоугольный параллелепипед
+        /// Сгенерировать древо костей
         /// </summary>
-        public static void _Cube(List<float> list, int x1, int y1, int z1,
-            int x2, int y2, int z2,
-            int numberTexture, float r, float g, float b, float id)
+        public Bone[] GenBones()
         {
-            QuadSide quadSide;
-            for (int i = 0; i < 6; i++)
-            {
-                quadSide = new QuadSide();
-                quadSide.SetSide((Pole)i, true, x1, y1, z1, x2, y2, z2);
-                quadSide.SetTexture(numberTexture);
+            _ClearCubeBone(_bones);
+            return _ConvertBones(_bones);
+        }
 
-                for (int j = 0; j < 4; j++)
+        /// <summary>
+        /// Конверт в древо костей сущности для игры
+        /// </summary>
+        private Bone[] _ConvertBones(List<ModelElement> modelBones)
+        {
+            int count = modelBones.Count;
+            Bone[] bones = new Bone[count];
+            for (int i = 0; i < count; i++)
+            {
+                if (modelBones[i] is ModelBone modelBone)
                 {
-                    list.AddRange(new float[] {
-                        quadSide.Vertex[j].X, quadSide.Vertex[j].Y, quadSide.Vertex[j].Z,
-                        quadSide.Vertex[j].U, quadSide.Vertex[j].V,
-                        r, g, b, 1, id
-                    });
+                    bones[i] = modelBone.CreateBone();
+                    bones[i].SetChildren(_ConvertBones(modelBone.Children));
+                }
+            }
+            return bones;
+        }
+
+        /// <summary>
+        /// Очистить кубы в костях
+        /// </summary>
+        private void _ClearCubeBone(List<ModelElement> bones)
+        {
+            int count = bones.Count - 1;
+            for (int i = count; i >= 0; i--)
+            {
+                if (bones[i] is ModelBone modelBone)
+                {
+                    if (modelBone.Children.Count == 0)
+                    {
+                        bones.RemoveAt(i);
+                    }
+                    else
+                    {
+                        _ClearCubeBone(modelBone.Children);
+                    }
+                }
+                else
+                {
+                    bones.RemoveAt(i);
                 }
             }
         }

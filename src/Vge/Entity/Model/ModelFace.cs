@@ -126,7 +126,7 @@ namespace Vge.Entity.Model
                     buffer.AddRange(new float[] {
                         Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
                         Vertex[i].U, Vertex[i].V,
-                        0
+                        modelCube.BoneIndex
                     });
                 }
             }

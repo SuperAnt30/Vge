@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
 
@@ -22,6 +23,10 @@ namespace Vge.Entity
         /// Текстуры для моба
         /// </summary>
         public BufferedImage[] Textures { get; private set; }
+        /// <summary>
+        /// Древо костей, для скелетной анимации
+        /// </summary>
+        public Bone[] Bones { get; private set; }
 
         public ModelEntity(string alias) => Alias = alias;
 
@@ -72,6 +77,9 @@ namespace Vge.Entity
 
             Buffer = definition.Buffer;
             Textures = definition.Textures;
+            Bones = definition.GenBones();
+
+            return;
         }
 
         #endregion

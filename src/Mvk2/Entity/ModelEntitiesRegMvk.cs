@@ -9,7 +9,7 @@ namespace Mvk2.Entity
     {
         public static void Initialization()
         {
-            ModelEntitiesReg.RegisterModelEntityClass("Chick");
+            //ModelEntitiesReg.RegisterModelEntityClass("Chick");
         }
     }
 }

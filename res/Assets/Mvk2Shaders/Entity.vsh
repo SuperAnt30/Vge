@@ -9,7 +9,7 @@ out vec2 a_texCoord;
 
 uniform mat4 view;
 uniform vec3 pos;
-uniform mat4x3 elementTransforms[2];
+uniform mat4x3 elementTransforms[24];
 
 void main()
 {
