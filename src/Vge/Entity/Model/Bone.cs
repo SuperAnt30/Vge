@@ -9,6 +9,10 @@
         /// Индекс кости
         /// </summary>
         public readonly byte Index;
+        /// <summary>
+        /// Кость реагирует на угол Pitch
+        /// </summary>
+        public readonly bool IsPitch;
 
         /// <summary>
         /// Вращение по X
@@ -40,16 +44,17 @@
         /// </summary>
         public readonly Bone[] Children;
 
-        public Bone(byte index, float rotationX, float rotationY, float rotationZ,
+        public Bone(byte index, bool isPitch, float rotationX, float rotationY, float rotationZ,
             float originX, float originY, float originZ, int children)
         {
             Index = index;
+            IsPitch = isPitch;
             RotationX = rotationX;
             RotationY = rotationY;
             RotationZ = rotationZ;
-            OriginX = originX;
-            OriginY = originY;
-            OriginZ = originZ;
+            OriginX = originX / 16f;
+            OriginY = originY / 16f;
+            OriginZ = originZ / 16f;
             Children = new Bone[children];
         }
 
@@ -61,6 +66,12 @@
             }
         }
 
-        public override string ToString() => Index + " " + Children.Length;
+        public override string ToString()
+        {
+            string s = Index.ToString();
+            if (Children.Length > 0) s += " " + Children.Length.ToString();
+            if (IsPitch) s += " Pitch";
+            return s;
+        }
     }
 }

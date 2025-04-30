@@ -14,7 +14,7 @@ namespace Vge.Entity
         /// <summary>
         /// Буфер сетки моба, для рендера
         /// </summary>
-        public float[] Buffer { get; private set; }
+        public float[] BufferMesh { get; private set; }
         /// <summary>
         /// Текстуры для моба
         /// </summary>
@@ -25,6 +25,10 @@ namespace Vge.Entity
         /// </summary>
         private readonly string _alias;
         /// <summary>
+        /// Название кости меняющее от Pitch
+        /// </summary>
+        private readonly string _nameBonePitch;
+        /// <summary>
         /// Список кубов
         /// </summary>
         private readonly List<ModelCube> _cubes = new List<ModelCube>();
@@ -32,6 +36,14 @@ namespace Vge.Entity
         /// Список костей они же папки
         /// </summary>
         private readonly List<ModelElement> _bones = new List<ModelElement>();
+        /// <summary>
+        /// Карта костей, по индексам
+        /// </summary>
+        private readonly Dictionary<string, ModelElement> _mapBones = new Dictionary<string, ModelElement>();
+        /// <summary>
+        /// Список анимаций
+        /// </summary>
+        private readonly List<ModelAnimation> _animations = new List<ModelAnimation>();
 
         /// <summary>
         /// Для краша, название раздела
@@ -51,7 +63,11 @@ namespace Vge.Entity
         /// </summary>
         private byte _boneIndex = 0;
 
-        public ModelEntityDefinition(string alias) => _alias = alias;
+        public ModelEntityDefinition(string alias, string nameBonePitch)
+        {
+            _alias = alias;
+            _nameBonePitch = nameBonePitch;
+        }
 
         /// <summary>
         /// Запуск определения модели
@@ -87,6 +103,11 @@ namespace Vge.Entity
                 // Древо скелета
                 _log = Cte.Outliner;
                 _Outliner(model.GetArray(Cte.Outliner), _bones, _boneIndex);
+                _ClearCubeBone(_bones);
+
+                // Анимация
+                _log = Cte.Animations;
+                _Animations(model.GetArray(Cte.Animations).ToArrayObject());
 
                 // Генерируем буффер
                 List<float> list = new List<float>();
@@ -94,7 +115,7 @@ namespace Vge.Entity
                 {
                     cube.GenBuffer(list);
                 }
-                Buffer = list.ToArray();
+                BufferMesh = list.ToArray();
                 return;
             }
             catch (Exception ex)
@@ -132,48 +153,51 @@ namespace Vge.Entity
         {
             for (int i = 0; i < elements.Length; i++)
             {
-                _log = "CubeNameUuid";
-                ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
-                    elements[i].GetString(Cte.Name), _width, _height);
-
-                _log = "CubeFromTo";
-                cube.SetPosition(
-                    elements[i].GetArray(Cte.From).ToArrayFloat(),
-                    elements[i].GetArray(Cte.To).ToArrayFloat()
-                    );
-                if (elements[i].IsKey(Cte.Rotation))
+                if (!elements[i].IsKey(Cte.Visibility) || elements[i].GetBool(Cte.Visibility))
                 {
-                    _log = "CubeRotationOrigin";
-                    cube.SetRotation(
-                        elements[i].GetArray(Cte.Rotation).ToArrayFloat(),
-                        elements[i].GetArray(Cte.Origin).ToArrayFloat()
-                    );
+                    _log = "CubeNameUuid";
+                    ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
+                        elements[i].GetString(Cte.Name), _width, _height);
+
+                    _log = "CubeFromTo";
+                    cube.SetPosition(
+                        elements[i].GetArray(Cte.From).ToArrayFloat(),
+                        elements[i].GetArray(Cte.To).ToArrayFloat()
+                        );
+                    if (elements[i].IsKey(Cte.Rotation))
+                    {
+                        _log = "CubeRotationOrigin";
+                        cube.SetRotation(
+                            elements[i].GetArray(Cte.Rotation).ToArrayFloat(),
+                            elements[i].GetArray(Cte.Origin).ToArrayFloat()
+                        );
+                    }
+
+                    _log = Cte.Faces;
+                    JsonCompound faces = elements[i].GetObject(Cte.Faces);
+
+                    // Собираем 6 сторон текстур
+                    _log = Cte.Up;
+                    cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up,
+                        faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
+                    _log = Cte.Down;
+                    cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down,
+                        faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
+                    _log = Cte.East;
+                    cube.Faces[(int)Pole.East] = new ModelFace(Pole.East,
+                        faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
+                    _log = Cte.West;
+                    cube.Faces[(int)Pole.West] = new ModelFace(Pole.West,
+                        faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
+                    _log = Cte.North;
+                    cube.Faces[(int)Pole.North] = new ModelFace(Pole.North,
+                        faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
+                    _log = Cte.South;
+                    cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
+                        faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
+
+                    _cubes.Add(cube);
                 }
-
-                _log = Cte.Faces;
-                JsonCompound faces = elements[i].GetObject(Cte.Faces);
-
-                // Собираем 6 сторон текстур
-                _log = Cte.Up;
-                cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up, 
-                    faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
-                _log = Cte.Down;
-                cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down, 
-                    faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
-                _log = Cte.East;
-                cube.Faces[(int)Pole.East] = new ModelFace(Pole.East, 
-                    faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
-                _log = Cte.West;
-                cube.Faces[(int)Pole.West] = new ModelFace(Pole.West, 
-                    faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
-                _log = Cte.North;
-                cube.Faces[(int)Pole.North] = new ModelFace(Pole.North, 
-                    faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
-                _log = Cte.South;
-                cube.Faces[(int)Pole.South] = new ModelFace(Pole.South, 
-                    faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
-
-                _cubes.Add(cube);
             }
         }
 
@@ -222,6 +246,7 @@ namespace Vge.Entity
                     }
 
                     bones.Add(bone);
+                    _mapBones.Add(bone.Name, bone);
                 }
             }
         }
@@ -244,11 +269,7 @@ namespace Vge.Entity
         /// <summary>
         /// Сгенерировать древо костей
         /// </summary>
-        public Bone[] GenBones()
-        {
-            _ClearCubeBone(_bones);
-            return _ConvertBones(_bones);
-        }
+        public Bone[] GenBones() => _ConvertBones(_bones);
 
         /// <summary>
         /// Конверт в древо костей сущности для игры
@@ -261,7 +282,7 @@ namespace Vge.Entity
             {
                 if (modelBones[i] is ModelBone modelBone)
                 {
-                    bones[i] = modelBone.CreateBone();
+                    bones[i] = modelBone.CreateBone(_nameBonePitch);
                     bones[i].SetChildren(_ConvertBones(modelBone.Children));
                 }
             }
@@ -280,6 +301,7 @@ namespace Vge.Entity
                 {
                     if (modelBone.Children.Count == 0)
                     {
+                        _mapBones.Remove(bones[i].Name);
                         bones.RemoveAt(i);
                     }
                     else
@@ -290,6 +312,67 @@ namespace Vge.Entity
                 else
                 {
                     bones.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Собираем анимации
+        /// </summary>
+        private void _Animations(JsonCompound[] animations)
+        {
+            for (int i = 0; i < animations.Length; i++)
+            {
+                _log = "AnimNameLoop";
+                ModelAnimation animation = new ModelAnimation(
+                    animations[i].GetString(Cte.Name),
+                    animations[i].GetString(Cte.Loop).Equals("loop")
+                );
+
+                // Массив элементов анимаций
+                _log = Cte.Animators;
+                JsonCompound animators = animations[i].GetObject(Cte.Animators);
+                if (animators.GetCount() == 0)
+                {
+                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, _alias, _log));
+                }
+                _Animators(animation, animators);
+
+
+                _animations.Add(animation);
+            }
+        }
+
+        /// <summary>
+        /// Собираем анимацию
+        /// </summary>
+        private void _Animators(ModelAnimation animation, JsonCompound animators)
+        {
+            int countBone = animators.GetCount();
+            // Цикл костей
+            for (int i = 0; i < countBone; i++)
+            {
+                _log = "AnimBone";
+                JsonCompound animator = animators.Items[i].GetObjects();
+                // Вытаскиваем имя кости
+                string nameBone = animator.GetString(Cte.Name);
+                if (_mapBones.ContainsKey(nameBone))
+                {
+                    ModelAnimation.AnimationBone bone = new ModelAnimation.AnimationBone(_mapBones[nameBone].BoneIndex);
+                    JsonCompound[] keyframes = animator.GetArray(Cte.Keyframes).ToArrayObject();
+
+                    _log = "AnimKeyFrames";
+                    int countFrame = keyframes.Length;
+                    for (int j = 0; j < countFrame; j++)
+                    {
+                        JsonCompound pos = keyframes[j].GetArray(Cte.DataPoints).ToArrayObject()[0];
+                        bone.Frames.Add(new ModelAnimation.KeyFrames(
+                            keyframes[j].GetString(Cte.Channel).Equals("rotation"),
+                            keyframes[j].GetFloat(Cte.Time),
+                            pos.GetFloat(Cte.X), pos.GetFloat(Cte.Y), pos.GetFloat(Cte.Z)
+                        ));
+                    }
+                    animation.Bones.Add(bone);
                 }
             }
         }

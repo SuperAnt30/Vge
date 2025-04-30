@@ -215,12 +215,12 @@ namespace Vge.Entity
 
         public override string ToString()
         {
-            string list = "";
-            for (int i = 0; i < _trackedEntities.Count; i++)
-            {
-                list += "[" + _trackedEntities.GetAt(i).ToString() + "] ";
-            }
-            return "Tracker: " + _trackedEntities.Count + " " + list;
+            //string list = "";
+            //for (int i = 0; i < _trackedEntities.Count; i++)
+            //{
+            //    list += "[" + _trackedEntities.GetAt(i).ToString() + "] ";
+            //}
+            return "Tracker: " + _trackedEntities.Count;// + " " + list;
         }
     }
 }

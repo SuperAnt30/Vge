@@ -21,6 +21,8 @@ namespace Vge.Entity.List
         /// </summary>
         private readonly float _weight;
 
+        private int _jumpTime;
+
         public EntityThrowable(EnumEntity type)
         {
             if (type == EnumEntity.Stone)
@@ -103,7 +105,7 @@ namespace Vge.Entity.List
         {
             if (Physics != null)
             {
-                if (_age > 1800)
+                if (_age > 9000)//1800)
                 {
                     SetDead();
                     return;
@@ -140,6 +142,15 @@ namespace Vge.Entity.List
                     else if (Physics.IsPhysicAlmostSleep())
                     {
                         LevelMotionChange = 2;
+                    }
+                }
+                else
+                {
+                    if (_jumpTime++ > 150)
+                    {
+                        Physics.MotionY = .5f;
+                        _jumpTime = 0;
+                        Physics.AwakenPhysics();
                     }
                 }
             }

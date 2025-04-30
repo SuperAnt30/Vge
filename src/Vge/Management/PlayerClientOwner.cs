@@ -129,6 +129,8 @@ namespace Vge.Management
         /// </summary>
         private Vector3 _rayLook;
 
+        public float FFF = 0;
+
         public PlayerClientOwner(GameBase game) : base(game)
         {
             Login = game.ToLoginPlayer();
@@ -450,6 +452,9 @@ namespace Vge.Management
         /// </summary>
         public override void Update()
         {
+            FFF += .0174f;
+            if (FFF > 6.28f) FFF = 0;
+
 #if PhysicsServer
 
             PosPrevX = PosX;

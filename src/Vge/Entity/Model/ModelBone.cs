@@ -15,7 +15,12 @@ namespace Vge.Entity.Model
         public ModelBone(string uuid, string name, byte boneIndex) : base(uuid, name)
             => BoneIndex = boneIndex;
 
-        public Bone CreateBone()
-            => new Bone(BoneIndex, RotationX, RotationY, RotationZ, OriginX, OriginY, OriginZ, Children.Count);
+        /// <summary>
+        /// Создать кость
+        /// </summary>
+        /// <param name="nameBonePitch">Название кости меняющее от Pitch</param>
+        public Bone CreateBone(string nameBonePitch)
+            => new Bone(BoneIndex, Name.Equals(nameBonePitch),
+                RotationX, RotationY, RotationZ, OriginX, OriginY, OriginZ, Children.Count);
     }
 }

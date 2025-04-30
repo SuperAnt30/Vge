@@ -52,6 +52,10 @@ namespace Vge.Renderer
         /// Шейдоры для сущностей
         /// </summary>
         public readonly ShaderEntity ShEntity;
+        /// <summary>
+        /// Шейдоры для примитивных сущностей без скелетной анимации
+        /// </summary>
+        public readonly ShaderEntityPrimitive ShEntityPrimitive;
 
         /// <summary>
         /// Время выполнения кадра
@@ -89,6 +93,7 @@ namespace Vge.Renderer
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
             ShEntity = new ShaderEntity(gl);
+            ShEntityPrimitive = new ShaderEntityPrimitive(gl);
             ShLine = new ShaderLine(gl);
             _Initialize();
         }
@@ -116,6 +121,7 @@ namespace Vge.Renderer
             ShGuiLine.Delete(gl);
             ShVoxel.Delete(gl);
             ShEntity.Delete(gl);
+            ShEntityPrimitive.Delete(gl);
             ShLine.Delete(gl);
         }
 
@@ -204,6 +210,19 @@ namespace Vge.Renderer
             ShEntity.SetUniformMatrix4(gl, "view", view);
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
             ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, 24);
+        }
+
+        /// <summary>
+        /// Связать шейдер примитивных сущностей без скелетной анимации
+        /// </summary>
+        public void ShaderBindEntityPrimitive(float[] view, 
+            float posX, float posY, float posZ)
+            //float[] modelMatrix)
+        {
+            ShEntityPrimitive.Bind(gl);
+            ShEntityPrimitive.SetUniformMatrix4(gl, "view", view);
+            ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);
+            //ShEntityPrimitive.SetUniformMatrix4(gl, "modelMatrix", modelMatrix);
         }
 
         /// <summary>

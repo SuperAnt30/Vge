@@ -72,11 +72,11 @@ namespace Vge.Renderer.World.Entity
                         //if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
                             // HitBox
-                            Render.ShaderBindLine(_game.Player.View,
-                                entity.GetPosFrameX(timeIndex) - x,
-                                entity.GetPosFrameY(timeIndex) - y,
-                                entity.GetPosFrameZ(timeIndex) - z);
-                            _hitbox.Draw(timeIndex, entity);
+                            //Render.ShaderBindLine(_game.Player.View,
+                            //    entity.GetPosFrameX(timeIndex) - x,
+                            //    entity.GetPosFrameY(timeIndex) - y,
+                            //    entity.GetPosFrameZ(timeIndex) - z);
+                            //_hitbox.Draw(timeIndex, entity);
                             // Model
                             _entityRender.Draw(timeIndex, entity);
                             CountEntitiesFC++;

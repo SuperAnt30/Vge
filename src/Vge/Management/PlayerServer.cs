@@ -364,11 +364,14 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                EntityThrowable entity = new EntityThrowable(
-                    isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this);
-                isBox = !isBox;
-                entity.SetEntityId(_server.LastEntityId());
-                world.SpawnEntityInWorld(entity);
+                for (int i = 0; i < 50; i++)
+                {
+                    EntityThrowable entity = new EntityThrowable(
+                        isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this);
+                    isBox = !isBox;
+                    entity.SetEntityId(_server.LastEntityId());
+                    world.SpawnEntityInWorld(entity);
+                }
             }
         }
 
