@@ -145,9 +145,10 @@ namespace Vge.Entity.Model
                 vec.X -= originX;
                 vec.Y -= originY;
                 vec.Z -= originZ;
-                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+                // Так правильно по Blockbench
                 if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
                 if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
+                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
                 Vertex[i].X = Mth.Round(vec.X + originX, 3);
                 Vertex[i].Y = Mth.Round(vec.Y + originY, 3);
                 Vertex[i].Z = Mth.Round(vec.Z + originZ, 3);

@@ -268,15 +268,6 @@ namespace WinGL.Util
             return result;
         }
 
-        public static Mat4 Rotate(Mat4 rotat, float yaw, float pitch, float roll)
-        {
-            if (yaw != 0) rotat = Rotate(rotat, yaw, new Vector3(0, 0, 1));
-            if (pitch != 0) rotat = Rotate(rotat, pitch, new Vector3(1, 0, 0));
-            if (roll != 0) rotat = Rotate(rotat, roll, new Vector3(0, 1, 0));
-
-            return rotat;
-        }
-
         /// <summary>
         /// Applies a scale transformation to matrix <paramref name="m"/> by vector <paramref name="v"/>.
         /// </summary>

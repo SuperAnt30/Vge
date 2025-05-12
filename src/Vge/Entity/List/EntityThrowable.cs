@@ -1,4 +1,5 @@
-﻿using Vge.World;
+﻿using Vge.Renderer.World.Entity;
+using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Entity.List
@@ -23,8 +24,12 @@ namespace Vge.Entity.List
 
         private int _jumpTime;
 
-        public EntityThrowable(EnumEntity type)
+        /// <summary>
+        /// Создаёт клиент
+        /// </summary>
+        public EntityThrowable(EnumEntity type, EntitiesRenderer entities)
         {
+            Render = new EntityRenderClient(this, entities);
             if (type == EnumEntity.Stone)
             {
                 Width = .125f;
@@ -40,15 +45,16 @@ namespace Vge.Entity.List
         }
 
         /// <summary>
-        /// Сущность метательная
+        /// Сущность метательная, создаёт сервер
         /// </summary>
         /// <param name="entityThrower">Кто метнул</param>
         /// <param name="speedThrower">Скорость метания</param>
         public EntityThrowable(EnumEntity type, CollisionBase collision,
-            EntityLiving entityThrower, float speedThrower = .49f)
+            EntityLiving entityThrower, int i, float speedThrower = .49f)
         {
             EntityThrower = entityThrower;
             Type = type;
+            Render = new EntityRenderBase(this);
             if (type == EnumEntity.Stone)
             {
                 Width = .125f;
@@ -70,13 +76,15 @@ namespace Vge.Entity.List
             //PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw);// * .4f;
             //PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw);// * .4f;
             // спереди
-            //PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw);
-            //PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw);
-            //PosY = entityThrower.PosY + entityThrower.Eye - .2f;
+            float f = (i & 15) * 1.24f;
+            float f2 = (i >> 4) * 1.1f;
+            PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw) * f;
+            PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw) * f;
+            PosY = entityThrower.PosY + entityThrower.Eye - .2f + f2;
             // вверх
-            PosX = entityThrower.PosX;
-            PosZ = entityThrower.PosZ;
-            PosY = entityThrower.PosY + entityThrower.Height + .2f;
+            //PosX = entityThrower.PosX;
+            //PosZ = entityThrower.PosZ;
+            //PosY = entityThrower.PosY + entityThrower.Height + .2f;
 
             //Physics = new PhysicsGround(collision, this, .9f);
             //Physics.SetImpulse(.5f);
@@ -133,9 +141,7 @@ namespace Vge.Entity.List
                         //RotationPrevYaw = RotationYaw;
                         //RotationPrevPitch = RotationPitch;
 
-                        PosPrevX = PosX;
-                        PosPrevY = PosY;
-                        PosPrevZ = PosZ;
+                        UpdatePrev();
                         
                         LevelMotionChange = 2;
                     }
@@ -146,14 +152,20 @@ namespace Vge.Entity.List
                 }
                 else
                 {
-                    if (_jumpTime++ > 150)
-                    {
-                        Physics.MotionY = .5f;
-                        _jumpTime = 0;
-                        Physics.AwakenPhysics();
-                    }
+                    //if (_jumpTime++ > 150)
+                    //{
+                    //    Physics.MotionY = .5f;
+                    //    _jumpTime = 0;
+                    //    Physics.AwakenPhysics();
+                    //}
                 }
             }
+            // TODO::2025-05-02 бага по фризу во время лага, прилетает с пакета, но если пакета нет, заного интерполяция идёт
+            // Скорее всего надо добавить для клиента такие параметры как PosServX,Y,Z
+            //if (IsPositionChange())
+            //{
+            //    UpdatePrev();
+            //}
         }
     }
 }

@@ -57,7 +57,11 @@ namespace Vge
         /// Дельта последнего тика в mc
         /// </summary>
         public float DeltaTime { get; private set; }
-       
+        /// <summary>
+        /// Дельта последнего кадра в mc
+        /// </summary>
+        public float DeltaTimeFrame { get; private set; }
+
         /// <summary>
         /// Готово ли окно для графики и прочего, меняется статус после Splash
         /// </summary>
@@ -87,15 +91,27 @@ namespace Vge
         /// <summary>
         /// Фиксация времени начала тика
         /// </summary>
-        private long timeBegin;
+        private long _timeTicksBegin;
         /// <summary>
         /// Фиксация конечное время тика
         /// </summary>
-        private long endTime;
+        private long _endTimeTicks;
         /// <summary>
         /// Фиксация текущее время тика
         /// </summary>
-        private long currentTime;
+        private long _currentTimeTicks;
+        /// <summary>
+        /// Фиксация времени начала кадра
+        /// </summary>
+        private long _timeFrameBegin;
+        /// <summary>
+        /// Фиксация конечное время кадра
+        /// </summary>
+        private long _endTimeFrame;
+        /// <summary>
+        /// Фиксация текущее время кадра
+        /// </summary>
+        private long _currentTimeFrame;
 
         #endregion
 
@@ -321,10 +337,11 @@ namespace Vge
             else
             {
                 // Есть игра
-                Game.Draw(ticker.Interpolation);
+                float timeIndex = Game.IsGamePaused ? 1 : ticker.Interpolation;
+                Game.Draw(timeIndex);
                 if (Screen != null)
                 {
-                    Screen.Draw(ticker.Interpolation);
+                    Screen.Draw(timeIndex);
                 }
             }
             if (Ce.IsDebugDraw)
@@ -612,20 +629,27 @@ namespace Vge
         /// </summary>
         public void SetWishFrame(int frame) => ticker.SetWishFrame(frame);
 
-        protected virtual void Ticker_Frame(object sender, EventArgs e) => DrawFrame();
+        protected virtual void Ticker_Frame(object sender, EventArgs e)
+        {
+            DrawFrame();
+            // фиксируем текущее время такта
+            _currentTimeFrame = TimeTicks();
+            DeltaTimeFrame = (_currentTimeFrame - _endTimeFrame) / (float)Ticker.TimerFrequency;
+            _endTimeFrame = _currentTimeFrame;
+        }
 
         private void Ticker_Tick(object sender, EventArgs e)
         {
-            timeBegin = TimeTicks();
+            _timeTicksBegin = TimeTicks();
             OnTick();
             // фиксируем текущее время такта
-            currentTime = TimeTicks();
+            _currentTimeTicks = TimeTicks();
             // Находим дельту времени между тактами
-            DeltaTime = (currentTime - endTime) / (float)Ticker.TimerFrequency;
+            DeltaTime = (_currentTimeTicks - _endTimeTicks) / (float)Ticker.TimerFrequency;
             // фиксируем конечное время
-            endTime = currentTime;
+            _endTimeTicks = _currentTimeTicks;
             // Считаем время выполнение такта и тикаем рендер
-            Render.SetExecutionTime((currentTime - timeBegin) / (float)Ticker.TimerFrequency);
+            Render.SetExecutionTime((_currentTimeTicks - _timeTicksBegin) / (float)Ticker.TimerFrequency);
         }
 
         /// <summary>

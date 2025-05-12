@@ -132,6 +132,11 @@ namespace Vge.Games
             Key.InChat += _Key_InChat;
         }
 
+        /// <summary>
+        /// Дельта последнего кадра в mc
+        /// </summary>
+        public float DeltaTimeFrame => window.DeltaTimeFrame;
+
         private void _Key_InChat(object sender, EventArgs e)
         {
             window.LScreen.Chat();

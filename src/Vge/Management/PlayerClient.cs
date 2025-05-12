@@ -1,4 +1,5 @@
 ﻿using Vge.Games;
+using Vge.Renderer.World.Entity;
 
 namespace Vge.Management
 {
@@ -43,6 +44,10 @@ namespace Vge.Management
             _game = game;
             Eye = Height * .85f;
             Type = Entity.EnumEntity.Player;
+            if (!(this is PlayerClientOwner))// game.WorldRender != null)
+            {
+                Render = new EntityRenderClient(this, game.WorldRender.Entities);
+            }
         }
 
         /// <summary>

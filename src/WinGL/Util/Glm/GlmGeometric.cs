@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace WinGL.Util
 {
@@ -96,7 +97,7 @@ namespace WinGL.Util
             float sqr = v.X * v.X + v.Y * v.Y + v.Z * v.Z;
             return v * (1.0f / Mth.Sqrt(sqr));
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Normalize(Vector4 v)
         {
             float sqr = v.X * v.X + v.Y * v.Y + v.Z * v.Z + v.W * v.W;
@@ -104,7 +105,7 @@ namespace WinGL.Util
         }
 
         /// <summary>
-        /// Вращение точки вокруг оси координат вокруг вектора
+        /// Вращение точки вокруг оси координат вокруг вектора 
         /// </summary>
         /// <param name="pos">позиция точки</param>
         /// <param name="angle">угол</param>
@@ -116,5 +117,118 @@ namespace WinGL.Util
             Mat4 res = Translate(rotat, pos);
             return new Vector3(res);
         }
+
+        #region Quaternion
+
+        /// <summary>
+        /// Конвертируем из углов Эйллера(Тейт–Брайан) в Кватерниона
+        /// </summary>
+        /// <param name="yaw">По оси Y</param>
+        /// <param name="pitch">По оси X</param>
+        /// <param name="roll">По оси Z</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 ToQuaternionZYX(float yaw, float pitch, float roll)
+        {
+            yaw *= .5f;
+            pitch *= .5f;
+            roll *= .5f;
+            // https://github.com/Philip-Trettner/GlmSharp/blob/master/GlmSharp/GlmSharp/Quat/quat.cs
+            float cz = Cos(roll);
+            float cy = Cos(yaw);
+            float cx = Cos(pitch);
+            float sz = Sin(roll);
+            float sy = Sin(yaw);
+            float sx = Sin(pitch);
+            return new Vector4(
+                sx * cy * cz - cx * sy * sz,
+                cx * sy * cz + sx * cy * sz,
+                cx * cy * sz - sx * sy * cz,
+                cx * cy * cz + sx * sy * sz
+            );
+        }
+
+        /// <summary>
+        /// Конвертируем из углов Эйлера(Тейт–Брайан) в Кватерниона
+        /// </summary>
+        /// <param name="yaw">По оси Y</param>
+        /// <param name="pitch">По оси X</param>
+        /// <param name="roll">По оси Z</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 ToQuaternionXYZ(float yaw, float pitch, float roll)
+        {
+            yaw *= .5f;
+            pitch *= .5f;
+            roll *= .5f;
+            float cx = Cos(pitch);
+            float cy = Cos(yaw);
+            float cz = Cos(roll);
+            float sx = Sin(pitch);
+            float sy = Sin(yaw);
+            float sz = Sin(roll);
+            // XYZ - https://stackoverflow.com/questions/50011864/changing-xyz-order-when-converting-euler-angles-to-quaternions
+            return new Vector4(
+                sx * cy * cz + cx * sy * sz,
+                cx * sy * cz - sx * cy * sz,
+                cx * cy * sz + sx * sy * cz,
+                cx * cy * cz - sx * sy * sz
+            );
+        }
+
+        /// <summary>
+        /// Конвертируем из угла Кватерниона в углы Эйлера(Тейт–Брайан)  
+        /// </summary>
+        /// <returns>X=pitch; Y=yaw; Z=roll</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToEulerAnglesZYX(float x, float y, float z, float w)
+        {
+            // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+            Vector3 ypr = new Vector3
+            {
+                // pitch (x-axis rotation)
+                X = (float)Math.Atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y)),
+                // roll (z-axis rotation)
+                Z = (float)Math.Atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+            };
+
+            // yaw (y-axis rotation)
+            float sinp = 2 * (w * y - z * x);
+            ypr.Y = Math.Abs(sinp) >= 1 ? sinp > 0 ? Pi90 : -Pi90 : (float)Math.Asin(sinp);
+
+            return ypr;
+        }
+
+        /// <summary>
+        /// Конвертируем из угла Кватерниона в углы Эйлера(Тейт–Брайан).
+        /// </summary>
+        /// <returns>X=pitch; Y=yaw; Z=roll</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToEulerAnglesXYZ(Vector4 quaternions)
+            => ToEulerAnglesXYZ(quaternions.X, quaternions.Y, quaternions.Z, quaternions.W);
+
+        /// <summary>
+        /// Конвертируем из угла Кватерниона в углы Эйлера(Тейт–Брайан).
+        /// </summary>
+        /// <returns>X=pitch; Y=yaw; Z=roll</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToEulerAnglesXYZ(float x, float y, float z, float w)
+        {
+            // https://discourse.mcneel.com/t/what-is-the-right-method-to-convert-quaternion-to-plane-using-rhinocommon/92411/21?page=2
+            Vector3 ypr = new Vector3
+            {
+                // pitch (x-axis rotation)
+                X = (float)Math.Atan2(-2 * (y * z - w * x), w * w - x * x - y * y + z * z),
+                // roll (z-axis rotation)
+                Z = (float)Math.Atan2(-2 * (x * y - w * z), w * w + x * x - y * y - z * z)
+            };
+
+            // yaw (y-axis rotation)
+            float sinp = 2 * (x * z + w * y);
+            ypr.Y = Math.Abs(sinp) >= 1 ? sinp > 0 ? Pi90 : -Pi90 : (float)Math.Asin(sinp);
+            return ypr;
+        }
+
+        #endregion
+
+
     }
 }

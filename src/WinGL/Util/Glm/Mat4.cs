@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace WinGL.Util
 {
@@ -107,6 +108,26 @@ namespace WinGL.Util
             };
         }
 
+        public void Clear()
+        {
+            _cols[0].X = _cols[1].Y = _cols[2].Z = _cols[3].W = 1;
+            _cols[0].Y = _cols[0].Z = _cols[0].W =
+            _cols[1].X  = _cols[1].Z = _cols[1].W =
+            _cols[2].X = _cols[2].Y = _cols[2].W =
+            _cols[3].X = _cols[3].Y = _cols[3].Z = 0;
+        }
+
+        /// <summary>
+        /// Копировать текущую матрицу в матрицу m
+        /// </summary>
+        public void Copy(Mat4 m)
+        {
+            m._cols[0] = _cols[0];
+            m._cols[1] = _cols[1];
+            m._cols[2] = _cols[2];
+            m._cols[3] = _cols[3];
+        }
+
         #endregion
 
         #region Index Access
@@ -144,19 +165,214 @@ namespace WinGL.Util
 
         #endregion
 
+        #region Transform
+
+        private static Mat4 _matCache = Mat4.Identity();
+        /// <summary>
+        /// Вращение матрицы по кватерниону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateQuat(float x, float y, float z, float w)
+        {
+            float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
+
+            x2 = x + x;
+            y2 = y + y;
+            z2 = z + z;
+            xx = x * x2;
+            xy = x * y2;
+            xz = x * z2;
+            yy = y * y2;
+            yz = y * z2;
+            zz = z * z2;
+            wx = w * x2;
+            wy = w * y2;
+            wz = w * z2;
+
+            _matCache.Clear();
+            _matCache[0, 0] = 1f - (yy + zz);
+            _matCache[0, 1] = xy + wz;
+            _matCache[0, 2] = xz - wy;
+            _matCache[1, 0] = xy - wz;
+            _matCache[1, 1] = 1f - (xx + zz);
+            _matCache[1, 2] = yz + wx;
+            _matCache[2, 0] = xz + wy;
+            _matCache[2, 1] = yz - wx;
+            _matCache[2, 2] = 1f - (xx + yy);
+            this *= _matCache;
+        }
+        /// <summary>
+        /// Вращение матрицы по кватерниону
+        /// </summary>
+        public void RotateQuat(Vector4 quaternion)
+            => RotateQuat(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+
+        /// <summary>
+        /// Вращение текущей матрицы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Rotate(float angle, float x, float y, float z)
+        {
+            float c = Glm.Cos(angle);
+            float cm = 1 - c;
+            float sz = Glm.Sin(angle);
+
+            float tx = cm * x;
+            float ty = cm * y;
+            float tz = cm * z;
+
+            float sx = sz * x;
+            float sy = sz * y;
+            sz *= z;
+
+            Vector4 v0 = _cols[0] * (c + tx * x) + _cols[1] * (tx * y + sz) + _cols[2] * (tx * z - sy);
+            Vector4 v1 = _cols[0] * (ty * x - sz) + _cols[1] * (c + ty * y) + _cols[2] * (ty * z + sx);
+            _cols[2] = _cols[0] * (tz * x + sy) + _cols[1] * (tz * y - sx) + _cols[2] * (c + tz * z);
+            _cols[0] = v0;
+            _cols[1] = v1;
+        }
+
+        /// <summary>
+        /// Вращение текущей матрицы по оси X
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateX(float pitch)
+        {
+            float c = Glm.Cos(pitch);
+            float s = Glm.Sin(pitch);
+
+            Vector4 v = _cols[1] * c + _cols[2] * s;
+            _cols[2] = _cols[1] * -s + _cols[2] * c;
+            _cols[1] = v;
+        }
+
+        /// <summary>
+        /// Вращение текущей матрицы по оси Y
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateY(float yaw)
+        {
+            float c = Glm.Cos(yaw);
+            float s = Glm.Sin(yaw);
+
+            Vector4 v = _cols[0] * c + _cols[2] * -s;
+            _cols[2] = _cols[0] * s + _cols[2] * c;
+            _cols[0] = v;
+        }
+
+        /// <summary>
+        /// Вращение текущей матрицы по оси Z
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateZ(float roll)
+        {
+            float c = Glm.Cos(roll);
+            float s = Glm.Sin(roll);
+
+            Vector4 v = _cols[0] * c + _cols[1] * s;
+            _cols[1] = _cols[0] * -s + _cols[1] * c;
+            _cols[0] = v;
+        }
+
+        /// <summary>
+        /// Вращение текущей матрицы по очерёдности XYZ
+        /// </summary>
+        /// <param name="yaw">По оси Y</param>
+        /// <param name="pitch">По оси X</param>
+        /// <param name="roll">По оси Z</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateXYZ(float yaw, float pitch, float roll)
+        {
+            if (pitch != 0) RotateX(pitch);
+            if (yaw != 0) RotateY(yaw);
+            if (roll != 0) RotateZ(roll);
+        }
+
+        /// <summary>
+        /// Вращение текущей матрицы по очерёдности ZYX
+        /// </summary>
+        /// <param name="yaw">По оси Y</param>
+        /// <param name="pitch">По оси X</param>
+        /// <param name="roll">По оси Z</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RotateZYX(float yaw, float pitch, float roll)
+        {
+            if (roll != 0) RotateZ(roll); 
+            if (yaw != 0) RotateY(yaw);
+            if (pitch != 0) RotateX(pitch);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Translate(float x, float y, float z)
+            => _cols[3] += _cols[0] * x + _cols[1] * y + _cols[2] * z;
+
+        #endregion
+
         #region Conversion
 
         /// <summary>
         /// Returns the matrix as a flat array of elements, column major.
         /// </summary>
-        public float[] ToArray()
-            => _cols.SelectMany(v => v.ToArray()).ToArray();
+        public float[] ToArray() => new float[]
+        {
+            _cols[0].X,
+            _cols[0].Y,
+            _cols[0].Z,
+            _cols[0].W,
+            _cols[1].X,
+            _cols[1].Y,
+            _cols[1].Z,
+            _cols[1].W,
+            _cols[2].X,
+            _cols[2].Y,
+            _cols[2].Z,
+            _cols[2].W,
+            _cols[3].X,
+            _cols[3].Y,
+            _cols[3].Z,
+            _cols[3].W
+        };
+            //=> _cols.SelectMany(v => v.ToArray()).ToArray();
 
         /// <summary>
         /// Вернуть массив элементов матрицы, 4*3
         /// </summary>
-        public float[] ToArray4x3()
-            => _cols.SelectMany(v => v.ToArray3()).ToArray();
+        public float[] ToArray4x3() => new float[]
+        {
+            _cols[0].X,
+            _cols[0].Y,
+            _cols[0].Z,
+            _cols[1].X,
+            _cols[1].Y,
+            _cols[1].Z,
+            _cols[2].X,
+            _cols[2].Y,
+            _cols[2].Z,
+            _cols[3].X,
+            _cols[3].Y,
+            _cols[3].Z
+        };
+
+        /// <summary>
+        /// Передать все данные в входящий массив не создавая ни структур ни массивов
+        /// </summary>
+        public void ConvArray4x3(float[] array, int offset)
+        {
+            //Buffer.BlockCopy(_cols[0].ToArray3(), 0, array, offset * 4, 12);
+
+            array[offset] = _cols[0].X;
+            array[offset + 1] = _cols[0].Y;
+            array[offset + 2] = _cols[0].Z;
+            array[offset + 3] = _cols[1].X;
+            array[offset + 4] = _cols[1].Y;
+            array[offset + 5] = _cols[1].Z;
+            array[offset + 6] = _cols[2].X;
+            array[offset + 7] = _cols[2].Y;
+            array[offset + 8] = _cols[2].Z;
+            array[offset + 9] = _cols[3].X;
+            array[offset + 10] = _cols[3].Y;
+            array[offset + 11] = _cols[3].Z;
+        }
 
         /// <summary>
         /// Передать все данные в входящий массив не создавая ни структур ни массивов

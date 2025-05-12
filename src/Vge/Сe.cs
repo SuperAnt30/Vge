@@ -83,6 +83,11 @@ public sealed class Ce
     #endregion
 
     /// <summary>
+    /// Максимальное количество костей у сущностей
+    /// </summary>
+    public const int MaxAnimatedBones = 24;
+
+    /// <summary>
     /// Количество спрайтов на стороне текстурного атласа,
     /// По умалчанию 64 (1024*1024) = 4096 спрайтов
     /// </summary>

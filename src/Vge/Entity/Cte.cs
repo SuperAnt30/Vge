@@ -144,6 +144,10 @@
         /// </summary>
         public const string Loop = "loop";
         /// <summary>
+        /// Длинна ролика. (float)
+        /// </summary>
+        public const string Length = "length";
+        /// <summary>
         /// Аниматор костей. ({})
         /// </summary>
         public const string Animators = "animators";

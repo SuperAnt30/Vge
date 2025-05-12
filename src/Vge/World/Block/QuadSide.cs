@@ -250,9 +250,11 @@ namespace Vge.World.Block
             for (int i = 0; i < 4; i++)
             {
                 vec = Vertex[i].ToPosition() - .5f;
-                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+                // Так правильно по Blockbench
                 if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
                 if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
+                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+
                 Vertex[i].X = Mth.Round(vec.X + .5f, 3);
                 Vertex[i].Y = Mth.Round(vec.Y + .5f, 3);
                 Vertex[i].Z = Mth.Round(vec.Z + .5f, 3);

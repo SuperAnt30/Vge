@@ -268,7 +268,7 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
-            EntityThrowable entity = new EntityThrowable(packet.Type);
+            EntityThrowable entity = new EntityThrowable(packet.Type, Game.WorldRender.Entities);
             entity.SetEntityId(packet.Index);
             entity.PosPrevX = entity.PosX = packet.X;
             entity.PosPrevY = entity.PosY = packet.Y;

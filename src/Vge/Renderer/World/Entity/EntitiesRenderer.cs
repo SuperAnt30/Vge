@@ -41,7 +41,6 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            
             int count = _arrayChunkRender.Count;
             int countEntity;
             ChunkRender chunkRender;
@@ -72,19 +71,22 @@ namespace Vge.Renderer.World.Entity
                         //if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
                             // HitBox
-                            //Render.ShaderBindLine(_game.Player.View,
-                            //    entity.GetPosFrameX(timeIndex) - x,
-                            //    entity.GetPosFrameY(timeIndex) - y,
-                            //    entity.GetPosFrameZ(timeIndex) - z);
-                            //_hitbox.Draw(timeIndex, entity);
+                            Render.ShaderBindLine(_game.Player.View,
+                                entity.GetPosFrameX(timeIndex) - x,
+                                entity.GetPosFrameY(timeIndex) - y,
+                                entity.GetPosFrameZ(timeIndex) - z);
+                            _hitbox.Draw(timeIndex, entity);
                             // Model
-                            _entityRender.Draw(timeIndex, entity);
+                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                            //_entityRender.Draw(timeIndex, entity);
                             CountEntitiesFC++;
                         }
                     }
                 }
             }
         }
+
+        public EntityRender GetEntityRender() => _entityRender;
 
         /// <summary>
         /// Метод для прорисовки основного игрока

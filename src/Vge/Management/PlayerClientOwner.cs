@@ -7,6 +7,7 @@ using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
 using Vge.Renderer.World;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -144,10 +145,13 @@ namespace Vge.Management
         /// </summary>
         public void WorldStarting()
         {
-            //Physics = new PhysicsFly(_game.World.Collision, this);
+            Physics = new PhysicsFly(_game.World.Collision, this);
             //Physics = new PhysicsGround(_game.World.Collision, this);
 
-            Physics = new PhysicsPlayer(_game.World.Collision, this);
+            //Physics = new PhysicsPlayer(_game.World.Collision, this);
+
+            // Создание объекта рендера не в конструкторе, так-как там ещё не создан рендер мир
+            Render = new EntityRenderClient(this, _game.WorldRender.Entities);
         }
 
         #region Методы от Entity
@@ -280,7 +284,7 @@ namespace Vge.Management
 
             if (!ViewCameraEye)
             {
-                pos -= front * 5;
+                pos -= front * 3; // 5
                 //Vector3 right = Glm.Cross(front, up);
                 //pos += right * 2;
             }

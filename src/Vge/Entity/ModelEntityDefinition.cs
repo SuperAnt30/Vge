@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Entity.Animation;
 using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
@@ -19,6 +20,10 @@ namespace Vge.Entity
         /// Текстуры для моба
         /// </summary>
         public BufferedImage[] Textures { get; private set; }
+        /// <summary>
+        /// Массив костей
+        /// </summary>
+        public Bone[] Bones { get; private set; }
 
         /// <summary>
         /// Псевдоним сущности
@@ -44,6 +49,15 @@ namespace Vge.Entity
         /// Список анимаций
         /// </summary>
         private readonly List<ModelAnimation> _animations = new List<ModelAnimation>();
+        /// <summary>
+        /// Карта смены индексов, key=old value=new
+        /// </summary>
+        private readonly Dictionary<byte, byte> _mapIndexs = new Dictionary<byte, byte>();
+
+        /// <summary>
+        /// Счётчик индекс кости, для шейдора и не только
+        /// </summary>
+        private byte _amountBoneIndex = 0;
 
         /// <summary>
         /// Для краша, название раздела
@@ -58,10 +72,7 @@ namespace Vge.Entity
         /// Высота
         /// </summary>
         private int _height;
-        /// <summary>
-        /// Индекс кости, для шейдора
-        /// </summary>
-        private byte _boneIndex = 0;
+        
 
         public ModelEntityDefinition(string alias, string nameBonePitch)
         {
@@ -102,7 +113,8 @@ namespace Vge.Entity
 
                 // Древо скелета
                 _log = Cte.Outliner;
-                _Outliner(model.GetArray(Cte.Outliner), _bones, _boneIndex);
+                _Outliner(model.GetArray(Cte.Outliner), _bones, _amountBoneIndex);
+                _amountBoneIndex = 0;
                 _ClearCubeBone(_bones);
 
                 // Анимация
@@ -113,6 +125,9 @@ namespace Vge.Entity
                 List<float> list = new List<float>();
                 foreach(ModelCube cube in _cubes)
                 {
+                    // Смена индексов в кубах
+                    cube.BoneIndex = _mapIndexs[cube.BoneIndex];
+                    // Генерация буфера
                     cube.GenBuffer(list);
                 }
                 BufferMesh = list.ToArray();
@@ -224,29 +239,32 @@ namespace Vge.Entity
                 {
                     // Объект, значит папка
                     JsonCompound compound = outliner.GetCompound(i);
-                    _log = "BoneNameUuid";
-                    ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
-                        compound.GetString(Cte.Name), _boneIndex++);
-
-                    if (compound.IsKey(Cte.Origin))
+                    if (!compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
                     {
-                        _log = "BoneRotationOrigin";
-                        float[] rotation = compound.IsKey(Cte.Rotation)
-                            ? compound.GetArray(Cte.Rotation).ToArrayFloat()
-                            : new float[] { 0, 0, 0 };
-                        bone.SetRotation(rotation, compound.GetArray(Cte.Origin).ToArrayFloat());
-                    }
+                        _log = "BoneNameUuid";
+                        ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
+                            compound.GetString(Cte.Name), _amountBoneIndex++);
 
-                    _log = Cte.Children;
-                    JsonArray children = compound.GetArray(Cte.Children);
-                    if (children.GetCount() > 0)
-                    {
-                        // Имеются детишки
-                        _Outliner(children, bone.Children, bone.BoneIndex);
-                    }
+                        if (compound.IsKey(Cte.Origin))
+                        {
+                            _log = "BoneRotationOrigin";
+                            float[] rotation = compound.IsKey(Cte.Rotation)
+                                ? compound.GetArray(Cte.Rotation).ToArrayFloat()
+                                : new float[] { 0, 0, 0 };
+                            bone.SetRotation(rotation, compound.GetArray(Cte.Origin).ToArrayFloat());
+                        }
 
-                    bones.Add(bone);
-                    _mapBones.Add(bone.Name, bone);
+                        _log = Cte.Children;
+                        JsonArray children = compound.GetArray(Cte.Children);
+                        if (children.GetCount() > 0)
+                        {
+                            // Имеются детишки
+                            _Outliner(children, bone.Children, bone.BoneIndex);
+                        }
+
+                        bones.Add(bone);
+                        _mapBones.Add(bone.Name, bone);
+                    }
                 }
             }
         }
@@ -267,29 +285,6 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Сгенерировать древо костей
-        /// </summary>
-        public Bone[] GenBones() => _ConvertBones(_bones);
-
-        /// <summary>
-        /// Конверт в древо костей сущности для игры
-        /// </summary>
-        private Bone[] _ConvertBones(List<ModelElement> modelBones)
-        {
-            int count = modelBones.Count;
-            Bone[] bones = new Bone[count];
-            for (int i = 0; i < count; i++)
-            {
-                if (modelBones[i] is ModelBone modelBone)
-                {
-                    bones[i] = modelBone.CreateBone(_nameBonePitch);
-                    bones[i].SetChildren(_ConvertBones(modelBone.Children));
-                }
-            }
-            return bones;
-        }
-
-        /// <summary>
         /// Очистить кубы в костях
         /// </summary>
         private void _ClearCubeBone(List<ModelElement> bones)
@@ -306,6 +301,9 @@ namespace Vge.Entity
                     }
                     else
                     {
+                        _mapIndexs.Add(modelBone.BoneIndex, _amountBoneIndex);
+                        modelBone.BoneIndex = _amountBoneIndex++;
+
                         _ClearCubeBone(modelBone.Children);
                     }
                 }
@@ -315,6 +313,39 @@ namespace Vge.Entity
                 }
             }
         }
+
+        #region TreeBones
+
+        /// <summary>
+        /// Сгенерировать древо костей
+        /// </summary>
+        public Bone0[] GenTreeBones()
+        {
+            Bones = new Bone[_amountBoneIndex];
+            return _ConvertTreeBones(_bones, Bone.RootBoneParentIndex);
+        }
+
+        /// <summary>
+        /// Конверт в древо костей сущности для игры
+        /// </summary>
+        private Bone0[] _ConvertTreeBones(List<ModelElement> modelBones, byte parentIndex)
+        {
+            int count = modelBones.Count;
+            Bone0[] bones = new Bone0[count];
+            for (int i = 0; i < count; i++)
+            {
+                if (modelBones[i] is ModelBone modelBone)
+                {
+                    Bone0 bone0 = modelBone.CreateBone0(_nameBonePitch);
+                    bone0.SetChildren(_ConvertTreeBones(modelBone.Children, bone0.Index));
+                    bones[i] = bone0;
+                    Bones[bone0.Index] = modelBone.CreateBone(_nameBonePitch, parentIndex);
+                }
+            }
+            return bones;
+        }
+
+        #endregion
 
         /// <summary>
         /// Собираем анимации
@@ -326,7 +357,8 @@ namespace Vge.Entity
                 _log = "AnimNameLoop";
                 ModelAnimation animation = new ModelAnimation(
                     animations[i].GetString(Cte.Name),
-                    animations[i].GetString(Cte.Loop).Equals("loop")
+                    animations[i].GetString(Cte.Loop).Equals("loop"),
+                    animations[i].GetFloat(Cte.Length)
                 );
 
                 // Массив элементов анимаций
@@ -372,9 +404,26 @@ namespace Vge.Entity
                             pos.GetFloat(Cte.X), pos.GetFloat(Cte.Y), pos.GetFloat(Cte.Z)
                         ));
                     }
-                    animation.Bones.Add(bone);
+                    animation.BoneAdd(bone);
                 }
             }
+        }
+
+        /// <summary>
+        /// Сгенерировать списки модели ключевых кадров для каждой кости скелета
+        /// </summary>
+        public ModelAnimationClip[] GetModelAnimationClips()
+        {
+            // Количество анимационных клипов
+            int count = _animations.Count;
+            ModelAnimationClip[] animationClips = new ModelAnimationClip[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                animationClips[i] = _animations[i].CreateModelAnimationClip(_amountBoneIndex);
+            }
+
+            return animationClips;
         }
     }
 }

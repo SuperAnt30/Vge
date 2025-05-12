@@ -88,6 +88,10 @@ namespace Vge.Entity
         /// Объект физики
         /// </summary>
         public PhysicsBase Physics { get; protected set; }
+        /// <summary>
+        /// Объект рендера
+        /// </summary>
+        public EntityRenderBase Render { get; protected set; }
 
         /// <summary>
         /// Уровень перемещение. Для сервера 1 и 0 чтоб передвавать клиентам перемещение.
@@ -433,6 +437,11 @@ namespace Vge.Entity
         public virtual void MadeOverviewChunkChanged() { }
 
         #endregion
+
+        /// <summary>
+        /// Инициализировать объект рендера
+        /// </summary>
+        public void InitRender(EntityRenderBase render) => Render = render;
 
         /// <summary>
         /// Будет уничтожен следующим тиком

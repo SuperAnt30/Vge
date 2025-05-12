@@ -1,5 +1,5 @@
 ﻿using System;
-using Vge.Entity.Model;
+using Vge.Entity.Animation;
 using Vge.Json;
 using Vge.Util;
 using WinGL.Util;
@@ -7,17 +7,11 @@ using WinGL.Util;
 namespace Vge.Entity
 {
     /// <summary>
-    /// Модель сущности, нужна для рендера и анимации
+    /// Модель сущности, нужна для рендера и анимации (имеет скелет)
     /// На сервере будет упрощённая
     /// </summary>
     public class ModelEntity
     {
-        /// <summary>
-        /// Буфер для шейдера матриц скелетной анимации, на 24 кости (матрица 4*3 и 24 кости)
-        /// </summary>
-        // private static ListFlout _buffer = new ListFlout(288);
-        private static float[] _buffer = new float[288];
-
         /// <summary>
         /// Название модели
         /// </summary>
@@ -33,81 +27,24 @@ namespace Vge.Entity
         /// <summary>
         /// Древо костей, для скелетной анимации
         /// </summary>
+        public Bone0[] TreeBones { get; private set; }
+        /// <summary>
+        /// Массив костей скелета
+        /// </summary>
         public Bone[] Bones { get; private set; }
+        /// <summary>
+        /// Массив объектов моделей анимационныйх клиппов
+        /// </summary>
+        public ModelAnimationClip[] ModelAnimationClips { get; private set; }
 
         /// <summary>
         /// Название кости меняющее от Pitch
         /// </summary>
         private string _nameBonePitch;
 
-        private int _index;
-        private float _pitch;
-        private Mat4 _matrix;
+        private Mat4 _matrix = Mat4.Identity();
 
         public ModelEntity(string alias) => Alias = alias;
-
-        /// <summary>
-        /// Генерация матриц
-        /// </summary>
-        public float[] GenMatrix(float yaw, float pitch)
-        {
-            //_buffer.Clear();
-            _index = 0;
-            _pitch = pitch;
-
-            _matrix = Mat4.Identity();
-
-            if (yaw != 0)
-            {
-                _matrix = Glm.Rotate(_matrix, -yaw, new Vector3(0, 1, 0));
-            }
-
-            _GenBoneMatrix(Bones, _matrix);
-
-            // Остатки пустышки
-            //_matrix = Mat4.Identity();
-            //for (int i = _index; i < 24; i++)
-            //{
-            //    Buffer.BlockCopy(_matrix.ToArray4x3(), 0, _buffer,
-            //        _index * 48, 48);
-            //    // _buffer.AddRange(_matrix.ToArray4x3());
-            //}
-
-            return _buffer;//.ToArray();
-        }
-
-        /// <summary>
-        /// Конверт в древо костей сущности для игры
-        /// </summary>
-        private void _GenBoneMatrix(Bone[] bones, Mat4 m)
-        {
-            int count = bones.Length;
-            for (int i = 0; i < count; i++)
-            {
-                Mat4 m2 = new Mat4(m);
-
-                Bone bone = bones[i];
-                if (bone.IsPitch && _pitch != 0)
-                {
-                    m2[3] = m2[0] * bone.OriginX + m2[1] * bone.OriginY + m2[2] * bone.OriginZ + m2[3];
-                    m2 = Glm.Rotate(m2, _pitch, new Vector3(1, 0, 0));
-                    m2[3] = m2[0] * -bone.OriginX + m2[1] * -bone.OriginY + m2[2] * -bone.OriginZ + m2[3];
-                    //m2 = Glm.Translate(m2, bone.OriginX, bone.OriginY, bone.OriginZ);
-                    //m2 = Glm.Rotate(m2, _pitch, new Vector3(1, 0, 0));
-                    //m2 = Glm.Translate(m2, -bone.OriginX, -bone.OriginY, -bone.OriginZ);
-                }
-
-                Buffer.BlockCopy(m2.ToArray4x3(), 0, _buffer,
-                    _index * 48, 48);
-
-                //_buffer.AddRange(m2.ToArray4x3());
-                _index++;
-                if (bone.Children.Length > 0)
-                {
-                    _GenBoneMatrix(bone.Children, m2);
-                }
-            }
-        }
 
         #region Методы для импорта данных с json
 
@@ -156,8 +93,10 @@ namespace Vge.Entity
 
             BufferMesh = definition.BufferMesh;
             Textures = definition.Textures;
-            Bones = definition.GenBones();
-
+            TreeBones = definition.GenTreeBones();
+            Bones = definition.Bones;
+            ModelAnimationClips = definition.GetModelAnimationClips();
+              
             return;
         }
 
