@@ -176,6 +176,8 @@ namespace Vge.Network
         {
             BlocksReg.Correct(new CorrectTable(packet.Blocks));
             ModelEntitiesReg.Correct(new CorrectTable(packet.Entities));
+            // После получения таблиц блоков и сущностей, запускаем мир
+            Game.GameStartingNet();
         }
 
         /// <summary>
@@ -245,9 +247,9 @@ namespace Vge.Network
 
                 PlayerClient player = new PlayerClient(Game);
                 player.SetDataPlayer(packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
-                player.PosPrevX = player.PosX = packet.X;
-                player.PosPrevY = player.PosY = packet.Y;
-                player.PosPrevZ = player.PosZ = packet.Z;
+                player.PosServerX = player.PosPrevX = player.PosX = packet.X;
+                player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
+                player.PosServerZ = player.PosPrevZ = player.PosZ = packet.Z;
                 player.RotationPrevYaw = player.RotationYaw = packet.Yaw;
                 player.RotationPrevPitch = player.RotationPitch = packet.Pitch;
                 player.OnGround = packet.OnGround;
@@ -270,9 +272,9 @@ namespace Vge.Network
         {
             EntityThrowable entity = new EntityThrowable(packet.Type, Game.WorldRender.Entities);
             entity.SetEntityId(packet.Index);
-            entity.PosPrevX = entity.PosX = packet.X;
-            entity.PosPrevY = entity.PosY = packet.Y;
-            entity.PosPrevZ = entity.PosZ = packet.Z;
+            entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
+            entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;
+            entity.PosServerZ = entity.PosPrevZ = entity.PosZ = packet.Z;
             //entity.RotationPrevYaw = entity.RotationYaw = packet.Yaw;
             //entity.RotationPrevPitch = entity.RotationPitch = packet.Pitch;
             Game.World.SpawnEntityInWorld(entity);
@@ -299,20 +301,17 @@ namespace Vge.Network
             EntityBase entity = Game.World.GetEntityByID(packet.Index);
             if (entity != null)
             {
-                entity.UpdatePrev();
-
-                entity.PosX = packet.X;
-                entity.PosY = packet.Y;
-                entity.PosZ = packet.Z;
+                entity.PosServerX = packet.X;
+                entity.PosServerY = packet.Y;
+                entity.PosServerZ = packet.Z;
                 
                 entity.OnGround = packet.OnGround;
                 entity.SetPhysicsSleepDebug(packet.Sleep);
-                entity.LevelMotionChange = 2;
 
                 if (entity is EntityLiving entityLiving)
                 {
-                    entityLiving.RotationYaw = packet.Yaw;
-                    entityLiving.RotationPitch = packet.Pitch;
+                    entityLiving.RotationServerYaw = packet.Yaw;
+                    entityLiving.RotationServerPitch = packet.Pitch;
 
                     //entityLiving.SetMotionServer(
                     //    packet.GetPos(), packet.GetYaw(), packet.GetPitch(),

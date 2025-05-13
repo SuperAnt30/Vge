@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Entity.Animation;
+using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
 using WinGL.Util;
@@ -24,10 +25,6 @@ namespace Vge.Entity
         /// Текстуры для моба
         /// </summary>
         public BufferedImage[] Textures { get; private set; }
-        /// <summary>
-        /// Древо костей, для скелетной анимации
-        /// </summary>
-        public Bone0[] TreeBones { get; private set; }
         /// <summary>
         /// Массив костей скелета
         /// </summary>
@@ -93,8 +90,7 @@ namespace Vge.Entity
 
             BufferMesh = definition.BufferMesh;
             Textures = definition.Textures;
-            TreeBones = definition.GenTreeBones();
-            Bones = definition.Bones;
+            Bones = definition.GenBones();
             ModelAnimationClips = definition.GetModelAnimationClips();
               
             return;

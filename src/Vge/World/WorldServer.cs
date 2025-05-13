@@ -254,6 +254,18 @@ namespace Vge.World
         protected override void _FlagDebugChunkProviderServer() 
             => Fragment.flagDebugChunkProviderServer = true;
 
+        /// <summary>
+        /// Изменение в каждом такте сущности
+        /// </summary>
+        protected override void _UpdateEntity(EntityBase entity)
+        {
+            if (entity.AddedToChunk)
+            {
+                entity.Update();
+            }
+            base._UpdateEntity(entity);
+        }
+
         #endregion
 
         #region WriteRead

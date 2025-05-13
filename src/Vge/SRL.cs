@@ -68,4 +68,6 @@ internal sealed class Srl
     internal const string StoppedClient = "Остановлен{0}.";
 
     #endregion
+
+    internal const string ItIsImpossibleToCompareTwoObjects = "Невозможно сравнить два объекта";
 }

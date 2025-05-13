@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vge.Entity.Animation;
-using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Model
 {
     /// <summary>
     /// Объект отвечает за определяение модели сущности
@@ -20,11 +19,7 @@ namespace Vge.Entity
         /// Текстуры для моба
         /// </summary>
         public BufferedImage[] Textures { get; private set; }
-        /// <summary>
-        /// Массив костей
-        /// </summary>
-        public Bone[] Bones { get; private set; }
-
+        
         /// <summary>
         /// Псевдоним сущности
         /// </summary>
@@ -58,7 +53,6 @@ namespace Vge.Entity
         /// Счётчик индекс кости, для шейдора и не только
         /// </summary>
         private byte _amountBoneIndex = 0;
-
         /// <summary>
         /// Для краша, название раздела
         /// </summary>
@@ -317,32 +311,29 @@ namespace Vge.Entity
         #region TreeBones
 
         /// <summary>
-        /// Сгенерировать древо костей
+        /// Сгенерировать массив костей
         /// </summary>
-        public Bone0[] GenTreeBones()
+        public Bone[] GenBones()
         {
-            Bones = new Bone[_amountBoneIndex];
-            return _ConvertTreeBones(_bones, Bone.RootBoneParentIndex);
+            // Массив костей
+            Bone[] resultBones = new Bone[_amountBoneIndex];
+            _ConvertTreeBones(resultBones, _bones, Bone.RootBoneParentIndex);
+            return resultBones;
         }
 
         /// <summary>
         /// Конверт в древо костей сущности для игры
         /// </summary>
-        private Bone0[] _ConvertTreeBones(List<ModelElement> modelBones, byte parentIndex)
+        private void _ConvertTreeBones(Bone[] resultBones, List<ModelElement> modelBones, byte parentIndex)
         {
-            int count = modelBones.Count;
-            Bone0[] bones = new Bone0[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < modelBones.Count; i++)
             {
                 if (modelBones[i] is ModelBone modelBone)
                 {
-                    Bone0 bone0 = modelBone.CreateBone0(_nameBonePitch);
-                    bone0.SetChildren(_ConvertTreeBones(modelBone.Children, bone0.Index));
-                    bones[i] = bone0;
-                    Bones[bone0.Index] = modelBone.CreateBone(_nameBonePitch, parentIndex);
+                    _ConvertTreeBones(resultBones, modelBone.Children, modelBone.BoneIndex);
+                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBonePitch, parentIndex);
                 }
             }
-            return bones;
         }
 
         #endregion

@@ -8,6 +8,8 @@ namespace WinGL.Util
     /// </summary>
     public struct Mat4
     {
+        private static Mat4 _matCache = Identity();
+
         /// <summary>
         /// The columms of the matrix.
         /// </summary>
@@ -167,7 +169,6 @@ namespace WinGL.Util
 
         #region Transform
 
-        private static Mat4 _matCache = Mat4.Identity();
         /// <summary>
         /// Вращение матрицы по кватерниону
         /// </summary>
@@ -402,11 +403,27 @@ namespace WinGL.Util
         #region Multiplication
 
         /// <summary>
+        /// Произведение текущей матрица на заданную, и результат идёт в текущую
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Multiply(Mat4 rhs)
+        {
+            _matCache[0] = rhs[0][0] * _cols[0] + rhs[0][1] * _cols[1] + rhs[0][2] * _cols[2] + rhs[0][3] * _cols[3];
+            _matCache[1] = rhs[1][0] * _cols[0] + rhs[1][1] * _cols[1] + rhs[1][2] * _cols[2] + rhs[1][3] * _cols[3];
+            _matCache[2] = rhs[2][0] * _cols[0] + rhs[2][1] * _cols[1] + rhs[2][2] * _cols[2] + rhs[2][3] * _cols[3];
+            _cols[3] = rhs[3][0] * _cols[0] + rhs[3][1] * _cols[1] + rhs[3][2] * _cols[2] + rhs[3][3] * _cols[3];
+            _cols[0] = _matCache[0];
+            _cols[1] = _matCache[1];
+            _cols[2] = _matCache[2];
+        }
+
+        /// <summary>
         /// Multiplies the <paramref name="lhs"/> matrix by the <paramref name="rhs"/> vector.
         /// </summary>
         /// <param name="lhs">The LHS matrix.</param>
         /// <param name="rhs">The RHS vector.</param>
         /// <returns>The product of <paramref name="lhs"/> and <paramref name="rhs"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(Mat4 lhs, Vector4 rhs)
         {
             return new Vector4(
@@ -417,12 +434,14 @@ namespace WinGL.Util
             );
         }
 
+        static Mat4 _mm = Mat4.Identity();
         /// <summary>
         /// Multiplies the <paramref name="lhs"/> matrix by the <paramref name="rhs"/> matrix.
         /// </summary>
         /// <param name="lhs">The LHS matrix.</param>
         /// <param name="rhs">The RHS matrix.</param>
         /// <returns>The product of <paramref name="lhs"/> and <paramref name="rhs"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Mat4 operator *(Mat4 lhs, Mat4 rhs)
         {
             return new Mat4(new[]
@@ -433,7 +452,7 @@ namespace WinGL.Util
                 rhs[3][0] * lhs[0] + rhs[3][1] * lhs[1] + rhs[3][2] * lhs[2] + rhs[3][3] * lhs[3]
             });
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Mat4 operator *(Mat4 lhs, float s)
         {
             return new Mat4(new[]

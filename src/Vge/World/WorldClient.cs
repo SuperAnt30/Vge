@@ -148,6 +148,15 @@ namespace Vge.World
             }
         }
 
+        protected override void _UpdateEntity(EntityBase entity)
+        {
+            if (entity.AddedToChunk)
+            {
+                entity.UpdateClient();
+            }
+            base._UpdateEntity(entity);
+        }
+
         #endregion
 
         public override void DebugString(string logMessage, params object[] args)

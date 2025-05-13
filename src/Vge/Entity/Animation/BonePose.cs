@@ -51,7 +51,7 @@ namespace Vge.Entity.Animation
         /// Добавить смещение и вращение к текущей позе
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BonePose Add(BonePose bonePose)
+        public void Add(BonePose bonePose)
         {
             RotationX += bonePose.RotationX;
             RotationY += bonePose.RotationY;
@@ -60,8 +60,6 @@ namespace Vge.Entity.Animation
             PositionX += bonePose.PositionX;
             PositionY += bonePose.PositionY;
             PositionZ += bonePose.PositionZ;
-
-            return this;
         }
 
         /// <summary>

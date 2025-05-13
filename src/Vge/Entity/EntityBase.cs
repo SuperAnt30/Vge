@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Physics;
 using Vge.Util;
 using WinGL.Util;
 
@@ -57,6 +58,19 @@ namespace Vge.Entity
         public float PosPrevZ;
 
         /// <summary>
+        /// Позиция этой сущности по оси X с сервера, только для клиента
+        /// </summary>
+        public float PosServerX;
+        /// <summary>
+        /// Позиция этой сущности по оси Y с сервера, только для клиента
+        /// </summary>
+        public float PosServerY;
+        /// <summary>
+        /// Позиция этой сущности по оси Z с сервера, только для клиента
+        /// </summary>
+        public float PosServerZ;
+
+        /// <summary>
         /// Координату X в каком чанке находится перерасчётес с PosX
         /// </summary>
         public int ChunkPositionX => Mth.Floor(PosX) >> 4;
@@ -94,8 +108,8 @@ namespace Vge.Entity
         public EntityRenderBase Render { get; protected set; }
 
         /// <summary>
-        /// Уровень перемещение. Для сервера 1 и 0 чтоб передвавать клиентам перемещение.
-        /// Для клиента 2 - 0, чтоб минимизировать запросы.
+        /// Уровень перемещение. Только для сервера 2 - 0 чтоб передвавать клиентам перемещение.
+        /// 1 для игроков, 2 для мобов, на один больше, чтоб клиент мог зафиксировать сон, т.е. два последнийх одинаковые
         /// </summary>
         public byte LevelMotionChange;
 
@@ -245,12 +259,24 @@ namespace Vge.Entity
         /// Обновить значения Prev
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void UpdatePrev()
+        public virtual void UpdatePositionPrev()
         {
             PosPrevX = PosX;
             PosPrevY = PosY;
             PosPrevZ = PosZ;
         }
+
+        /// <summary>
+        /// Обновить значения позиций с сервера, только для клиента
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void UpdatePositionServer()
+        {
+            PosX = PosServerX;
+            PosY = PosServerY;
+            PosZ = PosServerZ;
+        }
+       
 
         #endregion
 
@@ -453,9 +479,14 @@ namespace Vge.Entity
         public virtual string GetName() => "";
 
         /// <summary>
-        /// Игровой такт
+        /// Игровой такт на сервере
         /// </summary>
         public virtual void Update() { }
+        /// <summary>
+        /// Игровой такт на клиенте
+        /// </summary>
+        public virtual void UpdateClient() { }
+
 
         /// <summary>
         /// Получить массив XZ с вращением

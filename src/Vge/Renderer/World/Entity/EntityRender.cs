@@ -33,7 +33,6 @@ namespace Vge.Renderer.World.Entity
             Texture = Render.SetTexture(Ce.ModelEntities.ModelEntitiesObjects[0].Textures[1]);
 
             _mesh = new MeshEntity(gl);
-            // TODO::SceletAnim #1 Тут ставим кубы в ноль, вращения
             _mesh.Reload(Ce.ModelEntities.ModelEntitiesObjects[0].BufferMesh);
         }
 

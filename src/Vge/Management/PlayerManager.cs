@@ -279,6 +279,10 @@ namespace Vge.Management
                 socketSide.SendPacket(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.InvalidToken));
                 return;
             }
+
+            // Таблицу блоков
+            socketSide.SendPacket(new PacketS05Tables(Ce.Blocks.BlockAlias, Ce.ModelEntities.ModelEntitiesAlias));
+
             // Поставить в очередь на cоединение сетевого игрока
             _playerStartList.Add(playerServer);
         }

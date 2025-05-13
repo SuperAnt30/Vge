@@ -365,10 +365,10 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     EntityThrowable entity = new EntityThrowable(
-                        EnumEntity.Box, world.Collision, this, i);
+                        EnumEntity.Stone, world.Collision, this, i);
                     //isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this);
                     isBox = !isBox;
                     entity.SetEntityId(_server.LastEntityId());
@@ -452,11 +452,6 @@ namespace Vge.Management
         {
             // Id игрока
             SendPacket(new PacketS03JoinGame(Id, UUID));
-            // Таблицу блоков если не владелец
-            if (!Owner)
-            {
-                SendPacket(new PacketS05Tables(Ce.Blocks.BlockAlias, Ce.ModelEntities.ModelEntitiesAlias));
-            }
             // Тикущий счётчик тика сервера
             SendPacket(new PacketS04TimeUpdate(_server.TickCounter));
             // Информацию о мире в каком игрок находиться

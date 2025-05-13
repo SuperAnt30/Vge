@@ -16,6 +16,10 @@ namespace Vge.Entity
         /// </summary>
         public float RotationYaw;
         /// <summary>
+        /// Вращение головы этой сущности по оси Y в радианах (если голова имеется, если нет, игнорируем)
+        /// </summary>
+        public float RotationYawHead;
+        /// <summary>
         /// Вращение этой сущности вверх вниз в радианах
         /// </summary>
         public float RotationPitch;
@@ -25,9 +29,26 @@ namespace Vge.Entity
         /// </summary>
         public float RotationPrevYaw;
         /// <summary>
+        /// Вращение этой сущности по оси Y в прошлом такте (если голова имеется, если нет, игнорируем)
+        /// </summary>
+        public float RotationPrevYawHead;
+        /// <summary>
         /// Вращение этой сущности вверх вниз в прошлом такте
         /// </summary>
         public float RotationPrevPitch;
+
+        /// <summary>
+        /// Вращение этой сущности по оси Y с сервера, только для клиента
+        /// </summary>
+        public float RotationServerYaw;
+        /// <summary>
+        /// Вращение этой сущности по оси Y с сервера, только для клиента (если голова имеется, если нет, игнорируем)
+        /// </summary>
+        public float RotationServerYawHead;
+        /// <summary>
+        /// Вращение этой сущности вверх вниз с сервера, только для клиента
+        /// </summary>
+        public float RotationServerPitch;
 
         #endregion
 
@@ -88,13 +109,28 @@ namespace Vge.Entity
         /// Обновить значения Prev
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void UpdatePrev()
+        public override void UpdatePositionPrev()
         {
             PosPrevX = PosX;
             PosPrevY = PosY;
             PosPrevZ = PosZ;
             RotationPrevYaw = RotationYaw;
+            RotationPrevYawHead = RotationYawHead;
             RotationPrevPitch = RotationPitch;
+        }
+
+        /// <summary>
+        /// Обновить значения позиций с сервера, только для клиента
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdatePositionServer()
+        {
+            PosX = PosServerX;
+            PosY = PosServerY;
+            PosZ = PosServerZ;
+            RotationYaw = RotationServerYaw;
+            RotationYawHead = RotationServerYawHead;
+            RotationPitch = RotationServerPitch;
         }
 
         #endregion

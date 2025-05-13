@@ -1,6 +1,7 @@
 ﻿//#define PhysicsServer
 using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.Entity.Physics;
 using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
@@ -288,12 +289,12 @@ namespace Vge.Management
                 //Vector3 right = Glm.Cross(front, up);
                 //pos += right * 2;
             }
-            Mat4 look = Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0));
-            //Mat4 projection = Glm.Perspective(1.43f, Gi.Width / (float)Gi.Height, 
-            //    0.01f, 16 * 22f);
-            Mat4 projection = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
-                0.01f, OverviewChunk * 22f);
-            (projection * look).ConvArray(View);
+            // Матрица Projection
+            Mat4 matrix = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
+               0.01f, OverviewChunk * 22f);
+            // Матрица Look
+            matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
+            matrix.ConvArray(View);
         }
 
         /// <summary>
@@ -452,9 +453,9 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Игровой такт
+        /// Игровой такт на клиенте
         /// </summary>
-        public override void Update()
+        public override void UpdateClient()
         {
             FFF += .0174f;
             if (FFF > 6.28f) FFF = 0;
@@ -768,6 +769,7 @@ namespace Vge.Management
 
         public override string ToString()
         {
+            if (Physics == null) return "null";
             float k = 10f; // 20 tps * .5f ширина блока
             k = Ce.Tps;// * .5f;
             string motion = string.Format("{0:0.00} | {1:0.00} м/с {2} {3}", 

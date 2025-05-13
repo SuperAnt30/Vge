@@ -8,7 +8,7 @@
         /// <summary>
         /// Пустой ключевой кадр позиции или ориентации кости
         /// </summary>
-        private static BoneAnimationFrame _boneAnimationFrameNull = new BoneAnimationFrame();
+        private static BoneAnimationFrame _boneAnimationFrameNull = new BoneAnimationFrame(0, 0, 0);
 
         /// <summary>
         /// Массив костей скелета в заданный момент времени
@@ -104,33 +104,20 @@
             }
 
             // Ищем ближайшие кадры
-            BoneAnimationFrame fromFrame = _boneAnimationFrameNull;
-            BoneAnimationFrame toFrame = _boneAnimationFrameNull;
-            float fromTime = float.MinValue;
-            float toTime = float.MaxValue;
-            foreach (BoneAnimationFrame frame in positionFrames)
+            BoneAnimationFrame frame;
+            for (int i = 0; i < positionFrames.Length; i++)
             {
+                frame = positionFrames[i];
                 if (frame.Time == _currentTime)
                 {
                     return frame;
                 }
-
-                if (frame.Time < _currentTime) 
+                if (frame.Time > _currentTime)
                 {
-                    if (frame.Time > fromTime)
-                    {
-                        fromTime = frame.Time;
-                        fromFrame = frame;
-                    }
-                }
-                else if (frame.Time < toTime)
-                {
-                    toTime = frame.Time;
-                    toFrame = frame;
+                    return BoneAnimationFrame.Lerp(positionFrames[i - 1], frame, _currentTime);
                 }
             }
-
-            return BoneAnimationFrame.Lerp(fromFrame, toFrame, _currentTime);
+            return _boneAnimationFrameNull;
         }
     }
 }

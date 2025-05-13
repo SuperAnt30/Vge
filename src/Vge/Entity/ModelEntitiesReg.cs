@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
 

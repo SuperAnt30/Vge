@@ -2,7 +2,7 @@
 using Vge.World;
 using WinGL.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Physics
 {
     /// <summary>
     /// Физика для полёта

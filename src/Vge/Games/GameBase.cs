@@ -67,6 +67,10 @@ namespace Vge.Games
         /// Увеличивается каждый тик 
         /// </summary>
         public uint TickCounter { get; private set; } = 0;
+        /// <summary>
+        /// Флаг запущена ли игра, надо для сервера
+        /// </summary>
+        public bool FlagGameStarted { get; private set; }
 
         /// <summary>
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
@@ -126,10 +130,10 @@ namespace Vge.Games
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
             Player = new PlayerClientOwner(this);
-            WorldRender = new WorldRenderer(this);
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
             Key.InChat += _Key_InChat;
+            WorldRender = new WorldRenderer(this);
         }
 
         /// <summary>
@@ -163,7 +167,12 @@ namespace Vge.Games
         #region StartStopPause
 
         /// <summary>
-        /// Запуск игры
+        /// Запуск игры и миров, после всех сетевых проверок, только для сети
+        /// </summary>
+        public virtual void GameStartingNet() { }
+
+        /// <summary>
+        /// Запуск игры и миров, по сети миры создаём чуть позже, после получения от сервера инфу о блоках и сущностях
         /// </summary>
         public virtual void GameStarting()
         {
@@ -174,6 +183,7 @@ namespace Vge.Games
             _stopwatch.Start();
             //Ce.IsDebugDrawChunks = 
             Ce.IsDebugDraw = true;
+            FlagGameStarted = true;
         }
 
         private void World_TagDebug(object sender, StringEventArgs e) => _OnTagDebug(e);
@@ -429,7 +439,11 @@ namespace Vge.Games
             gl.ClearColor(.4f, .4f, .7f, 1f);
 
             // Мир
-            WorldRender.Draw(timeIndex);
+            if (FlagGameStarted)
+            {
+                // Мир появляется, как загрузятся 
+                WorldRender.Draw(timeIndex);
+            }
 
             // Тут индикация если имеется
             if (Hud != null)
@@ -497,7 +511,7 @@ namespace Vge.Games
                 _ToTraffic(),TickCounter, // 3-4
                 Player, // 5
                 WorldRender.ToString(), // 6
-                World.ToString() // 7
+                World != null ? World.ToString() : "" // 7
                 );
         }
 

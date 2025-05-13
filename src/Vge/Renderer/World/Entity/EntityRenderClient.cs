@@ -105,9 +105,9 @@ namespace Vge.Renderer.World.Entity
                 float z = Entity.PosZ - ppfz;
                 yaw = Glm.Atan2(z, x) - Glm.Pi90;
                 pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
-              //  yaw = pitch = 0;
+                pitch = 0;
             }
-
+            
             // Возвращаем значения костей в исходное положение, Оригинал
             for (byte i = 0; i < _countBones; i++)
             {
@@ -119,14 +119,15 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Пробегаемся по анимациям
-            for (int ai = 0; ai < 2; ai++)
-            {
-                _GenBoneCurrentPose(ai);
-            }
-
+            _GenBoneCurrentPose(0);
+            //for (int ai = 0; ai < 2; ai++)
+            //{
+            //    _GenBoneCurrentPose(ai);
+            //}
+            
             // Собираем конечные матрицы
             _GetMatrixPalette(yaw, pitch);
-
+            
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(entityRender.Player.View,
                    Entity.GetPosFrameX(timeIndex) - ppfx,
@@ -166,24 +167,29 @@ namespace Vge.Renderer.World.Entity
                 _bonesTransforms[0].RotateY(-yaw);
             }
             // У корневой кости нет родительской матрицы, поэтому заносим в матричную палитру матрицу перехода как есть
-            _bonesTransforms[0] *= _bones[0].GetBoneMatrix() * _modelEntity.Bones[0].MatrixInverse;
+            _bonesTransforms[0].Multiply(_bones[0].GetBoneMatrix());
+            _bonesTransforms[0].Multiply(_modelEntity.Bones[0].MatrixInverse);
             _bonesTransforms[0].ConvArray4x3(_bufferBonesTransforms, 0);
 
+            Bone bone;
             // Пользуясь порядком хранения, проходим по всем локальным позам и выполняем умножения на родительские матрицы и обратные
             for (int i = 1; i < _countBones; i++)
             {
                 // Перемножаем матрицы в положение как выставленно в Blockbench
-                _bonesTransforms[i] = _bonesTransforms[_modelEntity.Bones[i].ParentIndex]
-                           * _bones[i].GetBoneMatrix();
+                bone = _modelEntity.Bones[i];
+
+
+                _bonesTransforms[bone.ParentIndex].Copy(_bonesTransforms[i]);
+                _bonesTransforms[i].Multiply(_bones[i].GetBoneMatrix());
 
                 // Если надо вращаем Pitch
-                if (_modelEntity.Bones[i].IsPitch && pitch != 0)
+                if (bone.IsPitch && pitch != 0)
                 {
                     _bonesTransforms[i].RotateX(pitch);
                 }
 
                 // Умножаем обратную матрицу
-                _bonesTransforms[i] *= _modelEntity.Bones[i].MatrixInverse;
+                _bonesTransforms[i].Multiply(bone.MatrixInverse);
                 // Отправляем в кеш
                 _bonesTransforms[i].ConvArray4x3(_bufferBonesTransforms, i * 12);
             }

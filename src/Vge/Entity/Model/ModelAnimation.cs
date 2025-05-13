@@ -88,7 +88,8 @@ namespace Vge.Entity.Model
                     }
                 }
             }
-
+            positionFrames.Sort();
+            orientationFrames.Sort();
             return new BoneAnimationChannel(_name, _loop,
                 positionFrames.ToArray(), orientationFrames.ToArray());
         }

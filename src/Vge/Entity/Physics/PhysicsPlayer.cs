@@ -1,7 +1,7 @@
 ﻿using Vge.Util;
 using Vge.World;
 
-namespace Vge.Entity
+namespace Vge.Entity.Physics
 {
     /// <summary>
     /// Физика для игрока

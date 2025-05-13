@@ -1,4 +1,4 @@
-﻿namespace Vge.Entity
+﻿namespace Vge.Entity.Model
 {
     /// <summary>
     /// Константы названий тег для параметров сущности в json

@@ -273,13 +273,11 @@ namespace Vge.World
             //profiler.EndSection();
         }
 
+        /// <summary>
+        /// Изменение в каждом такте сущности
+        /// </summary>
         protected virtual void _UpdateEntity(EntityBase entity)
         {
-            if (entity.AddedToChunk)
-            {
-                entity.Update();
-            }
-
             // Добавление сущности в чанк или выгрузка
             int cx = entity.ChunkPositionX;
             int cy = entity.ChunkPositionY;

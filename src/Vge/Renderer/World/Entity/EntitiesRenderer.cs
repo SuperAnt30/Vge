@@ -25,13 +25,16 @@ namespace Vge.Renderer.World.Entity
 
         private HitboxEntityRender _hitbox;
 
+        /// <summary>
+        /// Это временно!!!
+        /// </summary>
         private EntityRender _entityRender;
 
         public EntitiesRenderer(GameBase game, ArrayFast<ChunkRender> arrayChunkRender) : base(game)
         {
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
-            //_entityRender = new EntityRender(gl);
+            //_entityRender = new EntityRender(gl, Render, game.Player);
             _arrayChunkRender = arrayChunkRender;
         }
 
@@ -53,8 +56,7 @@ namespace Vge.Renderer.World.Entity
             if (_entityRender == null)
             {
                 // TODO::2025-04-25 Продумать, подготовку рендера для сети и не только до создания сущностей
-                // Надо сделать в Ce flag на готовность сущностей
-                if (Ce.ModelEntities == null) return;
+                // TODO::2025-05-14 Из-за Texture ещё не готов модуль
                 _entityRender = new EntityRender(gl, Render, _game.Player);
             }
 

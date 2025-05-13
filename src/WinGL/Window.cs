@@ -180,6 +180,8 @@ namespace WinGL
             catch (Exception ex)
             {
                 MessageBoxCrash(ex);
+                // При краше, принудительно останавливаем все потоки которые работали.
+                Process.GetCurrentProcess().Kill();
             }
         }
 
@@ -206,7 +208,6 @@ namespace WinGL
             }
             catch (Exception ex)
             {
-                Close();
                 throw new Exception(Sr.GetString(Sr.ErrorWhileStartingWindow, ex.Message), ex);
             }
             finally

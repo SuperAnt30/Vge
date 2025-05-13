@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Entity.Animation
 {
     /// <summary>
     /// Ключевой кадр позиции или ориентации кости
     /// </summary>
-    public struct BoneAnimationFrame
+    public class BoneAnimationFrame : IComparable
     {
         /// <summary>
         /// Номер кадра
@@ -59,5 +60,14 @@ namespace Vge.Entity.Animation
 
         public override string ToString()
             => string.Format("T:{0:0.00} [{1:0.00}; {2:0.00}; {3:0.00}]", Time, X, Y, Z);
+
+        public int CompareTo(object obj)
+        {
+            if (obj is BoneAnimationFrame v)
+            {
+                return Time.CompareTo(v.Time);
+            }
+            throw new Exception(Srl.ItIsImpossibleToCompareTwoObjects);
+        }
     }
 }

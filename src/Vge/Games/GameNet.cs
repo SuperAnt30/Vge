@@ -58,12 +58,18 @@ namespace Vge.Games
 
         #region StartStopPause
 
+
+        /// <summary>
+        /// Запуск игры и миров, после всех сетевых проверок, только для сети
+        /// </summary>
+        public override void GameStartingNet() => base.GameStarting();
+
         /// <summary>
         /// Запуск игры
         /// </summary>
         public override void GameStarting()
         {
-            base.GameStarting();
+            // base.GameStarting(); тут нельзя, её запускаем через GameStartingNet()
             Log.Client(Srl.StartingMultiplayer);
             Log.Save();
 

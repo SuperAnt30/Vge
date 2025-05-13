@@ -4,7 +4,7 @@ using Vge.Util;
 using Vge.World;
 using WinGL.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Physics
 {
     /// <summary>
     /// Физика по земле для сущностей которые имеют силу для перемещения

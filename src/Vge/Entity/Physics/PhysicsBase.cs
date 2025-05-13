@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 
-namespace Vge.Entity
+namespace Vge.Entity.Physics
 {
     /// <summary>
     /// Базовый объект физики для сущности

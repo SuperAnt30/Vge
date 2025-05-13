@@ -61,17 +61,13 @@ namespace Vge.Management
             IdWorld = idWorld;
         }
 
-        public override void Update()
+        /// <summary>
+        /// Игровой такт на клиенте
+        /// </summary>
+        public override void UpdateClient()
         {
-            if (LevelMotionChange == 2)
-            {
-                LevelMotionChange = 1;
-            }
-            else if (LevelMotionChange == 1)
-            {
-                UpdatePrev();
-                LevelMotionChange = 0;
-            }
+            UpdatePositionPrev();
+            UpdatePositionServer();
         }
     }
 }

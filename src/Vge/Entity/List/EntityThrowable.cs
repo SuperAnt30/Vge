@@ -1,4 +1,5 @@
-﻿using Vge.Renderer.World.Entity;
+﻿using Vge.Entity.Physics;
+using Vge.Renderer.World.Entity;
 using Vge.World;
 using WinGL.Util;
 
@@ -109,63 +110,68 @@ namespace Vge.Entity.List
         /// </summary>
         public override float GetWeight() => _weight;
 
+        /// <summary>
+        /// Игровой такт на сервере
+        /// </summary>
         public override void Update()
         {
-            if (Physics != null)
+            if (_age > 9000)//1800)
             {
-                if (_age > 9000)//1800)
+                SetDead();
+                return;
+            }
+            _age++;
+
+            if (!Physics.IsPhysicSleep())
+            {
+                //Console.Write(PosX);
+                //Console.Write(" ");
+                //Console.Write(PosY);
+                //Console.Write(" ");
+                //Console.WriteLine(PosZ);
+
+                // Расчитать перемещение в объекте физика
+                Physics.LivingUpdate();
+
+                if (IsPositionChange())
                 {
-                    SetDead();
-                    return;
-                }
-                _age++;
+                    //float x = -Physics.MotionX;
+                    //float z = -Physics.MotionZ;
 
-                if (!Physics.IsPhysicSleep())
-                {
-                    //Console.Write(PosX);
-                    //Console.Write(" ");
-                    //Console.Write(PosY);
-                    //Console.Write(" ");
-                    //Console.WriteLine(PosZ);
+                    //RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
+                    //RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
+                    //RotationPrevYaw = RotationYaw;
+                    //RotationPrevPitch = RotationPitch;
 
-                    // Расчитать перемещение в объекте физика
-                    Physics.LivingUpdate();
-
-                    if (IsPositionChange())
-                    {
-                        //float x = -Physics.MotionX;
-                        //float z = -Physics.MotionZ;
-
-                        //RotationYaw = Glm.Atan2(z, x) - Glm.Pi90;
-                        //RotationPitch = -Glm.Atan2(-Physics.MotionY, Mth.Sqrt(x * x + z * z));
-                        //RotationPrevYaw = RotationYaw;
-                        //RotationPrevPitch = RotationPitch;
-
-                        UpdatePrev();
+                    UpdatePositionPrev();
                         
-                        LevelMotionChange = 2;
-                    }
-                    else if (Physics.IsPhysicAlmostSleep())
-                    {
-                        LevelMotionChange = 2;
-                    }
+                    LevelMotionChange = 2;
                 }
-                else
+                else if (Physics.IsPhysicAlmostSleep())
                 {
-                    //if (_jumpTime++ > 150)
-                    //{
-                    //    Physics.MotionY = .5f;
-                    //    _jumpTime = 0;
-                    //    Physics.AwakenPhysics();
-                    //}
+                    // Надо ещё 2 такта как минимум передать, чтоб клиент, зафиксировал сон
+                    LevelMotionChange = 2;
                 }
             }
-            // TODO::2025-05-02 бага по фризу во время лага, прилетает с пакета, но если пакета нет, заного интерполяция идёт
-            // Скорее всего надо добавить для клиента такие параметры как PosServX,Y,Z
-            //if (IsPositionChange())
-            //{
-            //    UpdatePrev();
-            //}
+            else
+            {
+                //if (_jumpTime++ > 150)
+                //{
+                //    Physics.MotionY = .5f;
+                //    _jumpTime = 0;
+                //    Physics.AwakenPhysics();
+                //}
+            }
+           
+        }
+
+        /// <summary>
+        /// Игровой такт на клиенте
+        /// </summary>
+        public override void UpdateClient()
+        {
+            UpdatePositionPrev();
+            UpdatePositionServer();
         }
     }
 }
