@@ -107,6 +107,13 @@ namespace Vge.Renderer.World.Entity
                 pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
                 pitch = 0;
             }
+
+            // Заносим в шейдор
+            //Entities.Render.ShaderBindEntityPrimitive(entityRender.Player.View,
+            //       Entity.GetPosFrameX(timeIndex) - ppfx,
+            //       Entity.GetPosFrameY(timeIndex) - ppfy,
+            //       Entity.GetPosFrameZ(timeIndex) - ppfz
+            //   );
             
             // Возвращаем значения костей в исходное положение, Оригинал
             for (byte i = 0; i < _countBones; i++)
@@ -135,7 +142,7 @@ namespace Vge.Renderer.World.Entity
                    Entity.GetPosFrameZ(timeIndex) - ppfz,
                    _bufferBonesTransforms
                );
-
+            
             entityRender.MeshDraw();
         }
 

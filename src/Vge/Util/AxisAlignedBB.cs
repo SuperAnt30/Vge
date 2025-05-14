@@ -8,7 +8,7 @@ namespace Vge.Util
     /// Выровненные по осям ограничивающие рамки
     /// Axis-aligned bounding boxes 
     /// </summary>
-    public class AxisAlignedBB
+    public struct AxisAlignedBB
     {
         /// <summary>
         /// Погрешность

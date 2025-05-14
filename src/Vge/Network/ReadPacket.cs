@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Vge.Network
@@ -36,12 +37,15 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть логический тип (0..1) 1 байт
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Bool() => _buffer[_position++] != 0;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] GetBuffer() => _buffer;
         /// <summary>
         /// Прочесть массив байт
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] Bytes()
         {
             // Первый параметр длинна массива
@@ -87,19 +91,23 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть тип byte (0..255) 1 байт
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte Byte() => _buffer[_position++];
         /// <summary>
         /// Прочесть тип ushort (0..65535) 2 байта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort UShort() => (ushort)((_buffer[_position++] << 8) | _buffer[_position++]);
         /// <summary>
         /// Прочесть тип uint (0..4 294 967 295) 4 байта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint UInt() => (uint)((_buffer[_position++] << 24) | (_buffer[_position++] << 16) 
             | (_buffer[_position++] << 8) | _buffer[_position++]);
         /// <summary>
         /// Прочесть тип uint (0..18 446 744 073 709 551 615) 8 байт
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong ULong() => (ulong)((_buffer[_position++] << 56) | (_buffer[_position++] << 48) 
             | (_buffer[_position++] << 40) | (_buffer[_position++] << 32)
             | (_buffer[_position++] << 24) | (_buffer[_position++] << 16) 
@@ -107,14 +115,17 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть тип sbyte (-128..127) 1 байт
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte SByte() => (sbyte)Byte();
         /// <summary>
         /// Прочесть тип short (-32768..32767) 2 байта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short ReadShort() => (short)UShort();
         /// <summary>
         /// Прочесть тип int (-2 147 483 648..2 147 483 647) 4 байта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Int() => (int)UInt();
         /// <summary>
         /// Прочесть тип int (–9 223 372 036 854 775 808..9 223 372 036 854 775 807) 8 байт
@@ -124,13 +135,21 @@ namespace Vge.Network
         /// <summary>
         /// Прочесть строку в UTF-16
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string String() => Encoding.BigEndianUnicode.GetString(Bytes());
 
         /// <summary>
         /// Прочесть тип float (точность 0,0001) 4 байта
         /// </summary>
         //public float Float() => Int() / 10000f; // Этот быстрее на ~10-20%
-        public float Float() => BitConverter.ToSingle(new byte[] { Byte(), Byte(), Byte(), Byte() }, 0);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float Float() 
+            => BitConverter.ToSingle(new byte[] {
+                _buffer[_position++],
+                _buffer[_position++],
+                _buffer[_position++],
+                _buffer[_position++]
+            }, 0);
 
         #endregion
 

@@ -110,6 +110,10 @@ namespace WinGL.Util
             };
         }
 
+        /// <summary>
+        /// Привести текущую матрицу к Identity
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             _cols[0].X = _cols[1].Y = _cols[2].Z = _cols[3].W = 1;
@@ -122,6 +126,7 @@ namespace WinGL.Util
         /// <summary>
         /// Копировать текущую матрицу в матрицу m
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Copy(Mat4 m)
         {
             m._cols[0] = _cols[0];
@@ -144,7 +149,9 @@ namespace WinGL.Util
         /// <returns>The column at index <paramref name="column"/>.</returns>
         public Vector4 this[int column]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get { return _cols[column]; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set { _cols[column] = value; }
         }
 
@@ -161,7 +168,9 @@ namespace WinGL.Util
         /// </returns>
         public float this[int column, int row]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get { return _cols[column][row]; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set { _cols[column][row] = value; }
         }
 
@@ -205,6 +214,7 @@ namespace WinGL.Util
         /// <summary>
         /// Вращение матрицы по кватерниону
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RotateQuat(Vector4 quaternion)
             => RotateQuat(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
 
@@ -357,6 +367,7 @@ namespace WinGL.Util
         /// <summary>
         /// Передать все данные в входящий массив не создавая ни структур ни массивов
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ConvArray4x3(float[] array, int offset)
         {
             //Buffer.BlockCopy(_cols[0].ToArray3(), 0, array, offset * 4, 12);
@@ -378,6 +389,7 @@ namespace WinGL.Util
         /// <summary>
         /// Передать все данные в входящий массив не создавая ни структур ни массивов
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ConvArray(float[] array)
         {
             array[0] = _cols[0].X;
