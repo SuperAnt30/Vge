@@ -10,6 +10,7 @@ using Vge.Realms;
 using Vge.Renderer.World;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
+using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
@@ -455,7 +456,7 @@ namespace Vge.Management
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient()
+        public override void UpdateClient(WorldClient world)
         {
             FFF += .0174f;
             if (FFF > 6.28f) FFF = 0;
@@ -535,6 +536,8 @@ namespace Vge.Management
 
             // Проверка на обновление чанков альфа блоков, в такте после перемещения
             _UpdateChunkRenderAlphe();
+
+            Render.UpdateClient(world);
         }
 
         /// <summary>

@@ -168,10 +168,10 @@ namespace Vge.Entity.List
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient()
+        public override void UpdateClient(WorldClient world)
         {
-            UpdatePositionPrev();
             UpdatePositionServer();
+            Render.UpdateClient(world);
         }
     }
 }

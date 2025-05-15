@@ -365,7 +365,7 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     EntityThrowable entity = new EntityThrowable(
                         EnumEntity.Stone, world.Collision, this, i);

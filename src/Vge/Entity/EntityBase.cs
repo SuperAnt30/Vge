@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
 using Vge.Util;
+using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -272,6 +273,7 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void UpdatePositionServer()
         {
+            UpdatePositionPrev();
             PosX = PosServerX;
             PosY = PosServerY;
             PosZ = PosServerZ;
@@ -465,11 +467,6 @@ namespace Vge.Entity
         #endregion
 
         /// <summary>
-        /// Инициализировать объект рендера
-        /// </summary>
-        public void InitRender(EntityRenderBase render) => Render = render;
-
-        /// <summary>
         /// Будет уничтожен следующим тиком
         /// </summary>
         public virtual void SetDead() => IsDead = true;
@@ -485,8 +482,14 @@ namespace Vge.Entity
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public virtual void UpdateClient() { }
+        public virtual void UpdateClient(WorldClient world) { }
 
+
+        #region Get
+
+     
+
+        #endregion
 
         /// <summary>
         /// Получить массив XZ с вращением

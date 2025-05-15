@@ -1,5 +1,6 @@
 ﻿using Vge.Games;
 using Vge.Renderer.World.Entity;
+using Vge.World;
 
 namespace Vge.Management
 {
@@ -64,10 +65,10 @@ namespace Vge.Management
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient()
+        public override void UpdateClient(WorldClient world)
         {
-            UpdatePositionPrev();
             UpdatePositionServer();
+            Render.UpdateClient(world);
         }
     }
 }

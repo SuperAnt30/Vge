@@ -1,6 +1,9 @@
 ﻿using Vge.Entity;
 using Vge.Entity.Animation;
 using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
+using Vge.World.Chunk;
 using WinGL.Util;
 
 namespace Vge.Renderer.World.Entity
@@ -42,6 +45,14 @@ namespace Vge.Renderer.World.Entity
         /// Количество костей
         /// </summary>
         private readonly byte _countBones;
+        /// <summary>
+        /// Освещёность блочного света
+        /// </summary>
+        private float _lightBlock;
+        /// <summary>
+        /// Освещёность небесного света
+        /// </summary>
+        private float _lightSky;
 
         public EntityRenderClient(EntityBase entity, EntitiesRenderer entities) : base(entity)
         {
@@ -64,16 +75,12 @@ namespace Vge.Renderer.World.Entity
         }
 
         /// <summary>
-        /// Увеличивает счётчик прошедшего с начала анимации времени:
+        /// Игровой такт на клиенте
         /// </summary>
-        /// <param name="delta"></param>
-        public void IncreaseCurrentTime(float delta)
+        public override void UpdateClient(WorldClient world)
         {
-            //foreach(AnimationClip animationClip in _animationClips)
-            {
-                _animationClips[0].IncreaseCurrentTime(delta);
-                _animationClips[1].IncreaseCurrentTime(delta);
-            }
+            // Проверяем освещение
+            _BrightnessForRender(world);
         }
 
         /// <summary>
@@ -83,9 +90,10 @@ namespace Vge.Renderer.World.Entity
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
         public override void Draw(float timeIndex, float deltaTime)
         {
-            IncreaseCurrentTime(deltaTime);
+            _IncreaseCurrentTime(deltaTime);
             EntityRender entityRender = Entities.GetEntityRender();
-            Entities.Render.BindTexture(entityRender.Texture);
+            
+            //Entities.Render.BindTexture(entityRender.Texture);
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;
@@ -109,12 +117,13 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Заносим в шейдор
-            //Entities.Render.ShaderBindEntityPrimitive(entityRender.Player.View,
+            //Entities.Render.ShaderBindEntityPrimitive(
+            //    entityRender.Texture, entityRender.Player.View,
             //       Entity.GetPosFrameX(timeIndex) - ppfx,
             //       Entity.GetPosFrameY(timeIndex) - ppfy,
             //       Entity.GetPosFrameZ(timeIndex) - ppfz
             //   );
-            
+
             // Возвращаем значения костей в исходное положение, Оригинал
             for (byte i = 0; i < _countBones; i++)
             {
@@ -134,9 +143,11 @@ namespace Vge.Renderer.World.Entity
 
             // Собираем конечные матрицы
             _GetMatrixPalette(yaw, pitch);
-            
+
             // Заносим в шейдор
-            Entities.Render.ShaderBindEntity(entityRender.Player.View,
+            Entities.Render.ShaderBindEntity(
+                entityRender.Texture, _lightBlock, _lightSky,
+                entityRender.Player.View,
                    Entity.GetPosFrameX(timeIndex) - ppfx,
                    Entity.GetPosFrameY(timeIndex) - ppfy,
                    Entity.GetPosFrameZ(timeIndex) - ppfz,
@@ -144,6 +155,21 @@ namespace Vge.Renderer.World.Entity
                );
             
             entityRender.MeshDraw();
+        }
+
+        #region Skeletion Matrix
+
+        /// <summary>
+        /// Увеличивает счётчик прошедшего с начала анимации времени:
+        /// </summary>
+        /// <param name="delta"></param>
+        private void _IncreaseCurrentTime(float delta)
+        {
+            //foreach(AnimationClip animationClip in _animationClips)
+            {
+                _animationClips[0].IncreaseCurrentTime(delta);
+                _animationClips[1].IncreaseCurrentTime(delta);
+            }
         }
 
         /// <summary>
@@ -199,6 +225,39 @@ namespace Vge.Renderer.World.Entity
                 _bonesTransforms[i].Multiply(bone.MatrixInverse);
                 // Отправляем в кеш
                 _bonesTransforms[i].ConvArray4x3(_bufferBonesTransforms, i * 12);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Получить яркость для рендера 0.0 - 1.0
+        /// </summary>
+        private void _BrightnessForRender(WorldClient world)
+        {
+            BlockPos blockPos = new BlockPos(Entity.PosX, Entity.PosY + Entity.Height * .85f, Entity.PosZ);
+            if (blockPos.IsValid(world.ChunkPr.Settings))
+            {
+                ChunkBase chunk = world.GetChunk(blockPos.GetPositionChunk());
+                if (chunk != null)
+                {
+                    ChunkStorage chunkStorage = chunk.StorageArrays[blockPos.Y >> 4];
+                    int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                    _lightBlock = (chunkStorage.Light[index] >> 4) / 16f + .03125f;
+                    _lightSky = (chunkStorage.Light[index] & 15) / 16f + .03125f;
+                }
+                else
+                {
+                    // Если блок не определён
+                    _lightBlock = 0;
+                    _lightSky = 1;
+                }
+            }
+            else
+            {
+                // Если блок не определён
+                _lightBlock = 0;
+                _lightSky = 1;
             }
         }
     }

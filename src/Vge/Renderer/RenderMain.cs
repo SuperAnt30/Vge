@@ -201,24 +201,44 @@ namespace Vge.Renderer
             gl.Uniform1(lightMap, 2);
         }
 
+        public void BindTextureEntity(uint textureId, 
+            int lightBlock, int lightSky)
+        {
+
+        }
+
         /// <summary>
         /// Связать шейдер Entity
         /// </summary>
-        public void ShaderBindEntity(float[] view, float posX, float posY, float posZ, float[] m)
+        public void ShaderBindEntity(uint textureId,
+            float lightBlock, float lightSky,
+            float[] view, float posX, float posY, float posZ, float[] m)
         {
+            // Активация текстуры
+            int atlas = ShEntity.GetUniformLocation(gl, "atlas");
+            BindTexture(textureId);
+            gl.Uniform1(atlas, 0);
+
+            // Активация текстуры карты света
+          //  LightMap.BindTexture();
+            int lightMap = ShEntity.GetUniformLocation(gl, "light_map");
+            gl.Uniform1(lightMap, 2);
+
             ShEntity.Bind(gl);
             ShEntity.SetUniformMatrix4(gl, "view", view);
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
+            ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
             ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, Ce.MaxAnimatedBones);
         }
 
         /// <summary>
         /// Связать шейдер примитивных сущностей без скелетной анимации
         /// </summary>
-        public void ShaderBindEntityPrimitive(float[] view, 
+        public void ShaderBindEntityPrimitive(uint textureId, float[] view, 
             float posX, float posY, float posZ)
             //float[] modelMatrix)
         {
+            BindTexture(textureId);
             ShEntityPrimitive.Bind(gl);
             ShEntityPrimitive.SetUniformMatrix4(gl, "view", view);
             ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);

@@ -5,10 +5,12 @@ layout(location = 1) in vec2 v_texCoord;
 layout(location = 2) in float v_jointId;
 
 //out vec4 a_color;
+out vec2 a_light;
 out vec2 a_texCoord;
 
 uniform mat4 view;
 uniform vec3 pos;
+uniform vec2 light;
 uniform mat4x3 elementTransforms[24];
 
 void main()
@@ -17,6 +19,7 @@ void main()
     mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
     
     //a_color = vec4(1.0);
+    a_light = vec2(light);
 	a_texCoord = v_texCoord;
     
     int id = int(v_jointId);

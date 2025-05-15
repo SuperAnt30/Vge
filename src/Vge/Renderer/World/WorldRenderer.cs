@@ -214,6 +214,8 @@ namespace Vge.Renderer.World
 
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
+            // Биндим карту освещения
+            Render.LightMap.BindTexture();
             Entities.Draw(timeIndex);
             
 

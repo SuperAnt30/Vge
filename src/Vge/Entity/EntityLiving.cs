@@ -125,6 +125,7 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UpdatePositionServer()
         {
+            UpdatePositionPrev();
             PosX = PosServerX;
             PosY = PosServerY;
             PosZ = PosServerZ;

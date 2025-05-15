@@ -152,7 +152,7 @@ namespace Vge.World
         {
             if (entity.AddedToChunk)
             {
-                entity.UpdateClient();
+                entity.UpdateClient(this);
             }
             base._UpdateEntity(entity);
         }
