@@ -19,7 +19,7 @@ namespace Vge.Json
         {
             try
             {
-                return int.Parse(Value);
+                return int.Parse(_Fix(Value));
             }
             catch
             {
@@ -30,12 +30,22 @@ namespace Vge.Json
         {
             try
             {
-                return float.Parse(Value, CultureInfo.InvariantCulture);
+                return float.Parse(_Fix(Value), CultureInfo.InvariantCulture);
             }
             catch
             {
                 return 0;
             }
+        }
+
+        private string _Fix(string value)
+        {
+            int index = value.IndexOf("\\n");
+            if (index != -1)
+            {
+                value = value.Substring(0, index);
+            }
+            return value;
         }
 
         public override string ToString() => Value;

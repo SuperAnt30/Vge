@@ -70,7 +70,7 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        //if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
+                        if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
                             // HitBox
                             //Render.ShaderBindLine(_game.Player.View,
@@ -96,14 +96,17 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void DrawOwner(float timeIndex)
         {
-            //_game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
-            //_hitbox.Draw(timeIndex, _game.Player);
+            _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
+            _hitbox.Draw(timeIndex, _game.Player);
         }
 
         public override void Dispose()
         {
             _hitbox.Dispose();
-            _entityRender.Dispose();
+            if (_entityRender != null)
+            {
+                _entityRender.Dispose();
+            }
         }
 
     }

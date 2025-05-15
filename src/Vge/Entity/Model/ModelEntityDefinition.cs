@@ -54,6 +54,10 @@ namespace Vge.Entity.Model
         /// </summary>
         private byte _amountBoneIndex = 0;
         /// <summary>
+        /// Счётчик очерёдности кубов
+        /// </summary>
+        private byte _cubeIndex;
+        /// <summary>
         /// Для краша, название раздела
         /// </summary>
         private string _log;
@@ -115,17 +119,24 @@ namespace Vge.Entity.Model
                 _log = Cte.Animations;
                 _Animations(model.GetArray(Cte.Animations).ToArrayObject());
 
-                // Генерируем буффер
-                List<float> list = new List<float>();
-                foreach(ModelCube cube in _cubes)
+                // Сортируем кубы как в Blockbench
+                ModelCube[] cubes = new ModelCube[_cubes.Count];
+                for (int i = 0; i < cubes.Length; i++)
                 {
                     // Смена индексов в кубах
-                    cube.BoneIndex = _mapIndexs[cube.BoneIndex];
+                    _cubes[i].BoneIndex = _mapIndexs[_cubes[i].BoneIndex];
+                    cubes[_cubes[i].Index] = _cubes[i];
+                }
+
+                // Генерируем буффер
+                List<float> list = new List<float>();
+                foreach (ModelCube cube in cubes)
+                {
                     // Генерация буфера
                     cube.GenBuffer(list);
                 }
+
                 BufferMesh = list.ToArray();
-                return;
             }
             catch (Exception ex)
             {
@@ -226,6 +237,7 @@ namespace Vge.Entity.Model
                     if (cube != null)
                     {
                         cube.BoneIndex = boneIndex;
+                        cube.Index = _cubeIndex++;
                         bones.Add(cube);
                     }
                 }

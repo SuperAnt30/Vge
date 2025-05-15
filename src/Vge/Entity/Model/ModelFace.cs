@@ -37,7 +37,7 @@ namespace Vge.Entity.Model
             ToU = uv[2];
             ToV = uv[3];
 
-            Empty = FromU == 0 && FromV == 0;
+            Empty = FromU == 0 && ToU == 0;
         }
 
         /// <summary>

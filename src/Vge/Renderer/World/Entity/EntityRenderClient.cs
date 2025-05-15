@@ -60,7 +60,7 @@ namespace Vge.Renderer.World.Entity
 
             // Временное включение анимациионного клипа
             _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[0]));
-            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[1]));
+            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[2]));
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Vge.Renderer.World.Entity
                 float z = Entity.PosZ - ppfz;
                 yaw = Glm.Atan2(z, x) - Glm.Pi90;
                 pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
-                pitch = 0;
+                //pitch = 0;
             }
 
             // Заносим в шейдор
@@ -126,12 +126,12 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Пробегаемся по анимациям
-            _GenBoneCurrentPose(0);
-            //for (int ai = 0; ai < 2; ai++)
-            //{
-            //    _GenBoneCurrentPose(ai);
-            //}
-            
+            //_GenBoneCurrentPose(0);
+            for (int ai = 0; ai < 2; ai++)
+            {
+                _GenBoneCurrentPose(ai);
+            }
+
             // Собираем конечные матрицы
             _GetMatrixPalette(yaw, pitch);
             

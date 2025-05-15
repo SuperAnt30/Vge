@@ -143,13 +143,23 @@ namespace Vge.Network
         /// </summary>
         //public float Float() => Int() / 10000f; // Этот быстрее на ~10-20%
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Float() 
-            => BitConverter.ToSingle(new byte[] {
-                _buffer[_position++],
-                _buffer[_position++],
-                _buffer[_position++],
-                _buffer[_position++]
-            }, 0);
+        public float Float()
+        {
+            try
+            {
+                return BitConverter.ToSingle(new byte[] {
+                    _buffer[_position++],
+                    _buffer[_position++],
+                    _buffer[_position++],
+                    _buffer[_position++]
+                }, 0);
+            }
+            catch (Exception ex)
+            {
+                // TODO::Crash 2025-05-15 Уже два раза тут крашилось, из PacketS14EntityMotion.cs:строка 49
+                throw ex; 
+            }
+        }
 
         #endregion
 

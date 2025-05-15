@@ -484,7 +484,7 @@ namespace WinGL.OpenGL
         /// <param name="indices">Specifies a pointer to the location where the indices are stored.</param>
         public void DrawElements(uint mode, int count, uint type, IntPtr indices)
         {
-            // TODO::2024-12-06 GL Crash
+            // TODO::Crash 2024-12-06 GL Crash
             try
             {
                 glDrawElements(mode, count, type, indices);

@@ -1,7 +1,8 @@
 {
     Texture: { 
         All: "Blocks/Debug",
-        Up: "Blocks/DebugAnim" 
+        Up: "Blocks/DebugAnim",
+        Add: "Blocks/FlowerClover"
     },
     Elements: [
         {   From: [ 0, 8, 0 ],
@@ -15,8 +16,7 @@
                 { Texture:"All", Side:"South", Uv:[0, 0, 8, 8]},
                 { Texture:"All", Side:"West", Uv:[0, 0, 16, 8]}
             ]
-        }
-
+        },
         {   From: [ 0, 0, 0 ],
             To: [ 16, 8, 16 ],
             Faces: [
@@ -26,6 +26,12 @@
                 { Texture:"All", Side:"East", Uv:[0, 8, 16, 16]},
                 { Texture:"All", Side:"South", Uv:[0, 8, 16, 16]},
                 { Texture:"All", Side:"West", Uv:[0, 8, 16, 16]}
+            ]
+        },
+        {   From: [ 0, 0, 0 ],
+            To: [ 16, 16, 16 ],
+            Faces: [
+                { Texture:"Add", Side:"Down", Uv:[0, 0, 16, 16] },
             ]
         },
     ]

@@ -30,7 +30,7 @@ namespace Vge.Renderer.World.Entity
             Render = render;
             Player = player;
 
-            Texture = Render.SetTexture(Ce.ModelEntities.ModelEntitiesObjects[0].Textures[1]);
+            Texture = Render.SetTexture(Ce.ModelEntities.ModelEntitiesObjects[0].Textures[0]);
 
             _mesh = new MeshEntity(gl);
             _mesh.Reload(Ce.ModelEntities.ModelEntitiesObjects[0].BufferMesh);

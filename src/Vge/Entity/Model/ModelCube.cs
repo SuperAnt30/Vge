@@ -8,6 +8,11 @@ namespace Vge.Entity.Model
     public class ModelCube : ModelElement
     {
         /// <summary>
+        /// Индекс очерёдности куба в Blockbanch
+        /// </summary>
+        public byte Index;
+
+        /// <summary>
         /// Количество сторон
         /// </summary>
         public readonly ModelFace[] Faces = new ModelFace[6];
@@ -77,5 +82,8 @@ namespace Vge.Entity.Model
                 Faces[i].GenBuffer(buffer, this);
             }
         }
+
+        public override string ToString()
+            => Index.ToString() + " " + base.ToString();
     }
 }
