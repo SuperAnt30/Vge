@@ -220,7 +220,18 @@ namespace Vge.Entity
             //{
             //    list += "[" + _trackedEntities.GetAt(i).ToString() + "] ";
             //}
-            return "Tracker: " + _trackedEntities.Count;// + " " + list;
+            // Считаем сколько сущностей не спят
+            int countPhysics = 0;
+            EntityBase entity;
+            for (int i = 0; i < _trackedEntities.Count; i++)
+            {
+                entity = _trackedEntities.GetAt(i).TrackedEntity;
+                if (entity.Physics != null && !entity.Physics.IsPhysicSleep())
+                {
+                    countPhysics++;
+                }
+            }
+            return "Tracker: " + _trackedEntities.Count + " Physics: " + countPhysics;
         }
     }
 }

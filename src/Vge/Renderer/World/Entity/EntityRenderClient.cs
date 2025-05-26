@@ -54,10 +54,10 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private float _lightSky;
 
-        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities) : base(entity)
+        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, int indexModel) : base(entity)
         {
             Entities = entities;
-            _modelEntity = Ce.ModelEntities.ModelEntitiesObjects[0];
+            _modelEntity = Ce.ModelEntities.ModelEntitiesObjects[indexModel];
 
             _countBones = (byte)_modelEntity.Bones.Length;
             _bones = new BonePose[_countBones];
@@ -71,16 +71,18 @@ namespace Vge.Renderer.World.Entity
 
             // Временное включение анимациионного клипа
             _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[0]));
-            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[2]));
+            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[1]));
         }
 
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient(WorldClient world)
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void UpdateClient(WorldClient world, float deltaTime)
         {
             // Проверяем освещение
             _BrightnessForRender(world);
+            Entities.OnTick(deltaTime);
         }
 
         /// <summary>
@@ -91,9 +93,7 @@ namespace Vge.Renderer.World.Entity
         public override void Draw(float timeIndex, float deltaTime)
         {
             _IncreaseCurrentTime(deltaTime);
-            EntityRender entityRender = Entities.GetEntityRender();
-            
-            //Entities.Render.BindTexture(entityRender.Texture);
+            EntityRender entityRender = Entities.GetEntityRender(Entity.GetTypeEntity());
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;
@@ -117,13 +117,15 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Заносим в шейдор
-            //Entities.Render.ShaderBindEntityPrimitive(
-            //    entityRender.Texture, entityRender.Player.View,
-            //       Entity.GetPosFrameX(timeIndex) - ppfx,
-            //       Entity.GetPosFrameY(timeIndex) - ppfy,
-            //       Entity.GetPosFrameZ(timeIndex) - ppfz
-            //   );
-
+            Entities.Render.ShaderBindEntityPrimitive(
+                _modelEntity.DepthTextures[0], 
+                _modelEntity.TextureSmall,
+                _lightBlock, _lightSky, entityRender.Player.View,
+                Entity.GetPosFrameX(timeIndex) - ppfx,
+                Entity.GetPosFrameY(timeIndex) - ppfy,
+                Entity.GetPosFrameZ(timeIndex) - ppfz
+            );
+            /*
             // Возвращаем значения костей в исходное положение, Оригинал
             for (byte i = 0; i < _countBones; i++)
             {
@@ -144,16 +146,18 @@ namespace Vge.Renderer.World.Entity
             // Собираем конечные матрицы
             _GetMatrixPalette(yaw, pitch);
 
+            // Текстура сущности
+           // Entities.Render.BindTexture(entityRender.Texture);
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
-                entityRender.Texture, _lightBlock, _lightSky,
+                _lightBlock, _lightSky,
                 entityRender.Player.View,
                    Entity.GetPosFrameX(timeIndex) - ppfx,
                    Entity.GetPosFrameY(timeIndex) - ppfy,
                    Entity.GetPosFrameZ(timeIndex) - ppfz,
                    _bufferBonesTransforms
                );
-            
+            */
             entityRender.MeshDraw();
         }
 

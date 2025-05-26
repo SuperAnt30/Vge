@@ -23,6 +23,9 @@ namespace Vge.Entity.List
         /// </summary>
         private readonly float _weight;
 
+        /// <summary>
+        /// Для отладки прыгают всегда
+        /// </summary>
         private int _jumpTime;
 
         /// <summary>
@@ -30,15 +33,20 @@ namespace Vge.Entity.List
         /// </summary>
         public EntityThrowable(EnumEntity type, EntitiesRenderer entities)
         {
-            Render = new EntityRenderClient(this, entities);
+            Type = type;
+            //Render = new EntityRenderClient(this, entities, );
             if (type == EnumEntity.Stone)
             {
+                Render = new EntityRenderClient(this, entities, 1);
                 Width = .125f;
                 Height = .25f;
+                //Width = .6f;
+                //Height = 3.6f;
                 _weight = 25;
             }
             else
             {
+                Render = new EntityRenderClient(this, entities, 0);
                 Width = .5f;
                 Height = 1f;
                 _weight = 100;
@@ -60,6 +68,8 @@ namespace Vge.Entity.List
             {
                 Width = .125f;
                 Height = .25f;
+                //Width = .6f;
+                //Height = 3.6f;
                 _weight = 25;
                 Physics = new PhysicsGround(collision, this, .9f);
                 speedThrower = .6f;
@@ -168,10 +178,11 @@ namespace Vge.Entity.List
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient(WorldClient world)
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void UpdateClient(WorldClient world, float deltaTime)
         {
             UpdatePositionServer();
-            Render.UpdateClient(world);
+            Render.UpdateClient(world, deltaTime);
         }
     }
 }

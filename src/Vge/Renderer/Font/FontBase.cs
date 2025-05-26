@@ -163,7 +163,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Забиндить текстуру шрифта
         /// </summary>
-        public void BindTexture() => _render.BindTexture(_texture);
+        public void BindTexture() => _render.Texture.BindTexture(_texture);
 
         /// <summary>
         /// Получить объект символа

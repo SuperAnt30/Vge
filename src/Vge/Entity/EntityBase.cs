@@ -25,6 +25,9 @@ namespace Vge.Entity
         /// Тип сущности
         /// </summary>
         public EnumEntity Type { get; protected set; }
+
+        public int GetTypeEntity() => (int)Type - 2;
+
         /// <summary>
         /// Сущность мертва, не активна
         /// </summary>
@@ -482,12 +485,13 @@ namespace Vge.Entity
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public virtual void UpdateClient(WorldClient world) { }
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public virtual void UpdateClient(WorldClient world, float deltaTime) { }
 
 
         #region Get
 
-     
+
 
         #endregion
 

@@ -5,8 +5,8 @@ layout (location = 1) in vec4 v_color;
 
 out vec4 a_color;
 
-uniform vec3 pos;
 uniform mat4 view;
+uniform vec3 pos;
 
 void main()
 {

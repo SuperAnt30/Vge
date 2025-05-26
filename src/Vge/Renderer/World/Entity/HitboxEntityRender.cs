@@ -16,9 +16,18 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly MeshLine _mesh;
 
+        /// <summary>
+        /// Буфер сетки, 12 линий, на линию 14 float 
+        /// </summary>
+        private float[] _buffer = new float[168];
+        /// <summary>
+        /// Буфер сетки живой сущности, 13 линий
+        /// </summary>
+        private float[] _bufferLiving = new float[182];
+
         public HitboxEntityRender(GL gl)
         {
-            _mesh = new MeshLine(gl);
+            _mesh = new MeshLine(gl, GL.GL_STREAM_DRAW);
         }
 
         /// <summary>

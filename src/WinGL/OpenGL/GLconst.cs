@@ -160,6 +160,7 @@
         public const uint GL_STACK_OVERFLOW = 0x0503;
         public const uint GL_STACK_UNDERFLOW = 0x0504;
         public const uint GL_OUT_OF_MEMORY = 0x0505;
+        public const uint GL_INVALID_FRAMEBUFFER_OPERATION = 0x0506;
 
         //   FeedBackMode
         public const uint GL_2D = 0x0600;
@@ -396,6 +397,7 @@
         public const uint GL_MAP2_GRID_SEGMENTS = 0x0DD3;
         public const uint GL_TEXTURE_1D = 0x0DE0;
         public const uint GL_TEXTURE_2D = 0x0DE1;
+        public const uint GL_TEXTURE_2D_ARRAY = 0x8C1A;
         public const uint GL_FEEDBACK_BUFFER_POINTER = 0x0DF0;
         public const uint GL_FEEDBACK_BUFFER_SIZE = 0x0DF1;
         public const uint GL_FEEDBACK_BUFFER_TYPE = 0x0DF2;
@@ -841,8 +843,17 @@
         public const uint GL_ELEMENT_ARRAY_BUFFER = 0x8893;
         public const uint GL_ARRAY_BUFFER_BINDING = 0x8894;
         public const uint GL_ELEMENT_ARRAY_BUFFER_BINDING = 0x8895;
+        /// <summary>
+        /// Данные будут меняться при каждой отрисовке
+        /// </summary>
         public const uint GL_STREAM_DRAW = 0x88E0;
+        /// <summary>
+        /// Данные либо никогда не будут изменяться, либо будут изменяться очень редко
+        /// </summary>
         public const uint GL_STATIC_DRAW = 0x88E4;
+        /// <summary>
+        /// Данные будут меняться довольно часто
+        /// </summary>
         public const uint GL_DYNAMIC_DRAW = 0x88E8;
 
         public const uint GL_COMPILE_STATUS = 0x8B81;

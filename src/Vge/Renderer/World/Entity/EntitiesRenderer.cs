@@ -24,11 +24,24 @@ namespace Vge.Renderer.World.Entity
         private readonly ArrayFast<ChunkRender> _arrayChunkRender;
 
         private HitboxEntityRender _hitbox;
+        /// <summary>
+        /// Видем ли мы хитбокс сущности
+        /// </summary>
+        private bool _isHitBox = true;
 
         /// <summary>
         /// Это временно!!!
         /// </summary>
-        private EntityRender _entityRender;
+        private EntityRender[] _entityRender;
+
+        /// <summary>
+        /// Id маленьких текстур
+        /// </summary>
+        private uint _idTextureSmall;
+        /// <summary>
+        /// Id больших текстур
+        /// </summary>
+        private uint _idTextureBig;
 
         public EntitiesRenderer(GameBase game, ArrayFast<ChunkRender> arrayChunkRender) : base(game)
         {
@@ -36,6 +49,44 @@ namespace Vge.Renderer.World.Entity
             _hitbox = new HitboxEntityRender(gl);
             //_entityRender = new EntityRender(gl, Render, game.Player);
             _arrayChunkRender = arrayChunkRender;
+        }
+
+        /// <summary>
+        /// Игра запущена, всё загружено из библиотек
+        /// </summary>
+        public void GameStarting()
+        {
+            _idTextureSmall = Render.Texture.CreateTexture2dArray(
+                ModelEntitiesReg.TextureManager.WidthSmall,
+                ModelEntitiesReg.TextureManager.HeightSmall,
+                ModelEntitiesReg.TextureManager.DepthSmall, 3);
+
+            _idTextureBig = Render.Texture.CreateTexture2dArray(
+                ModelEntitiesReg.TextureManager.WidthBig,
+                ModelEntitiesReg.TextureManager.HeightBig,
+                ModelEntitiesReg.TextureManager.DepthBig, 4);
+
+            // TODO::2025-04-25 Продумать, подготовку рендера для сети и не только до создания сущностей
+            // TODO::2025-05-14 Из-за Texture ещё не готов модуль
+
+
+
+            int count = Ce.ModelEntities.ModelEntitiesObjects.Length;
+
+            _entityRender = new EntityRender[count];
+
+            ModelEntity modelEntity;
+            for (int i = 0; i < count; i++)
+            {
+                modelEntity = Ce.ModelEntities.ModelEntitiesObjects[i];
+                for (int t = 0; t < modelEntity.Textures.Length; t++)
+                {
+                    Render.Texture.SetImageTexture2dArray(modelEntity.Textures[t], modelEntity.DepthTextures[t],
+                        modelEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
+                        (uint)(modelEntity.TextureSmall ? 3 : 4));
+                }
+                _entityRender[i] = new EntityRender(gl, Render, modelEntity, _game.Player);
+            }
         }
 
         /// <summary>
@@ -53,13 +104,6 @@ namespace Vge.Renderer.World.Entity
             float y = _game.Player.PosFrameY;
             float z = _game.Player.PosFrameZ;
 
-            if (_entityRender == null)
-            {
-                // TODO::2025-04-25 Продумать, подготовку рендера для сети и не только до создания сущностей
-                // TODO::2025-05-14 Из-за Texture ещё не готов модуль
-                _entityRender = new EntityRender(gl, Render, _game.Player);
-            }
-
             CountEntitiesFC = 0;
             for (int i = 0; i < count; i++)
             {
@@ -73,14 +117,16 @@ namespace Vge.Renderer.World.Entity
                         if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
                             // HitBox
-                            //Render.ShaderBindLine(_game.Player.View,
-                            //    entity.GetPosFrameX(timeIndex) - x,
-                            //    entity.GetPosFrameY(timeIndex) - y,
-                            //    entity.GetPosFrameZ(timeIndex) - z);
-                            //_hitbox.Draw(timeIndex, entity);
+                            if (_isHitBox)
+                            {
+                                Render.ShaderBindLine(_game.Player.View,
+                                    entity.GetPosFrameX(timeIndex) - x,
+                                    entity.GetPosFrameY(timeIndex) - y,
+                                    entity.GetPosFrameZ(timeIndex) - z);
+                                _hitbox.Draw(timeIndex, entity);
+                            }
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
-                            //_entityRender.Draw(timeIndex, entity);
                             CountEntitiesFC++;
                         }
                     }
@@ -88,7 +134,10 @@ namespace Vge.Renderer.World.Entity
             }
         }
 
-        public EntityRender GetEntityRender() => _entityRender;
+        /// <summary>
+        /// Получить объект рендера сущности по индексу
+        /// </summary>
+        public EntityRender GetEntityRender(int indexEntity) => _entityRender[indexEntity];
 
         /// <summary>
         /// Метод для прорисовки основного игрока
@@ -100,12 +149,22 @@ namespace Vge.Renderer.World.Entity
             _hitbox.Draw(timeIndex, _game.Player);
         }
 
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void OnTick(float deltaTime)
+        {
+        }
+
         public override void Dispose()
         {
             _hitbox.Dispose();
             if (_entityRender != null)
             {
-                _entityRender.Dispose();
+                for (int i = 0; i < _entityRender.Length; i++)
+                    if (_entityRender[i] != null) _entityRender[i].Dispose();
+                //_entityRender.Dispose();
             }
         }
 

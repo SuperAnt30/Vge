@@ -82,6 +82,13 @@ public sealed class Ce
 
     #endregion
 
+    #region Entity
+
+    /// <summary>
+    /// Максимальное значение импульса
+    /// 2 * 30 = 60 блоков в секунду
+    /// </summary>
+    public const float MaxImpulse = 2f;
     /// <summary>
     /// Максимальное количество костей у сущностей
     /// </summary>
@@ -96,6 +103,8 @@ public sealed class Ce
     /// Коэффициент смещения по кадрам для анимации текстур
     /// </summary>
     public static float ShaderAnimOffset = 1f / TextureAtlasBlockCount;
+
+    #endregion
 
 
     #region Game Геометрия

@@ -19,7 +19,7 @@ void main()
     mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
     
     //a_color = vec4(1.0);
-    a_light = vec2(light);
+    a_light = light;
 	a_texCoord = v_texCoord;
     
     int id = int(v_jointId);

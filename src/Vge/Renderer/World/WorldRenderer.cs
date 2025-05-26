@@ -72,6 +72,14 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
+        /// Игра запущена, всё загружено из библиотек
+        /// </summary>
+        public void GameStarting()
+        {
+            Entities.GameStarting();
+        }
+
+        /// <summary>
         /// Изменён обзор чанков
         /// </summary>
         public void ModifyOverviewChunk()
@@ -198,7 +206,6 @@ namespace Vge.Renderer.World
         public override void Draw(float timeIndex)
         {
             Render.DrawWorldBegin();
-
             //Render.LightMap.Update(Glm.Cos((_game.TickCounter + timeIndex) * .01f), .24f );
             Render.LightMap.Update(_game.World.Settings.HasNoSky, 1, .12f);
             //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
@@ -211,17 +218,13 @@ namespace Vge.Renderer.World
            
             // Рисуем воксели сплошных и уникальных блоков
             _DrawVoxelDense(timeIndex);
-
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
             // Биндим карту освещения
-            Render.LightMap.BindTexture();
+           // Render.LightMap.BindTexture();
             Entities.Draw(timeIndex);
-            
-
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
-
             // Прорисовка вид не с руки, а видим себя
             Entities.DrawOwner(timeIndex);
 
@@ -232,10 +235,7 @@ namespace Vge.Renderer.World
             gl.Enable(GL.GL_CULL_FACE);
             _DrawVoxelAlpha();
 
-           
-
             // Прорисовка руки
-
         }
 
         /// <summary>

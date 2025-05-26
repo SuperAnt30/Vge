@@ -13,6 +13,5 @@ void main()
 {
     vec4 tex_color = texture(atlas, a_texCoord);
     if (tex_color.a < 0.1) discard;
-    vec4 light_color = texture(light_map, a_light);
-    f_color = tex_color * light_color;
+    f_color = tex_color * texture(light_map, a_light);
 }

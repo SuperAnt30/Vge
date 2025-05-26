@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Actions;
 using Vge.Event;
@@ -140,6 +141,10 @@ namespace Vge.Games
         /// Дельта последнего кадра в mc
         /// </summary>
         public float DeltaTimeFrame => window.DeltaTimeFrame;
+        /// <summary>
+        /// Дельта последнего тика в mc
+        /// </summary>
+        public float DeltaTime => window.DeltaTime;
 
         private void _Key_InChat(object sender, EventArgs e)
         {
@@ -181,6 +186,8 @@ namespace Vge.Games
             Player.TagDebug += World_TagDebug;
             Player.WorldStarting();
             _stopwatch.Start();
+            // Рендер мира информируем, что готово всё
+            WorldRender.GameStarting();
             //Ce.IsDebugDrawChunks = 
             Ce.IsDebugDraw = true;
             FlagGameStarted = true;
@@ -374,7 +381,7 @@ namespace Vge.Games
                 //Player.Update();
                // Filer.EndStartSection("World.Update", 10);
                 // Обновить мир
-                World.Update();
+                World.UpdateClient();
                 //Filer.EndStartSection("WorldRender.Update", 10);
                 // Обновить рендоровский мир
                 WorldRender.Update();

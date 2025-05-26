@@ -103,7 +103,7 @@ namespace Vge
         /// <summary>
         /// Фиксация времени начала кадра
         /// </summary>
-        private long _timeFrameBegin;
+       // private long _timeFrameBegin;
         /// <summary>
         /// Фиксация конечное время кадра
         /// </summary>
@@ -301,6 +301,17 @@ namespace Vge
             }
 
             RenderInitialized();
+
+            // Если включено, выполните сравнение глубины и обновите буфер глубины. Обратите внимание, 
+            // что даже если буфер глубины существует и маска глубины не равна нулю, 
+            // буфер глубины не обновляется, если тест глубины отключен. См. glDepthFunc и glDepthRange.
+            gl.Enable(GL.GL_DEPTH_TEST);
+            // Если включено, смешать вычисленные значения цвета фрагмента со значениями в буферах цвета.См.glBlendFunc.
+            gl.Enable(GL.GL_BLEND);
+            // Группа для сглаживания.
+            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            // Проходит, если входящее значение глубины меньше или равно сохраненному значению глубины.
+            gl.DepthFunc(GL.GL_LEQUAL);
         }
 
         /// <summary>
@@ -309,14 +320,10 @@ namespace Vge
         protected override void OnOpenGlDraw()
         {
             base.OnOpenGlDraw();
+           // OpenGLError er0 = gl.GetError();
             //Console.WriteLine(ticker.Interpolation);
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-           // gl.ClearColor(.7f, .4f, .4f, 1f);
-            gl.Enable(GL.GL_DEPTH_TEST);
-            // группа для сглаживания, но может жутко тормазить
-            gl.BlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(GL.GL_BLEND);
-
+            
             Render.DrawBegin();
             if (Game == null)
             {
@@ -521,6 +528,7 @@ namespace Vge
             _InitializationBlocks();
             BlocksReg.InitializationAtlas(this);
             _InitializationModelsEntities();
+            ModelEntitiesReg.TextureManagerRun();
         }
 
         /// <summary>

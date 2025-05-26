@@ -226,13 +226,9 @@ namespace Vge.Gui.Controls
             // Рисуем контур если имеется
             if (meshLine != null)
             {
-                // Для контура надо перекулючится без текстуры
-                window.Render.TextureDisable();
                 // И заменить шейдёр
                 window.Render.ShaderBindGuiLine();
                 meshLine.Draw();
-                // После прорисовки возращаем шейдер и текстуру
-                window.Render.TextureEnable();
                 window.Render.ShaderBindGuiColor();
             }
             // Рисуем текст

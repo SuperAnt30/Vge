@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vge.Entity.Model;
+using Vge.Entity.Texture;
 using Vge.Json;
 using Vge.Util;
 
@@ -24,6 +25,10 @@ namespace Vge.Entity
         /// Справочник всех моделей
         /// </summary>
         public static readonly Dictionary<string, JsonCompound> Models = new Dictionary<string, JsonCompound>();
+        /// <summary>
+        /// Текстурный менеджер
+        /// </summary>
+        public static readonly EntityTextureManager TextureManager = new EntityTextureManager(Table);
 
         /// <summary>
         /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
@@ -49,7 +54,8 @@ namespace Vge.Entity
 
             // Регистрация обязательных сущностей
             // Отладочный
-            RegisterModelEntityClass("Chicken");
+            RegisterModelEntityClass("Robinson");
+            //RegisterModelEntityClass("Chicken2");
         }
 
         /// <summary>
@@ -136,5 +142,14 @@ namespace Vge.Entity
             // Отсутствует файл модели сущности
             throw new Exception(Sr.GetString(Sr.FileMissingModelEntity, name));
         }
+
+        /// <summary>
+        /// Запустить текстурный менеджер
+        /// </summary>
+        public static void TextureManagerRun()
+        {
+            TextureManager.Init();
+        }
+        
     }
 }

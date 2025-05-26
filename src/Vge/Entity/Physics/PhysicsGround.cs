@@ -1,4 +1,5 @@
 ﻿//#define TPS20
+using System;
 using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
@@ -58,8 +59,6 @@ namespace Vge.Entity.Physics
         /// Скорость
         /// </summary>
         protected const float _speed = .0667f;
-        
-        
 
 #endif
         /// <summary>
@@ -122,20 +121,26 @@ namespace Vge.Entity.Physics
             // Если имеется сила для движения, тогда проверяем наличие прыжка
             _LivingUpdateJump();
 
-            // TODO::2025-02-10 сделать лимит по максимальному импульсу
+            // Лимит по максимальному импульсу
             if (ImpulseX != 0)
             {
-                MotionX += ImpulseX;
+                if (ImpulseX > Ce.MaxImpulse) MotionX += Ce.MaxImpulse;
+                else if (ImpulseX < -Ce.MaxImpulse) MotionX -= Ce.MaxImpulse;
+                else MotionX += ImpulseX;
                 ImpulseX = 0;
             }
             if (ImpulseY != 0)
             {
-                MotionY += ImpulseY;
+                if (ImpulseY > Ce.MaxImpulse) MotionY += Ce.MaxImpulse;
+                else if (ImpulseY < -Ce.MaxImpulse) MotionY -= Ce.MaxImpulse;
+                else MotionY += ImpulseY;
                 ImpulseY = 0;
             }
             if (ImpulseZ != 0)
             {
-                MotionZ += ImpulseZ;
+                if (ImpulseZ > Ce.MaxImpulse) MotionZ += Ce.MaxImpulse;
+                else if (ImpulseZ < -Ce.MaxImpulse) MotionZ -= Ce.MaxImpulse;
+                else MotionZ += ImpulseZ;
                 ImpulseZ = 0;
             }
 

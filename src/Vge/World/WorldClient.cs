@@ -61,7 +61,7 @@ namespace Vge.World
         /// <summary>
         /// Такт выполнения
         /// </summary>
-        public void Update()
+        public void UpdateClient()
         {
             Filer.StartSection("Entities");
             _UpdateEntities();
@@ -152,7 +152,7 @@ namespace Vge.World
         {
             if (entity.AddedToChunk)
             {
-                entity.UpdateClient(this);
+                entity.UpdateClient(this, Game.DeltaTime);
             }
             base._UpdateEntity(entity);
         }

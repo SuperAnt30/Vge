@@ -26,6 +26,10 @@ namespace Vge.Entity
         /// </summary>
         public BufferedImage[] Textures { get; private set; }
         /// <summary>
+        /// Индекс глубины текстуры для моба
+        /// </summary>
+        public int[] DepthTextures { get; private set; }
+        /// <summary>
         /// Массив костей скелета
         /// </summary>
         public Bone[] Bones { get; private set; }
@@ -33,6 +37,10 @@ namespace Vge.Entity
         /// Массив объектов моделей анимационныйх клиппов
         /// </summary>
         public ModelAnimationClip[] ModelAnimationClips { get; private set; }
+        /// <summary>
+        /// Минимальная текстура
+        /// </summary>
+        public bool TextureSmall { get; private set; } = true;
 
         /// <summary>
         /// Название кости меняющее от Pitch
@@ -42,6 +50,34 @@ namespace Vge.Entity
         private Mat4 _matrix = Mat4.Identity();
 
         public ModelEntity(string alias) => Alias = alias;
+
+        /// <summary>
+        /// Пометить модель в максимальную группу текстур
+        /// </summary>
+        public void TextureGroupBig() => TextureSmall = false;
+
+        /// <summary>
+        /// Корректировка размера ширины текстуры, в буффере UV
+        /// </summary>
+        public void SizeAdjustmentTextureWidth(float coef)
+        {
+            // XYZ UV B - 6 флоатов на вершину
+            for(int i = 3; i < BufferMesh.Length; i += 6)
+            {
+                BufferMesh[i] *= coef;
+            }
+        }
+        /// <summary>
+        /// Корректировка размера высоты текстуры, в буффере UV
+        /// </summary>
+        public void SizeAdjustmentTextureHeight(float coef)
+        {
+            // XYZ UV B - 6 флоатов на вершину
+            for (int i = 4; i < BufferMesh.Length; i += 6)
+            {
+                BufferMesh[i] *= coef;
+            }
+        }
 
         #region Методы для импорта данных с json
 
@@ -92,10 +128,16 @@ namespace Vge.Entity
             Textures = definition.Textures;
             Bones = definition.GenBones();
             ModelAnimationClips = definition.GetModelAnimationClips();
-              
+
+            DepthTextures = new int[Textures.Length];
+
             return;
         }
 
         #endregion
+
+        public override string ToString() => Alias + " " 
+            + (TextureSmall ? "Small" : "Big") + " " 
+            + (Textures.Length == 0 ? "" : (Textures[0].Width + ":" + Textures[0].Height));
     }
 }

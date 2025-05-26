@@ -10,6 +10,15 @@ namespace Mvk2.Entity
         public static void Initialization()
         {
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");
+            ModelEntitiesReg.RegisterModelEntityClass("Chicken");
+            //ModelEntitiesReg.RegisterModelEntityClass("Robinson");
+            //ModelEntitiesReg.RegisterModelEntityClass("Skeleton");
+            //ModelEntitiesReg.RegisterModelEntityClass("Robinson2");
+            //ModelEntitiesReg.RegisterModelEntityClass("Robinson3");
+            //ModelEntitiesReg.RegisterModelEntityClass("Robinson4");
+            //ModelEntitiesReg.RegisterModelEntityClass("Chicken3");
+            //ModelEntitiesReg.RegisterModelEntityClass("Chicken4");
+            //ModelEntitiesReg.RegisterModelEntityClass("Robinson5");
         }
     }
 }

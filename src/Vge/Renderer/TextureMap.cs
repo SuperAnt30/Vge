@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Vge.Util;
 using WinGL.OpenGL;
 
@@ -76,6 +78,7 @@ namespace Vge.Renderer
                     // У текстуры имеется MipMap
                     gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, image.Width, image.Height,
                             0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, image.Buffer);
+                   // gl.TexImage2D(GL.GL_TEXTURE_2)
 
                     int count = image.CountMipMap();
                     if (count > 0)
@@ -123,5 +126,70 @@ namespace Vge.Renderer
             }
             return index;
         }
+
+        #region 2D Array
+
+        /// <summary>
+        /// Запустить 2d массив текстур, указав индекс текстуры массива
+        /// </summary>
+        /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
+        public void BindTexture2dArray(uint index, uint texture = 0)
+        {
+            gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
+            gl.BindTexture(GL.GL_TEXTURE_2D_ARRAY, index);
+        }
+
+        /// <summary>
+        /// Создать массив текстур (GL_TEXTURE_2D_ARRAY)
+        /// </summary>
+        /// <param name="width">Ширина</param>
+        /// <param name="height">Высота</param>
+        /// <param name="depth">Глубина</param>
+        /// <param name="texture">ActiveTexture</param>
+        /// <param name="id">Id текстуры если надо пересоздать, id=0 - создать</param>
+        public uint CreateTexture2dArray(int width, int height, int depth, uint texture = 0, uint id = 0)
+        {
+            if (!_textures.Contains(id))
+            {
+                id = 0;
+            }
+            if (id == 0)
+            {
+                uint[] uid = new uint[1];
+                gl.GenTextures(1, uid);
+                id = uid[0];
+                _textures.Add(id);
+                gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
+                gl.BindTexture(GL.GL_TEXTURE_2D_ARRAY, id);
+                gl.TexStorage3D(GL.GL_TEXTURE_2D_ARRAY, 1, GL.GL_RGBA8, width, height, depth);
+                gl.TexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_BORDER);
+                gl.TexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_BORDER);
+                gl.TexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+                gl.TexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+            }
+            return id;
+        }
+
+        /// <summary>
+        /// Добавить картинку в слой
+        /// </summary>
+        /// <param name="image">Картинка</param>
+        /// <param name="depth">Слой</param>
+        /// <param name="id">Id текстуры</param>
+        public void SetImageTexture2dArray(BufferedImage image, int depth, uint id, uint texture = 0)
+        {
+            gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
+            gl.BindTexture(GL.GL_TEXTURE_2D_ARRAY, id);
+
+            IntPtr intPtr = Marshal.AllocHGlobal(image.Buffer.Length);
+            Marshal.Copy(image.Buffer, 0, intPtr, image.Buffer.Length);
+            //OpenGLError e1 = gl.GetError();
+            gl.TexSubImage3D(GL.GL_TEXTURE_2D_ARRAY, 0, 0, 0, depth, image.Width, image.Height,
+               1, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, intPtr);
+
+            //OpenGLError e2 = gl.GetError();
+        }
+
+        #endregion 
     }
 }

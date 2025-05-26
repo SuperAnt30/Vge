@@ -153,7 +153,7 @@ namespace Vge.Management
             //Physics = new PhysicsPlayer(_game.World.Collision, this);
 
             // Создание объекта рендера не в конструкторе, так-как там ещё не создан рендер мир
-            Render = new EntityRenderClient(this, _game.WorldRender.Entities);
+            Render = new EntityRenderClient(this, _game.WorldRender.Entities, 1);
         }
 
         #region Методы от Entity
@@ -456,7 +456,8 @@ namespace Vge.Management
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient(WorldClient world)
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void UpdateClient(WorldClient world, float deltaTime)
         {
             FFF += .0174f;
             if (FFF > 6.28f) FFF = 0;
@@ -537,7 +538,7 @@ namespace Vge.Management
             // Проверка на обновление чанков альфа блоков, в такте после перемещения
             _UpdateChunkRenderAlphe();
 
-            Render.UpdateClient(world);
+            Render.UpdateClient(world, deltaTime);
         }
 
         /// <summary>

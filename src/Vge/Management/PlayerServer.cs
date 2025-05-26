@@ -365,11 +365,11 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     EntityThrowable entity = new EntityThrowable(
-                        EnumEntity.Stone, world.Collision, this, i);
-                    //isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this);
+                    //    EnumEntity.Box, world.Collision, this, i);
+                    isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this, i);
                     isBox = !isBox;
                     entity.SetEntityId(_server.LastEntityId());
                     world.SpawnEntityInWorld(entity);

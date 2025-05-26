@@ -26,7 +26,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Объект текстур
         /// </summary>
-        protected readonly TextureMap _texture;
+        public readonly TextureMap Texture;
         /// <summary>
         /// Переменные индексов текстур GUI
         /// </summary>
@@ -88,7 +88,7 @@ namespace Vge.Renderer
 
         public RenderMain(WindowMain window) : base(window)
         {
-            _texture = new TextureMap(gl);
+            Texture = new TextureMap(gl);
             ShGuiColor = new ShaderGuiColor(gl);
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
@@ -210,39 +210,46 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер Entity
         /// </summary>
-        public void ShaderBindEntity(uint textureId,
-            float lightBlock, float lightSky,
+        public void ShaderBindEntity(float lightBlock, float lightSky,
             float[] view, float posX, float posY, float posZ, float[] m)
         {
-            // Активация текстуры
-            int atlas = ShEntity.GetUniformLocation(gl, "atlas");
-            BindTexture(textureId);
-            gl.Uniform1(atlas, 0);
-
-            // Активация текстуры карты света
-          //  LightMap.BindTexture();
-            int lightMap = ShEntity.GetUniformLocation(gl, "light_map");
-            gl.Uniform1(lightMap, 2);
-
             ShEntity.Bind(gl);
             ShEntity.SetUniformMatrix4(gl, "view", view);
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
             ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
             ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, Ce.MaxAnimatedBones);
+
+            // Текстура
+            gl.Uniform1(ShEntity.GetUniformLocation(gl, "atlas"), 0);
+            // Текстура карта света
+            gl.Uniform1(ShEntity.GetUniformLocation(gl, "light_map"), 2);
         }
 
         /// <summary>
         /// Связать шейдер примитивных сущностей без скелетной анимации
         /// </summary>
-        public void ShaderBindEntityPrimitive(uint textureId, float[] view, 
-            float posX, float posY, float posZ)
+        public void ShaderBindEntityPrimitive(float depth, bool small, float lightBlock, float lightSky,
+            float[] view, float posX, float posY, float posZ)
             //float[] modelMatrix)
         {
-            BindTexture(textureId);
+            //BindTexture(textureId);
             ShEntityPrimitive.Bind(gl);
             ShEntityPrimitive.SetUniformMatrix4(gl, "view", view);
             ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);
-            //ShEntityPrimitive.SetUniformMatrix4(gl, "modelMatrix", modelMatrix);
+            ShEntityPrimitive.SetUniform2(gl, "light", lightBlock, lightSky);
+            ShEntityPrimitive.SetUniform1(gl, "depth", depth);
+
+            // Текстура карта света
+            gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "light_map"), 2);
+            // Текстура
+            if (small)
+            {
+                gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "sampler"), 3);
+            }
+            else
+            {
+                gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "sampler"), 4);
+            }
         }
 
         /// <summary>
@@ -266,7 +273,7 @@ namespace Vge.Renderer
         {
             if (_textureIndex.Splash != 0)
             {
-                _texture.BindTexture(_textureIndex.Splash);
+                Texture.BindTexture(_textureIndex.Splash);
             }
         }
         /// <summary>
@@ -274,7 +281,7 @@ namespace Vge.Renderer
         /// </summary>
         public void DeleteTextureSplash()
         {
-            _texture.DeleteTexture(_textureIndex.Splash);
+            Texture.DeleteTexture(_textureIndex.Splash);
             _textureIndex.Splash = 0;
         }
 
@@ -282,47 +289,37 @@ namespace Vge.Renderer
         /// Задать текстуру заставки
         /// </summary>
         private void _SetTextureSplash(string fileName)
-            => _textureIndex.Splash = _texture.SetTexture(BufferedFileImage.FileToBufferedImage(fileName));
+            => _textureIndex.Splash = Texture.SetTexture(BufferedFileImage.FileToBufferedImage(fileName));
 
         #endregion
 
         #region Texture
 
         /// <summary>
-        /// Включить текстуру
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void TextureEnable() => gl.Enable(GL.GL_TEXTURE_2D);
-        /// <summary>
-        /// Выключить текстуру
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void TextureDisable() => gl.Disable(GL.GL_TEXTURE_2D);
-        /// <summary>
         /// Запустить текстуру основного виджета
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureWidgets() => _texture.BindTexture(_textureIndex.Widgets);
+        public void BindTextureWidgets() => Texture.BindTexture(_textureIndex.Widgets);
         
         /// <summary>
         /// Запустить текстуру атласа размытых блоков
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureAtlasBlurry() => _texture.BindTexture(_textureIndex.AtlasBlurry);
+        public void BindTextureAtlasBlurry() => Texture.BindTexture(_textureIndex.AtlasBlurry);
         /// <summary>
         /// Запустить текстуру атласа блоков с чёткой резкостью
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureAtlasSharpness() => _texture.BindTexture(_textureIndex.AtlasSharpness, 1);
+        public void BindTextureAtlasSharpness() => Texture.BindTexture(_textureIndex.AtlasSharpness, 1);
 
         /// <summary>
         /// Удалить текстуру атласов
         /// </summary>
         public void DeleteTextureAtlases()
         {
-            _texture.DeleteTexture(_textureIndex.AtlasBlurry);
+            Texture.DeleteTexture(_textureIndex.AtlasBlurry);
             _textureIndex.AtlasBlurry = 0;
-            _texture.DeleteTexture(_textureIndex.AtlasSharpness);
+            Texture.DeleteTexture(_textureIndex.AtlasSharpness);
             _textureIndex.AtlasSharpness = 0;
         }
 
@@ -330,24 +327,13 @@ namespace Vge.Renderer
         /// Задать текстуру атласа размытых блоков
         /// </summary>
         public void AddTextureAtlasBlurry(BufferedImage bufferedImage)
-            => _textureIndex.AtlasBlurry = _texture.SetTexture(bufferedImage);
+            => _textureIndex.AtlasBlurry = Texture.SetTexture(bufferedImage);
 
         /// <summary>
         /// Задать текстуру атласа блоков с чёткой резкостью
         /// </summary>
         public void AddTextureAtlasSharpness(BufferedImage bufferedImage)
-            => _textureIndex.AtlasSharpness = _texture.SetTexture(bufferedImage);
-
-        /// <summary>
-        /// Задать текстуру
-        /// </summary>
-        public uint SetTexture(BufferedImage bufferedImage) => _texture.SetTexture(bufferedImage);
-
-        /// <summary>
-        /// Запустить текстуру, указав индекс текстуры массива
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTexture(uint index, uint texture = 0) => _texture.BindTexture(index, texture);
+            => _textureIndex.AtlasSharpness = Texture.SetTexture(bufferedImage);
 
         /// <summary>
         /// Создать текстуру основного шрифта
@@ -365,11 +351,11 @@ namespace Vge.Renderer
         {
             if (buffereds.ContainsKey(EnumTexture.FontMain.ToString()))
             {
-                FontMain.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTexture.FontMain.ToString()]));
+                FontMain.CreateMesh(gl, Texture.SetTexture(buffereds[EnumTexture.FontMain.ToString()]));
             }
             if (buffereds.ContainsKey(EnumTexture.Widgets.ToString()))
             {
-                _textureIndex.Widgets = _texture.SetTexture(buffereds[EnumTexture.Widgets.ToString()]);
+                _textureIndex.Widgets = Texture.SetTexture(buffereds[EnumTexture.Widgets.ToString()]);
             }
         }
 
@@ -380,14 +366,10 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void DrawWorldBegin()
         {
+            //OpenGLError er = gl.GetError();
             gl.Enable(GL.GL_CULL_FACE);
             gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
             //gl.ClearColor(.5f, .7f, .99f, 1f);
-
-            // Код с фиксированной функцией может использовать альфа-тестирование
-            // Чтоб корректно прорисовывался кактус
-            gl.Enable(GL.GL_ALPHA_TEST);
-            gl.AlphaFunc(GL.GL_GREATER, 0.1f);
         }
 
         public virtual void DrawBegin()
@@ -428,10 +410,10 @@ namespace Vge.Renderer
                 Debug.FrizFps += timeFrame < 4 ? "." : timeFrame < 8 ? "," : timeFrame < 17 ? ":" : "|";
                 if (Debug.FrizFps.Length > 240) Debug.FrizFps = Debug.FrizFps.Substring(1);
                 //System.Console.Write(" MX:");
-                if (timeFrame > 8)
-                {
-                    System.Console.WriteLine(timeFrame);
-                }
+                //if (timeFrame > 8)
+                //{
+                //    System.Console.WriteLine(timeFrame);
+                //}
 
                 //_speedFrameAll += (float)(window.TimeTicks() - _timeBegin) / Ticker.TimerFrequency;
             }

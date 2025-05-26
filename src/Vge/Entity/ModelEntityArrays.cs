@@ -24,9 +24,8 @@
             ModelEntitiesAlias = new string[Count];
             ModelEntitiesObjects = new ModelEntity[Count];
 
-            ushort id;
             ModelEntity modelEntity;
-            for (id = 0; id < Count; id++)
+            for (ushort id = 0; id < Count; id++)
             {
                 ModelEntitiesAlias[id] = ModelEntitiesReg.Table.GetAlias(id);
                 ModelEntitiesObjects[id] = modelEntity = ModelEntitiesReg.Table[id];

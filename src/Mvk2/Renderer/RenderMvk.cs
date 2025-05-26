@@ -55,7 +55,7 @@ namespace Mvk2.Renderer
         /// Запустить текстуру чата
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureChat() => _texture.BindTexture(_textureIndexMvk.Chat);
+        public void BindTextureChat() => Texture.BindTexture(_textureIndexMvk.Chat);
 
         #endregion
 
@@ -69,15 +69,15 @@ namespace Mvk2.Renderer
 
             if (buffereds.ContainsKey(EnumTextureMvk.FontSmall.ToString()))
             {
-                FontSmall.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTextureMvk.FontSmall.ToString()]));
+                FontSmall.CreateMesh(gl, Texture.SetTexture(buffereds[EnumTextureMvk.FontSmall.ToString()]));
             }
             if (buffereds.ContainsKey(EnumTextureMvk.FontLarge.ToString()))
             {
-                FontLarge.CreateMesh(gl, _texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
+                FontLarge.CreateMesh(gl, Texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
             }
             if (buffereds.ContainsKey(EnumTextureMvk.Chat.ToString()))
             {
-                _textureIndexMvk.Chat = _texture.SetTexture(buffereds[EnumTextureMvk.Chat.ToString()]);
+                _textureIndexMvk.Chat = Texture.SetTexture(buffereds[EnumTextureMvk.Chat.ToString()]);
             }
         }
     }

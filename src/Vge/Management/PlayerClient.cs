@@ -47,7 +47,7 @@ namespace Vge.Management
             Type = Entity.EnumEntity.Player;
             if (!(this is PlayerClientOwner))// game.WorldRender != null)
             {
-                Render = new EntityRenderClient(this, game.WorldRender.Entities);
+                Render = new EntityRenderClient(this, game.WorldRender.Entities, 1);
             }
         }
 
@@ -65,10 +65,11 @@ namespace Vge.Management
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public override void UpdateClient(WorldClient world)
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void UpdateClient(WorldClient world, float deltaTime)
         {
             UpdatePositionServer();
-            Render.UpdateClient(world);
+            Render.UpdateClient(world, deltaTime);
         }
     }
 }

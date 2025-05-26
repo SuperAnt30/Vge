@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Vge.Management;
 using Vge.Util;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Renderer.World
@@ -56,8 +57,8 @@ namespace Vge.Renderer.World
         {
             _worldRenderer = worldRenderer;
             _player = player;
-            _meshBlock = new MeshLine(_worldRenderer.GetOpenGL());
-            _meshChunk = new MeshLine(_worldRenderer.GetOpenGL());
+            _meshBlock = new MeshLine(_worldRenderer.GetOpenGL(), GL.GL_DYNAMIC_DRAW);
+            _meshChunk = new MeshLine(_worldRenderer.GetOpenGL(), GL.GL_STATIC_DRAW);
         }
 
         /// <summary>

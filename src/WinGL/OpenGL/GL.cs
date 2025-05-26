@@ -118,6 +118,13 @@ namespace WinGL.OpenGL
         private delegate bool wglSwapIntervalEXT(int interval);
         private wglSwapIntervalEXT delegateSwapIntervalEXT;
 
+        private delegate void glTexImage3D(uint target, int level, uint internalformat, int width, int height, int depth, int border, uint format, uint type, IntPtr pixels);
+        private glTexImage3D delegateTexImage3D;
+        private delegate void glTexSubImage3D(uint target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, uint format, uint type, IntPtr pixels);
+        private glTexSubImage3D delegateTexSubImage3D;
+        private delegate bool glTexStorage3D(uint target, int level, uint internalformat, int width, int height, int depth);
+        private glTexStorage3D delegateTexStorage3D;
+
         #endregion
 
         public bool SwapIntervalEXT(int interval)
@@ -388,7 +395,24 @@ namespace WinGL.OpenGL
                 delegateGenerateMipmapEXT = GetDelegate<glGenerateMipmapEXT>() as glGenerateMipmapEXT;
             delegateGenerateMipmapEXT(target);
         }
-
+        public void TexImage3D(uint target, int level, uint internalformat, int width, int height, int depth, int border, uint format, uint type, IntPtr pixels)
+        {
+            if (delegateTexImage3D == null)
+                delegateTexImage3D = GetDelegate<glTexImage3D>() as glTexImage3D;
+            delegateTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+        }
+        public void TexSubImage3D(uint target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, uint format, uint type, IntPtr pixels)
+        {
+            if (delegateTexSubImage3D == null)
+                delegateTexSubImage3D = GetDelegate<glTexSubImage3D>() as glTexSubImage3D;
+            delegateTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        }
+        public void TexStorage3D(uint target, int level, uint internalformat, int width, int height, int depth)
+        {
+            if (delegateTexStorage3D == null)
+                delegateTexStorage3D = GetDelegate<glTexStorage3D>() as glTexStorage3D;
+            delegateTexStorage3D(target, level, internalformat, width, height, depth);
+        }
         #endregion
 
         #region Wrapped OpenGL Functions
@@ -447,7 +471,7 @@ namespace WinGL.OpenGL
 		public void Enable(uint cap) => glEnable(cap);
 
         /// <summary>
-		/// This function sets the current depth buffer comparison function, the default it LESS.
+		/// Эта функция устанавливает текущую функцию сравнения буфера глубины, по умолчанию она МЕНЬШЕ.
 		/// </summary>
 		/// <param name="func">The comparison function to set.</param>
 		public void DepthFunc(uint func) => glDepthFunc(func);
@@ -607,6 +631,11 @@ namespace WinGL.OpenGL
         public void DepthMask(byte flag) => glDepthMask(flag);
 
         public void PolygonOffset(float factor, float units) => glPolygonOffset(factor, units);
+
+        /// <summary>
+        /// Get the current OpenGL error code.
+        /// </summary>
+        public OpenGLError GetError() => (OpenGLError)glGetError();
 
         #endregion
 

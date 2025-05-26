@@ -24,6 +24,7 @@ namespace Vge.Entity
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
-        public virtual void UpdateClient(WorldClient world) { }
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public virtual void UpdateClient(WorldClient world, float deltaTime) { }
     }
 }

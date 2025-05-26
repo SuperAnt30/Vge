@@ -8,7 +8,22 @@ namespace Vge.Renderer
     /// </summary>
     public class MeshLine : Mesh
     {
-        public MeshLine(GL gl) : base(gl) { }
+        /// <summary>
+        /// Тип отрисовки.
+        /// GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
+        /// GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
+        /// GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
+        /// </summary>
+        private readonly uint _typeDraw;
+
+        /// <summary>
+        /// Объект сетки для 3д линий с цветом альфа без текстуры
+        /// Не используем EBO
+        /// </summary>
+        /// <param name="gl"></param>
+        /// <param name="typeDraw">GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_STREAM_DRAW</param>
+        public MeshLine(GL gl, uint typeDraw) : base(gl)
+            => _typeDraw = typeDraw;
 
         protected override void _InitEbo() { }
 
@@ -35,7 +50,7 @@ namespace Vge.Renderer
             // GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
             // GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
             // GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, _typeDraw);
         }
 
         /// <summary>

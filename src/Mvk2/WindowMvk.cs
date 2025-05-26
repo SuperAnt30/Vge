@@ -147,14 +147,6 @@ namespace Mvk2
             base.OnOpenGLInitialized();
 
             meshTextDebug = new MeshGuiColor(gl);
-
-            //gl.ShadeModel(GL.GL_SMOOTH);
-            //gl.ClearColor(0, .5f, 0, 1f);
-            //gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            //gl.ClearDepth(1.0f);
-            //gl.Enable(GL.GL_DEPTH_TEST);
-            gl.DepthFunc(GL.GL_LEQUAL);
-            //gl.Hint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
         }
 
         /// <summary>
