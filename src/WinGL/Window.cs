@@ -131,7 +131,9 @@ namespace WinGL
             windowHeigt = Height;
             windowLocationX = LocationX;
             windowLocationY = LocationY;
-            KeyCyrillic = System.Globalization.CultureInfo.CurrentCulture.KeyboardLayoutId == 1049;
+            int keyboardLayoutId = System.Globalization.CultureInfo.CurrentCulture.KeyboardLayoutId;
+            KeyCyrillic = keyboardLayoutId == 1049 // ru-RU
+                || keyboardLayoutId == 8192; // ru-BY
         }
 
         /// <summary>
@@ -363,10 +365,7 @@ namespace WinGL
             WinUser.SetFocus(hWnd);
 
             // Включать/выключать vsync
-            if (!vSync)
-            {
-                gl.SwapIntervalEXT(0);
-            }
+            gl.SwapIntervalEXT(vSync ? 1 : 0);
 
             // Тут графический метод первого запуска OpenGL
             OnOpenGLInitialized();

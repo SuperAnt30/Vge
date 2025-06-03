@@ -72,9 +72,11 @@ namespace Vge.World.Block
             window.Render.DeleteTextureAtlases();
 
             // Создаём заного текстуры
-            BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 1, false);
+            BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 
+                (uint)Gi.ActiveTextureAatlasSharpness, false);
             window.Render.AddTextureAtlasSharpness(bufferedImage);
-            bufferedImage = new BufferedImage(_height, _height, _buffer, 0, true);
+            bufferedImage = new BufferedImage(_height, _height, _buffer,
+                (uint)Gi.ActiveTextureAatlasBlurry, true);
             window.Render.AddTextureAtlasBlurry(bufferedImage);
 
 #if DEBUG

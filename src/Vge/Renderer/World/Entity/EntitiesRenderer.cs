@@ -27,7 +27,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
-        private bool _isHitBox = true;
+        private bool _isHitBox = false;// true;
 
         /// <summary>
         /// Это временно!!!
@@ -56,16 +56,19 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         public void GameStarting()
         {
+            
             _idTextureSmall = Render.Texture.CreateTexture2dArray(
                 ModelEntitiesReg.TextureManager.WidthSmall,
                 ModelEntitiesReg.TextureManager.HeightSmall,
-                ModelEntitiesReg.TextureManager.DepthSmall, 3);
+                ModelEntitiesReg.TextureManager.DepthSmall, 
+                (uint)Gi.ActiveTextureSamplerSmall);
 
             _idTextureBig = Render.Texture.CreateTexture2dArray(
                 ModelEntitiesReg.TextureManager.WidthBig,
                 ModelEntitiesReg.TextureManager.HeightBig,
-                ModelEntitiesReg.TextureManager.DepthBig, 4);
-
+                ModelEntitiesReg.TextureManager.DepthBig, 
+                (uint)Gi.ActiveTextureSamplerBig);
+            
             // TODO::2025-04-25 Продумать, подготовку рендера для сети и не только до создания сущностей
             // TODO::2025-05-14 Из-за Texture ещё не готов модуль
 
@@ -79,14 +82,17 @@ namespace Vge.Renderer.World.Entity
             for (int i = 0; i < count; i++)
             {
                 modelEntity = Ce.ModelEntities.ModelEntitiesObjects[i];
+                
                 for (int t = 0; t < modelEntity.Textures.Length; t++)
                 {
                     Render.Texture.SetImageTexture2dArray(modelEntity.Textures[t], modelEntity.DepthTextures[t],
                         modelEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
-                        (uint)(modelEntity.TextureSmall ? 3 : 4));
+                        (uint)(modelEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
                 }
+                
                 _entityRender[i] = new EntityRender(gl, Render, modelEntity, _game.Player);
             }
+            
         }
 
         /// <summary>
@@ -95,6 +101,7 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
+            CountEntitiesFC = 0;
             int count = _arrayChunkRender.Count;
             int countEntity;
             ChunkRender chunkRender;
@@ -104,7 +111,17 @@ namespace Vge.Renderer.World.Entity
             float y = _game.Player.PosFrameY;
             float z = _game.Player.PosFrameZ;
 
-            CountEntitiesFC = 0;
+            // Параметрв шейдоров для всех сущностей
+            //Render.ShEntityPrimitive.Bind(gl);
+            //Render.ShEntityPrimitive.SetUniformMatrix4(gl, "view", _game.Player.View);
+            //gl.Uniform1(Render.ShEntityPrimitive.GetUniformLocation(gl, "sampler_small"),
+            //    Gi.ActiveTextureSamplerSmall);
+            //gl.Uniform1(Render.ShEntityPrimitive.GetUniformLocation(gl, "sampler_big"),
+            //    Gi.ActiveTextureSamplerBig);
+
+            Render.ShEntity.Bind(gl);
+            Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
+
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -160,6 +177,10 @@ namespace Vge.Renderer.World.Entity
         public override void Dispose()
         {
             _hitbox.Dispose();
+            _game.WorldRender.Render.Texture.DeleteTexture(_idTextureSmall);
+            _idTextureSmall = 0;
+            _game.WorldRender.Render.Texture.DeleteTexture(_idTextureBig);
+            _idTextureBig = 0;
             if (_entityRender != null)
             {
                 for (int i = 0; i < _entityRender.Length; i++)

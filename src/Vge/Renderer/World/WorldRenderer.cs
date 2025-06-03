@@ -1,17 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Threading;
-using Vge.Entity;
 using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using WinGL.OpenGL;
-using WinGL.Util;
 
 namespace Vge.Renderer.World
 {
     /// <summary>
-    /// Объект рендера мира
+    /// Объект рендера мира, блоки, сущности
     /// </summary>
     public class WorldRenderer : WarpRenderer
     {
@@ -76,7 +74,37 @@ namespace Vge.Renderer.World
         /// </summary>
         public void GameStarting()
         {
+
             Entities.GameStarting();
+
+            // Для блоков
+            Render.ShVoxel.Bind(gl);
+            // Активация текстуры атласа с размытостью (с Mipmap)
+            gl.Uniform1(Render.ShVoxel.GetUniformLocation(gl, "atlas_blurry"),
+                Gi.ActiveTextureAatlasBlurry);
+            // Активация текстуры атласа с резкостью (без Mipmap)
+            gl.Uniform1(Render.ShVoxel.GetUniformLocation(gl, "atlas_sharpness"),
+                Gi.ActiveTextureAatlasSharpness);
+            // Активация текстуры карты света
+            gl.Uniform1(Render.ShVoxel.GetUniformLocation(gl, "light_map"),
+                Gi.ActiveTextureLightMap);
+
+            // Для сущностей
+            //Render.ShEntityPrimitive.Bind(gl);
+            //// Активация текстуры карты света
+            //gl.Uniform1(Render.ShEntityPrimitive.GetUniformLocation(gl, "light_map"),
+            //    Gi.ActiveTextureLightMap);
+
+            Render.ShEntity.Bind(gl);
+
+            gl.Uniform1(Render.ShEntity.GetUniformLocation(gl, "sampler_small"),
+                Gi.ActiveTextureSamplerSmall);
+            gl.Uniform1(Render.ShEntity.GetUniformLocation(gl, "sampler_big"),
+                Gi.ActiveTextureSamplerBig);
+            // Активация текстуры карты света
+            gl.Uniform1(Render.ShEntity.GetUniformLocation(gl, "light_map"),
+                Gi.ActiveTextureLightMap);
+
         }
 
         /// <summary>
@@ -209,7 +237,6 @@ namespace Vge.Renderer.World
             //Render.LightMap.Update(Glm.Cos((_game.TickCounter + timeIndex) * .01f), .24f );
             Render.LightMap.Update(_game.World.Settings.HasNoSky, 1, .12f);
             //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
-
             // Обновить кадр основного игрока, камера и прочее
             _game.Player.UpdateFrame(timeIndex);
 
@@ -221,20 +248,18 @@ namespace Vge.Renderer.World
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
             // Биндим карту освещения
-           // Render.LightMap.BindTexture();
+            // Render.LightMap.BindTexture();
             Entities.Draw(timeIndex);
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
             // Прорисовка вид не с руки, а видим себя
             Entities.DrawOwner(timeIndex);
-
             // Облака
             //DrawClouds(timeIndex);
 
             // Рисуем воксели альфа
             gl.Enable(GL.GL_CULL_FACE);
             _DrawVoxelAlpha();
-
             // Прорисовка руки
         }
 
@@ -311,7 +336,6 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShaderBindVoxels(_game.Player.View, timeIndex,
                 _overviewBlock, .4f, .4f, .7f, 5);
-            Render.BindTextureAtlasBlocks();
 
             if (Debug.IsDrawVoxelLine)
             {
@@ -332,8 +356,8 @@ namespace Vge.Renderer.World
                 // Прорисовка сплошных блоков чанка
                 if (chunkRender.NotNullMeshDense)
                 {
-                    _VoxelsShaderChunk(_game.Render.ShVoxel, 
-                        chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
+                    _game.Render.ShVoxel.SetUniform2(_game.GetOpenGL(), "chunk",
+                        chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
                     chunkRender.DrawDense();
                 }
             }
@@ -356,7 +380,6 @@ namespace Vge.Renderer.World
             gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
 
             Render.ShVoxel.Bind(gl);
-            Render.BindTextureAtlasBlocks();
 
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
@@ -368,33 +391,14 @@ namespace Vge.Renderer.World
                 // Прорисовка альфа блоков псевдо чанка
                 if (chunkRender.NotNullMeshAlpha)
                 {
-                    _VoxelsShaderChunk(_game.Render.ShVoxel,
-                        chunkRender.CurrentChunkX, chunkRender.CurrentChunkY);
+                    _game.Render.ShVoxel.SetUniform2(_game.GetOpenGL(), "chunk",
+                        chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
                     chunkRender.DrawAlpha();
                 }
             }
 
             gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
             gl.PolygonOffset(0, 0);
-        }
-
-        /// <summary>
-        /// Доп параметр к шейдеру чанка
-        /// </summary>
-        private void _VoxelsShaderChunk(ShaderVoxel shader, int chunkX, int chunkY)
-        {
-            int x = chunkX << 4;
-            int z = chunkY << 4;
-            shader.SetUniform3(_game.GetOpenGL(), "pos",
-                x - _game.Player.PosFrameX,
-                -_game.Player.PosFrameY,
-                z - _game.Player.PosFrameZ
-            );
-            shader.SetUniform3(_game.GetOpenGL(), "camera",
-                _game.Player.PosFrameX - x,
-                _game.Player.PosFrameY,
-                _game.Player.PosFrameZ - z
-            );
         }
 
         public override void Dispose()

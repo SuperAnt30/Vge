@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -55,7 +56,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Шейдоры для примитивных сущностей без скелетной анимации
         /// </summary>
-        public readonly ShaderEntityPrimitive ShEntityPrimitive;
+        //public readonly ShaderEntityPrimitive ShEntityPrimitive;
 
         /// <summary>
         /// Время выполнения кадра
@@ -93,8 +94,9 @@ namespace Vge.Renderer
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
             ShEntity = new ShaderEntity(gl);
-            ShEntityPrimitive = new ShaderEntityPrimitive(gl);
+            //ShEntityPrimitive = new ShaderEntityPrimitive(gl);
             ShLine = new ShaderLine(gl);
+
             _Initialize();
         }
 
@@ -121,7 +123,7 @@ namespace Vge.Renderer
             ShGuiLine.Delete(gl);
             ShVoxel.Delete(gl);
             ShEntity.Delete(gl);
-            ShEntityPrimitive.Delete(gl);
+            //ShEntityPrimitive.Delete(gl);
             ShLine.Delete(gl);
         }
 
@@ -163,94 +165,42 @@ namespace Vge.Renderer
             // Ветер, значение от -1 до 1
             int wind = (int)window.Time() / 48 & 0x7F;
             ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
-
-            //// Активация текстуры атласа с размытостью (с Mipmap)
-            //int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
-            //BindTextureAtlasBlurry();
-            //gl.Uniform1(atlasBlurry, 0);
-
-            //// Активация текстуры атласа с резкостью (без Mipmap)
-            //BindTextureAtlasSharpness();
-            //int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
-            //gl.Uniform1(atlasSharpness, 1);
-
-            //// Активация текстуры карты света
-            //LightMap.BindTexture();
-            //int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
-            //gl.Uniform1(lightMap, 2);
-        }
-
-        /// <summary>
-        /// Биндим атлас текстур
-        /// </summary>
-        public void BindTextureAtlasBlocks()
-        {
-            // Активация текстуры атласа с размытостью (с Mipmap)
-            int atlasBlurry = ShVoxel.GetUniformLocation(gl, "atlas_blurry");
-            BindTextureAtlasBlurry();
-            gl.Uniform1(atlasBlurry, 0);
-
-            // Активация текстуры атласа с резкостью (без Mipmap)
-            BindTextureAtlasSharpness();
-            int atlasSharpness = ShVoxel.GetUniformLocation(gl, "atlas_sharpness");
-            gl.Uniform1(atlasSharpness, 1);
-
-            // Активация текстуры карты света
-            LightMap.BindTexture();
-            int lightMap = ShVoxel.GetUniformLocation(gl, "light_map");
-            gl.Uniform1(lightMap, 2);
-        }
-
-        public void BindTextureEntity(uint textureId, 
-            int lightBlock, int lightSky)
-        {
-
+            ShVoxel.SetUniform3(gl, "player", window.Game.Player.PosFrameX,
+                window.Game.Player.PosFrameY,
+                window.Game.Player.PosFrameZ);
         }
 
         /// <summary>
         /// Связать шейдер Entity
         /// </summary>
-        public void ShaderBindEntity(float lightBlock, float lightSky,
-            float[] view, float posX, float posY, float posZ, float[] m)
+        public void ShaderBindEntity(float depth, float smallAnim,
+            float lightBlock, float lightSky,
+            float posX, float posY, float posZ)
         {
-            ShEntity.Bind(gl);
-            ShEntity.SetUniformMatrix4(gl, "view", view);
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
             ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
-            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, Ce.MaxAnimatedBones);
+            ShEntity.SetUniform2(gl, "depth", depth, smallAnim);
+        }
 
-            // Текстура
-            gl.Uniform1(ShEntity.GetUniformLocation(gl, "atlas"), 0);
-            // Текстура карта света
-            gl.Uniform1(ShEntity.GetUniformLocation(gl, "light_map"), 2);
+        /// <summary>
+        /// Связать шейдер Entity
+        /// </summary>
+        public void ShaderBindEntity(float[] m)
+        {
+            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, Ce.MaxAnimatedBones);
         }
 
         /// <summary>
         /// Связать шейдер примитивных сущностей без скелетной анимации
         /// </summary>
-        public void ShaderBindEntityPrimitive(float depth, bool small, float lightBlock, float lightSky,
-            float[] view, float posX, float posY, float posZ)
-            //float[] modelMatrix)
-        {
-            //BindTexture(textureId);
-            ShEntityPrimitive.Bind(gl);
-            ShEntityPrimitive.SetUniformMatrix4(gl, "view", view);
-            ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);
-            ShEntityPrimitive.SetUniform2(gl, "light", lightBlock, lightSky);
-            ShEntityPrimitive.SetUniform1(gl, "depth", depth);
-
-            // Текстура карта света
-            gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "light_map"), 2);
-            // Текстура
-            if (small)
-            {
-                gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "sampler"), 3);
-            }
-            else
-            {
-                gl.Uniform1(ShEntityPrimitive.GetUniformLocation(gl, "sampler"), 4);
-            }
-        }
+        //public void ShaderBindEntityPrimitive(float depth, bool small, 
+        //    float lightBlock, float lightSky,
+        //    float posX, float posY, float posZ)
+        //{
+        //    ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);
+        //    ShEntityPrimitive.SetUniform2(gl, "light", lightBlock, lightSky);
+        //    ShEntityPrimitive.SetUniform2(gl, "depth", depth, small ? 0f : 1f);
+        //}
 
         /// <summary>
         /// Связать шейдер Line
@@ -301,17 +251,6 @@ namespace Vge.Renderer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureWidgets() => Texture.BindTexture(_textureIndex.Widgets);
         
-        /// <summary>
-        /// Запустить текстуру атласа размытых блоков
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureAtlasBlurry() => Texture.BindTexture(_textureIndex.AtlasBlurry);
-        /// <summary>
-        /// Запустить текстуру атласа блоков с чёткой резкостью
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureAtlasSharpness() => Texture.BindTexture(_textureIndex.AtlasSharpness, 1);
-
         /// <summary>
         /// Удалить текстуру атласов
         /// </summary>

@@ -130,9 +130,12 @@ namespace Vge.Renderer
         /// </summary>
         public virtual void Draw()
         {
-            Debug.MeshCount++;
-            _gl.BindVertexArray(_vao);
-            _gl.DrawElements(GL.GL_TRIANGLES, _countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+            if (_countIndices > 0)
+            {
+                Debug.MeshCount++;
+                _gl.BindVertexArray(_vao);
+                _gl.DrawElements(GL.GL_TRIANGLES, _countIndices, GL.GL_UNSIGNED_INT, IntPtr.Zero);
+            }
         }
 
         #region Reload
@@ -145,9 +148,9 @@ namespace Vge.Renderer
             _countVertices = vertices.Length / _vertexSize;
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_DYNAMIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STREAM_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
         }
 
         /// <summary>
@@ -160,7 +163,7 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STREAM_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STATIC_DRAW);
         }
 
         #endregion

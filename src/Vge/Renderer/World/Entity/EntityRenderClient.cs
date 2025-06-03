@@ -94,6 +94,7 @@ namespace Vge.Renderer.World.Entity
         {
             _IncreaseCurrentTime(deltaTime);
             EntityRender entityRender = Entities.GetEntityRender(Entity.GetTypeEntity());
+            bool anim = false;// Entity.Type == EnumEntity.Stone;
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;
@@ -117,47 +118,52 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Заносим в шейдор
-            Entities.Render.ShaderBindEntityPrimitive(
-                _modelEntity.DepthTextures[0], 
-                _modelEntity.TextureSmall,
-                _lightBlock, _lightSky, entityRender.Player.View,
+            //Entities.Render.ShaderBindEntityPrimitive(
+            //    _modelEntity.DepthTextures[0], _modelEntity.TextureSmall,
+            //    _lightBlock, _lightSky,
+            //    Entity.GetPosFrameX(timeIndex) - ppfx,
+            //    Entity.GetPosFrameY(timeIndex) - ppfy,
+            //    Entity.GetPosFrameZ(timeIndex) - ppfz
+            //);
+
+            // Заносим в шейдор
+            Entities.Render.ShaderBindEntity(
+                _modelEntity.DepthTextures[0], (_modelEntity.TextureSmall ? 0 : 1) + (anim ? 2 : 0),
+                _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
                 Entity.GetPosFrameZ(timeIndex) - ppfz
             );
-            /*
-            // Возвращаем значения костей в исходное положение, Оригинал
-            for (byte i = 0; i < _countBones; i++)
+
+            if (anim)
             {
-                if (_bonesFlagModify[i])
+                // Возвращаем значения костей в исходное положение, Оригинал
+                for (byte i = 0; i < _countBones; i++)
                 {
-                    _modelEntity.Bones[i].SetBonePose(ref _bones[i]);
-                    _bonesFlagModify[i] = false;
+                    if (_bonesFlagModify[i])
+                    {
+                        _modelEntity.Bones[i].SetBonePose(ref _bones[i]);
+                        _bonesFlagModify[i] = false;
+                    }
                 }
+
+                // Пробегаемся по анимациям
+                //_GenBoneCurrentPose(0);
+                for (int ai = 0; ai < 2; ai++)
+                {
+                    _GenBoneCurrentPose(ai);
+                }
+
+                // Собираем конечные матрицы
+                _GetMatrixPalette(yaw, pitch);
+
+                Entities.Render.ShEntity.SetUniformMatrix4x3(Entities.GetOpenGL(),
+                    "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
             }
-
-            // Пробегаемся по анимациям
-            //_GenBoneCurrentPose(0);
-            for (int ai = 0; ai < 2; ai++)
-            {
-                _GenBoneCurrentPose(ai);
-            }
-
-            // Собираем конечные матрицы
-            _GetMatrixPalette(yaw, pitch);
-
             // Текстура сущности
            // Entities.Render.BindTexture(entityRender.Texture);
-            // Заносим в шейдор
-            Entities.Render.ShaderBindEntity(
-                _lightBlock, _lightSky,
-                entityRender.Player.View,
-                   Entity.GetPosFrameX(timeIndex) - ppfx,
-                   Entity.GetPosFrameY(timeIndex) - ppfy,
-                   Entity.GetPosFrameZ(timeIndex) - ppfz,
-                   _bufferBonesTransforms
-               );
-            */
+            
+            
             entityRender.MeshDraw();
         }
 

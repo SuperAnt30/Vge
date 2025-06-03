@@ -140,11 +140,13 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Прорисовка сплошных блоков чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DrawDense() => _meshDense.Draw();
 
         /// <summary>
         /// Прорисовка альфа блоков чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DrawAlpha() => _meshAlpha.Draw();
 
         public void DisposeMesh()
@@ -403,16 +405,19 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Старт рендеринга только альфа
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StartRenderingAlpha() => _meshAlpha.StatusRendering();
 
         /// <summary>
         /// Занести буфер сплошных блоков чанка если это требуется
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindBufferDense() => _meshDense.BindBuffer();
 
         /// <summary>
         /// Занести буфер альфа блоков чанка если это требуется
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindBufferAlpha() => _meshAlpha.BindBuffer();
 
         #region BufferChunks
@@ -473,6 +478,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Статсус не пустой для рендера альфа блоков
         /// </summary>
+        
         public bool NotNullMeshAlpha => _meshAlpha.Status != MeshVoxel.StatusMesh.Null;
         /// <summary>
         /// Изменить статус на отмена рендеринга альфа блоков

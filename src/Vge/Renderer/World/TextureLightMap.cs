@@ -1,4 +1,5 @@
-﻿using WinGL.OpenGL;
+﻿using Vge.Util;
+using WinGL.OpenGL;
 
 namespace Vge.Renderer.World
 {
@@ -272,9 +273,9 @@ namespace Vge.Renderer.World
                 _locationLightMap = texture[0];
             }
 
-            gl.ActiveTexture(GL.GL_TEXTURE2);
+            gl.ActiveTexture(GL.GL_TEXTURE0 + (uint)Gi.ActiveTextureLightMap);
             gl.BindTexture(GL.GL_TEXTURE_2D, _locationLightMap);
-            
+
             if (isCreate)
             {
                 gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 16, 16,
@@ -283,22 +284,15 @@ namespace Vge.Renderer.World
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+                //er = gl.GetError(); // InvalidEnum на Intel HD Graphics 5500
                 gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+                //er = gl.GetError(); // InvalidEnum на Intel HD Graphics 5500
             }
             else
             {
                 gl.TexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 16, 16,
                         GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, _buffer);
             }
-        }
-
-        /// <summary>
-        /// Биндим текстуру
-        /// </summary>
-        public void BindTexture()
-        {
-            gl.ActiveTexture(GL.GL_TEXTURE2);
-            gl.BindTexture(GL.GL_TEXTURE_2D, _locationLightMap);
         }
 
         #region Debug

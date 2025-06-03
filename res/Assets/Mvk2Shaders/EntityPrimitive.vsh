@@ -5,12 +5,13 @@ layout(location = 1) in vec2 v_texCoord;
 
 out vec2 a_texCoord;
 out vec2 a_light;
-out float a_depth;
+out vec2 a_depth;
 
 uniform mat4 view;
+
 uniform vec3 pos;
 uniform vec2 light;
-uniform float depth;
+uniform vec2 depth;
 
 void main()
 {

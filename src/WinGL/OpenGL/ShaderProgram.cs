@@ -24,8 +24,8 @@ namespace WinGL.OpenGL
             Dictionary<uint, string> attributeLocations)
         {
             // Создание шейдоров
-            vertexShader.Create(gl, GL.GL_VERTEX_SHADER, vertexShaderSource);
-            fragmentShader.Create(gl, GL.GL_FRAGMENT_SHADER, fragmentShaderSource);
+            vertexShader.Create(gl, GL.GL_VERTEX_SHADER, vertexShaderSource, GetType().Name);
+            fragmentShader.Create(gl, GL.GL_FRAGMENT_SHADER, fragmentShaderSource, GetType().Name);
 
             // Создайте программу, прикрепите шейдеры
             ShaderProgramObject = gl.CreateProgram();

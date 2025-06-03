@@ -32,6 +32,36 @@ public sealed class Gi
     /// </summary>
     public static int WindowsChatHeightMessage = 270;
 
+    #region ActiveTexture
+
+    /// <summary>
+    /// ID Активации текстуры атласа с резкостью (без Mipmap)
+    /// GL_TEXTURE0 + ActiveTextureAatlasSharpness
+    /// </summary>
+    public static int ActiveTextureAatlasSharpness = 10;
+    /// <summary>
+    /// ID Активации текстуры атласа с размытостью (с Mipmap)
+    /// GL_TEXTURE0 + ActiveTextureAatlasBlurry
+    /// </summary>
+    public static int ActiveTextureAatlasBlurry = 11;
+    /// <summary>
+    /// ID Активации текстуры карты света
+    /// GL_TEXTURE0 + ActiveTextureLightMap
+    /// </summary>
+    public static int ActiveTextureLightMap = 12;
+    /// <summary>
+    /// ID Активации текстуры маленьких сэмплов сущностей
+    /// GL_TEXTURE0 + ActiveTextureSamplerSmall
+    /// </summary>
+    public static int ActiveTextureSamplerSmall = 13;
+    /// <summary>
+    /// ID Активации текстуры больших сэмплов сущностей
+    /// GL_TEXTURE0 + ActiveTextureSamplerBig
+    /// </summary>
+    public static int ActiveTextureSamplerBig = 14;
+
+    #endregion
+
     /// <summary>
     /// Обновить размер инерфейса
     /// </summary>

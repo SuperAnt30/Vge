@@ -383,8 +383,10 @@ namespace Vge.Games
                 // Обновить мир
                 World.UpdateClient();
                 //Filer.EndStartSection("WorldRender.Update", 10);
+               
                 // Обновить рендоровский мир
                 WorldRender.Update();
+                
                 // Filer.EndSection(5);
 
                 // Тут индикация если имеется
@@ -405,8 +407,9 @@ namespace Vge.Games
                     TrancivePacket(new Packet00PingPong(Time()));
                 }
             }
+
             // Тест
-         //   TrancivePacket(new PacketC04PlayerPosition(new Vector3(1, 2.5f, 3.5f), true, false, true));
+            //   TrancivePacket(new PacketC04PlayerPosition(new Vector3(1, 2.5f, 3.5f), true, false, true));
         }
 
         /// <summary>
@@ -444,7 +447,6 @@ namespace Vge.Games
         {
             // Тут прорисовка мира
             gl.ClearColor(.4f, .4f, .7f, 1f);
-
             // Мир
             if (FlagGameStarted)
             {
