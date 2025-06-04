@@ -1,5 +1,8 @@
-﻿namespace WinGL.OpenGL
+﻿using System.Security;
+
+namespace WinGL.OpenGL
 {
+    [SuppressUnmanagedCodeSecurity]
     public partial class GL
     {
         #region The OpenGL constant definitions.

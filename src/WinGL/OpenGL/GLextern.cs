@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace WinGL.OpenGL
 {
+    [SuppressUnmanagedCodeSecurity]
     public partial class GL
     {
         public const string OpenGL32 = "opengl32.dll";

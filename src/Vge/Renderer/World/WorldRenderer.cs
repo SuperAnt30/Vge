@@ -4,6 +4,7 @@ using Vge.Games;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
+using Vge.World.Block;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World
@@ -403,6 +404,7 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
+            BlocksReg.BlockAtlas.DeleteTexture(Render.Texture);
             Entities.Dispose();
             _cursorRender.Dispose();
         }

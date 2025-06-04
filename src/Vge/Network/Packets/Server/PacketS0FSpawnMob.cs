@@ -10,7 +10,7 @@ namespace Vge.Network.Packets.Server
         public byte Id => 0x0F;
 
         public int Index { get; private set; }
-        public EnumEntity Type { get; private set; }
+        public ushort IndexEntity { get; private set; }
         public float X { get; private set; }
         public float Y { get; private set; }
         public float Z { get; private set; }
@@ -22,7 +22,7 @@ namespace Vge.Network.Packets.Server
         public PacketS0FSpawnMob(EntityBase entity)
         {
             Index = entity.Id;
-            Type = entity.Type;
+            IndexEntity = entity.IndexEntity;
             X = entity.PosX;
             Y = entity.PosY;
             Z = entity.PosZ;
@@ -43,7 +43,7 @@ namespace Vge.Network.Packets.Server
         public void ReadPacket(ReadPacket stream)
         {
             Index = stream.Int();
-            Type = (EnumEntity)stream.Byte();
+            IndexEntity = stream.UShort();
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
@@ -58,7 +58,7 @@ namespace Vge.Network.Packets.Server
         public void WritePacket(WritePacket stream)
         {
             stream.Int(Index);
-            stream.Byte((byte)Type);
+            stream.UShort(IndexEntity);
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);

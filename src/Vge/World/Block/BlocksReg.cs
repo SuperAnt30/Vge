@@ -68,7 +68,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Инициализация атласа блоков, после инициализации блоков
         /// </summary>
-        public static void InitializationAtlas(WindowMain window) => BlockAtlas.EndImage(window);
+        public static void InitializationAtlas(WindowMain window) => BlockAtlas.EndImage(window.Render.Texture);
 
         /// <summary>
         /// Корректировка блоков после загрузки, если загрузки нет,
@@ -76,18 +76,10 @@ namespace Vge.World.Block
         /// </summary>
         public static void Correct(CorrectTable correct)
         {
-            // int c2 = Ce.Blocks.Count;
-            Ce.Blocks = new BlockArrays();
+            //Ce.Blocks = new BlockArrays(); // 2025-06-04 Не помню почему так было, но бывали нал, возможно до создание мира
             correct.CorrectRegLoad(Table);
-            try
-            {
-                //int c = Blocks.Count;
-                Ce.Blocks = new BlockArrays();
-            }
-            catch (Exception ex)
-            {
-                throw ex.InnerException;
-            }
+            Ce.Blocks = new BlockArrays();
+
             // Очистить таблицы и вспомогательные данные json
             _Clear();
         }

@@ -760,7 +760,7 @@ namespace Vge.World.Chunk
             }
 
             // Эта строка не понятна мне, зачем это я делал?! 2024-12-04
-            if (storage.CountBlock != 0 && storage.Data[index] != block.Id) return new BlockState();
+            if (storage.CountBlock != 0 && storage.Data[index] != block.IndexBlock) return new BlockState();
 
             return blockStateOld;
         }

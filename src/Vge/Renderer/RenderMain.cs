@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World;
-using Vge.Renderer.World.Entity;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -11,7 +10,8 @@ using WinGL.Util;
 namespace Vge.Renderer
 {
     /// <summary>
-    /// Основной класс рендера
+    /// Основной класс рендера, он же клиентский основной объект
+    /// Есть возможность мода
     /// </summary>
     public class RenderMain : Warp
     {
@@ -53,10 +53,6 @@ namespace Vge.Renderer
         /// Шейдоры для сущностей
         /// </summary>
         public readonly ShaderEntity ShEntity;
-        /// <summary>
-        /// Шейдоры для примитивных сущностей без скелетной анимации
-        /// </summary>
-        //public readonly ShaderEntityPrimitive ShEntityPrimitive;
 
         /// <summary>
         /// Время выполнения кадра
@@ -94,7 +90,6 @@ namespace Vge.Renderer
             ShGuiLine = new ShaderGuiLine(gl);
             ShVoxel = new ShaderVoxel(gl);
             ShEntity = new ShaderEntity(gl);
-            //ShEntityPrimitive = new ShaderEntityPrimitive(gl);
             ShLine = new ShaderLine(gl);
 
             _Initialize();
@@ -123,7 +118,6 @@ namespace Vge.Renderer
             ShGuiLine.Delete(gl);
             ShVoxel.Delete(gl);
             ShEntity.Delete(gl);
-            //ShEntityPrimitive.Delete(gl);
             ShLine.Delete(gl);
         }
 
@@ -183,26 +177,6 @@ namespace Vge.Renderer
         }
 
         /// <summary>
-        /// Связать шейдер Entity
-        /// </summary>
-        public void ShaderBindEntity(float[] m)
-        {
-            ShEntity.SetUniformMatrix4x3(gl, "elementTransforms", m, Ce.MaxAnimatedBones);
-        }
-
-        /// <summary>
-        /// Связать шейдер примитивных сущностей без скелетной анимации
-        /// </summary>
-        //public void ShaderBindEntityPrimitive(float depth, bool small, 
-        //    float lightBlock, float lightSky,
-        //    float posX, float posY, float posZ)
-        //{
-        //    ShEntityPrimitive.SetUniform3(gl, "pos", posX, posY, posZ);
-        //    ShEntityPrimitive.SetUniform2(gl, "light", lightBlock, lightSky);
-        //    ShEntityPrimitive.SetUniform2(gl, "depth", depth, small ? 0f : 1f);
-        //}
-
-        /// <summary>
         /// Связать шейдер Line
         /// </summary>
         public void ShaderBindLine(float[] view, float posX, float posY, float posZ)
@@ -251,29 +225,6 @@ namespace Vge.Renderer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureWidgets() => Texture.BindTexture(_textureIndex.Widgets);
         
-        /// <summary>
-        /// Удалить текстуру атласов
-        /// </summary>
-        public void DeleteTextureAtlases()
-        {
-            Texture.DeleteTexture(_textureIndex.AtlasBlurry);
-            _textureIndex.AtlasBlurry = 0;
-            Texture.DeleteTexture(_textureIndex.AtlasSharpness);
-            _textureIndex.AtlasSharpness = 0;
-        }
-
-        /// <summary>
-        /// Задать текстуру атласа размытых блоков
-        /// </summary>
-        public void AddTextureAtlasBlurry(BufferedImage bufferedImage)
-            => _textureIndex.AtlasBlurry = Texture.SetTexture(bufferedImage);
-
-        /// <summary>
-        /// Задать текстуру атласа блоков с чёткой резкостью
-        /// </summary>
-        public void AddTextureAtlasSharpness(BufferedImage bufferedImage)
-            => _textureIndex.AtlasSharpness = Texture.SetTexture(bufferedImage);
-
         /// <summary>
         /// Создать текстуру основного шрифта
         /// </summary>

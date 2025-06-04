@@ -35,7 +35,8 @@ namespace Vge.Games
         /// </summary>
         private string _stopText;
 
-        public GameNet(WindowMain window, string ipAddress, int port) : base(window)
+        public GameNet(WindowMain window, string ipAddress, int port, 
+            GameModClient gameMod) : base(window, gameMod)
         {
             IsLoacl = false;
             _ipAddress = ipAddress;

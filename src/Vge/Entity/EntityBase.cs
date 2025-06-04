@@ -18,15 +18,13 @@ namespace Vge.Entity
     public abstract class EntityBase
     {
         /// <summary>
-        /// Уникальный порядковый номер игрока
+        /// Уникальный порядковый номер игрока в базе
         /// </summary>
         public int Id { get; protected set; }
         /// <summary>
-        /// Тип сущности
+        /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
-        public EnumEntity Type { get; protected set; }
-
-        public int GetTypeEntity() => (int)Type - 2;
+        public ushort IndexEntity { get; protected set; }
 
         /// <summary>
         /// Сущность мертва, не активна

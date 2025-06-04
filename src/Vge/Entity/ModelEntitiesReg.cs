@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Entity.List;
 using Vge.Entity.Model;
 using Vge.Entity.Texture;
 using Vge.Json;
+using Vge.Management;
 using Vge.Util;
 
 namespace Vge.Entity
@@ -51,10 +53,10 @@ namespace Vge.Entity
         {
             // Очистить таблицы и вспомогательные данные json
             _Clear();
-
             // Регистрация обязательных сущностей
+            RegisterModelEntityClass(ModelEntityArrays.AliasPlayer, typeof(PlayerClient));
             // Отладочный
-            RegisterModelEntityClass("Robinson");
+            RegisterModelEntityClass("Robinson", typeof(EntityThrowableBig));
             //RegisterModelEntityClass("Chicken2");
         }
 
@@ -64,16 +66,9 @@ namespace Vge.Entity
         /// </summary>
         public static void Correct(CorrectTable correct)
         {
-            Ce.ModelEntities = new ModelEntityArrays();
             correct.CorrectRegLoad(Table);
-            try
-            {
-                Ce.ModelEntities = new ModelEntityArrays();
-            }
-            catch (Exception ex)
-            {
-                throw ex.InnerException;
-            }
+            Ce.ModelEntities = new ModelEntityArrays();
+
             // Очистить таблицы и вспомогательные данные json
             _Clear();
         }
@@ -91,13 +86,13 @@ namespace Vge.Entity
         /// <summary>
         /// Зврегистрировать сущность
         /// </summary>
-        public static void RegisterModelEntityClass(string alias)
+        public static void RegisterModelEntityClass(string alias, Type entityType)
         {
             JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".json");
             
             if (jsonRead.IsThereFile)
             {
-                ModelEntity modelEntity = new ModelEntity(alias);
+                ModelEntity modelEntity = new ModelEntity(alias, entityType);
 
                 if (FlagRender)
                 {

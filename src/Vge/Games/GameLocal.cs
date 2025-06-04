@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using Vge.Event;
 using Vge.Gui.Screens;
@@ -24,7 +23,9 @@ namespace Vge.Games
         /// </summary>
         private readonly bool _flagRun = true;
 
-        public GameLocal(WindowMain window, GameSettings gameSettings, AllWorlds worlds) : base(window)
+        public GameLocal(WindowMain window, GameSettings gameSettings, 
+            AllWorlds worlds, GameModClient gameModClient) 
+            : base(window, gameModClient)
         {
             _server = new GameServer(Log, gameSettings, worlds);
             _server.Closeded += _Server_Closeded;

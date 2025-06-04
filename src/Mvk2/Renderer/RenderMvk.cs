@@ -8,7 +8,8 @@ using Vge.Util;
 namespace Mvk2.Renderer
 {
     /// <summary>
-    /// Класс отвечающий за прорисовку для малювек
+    /// Основной класс рендера, он же клиентский основной объект
+    /// Для Малювек 2
     /// </summary>
     public class RenderMvk : RenderMain
     {
@@ -24,20 +25,19 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Объект окна малювек
         /// </summary>
-        private readonly WindowMvk windowMvk;
+        private readonly WindowMvk _windowMvk;
         /// <summary>
         /// Переменные индексов текстур GUI для малювек
         /// </summary>
         private TextureIndexMvk _textureIndexMvk;
 
-        public RenderMvk(WindowMvk window) : base(window) => windowMvk = window;
+        public RenderMvk(WindowMvk window) : base(window) => _windowMvk = window;
 
         protected override void _Initialize()
         {
             _textureIndex = _textureIndexMvk = new TextureIndexMvk();
             LightMap = new TextureLightMap(gl);
         }
-
 
         #region Texture
 

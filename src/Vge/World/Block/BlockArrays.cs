@@ -63,15 +63,12 @@ namespace Vge.World.Block
             for (id = 0; id < Count; id++)
             {
                 BlockAlias[id] = BlocksReg.Table.GetAlias(id);
-                BlockObjects[id] = block = BlocksReg.Table[id];
+                block = BlocksReg.Table[id];
+                block.SetIndex(id);
+                BlockObjects[id] = block;
                 _blocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
                 BlocksRandomTick[id] = block.NeedsRandomTick;
                 BlocksMetadata[id] = block.IsMetadata;
-            }
-
-            for (id = 0; id < Count; id++)
-            {
-                BlockObjects[id].InitIdN2(id);
             }
         }
 

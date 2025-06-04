@@ -3,7 +3,6 @@ using Vge.Entity.Animation;
 using Vge.Entity.Model;
 using Vge.Json;
 using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -14,9 +13,17 @@ namespace Vge.Entity
     public class ModelEntity
     {
         /// <summary>
+        /// Индекс сущности из таблицы
+        /// </summary>
+        public ushort IndexEntity { get; private set; }
+        /// <summary>
         /// Название модели
         /// </summary>
         public readonly string Alias;
+        /// <summary>
+        /// Тип объекта сущности
+        /// </summary>
+        public readonly Type EntityType;
         /// <summary>
         /// Буфер сетки моба, для рендера
         /// </summary>
@@ -47,9 +54,18 @@ namespace Vge.Entity
         /// </summary>
         private string _nameBonePitch;
 
-        private Mat4 _matrix = Mat4.Identity();
+       // private Mat4 _matrix = Mat4.Identity();
 
-        public ModelEntity(string alias) => Alias = alias;
+        public ModelEntity(string alias, Type entityType)
+        {
+            Alias = alias;
+            EntityType = entityType;
+        }
+
+        /// <summary>
+        /// Задать индекс сущности, из таблицы
+        /// </summary>
+        public void SetIndex(ushort id) => IndexEntity = id;
 
         /// <summary>
         /// Пометить модель в максимальную группу текстур

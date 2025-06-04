@@ -14,7 +14,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Индекс блока из таблицы
         /// </summary>
-        public ushort Id { get; private set; }
+        public ushort IndexBlock { get; private set; }
         /// <summary>
         /// Псевдоним блока из таблицы
         /// </summary>
@@ -192,12 +192,9 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Инициализация id после корректировки карты ID блоков
+        /// Задать индекс блока, из таблицы
         /// </summary>
-        public void InitIdN2(ushort id)
-        {
-            Id = id;
-        }
+        public void SetIndex(ushort id) => IndexBlock = id;
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов
@@ -397,6 +394,6 @@ namespace Vge.World.Block
         public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
             => state.NewMet(0);
 
-        public override string ToString() => Id.ToString() + " " + Alias;
+        public override string ToString() => IndexBlock.ToString() + " " + Alias;
     }
 }

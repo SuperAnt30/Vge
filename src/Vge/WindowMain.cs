@@ -509,7 +509,7 @@ namespace Vge
         /// <summary>
         /// Создание миров
         /// </summary>
-        protected virtual AllWorlds CreateAllWorlds() => new AllWorlds();
+        protected virtual AllWorlds _CreateAllWorlds() => new AllWorlds();
 
         /// <summary>
         /// Инициализация блоков
@@ -540,8 +540,8 @@ namespace Vge
             {
                 _InitializationBlocksAtlasEntities();
                 LScreen.Process(L.T("Connection") + Ce.Ellipsis);
-                Game = new GameNet(this, ipAddress, port);
-                GameRun();
+                Game = new GameNet(this, ipAddress, port, _CreateGameModClient());
+                _GameRun();
             }
         }
 
@@ -554,12 +554,14 @@ namespace Vge
             {
                 _InitializationBlocksAtlasEntities();
                 LScreen.Working();
-                Game = new GameLocal(this, gameSettings, CreateAllWorlds());
-                GameRun();
+                GameLocal gameLocal = new GameLocal(this, gameSettings, _CreateAllWorlds(),
+                    _CreateGameModClient());
+                Game = gameLocal;
+                _GameRun();
             }
         }
 
-        private void GameRun()
+        private void _GameRun()
         {
             Game.Stoped += Game_Stoped;
             Game.Error += Game_Error;
@@ -568,6 +570,11 @@ namespace Vge
             SetWishFrame(Options.Fps);
             Game.GameStarting();
         }
+
+        /// <summary>
+        /// Создаём игровой мод клиентский
+        /// </summary>
+        protected virtual GameModClient _CreateGameModClient() => new GameModClient(this);
 
         /// <summary>
         /// Остановить игру

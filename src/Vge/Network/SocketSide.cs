@@ -237,7 +237,7 @@ namespace Vge.Network
                 {
                     socket.Shutdown(SocketShutdown.Both);
                     socket.Disconnect(false);
-                    socket.Close();
+                    if (socket != null) socket.Close();
                 }
                 socket = null;
                 if (waitHandler != null)

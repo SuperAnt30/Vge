@@ -1,10 +1,10 @@
 ﻿using Vge.Games;
-using Vge.World.Block;
 
 namespace Vge.World
 {
     /// <summary>
-    /// Объект миров этот объект отвечает за взаимосвязь всех миров и сервера
+    /// Объект миров этот объект отвечает за взаимосвязь всех миров на сервере.
+    /// Есть возможность мода
     /// </summary>
     public class AllWorlds
     {
@@ -36,6 +36,16 @@ namespace Vge.World
         /// Инициализация миров после создания сервера
         /// </summary>
         public virtual void Init(GameServer server) => Server = server;
+
+        /// <summary>
+        /// Инициализация после старта игры, когда уже все блоки и сущности загружены
+        /// </summary>
+        public virtual void InitAfterStartGame() { }
+
+        /// <summary>
+        /// Получить индекс кидаемого блока
+        /// </summary>
+        public virtual int GetDebugIndex(bool b) => -1;
 
         /// <summary>
         /// Такт сервера

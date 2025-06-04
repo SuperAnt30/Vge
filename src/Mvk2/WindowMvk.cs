@@ -1,5 +1,4 @@
-﻿using WinGL.OpenGL;
-using WinGL.Actions;
+﻿using WinGL.Actions;
 using System.Reflection;
 using Vge;
 using Mvk2.Util;
@@ -13,6 +12,8 @@ using Mvk2.World;
 using WinGL.Util;
 using Mvk2.World.Block;
 using Mvk2.Entity;
+using Vge.Games;
+using Mvk2.Games;
 
 namespace Mvk2
 {
@@ -184,7 +185,7 @@ namespace Mvk2
         /// <summary>
         /// Создание миров
         /// </summary>
-        protected override AllWorlds CreateAllWorlds() => new AllWorldsMvk();
+        protected override AllWorlds _CreateAllWorlds() => new AllWorldsMvk();
 
         /// <summary>
         /// Инициализация блоков
@@ -203,6 +204,11 @@ namespace Mvk2
             base._InitializationModelsEntities();
             ModelEntitiesRegMvk.Initialization();
         }
+
+        /// <summary>
+        /// Создаём игровой мод 
+        /// </summary>
+        protected override GameModClient _CreateGameModClient() => new GameModClientMvk(this);
 
         #endregion
 

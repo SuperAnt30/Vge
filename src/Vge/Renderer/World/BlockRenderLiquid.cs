@@ -473,7 +473,7 @@ namespace Vge.Renderer.World
                 id = 0;
             }
 
-            if (_blockCheck.Id != id)
+            if (_blockCheck.IndexBlock != id)
             {
                 _blockCheck = Ce.Blocks.BlockObjects[id];
             }
@@ -483,7 +483,7 @@ namespace Vge.Renderer.World
                 if (_metCheck == 0)
                 {
                     // 14 это ограничение стыка между разными типами жидкости, для блокировки волны
-                    return Gi.Block.Id != _blockCheck.Id ? 14 : 15;
+                    return Gi.Block.IndexBlock != _blockCheck.IndexBlock ? 14 : 15;
                 }
                 return _metCheck;
             }

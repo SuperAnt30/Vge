@@ -135,7 +135,7 @@ namespace Vge.Management
         {
             Login = login;
             Token = GetHash(token);
-            Type = EnumEntity.Player;
+            IndexEntity = Ce.ModelEntities.IndexPlayer;
             Socket = socket;
             _server = server;
             UUID = GetHash(login);
@@ -367,12 +367,28 @@ namespace Vge.Management
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
-                    EntityThrowable entity = new EntityThrowable(
-                    //    EnumEntity.Box, world.Collision, this, i);
-                    isBox ? EnumEntity.Box : EnumEntity.Stone, world.Collision, this, i);
-                    isBox = !isBox;
-                    entity.SetEntityId(_server.LastEntityId());
-                    world.SpawnEntityInWorld(entity);
+                    int id = _server.Worlds.GetDebugIndex(isBox);
+                    if (id == -1)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        //TODO::2025-06-04 Activator.CreateInstance
+                        EntityBase entity = Activator.CreateInstance(
+                            Ce.ModelEntities.ModelEntitiesObjects[id].EntityType,
+                            (ushort)id, world.Collision, this, i, .6f) as EntityBase;
+
+                        // EntityThrowable entity = new EntityThrowable((ushort)id, world.Collision, this, i);
+                        isBox = !isBox;
+                        entity.SetEntityId(_server.LastEntityId());
+
+                        world.SpawnEntityInWorld(entity);
+                    }
+                    catch (Exception ex)
+                    {
+                        return;
+                    }
                 }
             }
         }

@@ -13,14 +13,6 @@
         /// Текстура основного виджета
         /// </summary>
         public uint Widgets;
-        /// <summary>
-        /// Текстура атласа размытых блоков
-        /// </summary>
-        public uint AtlasBlurry;
-        /// <summary>
-        /// Текстура атласа блоков с чёткой резкостью
-        /// </summary>
-        public uint AtlasSharpness;
     }
 
     /// <summary>

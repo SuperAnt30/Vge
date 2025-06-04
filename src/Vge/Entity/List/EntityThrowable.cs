@@ -17,11 +17,11 @@ namespace Vge.Entity.List
         /// <summary>
         /// Сколько тиков жизни
         /// </summary>
-        private int _age = 0;
+        protected int _age = 0;
         /// <summary>
         /// Вес сущности
         /// </summary>
-        private readonly float _weight;
+        protected float _weight;
 
         /// <summary>
         /// Для отладки прыгают всегда
@@ -31,26 +31,11 @@ namespace Vge.Entity.List
         /// <summary>
         /// Создаёт клиент
         /// </summary>
-        public EntityThrowable(EnumEntity type, EntitiesRenderer entities)
+        public EntityThrowable(ushort indexEntity, EntitiesRenderer entities)
         {
-            Type = type;
-            //Render = new EntityRenderClient(this, entities, );
-            if (type == EnumEntity.Stone)
-            {
-                Render = new EntityRenderClient(this, entities, 1);
-                Width = .125f;
-                Height = .25f;
-                //Width = .6f;
-                //Height = 3.6f;
-                _weight = 25;
-            }
-            else
-            {
-                Render = new EntityRenderClient(this, entities, 0);
-                Width = .5f;
-                Height = 1f;
-                _weight = 100;
-            }
+            _InitSize();
+            IndexEntity = indexEntity;
+            Render = new EntityRenderClient(this, entities, IndexEntity);
         }
 
         /// <summary>
@@ -58,30 +43,14 @@ namespace Vge.Entity.List
         /// </summary>
         /// <param name="entityThrower">Кто метнул</param>
         /// <param name="speedThrower">Скорость метания</param>
-        public EntityThrowable(EnumEntity type, CollisionBase collision,
+        public EntityThrowable(ushort indexEntity, CollisionBase collision,
             EntityLiving entityThrower, int i, float speedThrower = .49f)
         {
             EntityThrower = entityThrower;
-            Type = type;
+            _InitSize();
+            IndexEntity = indexEntity;
             Render = new EntityRenderBase(this);
-            if (type == EnumEntity.Stone)
-            {
-                Width = .125f;
-                Height = .25f;
-                //Width = .6f;
-                //Height = 3.6f;
-                _weight = 25;
-                Physics = new PhysicsGround(collision, this, .9f);
-                speedThrower = .6f;
-            }
-            else
-            {
-                Width = .5f;
-                Height = 1f;
-                _weight = 100;
-                Physics = new PhysicsGround(collision, this, 0);
-                speedThrower = .4f;
-            }
+            _InitPhysics(collision);
 
             // с боку
             //PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw);// * .4f;
@@ -112,6 +81,18 @@ namespace Vge.Entity.List
             //motion.x += glm.cos(f2) * f1;
             //motion.z += glm.sin(f2) * f1;
             //Motion = motion;
+        }
+
+        protected virtual void _InitSize()
+        {
+            Width = .125f;
+            Height = .25f;
+            _weight = 25;
+        }
+
+        protected virtual void _InitPhysics(CollisionBase collision)
+        {
+            Physics = new PhysicsGround(collision, this, .9f);
         }
 
         /// <summary>

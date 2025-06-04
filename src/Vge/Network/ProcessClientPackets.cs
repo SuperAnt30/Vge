@@ -1,4 +1,5 @@
 ﻿//#define PhysicsServer
+using System;
 using Vge.Entity;
 using Vge.Entity.List;
 using Vge.Games;
@@ -176,6 +177,7 @@ namespace Vge.Network
         {
             BlocksReg.Correct(new CorrectTable(packet.Blocks));
             ModelEntitiesReg.Correct(new CorrectTable(packet.Entities));
+            
             // После получения таблиц блоков и сущностей, запускаем мир
             Game.GameStartingNet();
         }
@@ -245,7 +247,7 @@ namespace Vge.Network
             {
                 // После проверки, что оба в одном мире
 
-                PlayerClient player = new PlayerClient(Game);
+                PlayerClient player = new PlayerClient(Ce.ModelEntities.IndexPlayer, Game);
                 player.SetDataPlayer(packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
                 player.PosServerX = player.PosPrevX = player.PosX = packet.X;
                 player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
@@ -270,7 +272,11 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
-            EntityThrowable entity = new EntityThrowable(packet.Type, Game.WorldRender.Entities);
+            // Создание сущности, вынести в отдельный объект, возможно Ce.ModelEntities
+            //TODO::2025-06-04 Activator.CreateInstance
+            EntityBase entity = Activator.CreateInstance(
+                Ce.ModelEntities.ModelEntitiesObjects[packet.IndexEntity].EntityType,
+                packet.IndexEntity, Game.WorldRender.Entities) as EntityBase;
             entity.SetEntityId(packet.Index);
             entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
             entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;

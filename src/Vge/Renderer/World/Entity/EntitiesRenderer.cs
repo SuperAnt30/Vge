@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System;
+using Vge.Entity;
 using Vge.Games;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -27,7 +28,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
-        private bool _isHitBox = false;// true;
+        private bool _isHitBox = true;
 
         /// <summary>
         /// Это временно!!!
@@ -69,10 +70,7 @@ namespace Vge.Renderer.World.Entity
                 ModelEntitiesReg.TextureManager.DepthBig, 
                 (uint)Gi.ActiveTextureSamplerBig);
             
-            // TODO::2025-04-25 Продумать, подготовку рендера для сети и не только до создания сущностей
             // TODO::2025-05-14 Из-за Texture ещё не готов модуль
-
-
 
             int count = Ce.ModelEntities.ModelEntitiesObjects.Length;
 
@@ -89,10 +87,8 @@ namespace Vge.Renderer.World.Entity
                         modelEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
                         (uint)(modelEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
                 }
-                
                 _entityRender[i] = new EntityRender(gl, Render, modelEntity, _game.Player);
             }
-            
         }
 
         /// <summary>
@@ -111,14 +107,7 @@ namespace Vge.Renderer.World.Entity
             float y = _game.Player.PosFrameY;
             float z = _game.Player.PosFrameZ;
 
-            // Параметрв шейдоров для всех сущностей
-            //Render.ShEntityPrimitive.Bind(gl);
-            //Render.ShEntityPrimitive.SetUniformMatrix4(gl, "view", _game.Player.View);
-            //gl.Uniform1(Render.ShEntityPrimitive.GetUniformLocation(gl, "sampler_small"),
-            //    Gi.ActiveTextureSamplerSmall);
-            //gl.Uniform1(Render.ShEntityPrimitive.GetUniformLocation(gl, "sampler_big"),
-            //    Gi.ActiveTextureSamplerBig);
-
+            // Параметрв шейдоров
             Render.ShEntity.Bind(gl);
             Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
 
@@ -133,18 +122,37 @@ namespace Vge.Renderer.World.Entity
                         entity = chunkRender.ListEntities.GetAt(j);
                         if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
                         {
-                            // HitBox
-                            if (_isHitBox)
+                            // Model
+                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                            CountEntitiesFC++;
+                        }
+                    }
+                }
+            }
+
+            if (_isHitBox)
+            {
+                // Есть хит бокс сущности
+                // Пробегаемся заного по всем сущностям, это будет быстрее, чем биндить шейдера
+                Render.ShLine.Bind(gl);
+                Render.ShLine.SetUniformMatrix4(gl, "view", _game.Player.View);
+                for (int i = 0; i < count; i++)
+                {
+                    chunkRender = _arrayChunkRender[i];
+                    countEntity = chunkRender.ListEntities.Count;
+                    if (countEntity > 0)
+                    {
+                        for (int j = 0; j < countEntity; j++)
+                        {
+                            entity = chunkRender.ListEntities.GetAt(j);
+                            if (entity.Id != playerId)
                             {
-                                Render.ShaderBindLine(_game.Player.View,
+                                Render.ShLine.SetUniform3(gl, "pos",
                                     entity.GetPosFrameX(timeIndex) - x,
                                     entity.GetPosFrameY(timeIndex) - y,
                                     entity.GetPosFrameZ(timeIndex) - z);
                                 _hitbox.Draw(timeIndex, entity);
                             }
-                            // Model
-                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
-                            CountEntitiesFC++;
                         }
                     }
                 }
@@ -177,10 +185,17 @@ namespace Vge.Renderer.World.Entity
         public override void Dispose()
         {
             _hitbox.Dispose();
-            _game.WorldRender.Render.Texture.DeleteTexture(_idTextureSmall);
-            _idTextureSmall = 0;
-            _game.WorldRender.Render.Texture.DeleteTexture(_idTextureBig);
-            _idTextureBig = 0;
+            // Удаление текстур для сущностей
+            if (_idTextureSmall != 0)
+            {
+                _game.WorldRender.Render.Texture.DeleteTexture(_idTextureSmall);
+                _idTextureSmall = 0;
+            }
+            if (_idTextureBig != 0)
+            {
+                _game.WorldRender.Render.Texture.DeleteTexture(_idTextureBig);
+                _idTextureBig = 0;
+            }
             if (_entityRender != null)
             {
                 for (int i = 0; i < _entityRender.Length; i++)

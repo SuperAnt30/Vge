@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Actions;
 using Vge.Event;
@@ -34,6 +33,10 @@ namespace Vge.Games
         /// Объект нажатия клавиатуры
         /// </summary>
         public readonly Keyboard Key;
+        /// <summary>
+        /// Объект игрового мода для клиентской части, этот объект наследуется другими проектами
+        /// </summary>
+        public readonly GameModClient ModClient;
 
         /// <summary>
         /// Локальная игра
@@ -124,8 +127,9 @@ namespace Vge.Games
         /// </summary>
         private bool _flagFirstMouseFPV;
 
-        public GameBase(WindowMain window) : base(window)
+        public GameBase(WindowMain window, GameModClient gameModClient) : base(window)
         {
+            ModClient = gameModClient;
             Ce.InitClient();
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
@@ -181,6 +185,9 @@ namespace Vge.Games
         /// </summary>
         public virtual void GameStarting()
         {
+            // Инициализация ID сущностей и прочего
+            ModClient.InitAfterStartGame();
+
             World = new WorldClient(this);
             World.TagDebug += World_TagDebug;
             Player.TagDebug += World_TagDebug;

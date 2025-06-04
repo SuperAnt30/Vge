@@ -359,7 +359,7 @@ namespace Vge.Renderer.World
                     _emptySide = false;
                     _resultSide[_indexSide] = _storage.Light[i];
                 }
-                else if (_isCullFaceAll && id == Gi.Block.Id)
+                else if (_isCullFaceAll && id == Gi.Block.IndexBlock)
                 {
                     // Одинаково типа, убираем прорисовку, вода, стекло без метданых!
                     // Чистый должен быть id, для воды
@@ -370,7 +370,7 @@ namespace Vge.Renderer.World
                     // Собираем данные соседнего блока
                     _metCheck = id >> 12;
                     id = id & 0xFFF;
-                    if (_blockCheck.Id != id)
+                    if (_blockCheck.IndexBlock != id)
                     {
                         _blockCheck = Ce.Blocks.BlockObjects[id];
                     }
@@ -392,7 +392,7 @@ namespace Vge.Renderer.World
                     else if (_blockCheck.Translucent)
                     {
                         // Соседний блок прозрачный
-                        if (Gi.Block.Id != id)
+                        if (Gi.Block.IndexBlock != id)
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;

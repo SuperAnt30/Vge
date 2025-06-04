@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using Vge.Renderer;
 using Vge.Util;
 using WinGL.Util;
 
@@ -45,6 +46,15 @@ namespace Vge.World.Block
         /// </summary>
         private int _textureAtlasBlockCount = 64;
 
+        /// <summary>
+        /// Id текстуры атласа размытых блоков
+        /// </summary>
+        public uint _idAtlasBlurry;
+        /// <summary>
+        /// Id текстуры атласа блоков с чёткой резкостью
+        /// </summary>
+        public uint _idAtlasSharpness;
+
         //private readonly Logger _logger = new Logger("Debug");
         //private readonly Profiler _profiler;
 
@@ -66,18 +76,21 @@ namespace Vge.World.Block
             _mask = new bool[_textureAtlasBlockCount, _textureAtlasBlockCount];
         }
 
-        public void EndImage(WindowMain window)
+        /// <summary>
+        /// Конец создания атласа, биндим в текстуру
+        /// </summary>
+        public void EndImage(TextureMap textureMap)
         {
             // Удаляем текстуры, так-как может быть иной размер
-            window.Render.DeleteTextureAtlases();
-
+            DeleteTexture(textureMap);
+            
             // Создаём заного текстуры
-            BufferedImage bufferedImage = new BufferedImage(_height, _height, _buffer, 
-                (uint)Gi.ActiveTextureAatlasSharpness, false);
-            window.Render.AddTextureAtlasSharpness(bufferedImage);
-            bufferedImage = new BufferedImage(_height, _height, _buffer,
-                (uint)Gi.ActiveTextureAatlasBlurry, true);
-            window.Render.AddTextureAtlasBlurry(bufferedImage);
+            _idAtlasSharpness = textureMap.SetTexture(
+                new BufferedImage(_height, _height, _buffer,
+                (uint)Gi.ActiveTextureAatlasSharpness, false));
+            _idAtlasBlurry = textureMap.SetTexture(
+                new BufferedImage(_height, _height, _buffer,
+                (uint)Gi.ActiveTextureAatlasBlurry, true));
 
 #if DEBUG
             // Для отладки сохранить в файл посмотреть как вышло
@@ -292,6 +305,23 @@ namespace Vge.World.Block
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Удаление текстур атласов
+        /// </summary>
+        public void DeleteTexture(TextureMap textureMap)
+        {
+            if (_idAtlasSharpness != 0)
+            {
+                textureMap.DeleteTexture(_idAtlasSharpness);
+                _idAtlasSharpness = 0;
+            }
+            if (_idAtlasBlurry != 0)
+            {
+                textureMap.DeleteTexture(_idAtlasBlurry);
+                _idAtlasBlurry = 0;
+            }
         }
     }
 }

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 
+// 333-333-333-333-333 — 22:13 04.06.2025 Почему без[System.Security.SuppressUnmanagedCodeSecurity]?
 namespace WinGL.OpenGL
 {
     /// <summary>
     /// Объект методов OpenGL
     /// </summary>
+    [SuppressUnmanagedCodeSecurity] 
     public partial class GL
     {
         /// <summary>

@@ -4,6 +4,7 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Renderer.World.Entity
@@ -93,7 +94,7 @@ namespace Vge.Renderer.World.Entity
         public override void Draw(float timeIndex, float deltaTime)
         {
             _IncreaseCurrentTime(deltaTime);
-            EntityRender entityRender = Entities.GetEntityRender(Entity.GetTypeEntity());
+            EntityRender entityRender = Entities.GetEntityRender(Entity.IndexEntity);
             bool anim = false;// Entity.Type == EnumEntity.Stone;
 
             float ppfx = entityRender.Player.PosFrameX;
@@ -116,15 +117,6 @@ namespace Vge.Renderer.World.Entity
                 pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
                 //pitch = 0;
             }
-
-            // Заносим в шейдор
-            //Entities.Render.ShaderBindEntityPrimitive(
-            //    _modelEntity.DepthTextures[0], _modelEntity.TextureSmall,
-            //    _lightBlock, _lightSky,
-            //    Entity.GetPosFrameX(timeIndex) - ppfx,
-            //    Entity.GetPosFrameY(timeIndex) - ppfy,
-            //    Entity.GetPosFrameZ(timeIndex) - ppfz
-            //);
 
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
@@ -160,10 +152,6 @@ namespace Vge.Renderer.World.Entity
                 Entities.Render.ShEntity.SetUniformMatrix4x3(Entities.GetOpenGL(),
                     "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
             }
-            // Текстура сущности
-           // Entities.Render.BindTexture(entityRender.Texture);
-            
-            
             entityRender.MeshDraw();
         }
 
