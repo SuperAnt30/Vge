@@ -55,10 +55,10 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private float _lightSky;
 
-        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, int indexModel) : base(entity)
+        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, ushort indexModel) : base(entity)
         {
             Entities = entities;
-            _modelEntity = Ce.ModelEntities.ModelEntitiesObjects[indexModel];
+            _modelEntity = Ce.ModelEntities.GetModelEntity(indexModel);
 
             _countBones = (byte)_modelEntity.Bones.Length;
             _bones = new BonePose[_countBones];
@@ -95,7 +95,7 @@ namespace Vge.Renderer.World.Entity
         {
             _IncreaseCurrentTime(deltaTime);
             EntityRender entityRender = Entities.GetEntityRender(Entity.IndexEntity);
-            bool anim = false;// Entity.Type == EnumEntity.Stone;
+            bool anim = true;// Entity.Type == EnumEntity.Stone;
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;

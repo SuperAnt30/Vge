@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -24,7 +25,7 @@ namespace Vge.Entity
         /// <summary>
         /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
-        public ushort IndexEntity { get; protected set; }
+        public ushort IndexEntity { get; private set; }
 
         /// <summary>
         /// Сущность мертва, не активна
@@ -138,6 +139,58 @@ namespace Vge.Entity
         /// Спит ли физика, для отладки если Physics == null
         /// </summary>
         private bool _physicSleepDebug;
+
+        #region Init
+
+        /// <summary>
+        /// Инициализировать индекс сущности, как игрок
+        /// </summary>
+        protected void _InitIndexPlayer()
+        {
+            if (Ce.ModelEntities != null)
+            {
+                IndexEntity = Ce.ModelEntities.IndexPlayer;
+            }
+        }
+
+        /// <summary>
+        /// Запуск сущности после всех инициализаций, как правило только на сервере
+        /// </summary>
+        public virtual void InitRun() { }
+
+        /// <summary>
+        /// Инициализация для клиента
+        /// </summary>
+        public void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
+        {
+            IndexEntity = index;
+            Render = new EntityRenderClient(this, entitiesRenderer, IndexEntity);
+            _InitSize();
+        }
+
+        /// <summary>
+        /// Инициализация для сервера
+        /// </summary>
+        public void InitServer(ushort index, CollisionBase collision)
+        {
+            IndexEntity = index;
+            Render = new EntityRenderBase(this);
+            _InitSize();
+            _InitPhysics(collision);
+
+        }
+
+        /// <summary>
+        /// Инициализация физики
+        /// </summary>
+        protected virtual void _InitPhysics(CollisionBase collision) { }
+
+        /// <summary>
+        /// Инициализация размеров сущности
+        /// </summary>
+        protected virtual void _InitSize() { }
+
+        #endregion
 
         /// <summary>
         /// Задать индекс

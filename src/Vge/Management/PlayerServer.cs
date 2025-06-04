@@ -135,7 +135,7 @@ namespace Vge.Management
         {
             Login = login;
             Token = GetHash(token);
-            IndexEntity = Ce.ModelEntities.IndexPlayer;
+            _InitIndexPlayer();
             Socket = socket;
             _server = server;
             UUID = GetHash(login);
@@ -365,7 +365,7 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     int id = _server.Worlds.GetDebugIndex(isBox);
                     if (id == -1)
@@ -374,16 +374,13 @@ namespace Vge.Management
                     }
                     try
                     {
-                        //TODO::2025-06-04 Activator.CreateInstance
-                        EntityBase entity = Activator.CreateInstance(
-                            Ce.ModelEntities.ModelEntitiesObjects[id].EntityType,
-                            (ushort)id, world.Collision, this, i, .6f) as EntityBase;
-
-                        // EntityThrowable entity = new EntityThrowable((ushort)id, world.Collision, this, i);
                         isBox = !isBox;
-                        entity.SetEntityId(_server.LastEntityId());
-
-                        world.SpawnEntityInWorld(entity);
+                        //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
+                        // Для сервера
+                        EntityThrowable entityThrowable = Ce.ModelEntities.CreateEntityServer((ushort)id, world.Collision) as EntityThrowable;
+                        entityThrowable.InitRun(this, i);
+                        entityThrowable.SetEntityId(_server.LastEntityId());
+                        world.SpawnEntityInWorld(entityThrowable);
                     }
                     catch (Exception ex)
                     {

@@ -247,7 +247,7 @@ namespace Vge.Network
             {
                 // После проверки, что оба в одном мире
 
-                PlayerClient player = new PlayerClient(Ce.ModelEntities.IndexPlayer, Game);
+                PlayerClient player = new PlayerClient(Game);
                 player.SetDataPlayer(packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
                 player.PosServerX = player.PosPrevX = player.PosX = packet.X;
                 player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
@@ -272,17 +272,17 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
-            // Создание сущности, вынести в отдельный объект, возможно Ce.ModelEntities
-            //TODO::2025-06-04 Activator.CreateInstance
-            EntityBase entity = Activator.CreateInstance(
-                Ce.ModelEntities.ModelEntitiesObjects[packet.IndexEntity].EntityType,
-                packet.IndexEntity, Game.WorldRender.Entities) as EntityBase;
+            EntityBase entity = Ce.ModelEntities.CreateEntityClient(packet.IndexEntity, Game.WorldRender.Entities);
             entity.SetEntityId(packet.Index);
             entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
             entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;
             entity.PosServerZ = entity.PosPrevZ = entity.PosZ = packet.Z;
-            //entity.RotationPrevYaw = entity.RotationYaw = packet.Yaw;
-            //entity.RotationPrevPitch = entity.RotationPitch = packet.Pitch;
+            if (entity is EntityLiving entityLiving)
+            {
+                entityLiving.RotationPrevYaw = entityLiving.RotationYaw = packet.Yaw;
+                // YawHead подумать!
+                entityLiving.RotationPrevPitch = entityLiving.RotationPitch = packet.Pitch;
+            }
             Game.World.SpawnEntityInWorld(entity);
         }
 

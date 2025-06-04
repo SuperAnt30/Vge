@@ -1,4 +1,5 @@
-﻿using Vge.Entity.Physics;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Physics;
 using Vge.Renderer.World.Entity;
 using Vge.World;
 using WinGL.Util;
@@ -26,32 +27,19 @@ namespace Vge.Entity.List
         /// <summary>
         /// Для отладки прыгают всегда
         /// </summary>
-        private int _jumpTime;
+        //private int _jumpTime;
 
         /// <summary>
-        /// Создаёт клиент
+        /// Запуск сущности после всех инициализаций, как правило только на сервере .3
         /// </summary>
-        public EntityThrowable(ushort indexEntity, EntitiesRenderer entities)
-        {
-            _InitSize();
-            IndexEntity = indexEntity;
-            Render = new EntityRenderClient(this, entities, IndexEntity);
-        }
+        public virtual void InitRun(EntityLiving entityThrower, int i)
+            => _InitRun(entityThrower, i, .6f);
 
         /// <summary>
-        /// Сущность метательная, создаёт сервер
+        /// Запуск сущности после всех инициализаций, как правило только на сервере .3
         /// </summary>
-        /// <param name="entityThrower">Кто метнул</param>
-        /// <param name="speedThrower">Скорость метания</param>
-        public EntityThrowable(ushort indexEntity, CollisionBase collision,
-            EntityLiving entityThrower, int i, float speedThrower = .49f)
+        protected void _InitRun(EntityLiving entityThrower, int i, float speedThrower = .49f)
         {
-            EntityThrower = entityThrower;
-            _InitSize();
-            IndexEntity = indexEntity;
-            Render = new EntityRenderBase(this);
-            _InitPhysics(collision);
-
             // с боку
             //PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw);// * .4f;
             //PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw);// * .4f;
@@ -83,17 +71,22 @@ namespace Vge.Entity.List
             //Motion = motion;
         }
 
-        protected virtual void _InitSize()
+
+        /// <summary>
+        /// Инициализация размеров сущности
+        /// </summary>
+        protected override void _InitSize()
         {
             Width = .125f;
             Height = .25f;
             _weight = 25;
         }
 
-        protected virtual void _InitPhysics(CollisionBase collision)
-        {
-            Physics = new PhysicsGround(collision, this, .9f);
-        }
+        /// <summary>
+        /// Инициализация физики
+        /// </summary>
+        protected override void _InitPhysics(CollisionBase collision)
+            => Physics = new PhysicsGround(collision, this, .9f);
 
         /// <summary>
         /// Вес сущности для определения импулса между сущностями,

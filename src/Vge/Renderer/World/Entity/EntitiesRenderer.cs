@@ -28,7 +28,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
-        private bool _isHitBox = true;
+        private bool _isHitBox = false;//true;
 
         /// <summary>
         /// Это временно!!!
@@ -72,14 +72,13 @@ namespace Vge.Renderer.World.Entity
             
             // TODO::2025-05-14 Из-за Texture ещё не готов модуль
 
-            int count = Ce.ModelEntities.ModelEntitiesObjects.Length;
-
+            int count = Ce.ModelEntities.Count;
             _entityRender = new EntityRender[count];
 
             ModelEntity modelEntity;
-            for (int i = 0; i < count; i++)
+            for (ushort id = 0; id < count; id++)
             {
-                modelEntity = Ce.ModelEntities.ModelEntitiesObjects[i];
+                modelEntity = Ce.ModelEntities.GetModelEntity(id);
                 
                 for (int t = 0; t < modelEntity.Textures.Length; t++)
                 {
@@ -87,7 +86,7 @@ namespace Vge.Renderer.World.Entity
                         modelEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
                         (uint)(modelEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
                 }
-                _entityRender[i] = new EntityRender(gl, Render, modelEntity, _game.Player);
+                _entityRender[id] = new EntityRender(gl, Render, modelEntity, _game.Player);
             }
         }
 

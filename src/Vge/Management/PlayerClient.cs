@@ -40,11 +40,11 @@ namespace Vge.Management
         /// </summary>
         protected readonly GameBase _game;
 
-        public PlayerClient(ushort indexEntity, GameBase game)
+        public PlayerClient(GameBase game)
         {
             _game = game;
             Eye = Height * .85f;
-            IndexEntity = indexEntity;
+            _InitIndexPlayer();
             if (!(this is PlayerClientOwner))// game.WorldRender != null)
             {
                 Render = new EntityRenderClient(this, game.WorldRender.Entities, 1);

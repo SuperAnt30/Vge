@@ -134,7 +134,7 @@ namespace Vge.Management
 
         public float FFF = 0;
 
-        public PlayerClientOwner(GameBase game) : base(0, game) // IndexEntity ещё не определён
+        public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
@@ -147,7 +147,7 @@ namespace Vge.Management
         /// </summary>
         public void WorldStarting()
         {
-            IndexEntity = Ce.ModelEntities.IndexPlayer;
+            _InitIndexPlayer();
             Physics = new PhysicsFly(_game.World.Collision, this);
             //Physics = new PhysicsGround(_game.World.Collision, this);
 
@@ -206,8 +206,6 @@ namespace Vge.Management
         }
 
         #endregion
-
-            
 
         #region Действие рук, левый или правый клик
 

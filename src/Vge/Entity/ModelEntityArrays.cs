@@ -1,4 +1,6 @@
 ﻿using System;
+using Vge.Renderer.World.Entity;
+using Vge.World;
 
 namespace Vge.Entity
 {
@@ -18,7 +20,7 @@ namespace Vge.Entity
         /// <summary>
         /// Массив объектов сущностей
         /// </summary>
-        public readonly ModelEntity[] ModelEntitiesObjects;
+        private readonly ModelEntity[] _modelEntitiesObjects;
         /// <summary>
         /// Количество всех сущностей
         /// </summary>
@@ -32,7 +34,7 @@ namespace Vge.Entity
         {
             Count = ModelEntitiesReg.Table.Count;
             ModelEntitiesAlias = new string[Count];
-            ModelEntitiesObjects = new ModelEntity[Count];
+            _modelEntitiesObjects = new ModelEntity[Count];
 
             ModelEntity modelEntity;
             for (ushort id = 0; id < Count; id++)
@@ -44,8 +46,51 @@ namespace Vge.Entity
                 }
                 modelEntity = ModelEntitiesReg.Table[id];
                 modelEntity.SetIndex(id);
-                ModelEntitiesObjects[id] = modelEntity;
+                _modelEntitiesObjects[id] = modelEntity;
             }
         }
+
+        /// <summary>
+        /// Получить модель сущности по индексу из таблицы сервера.
+        /// </summary>
+        public ModelEntity GetModelEntity(ushort index)
+        {
+            if (index < Count)
+            {
+                return _modelEntitiesObjects[index];
+            }
+            throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));
+        }
+
+        /// <summary>
+        /// Создать сущность для клиента по индексу из таблицы сервера.
+        /// Регистрацию индексов сущностей можно заполнить в AllWorlds.Init()
+        /// </summary>
+        public EntityBase CreateEntityClient(ushort index, EntitiesRenderer entitiesRenderer)
+        {
+            if (index < Count)
+            {
+                EntityBase entity = Activator.CreateInstance(_modelEntitiesObjects[index].EntityType) as EntityBase;
+                entity.InitRender(index, entitiesRenderer);
+                return entity;
+            }
+            throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));
+        }
+
+        /// <summary>
+        /// Создать сущность для сервера по индексу из таблицы сервера.
+        /// Регистрацию индексов сущностей можно заполнить в GameModClient.InitAfterStartGame() 
+        /// </summary>
+        public EntityBase CreateEntityServer(ushort index, CollisionBase collision)
+        {
+            if (index < Count)
+            {
+                EntityBase entity = Activator.CreateInstance(_modelEntitiesObjects[index].EntityType) as EntityBase;
+                entity.InitServer(index, collision);
+                return entity;
+            }
+            throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));
+        }
+
     }
 }

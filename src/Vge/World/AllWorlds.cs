@@ -38,11 +38,6 @@ namespace Vge.World
         public virtual void Init(GameServer server) => Server = server;
 
         /// <summary>
-        /// Инициализация после старта игры, когда уже все блоки и сущности загружены
-        /// </summary>
-        public virtual void InitAfterStartGame() { }
-
-        /// <summary>
         /// Получить индекс кидаемого блока
         /// </summary>
         public virtual int GetDebugIndex(bool b) => -1;

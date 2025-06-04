@@ -39,7 +39,7 @@ namespace Mvk2.World
         /// </summary>
         private void _InitAfterStartGame()
         {
-            int count = Ce.ModelEntities.ModelEntitiesAlias.Length;
+            int count = Ce.ModelEntities.Count;
             string s;
             for (int id = 0; id < count; id++)
             {
