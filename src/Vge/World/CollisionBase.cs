@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Vge.Entity;
+﻿using Vge.Entity;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -13,6 +11,15 @@ namespace Vge.World
     /// </summary>
     public class CollisionBase
     {
+        /// <summary>
+        /// Результат запроса, списка для поиска сущностей
+        /// </summary>
+        public readonly ListFast<EntityBase> ListEntity = new ListFast<EntityBase>();
+        /// <summary>
+        /// Результат запроса, списка для поиска блоков
+        /// </summary>
+        public readonly ListFast<AxisAlignedBB> ListBlock = new ListFast<AxisAlignedBB>();
+
         /// <summary>
         /// Сылка на объект мира
         /// </summary>
@@ -29,15 +36,13 @@ namespace Vge.World
         /// </summary>
         public void Init() => _numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
 
-        
-
         /// <summary>
         /// Возвращает список статических (блоков) ограничивающих рамок, которые сталкиваются с aabb
         /// </summary>
         /// <param name="aabb">проверяемая рамка</param>
-        public List<AxisAlignedBB> GetStaticBoundingBoxes(AxisAlignedBB aabb)
+        public void StaticBoundingBoxes(AxisAlignedBB aabb)
         {
-            List<AxisAlignedBB> list = new List<AxisAlignedBB>();
+            ListBlock.Clear();
             Vector3i min = aabb.MinInt();
             Vector3i max = aabb.MaxInt();
                 
@@ -73,13 +78,13 @@ namespace Vge.World
                                 block = blockState.GetBlock();
                                 if (block.IsCollidable)
                                 {
-                                    list.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
+                                    ListBlock.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
                                 }
                             }
                             else
                             {
                                 // Для колизи важно, если чанк не загружен, то блоки все с колизией, так-как начнём падать
-                                list.Add(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1));
+                                ListBlock.Add(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1));
                             }
                         }
                     }
@@ -112,13 +117,13 @@ namespace Vge.World
                                                 block = blockState.GetBlock();
                                                 if (block.IsCollidable)
                                                 {
-                                                    list.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
+                                                    ListBlock.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
                                                 }
                                             }
                                             else
                                             {
                                                 // Для колизи важно, если чанк не загружен, то блоки все с колизией, так-как начнём падать
-                                                list.Add(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1));
+                                                ListBlock.Add(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1));
                                             }
                                         }
                                     }
@@ -128,8 +133,6 @@ namespace Vge.World
                     }
                 }
             }
-
-            return list;
         }
 
         /// <summary>
@@ -225,14 +228,16 @@ namespace Vge.World
             return false;
         }
 
+        
+
         /// <summary>
-        /// Возвращает список сущностей, которые могут сталкиваются с aabb из секторов чанка,
+        /// Собрать список сущностей, которые могут сталкиваются с aabb из секторов чанка,
         /// </summary>
         /// <param name="aabb">проверяемая рамка</param>
         /// <param name="id">исключение ID сущности</param>
-        public List<EntityBase> GetEntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
+        public void EntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
         {
-            List<EntityBase> list = new List<EntityBase>();
+            ListEntity.Clear();
             Vector3i min = aabb.MinInt();
             Vector3i max = aabb.MaxInt();
 
@@ -256,16 +261,14 @@ namespace Vge.World
                     // Не надо отрабатывать null, для этого есть отработка в статике
                     if (chunk != null)
                     {
-                        chunk.FillInEntityBoundingBoxesFromSector(list, minY, maxY, id);
+                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, minY, maxY, id);
                     }
                 }
             }
-
-            return list;
         }
 
         #region Old
-
+        /*
         /// <summary>
         /// Возвращает список сущностей, которые сталкиваются с aabb,
         /// </summary>
@@ -376,7 +379,7 @@ namespace Vge.World
             }
             return false;
         }
-
+        */
         #endregion
     }
 }

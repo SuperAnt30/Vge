@@ -253,7 +253,8 @@ namespace Vge.Entity.Physics
                 }
 
                 y = heightAutoJump;
-                List<AxisAlignedBB> aabbs = Collision.GetStaticBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ));
+                Collision.StaticBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ));
+                ListFast<AxisAlignedBB> aabbs = Collision.ListBlock;
                 AxisAlignedBB aabbEntity2 = boundingBox.Clone();
                 AxisAlignedBB aabb = aabbEntity2.AddCoordBias(MotionX, 0, MotionZ);
 
@@ -305,6 +306,8 @@ namespace Vge.Entity.Physics
                     // Находим итоговое смещение по Y
                     foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity3, y);
                 }
+
+                Collision.ListBlock.ClearFull();
 
                 if (monCacheX * monCacheX + monCacheZ * monCacheZ >= x * x + z * z)
                 {

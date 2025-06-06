@@ -159,7 +159,8 @@ namespace Vge.Entity.Physics
                 float z = MotionZ;
 
                 AxisAlignedBB aabbEntity = boundingBox.Clone();
-                List<AxisAlignedBB> aabbs = Collision.GetStaticBoundingBoxes(boundingBox.AddCoordBias(x, y, z));
+                Collision.StaticBoundingBoxes(boundingBox.AddCoordBias(x, y, z));
+                ListFast<AxisAlignedBB> aabbs = Collision.ListBlock;
 
                 // Находим смещение по Y
                 foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity, y);
@@ -183,6 +184,8 @@ namespace Vge.Entity.Physics
 
                 // Находим смещение по Z
                 foreach (AxisAlignedBB axis in aabbs) z = axis.CalculateZOffset(aabbEntity, z);
+                Collision.ListBlock.ClearFull();
+
                 // Рикошет от препятствия
                 if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
 
@@ -206,10 +209,12 @@ namespace Vge.Entity.Physics
         protected void _CheckMoveCollidingEntity(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z)
         {
             // Собираем все близлижащий сущностей для дальнейше проверки
-            List<EntityBase> entities = Collision.GetEntityBoundingBoxesFromSector(boundingBox.Expand(4), Entity.Id);
+            Collision.EntityBoundingBoxesFromSector(boundingBox.Expand(4), Entity.Id);
 
             // Если нет сущностей, то не зачем дальше обрабатывать
-            if (entities.Count == 0) return;
+            if (Collision.ListEntity.Count == 0) return;
+
+            ListFast<EntityBase> entities = Collision.ListEntity;
 
             AxisAlignedBB aabbEntity = boundingBox.Clone();
             // Коробка для проверки
@@ -358,6 +363,7 @@ namespace Vge.Entity.Physics
                     }
                 }
             }
+            Collision.ListBlock.ClearFull();
         }
     }
 }
