@@ -27,7 +27,7 @@ namespace Vge.Entity.List
         /// <summary>
         /// Для отладки прыгают всегда
         /// </summary>
-        //private int _jumpTime;
+        private int _jumpTime;
 
         /// <summary>
         /// Запуск сущности после всех инициализаций, как правило только на сервере .3
@@ -44,10 +44,14 @@ namespace Vge.Entity.List
             //PosX = entityThrower.PosX + Glm.Cos(entityThrower.RotationYaw);// * .4f;
             //PosZ = entityThrower.PosZ + Glm.Sin(entityThrower.RotationYaw);// * .4f;
             // спереди
-            float f = (i & 15) * 1.24f;
-            float f2 = (i >> 4) * 1.1f;
-            PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw) * f;
-            PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw) * f;
+            float f3 = (int)(i / 100) * 1.54f;
+            i = i % 100; 
+            float f = (i & 15) * 1.54f;
+            float f2 = (i >> 4) * 1.3f;
+            PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw) * f
+                - Glm.Cos(entityThrower.RotationYaw) * f3;
+            PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw) * f
+                + Glm.Sin(entityThrower.RotationYaw) * f3;
             PosY = entityThrower.PosY + entityThrower.Eye - .2f + f2;
             // вверх
             //PosX = entityThrower.PosX;
@@ -91,6 +95,7 @@ namespace Vge.Entity.List
         /// <summary>
         /// Вес сущности для определения импулса между сущностями,
         /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
+        /// В килограммах.
         /// </summary>
         public override float GetWeight() => _weight;
 
@@ -117,6 +122,24 @@ namespace Vge.Entity.List
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
+                if (Physics.CaughtInBlock > 2)
+                {
+                    if (_jumpTime > 0) _jumpTime--;
+                    if (_jumpTime == 0 && OnGround)
+                    {
+                        Physics.MotionY = .5f;
+                        _jumpTime = 20;
+                        Physics.AwakenPhysics();
+                    }
+                }
+
+                if (Physics.CaughtInBlock > 150 || Physics.CaughtInEntity > 30)
+                {
+                    SetDead();
+                    return;
+                }
+
+
                 if (IsPositionChange())
                 {
                     //float x = -Physics.MotionX;
@@ -131,9 +154,11 @@ namespace Vge.Entity.List
                         
                     LevelMotionChange = 2;
                 }
-                else if (Physics.IsPhysicAlmostSleep())
+                else if (!Physics.IsPhysicSleep())
                 {
-                    // Надо ещё 2 такта как минимум передать, чтоб клиент, зафиксировал сон
+                    // Сущность не спит!
+                    // Бодрый, только помечен на пробуждение, но не было перемещения [3 или 4]
+                    // Надо ещё 2 такта как минимум передать, чтоб клиент, зафиксировал сон [1]
                     LevelMotionChange = 2;
                 }
             }

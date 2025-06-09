@@ -365,7 +365,7 @@ namespace Vge.Management
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 1000; i++)
                 {
                     int id = _server.Worlds.GetDebugIndex(isBox);
                     if (id == -1)

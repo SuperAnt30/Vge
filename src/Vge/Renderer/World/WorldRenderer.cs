@@ -130,6 +130,11 @@ namespace Vge.Renderer.World
         /// </summary>
         public void ChunkCursorHiddenShow() => _cursorRender.ChunkCursorHiddenShow();
 
+        /// <summary>
+        /// Смена видимости хитбокса сущностей
+        /// </summary>
+        public void HitboxEntitiesHiddenShow() => Entities.IsHitBox = !Entities.IsHitBox;
+
         #region Поток рендера
 
         /// <summary>

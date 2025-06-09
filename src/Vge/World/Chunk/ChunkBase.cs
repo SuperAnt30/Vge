@@ -850,18 +850,27 @@ namespace Vge.World.Chunk
         /// Заполнить список сущностей, которые могут находится в секторах чанка
         /// </summary>
         /// <param name="id">исключение ID сущности</param>
-        public void FillInEntityBoundingBoxesFromSector(ListFast<EntityBase> list, int minY, int maxY, int id)
+        public void FillInEntityBoundingBoxesFromSector(ListFast<EntityBase> list,
+            AxisAlignedBB aabb, int minY, int maxY, int id)
         {
             EntityBase entity;
+            MapEntity <EntityBase> entityMap;
+            int count;
             for (int cy = minY; cy <= maxY; cy++)
             {
-                for (int i = 0; i < ListEntitiesSection[cy].Count; i++)
+                entityMap = ListEntitiesSection[cy];
+                count = entityMap.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    entity = ListEntitiesSection[cy].GetAt(i);
-                    if (entity.Id != id && !entity.IsDead)
+                    entity = entityMap.GetAt(i);
+                    // TODO::2025-06-09 !entity.IsDead в колизии, продумать, когда сущность умерла, что с колизией делать?
+                    if (entity.Id != id)// && !entity.IsDead)
                     {
-                        // Если пересекается вносим в список
-                        list.Add(entity);
+                        if (aabb.IntersectsWith(entity.GetBoundingBox()))
+                        {
+                            // Если пересекается вносим в список
+                            list.Add(entity);
+                        }
                     }
                 }
             }

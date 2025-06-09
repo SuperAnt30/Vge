@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Vge.Util
@@ -10,7 +6,7 @@ namespace Vge.Util
     /// <summary>
     /// Усовершенствованный лист от Мефистофель, работы без мусора, чтоб не пересоздавать
     /// </summary>
-    public class ListFast<T> : IEnumerable
+    public class ListFast<T> //: IEnumerable
     {
         /// <summary>
         /// Количество элементов
@@ -37,6 +33,7 @@ namespace Vge.Util
         /// <summary>
         /// Добавить значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
         {
             if (_size <= Count)
@@ -50,6 +47,7 @@ namespace Vge.Util
         /// <summary>
         /// Добавить массив значений
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddRange(T[] items)
         {
             int count = items.Length;
@@ -66,6 +64,7 @@ namespace Vge.Util
         /// <summary>
         /// Найти имеется ли такое значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T item)
         {
             for (int i = 0; i < Count; i++)
@@ -88,11 +87,13 @@ namespace Vge.Util
         /// <summary>
         /// Получить целый буфер
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] GetBufferAll() => _buffer;
 
         /// <summary>
         /// Удалить последнее значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveLast()
         {
             if (Count > 0) Count--;
@@ -101,15 +102,17 @@ namespace Vge.Util
         /// <summary>
         /// Вернуть последнее значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetLast() => _buffer[Count - 1];
 
         /// <summary>
         /// Присвоить значение null
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void IndexNull(int index) => _buffer[index] = default(T);
 
-        public void Sort()
-            => Array.Sort<T>(_buffer, 0, Count, null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Sort() => Array.Sort<T>(_buffer, 0, Count, null);
 
         /// <summary>
         /// Очистить
@@ -132,6 +135,7 @@ namespace Vge.Util
 
         public override string ToString() => Count.ToString();
 
+        /*
         /// <summary>
         /// Благодаря такой реализации мы можем перебирать объекты в цикле foreach
         /// </summary>
@@ -184,5 +188,6 @@ namespace Vge.Util
                 _current = default(T);
             }
         }
+        */
     }
 }

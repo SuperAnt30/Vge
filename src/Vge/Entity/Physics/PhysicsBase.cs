@@ -66,6 +66,14 @@ namespace Vge.Entity.Physics
         /// Будет ли эта сущность проходить сквозь блоки
         /// </summary>
         public bool NoClip { get; protected set; } = false;
+        /// <summary>
+        /// Сколько тактов сущность зажата в блоке
+        /// </summary>
+        public ushort CaughtInBlock { get; private set; } = 0;
+        /// <summary>
+        /// Сколько тактов сущность зажата в другой сущности
+        /// </summary>
+        public ushort CaughtInEntity { get; private set; } = 0;
 
         /// <summary>
         /// Коэффициент рикошета, 0 нет отскока, 1 максимальный
@@ -111,15 +119,38 @@ namespace Vge.Entity.Physics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsPhysicSleep() => _indexSleep == 0;
         /// <summary>
-        /// Почти спит ли физика, т.е. следующим тактом должна заснуть, если никто не пробудит
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsPhysicAlmostSleep() => _indexSleep == 1;
-        /// <summary>
         /// Пробудить физику на 4 такта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AwakenPhysics() => _indexSleep = 4; // на 4 такта
+        public void AwakenPhysics() => _indexSleep = 4;
+
+        /// <summary>
+        /// Действие сущность не зажата в другой сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _NotClampedEnity()
+        {
+            if (CaughtInEntity > 0)
+            {
+                if (CaughtInEntity == 1) CaughtInEntity = 0;
+                else CaughtInEntity -= 2;
+                AwakenPhysics();
+            }
+        }
+
+        /// <summary>
+        /// Действие сущность не зажата в блоке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _NotClampedBlock()
+        {
+            if (CaughtInBlock > 0)
+            {
+                if (CaughtInBlock == 1) CaughtInBlock = 0;
+                else CaughtInBlock -= 2;
+                AwakenPhysics();
+            }
+        }
 
         public virtual string ToDebugString() => "";
 
@@ -161,36 +192,74 @@ namespace Vge.Entity.Physics
                 AxisAlignedBB aabbEntity = boundingBox.Clone();
                 Collision.StaticBoundingBoxes(boundingBox.AddCoordBias(x, y, z));
                 ListFast<AxisAlignedBB> aabbs = Collision.ListBlock;
+                int count = aabbs.Count;
 
-                // Находим смещение по Y
-                foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity, y);
-                // Рикошет от препятствия
-                if (_isRebound && MotionY != y && MotionY < PhysicsGround.GravityRebound)
+                if (count > 0)
                 {
-                    float y0 = -(MotionY + PhysicsGround.GravityRebound) * _rebound;
-                    if (y0 > y) y = y0;
+                    // Находим смещение по Y
+                    for (int i = 0; i < count; i++) y = aabbs[i].CalculateYOffset(aabbEntity, y);
+                    // Рикошет от препятствия
+                    if (_isRebound && MotionY != y && MotionY < PhysicsGround.GravityRebound)
+                    {
+                        float y0 = -(MotionY + PhysicsGround.GravityRebound) * _rebound;
+                        if (y0 > y) y = y0;
+                    }
+                    aabbEntity = aabbEntity.Offset(0, y, 0);
+
+                    // Фиксация возможен ли авто прыжок
+                    _AutoNotJump(y);
+
+                    // Находим смещение по X
+                    if (MotionX != x)
+                    {
+                        for (int i = 0; i < count; i++) x = aabbs[i].CalculateXOffset(aabbEntity, x);
+                        // Рикошет от препятствия
+                        if (_isRebound && MotionX != x) x = -MotionX * _rebound;
+                        aabbEntity = aabbEntity.Offset(x, 0, 0);
+                    }
+
+                    // Находим смещение по Z
+                    if (MotionZ != z)
+                    {
+                        for (int i = 0; i < count; i++) z = aabbs[i].CalculateZOffset(aabbEntity, z);
+                        // Рикошет от препятствия
+                        if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
+                    }
+
+                    // Проверка находится ли сущность в блоке
+                    bool caughtInBlock = false;
+                    aabbEntity = Entity.GetBoundingBoxOffset(x, y, z);
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (aabbs[i].IntersectsWith(aabbEntity))
+                        {
+                            caughtInBlock = true;
+                            break;
+                        }
+                    }
+                    // Пометки зажатости
+                    if (!caughtInBlock)
+                    {
+                        _NotClampedBlock();
+                    }
+                    else
+                    {
+                        if (CaughtInBlock < 65535)
+                        {
+                            CaughtInBlock++;
+                            AwakenPhysics();
+                        }
+                    }
+
+                    Collision.ListBlock.ClearFull();
+
+                    // Авто прыжок
+                    _AutoJump(boundingBox, ref x, ref y, ref z);
                 }
-                aabbEntity = aabbEntity.Offset(0, y, 0);
-
-                // Фиксация возможен ли авто прыжок
-                _AutoNotJump(y);
-
-                // Находим смещение по X
-                foreach (AxisAlignedBB axis in aabbs) x = axis.CalculateXOffset(aabbEntity, x);
-                // Рикошет от препятствия
-                if (_isRebound && MotionX != x) x = -MotionX * _rebound;
-
-                aabbEntity = aabbEntity.Offset(x, 0, 0);
-
-                // Находим смещение по Z
-                foreach (AxisAlignedBB axis in aabbs) z = axis.CalculateZOffset(aabbEntity, z);
-                Collision.ListBlock.ClearFull();
-
-                // Рикошет от препятствия
-                if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
-
-                // Авто прыжок
-                _AutoJump(boundingBox, ref x, ref y, ref z);
+                else
+                {
+                    _NotClampedBlock();
+                }
 
                 // Проверка перемещения со столкновением сущностей
                 _CheckMoveCollidingEntity(boundingBox, ref x, ref y, ref z);
@@ -209,12 +278,18 @@ namespace Vge.Entity.Physics
         protected void _CheckMoveCollidingEntity(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z)
         {
             // Собираем все близлижащий сущностей для дальнейше проверки
-            Collision.EntityBoundingBoxesFromSector(boundingBox.Expand(4), Entity.Id);
+            Collision.EntityBoundingBoxesFromSector(boundingBox.Expand(.2f), Entity.Id);
 
             // Если нет сущностей, то не зачем дальше обрабатывать
-            if (Collision.ListEntity.Count == 0) return;
+            if (Collision.ListEntity.Count == 0)
+            {
+                _NotClampedEnity();
+                return;
+            }
 
             ListFast<EntityBase> entities = Collision.ListEntity;
+            int count = entities.Count;
+            EntityBase entity;
 
             AxisAlignedBB aabbEntity = boundingBox.Clone();
             // Коробка для проверки
@@ -226,7 +301,7 @@ namespace Vge.Entity.Physics
 
             // == ВЕРТИКАЛЬ
 
-            if (y > .006f)//PhysicsGround.GravityRebound) // Тут мы тогда когда 
+            if (y > .006f) // Тут мы тогда когда происходит взлёт
             {
                 // Проверяем что сверху когда прыгаем
                 // +-----+
@@ -237,8 +312,9 @@ namespace Vge.Entity.Physics
                 aabbCheck = boundingBox.Up(y);
 
                 // Находим смещение по Y
-                foreach (EntityBase entity in entities)
+                for (int i = 0; i < count; i++)
                 {
+                    entity = entities[i];
                     if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                     {
                         f = y;
@@ -261,14 +337,15 @@ namespace Vge.Entity.Physics
                 // |  я  |
                 // +-----+
                 aabbCheck = boundingBox.Up(.2f);
-                foreach (EntityBase entity in entities)
+                for (int i = 0; i < count; i++)
                 {
+                    entity = entities[i];
                     if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                     {
                         Entity.AwakenPhysicSleep(entity);
                     }
                 }
-
+                
                 if (y < -.005f)
                 {
                     // Проверяем что снизу
@@ -279,15 +356,16 @@ namespace Vge.Entity.Physics
                     // +-----+
                     aabbCheck = boundingBox.Down(y);
                     // Находим смещение по Y
-                    foreach (EntityBase entity in entities)
+                    for (int i = 0; i < count; i++)
                     {
+                        entity = entities[i];
                         if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                         {
                             y = entity.GetBoundingBox().CalculateYOffset(aabbEntity, y);
                         }
                     }
                     // Защита от мелких смещений, чтоб если сущности на уровне, можно было ходить по ним
-                    if (y0 != y) y += .02f;
+                    if ((x != 0 || z != 0) && y0 != y) y += .02f;
 
                     // Рикошет от сущности через импульс
                     if (_isRebound && y0 != y) ImpulseY -= (y0 + PhysicsGround.GravityRebound) * _rebound;
@@ -302,8 +380,9 @@ namespace Vge.Entity.Physics
                     // |  я  |
                     // +-----+
                     aabbCheck = boundingBox.Up(.2f);
-                    foreach (EntityBase entity in entities)
+                    for (int i = 0; i < count; i++)
                     {
+                        entity = entities[i];
                         if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                         {
                             // Создаём импульс кто сверху для перемещения
@@ -315,11 +394,11 @@ namespace Vge.Entity.Physics
             }
 
             // == ГОРИЗОНТ
-
             aabbCheck = aabbEntity.AddCoordBias(x, y, z);
             // Находим смещение по X
-            foreach (EntityBase entity in entities)
+            for (int i = 0; i < count; i++)
             {
+                entity = entities[i];
                 if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                 {
                     f = x;
@@ -335,8 +414,9 @@ namespace Vge.Entity.Physics
             aabbEntity = aabbEntity.Offset(x, 0, 0);
 
             // Находим смещение по Z
-            foreach (EntityBase entity in entities)
+            for (int i = 0; i < count; i++)
             {
+                entity = entities[i];
                 if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                 {
                     f = z;
@@ -351,16 +431,35 @@ namespace Vge.Entity.Physics
             if (_isRebound && z0 != z) ImpulseZ -= z0 * _rebound;
 
             // == ВЫТАЛКИВАНИЕ
+
+            // Проверка находится ли сущность в другой сущности
+            bool caughtInEntity = false;
+
             // Для игрока тоже остаётся, чтоб игроки сами в себе не находились
             aabbCheck = boundingBox.Offset(x, y, z);
-            foreach (EntityBase entity in entities)
+            for (int i = 0; i < count; i++)
             {
+                entity = entities[i];
                 if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
                 {
                     if (entity.CanBePushed())
                     {
                         entity.ApplyEntityCollision(Entity);
                     }
+                    caughtInEntity = true;
+                }
+            }
+            // Пометки зажатости
+            if (!caughtInEntity)
+            {
+                _NotClampedEnity();
+            }
+            else
+            {
+                if (CaughtInEntity < 65535)
+                {
+                    CaughtInEntity++;
+                    AwakenPhysics();
                 }
             }
             Collision.ListBlock.ClearFull();

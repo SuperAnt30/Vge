@@ -16,6 +16,11 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         public int CountEntitiesFC { get; private set; }
         /// <summary>
+        /// Видем ли мы хитбокс сущности
+        /// </summary>
+        public bool IsHitBox = false;
+
+        /// <summary>
         /// Объект OpenGL для элемента управления
         /// </summary>
         private readonly GL gl;
@@ -25,10 +30,7 @@ namespace Vge.Renderer.World.Entity
         private readonly ArrayFast<ChunkRender> _arrayChunkRender;
 
         private HitboxEntityRender _hitbox;
-        /// <summary>
-        /// Видем ли мы хитбокс сущности
-        /// </summary>
-        private bool _isHitBox = false;//true;
+        
 
         /// <summary>
         /// Это временно!!!
@@ -129,7 +131,7 @@ namespace Vge.Renderer.World.Entity
                 }
             }
 
-            if (_isHitBox)
+            if (IsHitBox)
             {
                 // Есть хит бокс сущности
                 // Пробегаемся заного по всем сущностям, это будет быстрее, чем биндить шейдера

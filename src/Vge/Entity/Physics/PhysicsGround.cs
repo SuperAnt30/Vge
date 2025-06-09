@@ -255,39 +255,40 @@ namespace Vge.Entity.Physics
                 y = heightAutoJump;
                 Collision.StaticBoundingBoxes(boundingBox.AddCoordBias(MotionX, y, MotionZ));
                 ListFast<AxisAlignedBB> aabbs = Collision.ListBlock;
+                int count = aabbs.Count;
                 AxisAlignedBB aabbEntity2 = boundingBox.Clone();
                 AxisAlignedBB aabb = aabbEntity2.AddCoordBias(MotionX, 0, MotionZ);
 
                 // Находим смещение по Y
                 float y2 = y;
-                foreach (AxisAlignedBB axis in aabbs) y2 = axis.CalculateYOffset(aabb, y2);
+                for (int i = 0; i < count; i++) y2 = aabbs[i].CalculateYOffset(aabb, y2);
                 aabbEntity2 = aabbEntity2.Offset(0, y2, 0);
 
                 // Находим смещение по X
                 float x2 = MotionX;
-                foreach (AxisAlignedBB axis in aabbs) x2 = axis.CalculateXOffset(aabbEntity2, x2);
+                for (int i = 0; i < count; i++) x2 = aabbs[i].CalculateXOffset(aabbEntity2, x2);
                 aabbEntity2 = aabbEntity2.Offset(x2, 0, 0);
 
                 // Находим смещение по Z
                 float z2 = MotionZ;
-                foreach (AxisAlignedBB axis in aabbs) z2 = axis.CalculateZOffset(aabbEntity2, z2);
+                for (int i = 0; i < count; i++) z2 = aabbs[i].CalculateZOffset(aabbEntity2, z2);
                 aabbEntity2 = aabbEntity2.Offset(0, 0, z2);
 
                 AxisAlignedBB aabbEntity3 = boundingBox.Clone();
 
                 // Находим смещение по Y
                 float y3 = y;
-                foreach (AxisAlignedBB axis in aabbs) y3 = axis.CalculateYOffset(aabbEntity3, y3);
+                for (int i = 0; i < count; i++) y3 = aabbs[i].CalculateYOffset(aabbEntity3, y3);
                 aabbEntity3 = aabbEntity3.Offset(0, y3, 0);
 
                 // Находим смещение по X
                 float x3 = MotionX;
-                foreach (AxisAlignedBB axis in aabbs) x3 = axis.CalculateXOffset(aabbEntity3, x3);
+                for (int i = 0; i < count; i++) x3 = aabbs[i].CalculateXOffset(aabbEntity3, x3);
                 aabbEntity3 = aabbEntity3.Offset(x3, 0, 0);
 
                 // Находим смещение по Z
                 float z3 = MotionZ;
-                foreach (AxisAlignedBB axis in aabbs) z3 = axis.CalculateZOffset(aabbEntity3, z3);
+                for (int i = 0; i < count; i++) z3 = aabbs[i].CalculateZOffset(aabbEntity3, z3);
                 aabbEntity3 = aabbEntity3.Offset(0, 0, z3);
 
                 y = -heightAutoJump;
@@ -297,14 +298,14 @@ namespace Vge.Entity.Physics
                     x = x2;
                     z = z2;
                     // Находим итоговое смещение по Y
-                    foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity2, y);
+                    for (int i = 0; i < aabbs.Count; i++) y = aabbs[i].CalculateYOffset(aabbEntity2, y);
                 }
                 else
                 {
                     x = x3;
                     z = z3;
                     // Находим итоговое смещение по Y
-                    foreach (AxisAlignedBB axis in aabbs) y = axis.CalculateYOffset(aabbEntity3, y);
+                    for (int i = 0; i < aabbs.Count; i++) y = aabbs[i].CalculateYOffset(aabbEntity3, y);
                 }
 
                 Collision.ListBlock.ClearFull();

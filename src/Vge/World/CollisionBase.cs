@@ -261,7 +261,7 @@ namespace Vge.World
                     // Не надо отрабатывать null, для этого есть отработка в статике
                     if (chunk != null)
                     {
-                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, minY, maxY, id);
+                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, aabb, minY, maxY, id);
                     }
                 }
             }
