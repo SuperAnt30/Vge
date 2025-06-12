@@ -172,7 +172,7 @@ namespace WinGL
         public static void Run(Window window)
         {
             // Строчка для масштаба
-            WinUser.SetProcessDPIAware();
+         //   WinUser.SetProcessDPIAware();
 
             Glm.Initialized();
             try
@@ -320,6 +320,15 @@ namespace WinGL
             {
                 throw new Exception(Sr.WindowCreationError);
             }
+
+            int dpi = (int)WinUser.GetDpiForWindow(hWnd);
+            if (dpi != 96)
+            {
+                // Если dpi не 100%
+                WinUser.SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 
+                    width * dpi / 96, height * dpi / 96, WinUser.SWP_NOMOVE);
+            }
+           
 
             // pfd сообщает Windows каким будет вывод на экран каждого пикселя
             PixelFormatDescriptor pfd = new PixelFormatDescriptor
@@ -605,6 +614,9 @@ namespace WinGL
             {
                 #region Window
 
+                case WinUser.WM_NCCREATE:
+                    bool b = WinUser.EnableNonClientDpiScaling(hWnd);
+                    break;
                 // Закрыто окно
                 case WinUser.WM_CLOSE:
                     Close();
@@ -631,6 +643,13 @@ namespace WinGL
                     param = wParam.ToInt32();
                     OnActivate(param != 0);
                     return IntPtr.Zero;
+                case WinUser.WM_DPICHANGED:
+                    // Чтоб это отлавливать, надо в манифесте установить
+                    // https://github.com/microsoft/WPF-Samples/blob/main/PerMonitorDPI/readme.md#1turn-on-windows-level-per-monitor-dpi-awareness-in-appmanifest
+                    param = wParam.ToInt32();
+                    //OnDpiChanged();
+                    return IntPtr.Zero;
+
                 #endregion
 
                 #region Mouse

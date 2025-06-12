@@ -126,6 +126,32 @@ namespace WinGL.Win32.User32
         public static extern bool SetWindowText(IntPtr hWnd, string lpString);
 
         /// <summary>
+        /// Изменяет размер, позицию и Z-последовательность дочернего, выскакивающего или верхнего уровня окна.
+        /// </summary>
+        /// <param name="hWnd">дескриптор окна</param>
+        /// <param name="hWndInsertAfter">дескриптор порядка размещения</param>
+        /// <param name="x">позиция по горизонтали</param>
+        /// <param name="y">позиция по вертикали</param>
+        /// <param name="cx">ширина</param>
+        /// <param name="cy">высота</param>
+        /// <param name="uFlag">флажки позиционирования окна</param>
+        [DllImport(User32, SetLastError = true)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlag);
+
+        /// <summary>
+        /// Возвращает значение точек на дюйм (dpi) для указанного окна. 96 = 100%
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern uint GetDpiForWindow(IntPtr hWnd);
+
+        /// <summary>
+        /// На дисплеях с высоким разрешением включает автоматическое масштабирование неклиентской области указанного окна верхнего уровня.
+        /// Должен вызываться во время инициализации этого окна.
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern bool EnableNonClientDpiScaling(IntPtr hWnd);
+
+        /// <summary>
         /// Освобождает контекст устройства (DC), освобождая его для использования 
         /// другими приложениями. Эффект функции ReleaseDC зависит от типа контроллера
         /// домена. Он освобождает только общие контроллеры домена и контроллеры 
@@ -174,7 +200,7 @@ namespace WinGL.Win32.User32
         public static extern bool DispatchMessage(ref MSG lpMsg);
 
         /// <summary>
-        /// Метод для масштаба
+        /// Устанавливает уровень осведомленности о DPI 
         /// </summary>
         [DllImport(User32, SetLastError = true)]
         public static extern bool SetProcessDPIAware();
@@ -341,6 +367,7 @@ namespace WinGL.Win32.User32
         public const int WM_DEVICECHANGE = 0x0219;
         public const int WM_DEVMODECHANGE = 0x001B;
         public const int WM_DISPLAYCHANGE = 0x007E;
+        public const int WM_DPICHANGED = 0x02E0;
         public const int WM_DRAWCLIPBOARD = 0x0308;
         public const int WM_DRAWITEM = 0x002B;
         public const int WM_DROPFILES = 0x0233;
@@ -527,6 +554,12 @@ namespace WinGL.Win32.User32
         public const int DISP_CHANGE_FAILED = -1;
 
         public const int SW_SHOW = 5;
+
+        /// <summary>
+        /// Сохраняет текущее положение (игнорирует параметры X и Y).
+        /// </summary>
+        public const int SWP_NOMOVE = 0x0002;
+
 
         private const int SHOWING = 0x01;
 
