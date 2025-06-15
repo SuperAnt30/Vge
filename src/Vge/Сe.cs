@@ -44,9 +44,9 @@ public sealed class Ce
     /// </summary>
     public static BlockArrays Blocks;
     /// <summary>
-    /// Различные массивы моделей сущности
+    /// Различные массивы сущностей
     /// </summary>
-    public static ModelEntityArrays ModelEntities;
+    public static EntityArrays Entities;
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
     /// </summary>

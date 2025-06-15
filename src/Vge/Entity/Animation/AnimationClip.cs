@@ -20,9 +20,9 @@
         /// </summary>
         private readonly ModelAnimationClip _modelClip;
         /// <summary>
-        /// Модель сущности, для которого создан данный клип 
+        /// Ресурсы сущности, для которого создан данный клип 
         /// </summary>
-        private readonly ModelEntity _modelEntity;
+        private readonly ResourcesEntity _resourcesEntity;
         /// <summary>
         /// Количество костей
         /// </summary>
@@ -34,12 +34,12 @@
         private float _currentTime;
 
 
-        public AnimationClip(ModelEntity modelEntity, ModelAnimationClip modelClip)
+        public AnimationClip(ResourcesEntity resourcesEntity, ModelAnimationClip modelClip)
         {
-            _modelEntity = modelEntity;
+            _resourcesEntity = resourcesEntity;
             _modelClip = modelClip;
             // Количество костей в текущей модели
-            _countBones = (byte)_modelEntity.Bones.Length;
+            _countBones = (byte)_resourcesEntity.Bones.Length;
             CurrentPoseBones = new BonePose[_countBones];
         }
 

@@ -176,7 +176,7 @@ namespace Vge.Network
         private void _Handle05Tables(PacketS05Tables packet)
         {
             BlocksReg.Correct(new CorrectTable(packet.Blocks));
-            ModelEntitiesReg.Correct(new CorrectTable(packet.Entities));
+            EntitiesReg.Correct(new CorrectTable(packet.Entities));
             
             // После получения таблиц блоков и сущностей, запускаем мир
             Game.GameStartingNet();
@@ -272,7 +272,7 @@ namespace Vge.Network
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
-            EntityBase entity = Ce.ModelEntities.CreateEntityClient(packet.IndexEntity, Game.WorldRender.Entities);
+            EntityBase entity = Ce.Entities.CreateEntityClient(packet.IndexEntity, Game.WorldRender.Entities);
             entity.SetEntityId(packet.Index);
             entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
             entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;

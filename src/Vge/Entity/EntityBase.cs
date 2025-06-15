@@ -147,9 +147,9 @@ namespace Vge.Entity
         /// </summary>
         protected void _InitIndexPlayer()
         {
-            if (Ce.ModelEntities != null)
+            if (Ce.Entities != null)
             {
-                IndexEntity = Ce.ModelEntities.IndexPlayer;
+                IndexEntity = Ce.Entities.IndexPlayer;
             }
         }
 

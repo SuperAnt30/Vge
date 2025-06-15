@@ -7,7 +7,7 @@ namespace Vge.Entity
     /// <summary>
     /// Различные массивы моделей сущности
     /// </summary>
-    public sealed class ModelEntityArrays
+    public sealed class EntityArrays
     {
         /// <summary>
         /// Псевдоним игрока
@@ -16,13 +16,13 @@ namespace Vge.Entity
         /// <summary>
         /// Массив названий сущностей
         /// </summary>
-        public readonly string[] ModelEntitiesAlias;
+        public readonly string[] EntitiesAlias;
         /// <summary>
         /// Массив объектов сущностей
         /// </summary>
-        private readonly ModelEntity[] _modelEntitiesObjects;
+        private readonly ResourcesEntity[] _entitiesObjects;
         /// <summary>
-        /// Количество всех сущностей
+        /// Количество всех различных сущностей
         /// </summary>
         public readonly int Count;
         /// <summary>
@@ -30,34 +30,34 @@ namespace Vge.Entity
         /// </summary>
         public readonly ushort IndexPlayer = 0;
 
-        public ModelEntityArrays()
+        public EntityArrays()
         {
-            Count = ModelEntitiesReg.Table.Count;
-            ModelEntitiesAlias = new string[Count];
-            _modelEntitiesObjects = new ModelEntity[Count];
+            Count = EntitiesReg.Table.Count;
+            EntitiesAlias = new string[Count];
+            _entitiesObjects = new ResourcesEntity[Count];
 
-            ModelEntity modelEntity;
+            ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < Count; id++)
             {
-                ModelEntitiesAlias[id] = ModelEntitiesReg.Table.GetAlias(id);
-                if (ModelEntitiesAlias[id] == AliasPlayer)
+                EntitiesAlias[id] = EntitiesReg.Table.GetAlias(id);
+                if (EntitiesAlias[id] == AliasPlayer)
                 {
                     IndexPlayer = id;
                 }
-                modelEntity = ModelEntitiesReg.Table[id];
-                modelEntity.SetIndex(id);
-                _modelEntitiesObjects[id] = modelEntity;
+                resourcesEntity = EntitiesReg.Table[id];
+                resourcesEntity.SetIndex(id);
+                _entitiesObjects[id] = resourcesEntity;
             }
         }
 
         /// <summary>
         /// Получить модель сущности по индексу из таблицы сервера.
         /// </summary>
-        public ModelEntity GetModelEntity(ushort index)
+        public ResourcesEntity GetModelEntity(ushort index)
         {
             if (index < Count)
             {
-                return _modelEntitiesObjects[index];
+                return _entitiesObjects[index];
             }
             throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));
         }
@@ -70,7 +70,7 @@ namespace Vge.Entity
         {
             if (index < Count)
             {
-                EntityBase entity = Activator.CreateInstance(_modelEntitiesObjects[index].EntityType) as EntityBase;
+                EntityBase entity = Activator.CreateInstance(_entitiesObjects[index].EntityType) as EntityBase;
                 entity.InitRender(index, entitiesRenderer);
                 return entity;
             }
@@ -85,7 +85,7 @@ namespace Vge.Entity
         {
             if (index < Count)
             {
-                EntityBase entity = Activator.CreateInstance(_modelEntitiesObjects[index].EntityType) as EntityBase;
+                EntityBase entity = Activator.CreateInstance(_entitiesObjects[index].EntityType) as EntityBase;
                 entity.InitServer(index, collision);
                 return entity;
             }

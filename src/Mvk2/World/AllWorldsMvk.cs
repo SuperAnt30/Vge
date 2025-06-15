@@ -24,7 +24,7 @@ namespace Mvk2.World
         {
             base.Init(server);
             BlocksReg.Correct(server.Settings.TableBlocks);
-            ModelEntitiesReg.Correct(server.Settings.TableEntities);
+            EntitiesReg.Correct(server.Settings.TableEntities);
 
             // Инициализация ID сущностей и прочего
             //Server.ModServer.InitAfterStartGame();
@@ -39,11 +39,11 @@ namespace Mvk2.World
         /// </summary>
         private void _InitAfterStartGame()
         {
-            int count = Ce.ModelEntities.Count;
+            int count = Ce.Entities.Count;
             string s;
             for (int id = 0; id < count; id++)
             {
-                s = Ce.ModelEntities.ModelEntitiesAlias[id];
+                s = Ce.Entities.EntitiesAlias[id];
                 if (s == "Robinson") i1 = id;
                 else if (s == "Chicken") i2 = id;
             }

@@ -202,7 +202,7 @@ namespace Mvk2
         protected override void _InitializationModelsEntities()
         {
             base._InitializationModelsEntities();
-            ModelEntitiesRegMvk.Initialization();
+            EntitiesRegMvk.Initialization();
         }
 
         /// <summary>

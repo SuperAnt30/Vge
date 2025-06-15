@@ -528,7 +528,7 @@ namespace Vge
         /// <summary>
         /// Инициализация модели сущностей
         /// </summary>
-        protected virtual void _InitializationModelsEntities() => ModelEntitiesReg.Initialization(this);
+        protected virtual void _InitializationModelsEntities() => EntitiesReg.Initialization(this);
 
         /// <summary>
         /// Инициализация блоков, атласа, модели сущностей
@@ -538,7 +538,7 @@ namespace Vge
             _InitializationBlocks();
             BlocksReg.InitializationAtlas(this);
             _InitializationModelsEntities();
-            ModelEntitiesReg.TextureManagerRun();
+            EntitiesReg.TextureManagerRun();
         }
 
         /// <summary>

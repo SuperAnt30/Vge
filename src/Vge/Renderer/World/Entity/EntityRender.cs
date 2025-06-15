@@ -23,7 +23,7 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly MeshEntity _mesh;
 
-        public EntityRender(GL gl, RenderMain render, ModelEntity modelEntity, PlayerClientOwner player)
+        public EntityRender(GL gl, RenderMain render, ResourcesEntity modelEntity, PlayerClientOwner player)
         {
             Render = render;
             Player = player;

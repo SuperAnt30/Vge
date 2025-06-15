@@ -34,14 +34,14 @@ namespace Vge.Entity.Texture
         /// </summary>
         public int DepthBig { get; private set; }
 
-        private readonly ModelEntitiesRegTable _table;
+        private readonly EntitiesRegTable _table;
 
         /// <summary>
         /// Массив всех групп текстур
         /// </summary>
         private GroupTexture[] _groups;
 
-        public EntityTextureManager(ModelEntitiesRegTable table) => _table = table;
+        public EntityTextureManager(EntitiesRegTable table) => _table = table;
 
         /// <summary>
         /// Инициализация текстурного менеджера
@@ -101,22 +101,22 @@ namespace Vge.Entity.Texture
             // Используя справочник, мы создаём однотипные группы текстур
             Dictionary<string, GroupTexture> pairs = new Dictionary<string, GroupTexture>();
             int count = _table.Count;
-            ModelEntity modelEntity;
+            ResourcesEntity resourcesEntity;
             BufferedImage buffered;
             string key;
 
             for (ushort id = 0; id < count; id++)
             {
-                modelEntity = _table[id];
-                if (modelEntity.Textures.Length > 0)
+                resourcesEntity = _table[id];
+                if (resourcesEntity.Textures.Length > 0)
                 {
-                    buffered = modelEntity.Textures[0];
+                    buffered = resourcesEntity.Textures[0];
                     key = buffered.Width + ":" + buffered.Height;
                     if (!pairs.ContainsKey(key))
                     {
                         pairs.Add(key, new GroupTexture(buffered.Width, buffered.Height));
                     }
-                    pairs[key].SetId(id, modelEntity.Textures.Length);
+                    pairs[key].SetId(id, resourcesEntity.Textures.Length);
                 }
             }
             // Создаём массив наших групп текстур
@@ -287,20 +287,20 @@ namespace Vge.Entity.Texture
         /// <param name="textureGroupBig">Если true то в максимальную группу</param>
         private void _ModifySize(GroupTexture group, ushort index, int width, int height, bool textureGroupBig)
         {
-            ModelEntity modelEntity = _table[index];
+            ResourcesEntity resourcesEntity = _table[index];
             if (textureGroupBig)
             {
-                modelEntity.TextureGroupBig();
+                resourcesEntity.TextureGroupBig();
             }
             if (group.Width != width)
             {
                 // Корректировка размера ширины текстуры
-                modelEntity.SizeAdjustmentTextureWidth(group.Width / (float)width);
+                resourcesEntity.SizeAdjustmentTextureWidth(group.Width / (float)width);
             }
             if (group.Height != height)
             {
                 // Корректировка размера высоты текстуры
-                modelEntity.SizeAdjustmentTextureHeight(group.Height / (float)height);
+                resourcesEntity.SizeAdjustmentTextureHeight(group.Height / (float)height);
             }
         }
 
@@ -311,12 +311,12 @@ namespace Vge.Entity.Texture
         /// <param name="textureGroupBig">Большая ли текстура</param>
         private void _SetDepthTextures(GroupTexture group, bool textureGroupBig)
         {
-            ModelEntity modelEntity;
+            ResourcesEntity resourcesEntity;
             int depth;
             for (int i = 0; i < group.ArrayId.Count; i++)
             {
-                modelEntity = _table[group.ArrayId[i]];
-                for (int t = 0; t < modelEntity.DepthTextures.Length; t++)
+                resourcesEntity = _table[group.ArrayId[i]];
+                for (int t = 0; t < resourcesEntity.DepthTextures.Length; t++)
                 {
                     if (textureGroupBig)
                     {
@@ -328,7 +328,7 @@ namespace Vge.Entity.Texture
                         depth = DepthSmall;
                         DepthSmall++;
                     }
-                    modelEntity.DepthTextures[t] = depth;
+                    resourcesEntity.DepthTextures[t] = depth;
                 }
             }
         }

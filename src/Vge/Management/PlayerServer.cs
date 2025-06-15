@@ -377,7 +377,7 @@ namespace Vge.Management
                         isBox = !isBox;
                         //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
                         // Для сервера
-                        EntityThrowable entityThrowable = Ce.ModelEntities.CreateEntityServer((ushort)id, world.Collision) as EntityThrowable;
+                        EntityThrowable entityThrowable = Ce.Entities.CreateEntityServer((ushort)id, world.Collision) as EntityThrowable;
                         entityThrowable.InitRun(this, i);
                         entityThrowable.SetEntityId(_server.LastEntityId());
                         world.SpawnEntityInWorld(entityThrowable);

@@ -61,34 +61,34 @@ namespace Vge.Renderer.World.Entity
         {
             
             _idTextureSmall = Render.Texture.CreateTexture2dArray(
-                ModelEntitiesReg.TextureManager.WidthSmall,
-                ModelEntitiesReg.TextureManager.HeightSmall,
-                ModelEntitiesReg.TextureManager.DepthSmall, 
+                EntitiesReg.TextureManager.WidthSmall,
+                EntitiesReg.TextureManager.HeightSmall,
+                EntitiesReg.TextureManager.DepthSmall, 
                 (uint)Gi.ActiveTextureSamplerSmall);
 
             _idTextureBig = Render.Texture.CreateTexture2dArray(
-                ModelEntitiesReg.TextureManager.WidthBig,
-                ModelEntitiesReg.TextureManager.HeightBig,
-                ModelEntitiesReg.TextureManager.DepthBig, 
+                EntitiesReg.TextureManager.WidthBig,
+                EntitiesReg.TextureManager.HeightBig,
+                EntitiesReg.TextureManager.DepthBig, 
                 (uint)Gi.ActiveTextureSamplerBig);
             
             // TODO::2025-05-14 Из-за Texture ещё не готов модуль
 
-            int count = Ce.ModelEntities.Count;
+            int count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
 
-            ModelEntity modelEntity;
+            ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)
             {
-                modelEntity = Ce.ModelEntities.GetModelEntity(id);
+                resourcesEntity = Ce.Entities.GetModelEntity(id);
                 
-                for (int t = 0; t < modelEntity.Textures.Length; t++)
+                for (int t = 0; t < resourcesEntity.Textures.Length; t++)
                 {
-                    Render.Texture.SetImageTexture2dArray(modelEntity.Textures[t], modelEntity.DepthTextures[t],
-                        modelEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
-                        (uint)(modelEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
+                    Render.Texture.SetImageTexture2dArray(resourcesEntity.Textures[t], resourcesEntity.DepthTextures[t],
+                        resourcesEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
+                        (uint)(resourcesEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
                 }
-                _entityRender[id] = new EntityRender(gl, Render, modelEntity, _game.Player);
+                _entityRender[id] = new EntityRender(gl, Render, resourcesEntity, _game.Player);
             }
         }
 

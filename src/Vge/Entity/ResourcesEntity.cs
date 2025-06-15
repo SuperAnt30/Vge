@@ -7,10 +7,10 @@ using Vge.Util;
 namespace Vge.Entity
 {
     /// <summary>
-    /// Модель сущности, нужна для рендера и анимации (имеет скелет)
+    /// Ресурсы сущности, покуда для клиента и сервера, надо продумать как разделить
     /// На сервере будет упрощённая
     /// </summary>
-    public class ModelEntity
+    public class ResourcesEntity
     {
         /// <summary>
         /// Индекс сущности из таблицы
@@ -56,7 +56,7 @@ namespace Vge.Entity
 
        // private Mat4 _matrix = Mat4.Identity();
 
-        public ModelEntity(string alias, Type entityType)
+        public ResourcesEntity(string alias, Type entityType)
         {
             Alias = alias;
             EntityType = entityType;

@@ -4,7 +4,6 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Renderer.World.Entity
@@ -25,7 +24,7 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         public readonly EntitiesRenderer Entities;
 
-        private readonly ModelEntity _modelEntity;
+        private readonly ResourcesEntity _resourcesEntity;
         /// <summary>
         /// Массив отдельных анимационных клипов
         /// </summary>
@@ -58,21 +57,21 @@ namespace Vge.Renderer.World.Entity
         public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, ushort indexModel) : base(entity)
         {
             Entities = entities;
-            _modelEntity = Ce.ModelEntities.GetModelEntity(indexModel);
+            _resourcesEntity = Ce.Entities.GetModelEntity(indexModel);
 
-            _countBones = (byte)_modelEntity.Bones.Length;
+            _countBones = (byte)_resourcesEntity.Bones.Length;
             _bones = new BonePose[_countBones];
             _bonesFlagModify = new bool[_countBones];
             _bonesTransforms = new Mat4[_countBones];
             for (int i = 0; i < _countBones; i++)
             {
-                _bones[i] = _modelEntity.Bones[i].CreateBonePose();
+                _bones[i] = _resourcesEntity.Bones[i].CreateBonePose();
                 _bonesTransforms[i] = Mat4.Identity();
             }
 
             // Временное включение анимациионного клипа
-            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[0]));
-            _animationClips.Add(new AnimationClip(_modelEntity, _modelEntity.ModelAnimationClips[1]));
+            _animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[0]));
+            _animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[1]));
         }
 
         /// <summary>
@@ -120,7 +119,7 @@ namespace Vge.Renderer.World.Entity
 
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
-                _modelEntity.DepthTextures[0], (_modelEntity.TextureSmall ? 0 : 1) + (anim ? 2 : 0),
+                _resourcesEntity.DepthTextures[0], (_resourcesEntity.TextureSmall ? 0 : 1) + (anim ? 2 : 0),
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
@@ -134,7 +133,7 @@ namespace Vge.Renderer.World.Entity
                 {
                     if (_bonesFlagModify[i])
                     {
-                        _modelEntity.Bones[i].SetBonePose(ref _bones[i]);
+                        _resourcesEntity.Bones[i].SetBonePose(ref _bones[i]);
                         _bonesFlagModify[i] = false;
                     }
                 }
@@ -199,7 +198,7 @@ namespace Vge.Renderer.World.Entity
             }
             // У корневой кости нет родительской матрицы, поэтому заносим в матричную палитру матрицу перехода как есть
             _bonesTransforms[0].Multiply(_bones[0].GetBoneMatrix());
-            _bonesTransforms[0].Multiply(_modelEntity.Bones[0].MatrixInverse);
+            _bonesTransforms[0].Multiply(_resourcesEntity.Bones[0].MatrixInverse);
             _bonesTransforms[0].ConvArray4x3(_bufferBonesTransforms, 0);
 
             Bone bone;
@@ -207,7 +206,7 @@ namespace Vge.Renderer.World.Entity
             for (int i = 1; i < _countBones; i++)
             {
                 // Перемножаем матрицы в положение как выставленно в Blockbench
-                bone = _modelEntity.Bones[i];
+                bone = _resourcesEntity.Bones[i];
 
 
                 _bonesTransforms[bone.ParentIndex].Copy(_bonesTransforms[i]);

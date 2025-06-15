@@ -10,9 +10,9 @@ using Vge.Util;
 namespace Vge.Entity
 {
     /// <summary>
-    /// Регистрация моделей сущностей
+    /// Регистрация сущностей
     /// </summary>
-    public sealed class ModelEntitiesReg
+    public sealed class EntitiesReg
     {
         /// <summary>
         /// Флаг, для рендера, если сервер, установить false.
@@ -22,7 +22,7 @@ namespace Vge.Entity
         /// <summary>
         /// Таблица моделей сущностей для регистрации
         /// </summary>
-        public static readonly ModelEntitiesRegTable Table = new ModelEntitiesRegTable();
+        public static readonly EntitiesRegTable Table = new EntitiesRegTable();
         /// <summary>
         /// Справочник всех моделей
         /// </summary>
@@ -54,7 +54,7 @@ namespace Vge.Entity
             // Очистить таблицы и вспомогательные данные json
             _Clear();
             // Регистрация обязательных сущностей
-            RegisterModelEntityClass(ModelEntityArrays.AliasPlayer, typeof(PlayerClient));
+            RegisterModelEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
             // Отладочный
             RegisterModelEntityClass("Robinson", typeof(EntityThrowableBig));
             //RegisterModelEntityClass("Chicken2");
@@ -67,7 +67,7 @@ namespace Vge.Entity
         public static void Correct(CorrectTable correct)
         {
             correct.CorrectRegLoad(Table);
-            Ce.ModelEntities = new ModelEntityArrays();
+            Ce.Entities = new EntityArrays();
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
@@ -92,7 +92,7 @@ namespace Vge.Entity
             
             if (jsonRead.IsThereFile)
             {
-                ModelEntity modelEntity = new ModelEntity(alias, entityType);
+                ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType);
 
                 if (FlagRender)
                 {

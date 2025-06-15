@@ -6,12 +6,12 @@ namespace Mvk2.Entity
     /// <summary>
     /// Регистрация моделей сущностей для Малювеки 2
     /// </summary>
-    public sealed class ModelEntitiesRegMvk
+    public sealed class EntitiesRegMvk
     {
         public static void Initialization()
         {
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");
-            ModelEntitiesReg.RegisterModelEntityClass("Chicken", typeof(EntityThrowable));
+            EntitiesReg.RegisterModelEntityClass("Chicken", typeof(EntityThrowable));
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson");
             //ModelEntitiesReg.RegisterModelEntityClass("Skeleton");
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson2");
