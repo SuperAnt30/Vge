@@ -13,7 +13,7 @@ namespace WinGL.Win32.User32
         /// </summary>
         WS_EX_ACCEPTFILES = 0x00000010,
         /// <summary>
-        /// Forces a top-level window onto the taskbar when the window is visible.
+        /// Принудительно размещает окно верхнего уровня на панели задач, когда оно видимо.
         /// </summary>
         WS_EX_APPWINDOW = 0x00040000,
         /// <summary>
@@ -114,7 +114,7 @@ namespace WinGL.Win32.User32
         /// </summary>
         WS_EX_TRANSPARENT = 0x00000020,
         /// <summary>
-        /// Specifies that a window has a border with a raised edge.
+        /// Указывает, что окно имеет границу с приподнятым краем.
         /// </summary>
         WS_EX_WINDOWEDGE = 0x00000100
     }

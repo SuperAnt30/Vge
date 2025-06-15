@@ -145,11 +145,50 @@ namespace WinGL.Win32.User32
         public static extern uint GetDpiForWindow(IntPtr hWnd);
 
         /// <summary>
-        /// На дисплеях с высоким разрешением включает автоматическое масштабирование неклиентской области указанного окна верхнего уровня.
+        /// На дисплеях с высоким разрешением включает автоматическое масштабирование 
+        /// неклиентской области указанного окна верхнего уровня.
         /// Должен вызываться во время инициализации этого окна.
         /// </summary>
         [DllImport(User32, SetLastError = true)]
         public static extern bool EnableNonClientDpiScaling(IntPtr hWnd);
+
+        /// <summary>
+        /// Извлекает указанную системную метрику или параметр конфигурации системы.
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern int GetSystemMetrics(int nIndex);
+
+        /// <summary>
+        /// Извлекает измерения ограничивающего прямоугольника указанного окна.
+        /// Измерения задаются в координатах экрана, которые относятся к левому верхнему углу экрана.
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern bool GetWindowRect(IntPtr hWnd, ref RectStruct lpmi);
+
+        /// <summary>
+        /// Извлекает дескриптор на монитор дисплея, содержащий указанную точку.
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern IntPtr MonitorFromPoint(Vector2i pt, uint dwFlags);
+
+        /// <summary>
+        /// Извлекает сведения о мониторе отображения.
+        /// </summary>
+        [DllImport(User32, SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetMonitorInfo(IntPtr hMonitor, [In, Out] MonitorInfoEx lpmi);
+
+        /// <summary>
+        /// Изменяет атрибут указанного окна.
+        /// https://learn.microsoft.com/ru-ru/windows/win32/api/winuser/nf-winuser-setwindowlonga
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, long newStyle);
+
+        /// <summary>
+        /// Извлекает сведения об указанном окне. 
+        /// </summary>
+        [DllImport(User32, SetLastError = true)]
+        public static extern long GetWindowLong(IntPtr hWnd, int nIndex);
 
         /// <summary>
         /// Освобождает контекст устройства (DC), освобождая его для использования 
@@ -200,10 +239,11 @@ namespace WinGL.Win32.User32
         public static extern bool DispatchMessage(ref MSG lpMsg);
 
         /// <summary>
-        /// Устанавливает уровень осведомленности о DPI 
+        /// Устанавливает уровень осведомленности о DPI.
+        /// Устарело, надо через манифест
         /// </summary>
-        [DllImport(User32, SetLastError = true)]
-        public static extern bool SetProcessDPIAware();
+        //[DllImport(User32, SetLastError = true)]
+        //public static extern bool SetProcessDPIAware();
 
         /// <summary>
         /// Must initialize cbSize
@@ -556,11 +596,26 @@ namespace WinGL.Win32.User32
         public const int SW_SHOW = 5;
 
         /// <summary>
-        /// Сохраняет текущее положение (игнорирует параметры X и Y).
+        /// Сохраняет текущий размер (игнорирует параметры cx и cy)
+        /// </summary>
+        public const int SWP_NOSIZE = 0x0001;
+        /// <summary>
+        /// Сохраняет текущее положение (игнорирует параметры X и Y)
         /// </summary>
         public const int SWP_NOMOVE = 0x0002;
-
-
+        /// <summary>
+        /// Сохраняет текущий порядок Z (игнорирует параметр hWndInsertAfter)
+        /// </summary>
+        public const int SWP_NOZORDER = 0x0004;
+        /// <summary>
+        /// Применяет новые стили кадров, заданные с помощью функции SetWindowLong
+        /// </summary>
+        public const int SWP_FRAMECHANGED = 0x0020;
+        /// <summary>
+        /// Не изменяет положение окна-владельца в порядке Z
+        /// </summary>
+        public const int SWP_NOOWNERZORDER = 0x0200;
+        
         private const int SHOWING = 0x01;
 
         public const int IDC_ARROW = 32512;
@@ -569,8 +624,20 @@ namespace WinGL.Win32.User32
         /// Сообщения удаляются из очереди после обработки с помощью PeekMessage
         /// </summary>
         public const int PM_REMOVE = 0x0001;
-        
 
+        /// <summary>
+        /// Возвращает дескриптор монитора, ближайшего к окну.
+        /// </summary>
+        public const int MONITOR_DEFAULTTONEAREST = 2;
+
+        /// <summary>
+        /// Задает новый стиль окна
+        /// </summary>
+        public const int GWL_STYLE = -16;
+        /// <summary>
+        /// Задает новый стиль расширенного окна
+        /// </summary>
+        public const int GWL_EXSTYLE = -20;
 
     }
 }

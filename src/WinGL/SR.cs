@@ -32,6 +32,8 @@ internal sealed class Sr
 
     internal const string ErrorWhileStartingWindow = "Ошибка при запуске окна.\r\n{0}";
     internal const string FailedToRegisterTheWindowClass = "Не удалось зарегистрировать класс окна";
+    internal const string FailedToGetMonitorInformation = "Не удалось получить информацию экрана";
+    internal const string FailedToGetWindowRect = "Не удалось получить расположение окна";
     internal const string WindowCreationError = "Ошибка создания окна";
     internal const string CantCreateAOpenGLDeviceContext = "Невозможно создать контекст устройства OpenGL";
     internal const string CantFindASuitablePixelFormat = "Не удалось найти подходящий формат пикселя";

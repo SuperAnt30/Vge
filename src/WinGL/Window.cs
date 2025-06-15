@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
+using WinGL.Actions;
+using WinGL.OpenGL;
 using WinGL.Util;
 using WinGL.Win32;
 using WinGL.Win32.Gdi32;
-using WinGL.OpenGL;
 using WinGL.Win32.User32;
-using WinGL.Actions;
-using System.Diagnostics;
 
 namespace WinGL
 {
@@ -75,18 +75,6 @@ namespace WinGL
         /// </summary>
         private int windowHeigt;
         /// <summary>
-        /// Рамка ширина окна в оконном режимме
-        /// </summary>
-        private int windowWidthBorder;
-        /// <summary>
-        /// Рамка высота окна в оконном режимме
-        /// </summary>
-        private int windowHeigtBorder;
-        /// <summary>
-        /// Был ли первый запуск, чтоб определеить размер рамки
-        /// </summary>
-        private bool flagWindowSizeBorder = false;
-        /// <summary>
         /// Позиция Х расположения окна в оконном режимме
         /// </summary>
         private int windowLocationX;
@@ -108,6 +96,10 @@ namespace WinGL
         /// </summary>
         private IntPtr hDC;
         /// <summary>
+        /// Хранится последний монитор, для кастыльного выхода
+        /// </summary>
+        private IntPtr hMonitorPrev;
+        /// <summary>
         /// Объект делегата приёма ответов, делается глобальный, чтоб не удалялся из-за чистки мусора
         /// </summary>
         private WndProc lpfnWndProcMain;
@@ -115,11 +107,7 @@ namespace WinGL
         /// Работает ли глобальный loop
         /// </summary>
         private bool running = false;
-        /// <summary>
-        /// Флаг перезапуска программы
-        /// </summary>
-        private bool flagRestart = false;
-        
+                
         /// <summary>
         /// Использовать ли вертикальную сенхронизацию
         /// </summary>
@@ -127,10 +115,6 @@ namespace WinGL
 
         protected Window()
         {
-            windowWidth = Width;
-            windowHeigt = Height;
-            windowLocationX = LocationX;
-            windowLocationY = LocationY;
             int keyboardLayoutId = System.Globalization.CultureInfo.CurrentCulture.KeyboardLayoutId;
             KeyCyrillic = keyboardLayoutId == 1049 // ru-RU
                 || keyboardLayoutId == 8192; // ru-BY
@@ -171,9 +155,6 @@ namespace WinGL
         /// </summary>
         public static void Run(Window window)
         {
-            // Строчка для масштаба
-         //   WinUser.SetProcessDPIAware();
-
             Glm.Initialized();
             try
             {
@@ -220,12 +201,6 @@ namespace WinGL
                 {
                     WinApi.TimeEndPeriod(1);
                 }
-                if (flagRestart)
-                {
-                    // Если имеется флаг перезапуска, запускаем новый процесс
-                    string name = Process.GetCurrentProcess().MainModule.FileName;
-                    Process.Start(name);
-                }
             }
         }
 
@@ -257,63 +232,33 @@ namespace WinGL
             {
                 throw new Exception(Sr.FailedToRegisterTheWindowClass);
             }
-            int width = windowWidth;
-            int height = windowHeigt;
 
-            // Полноэкранный режим?
-            if (FullScreen)
+            // Определяем монитор где будет запущено окно
+            Vector2i pos = WinUser.GetCursorPos();
+            IntPtr hMonitor = WinUser.MonitorFromPoint(pos, WinUser.MONITOR_DEFAULTTONEAREST);
+            // Получаем информацию монитора
+            MonitorInfoEx monitorInfo = new MonitorInfoEx();
+            if (!WinUser.GetMonitorInfo(hMonitor, monitorInfo))
             {
-                // Режим устройства
-                DevMode dm = new DevMode
-                {
-                    dmDeviceName = new string(new char[32]),
-                    dmFormName = new string(new char[32])
-                };
-                dm.Init();
-                // Извлекает информацию об одном из графических режимов устройства отображения
-                WinUser.EnumDisplaySettings(null, WinUser.ENUM_CURRENT_SETTINGS, ref dm);
-                // Пытаемся установить выбранный режим и получить результат
-                // Примечание: CDS_FULLSCREEN убирает панель управления
-                if (WinUser.ChangeDisplaySettings(ref dm, WinUser.CDS_FULLSCREEN) != WinUser.DISP_CHANGE_SUCCESSFUL)
-                {
-                    // Выбор оконного режима
-                    FullScreen = false;
-                }
-                else
-                {
-                    width = dm.dmPelsWidth;
-                    height = dm.dmPelsHeight;
-                }
+                throw new Exception(Sr.FailedToGetMonitorInformation);
             }
+
+            //TODO::2025-06-13 Продумать центровку!
+            LocationX = windowLocationX = monitorInfo.Monitor.Left;
+            LocationY = windowLocationY = monitorInfo.Monitor.Top;
 
             // Расширенный стиль окна
-            WindowStylesEx dwExStyle;
+            WindowStylesEx dwExStyle = WindowStylesEx.WS_EX_APPWINDOW | WindowStylesEx.WS_EX_WINDOWEDGE;
             // Обычный стиль окна
-            WindowStyles dwStyle;
+            WindowStyles dwStyle = WindowStyles.WS_OVERLAPPEDWINDOW;
 
-            if (FullScreen)
-            {
-                // Мы остались в полноэкранном режиме
-                dwExStyle = WindowStylesEx.WS_EX_APPWINDOW;
-                dwStyle = WindowStyles.WS_POPUP | WindowStyles.WS_VISIBLE | WindowStyles.WS_MINIMIZEBOX;
-                LocationX = LocationY = 0;
-            }
-            else
-            {
-                //width = windowWidth;
-                //height = windowHeigt;
-                LocationX = windowLocationX;
-                LocationY = windowLocationY;
-                dwExStyle = WindowStylesEx.WS_EX_APPWINDOW | WindowStylesEx.WS_EX_WINDOWEDGE;
-                dwStyle = WindowStyles.WS_OVERLAPPEDWINDOW;
-            }
-
+            // Создаём окно
             hWnd = WinUser.CreateWindowEx(
                 dwExStyle,
                 NameClass, Title,
                 WindowStyles.WS_CLIPSIBLINGS | WindowStyles.WS_CLIPCHILDREN | dwStyle,
                 LocationX, LocationY,
-                width, height,
+                Width, Height,
                 IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
 
             if (hWnd == IntPtr.Zero) 
@@ -321,14 +266,40 @@ namespace WinGL
                 throw new Exception(Sr.WindowCreationError);
             }
 
+            int width = Width;
+            int height = Height;
+            // Корректировка масштаба экрана
             int dpi = (int)WinUser.GetDpiForWindow(hWnd);
             if (dpi != 96)
             {
                 // Если dpi не 100%
-                WinUser.SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 
-                    width * dpi / 96, height * dpi / 96, WinUser.SWP_NOMOVE);
+                width = Width * dpi / 96;
+                height = Height * dpi / 96;
             }
-           
+            // Определили разрешение рабочей области
+            int widthWorkArea = monitorInfo.WorkArea.Right - monitorInfo.WorkArea.Left;
+            int heightWorkArea = monitorInfo.WorkArea.Bottom - monitorInfo.WorkArea.Top;
+            // Центрируем окно
+            if (width > widthWorkArea)
+            {
+                width = widthWorkArea;
+                LocationX = windowLocationX = monitorInfo.Monitor.Left;
+            }
+            else
+            {
+                LocationX = windowLocationX = monitorInfo.Monitor.Left + (widthWorkArea - width) / 2;
+            }
+            if (height > heightWorkArea)
+            {
+                height = heightWorkArea;
+                LocationY = windowLocationY = monitorInfo.Monitor.Top;
+            }
+            else
+            {
+                LocationY = windowLocationY = monitorInfo.Monitor.Top + (heightWorkArea - height) / 2;
+            }
+            WinUser.SetWindowPos(hWnd, IntPtr.Zero, LocationX, LocationY, width, height, 
+                WinUser.SWP_NOZORDER);
 
             // pfd сообщает Windows каким будет вывод на экран каждого пикселя
             PixelFormatDescriptor pfd = new PixelFormatDescriptor
@@ -370,8 +341,14 @@ namespace WinGL
             WinUser.ShowWindow(hWnd, WinUser.SW_SHOW);
             // Слегка повысим приоритет
             WinUser.SetForegroundWindow(hWnd);
-            // // Установить фокус клавиатуры на наше окно
+            // Установить фокус клавиатуры на наше окно
             WinUser.SetFocus(hWnd);
+
+            // Если полный экран по умолчанию, запускаем
+            if (FullScreen)
+            {
+                SetFullScreen(true);
+            }
 
             // Включать/выключать vsync
             gl.SwapIntervalEXT(vSync ? 1 : 0);
@@ -473,13 +450,79 @@ namespace WinGL
         /// Работает ли луп
         /// </summary>
         protected bool IsRunning() => running;
+
         /// <summary>
-        /// Перезапустить приложение
+        /// Задать режим экрана
         /// </summary>
-        public void Restart()
+        public virtual void SetFullScreen(bool fullScreen)
         {
-            flagRestart = true;
-            Close();
+            FullScreen = fullScreen;
+
+            // В помощь https://devblogs.microsoft.com/oldnewthing/20100412-00/?p=14353
+
+            // Меняем стиль
+            // Расширенный стиль окна
+            WindowStylesEx dwExStyle = (WindowStylesEx)WinUser.GetWindowLong(hWnd, WinUser.GWL_EXSTYLE);
+            // Обычный стиль окна
+            WindowStyles dwStyle = (WindowStyles)WinUser.GetWindowLong(hWnd, WinUser.GWL_STYLE);
+
+            int width = windowWidth;
+            int height = windowHeigt;
+
+            if (FullScreen)
+            {
+                // Определяем экран, по стартовой точки
+                Vector2i pos = new Vector2i(LocationX, LocationY);
+                IntPtr hMonitor = WinUser.MonitorFromPoint(pos, WinUser.MONITOR_DEFAULTTONEAREST);
+                // Получаем информацию монитора
+                MonitorInfoEx monitorInfo = new MonitorInfoEx();
+                if (!WinUser.GetMonitorInfo(hMonitor, monitorInfo))
+                {
+                    throw new Exception(Sr.FailedToGetMonitorInformation);
+                }
+                // Получаем размер и расположение текущего окна
+                RectStruct rect = new RectStruct();
+                if (!WinUser.GetWindowRect(hWnd, ref rect))
+                {
+                    throw new Exception(Sr.FailedToGetWindowRect);
+                }
+
+                windowLocationX = rect.Left;
+                windowLocationY = rect.Top;
+                windowWidth = rect.Right - rect.Left;
+                windowHeigt = rect.Bottom - rect.Top;
+
+                LocationX = monitorInfo.Monitor.Left;
+                LocationY = monitorInfo.Monitor.Top;
+                width = monitorInfo.Monitor.Right - monitorInfo.Monitor.Left;
+                height = monitorInfo.Monitor.Bottom - monitorInfo.Monitor.Top;
+
+                dwStyle = dwStyle & ~WindowStyles.WS_OVERLAPPEDWINDOW;
+                dwExStyle = dwExStyle & ~WindowStylesEx.WS_EX_WINDOWEDGE;
+
+                // Кастыльное решение, при старте или смене экрана, первый раз F11, открывается не с 0:0
+                if (!hMonitorPrev.Equals(hMonitor))
+                {
+                    hMonitorPrev = hMonitor;
+                }
+                else
+                {
+                    WinUser.SetWindowPos(hWnd, IntPtr.Zero, LocationX, LocationY, width, height,
+                        WinUser.SWP_NOOWNERZORDER | WinUser.SWP_FRAMECHANGED);
+                }
+            }
+            else
+            {
+                LocationX = windowLocationX;
+                LocationY = windowLocationY;
+                dwExStyle = dwExStyle | WindowStylesEx.WS_EX_WINDOWEDGE;
+                dwStyle = dwStyle | WindowStyles.WS_OVERLAPPEDWINDOW;
+            }
+            
+            WinUser.SetWindowLong(hWnd, WinUser.GWL_STYLE, (int)dwStyle);
+            WinUser.SetWindowLong(hWnd, WinUser.GWL_EXSTYLE, (int)dwExStyle);
+            WinUser.SetWindowPos(hWnd, IntPtr.Zero, LocationX, LocationY, width, height,
+                WinUser.SWP_NOZORDER | WinUser.SWP_NOOWNERZORDER | WinUser.SWP_FRAMECHANGED);
         }
 
         #endregion
@@ -496,19 +539,8 @@ namespace WinGL
         /// </summary>
         protected virtual void OnResized(int width, int height)
         {
-            if (!flagWindowSizeBorder)
-            {
-                flagWindowSizeBorder = true;
-                windowWidthBorder = Width - width;
-                windowHeigtBorder = Height - height;
-            }
             Width = width;
             Height = height;
-            if (!FullScreen)
-            {
-                windowWidth = width + windowWidthBorder;
-                windowHeigt = height + windowHeigtBorder;
-            }
 
             Glm.Ortho(0, Width, Height, 0, 0, 1).ConvArray(Ortho2D);
             gl.Viewport(0, 0, width, height);
@@ -615,7 +647,7 @@ namespace WinGL
                 #region Window
 
                 case WinUser.WM_NCCREATE:
-                    bool b = WinUser.EnableNonClientDpiScaling(hWnd);
+                    WinUser.EnableNonClientDpiScaling(hWnd);
                     break;
                 // Закрыто окно
                 case WinUser.WM_CLOSE:
@@ -632,6 +664,10 @@ namespace WinGL
                     if (lParam.ToInt64() == 2197848832)
                     {
                         // Свернули окно
+                    }
+                    else if (lParam.ToInt64() > 2147483647)
+                    {
+                        // Вроде как на весь экран. Методом подбора
                     }
                     else
                     {

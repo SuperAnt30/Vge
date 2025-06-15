@@ -227,6 +227,7 @@ namespace Vge
         {
             if (Screen != null) Screen.OnKeyDown(keys);
             else if (Game != null) Game.OnKeyDown(keys);
+            if (keys == Keys.F11) SetFullScreen(!FullScreen);
         }
 
         /// <summary>
@@ -401,6 +402,15 @@ namespace Vge
         }
 
         #region WindowOverride
+
+        /// <summary>
+        /// Задать режим экрана
+        /// </summary>
+        public override void SetFullScreen(bool fullScreen)
+        {
+            base.SetFullScreen(fullScreen);
+            Options.FullScreen = fullScreen;
+        }
 
         /// <summary>
         /// Включить или выключить вертикальную сенхронизацию

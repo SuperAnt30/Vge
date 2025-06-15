@@ -8,13 +8,13 @@ namespace WinGL.Win32.User32
     [Flags()]
     internal enum WindowStyles : uint
     {
-        /// <summary>The window has a thin-line border.</summary>
+        /// <summary>Окно имеет тонкую рамку.</summary>
         WS_BORDER = 0x800000,
 
-        /// <summary>The window has a title bar (includes the WS_BORDER style).</summary>
+        /// <summary>Окно имеет строку заголовка (включает стиль WS_BORDER ).</summary>
         WS_CAPTION = 0xc00000,
 
-        /// <summary>The window is a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style.</summary>
+        /// <summary>Окно является дочерним окном. Окно с этим стилем не может иметь строку меню. Этот стиль не может использоваться со стилем WS_POPUP .</summary>
         WS_CHILD = 0x40000000,
 
         /// <summary>Excludes the area occupied by child windows when drawing occurs within the parent window. This style is used when creating the parent window.</summary>
@@ -45,13 +45,15 @@ namespace WinGL.Win32.User32
         /// <summary>The window is initially maximized.</summary> 
         WS_MAXIMIZE = 0x1000000,
 
-        /// <summary>The window has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.</summary> 
+        /// <summary>Окно имеет кнопку максимизации. Не может сочетаться со стилем WS_EX_CONTEXTHELP . Также необходимо указать стиль WS_SYSMENU.</summary> 
         WS_MAXIMIZEBOX = 0x10000,
 
         /// <summary>The window is initially minimized.</summary>
         WS_MINIMIZE = 0x20000000,
 
-        /// <summary>The window has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.</summary>
+        /// <summary>Окно имеет кнопку минимизации. 
+        /// Не может сочетаться со стилем WS_EX_CONTEXTHELP . 
+        /// Также необходимо указать стиль WS_SYSMENU .</summary>
         WS_MINIMIZEBOX = 0x20000,
 
         /// <summary>The window is an overlapped window. An overlapped window has a title bar and a border.</summary>
@@ -60,7 +62,7 @@ namespace WinGL.Win32.User32
         /// <summary>The window is an overlapped window.</summary>
         WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_SIZEFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 
-        /// <summary>The window is a pop-up window. This style cannot be used with the WS_CHILD style.</summary>
+        /// <summary>Окно является всплывающим окном. Этот стиль не может использоваться со стилем WS_CHILD</summary>
         WS_POPUP = 0x80000000u,
 
         /// <summary>The window is a pop-up window. The WS_CAPTION and WS_POPUPWINDOW styles must be combined to make the window menu visible.</summary>
@@ -80,7 +82,7 @@ namespace WinGL.Win32.User32
         /// </summary>
         WS_TABSTOP = 0x10000,
 
-        /// <summary>The window is initially visible. This style can be turned on and off by using the ShowWindow or SetWindowPos function.</summary>
+        /// <summary>Окно изначально видимо.</summary>
         WS_VISIBLE = 0x10000000,
 
         /// <summary>The window has a vertical scroll bar.</summary>

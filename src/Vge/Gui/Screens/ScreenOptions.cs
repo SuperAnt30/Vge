@@ -153,7 +153,7 @@ namespace Vge.Gui.Screens
             window.OptionsSave();
             if (isFullScreen)
             {
-                window.Restart();
+                window.SetFullScreen(Options.FullScreen);
             }
             else if (isSizeInterface)
             {
