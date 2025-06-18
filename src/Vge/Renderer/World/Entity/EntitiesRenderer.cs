@@ -18,7 +18,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
-        public bool IsHitBox = false;
+        public bool IsHitBox = true;
 
         /// <summary>
         /// Объект OpenGL для элемента управления

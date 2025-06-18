@@ -109,6 +109,10 @@ namespace Vge.Entity
         /// Объект рендера
         /// </summary>
         public EntityRenderBase Render { get; protected set; }
+        /// <summary>
+        /// Объект Размер, вес и прочее сущностей которая работает с физикой
+        /// </summary>
+        public ISizeEntity Size { get; protected set; }
 
         /// <summary>
         /// Уровень перемещение. Только для сервера 2 - 0 чтоб передвавать клиентам перемещение.
@@ -121,15 +125,6 @@ namespace Vge.Entity
         /// </summary>
         public bool AddedToChunk;
 
-        /// <summary>
-        /// Пол ширина сущности
-        /// </summary>
-        public float Width { get; protected set; } = .3f;// .6f;
-        /// <summary>
-        /// Высота сущности
-        /// </summary>
-        public float Height { get; protected set; } = 1.8f;//3.6f;
-        
         /// <summary>
         /// На земле
         /// </summary>
@@ -336,37 +331,6 @@ namespace Vge.Entity
 
         #endregion
 
-        #region AxisAlignedBB
-
-        /// <summary>
-        /// Получить ограничительную рамку сущности
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB GetBoundingBox()
-            => new AxisAlignedBB(PosX - Width, PosY, PosZ - Width, PosX + Width, PosY + Height, PosZ + Width);
-
-        /// <summary>
-        /// Получить ограничительную рамку сущности со смещением
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB GetBoundingBoxOffset(float x, float y, float z)
-            => new AxisAlignedBB(PosX - Width + x, PosY + y, PosZ - Width + z, PosX + Width + x, PosY + Height + y, PosZ + Width + z);
-
-        /// <summary>
-        /// Получить ограничительную рамку на выбранной позиции
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB GetBoundingBox(float x, float y, float z) 
-            => new AxisAlignedBB(x - Width, y, z - Width, x + Width, y + Height, z + Width);
-
-        /// <summary>
-        /// Возвращает, пересекается ли данная ограничивающая рамка с этой сущностью
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsWith(AxisAlignedBB other) => GetBoundingBox().IntersectsWith(other);
-
-        #endregion
-
         #region Physic
 
         /// <summary>
@@ -487,22 +451,18 @@ namespace Vge.Entity
         /// Возвращает true, если этот объект можно толкать и толкает другие объекты при столкновении
         /// </summary>
         public virtual bool CanBePushed() => true;
+
         /// <summary>
-        /// Вес сущности для определения импулса между сущностями,
-        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
-        /// В килограммах.
-        /// </summary>
-        public virtual float GetWeight() => 0;
-        /// <summary>
-        /// Получить коэффициент силы импульса к сущности
+        /// Получить коэффициент силы импульса к сущности.
+        /// Зависит от веса сущностей
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetWeightImpulse(EntityBase entity)
         {
-            float ew = entity.GetWeight();
-            float f = GetWeight() + ew;
-            if (f == 0) return 1f;
-            return ew / f;
+            float weightAnother = entity.Size.GetWeight();
+            float weightSum = Size.GetWeight() + weightAnother;
+            if (weightSum == 0) return 1f;
+            return weightAnother / weightSum;
         }
 
         #endregion

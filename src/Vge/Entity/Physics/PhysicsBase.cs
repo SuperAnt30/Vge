@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 
@@ -176,11 +175,11 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Проверка перемещения со столкновением для медленный сущностей с hitbox
         /// </summary>
-        protected void _CheckMoveColliding()
+        protected void _CheckMoveColliding(SizeEntityBox size)
         {
             if (!NoClip)
             {
-                AxisAlignedBB boundingBox = Entity.GetBoundingBox();
+                AxisAlignedBB boundingBox = size.GetBoundingBox();
 
                 // Отрегулировать движение для подкрадывания
                 _AdjustMovementForSneaking(boundingBox);
@@ -204,31 +203,25 @@ namespace Vge.Entity.Physics
                         float y0 = -(MotionY + PhysicsGround.GravityRebound) * _rebound;
                         if (y0 > y) y = y0;
                     }
-                    aabbEntity = aabbEntity.Offset(0, y, 0);
+                    if (MotionY != y) aabbEntity = aabbEntity.Offset(0, y, 0);
 
                     // Фиксация возможен ли авто прыжок
                     _AutoNotJump(y);
 
                     // Находим смещение по X
-                    if (MotionX != x)
-                    {
-                        for (int i = 0; i < count; i++) x = aabbs[i].CalculateXOffset(aabbEntity, x);
-                        // Рикошет от препятствия
-                        if (_isRebound && MotionX != x) x = -MotionX * _rebound;
-                        aabbEntity = aabbEntity.Offset(x, 0, 0);
-                    }
+                    for (int i = 0; i < count; i++) x = aabbs[i].CalculateXOffset(aabbEntity, x);
+                    // Рикошет от препятствия
+                    if (_isRebound && MotionX != x) x = -MotionX * _rebound;
+                    if (MotionX != x) aabbEntity = aabbEntity.Offset(x, 0, 0);
 
                     // Находим смещение по Z
-                    if (MotionZ != z)
-                    {
-                        for (int i = 0; i < count; i++) z = aabbs[i].CalculateZOffset(aabbEntity, z);
-                        // Рикошет от препятствия
-                        if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
-                    }
+                    for (int i = 0; i < count; i++) z = aabbs[i].CalculateZOffset(aabbEntity, z);
+                    // Рикошет от препятствия
+                    if (_isRebound && MotionZ != z) z = -MotionZ * _rebound;
 
                     // Проверка находится ли сущность в блоке
                     bool caughtInBlock = false;
-                    aabbEntity = Entity.GetBoundingBoxOffset(x, y, z);
+                    aabbEntity = size.GetBoundingBoxOffset(x, y, z);
                     for (int i = 0; i < count; i++)
                     {
                         if (aabbs[i].IntersectsWith(aabbEntity))
@@ -315,10 +308,10 @@ namespace Vge.Entity.Physics
                 for (int i = 0; i < count; i++)
                 {
                     entity = entities[i];
-                    if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                    if (entity.Size.IntersectsWith(aabbCheck))
                     {
                         f = y;
-                        y = entity.GetBoundingBox().CalculateYOffset(aabbEntity, f);
+                        y = entity.Size.CalculateYOffset(aabbEntity, f);
                         if (entity.CanBePushed() && f != y)
                         {
                             Entity.SetEntityPhysicsImpulse(entity, 0, y0 * entity.GetWeightImpulse(Entity), 0);
@@ -340,7 +333,7 @@ namespace Vge.Entity.Physics
                 for (int i = 0; i < count; i++)
                 {
                     entity = entities[i];
-                    if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                    if (entity.Size.IntersectsWith(aabbCheck))
                     {
                         Entity.AwakenPhysicSleep(entity);
                     }
@@ -359,9 +352,9 @@ namespace Vge.Entity.Physics
                     for (int i = 0; i < count; i++)
                     {
                         entity = entities[i];
-                        if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                        if (entity.Size.IntersectsWith(aabbCheck))
                         {
-                            y = entity.GetBoundingBox().CalculateYOffset(aabbEntity, y);
+                            y = entity.Size.CalculateYOffset(aabbEntity, y);
                         }
                     }
                     // Защита от мелких смещений, чтоб если сущности на уровне, можно было ходить по ним
@@ -383,7 +376,7 @@ namespace Vge.Entity.Physics
                     for (int i = 0; i < count; i++)
                     {
                         entity = entities[i];
-                        if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                        if (entity.Size.IntersectsWith(aabbCheck))
                         {
                             // Создаём импульс кто сверху для перемещения
                             float force = entity.GetWeightImpulse(Entity) * .25f;
@@ -399,10 +392,10 @@ namespace Vge.Entity.Physics
             for (int i = 0; i < count; i++)
             {
                 entity = entities[i];
-                if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                if (entity.Size.IntersectsWith(aabbCheck))
                 {
                     f = x;
-                    x = entity.GetBoundingBox().CalculateXOffset(aabbEntity, f);
+                    x = entity.Size.CalculateXOffset(aabbEntity, f);
                     if (entity.CanBePushed() && f != x)
                     {
                         Entity.SetEntityPhysicsImpulse(entity, x0 * entity.GetWeightImpulse(Entity), 0, 0);
@@ -417,10 +410,10 @@ namespace Vge.Entity.Physics
             for (int i = 0; i < count; i++)
             {
                 entity = entities[i];
-                if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                if (entity.Size.IntersectsWith(aabbCheck))
                 {
                     f = z;
-                    z = entity.GetBoundingBox().CalculateZOffset(aabbEntity, f);
+                    z = entity.Size.CalculateZOffset(aabbEntity, f);
                     if (entity.CanBePushed() && f != z)
                     {
                         Entity.SetEntityPhysicsImpulse(entity, 0, 0, z0 * entity.GetWeightImpulse(Entity));
@@ -440,7 +433,7 @@ namespace Vge.Entity.Physics
             for (int i = 0; i < count; i++)
             {
                 entity = entities[i];
-                if (aabbCheck.IntersectsWith(entity.GetBoundingBox()))
+                if (entity.Size.IntersectsWith(aabbCheck))
                 {
                     if (entity.CanBePushed())
                     {

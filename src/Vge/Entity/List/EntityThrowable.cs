@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Vge.Entity.Physics;
-using Vge.Renderer.World.Entity;
+﻿using Vge.Entity.Physics;
 using Vge.World;
 using WinGL.Util;
 
@@ -19,10 +17,6 @@ namespace Vge.Entity.List
         /// Сколько тиков жизни
         /// </summary>
         protected int _age = 0;
-        /// <summary>
-        /// Вес сущности
-        /// </summary>
-        protected float _weight;
 
         /// <summary>
         /// Для отладки прыгают всегда
@@ -80,24 +74,13 @@ namespace Vge.Entity.List
         /// Инициализация размеров сущности
         /// </summary>
         protected override void _InitSize()
-        {
-            Width = .125f;
-            Height = .25f;
-            _weight = 25;
-        }
+            => Size = new SizeEntityBox(this, .125f, .25f, 25);
 
         /// <summary>
         /// Инициализация физики
         /// </summary>
         protected override void _InitPhysics(CollisionBase collision)
             => Physics = new PhysicsGround(collision, this, .9f);
-
-        /// <summary>
-        /// Вес сущности для определения импулса между сущностями,
-        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
-        /// В килограммах.
-        /// </summary>
-        public override float GetWeight() => _weight;
 
         /// <summary>
         /// Игровой такт на сервере

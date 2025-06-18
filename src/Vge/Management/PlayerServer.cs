@@ -144,9 +144,9 @@ namespace Vge.Management
             _batchSizeReceive = _batchSizeUnpack 
                 = _desiredBatchSize = Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
-            Eye = Height * .85f;
             _lastTimeServer = server.Time();
             Render = new EntityRenderBase(this);
+            _InitSize();
 #if PhysicsServer
             Physics = new PhysicsPlayer(GetWorld().Collision, this);
             Physics.SetImpulse(.8f);

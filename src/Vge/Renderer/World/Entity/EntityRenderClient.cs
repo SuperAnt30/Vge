@@ -232,7 +232,7 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private void _BrightnessForRender(WorldClient world)
         {
-            BlockPos blockPos = new BlockPos(Entity.PosX, Entity.PosY + Entity.Height * .85f, Entity.PosZ);
+            BlockPos blockPos = new BlockPos(Entity.PosX, Entity.PosY + Entity.Size.GetHeight() * .85f, Entity.PosZ);
             if (blockPos.IsValid(world.ChunkPr.Settings))
             {
                 ChunkBase chunk = world.GetChunk(blockPos.GetPositionChunk());

@@ -247,8 +247,8 @@ namespace Vge.Network
             {
                 // После проверки, что оба в одном мире
 
-                PlayerClient player = new PlayerClient(Game);
-                player.SetDataPlayer(packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
+                PlayerClient player = new PlayerClient(Game, 
+                    packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
                 player.PosServerX = player.PosPrevX = player.PosX = packet.X;
                 player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
                 player.PosServerZ = player.PosPrevZ = player.PosZ = packet.Z;

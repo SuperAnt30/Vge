@@ -174,7 +174,7 @@ namespace Vge.Entity.Physics
             _LivingUpdateMotion(acceleration);
 
             // Проверка каллизии
-            _CheckMoveColliding();
+            _CheckMoveColliding((SizeEntityBox)Entity.Size);
 
             // Если мелочь убираем
             if (Mth.Abs(MotionX) < .005f) MotionX = 0;

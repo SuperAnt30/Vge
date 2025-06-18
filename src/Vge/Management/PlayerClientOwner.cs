@@ -147,7 +147,10 @@ namespace Vge.Management
         /// </summary>
         public void WorldStarting()
         {
+            // Нельзя в конструкторе, так-как ещё сервер не подал таблицы id типов сущностей
             _InitIndexPlayer();
+
+            // Нельзя в конструкторе, так-как мир ещё не создан
             Physics = new PhysicsFly(_game.World.Collision, this);
             //Physics = new PhysicsGround(_game.World.Collision, this);
 

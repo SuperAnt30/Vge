@@ -36,8 +36,8 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void Draw(float timeIndex, EntityBase entity)
         {
-            float width = entity.Width;
-            float height = entity.Height;
+            float width = entity.Size.GetWidth();
+            float height = entity.Size.GetHeight();
             float gb = entity.IsPhysicSleepDebug() ? 0 : 1;
            // float gb = entity.LevelMotionChange == 0 ? 0 : 1;
             

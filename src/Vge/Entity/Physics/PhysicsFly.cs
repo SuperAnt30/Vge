@@ -63,7 +63,7 @@ namespace Vge.Entity.Physics
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;
             if (IsMotionChange)
             {
-                _CheckMoveColliding();
+                _CheckMoveColliding((SizeEntityBox)Entity.Size);
 
                 // Фиксируем перемещение
                 IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;

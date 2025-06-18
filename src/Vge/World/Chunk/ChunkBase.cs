@@ -866,7 +866,7 @@ namespace Vge.World.Chunk
                     // TODO::2025-06-09 !entity.IsDead в колизии, продумать, когда сущность умерла, что с колизией делать?
                     if (entity.Id != id)// && !entity.IsDead)
                     {
-                        if (aabb.IntersectsWith(entity.GetBoundingBox()))
+                        if (entity.Size.IntersectsWith(aabb))
                         {
                             // Если пересекается вносим в список
                             list.Add(entity);
@@ -895,7 +895,7 @@ namespace Vge.World.Chunk
                 entity = ListEntitiesSection[cy].GetAt(i);
                 if (!entity.IsDead && entity.IsPhysicSleep())
                 {
-                    if (entity.GetBoundingBox().IntersectsWith(x, y, z))
+                    if (entity.Size.IntersectsWithBlock(x, y, z))
                     {
                         entity.AwakenPhysicSleep();
                     }
@@ -962,7 +962,7 @@ namespace Vge.World.Chunk
                 entity = ListEntitiesSection[cy].GetAt(i);
                 if (!entity.IsDead && entity.IsPhysicSleep())
                 {
-                    if (entity.GetBoundingBox().IntersectsWith(x, y, z))
+                    if (entity.Size.IntersectsWithBlock(x, y, z))
                     {
                         entity.AwakenPhysicSleep();
                     }

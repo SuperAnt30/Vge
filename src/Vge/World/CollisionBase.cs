@@ -238,19 +238,20 @@ namespace Vge.World
         public void EntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
         {
             ListEntity.Clear();
-            Vector3i min = aabb.MinInt();
-            Vector3i max = aabb.MaxInt();
+            // TODO::2025-06-18 Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
+            Vector3i min = aabb.MinInt() - 2;
+            Vector3i max = aabb.MaxInt() + 2;
 
             int minCx = min.X >> 4;
             int minCz = min.Z >> 4;
             int maxCx = max.X >> 4;
             int maxCz = max.Z >> 4;
-            int minY = min.Y;
-            if (minY < 0) minY = 0; else if (minY > _numberBlocks) minY = _numberBlocks;
-            minY = minY >> 4;
-            int maxY = max.Y;
-            if (maxY < 0) maxY = 0; else if (maxY > _numberBlocks) maxY = _numberBlocks;
-            maxY = maxY >> 4;
+            int minCY = min.Y;
+            if (minCY < 0) minCY = 0; else if (minCY > _numberBlocks) minCY = _numberBlocks;
+            minCY = minCY >> 4;
+            int maxCY = max.Y;
+            if (maxCY < 0) maxCY = 0; else if (maxCY > _numberBlocks) maxCY = _numberBlocks;
+            maxCY = maxCY >> 4;
 
             int xc, zc;
             for (xc = minCx; xc <= maxCx; xc++)
@@ -261,7 +262,7 @@ namespace Vge.World
                     // Не надо отрабатывать null, для этого есть отработка в статике
                     if (chunk != null)
                     {
-                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, aabb, minY, maxY, id);
+                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, aabb, minCY, maxCY, id);
                     }
                 }
             }

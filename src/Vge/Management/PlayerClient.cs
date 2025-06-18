@@ -40,26 +40,23 @@ namespace Vge.Management
         /// </summary>
         protected readonly GameBase _game;
 
-        public PlayerClient(GameBase game)
+        protected PlayerClient(GameBase game)
         {
             _game = game;
-            Eye = Height * .85f;
-            _InitIndexPlayer();
-            if (!(this is PlayerClientOwner))// game.WorldRender != null)
-            {
-                Render = new EntityRenderClient(this, game.WorldRender.Entities, 1);
-            }
+            _InitSize();
         }
 
         /// <summary>
-        /// Задать данные игрока
+        /// Создание других игроков, сетевого, для клиента
         /// </summary>
-        public void SetDataPlayer(int id, string uuid, string login, byte idWorld)
+        public PlayerClient(GameBase game, int id, string uuid, string login, byte idWorld) : this(game)
         {
             Login = login;
             UUID = uuid;
             Id = id;
             IdWorld = idWorld;
+            _InitIndexPlayer();
+            Render = new EntityRenderClient(this, _game.WorldRender.Entities, 1);
         }
 
         /// <summary>

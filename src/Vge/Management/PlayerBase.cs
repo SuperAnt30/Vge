@@ -95,9 +95,14 @@ namespace Vge.Management
         public override string GetName() => Login;
 
         /// <summary>
-        /// Вес сущности для определения импулса между сущностями,
-        /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
+        /// Инициализация размеров сущности
         /// </summary>
-        public override float GetWeight() => 80;
+        protected override void _InitSize()
+        {
+            Size = new SizeEntityBox(this, .3f, 1.8f, 80);
+            // TODO::2025-06-18 Глава внести в SizeEntityLiving
+            Eye = Size.GetHeight() * .85f;
+        }
+
     }
 }

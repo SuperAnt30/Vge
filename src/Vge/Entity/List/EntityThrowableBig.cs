@@ -15,11 +15,7 @@ namespace Vge.Entity.List
             => _InitRun(entityThrower, i, .3f);
 
         protected override void _InitSize()
-        {
-            Width = .5f;
-            Height = 1f;
-            _weight = 100;
-        }
+            => Size = new SizeEntityBox(this, .5f, 1, 100);
 
         protected override void _InitPhysics(CollisionBase collision)
             => Physics = new PhysicsGround(collision, this, 0);
