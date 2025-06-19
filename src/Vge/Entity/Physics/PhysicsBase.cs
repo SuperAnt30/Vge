@@ -174,6 +174,46 @@ namespace Vge.Entity.Physics
         protected virtual void _AutoJump(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z) { }
 
         /// <summary>
+        /// Лимит по максимальному импульсу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _ImpulseLimit()
+        {
+            if (ImpulseX != 0)
+            {
+                if (ImpulseX > Ce.MaxImpulse) MotionX += Ce.MaxImpulse;
+                else if (ImpulseX < -Ce.MaxImpulse) MotionX -= Ce.MaxImpulse;
+                else MotionX += ImpulseX;
+                ImpulseX = 0;
+            }
+            if (ImpulseY != 0)
+            {
+                if (ImpulseY > Ce.MaxImpulse) MotionY += Ce.MaxImpulse;
+                else if (ImpulseY < -Ce.MaxImpulse) MotionY -= Ce.MaxImpulse;
+                else MotionY += ImpulseY;
+                ImpulseY = 0;
+            }
+            if (ImpulseZ != 0)
+            {
+                if (ImpulseZ > Ce.MaxImpulse) MotionZ += Ce.MaxImpulse;
+                else if (ImpulseZ < -Ce.MaxImpulse) MotionZ -= Ce.MaxImpulse;
+                else MotionZ += ImpulseZ;
+                ImpulseZ = 0;
+            }
+        }
+
+        /// <summary>
+        /// Если мелочь убираем
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _ResetMinimumMotion()
+        {
+            if (Mth.Abs(MotionX) < .005f) MotionX = 0;
+            if (Mth.Abs(MotionY) < .005f) MotionY = 0;
+            if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
+        }
+
+        /// <summary>
         /// Проверка перемещения со столкновением для медленный сущностей с hitbox
         /// </summary>
         protected void _CheckMoveColliding(ISizeEntityBox size)

@@ -50,7 +50,7 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Сопротивление воздуха
         /// </summary>
-        private const float _airDrag = .9869f;
+        public const float AirDrag = .9869f;
         /// <summary>
         /// Ускорение в воздухе
         /// </summary>
@@ -101,7 +101,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         /// <param name="rebound">Коэффициент отскока, 0 нет отскока, 1 максимальный</param>
         public PhysicsGround(CollisionBase collision, EntityBase entity, float rebound)
-            : base(collision, entity, rebound) => _airborneInertia = _airDrag;
+            : base(collision, entity, rebound) => _airborneInertia = AirDrag;
 
         /// <summary>
         /// Задать высоту автопрыжка, если 0 нет авто прыжка
@@ -122,27 +122,7 @@ namespace Vge.Entity.Physics
             _LivingUpdateJump();
 
             // Лимит по максимальному импульсу
-            if (ImpulseX != 0)
-            {
-                if (ImpulseX > Ce.MaxImpulse) MotionX += Ce.MaxImpulse;
-                else if (ImpulseX < -Ce.MaxImpulse) MotionX -= Ce.MaxImpulse;
-                else MotionX += ImpulseX;
-                ImpulseX = 0;
-            }
-            if (ImpulseY != 0)
-            {
-                if (ImpulseY > Ce.MaxImpulse) MotionY += Ce.MaxImpulse;
-                else if (ImpulseY < -Ce.MaxImpulse) MotionY -= Ce.MaxImpulse;
-                else MotionY += ImpulseY;
-                ImpulseY = 0;
-            }
-            if (ImpulseZ != 0)
-            {
-                if (ImpulseZ > Ce.MaxImpulse) MotionZ += Ce.MaxImpulse;
-                else if (ImpulseZ < -Ce.MaxImpulse) MotionZ -= Ce.MaxImpulse;
-                else MotionZ += ImpulseZ;
-                ImpulseZ = 0;
-            }
+            _ImpulseLimit();
 
             // Ускорение
             float acceleration;
@@ -184,9 +164,7 @@ namespace Vge.Entity.Physics
             }
 
             // Если мелочь убираем
-            if (Mth.Abs(MotionX) < .005f) MotionX = 0;
-            if (Mth.Abs(MotionY) < .005f) MotionY = 0;
-            if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
+            _ResetMinimumMotion();
 
             // Фиксируем перемещение
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;
@@ -224,7 +202,7 @@ namespace Vge.Entity.Physics
 
             // Инерция
             MotionX *= inertia;
-            MotionY *= _airDrag;
+            MotionY *= AirDrag;
             MotionZ *= inertia;
         }
 

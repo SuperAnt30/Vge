@@ -34,10 +34,9 @@ namespace Vge.Entity.Physics
             // Если нет перемещения по тактам, запускаем трение воздуха
             MotionX *= .98f;
             MotionZ *= .98f;
+
             // Если мелочь убираем
-            if (Mth.Abs(MotionX) < .005f) MotionX = 0;
-            if (Mth.Abs(MotionY) < .005f) MotionY = 0;
-            if (Mth.Abs(MotionZ) < .005f) MotionZ = 0;
+            _ResetMinimumMotion();
 
             float speed = .1f;
 

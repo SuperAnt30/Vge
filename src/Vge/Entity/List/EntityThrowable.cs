@@ -24,13 +24,13 @@ namespace Vge.Entity.List
         private int _jumpTime;
 
         /// <summary>
-        /// Запуск сущности после всех инициализаций, как правило только на сервере .3
+        /// Запуск сущности после всех инициализаций, как правило только на сервере
         /// </summary>
         public virtual void InitRun(EntityLiving entityThrower, int i)
             => _InitRun(entityThrower, i, .3f);
 
         /// <summary>
-        /// Запуск сущности после всех инициализаций, как правило только на сервере .3
+        /// Запуск сущности после всех инициализаций, как правило только на сервере
         /// </summary>
         protected void _InitRun(EntityLiving entityThrower, int i, float speedThrower = .49f)
         {
