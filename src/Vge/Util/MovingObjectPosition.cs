@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.World.Block;
 using WinGL.Util;
 
@@ -12,15 +13,15 @@ namespace Vge.Util
         /// <summary>
         /// Объект сущьности
         /// </summary>
-        public readonly EntityBase Entity;
+        public EntityBase Entity { get; private set; }
         /// <summary>
         /// Объект данных блока
         /// </summary>
-        public readonly BlockState Block;
+        public BlockState Block { get; private set; } = new BlockState().Empty();
         /// <summary>
         /// Позиция блока
         /// </summary>
-        public readonly BlockPos BlockPosition;
+        public BlockPos BlockPosition { get; private set; }
         /// <summary>
         /// Объект данных житкого блока
         /// </summary>
@@ -36,29 +37,81 @@ namespace Vge.Util
         /// <summary>
         /// Нормаль попадания по блоку
         /// </summary>
-        public readonly Vector3i Norm;
+        public Vector3i Norm { get; private set; }
         /// <summary>
         /// Координата куда попал луч в глобальных координатах по блоку
         /// </summary>
-        public readonly Vector3 RayHit;
+        public Vector3 RayHit { get; private set; }
         /// <summary>
         /// Точка куда устанавливаем блок (параметр с RayCast)
         /// значение в пределах 0..1, образно фиксируем пиксел клика на стороне
         /// </summary>
-        public readonly Vector3 Facing;
+        public Vector3 Facing { get; private set; }
         /// <summary>
         /// Сторона блока куда смотрит луч, нельзя по умолчанию All, надо строго из 6 сторон
         /// </summary>
-        public readonly Pole Side = Pole.Up;
+        public Pole Side { get; private set; } = Pole.Up;
 
-        private readonly MovingObjectType _type = MovingObjectType.None;
+        private MovingObjectType _type = MovingObjectType.None;
 
         /// <summary>
-        /// Нет попадания
+        /// Копировать объект в новый
         /// </summary>
-        public MovingObjectPosition()
+        public MovingObjectPosition Copy()
         {
-            Block = new BlockState().Empty();
+            MovingObjectPosition movingObject = new MovingObjectPosition();
+            movingObject.Copy(this);
+            return movingObject;
+        }
+        /// <summary>
+        /// Скопировать данные объекта movingObject в текущий
+        /// </summary>
+        public void Copy(MovingObjectPosition movingObject)
+        {
+            _type = movingObject._type;
+            if (_type != MovingObjectType.None)
+            {
+                RayHit = movingObject.RayHit;
+                Side = movingObject.Side;
+                if (_type == MovingObjectType.Entity)
+                {
+                    Entity = movingObject.Entity;
+                }
+                else
+                {
+                    Block = movingObject.Block;
+                    BlockPosition = movingObject.BlockPosition;
+                    Facing = movingObject.Facing;
+                    Norm = movingObject.Norm;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Очистить, ни кого не выбрали
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+            if (_type == MovingObjectType.Entity)
+            {
+                Entity = null;
+            }
+            _type = MovingObjectType.None;
+        }
+
+        /// <summary>
+        /// Попадаем в сущность
+        /// </summary>
+        /// <param name="entity">Объект сущности</param>
+        /// <param name="intersection">Точка пересечения</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ObjectEntity(EntityBase entity, PointIntersection intersection)
+        {
+            Entity = entity;
+            RayHit = intersection.RayHit;
+            Side = intersection.Side;
+            _type = MovingObjectType.Entity;
         }
 
         /// <summary>
@@ -70,8 +123,13 @@ namespace Vge.Util
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="norm">Нормаль попадания</param>
         /// <param name="rayHit">Координата куда попал луч</param>
-        public MovingObjectPosition(BlockState blockState, BlockPos pos, Pole side, Vector3 facing, Vector3i norm, Vector3 rayHit)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ObjectBlock(BlockState blockState, BlockPos pos, Pole side, Vector3 facing, Vector3i norm, Vector3 rayHit)
         {
+            if (_type == MovingObjectType.Entity)
+            {
+                Entity = null;
+            }
             Block = blockState;
             BlockPosition = pos;
             Facing = facing;
@@ -82,35 +140,25 @@ namespace Vge.Util
         }
 
         /// <summary>
-        /// Попадаем в сущность
-        /// </summary>
-        /// <param name="entity">Объект сущности</param>
-        /// <param name="intersection">Точка пересечения</param>
-        public MovingObjectPosition(EntityBase entity, PointIntersection intersection)
-        {
-            Block = new BlockState().Empty();
-            Entity = entity;
-            RayHit = intersection.RayHit;
-            Side = intersection.Side;
-            _type = MovingObjectType.Entity;
-        }
-
-        /// <summary>
         /// Попадает ли луч на блок
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBlock() => _type == MovingObjectType.Block;
-
         /// <summary>
         /// Попадает ли луч на сущность
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEntity() => _type == MovingObjectType.Entity;
-
+        /// <summary>
+        /// Лучь попадает или в сущность или в блок
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsCollision() => _type != MovingObjectType.None;
-
 
         /// <summary>
         /// Задать попадание по жидкому блоку
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetLiquid(int idBlock, BlockPos blockPos)
         {
             IsLiquid = true;
@@ -136,16 +184,16 @@ namespace Vge.Util
                 {
                     return moving.BlockPosition.Equals(BlockPosition) && moving.Block.Equals(Block);
                 }
-                //if (moving.IsEntity() && IsEntity())
-                //{
-                //    return moving.Entity.Id == Entity.Id;
-                //}
+                else if (moving.IsEntity() && IsEntity())
+                {
+                    return moving.Entity.Id == Entity.Id;
+                }
                 return true;
             }
             return false;
         }
 
-        public override int GetHashCode() 
+        public override int GetHashCode()
             => _type.GetHashCode() ^ RayHit.GetHashCode() ^ Block.GetHashCode();
 
         public override string ToString()

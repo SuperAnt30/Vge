@@ -1,7 +1,6 @@
 ﻿using Vge.Entity.Physics;
 using Vge.Util;
 using Vge.World;
-using Vge.World.Block;
 
 namespace Vge.Entity.List
 {
@@ -35,7 +34,10 @@ namespace Vge.Entity.List
             SetDead();
             if (moving.IsEntity())
             {
-                moving.Entity.SetDead();
+                if (moving.Entity.IndexEntity != Ce.Entities.IndexPlayer)
+                {
+                    moving.Entity.SetDead();
+                }
             }
             else if (moving.IsBlock())
             {

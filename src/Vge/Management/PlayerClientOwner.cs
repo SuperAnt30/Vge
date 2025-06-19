@@ -54,7 +54,7 @@ namespace Vge.Management
         /// <summary>
         /// Выбранный объект
         /// </summary>
-        public MovingObjectPosition MovingObject { get; private set; } = new MovingObjectPosition();
+        public readonly MovingObjectPosition MovingObject = new MovingObjectPosition();
 
         /// <summary>
         /// Позиция камеры в блоке для альфа, в зависимости от вида (с глаз, с зади, спереди)
@@ -609,17 +609,16 @@ namespace Vge.Management
             if (IsSpectator())
             {
                 // Если наблюдатель, то не может выбирать объекты
-                if (MovingObject.IsBlock())
+                if (MovingObject.IsCollision())
                 {
                     // Если был объект убираем его
-                    MovingObject = new MovingObjectPosition();
+                    MovingObject.Clear();
                 }
                 Debug.BlockFocus = "";
             }
             else
             {
-
-                MovingObject = _RayCast();
+                _UpRayCast();
 
                 if (MovingObject.IsBlock())
                 {
@@ -724,23 +723,18 @@ namespace Vge.Management
         {
             Chat.AddMessage(packet.Message, Gi.WindowsChatWidthMessage,  Gi.Si);
         }
-            
+
         #endregion
 
         /// <summary>
-        /// Луч игроком
+        /// Обновить луч игрока MovingObject
         /// </summary>
-        /// <param name="collidable"></param>
-        /// <param name="isLiquid"></param>
-        /// <returns></returns>
-        private MovingObjectPosition _RayCast(bool collidable = false, bool isLiquid = false)
+        private void _UpRayCast()//bool collidable = false, bool isLiquid = false)
         {
-            // максимальная дистанция луча
+            _game.World.Collision.RayCast(PosX, PosY + SizeLiving.GetEye(), PosZ, _rayLook, 8, false, Id);
+            MovingObject.Copy(_game.World.Collision.MovingObject);
 
-            //Vector3 pos = GetPositionVec();
-            //pos.Y += SizeLiving.GetEye();
-            return _game.World.Collision.RayCast(PosX, PosY + SizeLiving.GetEye(), PosZ, _rayLook,
-                8, collidable, Id, isLiquid);
+            // максимальная дистанция луча
             // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
         }
 

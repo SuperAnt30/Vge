@@ -468,13 +468,12 @@ namespace Vge.Entity.Physics
             if (!NoClip)
             {
                 Vector3 dir = new Vector3(MotionX, MotionY, MotionZ);
-                MovingObjectPosition moving = Collision.RayCast(
-                    Entity.PosX, Entity.PosY, Entity.PosZ,
+                Collision.RayCast(Entity.PosX, Entity.PosY, Entity.PosZ,
                     dir.Normalize(), Glm.Distance(dir), false, Entity.Id);
 
-                if (moving.IsCollision())
+                if (Collision.MovingObject.IsCollision())
                 {
-                    Entity.OnImpact(Collision.World, moving);
+                    Entity.OnImpact(Collision.World, Collision.MovingObject);
                 }
             }
         }

@@ -24,6 +24,10 @@ namespace Vge.World
         /// Сылка на объект мира
         /// </summary>
         public readonly WorldBase World;
+        /// <summary>
+        /// Выбранный объект
+        /// </summary>
+        public readonly MovingObjectPosition MovingObject = new MovingObjectPosition();
 
         /// <summary>
         /// Количество блоков в чанке. NumberChunkSections * 16 - 1 (old COUNT_HEIGHT_BLOCK)
@@ -281,16 +285,16 @@ namespace Vge.World
         /// <param name="entityId">исключение ID сущности, он же пускает луч</param>
         /// <param name="isLiquid">ловим жидкость</param>
         /// <param name="isLight">игнорируем прозрачные блоки</param>
-        public MovingObjectPosition RayCast(float px, float py, float pz,
+        public void RayCast(float px, float py, float pz,
             Vector3 dir, float maxDist, bool collidable, int entityId,
             bool isLiquid = false, bool isLight = false)
         {
 
-            MovingObjectPosition moving = RayCastBlock(
-                    px, py, pz, dir, maxDist, collidable, isLiquid, isLight);
+            // Пересечения лучей с визуализируемой поверхностью для блока
+            RayCastBlock(px, py, pz, dir, maxDist, collidable, isLiquid, isLight);
 
             Vector3 pos = new Vector3(px, py, pz);
-            Vector3 to = moving.IsBlock() ? moving.RayHit : pos + dir * maxDist;
+            Vector3 to = MovingObject.IsBlock() ? MovingObject.RayHit : pos + dir * maxDist;
 
             // Собираем все близлижащий сущностей для дальнейше проверки
             // TODO::2025-06-19 Тут должна быть hitbox не для коллизии, а для атаки или взаимодействия!
@@ -303,7 +307,7 @@ namespace Vge.World
                 EntityBase entityHit = null;
                 PointIntersection intersectionHit = new PointIntersection();
                 PointIntersection intersection;
-                float distance = moving.IsBlock() ? Glm.Distance(pos, moving.RayHit) : float.MaxValue;
+                float distance = MovingObject.IsBlock() ? Glm.Distance(pos, MovingObject.RayHit) : float.MaxValue;
 
                 for (int i = 0; i < count; i++)
                 {
@@ -329,10 +333,9 @@ namespace Vge.World
 
                 if (entityHit != null)
                 {
-                    moving = new MovingObjectPosition(entityHit, intersectionHit);
+                    MovingObject.ObjectEntity(entityHit, intersectionHit);
                 }
             }
-            return moving;
         }
 
 
@@ -347,10 +350,12 @@ namespace Vge.World
         /// <param name="collidable">сталкивающийся</param>
         /// <param name="isLiquid">ловим жидкость</param>
         /// <param name="isLight">игнорируем прозрачные блоки</param>
-        public MovingObjectPosition RayCastBlock(float px, float py, float pz,
+        public void RayCastBlock(float px, float py, float pz,
             Vector3 dir, float maxDist, bool collidable,
             bool isLiquid = false, bool isLight = false)
         {
+            MovingObject.Clear();
+
             float dx = dir.X;
             float dy = dir.Y;
             float dz = dir.Z;
@@ -393,7 +398,6 @@ namespace Vge.World
             Pole side = Pole.Up;
             Vector3i norm;
             Vector3 end;
-            MovingObjectPosition moving = new MovingObjectPosition();
 
             while (t <= maxDist)
             {
@@ -436,7 +440,7 @@ namespace Vge.World
                         side = sidez;
                         norm.Z = -stepz;
                     }
-                    moving = new MovingObjectPosition(blockState, blockPos, side, end - blockPos.ToVector3(), norm, end);
+                    MovingObject.ObjectBlock(blockState, blockPos, side, end - blockPos.ToVector3(), norm, end);
                     break;
                 }
                 if (txMax < tyMax)
@@ -477,9 +481,8 @@ namespace Vge.World
 
             if (isLiquid)
             {
-                moving.SetLiquid(idBlockLiquid, blockPosLiquid);
+                MovingObject.SetLiquid(idBlockLiquid, blockPosLiquid);
             }
-            return moving;
         }
 
         #region Old
