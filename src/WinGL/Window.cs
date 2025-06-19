@@ -243,7 +243,6 @@ namespace WinGL
                 throw new Exception(Sr.FailedToGetMonitorInformation);
             }
 
-            //TODO::2025-06-13 Продумать центровку!
             LocationX = windowLocationX = monitorInfo.Monitor.Left;
             LocationY = windowLocationY = monitorInfo.Monitor.Top;
 

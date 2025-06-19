@@ -27,7 +27,7 @@ namespace Vge.Entity.List
         /// Запуск сущности после всех инициализаций, как правило только на сервере .3
         /// </summary>
         public virtual void InitRun(EntityLiving entityThrower, int i)
-            => _InitRun(entityThrower, i, .6f);
+            => _InitRun(entityThrower, i, .3f);
 
         /// <summary>
         /// Запуск сущности после всех инициализаций, как правило только на сервере .3
@@ -40,13 +40,13 @@ namespace Vge.Entity.List
             // спереди
             float f3 = (int)(i / 100) * 1.54f;
             i = i % 100; 
-            float f = (i & 15) * 1.54f;
+            float f = (i & 15) * 1.54f + 1;
             float f2 = (i >> 4) * 1.3f;
             PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw) * f
                 - Glm.Cos(entityThrower.RotationYaw) * f3;
             PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw) * f
                 + Glm.Sin(entityThrower.RotationYaw) * f3;
-            PosY = entityThrower.PosY + entityThrower.Eye - .2f + f2;
+            PosY = entityThrower.PosY + entityThrower.SizeLiving.GetEye() - .2f + f2;
             // вверх
             //PosX = entityThrower.PosX;
             //PosZ = entityThrower.PosZ;
@@ -74,13 +74,18 @@ namespace Vge.Entity.List
         /// Инициализация размеров сущности
         /// </summary>
         protected override void _InitSize()
-            => Size = new SizeEntityBox(this, .125f, .25f, 25);
+            => Size = new SizeEntityBox(this, .5f, 1, 100);
 
         /// <summary>
         /// Инициализация физики
         /// </summary>
         protected override void _InitPhysics(CollisionBase collision)
-            => Physics = new PhysicsGround(collision, this, .9f);
+            => Physics = new PhysicsGround(collision, this, 0);
+
+        /// <summary>
+        /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
+        /// </summary>
+        public override bool CanBeCollidedWith() => true;
 
         /// <summary>
         /// Игровой такт на сервере
@@ -116,7 +121,7 @@ namespace Vge.Entity.List
                     }
                 }
 
-                if (Physics.CaughtInBlock > 150 || Physics.CaughtInEntity > 30)
+                if (Physics.CaughtInBlock > 2 || Physics.CaughtInEntity > 30)
                 {
                     SetDead();
                     return;

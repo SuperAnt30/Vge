@@ -821,30 +821,6 @@ namespace Vge.World.Chunk
                 ListEntities.GetAt(i).AwakenPhysicSleep();
             }
         }
-        /*
-        /// <summary>
-        /// Заполнить список сущностей, которые сталкиваются с aabb
-        /// </summary>
-        /// <param name="aabb">проверяемая рамка для пополнения списка</param>
-        /// <param name="id">исключение ID сущности</param>
-        public void FillInEntityBoundingBoxes(ListFast<EntityBase> list,
-            AxisAlignedBB aabb, int minY, int maxY, int id)
-        {
-            // TODO::2025-06-07 List<EntityBase> надо отказаться от листа, и продумать типа ListFast но надо продумать удаление объектов при очищении
-            EntityBase entity;
-            for (int cy = minY; cy <= maxY; cy++)
-            {
-                for (int i = 0; i < ListEntitiesSection[cy].Count; i++)
-                {
-                    entity = ListEntitiesSection[cy].GetAt(i);
-                    if (entity.Id != id && !entity.IsDead && entity.GetBoundingBox().IntersectsWith(aabb))
-                    {
-                        // Если пересекается вносим в список
-                        list.Add(entity);
-                    }
-                }
-            }
-        }*/
 
         /// <summary>
         /// Заполнить список сущностей, которые могут находится в секторах чанка

@@ -278,7 +278,8 @@ namespace Vge.World.Block
         /// <param name="a">точка от куда идёт лучь</param>
         /// <param name="dir">вектор луча</param>
         /// <param name="maxDist">максимальная дистания</param>
-        public bool CollisionRayTrace(BlockPos pos, uint met, Vector3 a, Vector3 dir, float maxDist)
+        public bool CollisionRayTrace(BlockPos pos, uint met, 
+            float px, float py, float pz, Vector3 dir, float maxDist)
         {
             if (IsAction)
             {

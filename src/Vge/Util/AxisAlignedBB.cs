@@ -235,7 +235,7 @@ namespace Vge.Util
         /// <summary>
         /// Рассчитать точку пересечения в AABB и отрезка, в виде вектора от pos1 до pos2
         /// </summary>
-        public MovingObjectPosition CalculateIntercept(Vector3 pos1, Vector3 pos2)
+        public PointIntersection CalculateIntercept(Vector3 pos1, Vector3 pos2)
         {
             Vector3 posX1 = _GetIntermediateWithXValue(pos1, pos2, Min.X);
             Vector3 posX2 = _GetIntermediateWithXValue(pos1, pos2, Max.X);
@@ -283,7 +283,7 @@ namespace Vge.Util
                 vecResult = posZ2;
             }
 
-            if (vecResult.IsZero()) return null;
+            if (vecResult.IsZero()) return new PointIntersection();
 
             Pole side;
             if (vecResult == posX1) side = Pole.West;
@@ -293,7 +293,7 @@ namespace Vge.Util
             else if (vecResult == posZ1) side = Pole.North;
             else side = Pole.South;
 
-            return new MovingObjectPosition(vecResult, side);
+            return new PointIntersection(vecResult, side);
         }
 
         /// <summary>
@@ -301,51 +301,60 @@ namespace Vge.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool _IsVecInYZ(Vector3 vec)
-            => vec.IsZero() ? false : vec.Y >= Min.Y && vec.Y <= Max.Y && vec.Z >= Min.Z && vec.Z <= Max.Z;
+            => !vec.IsZero() && vec.Y >= Min.Y && vec.Y <= Max.Y && vec.Z >= Min.Z && vec.Z <= Max.Z;
 
         /// <summary>
         /// Проверяет, находится ли указанный вектор в пределах размеров XZ ограничивающей рамки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool _IsVecInXZ(Vector3 vec)
-            => vec.IsZero() ? false : vec.X >= Min.X && vec.X <= Max.X && vec.Z >= Min.Z && vec.Z <= Max.Z;
+            => !vec.IsZero() && vec.X >= Min.X && vec.X <= Max.X && vec.Z >= Min.Z && vec.Z <= Max.Z;
 
         /// <summary>
         /// Проверяет, находится ли указанный вектор в пределах размеров XY ограничивающей рамки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool _IsVecInXY(Vector3 vec)
-            => vec.IsZero() ? false : vec.X >= Min.X && vec.X <= Max.X && vec.Y >= Min.Y && vec.Y <= Max.Y;
+            => !vec.IsZero() && vec.X >= Min.X && vec.X <= Max.X && vec.Y >= Min.Y && vec.Y <= Max.Y;
 
         /// <summary>
         /// Возвращает, пересекается ли данная ограничивающая рамка с этой Рамкой
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsWith(AxisAlignedBB other) => other.Max.X > Min.X && other.Min.X < Max.X
-                ? (other.Max.Y > Min.Y && other.Min.Y < Max.Y ? other.Max.Z > Min.Z && other.Min.Z < Max.Z : false)
-                : false;
+        public bool IntersectsWith(AxisAlignedBB other)
+            => other.Max.X > Min.X && other.Min.X < Max.X
+                && other.Max.Y > Min.Y && other.Min.Y < Max.Y
+                && other.Max.Z > Min.Z && other.Min.Z < Max.Z;
+
         /// <summary>
         /// Возвращает, пересекается ли данная ограничивающая рамка с блоком
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsWith(BlockPos blockPos) => blockPos.X + 1 > Min.X && blockPos.X < Max.X
-                ? (blockPos.Y + 1 > Min.Y && blockPos.Y < Max.Y ? blockPos.Z + 1 > Min.Z && blockPos.Z < Max.Z : false)
-                : false;
+        public bool IntersectsWith(BlockPos blockPos) 
+            => blockPos.X + 1 > Min.X && blockPos.X < Max.X
+                && blockPos.Y + 1 > Min.Y && blockPos.Y < Max.Y 
+                && blockPos.Z + 1 > Min.Z && blockPos.Z < Max.Z;
+
         /// <summary>
         /// Возвращает, пересекается ли данная ограничивающая рамка с блоком
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IntersectsWith(int x, int y, int z) => x + 1 > Min.X && x < Max.X
-                ? (y + 1 > Min.Y && y < Max.Y ? z + 1 > Min.Z && z < Max.Z : false)
-                : false;
+        public bool IntersectsWith(int x, int y, int z) 
+            => x + 1 > Min.X && x < Max.X && y + 1 > Min.Y && y < Max.Y && z + 1 > Min.Z && z < Max.Z;
+
+        /// <summary>
+        /// Возвращает, если предоставленный точка полностью находится внутри ограничивающей рамки.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPointInside(float x, float y, float z) 
+            => x > Min.X && x < Max.X && y > Min.Y && y < Max.Y && z > Min.Z && z < Max.Z;
 
         /// <summary>
         /// Возвращает, если предоставленный Vector3 полностью находится внутри ограничивающей рамки.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsVecInside(Vector3 vec) => vec.X > Min.X && vec.X < Max.X
-                ? (vec.Y > Min.Y && vec.Y < Max.Y ? vec.Z > Min.Z && vec.Z < Max.Z : false)
-                : false;
+        public bool IsVecInside(Vector3 vec) 
+            => vec.X > Min.X && vec.X < Max.X && vec.Y > Min.Y && vec.Y < Max.Y && vec.Z > Min.Z && vec.Z < Max.Z;
 
         /// <summary>
         /// Возвращает среднюю длину краев ограничивающей рамки

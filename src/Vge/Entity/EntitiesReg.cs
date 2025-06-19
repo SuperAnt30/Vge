@@ -56,7 +56,7 @@ namespace Vge.Entity
             // Регистрация обязательных сущностей
             RegisterModelEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
             // Отладочный
-            RegisterModelEntityClass("Robinson", typeof(EntityThrowableBig));
+            RegisterModelEntityClass("Robinson", typeof(EntityThrowable));
             //RegisterModelEntityClass("Chicken2");
         }
 

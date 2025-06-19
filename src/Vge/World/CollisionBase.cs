@@ -2,6 +2,7 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.World
@@ -19,22 +20,22 @@ namespace Vge.World
         /// Результат запроса, списка для поиска блоков
         /// </summary>
         public readonly ListFast<AxisAlignedBB> ListBlock = new ListFast<AxisAlignedBB>();
-
         /// <summary>
         /// Сылка на объект мира
         /// </summary>
-        private readonly WorldBase _world;
+        public readonly WorldBase World;
+
         /// <summary>
         /// Количество блоков в чанке. NumberChunkSections * 16 - 1 (old COUNT_HEIGHT_BLOCK)
         /// </summary>
         private int _numberBlocks;
 
-        public CollisionBase(WorldBase world) => _world = world;
+        public CollisionBase(WorldBase world) => World = world;
 
         /// <summary>
         /// Инициализация колизии, нужна чтоб задать высоту мира
         /// </summary>
-        public void Init() => _numberBlocks = _world.ChunkPr.Settings.NumberBlocks;
+        public void Init() => _numberBlocks = World.ChunkPr.Settings.NumberBlocks;
 
         /// <summary>
         /// Возвращает список статических (блоков) ограничивающих рамок, которые сталкиваются с aabb
@@ -62,7 +63,7 @@ namespace Vge.World
 
             if (minCx == maxCx && minCz == maxCz)
             {
-                ChunkBase chunk = _world.GetChunk(minCx, minCz);
+                ChunkBase chunk = World.GetChunk(minCx, minCz);
                 for (x = min.X; x <= max.X; x++)
                 {
                     xb = x & 15;
@@ -97,7 +98,7 @@ namespace Vge.World
                 {
                     for (zc = minCz; zc <= maxCz; zc++)
                     {
-                        ChunkBase chunk = _world.GetChunk(xc, zc);
+                        ChunkBase chunk = World.GetChunk(xc, zc);
                         for (x = min.X; x <= max.X; x++)
                         {
                             if (x >> 4 == xc)
@@ -157,7 +158,7 @@ namespace Vge.World
 
             if (minCx == maxCx && minCz == maxCz)
             {
-                ChunkBase chunk = _world.GetChunk(minCx, minCz);
+                ChunkBase chunk = World.GetChunk(minCx, minCz);
                 if (chunk != null)
                 {
                     for (x = min.X; x <= max.X; x++)
@@ -190,7 +191,7 @@ namespace Vge.World
                 {
                     for (zc = minCz; zc <= maxCz; zc++)
                     {
-                        ChunkBase chunk = _world.GetChunk(xc, zc);
+                        ChunkBase chunk = World.GetChunk(xc, zc);
                         if (chunk != null)
                         {
                             for (x = min.X; x <= max.X; x++)
@@ -258,7 +259,7 @@ namespace Vge.World
             {
                 for (zc = minCz; zc <= maxCz; zc++)
                 {
-                    ChunkBase chunk = _world.GetChunk(xc, zc);
+                    ChunkBase chunk = World.GetChunk(xc, zc);
                     // Не надо отрабатывать null, для этого есть отработка в статике
                     if (chunk != null)
                     {
@@ -266,6 +267,219 @@ namespace Vge.World
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Пересечения луча
+        /// </summary>
+        /// <param name="px">точка X от куда идёт лучь</param>
+        /// <param name="py">точка Y от куда идёт лучь</param>
+        /// <param name="pz">точка Z от куда идёт лучь</param>
+        /// <param name="dir">вектор луча, нормализованный</param>
+        /// <param name="maxDist">максимальная дистания</param>
+        /// <param name="collidable">сталкивающийся</param>
+        /// <param name="entityId">исключение ID сущности, он же пускает луч</param>
+        /// <param name="isLiquid">ловим жидкость</param>
+        /// <param name="isLight">игнорируем прозрачные блоки</param>
+        public MovingObjectPosition RayCast(float px, float py, float pz,
+            Vector3 dir, float maxDist, bool collidable, int entityId,
+            bool isLiquid = false, bool isLight = false)
+        {
+
+            MovingObjectPosition moving = RayCastBlock(
+                    px, py, pz, dir, maxDist, collidable, isLiquid, isLight);
+
+            Vector3 pos = new Vector3(px, py, pz);
+            Vector3 to = moving.IsBlock() ? moving.RayHit : pos + dir * maxDist;
+
+            // Собираем все близлижащий сущностей для дальнейше проверки
+            // TODO::2025-06-19 Тут должна быть hitbox не для коллизии, а для атаки или взаимодействия!
+            EntityBoundingBoxesFromSector(new AxisAlignedBB(pos, to), entityId);
+
+            int count = ListEntity.Count;
+            if (count > 0)
+            {
+                EntityBase entity;
+                EntityBase entityHit = null;
+                PointIntersection intersectionHit = new PointIntersection();
+                PointIntersection intersection;
+                float distance = moving.IsBlock() ? Glm.Distance(pos, moving.RayHit) : float.MaxValue;
+
+                for (int i = 0; i < count; i++)
+                {
+                    entity = ListEntity[i];
+                    // Проверка может ли сущность быть в проверке
+                    if (entity.CanBeCollidedWith())
+                    {
+                        intersection = entity.Size.CalculateIntercept(pos, to);
+                        if (intersection.Intersection)
+                        {
+                            // Имеется пересечение с сущностью
+                            float f = Glm.Distance(pos, intersection.RayHit);
+                            if (f < distance)
+                            {
+                                entityHit = entity;
+                                intersectionHit = intersection;
+                                distance = f;
+                            }
+                        }
+                    }
+                }
+                ListEntity.ClearFull();
+
+                if (entityHit != null)
+                {
+                    moving = new MovingObjectPosition(entityHit, intersectionHit);
+                }
+            }
+            return moving;
+        }
+
+
+        /// <summary>
+        /// Пересечения лучей с визуализируемой поверхностью для блока
+        /// </summary>
+        /// <param name="px">точка X от куда идёт лучь</param>
+        /// <param name="py">точка Y от куда идёт лучь</param>
+        /// <param name="pz">точка Z от куда идёт лучь</param>
+        /// <param name="dir">вектор луча, нормализованный</param>
+        /// <param name="maxDist">максимальная дистания</param>
+        /// <param name="collidable">сталкивающийся</param>
+        /// <param name="isLiquid">ловим жидкость</param>
+        /// <param name="isLight">игнорируем прозрачные блоки</param>
+        public MovingObjectPosition RayCastBlock(float px, float py, float pz,
+            Vector3 dir, float maxDist, bool collidable,
+            bool isLiquid = false, bool isLight = false)
+        {
+            float dx = dir.X;
+            float dy = dir.Y;
+            float dz = dir.Z;
+
+            float t = 0.0f;
+            int ix = Mth.Floor(px);
+            int iy = Mth.Floor(py);
+            int iz = Mth.Floor(pz);
+            int stepx = (dx > 0.0f) ? 1 : -1;
+            int stepy = (dy > 0.0f) ? 1 : -1;
+            int stepz = (dz > 0.0f) ? 1 : -1;
+            Pole sidex = (dx > 0.0f) ? Pole.West : Pole.East;
+            Pole sidey = (dy > 0.0f) ? Pole.Down : Pole.Up;
+            Pole sidez = (dz > 0.0f) ? Pole.North : Pole.South;
+
+            float infinity = float.MaxValue;
+
+            float txDelta = (dx == 0.0f) ? infinity : Mth.Abs(1.0f / dx);
+            float tyDelta = (dy == 0.0f) ? infinity : Mth.Abs(1.0f / dy);
+            float tzDelta = (dz == 0.0f) ? infinity : Mth.Abs(1.0f / dz);
+
+            float xdist = (stepx > 0) ? (ix + 1 - px) : (px - ix);
+            float ydist = (stepy > 0) ? (iy + 1 - py) : (py - iy);
+            float zdist = (stepz > 0) ? (iz + 1 - pz) : (pz - iz);
+
+            float txMax = (txDelta < infinity) ? txDelta * xdist : infinity;
+            float tyMax = (tyDelta < infinity) ? tyDelta * ydist : infinity;
+            float tzMax = (tzDelta < infinity) ? tzDelta * zdist : infinity;
+
+            int steppedIndex = -1;
+
+            bool liquid = false;
+            BlockPos blockPosLiquid = new BlockPos();
+            int idBlockLiquid = -1;
+
+            int idBlock;
+            BlockPos blockPos = new BlockPos();
+            BlockState blockState;
+            BlockBase block;
+            Pole side = Pole.Up;
+            Vector3i norm;
+            Vector3 end;
+            MovingObjectPosition moving = new MovingObjectPosition();
+
+            while (t <= maxDist)
+            {
+                blockPos.X = ix;
+                blockPos.Y = iy;
+                blockPos.Z = iz;
+                blockState = World.GetBlockState(blockPos);
+                block = blockState.GetBlock();
+                idBlock = blockState.Id;
+
+                if (isLiquid && !liquid && block.Liquid)// && !(block is BlockAbLiquidFlowing))
+                {
+                    liquid = true;
+                    blockPosLiquid.X = blockPos.X;
+                    blockPosLiquid.Y = blockPos.Y;
+                    blockPosLiquid.Z = blockPos.Z;
+                    idBlockLiquid = idBlock;
+                }
+
+                if ((isLight && block.IsNotTransparent) || (!isLight && ((!collidable) || (collidable && block.IsCollidable))
+                    && block.CollisionRayTrace(blockPos, blockState.Met, px, py, pz, dir, maxDist)))
+                {
+                    end.X = px + t * dx;
+                    end.Y = py + t * dy;
+                    end.Z = pz + t * dz;
+
+                    norm.X = norm.Y = norm.Z = 0;
+                    if (steppedIndex == 0)
+                    {
+                        side = sidex;
+                        norm.X = -stepx;
+                    }
+                    else if (steppedIndex == 1)
+                    {
+                        side = sidey;
+                        norm.Y = -stepy;
+                    }
+                    else if (steppedIndex == 2)
+                    {
+                        side = sidez;
+                        norm.Z = -stepz;
+                    }
+                    moving = new MovingObjectPosition(blockState, blockPos, side, end - blockPos.ToVector3(), norm, end);
+                    break;
+                }
+                if (txMax < tyMax)
+                {
+                    if (txMax < tzMax)
+                    {
+                        ix += stepx;
+                        t = txMax;
+                        txMax += txDelta;
+                        steppedIndex = 0;
+                    }
+                    else
+                    {
+                        iz += stepz;
+                        t = tzMax;
+                        tzMax += tzDelta;
+                        steppedIndex = 2;
+                    }
+                }
+                else
+                {
+                    if (tyMax < tzMax)
+                    {
+                        iy += stepy;
+                        t = tyMax;
+                        tyMax += tyDelta;
+                        steppedIndex = 1;
+                    }
+                    else
+                    {
+                        iz += stepz;
+                        t = tzMax;
+                        tzMax += tzDelta;
+                        steppedIndex = 2;
+                    }
+                }
+            }
+
+            if (isLiquid)
+            {
+                moving.SetLiquid(idBlockLiquid, blockPosLiquid);
+            }
+            return moving;
         }
 
         #region Old

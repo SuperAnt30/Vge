@@ -1,4 +1,6 @@
-﻿using Vge.Util;
+﻿using System.Runtime.CompilerServices;
+using Vge.Util;
+using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -34,6 +36,11 @@ namespace Vge.Entity
         bool IntersectsWithBlock(int x, int y, int z);
 
         /// <summary>
+        /// Рассчитать точку пересечения Hitbox и отрезка, в виде вектора от pos1 до pos2
+        /// </summary>
+        PointIntersection CalculateIntercept(Vector3 pos1, Vector3 pos2);
+
+        /// <summary>
         /// Если экземпляр и ограничивающие рамки аргумента перекрываются в измерениях Y и Z, 
         /// вычислите смещение между ними в измерении X. вернуть offset, если ограничивающие 
         /// рамки не перекрываются или если offset ближе к 0, чем вычисленное смещение. 
@@ -60,4 +67,31 @@ namespace Vge.Entity
         /// <param name="offset">смещение</param>
         float CalculateZOffset(AxisAlignedBB other, float offset);
     }
+
+    /// <summary>
+    /// Интерйейс объекта для размера, дополнение, чтоб создать рамку
+    /// </summary>
+    public interface ISizeEntityBox : ISizeEntity
+    {
+        /// <summary>
+        /// Получить ограничительную рамку сущности
+        /// </summary>
+        AxisAlignedBB GetBoundingBox();
+        /// <summary>
+        /// Получить ограничительную рамку сущности со смещением
+        /// </summary>
+        AxisAlignedBB GetBoundingBoxOffset(float x, float y, float z);
+    }
+
+    /// <summary>
+    /// Интерйейс объекта для размера, дополнение, глаза
+    /// </summary>
+    //public interface ISizeEntityEye : ISizeEntityBox
+    //{
+    //    /// <summary>
+    //    /// Высота глаз
+    //    /// </summary>
+    //    float GetEye();
+    //}
+
 }

@@ -9,6 +9,13 @@ namespace Vge.Entity
     /// </summary>
     public abstract class EntityLiving : EntityBase
     {
+
+        /// <summary>
+        /// Объект Размер, вес и прочее сущностей которая работает с физикой
+        /// </summary>
+        public SizeEntityLiving SizeLiving { get; protected set; }
+
+
         #region Rotation 
 
         /// <summary>
@@ -51,11 +58,6 @@ namespace Vge.Entity
         public float RotationServerPitch;
 
         #endregion
-
-        /// <summary>
-        /// Высота глаз
-        /// </summary>
-        public float Eye { get; protected set; }
 
         #region Методы для Position и Rotation
 

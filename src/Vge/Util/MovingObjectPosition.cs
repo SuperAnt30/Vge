@@ -1,4 +1,5 @@
-﻿using Vge.World.Block;
+﻿using Vge.Entity;
+using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Util
@@ -8,6 +9,10 @@ namespace Vge.Util
     /// </summary>
     public class MovingObjectPosition
     {
+        /// <summary>
+        /// Объект сущьности
+        /// </summary>
+        public readonly EntityBase Entity;
         /// <summary>
         /// Объект данных блока
         /// </summary>
@@ -51,19 +56,9 @@ namespace Vge.Util
         /// <summary>
         /// Нет попадания
         /// </summary>
-        public MovingObjectPosition() => Block = new BlockState().Empty();
-
-        /// <summary>
-        /// Проверка вектора, с какой стороны попали, точка попадания
-        /// </summary>
-        /// <param name="vec">точка попадания</param>
-        /// <param name="side">с какой стороны попали</param>
-        public MovingObjectPosition(Vector3 vec, Pole side)
+        public MovingObjectPosition()
         {
-            // TODO::2024-11-28 Почему блок?! MovingObjectType.Block
-            _type = MovingObjectType.Block;
-            RayHit = vec;
-            Side = side;
+            Block = new BlockState().Empty();
         }
 
         /// <summary>
@@ -87,6 +82,20 @@ namespace Vge.Util
         }
 
         /// <summary>
+        /// Попадаем в сущность
+        /// </summary>
+        /// <param name="entity">Объект сущности</param>
+        /// <param name="intersection">Точка пересечения</param>
+        public MovingObjectPosition(EntityBase entity, PointIntersection intersection)
+        {
+            Block = new BlockState().Empty();
+            Entity = entity;
+            RayHit = intersection.RayHit;
+            Side = intersection.Side;
+            _type = MovingObjectType.Entity;
+        }
+
+        /// <summary>
         /// Попадает ли луч на блок
         /// </summary>
         public bool IsBlock() => _type == MovingObjectType.Block;
@@ -96,7 +105,7 @@ namespace Vge.Util
         /// </summary>
         public bool IsEntity() => _type == MovingObjectType.Entity;
 
-        //public bool IsCollision() => _type != MovingObjectType.None;
+        public bool IsCollision() => _type != MovingObjectType.None;
 
 
         /// <summary>

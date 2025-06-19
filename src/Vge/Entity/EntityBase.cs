@@ -448,6 +448,10 @@ namespace Vge.Entity
         /// </summary>
         public virtual bool NoClip() => false;
         /// <summary>
+        /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
+        /// </summary>
+        public virtual bool CanBeCollidedWith() => false;
+        /// <summary>
         /// Возвращает true, если этот объект можно толкать и толкает другие объекты при столкновении
         /// </summary>
         public virtual bool CanBePushed() => true;
@@ -499,6 +503,11 @@ namespace Vge.Entity
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public virtual void UpdateClient(WorldClient world, float deltaTime) { }
+
+        /// <summary>
+        /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.
+        /// </summary>
+        public virtual void OnImpact(WorldBase world, MovingObjectPosition moving) { }
 
 
         #region Get

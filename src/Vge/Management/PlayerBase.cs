@@ -95,14 +95,15 @@ namespace Vge.Management
         public override string GetName() => Login;
 
         /// <summary>
+        /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
+        /// </summary>
+        public override bool CanBeCollidedWith() => true;
+
+        /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
         protected override void _InitSize()
-        {
-            Size = new SizeEntityBox(this, .3f, 1.8f, 80);
-            // TODO::2025-06-18 Глава внести в SizeEntityLiving
-            Eye = Size.GetHeight() * .85f;
-        }
+            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.53f, 80);
 
     }
 }

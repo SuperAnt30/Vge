@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
+using WinGL.Util;
 
 namespace Vge.Entity.Physics
 {
@@ -175,7 +176,7 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Проверка перемещения со столкновением для медленный сущностей с hitbox
         /// </summary>
-        protected void _CheckMoveColliding(SizeEntityBox size)
+        protected void _CheckMoveColliding(ISizeEntityBox size)
         {
             if (!NoClip)
             {
@@ -456,6 +457,26 @@ namespace Vge.Entity.Physics
                 }
             }
             Collision.ListBlock.ClearFull();
+        }
+
+
+        /// <summary>
+        /// Проверка перемещения со столкновением для быстрых сущностей точек, балистики
+        /// </summary>
+        protected void _CheckMoveCollidingPoint()
+        {
+            if (!NoClip)
+            {
+                Vector3 dir = new Vector3(MotionX, MotionY, MotionZ);
+                MovingObjectPosition moving = Collision.RayCast(
+                    Entity.PosX, Entity.PosY, Entity.PosZ,
+                    dir.Normalize(), Glm.Distance(dir), false, Entity.Id);
+
+                if (moving.IsCollision())
+                {
+                    Entity.OnImpact(Collision.World, moving);
+                }
+            }
         }
     }
 }

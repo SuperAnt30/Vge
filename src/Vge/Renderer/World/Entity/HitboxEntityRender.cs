@@ -48,8 +48,8 @@ namespace Vge.Renderer.World.Entity
                 Vector3 raycust = Glm.Ray(entityLiving.GetRotationFrameYaw(timeIndex), 
                     entityLiving.GetRotationFramePitch(timeIndex)) * 1.6f;
                 list.AddRange(new float[] {
-                0, entityLiving.Eye, 0, 1, .5f, .5f, 1,
-                raycust.X, raycust.Y + entityLiving.Eye, raycust.Z, 1, .5f, .5f, 1
+                0, entityLiving.SizeLiving.GetEye(), 0, 1, .5f, .5f, 1,
+                raycust.X, raycust.Y + entityLiving.SizeLiving.GetEye(), raycust.Z, 1, .5f, .5f, 1
             });
             }
             _mesh.Reload(list.ToArray());

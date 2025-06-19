@@ -151,10 +151,10 @@ namespace Vge.Management
             _InitIndexPlayer();
 
             // Нельзя в конструкторе, так-как мир ещё не создан
-            Physics = new PhysicsFly(_game.World.Collision, this);
+            //Physics = new PhysicsFly(_game.World.Collision, this);
             //Physics = new PhysicsGround(_game.World.Collision, this);
 
-            //Physics = new PhysicsPlayer(_game.World.Collision, this);
+            Physics = new PhysicsPlayer(_game.World.Collision, this);
 
             // Создание объекта рендера не в конструкторе, так-как там ещё не создан рендер мир
             Render = new EntityRenderClient(this, _game.WorldRender.Entities, 1);
@@ -283,7 +283,7 @@ namespace Vge.Management
         {
             Vector3 front = Glm.Ray(RotationFrameYaw, RotationFramePitch);
             Vector3 up = new Vector3(0, 1, 0);
-            Vector3 pos = new Vector3(0, Eye, 0);
+            Vector3 pos = new Vector3(0, SizeLiving.GetEye(), 0);
             _rayLook = front;
 
             if (!ViewCameraEye)
@@ -548,7 +548,7 @@ namespace Vge.Management
         /// </summary>
         private void _UpdateChunkRenderAlphe()
         {
-            PositionAlphaBlock = new Vector3i(PosX, PosY + Eye, PosZ);
+            PositionAlphaBlock = new Vector3i(PosX, PosY + SizeLiving.GetEye(), PosZ);
             _positionAlphaChunk = new Vector3i(PositionAlphaBlock.X >> 4, 
                 PositionAlphaBlock.Y >> 4, PositionAlphaBlock.Z >> 4);
 
@@ -653,15 +653,15 @@ namespace Vge.Management
                 {
                     Debug.BlockFocus = string.Format("Liquid:{0} {1}\r\n", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition);
                 }
-                //else if (MovingObject.IsEntity())
-                //{
-                //    Debug.BlockFocus = MovingObject.Entity.GetName();
-                //    if (MovingObject.Entity is EntityLiving entityLiving)
-                //    {
-                //        Debug.BlockFocus += " [" + entityLiving.GetHealth() + "]";
-                //    }
-                //    Debug.BlockFocus += "\r\n";
-                //}
+                else if (MovingObject.IsEntity())
+                {
+                    Debug.BlockFocus = "Entity: " + MovingObject.Entity.GetName();
+                    if (MovingObject.Entity is EntityLiving entityLiving)
+                    {
+                        Debug.BlockFocus += " [" + "entityLiving.GetHealth()" + "]";
+                    }
+                    Debug.BlockFocus += MovingObject.Entity.GetPositionVec().ToString() + "\r\n";
+                }
                 else
                 {
                     Debug.BlockFocus = "";
@@ -737,9 +737,10 @@ namespace Vge.Management
         {
             // максимальная дистанция луча
 
-            Vector3 pos = GetPositionVec();
-            pos.Y += Eye;// GetEyeHeight();
-            return _game.World.RayCastBlock(pos, _rayLook, 8, collidable, /*Id,*/ isLiquid);
+            //Vector3 pos = GetPositionVec();
+            //pos.Y += SizeLiving.GetEye();
+            return _game.World.Collision.RayCast(PosX, PosY + SizeLiving.GetEye(), PosZ, _rayLook,
+                8, collidable, Id, isLiquid);
             // return World.RayCast(pos, RayLook, MvkGlobal.RAY_CAST_DISTANCE, collidable, Id, isLiquid);
         }
 
