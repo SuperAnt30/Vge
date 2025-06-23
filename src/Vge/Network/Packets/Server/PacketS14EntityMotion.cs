@@ -9,7 +9,7 @@ namespace Vge.Network.Packets.Server
     {
         public byte Id => 0x14;
 
-        public int Index { get; private set; }
+        public int EntityId { get; private set; }
         public float X { get; private set; }
         public float Y { get; private set; }
         public float Z { get; private set; }
@@ -22,7 +22,7 @@ namespace Vge.Network.Packets.Server
 
         public PacketS14EntityMotion(EntityBase entity)
         {
-            Index = entity.Id;
+            EntityId = entity.Id;
             X = entity.PosX;
             Y = entity.PosY;
             Z = entity.PosZ;
@@ -44,7 +44,7 @@ namespace Vge.Network.Packets.Server
 
         public void ReadPacket(ReadPacket stream)
         {
-            Index = stream.Int();
+            EntityId = stream.Int();
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
@@ -60,7 +60,7 @@ namespace Vge.Network.Packets.Server
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Int(Index);
+            stream.Int(EntityId);
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);

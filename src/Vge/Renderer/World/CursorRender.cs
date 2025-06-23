@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vge.Management;
+using Vge.Entity.Player;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -35,7 +35,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Объект луча прошлого такта
         /// </summary>
-        private MovingObjectPosition _movingObjectPrev;
+        private readonly MovingObjectPosition _movingObjectPrev = new MovingObjectPosition();
         /// <summary>
         /// Сетка курсора
         /// </summary>
@@ -127,7 +127,7 @@ namespace Vge.Renderer.World
                 if (!moving.Equals(_movingObjectPrev))
                 {
                     compiled = true;
-                    _movingObjectPrev = moving;
+                    _movingObjectPrev.Copy(moving);
                 }
 
                 if (compiled)

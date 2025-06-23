@@ -31,7 +31,7 @@ namespace Vge.Util
         }
         
         public Vector3i MinInt() => new Vector3i(Min);
-        public Vector3i MaxInt() => new Vector3i(Mth.Ceiling(Max.X), Mth.Ceiling(Max.Y), Mth.Ceiling(Max.Z));
+        public Vector3i MaxInt() => new Vector3i(Max);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Clone() => new AxisAlignedBB(Min, Max);

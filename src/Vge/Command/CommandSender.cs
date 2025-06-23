@@ -1,5 +1,5 @@
 ﻿using System;
-using Vge.Management;
+using Vge.Entity.Player;
 using Vge.Network;
 using Vge.Util;
 using Vge.World.Block;

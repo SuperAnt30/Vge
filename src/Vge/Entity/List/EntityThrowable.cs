@@ -1,4 +1,5 @@
 ﻿using Vge.Entity.Physics;
+using Vge.Entity.Sizes;
 using Vge.World;
 using WinGL.Util;
 

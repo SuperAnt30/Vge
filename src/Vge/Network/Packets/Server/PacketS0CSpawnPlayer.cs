@@ -1,4 +1,4 @@
-﻿using Vge.Management;
+﻿using Vge.Entity.Player;
 
 namespace Vge.Network.Packets.Server
 {

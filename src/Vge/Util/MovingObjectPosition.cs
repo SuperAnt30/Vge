@@ -178,13 +178,14 @@ namespace Vge.Util
 
         public override bool Equals(object obj)
         {
-            if (obj != null && obj is MovingObjectPosition moving)
+            if (obj != null && obj is MovingObjectPosition moving
+                && moving._type == _type)
             {
-                if (moving.IsBlock() && IsBlock())
+                if (IsBlock())
                 {
                     return moving.BlockPosition.Equals(BlockPosition) && moving.Block.Equals(Block);
                 }
-                else if (moving.IsEntity() && IsEntity())
+                else if (IsEntity())
                 {
                     return moving.Entity.Id == Entity.Id;
                 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Command;
+using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network;
 using Vge.Network.Packets.Client;

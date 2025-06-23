@@ -1,7 +1,6 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity;
-using Vge.Management;
+using Vge.Entity.Player;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;

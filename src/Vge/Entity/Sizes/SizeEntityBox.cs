@@ -2,17 +2,17 @@
 using Vge.Util;
 using WinGL.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Sizes
 {
     /// <summary>
-    /// Размер, вес и глаза сущностей которая работает с физикой
+    /// Размер, вес сущностей которая работает с физикой
     /// </summary>
-    public readonly struct SizeEntityLiving : ISizeEntityBox
+    public readonly struct SizeEntityBox : ISizeEntityBox
     {
         /// <summary>
         /// Сущность к которой прекреплена физика
         /// </summary>
-        public readonly EntityLiving Entity;
+        public readonly EntityBase Entity;
 
         /// <summary>
         /// Пол ширина сущности
@@ -26,17 +26,12 @@ namespace Vge.Entity
         /// Вес сущности
         /// </summary>
         private readonly float _weight;
-        /// <summary>
-        /// Высота глаз
-        /// </summary>
-        private readonly float _eye;
 
-        public SizeEntityLiving(EntityLiving entity, float width, float height, float eye, float weight)
+        public SizeEntityBox(EntityBase entity, float width, float height, float weight)
         {
             Entity = entity;
             _width = width;
             _height = height;
-            _eye = eye;
             _weight = weight;
         }
 
@@ -50,13 +45,7 @@ namespace Vge.Entity
         /// Пол ширины сущности
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetWidth() => _width; 
-
-        /// <summary>
-        /// Высота глаз
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetEye() => _eye;
+        public float GetWidth() => _width;
 
         /// <summary>
         /// Вес сущности для определения импулса между сущностями,

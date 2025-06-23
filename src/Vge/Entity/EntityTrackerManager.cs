@@ -1,6 +1,6 @@
 ﻿using System;
+using Vge.Entity.Player;
 using Vge.Games;
-using Vge.Management;
 using Vge.Network;
 using Vge.World;
 using WinGL.Util;

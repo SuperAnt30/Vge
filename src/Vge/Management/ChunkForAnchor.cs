@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Vge.Entity.Player;
 using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.World;

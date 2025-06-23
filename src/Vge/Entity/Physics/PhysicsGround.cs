@@ -1,6 +1,7 @@
 ﻿//#define TPS20
 using System;
 using System.Collections.Generic;
+using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;

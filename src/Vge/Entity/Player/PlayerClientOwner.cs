@@ -1,6 +1,5 @@
 ﻿//#define PhysicsServer
 using System.Runtime.CompilerServices;
-using Vge.Entity;
 using Vge.Entity.Physics;
 using Vge.Event;
 using Vge.Games;
@@ -15,7 +14,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Vge.Management
+namespace Vge.Entity.Player
 {
     /// <summary>
     /// Объект игрока владельца, на клиенте
@@ -56,6 +55,15 @@ namespace Vge.Management
         /// </summary>
         public readonly MovingObjectPosition MovingObject = new MovingObjectPosition();
 
+        /// <summary>
+        /// Плавное перемещение угла обзора
+        /// </summary>
+        public readonly SmoothFrame Fov;
+        /// <summary>
+        /// Плавное перемещение глаз, сел/встал
+        /// </summary>
+        public readonly SmoothFrame Eye;
+        
         /// <summary>
         /// Позиция камеры в блоке для альфа, в зависимости от вида (с глаз, с зади, спереди)
         /// </summary>
@@ -131,14 +139,20 @@ namespace Vge.Management
         /// Вектор луча
         /// </summary>
         private Vector3 _rayLook;
-
-        public float FFF = 0;
+        /// <summary>
+        /// Высота глаз с учётом итерполяции кадра
+        /// </summary>
+        private float _eyeFrame;
 
         public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
             Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain);
+            Fov = new SmoothFrame(1.43f);
+            _eyeFrame = SizeLiving.GetEye();
+            Eye = new SmoothFrame(_eyeFrame);
+            
             _UpdateMatrixCamera();
         }
 
@@ -152,7 +166,6 @@ namespace Vge.Management
 
             // Нельзя в конструкторе, так-как мир ещё не создан
             //Physics = new PhysicsFly(_game.World.Collision, this);
-            //Physics = new PhysicsGround(_game.World.Collision, this);
 
             Physics = new PhysicsPlayer(_game.World.Collision, this);
 
@@ -167,9 +180,33 @@ namespace Vge.Management
         /// </summary>
         public bool IsSpectator() => false;
 
+        /// <summary>
+        /// Высота глаз
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override float GetEyeHeight() => _eyeFrame;
+
         #endregion
 
         #region Inputs (Mouse Key)
+
+        /// <summary>
+        /// Двойной клик пробела
+        /// </summary>
+        public void KeyDoubleClickSpace()
+        {
+            if (true) // Положение стоя
+            {
+                if (Physics is PhysicsPlayer)
+                {
+                    Physics = new PhysicsFly(_game.World.Collision, this);
+                }
+                else
+                {
+                    Physics = new PhysicsPlayer(_game.World.Collision, this);
+                }
+            }
+        }
 
         /// <summary>
         /// Изменение мыши
@@ -283,7 +320,7 @@ namespace Vge.Management
         {
             Vector3 front = Glm.Ray(RotationFrameYaw, RotationFramePitch);
             Vector3 up = new Vector3(0, 1, 0);
-            Vector3 pos = new Vector3(0, SizeLiving.GetEye(), 0);
+            Vector3 pos = new Vector3(0, _eyeFrame, 0);
             _rayLook = front;
 
             if (!ViewCameraEye)
@@ -293,7 +330,7 @@ namespace Vge.Management
                 //pos += right * 2;
             }
             // Матрица Projection
-            Mat4 matrix = Glm.PerspectiveFov(1.43f, Gi.Width, Gi.Height,
+            Mat4 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
                0.01f, OverviewChunk * 22f);
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
@@ -406,9 +443,24 @@ namespace Vge.Management
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void UpdateFrame(float timeIndex)
         {
-            if (PosX != PosFrameX || PosY != PosFrameY || PosZ != PosFrameZ
-                || RotationYaw != RotationFrameYaw || RotationPitch != RotationFramePitch)
+            // Обновить камеру
+            bool updateCamera = false;
+            // Меняем положения глаз, смена позы
+            if (Eye.UpdateFrame(timeIndex))
             {
+                _eyeFrame = Eye.ValueFrame;
+                updateCamera = true;
+            }
+            // Меняем угол обзора, как правило при изменении скорости
+            if (Fov.UpdateFrame(timeIndex))
+            {
+                updateCamera = true;
+            }
+
+            if (PosX != PosFrameX || PosY != PosFrameY || PosZ != PosFrameZ
+                    || RotationYaw != RotationFrameYaw || RotationPitch != RotationFramePitch)
+            {
+                // Если было перемещение и или вращение
                 if (timeIndex >= 1f)
                 {
                     if (PosX != PosPrevX) PosFrameX = PosX;
@@ -437,11 +489,14 @@ namespace Vge.Management
                     }
                     RotationFramePitch = RotationPrevPitch + (RotationPitch - RotationPrevPitch) * timeIndex;
                 }
+                updateCamera = true;
+            }
+
+            if (updateCamera)
+            {
+                // Обновить камеру
                 _CameraHasBeenChanged();
             }
-            //_game.Log.Log(Position.ToStringPos() + " | "
-            //    + PositionPrev.ToStringPos() + " | "
-            //    + PositionFrame.ToStringPos());
         }
 
         /// <summary>
@@ -461,8 +516,10 @@ namespace Vge.Management
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void UpdateClient(WorldClient world, float deltaTime)
         {
-            FFF += .0174f;
-            if (FFF > 6.28f) FFF = 0;
+            // Такты изминения глаз при присидании, и угол обзора при ускорении.
+            // Должны быть до base.Update()
+            Eye.Update();
+            Fov.Update();
 
 #if PhysicsServer
 
@@ -492,6 +549,12 @@ namespace Vge.Management
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
+                if (Physics.IsPoseChange)
+                {
+                    Eye.Set(SizeLiving.GetEye(), 6);
+                    Fov.Set(IsSprinting() ? 1.62f : 1.43f, 6); // TODO::2025-06-23 в конфиг обзора!
+                }
+
                 // Для отправки
                 if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
                 {
@@ -512,18 +575,29 @@ namespace Vge.Management
                     if (Physics.IsMotionChange)
                     {
                         // И перемещение и вращение
-                        _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, RotationYaw, RotationPitch, false));
+                        _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, 
+                            RotationYaw, RotationPitch, IsSneaking(), IsSprinting(), OnGround));
                     }
                     else
                     {
                         // Только вращение
-                        _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch, false));
+                        _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch, 
+                            IsSneaking(), IsSprinting(), OnGround));
                     }
+                    Physics.ResetPose();
                 }
                 else if (Physics.IsMotionChange)
                 {
                     // Только перемещение
-                    _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, false));
+                    _game.TrancivePacket(new PacketC04PlayerPosition(PosX, PosY, PosZ, 
+                        IsSneaking(), IsSprinting(), OnGround));
+                    Physics.ResetPose();
+                }
+                else if (Physics.IsPoseChange)
+                {
+                    // Смена позы
+                    _game.TrancivePacket(new PacketC04PlayerPosition(IsSneaking(), IsSprinting(), OnGround));
+                    Physics.ResetPose();
                 }
             }
 #endif
@@ -548,7 +622,7 @@ namespace Vge.Management
         /// </summary>
         private void _UpdateChunkRenderAlphe()
         {
-            PositionAlphaBlock = new Vector3i(PosX, PosY + SizeLiving.GetEye(), PosZ);
+            PositionAlphaBlock = new Vector3i(PosX, PosY + _eyeFrame, PosZ);
             _positionAlphaChunk = new Vector3i(PositionAlphaBlock.X >> 4, 
                 PositionAlphaBlock.Y >> 4, PositionAlphaBlock.Z >> 4);
 
@@ -731,7 +805,7 @@ namespace Vge.Management
         /// </summary>
         private void _UpRayCast()//bool collidable = false, bool isLiquid = false)
         {
-            _game.World.Collision.RayCast(PosX, PosY + SizeLiving.GetEye(), PosZ, _rayLook, 8, false, Id);
+            _game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, false, Id);
             MovingObject.Copy(_game.World.Collision.MovingObject);
 
             // максимальная дистанция луча

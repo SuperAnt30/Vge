@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Vge.Entity.List;
-using Vge.Management;
+using Vge.Entity.Player;
 using Vge.Network;
 using Vge.Network.Packets.Server;
 using Vge.Util;
@@ -126,10 +125,11 @@ namespace Vge.Entity
             //    SendPacketPlayers(new PacketS14EntityMotion(entityThrowable));
             //}
 
-            //if (TrackedEntity.MetaData.IsChanged) //UpdateCounter % UpdateFrequency == 0)
-            //{
-            //    SendMetadataToAllAssociatedPlayers();
-            //}
+            if (TrackedEntity.MetaData.IsChanged) //UpdateCounter % UpdateFrequency == 0)
+            {
+                SendPacketPlayersCurrent(new PacketS1CEntityMetadata(
+                    TrackedEntity.Id, TrackedEntity.MetaData.GetChanged()));
+            }
 
             UpdateCounter++;
         }
@@ -141,7 +141,7 @@ namespace Vge.Entity
         {
             if (TrackedEntity is PlayerServer playerServer)
             {
-                return new PacketS0CSpawnPlayer((PlayerServer)playerServer);
+                return new PacketS0CSpawnPlayer(playerServer);
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿using Vge.Entity;
+using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Management;
 using Vge.Util;

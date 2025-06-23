@@ -12,12 +12,15 @@
         public float Z { get; private set; }
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
+        public bool IsSneaking { get; private set; }
+        public bool IsSprinting { get; private set; }
         public bool OnGround { get; private set; }
 
         public bool IsPosition { get; private set; }
         public bool IsRotate { get; private set; }
 
-        public PacketC04PlayerPosition(float x, float y, float z, float yaw, float pitch, bool onGround)
+        public PacketC04PlayerPosition(float x, float y, float z, float yaw, float pitch,
+            bool sneaking, bool sprinting, bool onGround)
         {
             X = x;
             Y = y;
@@ -25,32 +28,50 @@
             Yaw = yaw;
             Pitch = pitch;
             OnGround = onGround;
+            IsSneaking = sneaking;
+            IsSprinting = sprinting;
             IsPosition = true;
             IsRotate = true;
         }
-        public PacketC04PlayerPosition(float x, float y, float z, bool onGround)
+        public PacketC04PlayerPosition(float x, float y, float z, bool sneaking, bool sprinting, bool onGround)
         {
             X = x;
             Y = y;
             Z = z;
             Yaw = Pitch = 0;
             OnGround = onGround;
+            IsSneaking = sneaking;
+            IsSprinting = sprinting;
             IsPosition = true;
             IsRotate = false;
         }
-        public PacketC04PlayerPosition(float yaw, float pitch, bool onGround)
+        public PacketC04PlayerPosition(float yaw, float pitch, bool sneaking, bool sprinting, bool onGround)
         {
             X = Y = Z = 0;
             Yaw = yaw;
             Pitch = pitch;
             OnGround = onGround;
+            IsSneaking = sneaking;
+            IsSprinting = sprinting;
             IsPosition = false;
             IsRotate = true;
+        }
+        public PacketC04PlayerPosition(bool sneaking, bool sprinting, bool onGround)
+        {
+            X = Y = Z = 0;
+            Yaw = Pitch = 0;
+            OnGround = onGround;
+            IsSneaking = sneaking;
+            IsSprinting = sprinting;
+            IsPosition = false;
+            IsRotate = false;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
             byte flag = stream.Byte();
+            IsSprinting = (flag & 1 << 4) != 0;
+            IsSneaking = (flag & 1 << 3) != 0;
             IsRotate = (flag & 1 << 2) != 0;
             IsPosition = (flag & 1 << 1) != 0;
             OnGround = (flag & 1) != 0;
@@ -73,6 +94,8 @@
             if (OnGround) flag += 1;
             if (IsPosition) flag += 2;
             if (IsRotate) flag += 4;
+            if (IsSneaking) flag += 8;
+            if (IsSprinting) flag += 16;
             stream.Byte(flag);
             if (IsPosition)
             {

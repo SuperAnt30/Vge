@@ -1,6 +1,7 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Sizes;
 
-namespace Vge.Management
+namespace Vge.Entity.Player
 {
     /// <summary>
     /// Абстрактный класс игрока
@@ -104,6 +105,21 @@ namespace Vge.Management
         /// </summary>
         protected override void _InitSize()
             => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.53f, 80);
+
+
+        /// <summary>
+        /// Положение стоя
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Standing()
+            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.53f, 80);
+
+        /// <summary>
+        /// Положение сидя
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Sitting()
+            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.49f, 1.23f, 80);
 
     }
 }

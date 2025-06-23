@@ -4,9 +4,9 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using Vge.Entity;
 using Vge.Entity.List;
 using Vge.Games;
+using Vge.Management;
 using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Client;
@@ -17,7 +17,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Vge.Management
+namespace Vge.Entity.Player
 {
     /// <summary>
     /// Объект игрока, как локального так и сетевого, не сущность
@@ -146,6 +146,7 @@ namespace Vge.Management
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
             Render = new EntityRenderBase(this);
+            _InitMetaData();
             _InitSize();
 #if PhysicsServer
             Physics = new PhysicsPlayer(GetWorld().Collision, this);
@@ -341,6 +342,11 @@ namespace Vge.Management
                 RotationYaw = packet.Yaw;
                 RotationPitch = packet.Pitch;
             }
+            if (IsSneaking() != packet.IsSneaking)
+            {
+                SetSneaking(packet.IsSneaking);
+                if (packet.IsSneaking) Sitting(); else Standing();
+            }
             LevelMotionChange = 1;
         }
 
@@ -367,6 +373,7 @@ namespace Vge.Management
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
+                   // isBox = false;
                     int id = _server.Worlds.GetDebugIndex(isBox);
                     if (id == -1)
                     {
@@ -418,6 +425,14 @@ namespace Vge.Management
             blockState = block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, pole, packet.Facing);
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
             world.SetBlockState(blockPos, blockState, world.IsRemote ? 14 : 31);
+        }
+
+        /// <summary>
+        /// Пакет: анимации игрока
+        /// </summary>
+        public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
+        {
+            //packet.Animation
         }
 
         /// <summary>

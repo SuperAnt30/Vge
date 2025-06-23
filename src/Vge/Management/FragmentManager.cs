@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Util;
 using Vge.World;

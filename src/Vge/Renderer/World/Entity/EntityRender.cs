@@ -1,6 +1,6 @@
 ﻿using System;
 using Vge.Entity;
-using Vge.Management;
+using Vge.Entity.Player;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World.Entity

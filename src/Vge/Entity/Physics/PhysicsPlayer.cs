@@ -53,8 +53,11 @@ namespace Vge.Entity.Physics
                     else z += _stepAmfs;
                 }
 
-                MotionX = x;
-                MotionZ = z;
+                if (MotionX != x || MotionZ != z)
+                {
+                    MotionX = x;
+                    MotionZ = z;
+                }
             }
         }
     }

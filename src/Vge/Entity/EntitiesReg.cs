@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Vge.Entity.List;
 using Vge.Entity.Model;
+using Vge.Entity.Player;
 using Vge.Entity.Texture;
 using Vge.Json;
-using Vge.Management;
 using Vge.Util;
 
 namespace Vge.Entity

@@ -1,7 +1,6 @@
 ﻿using System;
 using Vge.Games;
 using WinGL.Actions;
-using WinGL.Util;
 
 namespace Vge.Actions
 {
@@ -20,6 +19,10 @@ namespace Vge.Actions
         /// Нажатая ли F3
         /// </summary>
         private bool _keyF3 = false;
+        /// <summary>
+        /// Время клика клавиши Пробел
+        /// </summary>
+        private long _timeClickSpace = 0;
 
         public Keyboard(GameBase game)
         {
@@ -31,7 +34,6 @@ namespace Vge.Actions
         /// </summary>
         public void OnKeyDown(Keys keys)
         {
-            _keyPrev = keys;
             //Debug.Text = keys.ToString();
             if (_keyF3)
             {
@@ -46,6 +48,17 @@ namespace Vge.Actions
 
                 if (keys == Keys.F3) _keyF3 = true;
                 else if (keys == Keys.Escape || keys == Keys.Menu) _OnInGameMenu();
+                else if (keys == Keys.Space && !_game.Player.Movement.Jump)
+                {
+                    // Проверка двойного нажатия пробела
+                    long ms = _game.Time();
+                    if (_keyPrev == keys && ms - _timeClickSpace < 300)
+                    {
+                        // Это двойной клик Пробела
+                        _game.Player.KeyDoubleClickSpace();
+                    }
+                    _timeClickSpace = ms;
+                }
 
                 switch (keys)
                 {
@@ -55,17 +68,26 @@ namespace Vge.Actions
                     case Keys.D: _game.Player.Movement.Right = true; _game.Player.InputKeyMove(); break;
                     case Keys.S: _game.Player.Movement.Back = true; _game.Player.InputKeyMove(); break;
                     case Keys.Space: _game.Player.Movement.Jump = true; _game.Player.InputKeyMove(); break;
-                    case Keys.ShiftKey: _game.Player.Movement.Sneak = true; _game.Player.InputKeyMove(); break;
-                    case Keys.ControlKey: _game.Player.Movement.Sprinting = true; _game.Player.InputKeyMove(); break;
+                    case Keys.ShiftKey:
+                        if (!_game.Player.Movement.Sneak)
+                        {
+                            _game.Player.Movement.Sneak = true;
+                            _game.Player.InputKeyMove();
+                        }
+                        break;
+                    case Keys.ControlKey:
+                        if (!_game.Player.Movement.Sprinting)
+                        {
+                            _game.Player.Movement.Sprinting = true;
+                            _game.Player.InputKeyMove();
+                        }
+                        break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
 
                     case Keys.T: case Keys.Oemtilde: _OnInChat(); break; // Окно чата Клавиша "T" или "~"
                     case Keys.F5: _game.Player.ViewCameraEye = !_game.Player.ViewCameraEye; break;
                     case Keys.F8: Debug.IsDrawVoxelLine = !Debug.IsDrawVoxelLine; break;
                 }
-
-
-                // TODO::2024-10-15 Отладка перемещения!!!
 
                 if (keys == Keys.PageUp)
                 {
@@ -82,6 +104,7 @@ namespace Vge.Actions
                     }
                 }
             }
+            _keyPrev = keys;
         }
 
         /// <summary>
@@ -111,7 +134,13 @@ namespace Vge.Actions
                     case Keys.S: _game.Player.Movement.Back = false; _game.Player.InputKeyMove(); break;
                     case Keys.Space: _game.Player.Movement.Jump = false; _game.Player.InputKeyMove(); break;
                     case Keys.ShiftKey: _game.Player.Movement.Sneak = false; _game.Player.InputKeyMove(); break;
-                    case Keys.ControlKey: _game.Player.Movement.Sprinting = false; _game.Player.InputKeyMove(); break;
+                    case Keys.ControlKey:
+                        if (!_game.Player.Movement.Forward)
+                        {
+                            _game.Player.Movement.Sprinting = false;
+                            _game.Player.InputKeyMove();
+                        }
+                        break;
                 }
             }
         }

@@ -121,7 +121,7 @@ namespace Vge.Network
         /// Прочесть тип short (-32768..32767) 2 байта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public short ReadShort() => (short)UShort();
+        public short Short() => (short)UShort();
         /// <summary>
         /// Прочесть тип int (-2 147 483 648..2 147 483 647) 4 байта
         /// </summary>

@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
+using Vge.Entity.Sizes;
+using Vge.Entity.MetaData;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
@@ -16,7 +18,7 @@ namespace Vge.Entity
     /// <summary>
     /// Базовый объект сущности
     /// </summary>
-    public abstract class EntityBase
+    public abstract class EntityBase//<TSize> where TSize : ISizeEntity
     {
         /// <summary>
         /// Уникальный порядковый номер игрока в базе
@@ -131,6 +133,11 @@ namespace Vge.Entity
         public bool OnGround = false;
 
         /// <summary>
+        /// Объект дополнительных данных
+        /// </summary>
+        public DataWatcher MetaData { get; protected set; }
+
+        /// <summary>
         /// Спит ли физика, для отладки если Physics == null
         /// </summary>
         private bool _physicSleepDebug;
@@ -160,6 +167,7 @@ namespace Vge.Entity
         {
             IndexEntity = index;
             Render = new EntityRenderClient(this, entitiesRenderer, IndexEntity);
+            _InitMetaData();
             _InitSize();
         }
 
@@ -170,9 +178,9 @@ namespace Vge.Entity
         {
             IndexEntity = index;
             Render = new EntityRenderBase(this);
+            _InitMetaData();
             _InitSize();
             _InitPhysics(collision);
-
         }
 
         /// <summary>
@@ -184,6 +192,11 @@ namespace Vge.Entity
         /// Инициализация размеров сущности
         /// </summary>
         protected virtual void _InitSize() { }
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
 
         #endregion
 

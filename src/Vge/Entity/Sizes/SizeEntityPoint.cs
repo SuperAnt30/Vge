@@ -2,7 +2,7 @@
 using Vge.Util;
 using WinGL.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Sizes
 {
     /// <summary>
     /// Размер отсутствует это точка, вес сущностей которая работает с физикой

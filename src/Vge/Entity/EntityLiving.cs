@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.MetaData;
+using Vge.Entity.Sizes;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -7,15 +9,8 @@ namespace Vge.Entity
     /// Объект живой сущности, которая может сама перемещаться и вращаться.
     /// Игроки, мобы
     /// </summary>
-    public abstract class EntityLiving : EntityBase
+    public abstract class EntityLiving : EntityBase//<SizeEntityLiving>
     {
-
-        /// <summary>
-        /// Объект Размер, вес и прочее сущностей которая работает с физикой
-        /// </summary>
-        public SizeEntityLiving SizeLiving { get; protected set; }
-
-
         #region Rotation 
 
         /// <summary>
@@ -135,6 +130,97 @@ namespace Vge.Entity
             RotationYawHead = RotationServerYawHead;
             RotationPitch = RotationServerPitch;
         }
+
+        #endregion
+
+        /// <summary>
+        /// Объект Размер, вес и прочее сущностей которая работает с физикой
+        /// </summary>
+        public SizeEntityLiving SizeLiving { get; protected set; }
+
+        /// <summary>
+        /// Высота глаз
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual float GetEyeHeight() => SizeLiving.GetEye();
+
+        #region MetaData
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        protected override void _InitMetaData()
+        {
+            MetaData = new DataWatcher(1);
+            // флаги 0-горит; 1-крадется; 2-едет на чем-то; 3-бегает; 4-ест; 5-невидимый
+            MetaData.Set(0, (byte)0);
+        }
+
+        /// <summary>
+        /// Возвращает true, если флаг активен для сущности.Известные флаги:
+        /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 
+        /// </summary>
+        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) невидимый</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool GetFlag(int flag) => (MetaData.GetByte(0) & 1 << flag) != 0;
+
+        /// <summary>
+        /// Включите или отключите флаг сущности
+        /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 6) спит 7) невидимый по чаре
+        /// </summary>
+        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) невидимый</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void SetFlag(int flag, bool set)
+        {
+            byte var3 = MetaData.GetByte(0);
+            if (set) MetaData.UpdateObject(0, (byte)(var3 | 1 << flag));
+            else MetaData.UpdateObject(0, (byte)(var3 & ~(1 << flag)));
+        }
+
+        /// <summary>
+        /// Ускорение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSprinting() => GetFlag(3);
+        /// <summary>
+        /// Задать значение ускоряется ли
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSprinting(bool sprinting) => SetFlag(3, sprinting);
+
+        /// <summary>
+        /// Крадется
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSneaking() => GetFlag(1);
+        /// <summary>
+        /// Задать значение крадется ли
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSneaking(bool sneaking) => SetFlag(1, sneaking);
+
+        /// <summary>
+        /// Горит ли сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool InFire() => GetFlag(0);
+        /// <summary>
+        /// Задать горит ли сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetInFire(bool fire) => SetFlag(0, fire);
+
+        /// <summary>
+        /// Положение стоя
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Standing() { }
+
+        /// <summary>
+        /// Положение сидя
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Sitting() { }
 
         #endregion
     }

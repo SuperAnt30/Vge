@@ -58,13 +58,15 @@ namespace Vge.Entity.Physics
             // счётчик прыжка
             if (_jumpTicks > 0) _jumpTicks--;
 
+            bool isSneakingPrev = _entityLiving.IsSneaking();
+
             if (Movement.Jump)
             {
                 if (Entity.OnGround && _jumpTicks == 0)
                 {
                     _jumpTicks = _reJump;
                     MotionY = _airborneJumpInHeight;
-                    if (Movement.Sprinting)
+                    if (isSneakingPrev)
                     {
                         // Если прыжок с бегом, то скорость увеличивается
                         MotionX += Glm.Sin(_entityLiving.RotationYaw) * _airborneJumpInLength;
@@ -75,6 +77,33 @@ namespace Vge.Entity.Physics
             else
             {
                 _jumpTicks = 0;
+            }
+
+            // Обновить положение сидя
+            bool isSneaking = _entityLiving.IsSneaking();
+            if (Entity.OnGround && Movement.Sneak && !isSneaking)
+            {
+                // Только на земле, и в прошлом такте не сидел
+                _entityLiving.SetSneaking(true);
+                _entityLiving.Sitting();
+                IsPoseChange = true;
+            }
+            // Если хотим встать
+            else if (!Movement.Sneak && isSneaking)
+            {
+                // Проверка коллизии вверхней части при положении стоя
+                _entityLiving.SetSneaking(false);
+                _entityLiving.Standing();
+                IsPoseChange = true;
+            }
+
+            // Sprinting
+            bool isSprinting = Movement.Sprinting && Movement.Forward && !isSneakingPrev;
+            if (_entityLiving.IsSprinting() != isSprinting)
+            {
+                _entityLiving.SetSprinting(isSprinting);
+                // Тут надо сменить анимацию 
+                IsPoseChange = true;
             }
         }
 

@@ -2,7 +2,7 @@
 using Vge.Renderer.World.Entity;
 using Vge.World;
 
-namespace Vge.Management
+namespace Vge.Entity.Player
 {
     /// <summary>
     /// Объект игроков на клиентской стороне
@@ -43,6 +43,7 @@ namespace Vge.Management
         protected PlayerClient(GameBase game)
         {
             _game = game;
+            _InitMetaData();
             _InitSize();
         }
 

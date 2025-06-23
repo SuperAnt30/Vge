@@ -1,8 +1,7 @@
-﻿using System.Runtime.CompilerServices;
-using Vge.Util;
+﻿using Vge.Util;
 using WinGL.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Sizes
 {
     /// <summary>
     /// Интерйейс объекта для размера, веса и прочего сущностей которая работает с физикой

@@ -1,5 +1,5 @@
-﻿using Vge.Games;
-using Vge.Management;
+﻿using Vge.Entity.Player;
+using Vge.Games;
 using Vge.Realms;
 
 namespace Vge.Command

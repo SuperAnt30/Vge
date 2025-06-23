@@ -1,9 +1,7 @@
 ﻿//#define PhysicsServer
-using System;
 using Vge.Entity;
-using Vge.Entity.List;
+using Vge.Entity.Player;
 using Vge.Games;
-using Vge.Management;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -91,10 +89,12 @@ namespace Vge.Network
                 case 0x06: _Handle06PlayerEntryRemove((PacketS06PlayerEntryRemove)packet); break;
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
+                case 0x0B: _Handle0BAnimation((PacketS0BAnimation)packet); break;
                 case 0x0C: _Handle0CSpawnPlayer((PacketS0CSpawnPlayer)packet); break;
                 case 0x0F: _Handle0FSpawnMob((PacketS0FSpawnMob)packet); break;
                 case 0x13: _Handle13DestroyEntities((PacketS13DestroyEntities)packet); break;
                 case 0x14: _Handle14EntityMotion((PacketS14EntityMotion)packet); break;
+                case 0x1C: _Handle1CEntityMetadata((PacketS1CEntityMetadata)packet); break;
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
                 case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
@@ -237,6 +237,18 @@ namespace Vge.Network
         }
 
         /// <summary>
+        /// Пакет анимации сущности
+        /// </summary>
+        private void _Handle0BAnimation(PacketS0BAnimation packet)
+        {
+            EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
+            if (entity != null)
+            {
+                //entity.PacketAnimation(packet.Animation);
+            }
+        }
+
+        /// <summary>
         /// Пакет спавна других игроков
         /// </summary>
         private void _Handle0CSpawnPlayer(PacketS0CSpawnPlayer packet)
@@ -304,7 +316,7 @@ namespace Vge.Network
         private void _Handle14EntityMotion(PacketS14EntityMotion packet)
         {
            // Game.World
-            EntityBase entity = Game.World.GetEntityByID(packet.Index);
+            EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
             if (entity != null)
             {
                 entity.PosServerX = packet.X;
@@ -331,6 +343,23 @@ namespace Vge.Network
                 //{
                 //    entityThrowable.SetMotionServer(packet.GetPos(), packet.OnGround());
                 //}
+            }
+        }
+
+        /// <summary>
+        /// Пакет дополнительных данных сущности
+        /// </summary>
+        private void _Handle1CEntityMetadata(PacketS1CEntityMetadata packet)
+        {
+            EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
+            if (entity != null && packet.List.Length > 0)
+            {
+                entity.MetaData.UpdateWatchedObjectsFromList(packet.List);
+                // TODO::2025-06-23 Вынести в анимацию!!!
+                if (entity is EntityLiving entityLiving)
+                {
+                    if (entityLiving.IsSneaking()) entityLiving.Sitting(); else entityLiving.Standing();
+                }
             }
         }
 

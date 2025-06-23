@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -62,6 +63,10 @@ namespace Vge.Entity.Physics
         /// Было ли перемещение
         /// </summary>
         public bool IsMotionChange { get; protected set; } = false;
+        /// <summary>
+        /// Было ли смена позы или ускорение
+        /// </summary>
+        public bool IsPoseChange { get; protected set; } = false;
         /// <summary>
         /// Будет ли эта сущность проходить сквозь блоки
         /// </summary>
@@ -158,6 +163,18 @@ namespace Vge.Entity.Physics
         /// Обновить данные в такте игры
         /// </summary>
         public virtual void LivingUpdate() { }
+
+        /// <summary>
+        /// Сбросить изменение состоянии позы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ResetPose()
+        {
+            if (IsPoseChange)
+            {
+                IsPoseChange = false;
+            }
+        }
 
         /// <summary>
         /// Отрегулировать движение для подкрадывания
