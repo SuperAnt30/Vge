@@ -1,5 +1,4 @@
-﻿//#define PhysicsServer
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
 using Vge.Event;
 using Vge.Games;
@@ -73,21 +72,6 @@ namespace Vge.Entity.Player
         /// Обект перемещений
         /// </summary>
         public MovementInput Movement => Physics.Movement;
-
-#if PhysicsServer
-        /// <summary>
-        /// Позиция этой сущности по оси X
-        /// </summary>
-        public float PosPacketX;
-        /// <summary>
-        /// Позиция этой сущности по оси Y
-        /// </summary>
-        public float PosPacketY;
-        /// <summary>
-        /// Позиция этой сущности по оси Z
-        /// </summary>
-        public float PosPacketZ;
-#endif
 
         /// <summary>
         /// Вид камеры с глаз
@@ -505,9 +489,6 @@ namespace Vge.Entity.Player
         public void InputKeyMove()
         {
             Physics.AwakenPhysics();
-#if PhysicsServer
-            _game.TrancivePacket(new PacketC0CInput(Movement));
-#endif
         }
 
         /// <summary>
@@ -521,23 +502,6 @@ namespace Vge.Entity.Player
             Eye.Update();
             Fov.Update();
 
-#if PhysicsServer
-
-            PosPrevX = PosX;
-            PosPrevY = PosY;
-            PosPrevZ = PosZ;
-            PosX = PosPacketX;
-            PosY = PosPacketY;
-            PosZ = PosPacketZ;
-
-            if (IsRotationChange())
-            {
-                // Только вращение
-                _game.TrancivePacket(new PacketC0DInputRotate(RotationYaw, RotationPitch));
-                RotationPrevYaw = RotationYaw;
-                RotationPrevPitch = RotationPitch;
-            }
-#else
             if (IsPositionChange())
             {
                 PosPrevX = PosX;
@@ -600,7 +564,6 @@ namespace Vge.Entity.Player
                     Physics.ResetPose();
                 }
             }
-#endif
 
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)

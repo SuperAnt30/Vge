@@ -1,5 +1,4 @@
-﻿//#define PhysicsServer
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -148,10 +147,6 @@ namespace Vge.Entity.Player
             Render = new EntityRenderBase(this);
             _InitMetaData();
             _InitSize();
-#if PhysicsServer
-            Physics = new PhysicsPlayer(GetWorld().Collision, this);
-            Physics.SetImpulse(.8f);
-#endif
         }
 
         /// <summary>
@@ -199,17 +194,6 @@ namespace Vge.Entity.Player
         {
             // Добавить время к игроку
             TimesExisted += _server.DeltaTime;
-
-#if PhysicsServer
-            // Расчитать перемещение в объекте физика
-            Physics.LivingUpdate();
-           // if (Physics.IsMotionChange)
-            {
-                // Только перемещение
-                SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ));
-                LevelMotionChange = 1;
-            }
-#endif
 
             // Тут надо анализ сделать было ли перемещение
             if (IsPositionChange() || IsChangeOverview())
@@ -730,30 +714,6 @@ namespace Vge.Entity.Player
             }
         }
 
-        #endregion
-
-        #region Input физика на сервере
-#if PhysicsServer
-
-        public void PacketInput(PacketC0CInput packet)
-        {
-            Physics.Movement.Forward = packet.Forward;
-            Physics.Movement.Back = packet.Back;
-            Physics.Movement.Left = packet.Left;
-            Physics.Movement.Right = packet.Right;
-            Physics.Movement.Jump = packet.Jump;
-            Physics.Movement.Sneak = packet.Sneak;
-            Physics.Movement.Sprinting = packet.Sprinting;
-        }
-
-        public void PacketInputRotate(PacketC0DInputRotate packet)
-        {
-            RotationYaw = packet.Yaw;
-            RotationPitch = packet.Pitch;
-            LevelMotionChange = 1;
-        }
-
-#endif
         #endregion
 
         /// <summary>

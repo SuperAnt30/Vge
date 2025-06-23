@@ -1,5 +1,4 @@
-﻿//#define PhysicsServer
-using Vge.Entity;
+﻿using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
@@ -199,22 +198,6 @@ namespace Vge.Network
         /// </summary>
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
-#if PhysicsServer
-            if (packet.IsRotate)
-            {
-                Game.Player.PosX = packet.X;
-                Game.Player.PosY = packet.Y;
-                Game.Player.PosZ = packet.Z;
-                Game.Player.RotationYaw = packet.Yaw;
-                Game.Player.RotationPitch = packet.Pitch;
-            }
-            else
-            {
-                Game.Player.PosPacketX = packet.X;
-                Game.Player.PosPacketY = packet.Y;
-                Game.Player.PosPacketZ = packet.Z;
-            }
-#else
             if (packet.Impulse)
             {
                 Game.Player.Physics.ImpulseX = packet.X;
@@ -230,9 +213,6 @@ namespace Vge.Network
                 Game.Player.RotationPrevPitch = Game.Player.RotationPitch = packet.Pitch;
             }
             Game.Player.Physics.AwakenPhysics();
-
-#endif
-
             Debug.Player = Game.Player.GetChunkPosition();
         }
 

@@ -1,5 +1,4 @@
-﻿//#define PhysicsServer
-using Vge.Entity;
+﻿using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
@@ -74,13 +73,6 @@ namespace Vge.Network
             }
             else
             {
-#if PhysicsServer
-                if (index == 0x0C)
-                {
-                    _Handle0CInput(socketSide, (PacketC0CInput)packet);
-                }
-                else
-#endif
                 // Мир есть, заносим в пакет с двойным буфером, для обработки в такте
                 _packets.Add(new SocketPacket(socketSide, packet));
             }
@@ -107,9 +99,6 @@ namespace Vge.Network
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
                     case 0x0A: _Handle0APlayerAnimation(sp.Side, (PacketC0APlayerAnimation)sp.Packet); break;
-#if PhysicsServer
-                    case 0x0D: _Handle0DInputRotate(sp.Side, (PacketC0DInputRotate)sp.Packet); break;
-#endif
                     case 0x14: _Handle14Message(sp.Side, (PacketC14Message)sp.Packet); break;
                     case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
                     case 0x20: _Handle20AcknowledgeChunks(sp.Side, (PacketC20AcknowledgeChunks)sp.Packet); break;
@@ -233,26 +222,6 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null) playerServer.PacketPlayerAnimation(packet);
         }
-
-#if PhysicsServer
-        /// <summary>
-        /// Пакет игрок инпутов клавиатуры
-        /// </summary>
-        private void _Handle0CInput(SocketSide socketSide, PacketC0CInput packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketInput(packet);
-        }
-
-        /// <summary>
-        /// Пакет игрок инпутов вращения мыши
-        /// </summary>
-        private void _Handle0DInputRotate(SocketSide socketSide, PacketC0DInputRotate packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketInputRotate(packet);
-        }
-#endif
 
         /// <summary>
         /// Пакет передачии сообщения или команды
