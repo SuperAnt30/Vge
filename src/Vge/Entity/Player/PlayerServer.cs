@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Vge.Entity.List;
+using Vge.Entity.Render;
 using Vge.Games;
 using Vge.Management;
 using Vge.NBT;

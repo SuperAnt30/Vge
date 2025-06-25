@@ -6,6 +6,7 @@ using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
+using Vge.Entity.Render;
 
 namespace Vge.Entity
 {

@@ -51,6 +51,21 @@ namespace Vge.Entity.Animation
         /// Добавить смещение и вращение к текущей позе
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(BonePose bonePose, float mix)
+        {
+            RotationX += bonePose.RotationX * mix;
+            RotationY += bonePose.RotationY * mix;
+            RotationZ += bonePose.RotationZ * mix;
+
+            PositionX += bonePose.PositionX * mix;
+            PositionY += bonePose.PositionY * mix;
+            PositionZ += bonePose.PositionZ * mix;
+        }
+
+        /// <summary>
+        /// Добавить смещение и вращение к текущей позе
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(BonePose bonePose)
         {
             RotationX += bonePose.RotationX;

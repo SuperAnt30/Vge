@@ -1,4 +1,6 @@
-﻿namespace Vge.Entity.Animation
+﻿using Vge.Entity.Model;
+
+namespace Vge.Entity.Animation
 {
     /// <summary>
     /// Объект анимационного конкретного клипа с набором ключевых кадров отдельной кости.
@@ -12,7 +14,7 @@
         /// <summary>
         /// Анимация без перерыва, цикл
         /// </summary>
-        public readonly bool Loop;
+        public readonly ModelLoop Loop;
         /// <summary>
         /// Имеется ли у этой кости анимация
         /// </summary>
@@ -26,7 +28,7 @@
         /// </summary>
         public readonly BoneAnimationFrame[] OrientationFrames;
 
-        public BoneAnimationChannel(string name, bool loop,
+        public BoneAnimationChannel(string name, ModelLoop loop,
             BoneAnimationFrame[] positionFrames,
             BoneAnimationFrame[] orientationFrames)
         {

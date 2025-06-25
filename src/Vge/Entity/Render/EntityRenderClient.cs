@@ -1,12 +1,15 @@
-﻿using Vge.Entity;
+﻿using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Vge.Renderer.World.Entity
+namespace Vge.Entity.Render
 {
     /// <summary>
     /// Объект рендера сущности, хранящий данные рендера, только для клиента
@@ -28,7 +31,13 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Массив отдельных анимационных клипов
         /// </summary>
-        private readonly ListMessy<AnimationClip> _animationClips = new ListMessy<AnimationClip>();
+        //private readonly ListMessy<AnimationClip> _animationClips = new ListMessy<AnimationClip>();
+        private readonly ListMessy<int> _animationClips = new ListMessy<int>();
+
+        /// <summary>
+        /// Массив всех клипов данной сущности
+        /// </summary>
+        private readonly AnimationClip[] _animations;
         /// <summary>
         /// Массив костей в заданный момент времени
         /// </summary>
@@ -59,21 +68,59 @@ namespace Vge.Renderer.World.Entity
             Entities = entities;
             _resourcesEntity = Ce.Entities.GetModelEntity(indexModel);
 
-            _countBones = (byte)_resourcesEntity.Bones.Length;
-            _bones = new BonePose[_countBones];
-            _bonesFlagModify = new bool[_countBones];
-            _bonesTransforms = new Mat4[_countBones];
-            for (int i = 0; i < _countBones; i++)
+            if (_resourcesEntity.IsAnimation)
             {
-                _bones[i] = _resourcesEntity.Bones[i].CreateBonePose();
-                _bonesTransforms[i] = Mat4.Identity();
-            }
+                _countBones = (byte)_resourcesEntity.Bones.Length;
+                _bones = new BonePose[_countBones];
+                _bonesFlagModify = new bool[_countBones];
+                _bonesTransforms = new Mat4[_countBones];
+                for (int i = 0; i < _countBones; i++)
+                {
+                    _bones[i] = _resourcesEntity.Bones[i].CreateBonePose();
+                    _bonesTransforms[i] = Mat4.Identity();
+                }
 
-            // Временное включение анимациионного клипа
-            _animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[0]));
-            _animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[1]));
+                //TODO:!!*
+
+                int count = _resourcesEntity.ModelAnimationClips.Length;
+                _animations = new AnimationClip[count];
+                for (int i = 0; i < count; i++)
+                {
+                    _animations[i] = new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[i]);
+                }
+                _animationClips.Add(0);
+
+                // Временное включение анимациионного клипа
+                //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[2]));
+                //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[1]));
+                //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[0]));
+            }
         }
 
+        /// <summary>
+        /// Добавить клип
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void AddClip(int index)
+        {
+            if (_animationClips.Contains(index))
+            {
+                _animations[index].ResetStop();
+            }
+            else
+            {
+                _animationClips.Add(index);
+                _animations[index].Reset();
+            }
+        }
+
+        /// <summary>
+        /// Отменить клип
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void RemoveClip(int index) => _animations[index].Stoping();
+
+        private bool m = false;
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
@@ -83,6 +130,43 @@ namespace Vge.Renderer.World.Entity
             // Проверяем освещение
             _BrightnessForRender(world);
             Entities.OnTick(deltaTime);
+
+            if (_resourcesEntity.IsAnimation)
+            {
+                if (Entity.Physics != null)
+                {
+                    if (Entity.Physics.IsMotionChange)
+                    {
+                        // Позиция сменена
+                        if (!m)
+                        {
+                            m = true;
+                            RemoveClip(0);
+                            AddClip(1);
+                        }
+                    }
+                    else
+                    {
+                        // Стоит
+                        if (m)
+                        {
+                            m = false;
+                            RemoveClip(1);
+                            AddClip(0);
+                        }
+                    }
+                }
+
+                int i = 0;
+                int count = _animationClips.Count - 1;
+                for (i = count; i >= 0; i--)
+                {
+                    if (_animations[_animationClips[i]].IsStoped())
+                    {
+                        _animationClips.RemoveAt(i);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -94,14 +178,14 @@ namespace Vge.Renderer.World.Entity
         {
             _IncreaseCurrentTime(deltaTime);
             EntityRender entityRender = Entities.GetEntityRender(Entity.IndexEntity);
-            bool anim = true;// Entity.Type == EnumEntity.Stone;
+            bool anim = _resourcesEntity.IsAnimation;
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;
             float ppfz = entityRender.Player.PosFrameZ;
 
-            float yaw = 0;
-            float pitch = 0;
+            float yaw;// = 0;
+            float pitch;// = 0;
             if (Entity is EntityLiving entityLiving)
             {
                 yaw = entityLiving.GetRotationFrameYaw(timeIndex);
@@ -139,8 +223,9 @@ namespace Vge.Renderer.World.Entity
                 }
 
                 // Пробегаемся по анимациям
+                //TODO:!!*
                 //_GenBoneCurrentPose(0);
-                for (int ai = 0; ai < 2; ai++)
+                for (int ai = 0; ai < _animationClips.Count; ai++)
                 {
                     _GenBoneCurrentPose(ai);
                 }
@@ -162,10 +247,11 @@ namespace Vge.Renderer.World.Entity
         /// <param name="delta"></param>
         private void _IncreaseCurrentTime(float delta)
         {
-            //foreach(AnimationClip animationClip in _animationClips)
+            //TODO:!!*
+            if (_resourcesEntity.IsAnimation)
+            for (int i = 0; i < _animationClips.Count; i++)
             {
-                _animationClips[0].IncreaseCurrentTime(delta);
-                _animationClips[1].IncreaseCurrentTime(delta);
+                _animations[_animationClips[i]].IncreaseCurrentTime(delta);
             }
         }
 
@@ -174,13 +260,27 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private void _GenBoneCurrentPose(int indexPose)
         {
-            _animationClips[indexPose].GenBoneCurrentPose();
-            for (byte i = 0; i < _countBones; i++)
+            int index = _animationClips[indexPose];
+            _animations[index].GenBoneCurrentPose();
+            float mix = _animations[index].GetCoefMix();
+            //Console.WriteLine(index + " " + mix);
+            if (mix > 0)
             {
-                if (_animationClips[indexPose].IsAnimation(i))
+                for (byte i = 0; i < _countBones; i++)
                 {
-                    _bonesFlagModify[i] = true;
-                    _bones[i].Add(_animationClips[indexPose].CurrentPoseBones[i]);
+                    if (_animations[index].IsAnimation(i))
+                    {
+                        _bonesFlagModify[i] = true;
+                        // TODO:: смешивание загрузки и выгрузки! коэффициент, 0..1 
+                        if (mix == 1)
+                        {
+                            _bones[i].Add(_animations[index].CurrentPoseBones[i]);
+                        }
+                        else
+                        {
+                            _bones[i].Add(_animations[index].CurrentPoseBones[i], mix);
+                        }
+                    }
                 }
             }
         }

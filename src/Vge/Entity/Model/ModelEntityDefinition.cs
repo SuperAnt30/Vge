@@ -81,7 +81,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Запуск определения модели
         /// </summary>
-        public void RunModelFromJson(JsonCompound model)
+        public void RunModelFromJson(JsonCompound model, bool isAnimation)
         {
             try
             {
@@ -116,8 +116,11 @@ namespace Vge.Entity.Model
                 _ClearCubeBone(_bones);
 
                 // Анимация
-                _log = Cte.Animations;
-                _Animations(model.GetArray(Cte.Animations).ToArrayObject());
+                if (isAnimation)
+                {
+                    _log = Cte.Animations;
+                    _Animations(model.GetArray(Cte.Animations).ToArrayObject());
+                }
 
                 // Сортируем кубы как в Blockbench
                 ModelCube[] cubes = new ModelCube[_cubes.Count];
@@ -358,9 +361,11 @@ namespace Vge.Entity.Model
             for (int i = 0; i < animations.Length; i++)
             {
                 _log = "AnimNameLoop";
+                string sLoop = animations[i].GetString(Cte.Loop);
                 ModelAnimation animation = new ModelAnimation(
                     animations[i].GetString(Cte.Name),
-                    animations[i].GetString(Cte.Loop).Equals("loop"),
+                    sLoop.Equals(Cte.Once) ? ModelLoop.Once
+                    : sLoop.Equals(Cte.Hold) ? ModelLoop.Hold : ModelLoop.Loop,
                     animations[i].GetFloat(Cte.Length)
                 );
 

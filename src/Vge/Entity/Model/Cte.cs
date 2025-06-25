@@ -6,6 +6,8 @@
     public sealed class Cte
     {
 
+        #region Entity
+
         /// <summary>
         /// Название кости которая реагирует на угол Pitch. (string)
         /// </summary>
@@ -14,6 +16,14 @@
         /// Объект фигуры. (string)
         /// </summary>
         public const string Model = "Model";
+        /// <summary>
+        /// Имееися ли в сущности анимация (bool)
+        /// </summary>
+        public const string Anim = "Anim";
+        
+
+
+        #endregion
 
         /// <summary>
         /// Ширина. (int)
@@ -141,8 +151,17 @@
 
         /// <summary>
         /// Цикличность анимации. (string)
+        /// loop-цикл, hold-остановить на последнем кадре, once-проиграть один раз
         /// </summary>
         public const string Loop = "loop";
+        /// <summary>
+        /// Цикличность анимации, вариант тэг Loop, остановить на последнем кадре
+        /// </summary>
+        public const string Hold = "hold";
+        /// <summary>
+        /// Цикличность анимации, вариант тэг Loop, once-проиграть один раз
+        /// </summary>
+        public const string Once = "once";
         /// <summary>
         /// Длинна ролика. (float)
         /// </summary>

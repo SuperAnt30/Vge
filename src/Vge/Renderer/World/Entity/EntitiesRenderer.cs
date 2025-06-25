@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Entity;
+using Vge.Entity.Particle;
 using Vge.Games;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -18,7 +19,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
-        public bool IsHitBox = true;
+        public bool IsHitBox = false;
 
         /// <summary>
         /// Объект OpenGL для элемента управления
@@ -28,12 +29,14 @@ namespace Vge.Renderer.World.Entity
         /// Метод чанков для прорисовки
         /// </summary>
         private readonly ArrayFast<ChunkRender> _arrayChunkRender;
-
-        private HitboxEntityRender _hitbox;
+        /// <summary>
+        /// Объект для отладки хитбокса сущности
+        /// </summary>
+        private readonly HitboxEntityRender _hitbox;
         
 
         /// <summary>
-        /// Это временно!!!
+        /// Массив всех сущностей
         /// </summary>
         private EntityRender[] _entityRender;
 
@@ -50,7 +53,6 @@ namespace Vge.Renderer.World.Entity
         {
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
-            //_entityRender = new EntityRender(gl, Render, game.Player);
             _arrayChunkRender = arrayChunkRender;
         }
 
@@ -59,7 +61,6 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         public void GameStarting()
         {
-            
             _idTextureSmall = Render.Texture.CreateTexture2dArray(
                 EntitiesReg.TextureManager.WidthSmall,
                 EntitiesReg.TextureManager.HeightSmall,
@@ -171,8 +172,16 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void DrawOwner(float timeIndex)
         {
-            _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
-            _hitbox.Draw(timeIndex, _game.Player);
+            // Параметрв шейдоров
+            Render.ShEntity.Bind(gl);
+            Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
+            _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+
+            if (IsHitBox)
+            {
+                _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
+                _hitbox.Draw(timeIndex, _game.Player);
+            }
         }
 
         /// <summary>
@@ -200,8 +209,9 @@ namespace Vge.Renderer.World.Entity
             if (_entityRender != null)
             {
                 for (int i = 0; i < _entityRender.Length; i++)
+                {
                     if (_entityRender[i] != null) _entityRender[i].Dispose();
-                //_entityRender.Dispose();
+                }
             }
         }
 

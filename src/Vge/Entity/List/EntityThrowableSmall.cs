@@ -14,14 +14,15 @@ namespace Vge.Entity.List
         /// Запуск сущности после всех инициализаций, как правило только на сервере .3
         /// </summary>
         public override void InitRun(EntityLiving entityThrower, int i)
-            => _InitRun(entityThrower, i, 5.6f);
+            => _InitRun(entityThrower, i, .6f);
 
         protected override void _InitSize()
-            => Size = new SizeEntityPoint(this, 25);
+            => Size = new SizeEntityBox(this, .25f, .5f, 25);
+        //=> Size = new SizeEntityPoint(this, 25);
 
         protected override void _InitPhysics(CollisionBase collision)
-            => Physics = new PhysicsBallistics(collision, this);
-            //=> Physics = new PhysicsGround(collision, this, .9f);
+            //=> Physics = new PhysicsBallistics(collision, this);
+            => Physics = new PhysicsGround(collision, this, .9f);
 
         /// <summary>
         /// Возвращает true, если другие Сущности не должны проходить через эту Сущность

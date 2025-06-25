@@ -20,13 +20,13 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Анимация без перерыва, цикл
         /// </summary>
-        private readonly bool _loop;
+        private readonly ModelLoop _loop;
         /// <summary>
         /// Анимация кости
         /// </summary>
         private readonly List<AnimationBone> _bones = new List<AnimationBone>();
 
-        public ModelAnimation(string name, bool loop, float length)
+        public ModelAnimation(string name, ModelLoop loop, float length)
         {
             _name = name;
             _loop = loop;
@@ -116,7 +116,7 @@ namespace Vge.Entity.Model
             public override string ToString() => Index + " " + Frames.Count;
         }
 
-        public struct KeyFrames
+        public readonly struct KeyFrames
         {
             public readonly bool IsRotation;
             public readonly float Time;

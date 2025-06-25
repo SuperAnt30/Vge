@@ -37,6 +37,10 @@ namespace Vge.Entity
         /// </summary>
         public int[] DepthTextures { get; private set; }
         /// <summary>
+        /// Имеется ли анимация
+        /// </summary>
+        public bool IsAnimation { get; private set; }
+        /// <summary>
         /// Массив костей скелета
         /// </summary>
         public Bone[] Bones { get; private set; }
@@ -110,6 +114,8 @@ namespace Vge.Entity
                     foreach (JsonKeyValue json in state.Items)
                     {
                         if (json.IsKey(Cte.Pitch)) _nameBonePitch = json.GetString();
+                        if (json.IsKey(Cte.Anim)) IsAnimation = json.GetBool();
+                        
                         //if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                         //if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
                         //if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
@@ -138,12 +144,16 @@ namespace Vge.Entity
             ReadStateFromJson(state);
 
             ModelEntityDefinition definition = new ModelEntityDefinition(Alias, _nameBonePitch);
-            definition.RunModelFromJson(model);
+            definition.RunModelFromJson(model, IsAnimation);
 
             BufferMesh = definition.BufferMesh;
             Textures = definition.Textures;
-            Bones = definition.GenBones();
-            ModelAnimationClips = definition.GetModelAnimationClips();
+            if (IsAnimation)
+            {
+                // Если только есть анимация, нужны кости и клипы
+                Bones = definition.GenBones();
+                ModelAnimationClips = definition.GetModelAnimationClips();
+            }
 
             DepthTextures = new int[Textures.Length];
 

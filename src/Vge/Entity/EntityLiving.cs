@@ -54,6 +54,11 @@ namespace Vge.Entity
 
         #endregion
 
+        /// <summary>
+        /// Объект Размер, вес и прочее сущностей которая работает с физикой
+        /// </summary>
+        public SizeEntityLiving SizeLiving { get; protected set; }
+
         #region Методы для Position и Rotation
 
         /// <summary>
@@ -132,11 +137,6 @@ namespace Vge.Entity
         }
 
         #endregion
-
-        /// <summary>
-        /// Объект Размер, вес и прочее сущностей которая работает с физикой
-        /// </summary>
-        public SizeEntityLiving SizeLiving { get; protected set; }
 
         /// <summary>
         /// Высота глаз

@@ -1,5 +1,6 @@
 {
     Pitch: "Head",
-    Model: "Robinson"
+    Model: "Robinson",
+    Anim: true
     #Model: "skeleton"
 }

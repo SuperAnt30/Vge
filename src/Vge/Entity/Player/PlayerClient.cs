@@ -1,5 +1,5 @@
-﻿using Vge.Games;
-using Vge.Renderer.World.Entity;
+﻿using Vge.Entity.Render;
+using Vge.Games;
 using Vge.World;
 
 namespace Vge.Entity.Player

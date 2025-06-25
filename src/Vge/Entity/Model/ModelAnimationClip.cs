@@ -1,4 +1,6 @@
-﻿namespace Vge.Entity.Animation
+﻿using Vge.Entity.Model;
+
+namespace Vge.Entity.Animation
 {
     /// <summary>
     /// Класс, представляющий модель отдельного анимационного клипа (например, бег, прицеливание, ходьбу)
@@ -12,7 +14,7 @@
         /// <summary>
         /// Анимация без перерыва, цикл
         /// </summary>
-        public readonly bool Loop;
+        public readonly ModelLoop Loop;
         /// <summary>
         /// Длительность анимации, милисекунды
         /// </summary>
@@ -22,7 +24,7 @@
         /// </summary>
         public readonly BoneAnimationChannel[] Bones;
 
-        public ModelAnimationClip(string name, bool loop, float duration, BoneAnimationChannel[] bones)
+        public ModelAnimationClip(string name, ModelLoop loop, float duration, BoneAnimationChannel[] bones)
         {
             Name = name;
             Loop = loop;

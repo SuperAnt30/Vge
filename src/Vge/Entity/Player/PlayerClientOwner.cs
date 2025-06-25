@@ -1,12 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
+using Vge.Entity.Render;
 using Vge.Event;
 using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
 using Vge.Renderer.World;
-using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
