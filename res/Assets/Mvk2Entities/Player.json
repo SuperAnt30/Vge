@@ -1,5 +1,22 @@
 {
     Pitch: "Head",
     Model: "Robinson",
-    Anim: true
+    Animations: [
+        { 
+            Name: "Idle",
+            TimeMixBegin: 150,
+            TimeMixEnd: 150,
+            TriggeredBy: { onControls: ["Idle"], matchExact: true, defaultAnim: true }
+        },
+        {
+            Name: "Walk",
+            TimeMixBegin: 150,
+            TimeMixEnd: 250,
+            AnimationSpeed: 1.1,
+            TriggeredBy: { onControls: ["Move"], matchExact: true } 
+        },
+        { 
+            Name: "Chop",
+        }
+    ]
 }

@@ -69,14 +69,14 @@ namespace Vge.Entity.Player
         public Vector3i PositionAlphaBlock { get; private set; }
 
         /// <summary>
+        /// Вид камеры с глаз
+        /// </summary>
+        public bool ViewCameraEye { get; private set; } = true;
+
+        /// <summary>
         /// Обект перемещений
         /// </summary>
         public MovementInput Movement => Physics.Movement;
-
-        /// <summary>
-        /// Вид камеры с глаз
-        /// </summary>
-        public bool ViewCameraEye = true;
 
         /// <summary>
         /// Позиция камеры в чанке для альфа, в зависимости от вида (с глаз, с зади, спереди)
@@ -154,7 +154,7 @@ namespace Vge.Entity.Player
             Physics = new PhysicsPlayer(_game.World.Collision, this);
 
             // Создание объекта рендера не в конструкторе, так-как там ещё не создан рендер мир
-            Render = new EntityRenderClient(this, _game.WorldRender.Entities, 1);
+            Render = new EntityRenderClient(this, _game.WorldRender.Entities, IndexEntity);
         }
 
         #region Методы от Entity
@@ -289,6 +289,15 @@ namespace Vge.Entity.Player
         #region FrustumCulling Camera
 
         /// <summary>
+        /// Задать вид камеры, true - с глаз
+        /// </summary>
+        public void SetViewCameraEye(bool value)
+        {
+            ViewCameraEye = value;
+            _CameraHasBeenChanged();
+        }
+
+        /// <summary>
         /// Камера была изменена
         /// </summary>
         private void  _CameraHasBeenChanged()
@@ -309,10 +318,17 @@ namespace Vge.Entity.Player
 
             if (!ViewCameraEye)
             {
-                pos -= front * 3; // 5
-                //Vector3 right = Glm.Cross(front, up);
+                pos -= front * 4; // 5
+                //Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
+                //Vector3 right = Glm.Cross(front2, up);
                 //pos += right * 2;
             }
+            //else
+            //{
+            //    Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
+            //    pos += front2 * .2f;
+            //    pos -= up * .1f;
+            //}
             // Матрица Projection
             Mat4 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
                0.01f, OverviewChunk * 22f);
@@ -508,6 +524,7 @@ namespace Vge.Entity.Player
                 PosPrevY = PosY;
                 PosPrevZ = PosZ;
             }
+            
             if (!Physics.IsPhysicSleep())
             {
                 // Расчитать перемещение в объекте физика
@@ -523,6 +540,7 @@ namespace Vge.Entity.Player
                 if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
                 {
                     RotationPrevYaw = RotationYaw;
+                    
                     RotationPrevPitch = RotationPitch;
 
                     RotationPitch += RotationPitchBiasInput;
@@ -564,6 +582,9 @@ namespace Vge.Entity.Player
                     Physics.ResetPose();
                 }
             }
+
+            // Поворот тела от поворота головы или движения
+            _RotationBody();
 
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)

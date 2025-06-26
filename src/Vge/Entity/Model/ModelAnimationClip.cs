@@ -20,15 +20,27 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly float Duration;
         /// <summary>
+        /// Начальное время микса в милисекундах
+        /// </summary>
+        public readonly int TimeMixBegin;
+        /// <summary>
+        /// Конечное время микса в милисекундах
+        /// </summary>
+        public readonly int TimeMixEnd;
+        /// <summary>
         /// Списки ключевых кадров для каждой кости скелета
         /// </summary>
         public readonly BoneAnimationChannel[] Bones;
 
-        public ModelAnimationClip(string name, ModelLoop loop, float duration, BoneAnimationChannel[] bones)
+        public ModelAnimationClip(string name, ModelLoop loop, float duration, 
+            int timeMixBegin, int timeMixEnd,
+            BoneAnimationChannel[] bones)
         {
             Name = name;
             Loop = loop;
             Duration = duration;
+            TimeMixBegin = timeMixBegin;
+            TimeMixEnd = timeMixEnd;
             Bones = bones;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vge.Entity.Animation;
 using Vge.Json;
 using Vge.Util;
@@ -420,18 +421,26 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Сгенерировать списки модели ключевых кадров для каждой кости скелета
         /// </summary>
-        public ModelAnimationClip[] GetModelAnimationClips()
+        public ModelAnimationClip[] GetModelAnimationClips(AnimationData[] animationDatas)
         {
             // Количество анимационных клипов
-            int count = _animations.Count;
-            ModelAnimationClip[] animationClips = new ModelAnimationClip[count];
-
-            for (int i = 0; i < count; i++)
+            int count1 = animationDatas.Length;
+            int count2 = _animations.Count;
+            int i1, i2;
+            AnimationData animationData;
+            List<ModelAnimationClip> list = new List<ModelAnimationClip>();
+            for (i1 = 0; i1 < count1; i1++)
             {
-                animationClips[i] = _animations[i].CreateModelAnimationClip(_amountBoneIndex);
+                animationData = animationDatas[i1];
+                for (i2 = 0; i2 < count2; i2++)
+                {
+                    if (animationData.Name.Equals(_animations[i2].Name))
+                    {
+                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData));
+                    }
+                }
             }
-
-            return animationClips;
+            return list.ToArray();
         }
     }
 }

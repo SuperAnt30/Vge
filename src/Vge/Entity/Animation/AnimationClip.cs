@@ -30,14 +30,6 @@ namespace Vge.Entity.Animation
         /// Количество костей
         /// </summary>
         private readonly byte _countBones;
-        /// <summary>
-        /// Начальное время микса в милисекундах
-        /// </summary>
-        private readonly float _timeMixBegin;
-        /// <summary>
-        /// Конечное время микса в милисекундах
-        /// </summary>
-        private readonly float _timeMixEnd;
 
         /// <summary>
         /// Счётчик времени, милисекунды
@@ -59,10 +51,6 @@ namespace Vge.Entity.Animation
             // Количество костей в текущей модели
             _countBones = (byte)_resourcesEntity.Bones.Length;
             CurrentPoseBones = new BonePose[_countBones];
-            // Установка времени смешивания вначале клипа
-            _timeMixBegin = 150;
-            // Установка времени смешивания вконце клипа
-            _timeMixEnd = 250;
         }
 
         /// <summary>
@@ -81,7 +69,7 @@ namespace Vge.Entity.Animation
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsStoped() 
-            => _stopTime != 0 && _timeMixEnd <= _currentTimeFull - _stopTime;
+            => _stopTime != 0 && _modelClip.TimeMixEnd <= _currentTimeFull - _stopTime;
         /// <summary>
         /// Начинаем остановку клипа
         /// </summary>
@@ -94,13 +82,13 @@ namespace Vge.Entity.Animation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCoefMix()
         {
-            if (_timeMixBegin != 0 && _timeMixBegin > _currentTimeFull)
+            if (_modelClip.TimeMixBegin != 0 && _modelClip.TimeMixBegin > _currentTimeFull)
             {
-                return _currentTimeFull / _timeMixBegin;
+                return _currentTimeFull / _modelClip.TimeMixBegin;
             }
-            if (_timeMixEnd != 0 && _stopTime != 0)
+            if (_modelClip.TimeMixEnd != 0 && _stopTime != 0)
             {
-                return 1f - (_currentTimeFull - _stopTime) / _timeMixEnd;
+                return 1f - (_currentTimeFull - _stopTime) / _modelClip.TimeMixEnd;
             }
             return 1f;
         }

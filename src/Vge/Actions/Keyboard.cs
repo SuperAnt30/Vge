@@ -85,7 +85,7 @@ namespace Vge.Actions
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
 
                     case Keys.T: case Keys.Oemtilde: _OnInChat(); break; // Окно чата Клавиша "T" или "~"
-                    case Keys.F5: _game.Player.ViewCameraEye = !_game.Player.ViewCameraEye; break;
+                    case Keys.F5: _game.Player.SetViewCameraEye(!_game.Player.ViewCameraEye); break;
                     case Keys.F8: Debug.IsDrawVoxelLine = !Debug.IsDrawVoxelLine; break;
                 }
 

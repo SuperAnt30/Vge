@@ -10,13 +10,13 @@ namespace Vge.Entity.Model
     public class ModelAnimation
     {
         /// <summary>
+        /// Имя анимации из Blockbench
+        /// </summary>
+        public readonly string Name;
+        /// <summary>
         /// Длинна ролика в секундах
         /// </summary>
         private readonly float _length;
-        /// <summary>
-        /// Имя анимации из Blockbench
-        /// </summary>
-        private readonly string _name;
         /// <summary>
         /// Анимация без перерыва, цикл
         /// </summary>
@@ -28,7 +28,7 @@ namespace Vge.Entity.Model
 
         public ModelAnimation(string name, ModelLoop loop, float length)
         {
-            _name = name;
+            Name = name;
             _loop = loop;
             _length = length;
         }
@@ -39,9 +39,9 @@ namespace Vge.Entity.Model
         /// Создать модель отдельного анимационного клипа
         /// </summary>
         /// <param name="amountBoneIndex">Количество костей</param>
-        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex)
-            => new ModelAnimationClip(_name, _loop, _length * 1000f,
-                _GetBoneAnimationClip(amountBoneIndex));
+        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, AnimationData animationData)
+            => new ModelAnimationClip(Name, _loop, _length * 1000f,
+                animationData.TimeMixBegin, animationData.TimeMixEnd, _GetBoneAnimationClip(amountBoneIndex));
 
         /// <summary>
         /// Сгенерировать cписки ключевых кадров для каждой кости скелета
@@ -90,11 +90,11 @@ namespace Vge.Entity.Model
             }
             positionFrames.Sort();
             orientationFrames.Sort();
-            return new BoneAnimationChannel(_name, _loop,
+            return new BoneAnimationChannel(Name, _loop,
                 positionFrames.ToArray(), orientationFrames.ToArray());
         }
 
-        public override string ToString() => _name + " " + _bones.Count;
+        public override string ToString() => Name + " " + _bones.Count;
 
         /// <summary>
         /// Анимация кости

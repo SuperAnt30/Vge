@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace WinGL.Util
 {
@@ -15,9 +16,17 @@ namespace WinGL.Util
         }
 
         /// <summary>
+        /// Четверть Пи 0.52, аналог 30гр
+        /// </summary>
+        public const float Pi30 = 0.5235988f;
+        /// <summary>
         /// Четверть Пи 0.79, аналог 45гр
         /// </summary>
         public const float Pi45 = 0.7853982f;
+        /// <summary>
+        /// Четверть Пи 1.05, аналог 60гр
+        /// </summary>
+        public const float Pi60 = 1.04719758f;
         /// <summary>
         /// Половина Пи 1.57, аналог 90гр
         /// </summary>
@@ -43,39 +52,46 @@ namespace WinGL.Util
         /// </summary>
         public const float DegreesInRadians = 57.29578f;
 
-        public static float Degrees(float radians)
-            => radians * 57.295779513082320876798154814105f;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Degrees(float radians) => radians * 57.29578f;
 
-        public static float Radians(float degrees)
-            => degrees * 0.01745329251994329576923690768489f;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Radians(float degrees) => degrees * 0.0174532924f;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cos(float angle)
         {
             angle %= Pi360;
             return _sinTable[(int)(angle * 10430.378f + 16384.0f) & 65535];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sin(float angle)
         {
             angle %= Pi360;
             return _sinTable[(int)(angle * 10430.378f) & 65535];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Tan(float angle)
         {
             float c = Cos(angle);
             return c == 0 ? float.PositiveInfinity : Sin(angle) / c;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Atan2(float y, float x) => (float)Math.Atan2(y, x);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Acos(float x) => (float)Math.Acos(x);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Asin(float x) => (float)Math.Asin(x);
 
         /// <summary>
         /// Перевести угол в радианах в -180 .. 180
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float WrapAngleToPi(float angle)
         {
             angle %= Pi360;
@@ -87,6 +103,7 @@ namespace WinGL.Util
         /// <summary>
         /// Получить вектор направления по поворотам
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Ray(float yaw, float pitch)
         {
             //float var3 = glm.cos(-yaw - glm.pi);

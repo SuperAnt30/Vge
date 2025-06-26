@@ -173,9 +173,12 @@ namespace Vge.Renderer.World.Entity
         public void DrawOwner(float timeIndex)
         {
             // Параметрв шейдоров
-            Render.ShEntity.Bind(gl);
-            Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
-            _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+            if (!_game.Player.ViewCameraEye)
+            {
+                Render.ShEntity.Bind(gl);
+                Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
+                _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+            }
 
             if (IsHitBox)
             {

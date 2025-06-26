@@ -1,6 +1,23 @@
 {
     Pitch: "Head",
     Model: "Robinson",
-    Anim: true
+    Animations: [
+        {
+            Name: "Walk",
+            AnimationSpeed: 1.1,
+            TriggeredBy: { onControls: ["Move"], matchExact: true } 
+        },
+        { 
+            Name: "Idle", 
+            TriggeredBy: { onControls: ["Idle"], matchExact: true, defaultAnim: true }
+        },
+        { 
+            Name: "Run", 
+            TriggeredBy: { onControls: ["Run"], matchExact: true, defaultAnim: true }
+        },
+        { 
+            Name: "Chop", 
+        }
+    ]
     #Model: "skeleton"
 }

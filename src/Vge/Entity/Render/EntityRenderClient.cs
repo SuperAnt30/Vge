@@ -184,22 +184,7 @@ namespace Vge.Entity.Render
             float ppfy = entityRender.Player.PosFrameY;
             float ppfz = entityRender.Player.PosFrameZ;
 
-            float yaw;// = 0;
-            float pitch;// = 0;
-            if (Entity is EntityLiving entityLiving)
-            {
-                yaw = entityLiving.GetRotationFrameYaw(timeIndex);
-                pitch = entityLiving.GetRotationFramePitch(timeIndex);
-            }
-            else
-            {
-                float x = Entity.PosX - ppfx;
-                float y = Entity.PosY - ppfy;
-                float z = Entity.PosZ - ppfz;
-                yaw = Glm.Atan2(z, x) - Glm.Pi90;
-                pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
-                //pitch = 0;
-            }
+            
 
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
@@ -212,6 +197,26 @@ namespace Vge.Entity.Render
 
             if (anim)
             {
+                float yaw;// = 0;
+                float yawBody;
+                float pitch;// = 0;
+                if (Entity is EntityLiving entityLiving)
+                {
+                    yaw = entityLiving.GetRotationFrameYaw(timeIndex);
+                    yawBody = entityLiving.SolidHeadWithBody 
+                        ? yaw : entityLiving.GetRotationFrameYawBody(timeIndex);
+                    pitch = entityLiving.GetRotationFramePitch(timeIndex);
+                }
+                else
+                {
+                    float x = Entity.PosX - ppfx;
+                    float y = Entity.PosY - ppfy;
+                    float z = Entity.PosZ - ppfz;
+                    yawBody = yaw = Glm.Atan2(z, x) - Glm.Pi90;
+                    pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
+                    //pitch = 0;
+                }
+
                 // Возвращаем значения костей в исходное положение, Оригинал
                 for (byte i = 0; i < _countBones; i++)
                 {
@@ -231,7 +236,7 @@ namespace Vge.Entity.Render
                 }
 
                 // Собираем конечные матрицы
-                _GetMatrixPalette(yaw, pitch);
+                _GetMatrixPalette(yaw, yawBody, pitch);
 
                 Entities.Render.ShEntity.SetUniformMatrix4x3(Entities.GetOpenGL(),
                     "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
@@ -288,13 +293,13 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Получение матричной палитры для позы
         /// </summary>
-        private void _GetMatrixPalette(float yaw, float pitch)
+        private void _GetMatrixPalette(float yaw, float yawBody, float pitch)
         {
             // Корневая кость
             _bonesTransforms[0].Clear();
-            if (yaw != 0)
+            if (yawBody != 0)
             {
-                _bonesTransforms[0].RotateY(-yaw);
+                _bonesTransforms[0].RotateY(-yawBody);
             }
             // У корневой кости нет родительской матрицы, поэтому заносим в матричную палитру матрицу перехода как есть
             _bonesTransforms[0].Multiply(_bones[0].GetBoneMatrix());
@@ -313,9 +318,17 @@ namespace Vge.Entity.Render
                 _bonesTransforms[i].Multiply(_bones[i].GetBoneMatrix());
 
                 // Если надо вращаем Pitch
-                if (bone.IsPitch && pitch != 0)
+                if (bone.IsPitch)
                 {
-                    _bonesTransforms[i].RotateX(pitch);
+                    yaw -= yawBody;
+                    if (yaw != 0)
+                    {
+                        _bonesTransforms[i].RotateY(-yaw);
+                    }
+                    if (pitch != 0)
+                    {
+                        _bonesTransforms[i].RotateX(pitch);
+                    }
                 }
 
                 // Умножаем обратную матрицу

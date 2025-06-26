@@ -42,6 +42,7 @@ namespace Vge.Entity.Player
 
         protected PlayerClient(GameBase game)
         {
+            SolidHeadWithBody = false;
             _game = game;
             _InitMetaData();
             _InitSize();
@@ -57,7 +58,7 @@ namespace Vge.Entity.Player
             Id = id;
             IdWorld = idWorld;
             _InitIndexPlayer();
-            Render = new EntityRenderClient(this, _game.WorldRender.Entities, 1);
+            Render = new EntityRenderClient(this, _game.WorldRender.Entities, IndexEntity);
         }
 
         /// <summary>
@@ -67,6 +68,10 @@ namespace Vge.Entity.Player
         public override void UpdateClient(WorldClient world, float deltaTime)
         {
             UpdatePositionServer();
+
+            // Поворот тела от поворота головы или движения
+            _RotationBody();
+
             Render.UpdateClient(world, deltaTime);
         }
     }

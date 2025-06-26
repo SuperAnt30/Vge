@@ -1,6 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -11,16 +13,17 @@ namespace Vge.Entity
     /// </summary>
     public abstract class EntityLiving : EntityBase//<SizeEntityLiving>
     {
+        /// <summary>
+        /// Цельная голова с телом
+        /// </summary>
+        public bool SolidHeadWithBody { get; protected set; } = true;
+
         #region Rotation 
 
         /// <summary>
         /// Вращение этой сущности по оси Y в радианах
         /// </summary>
         public float RotationYaw;
-        /// <summary>
-        /// Вращение головы этой сущности по оси Y в радианах (если голова имеется, если нет, игнорируем)
-        /// </summary>
-        public float RotationYawHead;
         /// <summary>
         /// Вращение этой сущности вверх вниз в радианах
         /// </summary>
@@ -31,10 +34,6 @@ namespace Vge.Entity
         /// </summary>
         public float RotationPrevYaw;
         /// <summary>
-        /// Вращение этой сущности по оси Y в прошлом такте (если голова имеется, если нет, игнорируем)
-        /// </summary>
-        public float RotationPrevYawHead;
-        /// <summary>
         /// Вращение этой сущности вверх вниз в прошлом такте
         /// </summary>
         public float RotationPrevPitch;
@@ -43,14 +42,19 @@ namespace Vge.Entity
         /// Вращение этой сущности по оси Y с сервера, только для клиента
         /// </summary>
         public float RotationServerYaw;
-        /// <summary>
-        /// Вращение этой сущности по оси Y с сервера, только для клиента (если голова имеется, если нет, игнорируем)
-        /// </summary>
-        public float RotationServerYawHead;
-        /// <summary>
+        /// <summary>wBod
         /// Вращение этой сущности вверх вниз с сервера, только для клиента
         /// </summary>
         public float RotationServerPitch;
+
+        /// <summary>
+        /// Вращение тела этой сущности по оси Y в радианах
+        /// </summary>
+        private float _rotationYawBody;
+        /// <summary>
+        /// Вращение тела этой сущности по оси Y в прошлом такте
+        /// </summary>
+        private float _rotationPrevYawBody;
 
         #endregion
 
@@ -75,6 +79,26 @@ namespace Vge.Entity
         public string ToStringPositionRotation()
             => string.Format("{0:0.00}; {1:0.00}; {2:0.00} Y:{3:0.00} P:{4:0.00}",
                 PosX, PosY, PosZ, Glm.Degrees(RotationYaw), Glm.Degrees(RotationPitch));
+
+        /// <summary>
+        /// Получить угол Yaw тела для кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetRotationFrameYawBody(float timeIndex)
+        {
+            if (timeIndex >= 1.0f || _rotationPrevYawBody == _rotationYawBody) return _rotationYawBody;
+            float biasYaw = _rotationYawBody - _rotationPrevYawBody;
+            if (biasYaw > Glm.Pi)
+            {
+                return _rotationPrevYawBody + (_rotationYawBody - Glm.Pi360 - _rotationPrevYawBody) * timeIndex;
+            }
+            if (biasYaw < -Glm.Pi)
+            {
+                return _rotationPrevYawBody + (_rotationYawBody + Glm.Pi360 - _rotationPrevYawBody) * timeIndex;
+            }
+            return _rotationPrevYawBody + biasYaw * timeIndex;
+        }
 
         /// <summary>
         /// Получить угол Yaw для кадра
@@ -117,7 +141,6 @@ namespace Vge.Entity
             PosPrevY = PosY;
             PosPrevZ = PosZ;
             RotationPrevYaw = RotationYaw;
-            RotationPrevYawHead = RotationYawHead;
             RotationPrevPitch = RotationPitch;
         }
 
@@ -132,9 +155,81 @@ namespace Vge.Entity
             PosY = PosServerY;
             PosZ = PosServerZ;
             RotationYaw = RotationServerYaw;
-            RotationYawHead = RotationServerYawHead;
             RotationPitch = RotationServerPitch;
         }
+
+        /// <summary>
+        /// Поворот тела от поворота головы или движения.
+        /// Для сущностей где голова вращается отдельно от тела.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _RotationBody()
+        {
+            if (SolidHeadWithBody) _RotationBodyEqualHead();
+            else _RotationBodyFromHead();
+        }
+
+        /// <summary>
+        /// Поворот тела равен повороту головы, для сущностей где тело и голова цельная.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _RotationBodyEqualHead()
+        {
+            if (RotationYaw != _rotationYawBody) _rotationYawBody = RotationYaw;
+            if (RotationPrevYaw != _rotationPrevYawBody) _rotationPrevYawBody = RotationPrevYaw;
+        }
+
+        /// <summary>
+        /// Поворот тела от поворота головы или движения.
+        /// Для сущностей где голова вращается отдельно от тела.
+        /// </summary>
+        private void _RotationBodyFromHead()
+        {
+            if (PosX != PosPrevX || PosZ != PosPrevZ
+                || RotationYaw != RotationPrevYaw || _rotationYawBody != _rotationPrevYawBody)
+            {
+                _rotationPrevYawBody = _rotationYawBody;
+                float yawOffset = _rotationYawBody;
+
+                float xDis = PosX - PosPrevX;
+                float zDis = PosZ - PosPrevZ;
+                if (xDis * xDis + zDis * zDis > .0025f)
+                {
+                    // Движение, высчитываем угол направления
+                    yawOffset = Glm.Atan2(zDis, xDis) + Glm.Pi90;
+                    // Реверс для бега назад
+                    float yawRev = Glm.WrapAngleToPi(yawOffset - _rotationYawBody);
+                    if (yawRev < -1.8f) yawOffset += Glm.Pi;
+                    else if (yawRev > 1.8f) yawOffset -= Glm.Pi;
+                }
+
+                float yaw = Glm.WrapAngleToPi(yawOffset - _rotationYawBody);
+                _rotationYawBody += yaw * .2f;
+                yaw = Glm.WrapAngleToPi(RotationYaw - _rotationYawBody);
+
+                if (yaw < -Glm.Pi60) yaw = -Glm.Pi60;
+                else if (yaw > Glm.Pi60) yaw = Glm.Pi60;
+
+                _rotationYawBody = RotationYaw - yaw;
+
+                // Смещаем тело если дельта выше 30 градусов, плавным возвращением
+                if (yaw > Glm.Pi30 || yaw < -Glm.Pi30) _rotationYawBody += yaw * .03f;
+
+                _rotationYawBody = Glm.WrapAngleToPi(_rotationYawBody);
+            }
+        }
+
+        /// <summary>
+        /// Задать вращение для сущностей с AI
+        /// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public void SetRotationAI(float yaw, float pitch)
+        //{
+        //    RotationYaw = yaw;
+        //    RotationPitch = pitch;
+        //    _RotationBody();
+        //    //Trigger = Look;
+        //}
 
         #endregion
 

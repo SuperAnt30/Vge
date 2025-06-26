@@ -57,8 +57,10 @@ namespace Vge.Entity
         /// Название кости меняющее от Pitch
         /// </summary>
         private string _nameBonePitch;
-
-       // private Mat4 _matrix = Mat4.Identity();
+        /// <summary>
+        /// Массив данных анимации
+        /// </summary>
+        private AnimationData[] _animationDatas;
 
         public ResourcesEntity(string alias, Type entityType)
         {
@@ -114,8 +116,12 @@ namespace Vge.Entity
                     foreach (JsonKeyValue json in state.Items)
                     {
                         if (json.IsKey(Cte.Pitch)) _nameBonePitch = json.GetString();
-                        if (json.IsKey(Cte.Anim)) IsAnimation = json.GetBool();
-                        
+                        //if (json.IsKey(Cte.IsAnimations)) IsAnimation = json.GetBool();
+                        if (json.IsKey(Cte.Animations))
+                        {
+                            IsAnimation = true;
+                            _Animations(json.GetArray().ToArrayObject());
+                        }
                         //if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                         //if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
                         //if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
@@ -152,12 +158,29 @@ namespace Vge.Entity
             {
                 // Если только есть анимация, нужны кости и клипы
                 Bones = definition.GenBones();
-                ModelAnimationClips = definition.GetModelAnimationClips();
+                ModelAnimationClips = definition.GetModelAnimationClips(_animationDatas);
+                _animationDatas = null;
             }
 
             DepthTextures = new int[Textures.Length];
 
             return;
+        }
+
+        /// <summary>
+        /// Собираем анимации в статах
+        /// </summary>
+        private void _Animations(JsonCompound[] animations)
+        {
+            _animationDatas = new AnimationData[animations.Length];
+            for (int i = 0; i < animations.Length; i++)
+            {
+                _animationDatas[i] = new AnimationData(
+                    animations[i].GetString(Cte.Name),
+                    animations[i].GetInt(Cte.TimeMixBegin),
+                    animations[i].GetInt(Cte.TimeMixEnd)
+                );
+            }
         }
 
         #endregion

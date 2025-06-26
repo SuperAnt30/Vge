@@ -17,10 +17,14 @@
         /// </summary>
         public const string Model = "Model";
         /// <summary>
-        /// Имееися ли в сущности анимация (bool)
+        /// Начальное время микса в милисекундах. (int)
         /// </summary>
-        public const string Anim = "Anim";
-        
+        public const string TimeMixBegin = "TimeMixBegin";
+        /// <summary>
+        /// Конечное время микса в милисекундах. (int)
+        /// </summary>
+        public const string TimeMixEnd = "TimeMixEnd";
+
 
 
         #endregion
