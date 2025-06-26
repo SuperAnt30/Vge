@@ -41,7 +41,7 @@ namespace Vge.Entity.Model
         /// <param name="amountBoneIndex">Количество костей</param>
         public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, AnimationData animationData)
             => new ModelAnimationClip(Name, _loop, _length * 1000f,
-                animationData.TimeMixBegin, animationData.TimeMixEnd, _GetBoneAnimationClip(amountBoneIndex));
+                animationData, _GetBoneAnimationClip(amountBoneIndex));
 
         /// <summary>
         /// Сгенерировать cписки ключевых кадров для каждой кости скелета

@@ -24,8 +24,10 @@
         /// Конечное время микса в милисекундах. (int)
         /// </summary>
         public const string TimeMixEnd = "TimeMixEnd";
-
-
+        /// <summary>
+        /// Скорость анимации. (float)
+        /// </summary>
+        public const string Speed = "Speed";
 
         #endregion
 

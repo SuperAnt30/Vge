@@ -178,7 +178,8 @@ namespace Vge.Entity
                 _animationDatas[i] = new AnimationData(
                     animations[i].GetString(Cte.Name),
                     animations[i].GetInt(Cte.TimeMixBegin),
-                    animations[i].GetInt(Cte.TimeMixEnd)
+                    animations[i].GetInt(Cte.TimeMixEnd),
+                    animations[i].GetFloat(Cte.Speed)
                 );
             }
         }

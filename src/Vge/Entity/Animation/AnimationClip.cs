@@ -17,6 +17,10 @@ namespace Vge.Entity.Animation
         /// Массив костей скелета в заданный момент времени
         /// </summary>
         public readonly BonePose[] CurrentPoseBones;
+        /// <summary>
+        /// Скорость клипа, 1 норма
+        /// </summary>
+        public float Speed;
 
         /// <summary>
         /// Модель отдельного анимационного клипа
@@ -48,6 +52,8 @@ namespace Vge.Entity.Animation
         {
             _resourcesEntity = resourcesEntity;
             _modelClip = modelClip;
+            // Скорость по умолчанию
+            Speed = _modelClip.Speed;
             // Количество костей в текущей модели
             _countBones = (byte)_resourcesEntity.Bones.Length;
             CurrentPoseBones = new BonePose[_countBones];
@@ -101,7 +107,7 @@ namespace Vge.Entity.Animation
         public void IncreaseCurrentTime(float delta)
         {
             _currentTimeFull += delta;
-            _currentTime += delta;
+            _currentTime += delta * Speed;
             if (_currentTime > _modelClip.Duration)
             {
                 _currentTime -= _modelClip.Duration;

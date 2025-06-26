@@ -31,7 +31,6 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Массив отдельных анимационных клипов
         /// </summary>
-        //private readonly ListMessy<AnimationClip> _animationClips = new ListMessy<AnimationClip>();
         private readonly ListMessy<int> _animationClips = new ListMessy<int>();
 
         /// <summary>
@@ -137,12 +136,16 @@ namespace Vge.Entity.Render
                 {
                     if (Entity.Physics.IsMotionChange)
                     {
+                        // TODO::TEST
                         // Позиция сменена
                         if (!m)
                         {
                             m = true;
                             RemoveClip(0);
                             AddClip(1);
+
+                            if (Entity.Physics.Movement.Sprinting) _animations[1].Speed = 2;
+                            else _animations[1].Speed = 1;
                         }
                     }
                     else
