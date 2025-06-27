@@ -16,13 +16,13 @@ namespace WinGL
     public class Window
     {
         /// <summary>
-        /// Ширина окна, по умолчанию размер HD
+        /// Ширина наружного окна, по умолчанию размер HD
         /// </summary>
-        public int Width { get; private set; } = 1280;
+        protected int _width = 1280;
         /// <summary>
-        /// Высота окна, по умолчанию размер HD
+        /// Высота наружного окна, по умолчанию размер HD
         /// </summary>
-        public int Height { get; private set; } = 720;
+        protected int _height = 720;
         /// <summary>
         /// Позиция Х расположения окна
         /// </summary>
@@ -257,7 +257,7 @@ namespace WinGL
                 NameClass, Title,
                 WindowStyles.WS_CLIPSIBLINGS | WindowStyles.WS_CLIPCHILDREN | dwStyle,
                 LocationX, LocationY,
-                Width, Height,
+                _width, _height,
                 IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
 
             if (hWnd == IntPtr.Zero) 
@@ -265,15 +265,15 @@ namespace WinGL
                 throw new Exception(Sr.WindowCreationError);
             }
 
-            int width = Width;
-            int height = Height;
+            int width = _width;
+            int height = _height;
             // Корректировка масштаба экрана
             int dpi = (int)WinUser.GetDpiForWindow(hWnd);
             if (dpi != 96)
             {
                 // Если dpi не 100%
-                width = Width * dpi / 96;
-                height = Height * dpi / 96;
+                width = _width * dpi / 96;
+                height = _height * dpi / 96;
             }
             // Определили разрешение рабочей области
             int widthWorkArea = monitorInfo.WorkArea.Right - monitorInfo.WorkArea.Left;
@@ -389,8 +389,8 @@ namespace WinGL
                     {
                         Vector2i pos = WinUser.GetCursorPos();
                         if (pos.X < LocationX || pos.Y < LocationY
-                            || pos.X > LocationX + Width
-                            || pos.Y > LocationY + Height)
+                            || pos.X > LocationX + _width
+                            || pos.Y > LocationY + _height)
                         {
                             mouseEntity = false;
                             OnMouseLeave();
@@ -538,10 +538,7 @@ namespace WinGL
         /// </summary>
         protected virtual void OnResized(int width, int height)
         {
-            Width = width;
-            Height = height;
-
-            Glm.Ortho(0, Width, Height, 0, 0, 1).ConvArray(Ortho2D);
+            Glm.Ortho(0, width, height, 0, 0, 1).ConvArray(Ortho2D);
             gl.Viewport(0, 0, width, height);
         }
 

@@ -19,7 +19,7 @@ namespace Vge.Gui.Screens
         {
             FontBase font = window.Render.FontMain;
             this.parent = parent;
-            label = new Label(window, font, window.Width - 100, 0, text);
+            label = new Label(window, font, Gi.Width - 100, 0, text);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
             buttonYes = new Button(window, font, 200, L.T("Yes"));

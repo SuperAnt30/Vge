@@ -16,7 +16,7 @@ namespace Vge.Gui.Screens
         public ScreenNotification(WindowMain window, string notification) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width - 100, 0, notification);
+            label = new Label(window, font, Gi.Width - 100, 0, notification);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
             button = new Button(window, font, 200, L.T("Menu"));

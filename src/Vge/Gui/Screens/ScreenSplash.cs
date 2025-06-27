@@ -97,8 +97,8 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected virtual void RenderStep()
         {
-            int w = window.Width / 2;
-            int h = (window.Height - 608) / 2 + 512;
+            int w = Gi.Width / 2;
+            int h = (Gi.Height - 608) / 2 + 512;
             list.Clear();
             list.AddRange(RenderFigure.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
             list.AddRange(RenderFigure.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));

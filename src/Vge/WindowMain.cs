@@ -370,8 +370,8 @@ namespace Vge
         protected override void OnResized(int width, int height)
         {
             base.OnResized(width, height);
-            Gi.Width = Width;
-            Gi.Height = Height;
+            Gi.Width = width;
+            Gi.Height = height;
             UpdateSizeInterface();
             if (Screen != null) 
             {

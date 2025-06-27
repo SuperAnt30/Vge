@@ -119,11 +119,11 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Получить ширину, с перерасчётом для инерфейса
         /// </summary>
-        public int Width => window.Width / si;
+        public int Width => Gi.Width / si;
         /// <summary>
         /// Получить высоту, с перерасчётом для инерфейса
         /// </summary>
-        public int Height => window.Height / si;
+        public int Height => Gi.Height / si;
 
         public override void Dispose()
         {

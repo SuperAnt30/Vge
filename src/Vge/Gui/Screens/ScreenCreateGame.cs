@@ -21,7 +21,7 @@ namespace Vge.Gui.Screens
         {
             this.slot = slot;
             FontBase font = window.Render.FontMain;
-            label = new Label(window, font, window.Width - 100, 0, L.T("SingleCreate{0}", slot));
+            label = new Label(window, font, Gi.Width - 100, 0, L.T("SingleCreate{0}", slot));
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
 
             labelSeed = new Label(window, font, 300, 40, L.T("Seed"));
