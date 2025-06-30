@@ -12,6 +12,10 @@ namespace Vge.Entity.Render
         /// Сущность к которой прекреплена физика
         /// </summary>
         public readonly EntityBase Entity;
+        /// <summary>
+        /// Анимационный триггер для сущности
+        /// </summary>
+        public readonly TriggerAnimation Trigger = new TriggerAnimation();
 
         public EntityRenderBase(EntityBase entity) => Entity = entity;
 

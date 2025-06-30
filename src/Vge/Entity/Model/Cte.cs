@@ -17,6 +17,10 @@
         /// </summary>
         public const string Model = "Model";
         /// <summary>
+        /// Масштаб. (float)
+        /// </summary>
+        public const string Scale = "Scale";
+        /// <summary>
         /// Начальное время микса в милисекундах. (int)
         /// </summary>
         public const string TimeMixBegin = "TimeMixBegin";
@@ -27,7 +31,11 @@
         /// <summary>
         /// Скорость анимации. (float)
         /// </summary>
-        public const string Speed = "Speed";
+        public const string AnimationSpeed = "AnimationSpeed";
+        /// <summary>
+        /// Имя триггера. (string)
+        /// </summary>
+        public const string Trigger = "Trigger";
 
         #endregion
 

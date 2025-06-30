@@ -87,7 +87,7 @@ namespace Vge.Entity.Render
                 {
                     _animations[i] = new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[i]);
                 }
-                _animationClips.Add(0);
+               // _animationClips.Add(0);
 
                 // Временное включение анимациионного клипа
                 //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[2]));
@@ -119,7 +119,7 @@ namespace Vge.Entity.Render
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void RemoveClip(int index) => _animations[index].Stoping();
 
-        private bool m = false;
+      //  private bool m = false;
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
@@ -132,6 +132,30 @@ namespace Vge.Entity.Render
 
             if (_resourcesEntity.IsAnimation)
             {
+                byte mov = Trigger.GetMoving();
+                // Что убрать
+                Trigger.PrepareRemoved();
+
+                if (Trigger.IsForward())
+                {
+                    RemoveClip(1);
+                    AddClip(0);
+                }
+
+                Trigger.SetAnimation(mov);
+
+                // Что добавить
+                Trigger.PrepareAddendum();
+
+                if (Trigger.IsForward())
+                {
+                    RemoveClip(0);
+                    AddClip(1);
+                }
+
+                Trigger.SetAnimation(mov);
+                Trigger.UpdatePrev();
+                /*
                 if (Entity.Physics != null)
                 {
                     if (Entity.Physics.IsMotionChange)
@@ -159,6 +183,7 @@ namespace Vge.Entity.Render
                         }
                     }
                 }
+                */
 
                 int i = 0;
                 int count = _animationClips.Count - 1;

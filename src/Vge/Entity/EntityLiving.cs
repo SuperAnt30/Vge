@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
-using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -42,7 +40,7 @@ namespace Vge.Entity
         /// Вращение этой сущности по оси Y с сервера, только для клиента
         /// </summary>
         public float RotationServerYaw;
-        /// <summary>wBod
+        /// <summary>
         /// Вращение этой сущности вверх вниз с сервера, только для клиента
         /// </summary>
         public float RotationServerPitch;

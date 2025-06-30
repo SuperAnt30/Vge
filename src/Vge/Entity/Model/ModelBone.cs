@@ -13,7 +13,7 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly List<ModelElement> Children = new List<ModelElement>();
 
-        public ModelBone(string uuid, string name, byte boneIndex) : base(uuid, name)
+        public ModelBone(string uuid, string name, float scale, byte boneIndex) : base(uuid, name, scale)
             => BoneIndex = boneIndex;
 
         /// <summary>

@@ -1,19 +1,21 @@
 {
     Pitch: "Head",
+    #Scale: 1.9375,
+    Scale: 0.929,
     Model: "Robinson",
     Animations: [
         { 
             Name: "Idle",
             TimeMixBegin: 150,
             TimeMixEnd: 150,
-            TriggeredBy: { onControls: ["Idle"], matchExact: true, defaultAnim: true }
+            Trigger: "Idle"
         },
         {
             Name: "Walk",
             TimeMixBegin: 150,
             TimeMixEnd: 250,
-            AnimationSpeed: 1.1,
-            TriggeredBy: { onControls: ["Move"], matchExact: true } 
+            AnimationSpeed: 1.7,
+            Trigger: "Forward"
         },
         { 
             Name: "Chop",

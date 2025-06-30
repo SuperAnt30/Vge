@@ -27,8 +27,7 @@
             Name = name;
             TimeMixBegin = timeMixBegin;
             TimeMixEnd = timeMixEnd;
-            if (speed == 0) Speed = 1;
-            else Speed = speed;
+            Speed = speed == 0 ? 1 : speed;
         }
 
     }

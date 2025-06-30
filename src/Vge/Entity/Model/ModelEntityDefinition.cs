@@ -26,6 +26,10 @@ namespace Vge.Entity.Model
         /// </summary>
         private readonly string _alias;
         /// <summary>
+        /// Масштаб
+        /// </summary>
+        private readonly float _scale;
+        /// <summary>
         /// Название кости меняющее от Pitch
         /// </summary>
         private readonly string _nameBonePitch;
@@ -71,11 +75,11 @@ namespace Vge.Entity.Model
         /// Высота
         /// </summary>
         private int _height;
-        
 
-        public ModelEntityDefinition(string alias, string nameBonePitch)
+        public ModelEntityDefinition(string alias, float scale, string nameBonePitch)
         {
             _alias = alias;
+            _scale = scale;
             _nameBonePitch = nameBonePitch;
         }
 
@@ -181,7 +185,7 @@ namespace Vge.Entity.Model
                 {
                     _log = "CubeNameUuid";
                     ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
-                        elements[i].GetString(Cte.Name), _width, _height);
+                        elements[i].GetString(Cte.Name), _width, _height, _scale);
 
                     _log = "CubeFromTo";
                     cube.SetPosition(
@@ -253,7 +257,7 @@ namespace Vge.Entity.Model
                     {
                         _log = "BoneNameUuid";
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
-                            compound.GetString(Cte.Name), _amountBoneIndex++);
+                            compound.GetString(Cte.Name), _scale, _amountBoneIndex++);
 
                         if (compound.IsKey(Cte.Origin))
                         {
@@ -410,7 +414,9 @@ namespace Vge.Entity.Model
                         bone.Frames.Add(new ModelAnimation.KeyFrames(
                             keyframes[j].GetString(Cte.Channel).Equals("rotation"),
                             keyframes[j].GetFloat(Cte.Time),
-                            pos.GetFloat(Cte.X), pos.GetFloat(Cte.Y), pos.GetFloat(Cte.Z)
+                            pos.GetFloat(Cte.X) * _scale,
+                            pos.GetFloat(Cte.Y) * _scale,
+                            pos.GetFloat(Cte.Z) * _scale
                         ));
                     }
                     animation.BoneAdd(bone);

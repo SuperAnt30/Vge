@@ -222,9 +222,9 @@ namespace Vge.Network
         private void _Handle0BAnimation(PacketS0BAnimation packet)
         {
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
-            if (entity != null)
+            if (entity != null && entity.Render != null)
             {
-                //entity.PacketAnimation(packet.Animation);
+                entity.Render.Trigger.SetAnimation(packet.Animation);
             }
         }
 

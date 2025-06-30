@@ -62,30 +62,18 @@ namespace Vge.Actions
 
                 switch (keys)
                 {
-                    case Keys.W: _game.Player.Movement.Forward = true; _game.Player.InputKeyMove(); break;
-                    case Keys.E: _game.Player.Movement.Forward = true; _game.Player.InputKeyMove(); break;
-                    case Keys.A: _game.Player.Movement.Left = true; _game.Player.InputKeyMove(); break;
-                    case Keys.D: _game.Player.Movement.Right = true; _game.Player.InputKeyMove(); break;
-                    case Keys.S: _game.Player.Movement.Back = true; _game.Player.InputKeyMove(); break;
-                    case Keys.Space: _game.Player.Movement.Jump = true; _game.Player.InputKeyMove(); break;
-                    case Keys.ShiftKey:
-                        if (!_game.Player.Movement.Sneak)
-                        {
-                            _game.Player.Movement.Sneak = true;
-                            _game.Player.InputKeyMove();
-                        }
-                        break;
-                    case Keys.ControlKey:
-                        if (!_game.Player.Movement.Sprinting)
-                        {
-                            _game.Player.Movement.Sprinting = true;
-                            _game.Player.InputKeyMove();
-                        }
-                        break;
+                    case Keys.W: _game.Player.KeyForward(true); break;
+                    case Keys.E: _game.Player.KeyForward(true); break;
+                    case Keys.A: _game.Player.KeyStrafeLeft(true); break;
+                    case Keys.D: _game.Player.KeyStrafeRight(true); break;
+                    case Keys.S: _game.Player.KeyBack(true); break;
+                    case Keys.Space: _game.Player.KeyJump(true); break;
+                    case Keys.ShiftKey: _game.Player.KeySneak(true); break;
+                    case Keys.ControlKey: _game.Player.KeySprinting(true); break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
 
                     case Keys.T: case Keys.Oemtilde: _OnInChat(); break; // Окно чата Клавиша "T" или "~"
-                    case Keys.F5: _game.Player.SetViewCameraEye(!_game.Player.ViewCameraEye); break;
+                    case Keys.F5: _game.Player.ViewCameraNext(); break;
                     case Keys.F8: Debug.IsDrawVoxelLine = !Debug.IsDrawVoxelLine; break;
                 }
 
@@ -124,23 +112,13 @@ namespace Vge.Actions
             { 
                 switch (keys)
                 {
-                    case Keys.W:
-                        _game.Player.Movement.Forward = false;
-                        _game.Player.Movement.Sprinting = false;
-                        _game.Player.InputKeyMove();
-                        break;
-                    case Keys.A: _game.Player.Movement.Left = false; _game.Player.InputKeyMove(); break;
-                    case Keys.D: _game.Player.Movement.Right = false; _game.Player.InputKeyMove(); break;
-                    case Keys.S: _game.Player.Movement.Back = false; _game.Player.InputKeyMove(); break;
-                    case Keys.Space: _game.Player.Movement.Jump = false; _game.Player.InputKeyMove(); break;
-                    case Keys.ShiftKey: _game.Player.Movement.Sneak = false; _game.Player.InputKeyMove(); break;
-                    case Keys.ControlKey:
-                        if (!_game.Player.Movement.Forward)
-                        {
-                            _game.Player.Movement.Sprinting = false;
-                            _game.Player.InputKeyMove();
-                        }
-                        break;
+                    case Keys.W: _game.Player.KeyForward(false); break;
+                    case Keys.A: _game.Player.KeyStrafeLeft(false); break;
+                    case Keys.D: _game.Player.KeyStrafeRight(false); break;
+                    case Keys.S: _game.Player.KeyBack(false); break;
+                    case Keys.Space: _game.Player.KeyJump(false); break;
+                    case Keys.ShiftKey: _game.Player.KeySneak(false); break;
+                    case Keys.ControlKey: _game.Player.KeySprinting(false); break;
                 }
             }
         }

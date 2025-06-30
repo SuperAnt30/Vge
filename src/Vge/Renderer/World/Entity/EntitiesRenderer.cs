@@ -1,6 +1,5 @@
-﻿using System;
-using Vge.Entity;
-using Vge.Entity.Particle;
+﻿using Vge.Entity;
+using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -173,7 +172,7 @@ namespace Vge.Renderer.World.Entity
         public void DrawOwner(float timeIndex)
         {
             // Параметрв шейдоров
-            if (!_game.Player.ViewCameraEye)
+            if (_game.Player.ViewCamera != EnumViewCamera.Eye)
             {
                 Render.ShEntity.Bind(gl);
                 Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Event;
@@ -11,6 +12,7 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Entity.Player
@@ -69,9 +71,9 @@ namespace Vge.Entity.Player
         public Vector3i PositionAlphaBlock { get; private set; }
 
         /// <summary>
-        /// Вид камеры с глаз
+        /// Вид камеры
         /// </summary>
-        public bool ViewCameraEye { get; private set; } = true;
+        public EnumViewCamera ViewCamera { get; private set; } = EnumViewCamera.Eye;
 
         /// <summary>
         /// Обект перемещений
@@ -175,6 +177,109 @@ namespace Vge.Entity.Player
         #region Inputs (Mouse Key)
 
         /// <summary>
+        /// Нажата или отпущена клавиша идти вперёд
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeyForward(bool value)
+        {
+            Movement.Forward = value;
+            if (value && Movement.Back)
+            {
+                // Отмена идти назад если зажаты две клавиши
+                Movement.Back = false;
+            }
+            else if (!value && Movement.Sprinting)
+            {
+                // Отменить ускорение если оно было
+                Movement.Sprinting = false;
+            }
+            Movement.MovingChanged();
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша идти назад
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeyBack(bool value)
+        {
+            Movement.Back = value;
+            if (value && Movement.Forward)
+            {
+                // Отмена идти вперёд если зажаты две клавиши
+                Movement.Forward = false;
+                if (Movement.Sprinting)
+                {
+                    // Отменить ускорение если оно было
+                    Movement.Sprinting = false;
+                }
+            }
+            Movement.MovingChanged();
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша шаг влево
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeyStrafeLeft(bool value)
+        {
+            Movement.StrafeLeft = value;
+            if (value && Movement.StrafeRight)
+            {
+                // Отмена шага вправо если зажаты две клавиши
+                Movement.StrafeRight = false;
+            }
+            Movement.MovingChanged();
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша шаг вправо
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeyStrafeRight(bool value)
+        {
+            Movement.StrafeRight = value;
+            if (value && Movement.StrafeLeft)
+            {
+                // Отмена шага влево если зажаты две клавиши
+                Movement.StrafeLeft = false;
+            }
+            Movement.MovingChanged();
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша прыжка или движение вверх
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeyJump(bool value)
+        {
+            Movement.Jump = value;
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша присесть или движение вниз
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeySneak(bool value)
+        {
+            Movement.Sneak = value;
+            Movement.MovingChanged();
+            Physics.AwakenPhysics();
+        }
+        /// <summary>
+        /// Нажата или отпущена клавиша ускорения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void KeySprinting(bool value)
+        {
+            if (value || (!value && !Movement.Forward))
+            {
+                Movement.Sprinting = value;
+                Movement.MovingChanged();
+                Physics.AwakenPhysics();
+            }
+        }
+
+        /// <summary>
         /// Двойной клик пробела
         /// </summary>
         public void KeyDoubleClickSpace()
@@ -217,7 +322,7 @@ namespace Vge.Entity.Player
         public void ActionStop()
         {
             Movement.SetStop();
-            InputKeyMove();
+            Physics.AwakenPhysics();
             if (!_game.IsRunNet())
             {
                 PosFrameX = PosPrevX = PosX;
@@ -289,12 +394,15 @@ namespace Vge.Entity.Player
         #region FrustumCulling Camera
 
         /// <summary>
-        /// Задать вид камеры, true - с глаз
+        /// Следующий вид камеры
         /// </summary>
-        public void SetViewCameraEye(bool value)
+        public void ViewCameraNext()
         {
-            ViewCameraEye = value;
-            _CameraHasBeenChanged();
+            int count = Enum.GetValues(typeof(EnumViewCamera)).Length - 1;
+            int value = (int)ViewCamera;
+            value++;
+            if (value > count) value = 0;
+            ViewCamera = (EnumViewCamera)value;
         }
 
         /// <summary>
@@ -316,13 +424,25 @@ namespace Vge.Entity.Player
             Vector3 pos = new Vector3(0, _eyeFrame, 0);
             _rayLook = front;
 
-            if (!ViewCameraEye)
+            if (ViewCamera == EnumViewCamera.Back)
             {
-                pos -= front * 4; // 5
-                //Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
-                //Vector3 right = Glm.Cross(front2, up);
-                //pos += right * 2;
+                // вид сзади
+                pos = _GetPositionCamera(pos, front * -1f, 4); // 8
             }
+            else if (ViewCamera == EnumViewCamera.Front)
+            {
+                // вид спереди
+                pos = _GetPositionCamera(pos, front, 4); // 8
+                front *= -1f;
+            }
+            
+            //if (!ViewCameraEye)
+            //{
+            //    pos -= front * 4; // 5
+            //    //Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
+            //    //Vector3 right = Glm.Cross(front2, up);
+            //    //pos += right * 2;
+            //}
             //else
             //{
             //    Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
@@ -335,6 +455,23 @@ namespace Vge.Entity.Player
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(View);
+        }
+
+        /// <summary>
+        /// Определить положение камеры, при виде сзади и спереди, проверка RayCast
+        /// </summary>
+        /// <param name="pos">позиция глаз</param>
+        /// <param name="vec">направляющий вектор к расположению камеры</param>
+        private Vector3 _GetPositionCamera(Vector3 pos, Vector3 vec, float dis)
+        {
+            return pos + vec * dis;
+            //Vector3 offset = ClientWorld.RenderEntityManager.CameraOffset;
+            //if (IsSpectator())
+            //{
+            //    return pos + vec * dis;
+            //}
+            //MovingObjectPosition moving = World.RayCastBlock(pos + offset, vec, dis, true);
+            //return pos + vec * (moving.IsBlock() ? glm.distance(pos, moving.RayHit + new vec3(moving.Norm) * .5f - offset) : dis);
         }
 
         /// <summary>
@@ -500,14 +637,6 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
-        /// Нажатие или отпускание инпута управления
-        /// </summary>
-        public void InputKeyMove()
-        {
-            Physics.AwakenPhysics();
-        }
-
-        /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
@@ -540,7 +669,6 @@ namespace Vge.Entity.Player
                 if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
                 {
                     RotationPrevYaw = RotationYaw;
-                    
                     RotationPrevPitch = RotationPitch;
 
                     RotationPitch += RotationPitchBiasInput;
@@ -586,6 +714,18 @@ namespace Vge.Entity.Player
             // Поворот тела от поворота головы или движения
             _RotationBody();
 
+            // Подготовка анимационных триггеров
+            if (Movement.PrepareDataForDistinction())
+            {
+                // Отправить анимацию
+                _game.TrancivePacket(new PacketC0APlayerAnimation(Movement.GetMoving()));
+                // Задать анимацию
+                Render.Trigger.SetAnimation(Movement.GetMoving());
+
+                // Зачистить
+                Movement.UpdateAfter();
+            }
+
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)
             {
@@ -597,7 +737,7 @@ namespace Vge.Entity.Player
 
             // Проверка на обновление чанков альфа блоков, в такте после перемещения
             _UpdateChunkRenderAlphe();
-
+            
             Render.UpdateClient(world, deltaTime);
         }
 

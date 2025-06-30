@@ -116,7 +116,6 @@ namespace Vge.Entity
                     foreach (JsonKeyValue json in state.Items)
                     {
                         if (json.IsKey(Cte.Pitch)) _nameBonePitch = json.GetString();
-                        //if (json.IsKey(Cte.IsAnimations)) IsAnimation = json.GetBool();
                         if (json.IsKey(Cte.Animations))
                         {
                             IsAnimation = true;
@@ -149,7 +148,10 @@ namespace Vge.Entity
         {
             ReadStateFromJson(state);
 
-            ModelEntityDefinition definition = new ModelEntityDefinition(Alias, _nameBonePitch);
+            float scale = state.GetFloat(Cte.Scale);
+            if (scale == 0) scale = 1;
+
+            ModelEntityDefinition definition = new ModelEntityDefinition(Alias, scale, _nameBonePitch);
             definition.RunModelFromJson(model, IsAnimation);
 
             BufferMesh = definition.BufferMesh;
@@ -179,7 +181,7 @@ namespace Vge.Entity
                     animations[i].GetString(Cte.Name),
                     animations[i].GetInt(Cte.TimeMixBegin),
                     animations[i].GetInt(Cte.TimeMixEnd),
-                    animations[i].GetFloat(Cte.Speed)
+                    animations[i].GetFloat(Cte.AnimationSpeed)
                 );
             }
         }

@@ -416,9 +416,7 @@ namespace Vge.Entity.Player
         /// Пакет: анимации игрока
         /// </summary>
         public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
-        {
-            //packet.Animation
-        }
+            => GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
 
         /// <summary>
         /// Пакет: Параметры игрока
