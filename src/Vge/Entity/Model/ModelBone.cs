@@ -13,15 +13,16 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly List<ModelElement> Children = new List<ModelElement>();
 
-        public ModelBone(string uuid, string name, float scale, byte boneIndex) : base(uuid, name, scale)
+        public ModelBone(string uuid, string name, byte boneIndex) : base(uuid, name)
             => BoneIndex = boneIndex;
 
         /// <summary>
         /// Создать кость
         /// </summary>
         /// <param name="nameBonePitch">Название кости меняющее от Pitch</param>
-        public Bone CreateBone(string nameBonePitch, byte parentIndex)
+        public Bone CreateBone(string nameBonePitch, byte parentIndex, float scale)
             => new Bone(parentIndex, Name.Equals(nameBonePitch),
-                RotationX, RotationY, RotationZ, OriginX, OriginY, OriginZ, Children.Count);
+                RotationX, RotationY, RotationZ, 
+                OriginX * scale, OriginY * scale, OriginZ * scale, Children.Count);
     }
 }

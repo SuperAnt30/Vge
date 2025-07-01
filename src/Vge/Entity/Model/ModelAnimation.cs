@@ -22,15 +22,20 @@ namespace Vge.Entity.Model
         /// </summary>
         private readonly ModelLoop _loop;
         /// <summary>
+        /// Время микса в милисекундах
+        /// </summary>
+        private readonly int _timeMix;
+        /// <summary>
         /// Анимация кости
         /// </summary>
         private readonly List<AnimationBone> _bones = new List<AnimationBone>();
 
-        public ModelAnimation(string name, ModelLoop loop, float length)
+        public ModelAnimation(string name, ModelLoop loop, float length, int timeMix)
         {
             Name = name;
             _loop = loop;
             _length = length;
+            _timeMix = timeMix;
         }
 
         public void BoneAdd(AnimationBone bone) => _bones.Add(bone);
@@ -39,9 +44,9 @@ namespace Vge.Entity.Model
         /// Создать модель отдельного анимационного клипа
         /// </summary>
         /// <param name="amountBoneIndex">Количество костей</param>
-        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, AnimationData animationData)
-            => new ModelAnimationClip(Name, _loop, _length * 1000f,
-                animationData, _GetBoneAnimationClip(amountBoneIndex));
+        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, float speed)
+            => new ModelAnimationClip(Name, _loop, _length * 1000f, _timeMix,
+                speed, _GetBoneAnimationClip(amountBoneIndex));
 
         /// <summary>
         /// Сгенерировать cписки ключевых кадров для каждой кости скелета

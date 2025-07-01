@@ -140,7 +140,7 @@ namespace Vge.Entity
         /// <param name="packet">пакет</param>
         public void SendToAllTrackingEntity(EntityBase entity, IPacket packet)
         {
-            EntityTracker entityTracker = _trackedEntities.Get(entity.Id) as EntityTracker;
+            EntityTracker entityTracker = _trackedEntities.Get(entity.Id);
             if (entityTracker != null)
             {
                 entityTracker.SendPacketPlayers(packet);

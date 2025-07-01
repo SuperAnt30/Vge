@@ -1,19 +1,17 @@
 {
-    Pitch: "Head",
+    #Pitch: "Head",
     #Scale: 1.9375,
-    Scale: 0.929,
+    #Scale: 0.929,
+    Scale: .75,
     Model: "Robinson",
     Animations: [
         { 
             Name: "Idle",
-            TimeMixBegin: 150,
-            TimeMixEnd: 150,
+            AnimationSpeed: 0.3,
             Trigger: "Idle"
         },
         {
             Name: "Walk",
-            TimeMixBegin: 150,
-            TimeMixEnd: 250,
             AnimationSpeed: 1.7,
             Trigger: "Forward"
         },

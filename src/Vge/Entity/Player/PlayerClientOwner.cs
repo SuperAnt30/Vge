@@ -12,7 +12,6 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Entity.Player

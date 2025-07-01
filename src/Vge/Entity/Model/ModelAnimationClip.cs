@@ -37,13 +37,12 @@ namespace Vge.Entity.Animation
         public readonly BoneAnimationChannel[] Bones;
 
         public ModelAnimationClip(string name, ModelLoop loop, float duration,
-            AnimationData animationData, BoneAnimationChannel[] bones)
+            int timeMix, float speed, BoneAnimationChannel[] bones)
         {
             Name = name;
             Loop = loop;
-            TimeMixBegin = animationData.TimeMixBegin;
-            TimeMixEnd = animationData.TimeMixEnd;
-            Speed = animationData.Speed;
+            TimeMixEnd = TimeMixBegin = timeMix;
+            Speed = speed;
             Duration = duration;
             Bones = bones;
         }

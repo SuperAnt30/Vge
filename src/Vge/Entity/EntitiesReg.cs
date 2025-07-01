@@ -24,13 +24,22 @@ namespace Vge.Entity
         /// </summary>
         public static readonly EntitiesRegTable Table = new EntitiesRegTable();
         /// <summary>
-        /// Справочник всех моделей
-        /// </summary>
-        public static readonly Dictionary<string, JsonCompound> Models = new Dictionary<string, JsonCompound>();
-        /// <summary>
         /// Текстурный менеджер
         /// </summary>
-        public static readonly EntityTextureManager TextureManager = new EntityTextureManager(Table);
+        public static readonly EntityTextureManager TextureManager = new EntityTextureManager();
+        /// <summary>
+        /// Список всех форм
+        /// </summary>
+        public static readonly List<ShapeEntity> Shapes = new List<ShapeEntity>();
+
+        /// <summary>
+        /// Справочник всех моделей
+        /// </summary>
+        private static readonly Dictionary<string, JsonCompound> _jsonModels = new Dictionary<string, JsonCompound>();
+        /// <summary>
+        /// Справочник всех моделей
+        /// </summary>
+        private static readonly Dictionary<string, ShapeEntity> _shapes = new Dictionary<string, ShapeEntity>();
 
         /// <summary>
         /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
@@ -53,6 +62,7 @@ namespace Vge.Entity
         {
             // Очистить таблицы и вспомогательные данные json
             _Clear();
+            Shapes.Clear();
             // Регистрация обязательных сущностей
             RegisterModelEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
             // Отладочный
@@ -71,6 +81,11 @@ namespace Vge.Entity
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
+            // Очистить вспомогательные объекты в момент загрузки
+            foreach (ShapeEntity shapeEntity in Shapes)
+            {
+                shapeEntity.ClearDefinition();
+            }
         }
 
         /// <summary>
@@ -80,7 +95,8 @@ namespace Vge.Entity
         {
             // Очистить массивы регистрации
             Table.Clear();
-            Models.Clear();
+            _jsonModels.Clear();
+            _shapes.Clear();
         }
 
         /// <summary>
@@ -92,8 +108,7 @@ namespace Vge.Entity
             
             if (jsonRead.IsThereFile)
             {
-                ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType);
-
+                ShapeEntity shape = null;
                 if (FlagRender)
                 {
                     string modelFile = jsonRead.Compound.GetString(Cte.Model);
@@ -102,13 +117,25 @@ namespace Vge.Entity
                         // Отсутствует модель в файле json сущности
                         throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
                     }
-                    JsonCompound model = _GetModel(modelFile);
-                    modelEntity.ReadStateFromJson(jsonRead.Compound, model);
+                    if (_shapes.ContainsKey(modelFile))
+                    {
+                        shape = _shapes[modelFile];
+                    }
+                    else
+                    {
+                        shape = new ShapeEntity((ushort)Shapes.Count, modelFile, _GetModel(modelFile));
+                        _shapes.Add(modelFile, shape);
+                        Shapes.Add(shape);
+                    }
                 }
-                else
+
+                ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType, shape.Index);
+                modelEntity.ReadStateFromJson(jsonRead.Compound);
+                if (FlagRender)
                 {
-                    modelEntity.ReadStateFromJson(jsonRead.Compound);
+                    modelEntity.ReadStateClientFromJson(jsonRead.Compound);
                 }
+
                 Table.Add(alias, modelEntity);
             }
             else
@@ -123,15 +150,15 @@ namespace Vge.Entity
         /// </summary>
         private static JsonCompound _GetModel(string name)
         {
-            if (Models.ContainsKey(name))
+            if (_jsonModels.ContainsKey(name))
             {
-                return Models[name];
+                return _jsonModels[name];
             }
             // Добавляем фигуру
             JsonRead jsonRead = new JsonRead(Options.PathModelEntities + name + ".bbmodel");
             if (jsonRead.IsThereFile)
             {
-                Models.Add(name, jsonRead.Compound);
+                _jsonModels.Add(name, jsonRead.Compound);
                 return jsonRead.Compound;
             }
             // Отсутствует файл модели сущности

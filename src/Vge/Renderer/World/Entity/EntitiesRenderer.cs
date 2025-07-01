@@ -73,21 +73,26 @@ namespace Vge.Renderer.World.Entity
                 (uint)Gi.ActiveTextureSamplerBig);
             
             // TODO::2025-05-14 Из-за Texture ещё не готов модуль
+            int count = EntitiesReg.Shapes.Count;
+            ShapeEntity resourcesEntityModel;
+            for (int i = 0; i < count; i++)
+            {
+                resourcesEntityModel = EntitiesReg.Shapes[i];
+                for (int t = 0; t < resourcesEntityModel.Textures.Length; t++)
+                {
+                    Render.Texture.SetImageTexture2dArray(resourcesEntityModel.Textures[t], resourcesEntityModel.DepthTextures[t],
+                        resourcesEntityModel.TextureSmall ? _idTextureSmall : _idTextureBig,
+                        (uint)(resourcesEntityModel.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
+                }
+            }
 
-            int count = Ce.Entities.Count;
+            count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
 
             ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)
             {
                 resourcesEntity = Ce.Entities.GetModelEntity(id);
-                
-                for (int t = 0; t < resourcesEntity.Textures.Length; t++)
-                {
-                    Render.Texture.SetImageTexture2dArray(resourcesEntity.Textures[t], resourcesEntity.DepthTextures[t],
-                        resourcesEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
-                        (uint)(resourcesEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
-                }
                 _entityRender[id] = new EntityRender(gl, Render, resourcesEntity, _game.Player);
             }
         }

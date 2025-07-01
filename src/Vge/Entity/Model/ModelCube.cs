@@ -52,7 +52,7 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly int Height;
         
-        public ModelCube(string uuid, string name, int width, int height, float scale) : base(uuid, name, scale)
+        public ModelCube(string uuid, string name, int width, int height) : base(uuid, name)
         {
             Width = width;
             Height = height;
@@ -63,13 +63,13 @@ namespace Vge.Entity.Model
         /// </summary>
         public void SetPosition(float[] from, float[] to)
         {
-            FromX = from[0] * Scale;
-            FromY = from[1] * Scale;
-            FromZ = from[2] * Scale;
+            FromX = from[0];
+            FromY = from[1];
+            FromZ = from[2];
 
-            ToX = to[0] * Scale;
-            ToY = to[1] * Scale;
-            ToZ = to[2] * Scale;
+            ToX = to[0];
+            ToY = to[1];
+            ToZ = to[2];
         }
 
         /// <summary>

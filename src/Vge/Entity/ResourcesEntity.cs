@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
 using Vge.Json;
-using Vge.Util;
 
 namespace Vge.Entity
 {
     /// <summary>
-    /// Ресурсы сущности, покуда для клиента и сервера, надо продумать как разделить
-    /// На сервере будет упрощённая
+    /// Ресурсы сущности, нужны везде, но форма только на клиенте
     /// </summary>
     public class ResourcesEntity
     {
@@ -17,7 +16,7 @@ namespace Vge.Entity
         /// </summary>
         public ushort IndexEntity { get; private set; }
         /// <summary>
-        /// Название модели
+        /// Название сущности
         /// </summary>
         public readonly string Alias;
         /// <summary>
@@ -25,17 +24,10 @@ namespace Vge.Entity
         /// </summary>
         public readonly Type EntityType;
         /// <summary>
-        /// Буфер сетки моба, для рендера
+        /// Индекс формы
         /// </summary>
-        public float[] BufferMesh { get; private set; }
-        /// <summary>
-        /// Текстуры для моба
-        /// </summary>
-        public BufferedImage[] Textures { get; private set; }
-        /// <summary>
-        /// Индекс глубины текстуры для моба
-        /// </summary>
-        public int[] DepthTextures { get; private set; }
+        public readonly ushort IndexShape;
+
         /// <summary>
         /// Имеется ли анимация
         /// </summary>
@@ -49,59 +41,28 @@ namespace Vge.Entity
         /// </summary>
         public ModelAnimationClip[] ModelAnimationClips { get; private set; }
         /// <summary>
-        /// Минимальная текстура
+        /// Буфер сетки моба по умолчанию, для рендера
         /// </summary>
-        public bool TextureSmall { get; private set; } = true;
+        public float[] BufferMesh { get; private set; }
 
-        /// <summary>
-        /// Название кости меняющее от Pitch
-        /// </summary>
-        private string _nameBonePitch;
-        /// <summary>
-        /// Массив данных анимации
-        /// </summary>
-        private AnimationData[] _animationDatas;
-
-        public ResourcesEntity(string alias, Type entityType)
+        public ResourcesEntity(string alias, Type entityType, ushort indexShape)
         {
             Alias = alias;
             EntityType = entityType;
+            IndexShape = indexShape;
         }
 
         /// <summary>
         /// Задать индекс сущности, из таблицы
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetIndex(ushort id) => IndexEntity = id;
 
         /// <summary>
-        /// Пометить модель в максимальную группу текстур
+        /// Получить объект формы
         /// </summary>
-        public void TextureGroupBig() => TextureSmall = false;
-
-        /// <summary>
-        /// Корректировка размера ширины текстуры, в буффере UV
-        /// </summary>
-        public void SizeAdjustmentTextureWidth(float coef)
-        {
-            // XYZ UV B - 6 флоатов на вершину
-            for(int i = 3; i < BufferMesh.Length; i += 6)
-            {
-                BufferMesh[i] *= coef;
-            }
-        }
-        /// <summary>
-        /// Корректировка размера высоты текстуры, в буффере UV
-        /// </summary>
-        public void SizeAdjustmentTextureHeight(float coef)
-        {
-            // XYZ UV B - 6 флоатов на вершину
-            for (int i = 4; i < BufferMesh.Length; i += 6)
-            {
-                BufferMesh[i] *= coef;
-            }
-        }
-
-        #region Методы для импорта данных с json
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ShapeEntity GetShape() => EntitiesReg.Shapes[IndexShape];
 
         /// <summary>
         /// Прочесть состояние из Json формы
@@ -113,26 +74,19 @@ namespace Vge.Entity
                 try
                 {
                     // Статы
-                    foreach (JsonKeyValue json in state.Items)
-                    {
-                        if (json.IsKey(Cte.Pitch)) _nameBonePitch = json.GetString();
-                        if (json.IsKey(Cte.Animations))
-                        {
-                            IsAnimation = true;
-                            _Animations(json.GetArray().ToArrayObject());
-                        }
-                        //if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
-                        //if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
-                        //if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
-                        //if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
-                        //if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
-                        //if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
-                        //if (json.IsKey(Ctb.Color))
-                        //{
-                        //    float[] ar = json.GetArray().ToArrayFloat();
-                        //    Color = new Vector3(ar[0], ar[1], ar[2]);
-                        //}
-                    }
+                    //foreach (JsonKeyValue json in state.Items)
+                    //{
+                    //    //if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
+                    //    //if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
+                    //    //if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
+                    //    //if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
+                    //    //if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
+                    //    //if (json.IsKey(Ctb.Color))
+                    //    //{
+                    //    //    float[] ar = json.GetArray().ToArrayFloat();
+                    //    //    Color = new Vector3(ar[0], ar[1], ar[2]);
+                    //    //}
+                    //}
                 }
                 catch
                 {
@@ -142,54 +96,57 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Прочесть состояние из Json формы и модель
+        /// Прочесть состояние для клиента из Json формы
         /// </summary>
-        public void ReadStateFromJson(JsonCompound state, JsonCompound model)
+        public void ReadStateClientFromJson(JsonCompound state)
         {
-            ReadStateFromJson(state);
+            float scale = 1;
+            // Массив данных анимации
+            AnimationData[] animationDatas = new AnimationData[0];
+            if (state.Items != null)
+            {
+                try
+                {
+                    // Статы
+                    foreach (JsonKeyValue json in state.Items)
+                    {
+                        if (json.IsKey(Cte.Animations))
+                        {
+                            IsAnimation = true;
+                            // Собираем анимации в статах
+                            JsonCompound[] animations = json.GetArray().ToArrayObject();
+                            animationDatas = new AnimationData[animations.Length];
+                            for (int i = 0; i < animations.Length; i++)
+                            {
+                                animationDatas[i] = new AnimationData(
+                                    animations[i].GetString(Cte.Name),
+                                    animations[i].GetFloat(Cte.AnimationSpeed)
+                                );
+                            }
+                        }
+                        if (json.IsKey(Cte.Scale))
+                        {
+                            scale = json.GetFloat();
+                            if (scale == 0) scale = 1;
+                        }
+                    }
+                }
+                catch
+                {
+                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonEntityStat, Alias));
+                }
+            }
 
-            float scale = state.GetFloat(Cte.Scale);
-            if (scale == 0) scale = 1;
-
-            ModelEntityDefinition definition = new ModelEntityDefinition(Alias, scale, _nameBonePitch);
-            definition.RunModelFromJson(model, IsAnimation);
-
-            BufferMesh = definition.BufferMesh;
-            Textures = definition.Textures;
+            // Копия буффера
+            BufferMesh = GetShape().CopyBufferMesh(scale);
             if (IsAnimation)
             {
                 // Если только есть анимация, нужны кости и клипы
-                Bones = definition.GenBones();
-                ModelAnimationClips = definition.GetModelAnimationClips(_animationDatas);
-                _animationDatas = null;
-            }
-
-            DepthTextures = new int[Textures.Length];
-
-            return;
-        }
-
-        /// <summary>
-        /// Собираем анимации в статах
-        /// </summary>
-        private void _Animations(JsonCompound[] animations)
-        {
-            _animationDatas = new AnimationData[animations.Length];
-            for (int i = 0; i < animations.Length; i++)
-            {
-                _animationDatas[i] = new AnimationData(
-                    animations[i].GetString(Cte.Name),
-                    animations[i].GetInt(Cte.TimeMixBegin),
-                    animations[i].GetInt(Cte.TimeMixEnd),
-                    animations[i].GetFloat(Cte.AnimationSpeed)
-                );
+                Bones = GetShape().GenBones(scale);
+                ModelAnimationClips = GetShape().GetModelAnimationClips(animationDatas);
             }
         }
 
-        #endregion
-
-        public override string ToString() => Alias + " " 
-            + (TextureSmall ? "Small" : "Big") + " " 
-            + (Textures.Length == 0 ? "" : (Textures[0].Width + ":" + Textures[0].Height));
+        public override string ToString() => Alias + " IndexShape:" + IndexShape;
     }
 }

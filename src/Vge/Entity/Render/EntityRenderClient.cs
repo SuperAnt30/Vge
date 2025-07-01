@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
@@ -212,11 +210,10 @@ namespace Vge.Entity.Render
             float ppfy = entityRender.Player.PosFrameY;
             float ppfz = entityRender.Player.PosFrameZ;
 
-            
-
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
-                _resourcesEntity.DepthTextures[0], (_resourcesEntity.TextureSmall ? 0 : 1) + (anim ? 2 : 0),
+                _resourcesEntity.GetShape().DepthTextures[1], 
+                (_resourcesEntity.GetShape().TextureSmall ? 0 : 1) + (anim ? 2 : 0),
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,

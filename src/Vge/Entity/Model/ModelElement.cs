@@ -14,10 +14,6 @@
         /// </summary>
         public readonly string Name;
         /// <summary>
-        /// Масштаб
-        /// </summary>
-        public readonly float Scale;
-        /// <summary>
         /// Индекс кости
         /// </summary>
         public byte BoneIndex;
@@ -48,11 +44,10 @@
         /// </summary>
         public float OriginZ;
 
-        public ModelElement(string uuid, string name, float scale)
+        public ModelElement(string uuid, string name)
         {
             Uuid = uuid;
             Name = name;
-            Scale = scale;
         }
 
         /// <summary>
@@ -64,9 +59,9 @@
             RotationY = rotation[1];
             RotationZ = rotation[2];
 
-            OriginX = origin[0] * Scale;
-            OriginY = origin[1] * Scale;
-            OriginZ = origin[2] * Scale;
+            OriginX = origin[0];
+            OriginY = origin[1];
+            OriginZ = origin[2];
         }
 
         public override string ToString() => BoneIndex + " " + Name + " " + Uuid;

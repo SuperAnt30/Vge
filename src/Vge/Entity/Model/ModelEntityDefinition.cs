@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Vge.Entity.Animation;
 using Vge.Json;
 using Vge.Util;
@@ -26,13 +25,9 @@ namespace Vge.Entity.Model
         /// </summary>
         private readonly string _alias;
         /// <summary>
-        /// Масштаб
-        /// </summary>
-        private readonly float _scale;
-        /// <summary>
         /// Название кости меняющее от Pitch
         /// </summary>
-        private readonly string _nameBonePitch;
+        private const string _nameBonePitch = "Head";
         /// <summary>
         /// Список кубов
         /// </summary>
@@ -76,17 +71,15 @@ namespace Vge.Entity.Model
         /// </summary>
         private int _height;
 
-        public ModelEntityDefinition(string alias, float scale, string nameBonePitch)
+        public ModelEntityDefinition(string alias)
         {
             _alias = alias;
-            _scale = scale;
-            _nameBonePitch = nameBonePitch;
         }
 
         /// <summary>
         /// Запуск определения модели
         /// </summary>
-        public void RunModelFromJson(JsonCompound model, bool isAnimation)
+        public void RunModelFromJson(JsonCompound model)
         {
             try
             {
@@ -121,11 +114,8 @@ namespace Vge.Entity.Model
                 _ClearCubeBone(_bones);
 
                 // Анимация
-                if (isAnimation)
-                {
-                    _log = Cte.Animations;
-                    _Animations(model.GetArray(Cte.Animations).ToArrayObject());
-                }
+                _log = Cte.Animations;
+                _Animations(model.GetArray(Cte.Animations).ToArrayObject());
 
                 // Сортируем кубы как в Blockbench
                 ModelCube[] cubes = new ModelCube[_cubes.Count];
@@ -185,7 +175,7 @@ namespace Vge.Entity.Model
                 {
                     _log = "CubeNameUuid";
                     ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
-                        elements[i].GetString(Cte.Name), _width, _height, _scale);
+                        elements[i].GetString(Cte.Name), _width, _height);
 
                     _log = "CubeFromTo";
                     cube.SetPosition(
@@ -224,6 +214,7 @@ namespace Vge.Entity.Model
                     cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
                         faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
 
+                    //if (cube.Name != "armLeft") 
                     _cubes.Add(cube);
                 }
             }
@@ -257,7 +248,7 @@ namespace Vge.Entity.Model
                     {
                         _log = "BoneNameUuid";
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
-                            compound.GetString(Cte.Name), _scale, _amountBoneIndex++);
+                            compound.GetString(Cte.Name), _amountBoneIndex++);
 
                         if (compound.IsKey(Cte.Origin))
                         {
@@ -333,25 +324,26 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Сгенерировать массив костей
         /// </summary>
-        public Bone[] GenBones()
+        public Bone[] GenBones(float scale)
         {
             // Массив костей
             Bone[] resultBones = new Bone[_amountBoneIndex];
-            _ConvertTreeBones(resultBones, _bones, Bone.RootBoneParentIndex);
+            _ConvertTreeBones(resultBones, _bones, Bone.RootBoneParentIndex, scale);
             return resultBones;
         }
 
         /// <summary>
         /// Конверт в древо костей сущности для игры
         /// </summary>
-        private void _ConvertTreeBones(Bone[] resultBones, List<ModelElement> modelBones, byte parentIndex)
+        private void _ConvertTreeBones(Bone[] resultBones, List<ModelElement> modelBones, 
+            byte parentIndex, float scale)
         {
             for (int i = 0; i < modelBones.Count; i++)
             {
                 if (modelBones[i] is ModelBone modelBone)
                 {
-                    _ConvertTreeBones(resultBones, modelBone.Children, modelBone.BoneIndex);
-                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBonePitch, parentIndex);
+                    _ConvertTreeBones(resultBones, modelBone.Children, modelBone.BoneIndex, scale);
+                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBonePitch, parentIndex, scale);
                 }
             }
         }
@@ -371,8 +363,10 @@ namespace Vge.Entity.Model
                     animations[i].GetString(Cte.Name),
                     sLoop.Equals(Cte.Once) ? ModelLoop.Once
                     : sLoop.Equals(Cte.Hold) ? ModelLoop.Hold : ModelLoop.Loop,
-                    animations[i].GetFloat(Cte.Length)
-                );
+                    animations[i].GetFloat(Cte.Length),
+                    animations[i].GetInt(Cte.StartDelay)
+                    
+               );
 
                 // Массив элементов анимаций
                 _log = Cte.Animators;
@@ -414,9 +408,9 @@ namespace Vge.Entity.Model
                         bone.Frames.Add(new ModelAnimation.KeyFrames(
                             keyframes[j].GetString(Cte.Channel).Equals("rotation"),
                             keyframes[j].GetFloat(Cte.Time),
-                            pos.GetFloat(Cte.X) * _scale,
-                            pos.GetFloat(Cte.Y) * _scale,
-                            pos.GetFloat(Cte.Z) * _scale
+                            pos.GetFloat(Cte.X),
+                            pos.GetFloat(Cte.Y),
+                            pos.GetFloat(Cte.Z)
                         ));
                     }
                     animation.BoneAdd(bone);
@@ -442,7 +436,7 @@ namespace Vge.Entity.Model
                 {
                     if (animationData.Name.Equals(_animations[i2].Name))
                     {
-                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData));
+                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData.Speed));
                     }
                 }
             }

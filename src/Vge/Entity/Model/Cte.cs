@@ -9,10 +9,6 @@
         #region Entity
 
         /// <summary>
-        /// Название кости которая реагирует на угол Pitch. (string)
-        /// </summary>
-        public const string Pitch = "Pitch";
-        /// <summary>
         /// Объект фигуры. (string)
         /// </summary>
         public const string Model = "Model";
@@ -20,14 +16,6 @@
         /// Масштаб. (float)
         /// </summary>
         public const string Scale = "Scale";
-        /// <summary>
-        /// Начальное время микса в милисекундах. (int)
-        /// </summary>
-        public const string TimeMixBegin = "TimeMixBegin";
-        /// <summary>
-        /// Конечное время микса в милисекундах. (int)
-        /// </summary>
-        public const string TimeMixEnd = "TimeMixEnd";
         /// <summary>
         /// Скорость анимации. (float)
         /// </summary>
@@ -180,6 +168,10 @@
         /// Длинна ролика. (float)
         /// </summary>
         public const string Length = "length";
+        /// <summary>
+        /// Начальное и конечное время в мс для микса. (string) но в реале цифра int
+        /// </summary>
+        public const string StartDelay = "start_delay";
         /// <summary>
         /// Аниматор костей. ({})
         /// </summary>
