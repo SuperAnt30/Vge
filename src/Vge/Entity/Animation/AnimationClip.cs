@@ -74,7 +74,7 @@ namespace Vge.Entity.Animation
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsStoped() 
-            => _stopTime != 0 && _modelClip.TimeMixEnd <= _currentTimeFull - _stopTime;
+            => _stopTime != 0 && _modelClip.TimeMix <= _currentTimeFull - _stopTime;
         /// <summary>
         /// Начинаем остановку клипа
         /// </summary>
@@ -87,13 +87,16 @@ namespace Vge.Entity.Animation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCoefMix()
         {
-            if (_modelClip.TimeMixBegin != 0 && _modelClip.TimeMixBegin > _currentTimeFull)
+            if (_modelClip.TimeMix != 0)
             {
-                return _currentTimeFull / _modelClip.TimeMixBegin;
-            }
-            if (_modelClip.TimeMixEnd != 0 && _stopTime != 0)
-            {
-                return 1f - (_currentTimeFull - _stopTime) / _modelClip.TimeMixEnd;
+                if (_modelClip.TimeMix > _currentTimeFull)
+                {
+                    return _currentTimeFull / _modelClip.TimeMix;
+                }
+                if (_stopTime != 0)
+                {
+                    return 1f - (_currentTimeFull - _stopTime) / _modelClip.TimeMix;
+                }
             }
             return 1f;
         }

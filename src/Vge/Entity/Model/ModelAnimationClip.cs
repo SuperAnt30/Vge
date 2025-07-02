@@ -20,13 +20,9 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly float Duration;
         /// <summary>
-        /// Начальное время микса в милисекундах
+        /// Время микса в милисекундах
         /// </summary>
-        public readonly int TimeMixBegin;
-        /// <summary>
-        /// Конечное время микса в милисекундах
-        /// </summary>
-        public readonly int TimeMixEnd;
+        public readonly int TimeMix;
         /// <summary>
         /// Скорость клипа, 1 норма
         /// </summary>
@@ -41,7 +37,7 @@ namespace Vge.Entity.Animation
         {
             Name = name;
             Loop = loop;
-            TimeMixEnd = TimeMixBegin = timeMix;
+            TimeMix = timeMix;
             Speed = speed;
             Duration = duration;
             Bones = bones;

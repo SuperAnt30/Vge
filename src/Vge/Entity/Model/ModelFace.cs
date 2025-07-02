@@ -43,7 +43,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Сгенерировать буффер
         /// </summary>
-        public void GenBuffer(List<float> buffer, ModelCube modelCube)
+        public void GenBuffer(List<float> bufferFloat, List<int> bufferInt, ModelCube modelCube)
         {
             if (!Empty)
             {
@@ -123,11 +123,11 @@ namespace Vge.Entity.Model
                 // Формируем буфер
                 for (int i = 0; i < 4; i++)
                 {
-                    buffer.AddRange(new float[] {
+                    bufferFloat.AddRange(new float[] {
                         Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
-                        Vertex[i].U, Vertex[i].V,
-                        modelCube.BoneIndex
+                        Vertex[i].U, Vertex[i].V
                     });
+                    bufferInt.AddRange(new int[] { modelCube.BoneIndex, 0 });
                 }
             }
         }

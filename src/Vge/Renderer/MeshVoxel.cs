@@ -42,62 +42,31 @@ namespace Vge.Renderer
             _vboByte = id[1];
         }
 
-        //protected override void _InitEbo() { }
-
-        ///// <summary>
-        ///// Прорисовать меш с треугольными полигонами через EBO
-        ///// </summary>
-        //public override void Draw()
-        //{
-        //    if (_countVertices > 0)
-        //    {
-        //        Debug.MeshCount++;
-        //        _gl.BindVertexArray(_vao);
-        //        _gl.DrawArrays(GL.GL_TRIANGLES, 0, _countVertices);
-        //    }
-        //}
-
         /// <summary>
         /// Инициализация атрибут
         /// </summary>
         protected override void _InitAtributs()
         {
-            int countAttr = 7;// 3 + 2 + 1 + 1;
-            _vertexSize = 5;// 3 + 2;
-            int stride = countAttr * sizeof(float);
-
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
 
+            // layout(location = 0) in vec3 v_position;
             _gl.VertexAttribPointer(0, 3, GL.GL_FLOAT, false, 20, new IntPtr(0 * sizeof(float)));
             _gl.EnableVertexAttribArray(0);
 
+            // layout(location = 1) in vec2 v_texCoord;
             _gl.VertexAttribPointer(1, 2, GL.GL_FLOAT, false, 20, new IntPtr(3 * sizeof(float)));
             _gl.EnableVertexAttribArray(1);
 
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
 
+            // layout(location = 2) in int v_rgbl;
             _gl.VertexAttribPointer(2, 1, GL.GL_FLOAT, false, 8, new IntPtr(0 * sizeof(int)));
             _gl.EnableVertexAttribArray(2);
 
+            // layout(location = 3) in int v_anim;
             _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 8, new IntPtr(1 * sizeof(int)));
             _gl.EnableVertexAttribArray(3);
         }
-
-        /// <summary>
-        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
-        /// </summary>
-        //public void Reload(BufferFastFloat bufferFastFloat, BufferFastByte bufferFastByte)
-        //{
-        //    int count = bufferFastFloat.Count * sizeof(float);
-        //    _countVertices = count / _vertexSize;
-        //    _gl.BindVertexArray(_vao);
-        //    _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-        //    _gl.BufferData(GL.GL_ARRAY_BUFFER, count, bufferFastFloat.ToBuffer(), GL.GL_STATIC_DRAW);
-        //    _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
-        //    _gl.BufferData(GL.GL_ARRAY_BUFFER, bufferFastByte.Count, bufferFastByte.ToBuffer(), GL.GL_STATIC_DRAW);
-        //    _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        //    _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, QuadIndices(), GL.GL_STREAM_DRAW);
-        //}
 
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
@@ -151,7 +120,6 @@ namespace Vge.Renderer
                 _bufferFloat.Clear();
                 _bufferByte.Clear();
             }
-                //_countPoligon = bufferByte.Count / 24;
             Status = StatusMesh.Binding;
         }
 
@@ -160,14 +128,12 @@ namespace Vge.Renderer
         /// </summary>
         public void BindBuffer()
         {
-            if (!_bufferFloat.Empty)//bufferData.body && countPoligon > 0)
+            if (!_bufferFloat.Empty)
             {
                 _countVertices = _cv;
                 Reload();
                 _bufferFloat.Clear();
                 _bufferByte.Clear();
-                //BindBufferReload();
-                //bufferData.Free();
                 Status = StatusMesh.Wait;
             }
             else

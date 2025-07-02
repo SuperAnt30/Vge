@@ -72,23 +72,24 @@ namespace Vge.Renderer.World.Entity
                 EntitiesReg.TextureManager.DepthBig, 
                 (uint)Gi.ActiveTextureSamplerBig);
             
-            // TODO::2025-05-14 Из-за Texture ещё не готов модуль
+            // Заносим все текстуры сущностей
             int count = EntitiesReg.Shapes.Count;
-            ShapeEntity resourcesEntityModel;
+            ShapeEntity shapeEntity;
             for (int i = 0; i < count; i++)
             {
-                resourcesEntityModel = EntitiesReg.Shapes[i];
-                for (int t = 0; t < resourcesEntityModel.Textures.Length; t++)
+                shapeEntity = EntitiesReg.Shapes[i];
+                for (int t = 0; t < shapeEntity.Textures.Length; t++)
                 {
-                    Render.Texture.SetImageTexture2dArray(resourcesEntityModel.Textures[t], resourcesEntityModel.DepthTextures[t],
-                        resourcesEntityModel.TextureSmall ? _idTextureSmall : _idTextureBig,
-                        (uint)(resourcesEntityModel.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
+                    Render.Texture.SetImageTexture2dArray(shapeEntity.Textures[t], 
+                        shapeEntity.DepthTextures[t],
+                        shapeEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
+                        (uint)(shapeEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
                 }
             }
 
+            // Создаём объекты рендора всех сущностей
             count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
-
             ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)
             {

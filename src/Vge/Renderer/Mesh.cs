@@ -12,8 +12,17 @@ namespace Vge.Renderer
         protected readonly uint _vao;
         protected uint _vbo;
         protected readonly GL _gl;
+        /// <summary>
+        /// Количество вершин, нужен для QuadIndices
+        /// </summary>
         protected int _countVertices;
+        /// <summary>
+        /// Количество индексов вершин через VAO нужен для QuadIndices и Draw с VAO
+        /// </summary>
         private int _countIndices;
+        /// <summary>
+        /// Количество атрибут на вершину
+        /// </summary>
         protected int _vertexSize;
 
         public Mesh(GL gl)

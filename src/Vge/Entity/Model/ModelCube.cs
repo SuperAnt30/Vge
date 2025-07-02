@@ -75,11 +75,11 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Сгенерировать буффер
         /// </summary>
-        public void GenBuffer(List<float> buffer)
+        public void GenBuffer(List<float> bufferFloat, List<int> bufferInt)
         {
             for (int i = 0; i < 6; i++)
             {
-                Faces[i].GenBuffer(buffer, this);
+                Faces[i].GenBuffer(bufferFloat, bufferInt, this);
             }
         }
 

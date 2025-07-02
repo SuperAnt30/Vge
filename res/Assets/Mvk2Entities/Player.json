@@ -1,9 +1,9 @@
 {
-    #Pitch: "Head",
     #Scale: 1.9375,
     #Scale: 0.929,
     Scale: .75,
     Model: "Robinson",
+    Texture: 1,
     Animations: [
         { 
             Name: "Idle",

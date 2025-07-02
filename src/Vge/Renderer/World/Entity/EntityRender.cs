@@ -29,7 +29,7 @@ namespace Vge.Renderer.World.Entity
             Player = player;
 
             _mesh = new MeshEntity(gl);
-            _mesh.Reload(modelEntity.BufferMesh);
+            _mesh.Reload(modelEntity.BufferFloatMesh, modelEntity.BufferIntMesh);
         }
 
         public void MeshDraw() => _mesh.Draw();

@@ -17,6 +17,10 @@
         /// </summary>
         public const string Scale = "Scale";
         /// <summary>
+        /// Индекс текстуры. (int)
+        /// </summary>
+        public const string Texture = "texture";
+        /// <summary>
         /// Скорость анимации. (float)
         /// </summary>
         public const string AnimationSpeed = "AnimationSpeed";

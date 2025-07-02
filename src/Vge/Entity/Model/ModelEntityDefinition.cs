@@ -14,7 +14,11 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Буфер сетки моба, для рендера
         /// </summary>
-        public float[] BufferMesh { get; private set; }
+        public float[] BufferFloatMesh { get; private set; }
+        /// <summary>
+        /// Буфер сетки моба, для рендера
+        /// </summary>
+        public int[] BufferIntMesh { get; private set; }
         /// <summary>
         /// Текстуры для моба
         /// </summary>
@@ -127,14 +131,17 @@ namespace Vge.Entity.Model
                 }
 
                 // Генерируем буффер
-                List<float> list = new List<float>();
+                List<float> listFloat = new List<float>();
+                List<int> listInt = new List<int>();
                 foreach (ModelCube cube in cubes)
                 {
                     // Генерация буфера
-                    cube.GenBuffer(list);
+                    cube.GenBuffer(listFloat, listInt);
                 }
 
-                BufferMesh = list.ToArray();
+                BufferFloatMesh = listFloat.ToArray();
+                BufferIntMesh = listInt.ToArray();
+
             }
             catch (Exception ex)
             {
@@ -214,7 +221,6 @@ namespace Vge.Entity.Model
                     cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
                         faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
 
-                    //if (cube.Name != "armLeft") 
                     _cubes.Add(cube);
                 }
             }

@@ -77,7 +77,7 @@ namespace Vge.Entity.Render
                     _bonesTransforms[i] = Mat4.Identity();
                 }
 
-                //TODO:!!*
+                //TODO:!!* Создание модели для клиента, определяем анимацию стартовую
 
                 int count = _resourcesEntity.ModelAnimationClips.Length;
                 _animations = new AnimationClip[count];
@@ -202,9 +202,7 @@ namespace Vge.Entity.Render
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
         public override void Draw(float timeIndex, float deltaTime)
         {
-            _IncreaseCurrentTime(deltaTime);
             EntityRender entityRender = Entities.GetEntityRender(Entity.IndexEntity);
-            bool anim = _resourcesEntity.IsAnimation;
 
             float ppfx = entityRender.Player.PosFrameX;
             float ppfy = entityRender.Player.PosFrameY;
@@ -212,16 +210,19 @@ namespace Vge.Entity.Render
 
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
-                _resourcesEntity.GetShape().DepthTextures[1], 
-                (_resourcesEntity.GetShape().TextureSmall ? 0 : 1) + (anim ? 2 : 0),
+                _resourcesEntity.GetDepthTexture(), 
+                _resourcesEntity.GetSmallAnimation(),
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
                 Entity.GetPosFrameZ(timeIndex) - ppfz
             );
 
-            if (anim)
+            if (_resourcesEntity.IsAnimation)
             {
+                // Увеличивает счётчик прошедшего с начала анимации времени:
+                _IncreaseCurrentTime(deltaTime);
+
                 float yaw;// = 0;
                 float yawBody;
                 float pitch;// = 0;
@@ -253,8 +254,6 @@ namespace Vge.Entity.Render
                 }
 
                 // Пробегаемся по анимациям
-                //TODO:!!*
-                //_GenBoneCurrentPose(0);
                 for (int ai = 0; ai < _animationClips.Count; ai++)
                 {
                     _GenBoneCurrentPose(ai);
@@ -274,11 +273,9 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Увеличивает счётчик прошедшего с начала анимации времени:
         /// </summary>
-        /// <param name="delta"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _IncreaseCurrentTime(float delta)
         {
-            //TODO:!!*
-            if (_resourcesEntity.IsAnimation)
             for (int i = 0; i < _animationClips.Count; i++)
             {
                 _animations[_animationClips[i]].IncreaseCurrentTime(delta);

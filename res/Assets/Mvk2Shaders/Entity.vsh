@@ -2,7 +2,8 @@
 
 layout(location = 0) in vec3 v_position;
 layout(location = 1) in vec2 v_texCoord;
-layout(location = 2) in float v_jointId;
+layout(location = 2) in int v_jointId;
+layout(location = 3) in int v_clothId;
 
 out vec2 a_texCoord;
 out vec2 a_light;
@@ -30,7 +31,6 @@ void main()
 	  a_depth.y -= 2;
 	  // Матрица модели, расположения в мире
       mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
-      int id = int(v_jointId);
-      gl_Position = view * modelMatrix * mat4(elementTransforms[id]) * vec4(v_position, 1.0);
+      gl_Position = view * modelMatrix * mat4(elementTransforms[v_jointId]) * vec4(v_position, 1.0);
 	}
 }

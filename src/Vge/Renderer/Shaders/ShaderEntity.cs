@@ -15,7 +15,8 @@ namespace Vge.Renderer.Shaders
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },
-                    { 2, "v_jointId" }
+                    { 2, "v_jointId" },
+                    { 3, "v_clothId" }
                 });
         }
     }

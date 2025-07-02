@@ -32,7 +32,11 @@ namespace Vge.Entity
         /// <summary>
         /// Буфер сетки формы, для рендера
         /// </summary>
-        private readonly float[] _bufferMesh;
+        private readonly float[] _bufferFloatMesh;
+        /// <summary>
+        /// Буфер сетки формы, для рендера
+        /// </summary>
+        private readonly int[] _bufferIntMesh;
         /// <summary>
         /// Объект отвечает за определяение модели сущности
         /// </summary>
@@ -43,7 +47,8 @@ namespace Vge.Entity
             Index = index;
             _definition = new ModelEntityDefinition(alias);
             _definition.RunModelFromJson(jsonModel);
-            _bufferMesh = _definition.BufferMesh;
+            _bufferFloatMesh = _definition.BufferFloatMesh;
+            _bufferIntMesh = _definition.BufferIntMesh;
             Textures = _definition.Textures;
             DepthTextures = new int[Textures.Length];
         }
@@ -82,9 +87,9 @@ namespace Vge.Entity
         public void SizeAdjustmentTextureWidth(float coef)
         {
             // XYZ UV B - 6 флоатов на вершину
-            for(int i = 3; i < _bufferMesh.Length; i += 6)
+            for(int i = 3; i < _bufferFloatMesh.Length; i += 5)
             {
-                _bufferMesh[i] *= coef;
+                _bufferFloatMesh[i] *= coef;
             }
         }
         /// <summary>
@@ -93,29 +98,39 @@ namespace Vge.Entity
         public void SizeAdjustmentTextureHeight(float coef)
         {
             // XYZ UV B - 6 флоатов на вершину
-            for (int i = 4; i < _bufferMesh.Length; i += 6)
+            for (int i = 4; i < _bufferFloatMesh.Length; i += 5)
             {
-                _bufferMesh[i] *= coef;
+                _bufferFloatMesh[i] *= coef;
             }
         }
 
         /// <summary>
         /// Копия буфера сетки с масштабом
         /// </summary>
-        public float[] CopyBufferMesh(float scale = 1)
+        public float[] CopyBufferFloatMesh(float scale = 1)
         {
-            float[] buffer = new float[_bufferMesh.Length];
-            Array.Copy(_bufferMesh, buffer, buffer.Length);
+            float[] buffer = new float[_bufferFloatMesh.Length];
+            Array.Copy(_bufferFloatMesh, buffer, buffer.Length);
 
             if (scale != 1)
             {
-                for (int i = 0; i < buffer.Length; i += 6)
+                for (int i = 0; i < buffer.Length; i += 5)
                 {
                     buffer[i] *= scale;
                     buffer[i + 1] *= scale;
                     buffer[i + 2] *= scale;
                 }
             }
+            return buffer;
+        }
+
+        /// <summary>
+        /// Копия буфера сетки с масштабом
+        /// </summary>
+        public int[] CopyBufferIntMesh()
+        {
+            int[] buffer = new int[_bufferIntMesh.Length];
+            Array.Copy(_bufferIntMesh, buffer, buffer.Length);
             return buffer;
         }
 

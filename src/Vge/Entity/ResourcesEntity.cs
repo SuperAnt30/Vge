@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
 using Vge.Json;
+using Vge.World.Block;
 
 namespace Vge.Entity
 {
@@ -23,11 +24,7 @@ namespace Vge.Entity
         /// Тип объекта сущности
         /// </summary>
         public readonly Type EntityType;
-        /// <summary>
-        /// Индекс формы
-        /// </summary>
-        public readonly ushort IndexShape;
-
+        
         /// <summary>
         /// Имеется ли анимация
         /// </summary>
@@ -43,13 +40,26 @@ namespace Vge.Entity
         /// <summary>
         /// Буфер сетки моба по умолчанию, для рендера
         /// </summary>
-        public float[] BufferMesh { get; private set; }
+        public float[] BufferFloatMesh { get; private set; }
+        /// <summary>
+        /// Буфер сетки моба по умолчанию, для рендера
+        /// </summary>
+        public int[] BufferIntMesh { get; private set; }
+
+        /// <summary>
+        /// Индекс формы
+        /// </summary>
+        private readonly ushort _indexShape;
+        /// <summary>
+        /// Индекс текстуры
+        /// </summary>
+        private ushort _indexTexture;
 
         public ResourcesEntity(string alias, Type entityType, ushort indexShape)
         {
             Alias = alias;
             EntityType = entityType;
-            IndexShape = indexShape;
+            _indexShape = indexShape;
         }
 
         /// <summary>
@@ -59,10 +69,17 @@ namespace Vge.Entity
         public void SetIndex(ushort id) => IndexEntity = id;
 
         /// <summary>
-        /// Получить объект формы
+        /// Получить параметр глубины текстуры для шейдера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ShapeEntity GetShape() => EntitiesReg.Shapes[IndexShape];
+        public float GetDepthTexture() => EntitiesReg.Shapes[_indexShape].DepthTextures[_indexTexture];
+
+        /// <summary>
+        /// Получить параметр группы текстуры и есть ли анимация
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetSmallAnimation() => EntitiesReg.Shapes[_indexShape].TextureSmall ? 0 : 1
+            + (IsAnimation ? 2 : 0);
 
         /// <summary>
         /// Прочесть состояние из Json формы
@@ -124,11 +141,12 @@ namespace Vge.Entity
                                 );
                             }
                         }
-                        if (json.IsKey(Cte.Scale))
+                        else if (json.IsKey(Cte.Scale))
                         {
                             scale = json.GetFloat();
                             if (scale == 0) scale = 1;
                         }
+                        else if (json.IsKey(Ctb.Texture)) _indexTexture = (ushort)json.GetInt();
                     }
                 }
                 catch
@@ -138,15 +156,17 @@ namespace Vge.Entity
             }
 
             // Копия буффера
-            BufferMesh = GetShape().CopyBufferMesh(scale);
+            ShapeEntity shapeEntity = EntitiesReg.Shapes[_indexShape];
+            BufferFloatMesh = shapeEntity.CopyBufferFloatMesh(scale);
+            BufferIntMesh = shapeEntity.CopyBufferIntMesh();
             if (IsAnimation)
             {
                 // Если только есть анимация, нужны кости и клипы
-                Bones = GetShape().GenBones(scale);
-                ModelAnimationClips = GetShape().GetModelAnimationClips(animationDatas);
+                Bones = shapeEntity.GenBones(scale);
+                ModelAnimationClips = shapeEntity.GetModelAnimationClips(animationDatas);
             }
         }
 
-        public override string ToString() => Alias + " IndexShape:" + IndexShape;
+        public override string ToString() => Alias + " IndexShape:" + _indexShape;
     }
 }
