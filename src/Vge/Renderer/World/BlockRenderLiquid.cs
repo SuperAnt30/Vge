@@ -24,7 +24,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private SideLiquid _sideLiquid;
 
-        public BlockRenderLiquid(VertexBuffer vertex) : base(vertex) { }
+        public BlockRenderLiquid(VertexBlockBuffer vertex) : base(vertex) { }
 
         public override void RenderSide()
         {

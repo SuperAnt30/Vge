@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vge.Entity.Animation;
+using Vge.Entity.Render;
 using Vge.Json;
 using Vge.Util;
 
@@ -14,11 +15,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Буфер сетки моба, для рендера
         /// </summary>
-        public float[] BufferFloatMesh { get; private set; }
-        /// <summary>
-        /// Буфер сетки моба, для рендера
-        /// </summary>
-        public int[] BufferIntMesh { get; private set; }
+        public VertexEntityBuffer BufferMesh { get; private set; }
         /// <summary>
         /// Текстуры для моба
         /// </summary>
@@ -139,8 +136,7 @@ namespace Vge.Entity.Model
                     cube.GenBuffer(listFloat, listInt);
                 }
 
-                BufferFloatMesh = listFloat.ToArray();
-                BufferIntMesh = listInt.ToArray();
+                BufferMesh = new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
 
             }
             catch (Exception ex)

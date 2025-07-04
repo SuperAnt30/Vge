@@ -105,12 +105,12 @@ public sealed class Gi
     /// Буфер для склейки рендера сплошных блоков всего ряда
     /// 128000 / 4 = 32000 квадов
     /// </summary>
-    public readonly static VertexBuffer VertexDense = new VertexBuffer(128000);
+    public readonly static VertexBlockBuffer VertexDense = new VertexBlockBuffer(128000);
     /// <summary>
     /// Буфер для склейки рендера альфа блоков всего ряда
     /// 128000 / 4 = 32000 квадов
     /// </summary>
-    public readonly static VertexBuffer VertexAlpha = new VertexBuffer(128000);
+    public readonly static VertexBlockBuffer VertexAlpha = new VertexBlockBuffer(128000);
 
     /// <summary>
     /// Выбранный объект блока для рендера

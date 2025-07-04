@@ -10,11 +10,11 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Основной буфер
         /// </summary>
-        public VertexBuffer Buffer;
+        public VertexBlockBuffer Buffer;
         /// <summary>
         /// Буфер кэш для внутренней части жидких блоков
         /// </summary>
-        public VertexBuffer BufferCache;
+        public VertexBlockBuffer BufferCache;
 
         public Vertex3d[] Vertex;
 

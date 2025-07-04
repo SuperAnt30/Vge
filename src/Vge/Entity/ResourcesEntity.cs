@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
+using Vge.Entity.Render;
 using Vge.Json;
 using Vge.World.Block;
 
@@ -40,11 +41,7 @@ namespace Vge.Entity
         /// <summary>
         /// Буфер сетки моба по умолчанию, для рендера
         /// </summary>
-        public float[] BufferFloatMesh { get; private set; }
-        /// <summary>
-        /// Буфер сетки моба по умолчанию, для рендера
-        /// </summary>
-        public int[] BufferIntMesh { get; private set; }
+        public VertexEntityBuffer BufferMesh { get; private set; }
 
         /// <summary>
         /// Индекс формы
@@ -157,8 +154,7 @@ namespace Vge.Entity
 
             // Копия буффера
             ShapeEntity shapeEntity = EntitiesReg.Shapes[_indexShape];
-            BufferFloatMesh = shapeEntity.CopyBufferFloatMesh(scale);
-            BufferIntMesh = shapeEntity.CopyBufferIntMesh();
+            BufferMesh = shapeEntity.CopyBufferFloatMesh(scale);
             if (IsAnimation)
             {
                 // Если только есть анимация, нужны кости и клипы

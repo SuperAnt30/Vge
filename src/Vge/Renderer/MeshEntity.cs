@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Entity.Render;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer
@@ -8,11 +9,6 @@ namespace Vge.Renderer
     /// </summary>
     public class MeshEntity : Mesh
     {
-        /// <summary>
-        /// Количество элементов в типе buffersInt в одной вершине
-        /// </summary>
-        private const byte _sizeInt = 2;
-
         /// <summary>
         /// Дополнительный буфер для int данных
         /// </summary>
@@ -65,15 +61,15 @@ namespace Vge.Renderer
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
         /// </summary>
-        public void Reload(float[] buffersFloat, int[] buffersInt)
+        public void Reload(VertexEntityBuffer buffers)
         {
-            _countVertices = buffersInt.Length / _sizeInt;
+            _countVertices = buffers.GetCountVertices();
 
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffersFloat, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferFloat, GL.GL_DYNAMIC_DRAW);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboInt);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffersInt, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferInt, GL.GL_DYNAMIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
         }

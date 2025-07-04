@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Renderer.World
 {
     /// <summary>
     /// Буфер вершин блоков
     /// </summary>
-    public class VertexBuffer : IDisposable
+    public class VertexBlockBuffer : IDisposable
     {
         /// <summary>
         /// Количество элементов Float в одной вершине
@@ -25,7 +26,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public readonly BufferFastByte BufferByte;
 
-        public VertexBuffer(int maxSizeVertex = 100)
+        public VertexBlockBuffer(int maxSizeVertex = 100)
         {
             BufferFloat = new BufferFastFloat(maxSizeVertex * _sizeFloat);
             BufferByte = new BufferFastByte(maxSizeVertex * _sizeByte);
@@ -34,13 +35,16 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Пустой
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Empty() => BufferByte.Count == 0;
 
         /// <summary>
         /// Получить количество вершин
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetCountVertices() => BufferByte.Count / _sizeByte;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             BufferFloat.Clear();
@@ -50,6 +54,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Добавить буфер с дистанции
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddBlockBufferDistance(BlockBufferDistance blockBuffer)
         {
             BufferFloat.AddRange(blockBuffer.BufferFloat);
@@ -60,6 +65,7 @@ namespace Vge.Renderer.World
         /// Добавить вершину
         /// </summary>
         /// <param name="flag">По битовые данные, 0 - wind (ветер), 1 - wave (волна), 2 - sharpness (резкость)</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddVertex(float x, float y, float z, float u, float v, 
             byte r, byte g, byte b, byte light, byte animFrame, byte animPause, byte flag)
         {

@@ -106,7 +106,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Буфер внесён
         /// </summary>
-        public void SetBuffer(VertexBuffer vertexBuffer)
+        public void SetBuffer(VertexBlockBuffer vertexBuffer)
         {
             _cv = vertexBuffer.GetCountVertices();
 

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
+using Vge.Entity.Render;
 using Vge.Json;
 using Vge.Util;
 
@@ -32,11 +32,7 @@ namespace Vge.Entity
         /// <summary>
         /// Буфер сетки формы, для рендера
         /// </summary>
-        private readonly float[] _bufferFloatMesh;
-        /// <summary>
-        /// Буфер сетки формы, для рендера
-        /// </summary>
-        private readonly int[] _bufferIntMesh;
+        private readonly VertexEntityBuffer _bufferMesh;
         /// <summary>
         /// Объект отвечает за определяение модели сущности
         /// </summary>
@@ -47,8 +43,7 @@ namespace Vge.Entity
             Index = index;
             _definition = new ModelEntityDefinition(alias);
             _definition.RunModelFromJson(jsonModel);
-            _bufferFloatMesh = _definition.BufferFloatMesh;
-            _bufferIntMesh = _definition.BufferIntMesh;
+            _bufferMesh = _definition.BufferMesh;
             Textures = _definition.Textures;
             DepthTextures = new int[Textures.Length];
         }
@@ -58,6 +53,7 @@ namespace Vge.Entity
         /// <summary>
         /// Очистить объект отвечает за определяение модели сущности
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearDefinition() => _definition = null;
 
         /// <summary>
@@ -84,55 +80,23 @@ namespace Vge.Entity
         /// <summary>
         /// Корректировка размера ширины текстуры, в буффере UV
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SizeAdjustmentTextureWidth(float coef)
-        {
-            // XYZ UV B - 6 флоатов на вершину
-            for(int i = 3; i < _bufferFloatMesh.Length; i += 5)
-            {
-                _bufferFloatMesh[i] *= coef;
-            }
-        }
+            => _bufferMesh.SizeAdjustmentTextureWidth(coef);
+
         /// <summary>
         /// Корректировка размера высоты текстуры, в буффере UV
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SizeAdjustmentTextureHeight(float coef)
-        {
-            // XYZ UV B - 6 флоатов на вершину
-            for (int i = 4; i < _bufferFloatMesh.Length; i += 5)
-            {
-                _bufferFloatMesh[i] *= coef;
-            }
-        }
+            => _bufferMesh.SizeAdjustmentTextureHeight(coef);
 
         /// <summary>
         /// Копия буфера сетки с масштабом
         /// </summary>
-        public float[] CopyBufferFloatMesh(float scale = 1)
-        {
-            float[] buffer = new float[_bufferFloatMesh.Length];
-            Array.Copy(_bufferFloatMesh, buffer, buffer.Length);
-
-            if (scale != 1)
-            {
-                for (int i = 0; i < buffer.Length; i += 5)
-                {
-                    buffer[i] *= scale;
-                    buffer[i + 1] *= scale;
-                    buffer[i + 2] *= scale;
-                }
-            }
-            return buffer;
-        }
-
-        /// <summary>
-        /// Копия буфера сетки с масштабом
-        /// </summary>
-        public int[] CopyBufferIntMesh()
-        {
-            int[] buffer = new int[_bufferIntMesh.Length];
-            Array.Copy(_bufferIntMesh, buffer, buffer.Length);
-            return buffer;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public VertexEntityBuffer CopyBufferFloatMesh(float scale = 1)
+            => _bufferMesh.CopyBufferMesh(scale);
 
         public override string ToString() => Index + " " 
             + (TextureSmall ? "Small" : "Big") + " " 

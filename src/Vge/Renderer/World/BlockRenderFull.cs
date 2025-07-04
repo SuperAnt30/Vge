@@ -111,7 +111,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Создание блока генерации для мира
         /// </summary>
-        public BlockRenderFull(VertexBuffer vertex)
+        public BlockRenderFull(VertexBlockBuffer vertex)
         {
             blockUV.Buffer = vertex;
             InitAmbientOcclusion();
