@@ -339,8 +339,8 @@ namespace Vge.Entity.Render
                 _bonesTransforms[bone.ParentIndex].Copy(_bonesTransforms[i]);
                 _bonesTransforms[i].Multiply(_bones[i].GetBoneMatrix());
 
-                // Если надо вращаем Pitch
-                if (bone.IsPitch)
+                // Если надо вращаем Pitch, голова
+                if (bone.IsHead)
                 {
                     yaw -= yawBody;
                     if (yaw != 0)

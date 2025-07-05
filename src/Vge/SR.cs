@@ -69,7 +69,7 @@ internal sealed class Sr
     internal const string FileMissingModelEntity = "Отсутствует файл модели сущности {0}";
     internal const string ErrorReadJsonModelEntity = "Ошибка чтения из json, параметра {1} сущности {0}";
     internal const string RequiredParameterIsMissingEntity = "Отсутствует требуемый параметр {1} сущности {0}";
+    internal const string TransferNestedFolderMustNotBeDeeperThan = "Переносящая вложенная папка не должна быть глубже {1}. Сущность {0}";
 
-    
     #endregion
 }

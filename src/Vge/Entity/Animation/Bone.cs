@@ -23,9 +23,9 @@ namespace Vge.Entity.Animation
         public readonly Mat4 MatrixInverse;
 
         /// <summary>
-        /// Кость реагирует на угол Pitch
+        /// Кость реагирует на угол Pitch, голова
         /// </summary>
-        public readonly bool IsPitch;
+        public readonly bool IsHead;
 
         /// <summary>
         /// Вращение по X (Pitch)
@@ -53,11 +53,11 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly float OriginZ;
 
-        public Bone(byte parentIndex, bool isPitch, float rotationX, float rotationY, float rotationZ,
+        public Bone(byte parentIndex, bool isHead, float rotationX, float rotationY, float rotationZ,
             float originX, float originY, float originZ, int children)
         {
             ParentIndex = parentIndex;
-            IsPitch = isPitch;
+            IsHead = isHead;
             RotationX = Glm.Radians(rotationX);
             RotationY = Glm.Radians(rotationY);
             RotationZ = Glm.Radians(rotationZ);
@@ -102,7 +102,7 @@ namespace Vge.Entity.Animation
         public override string ToString()
         {
             string s = ParentIndex.ToString();
-            if (IsPitch) s += " Pitch";
+            if (IsHead) s += " Head";
             return s;
         }
     }

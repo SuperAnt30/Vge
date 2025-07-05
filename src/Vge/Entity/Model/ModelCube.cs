@@ -11,6 +11,10 @@ namespace Vge.Entity.Model
         /// Индекс очерёдности куба в Blockbanch
         /// </summary>
         public byte Index;
+        /// <summary>
+        /// Индекс слоя
+        /// </summary>
+        public int Layer;
 
         /// <summary>
         /// Количество сторон
@@ -51,11 +55,16 @@ namespace Vge.Entity.Model
         /// Высота
         /// </summary>
         public readonly int Height;
-        
-        public ModelCube(string uuid, string name, int width, int height) : base(uuid, name)
+        /// <summary>
+        /// Видимость куба
+        /// </summary>
+        public readonly bool Visible;
+
+        public ModelCube(string uuid, string name, int width, int height, bool visible) : base(uuid, name)
         {
             Width = width;
             Height = height;
+            Visible = visible;
         }
 
         /// <summary>

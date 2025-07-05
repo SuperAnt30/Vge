@@ -1,9 +1,9 @@
 {
     #Scale: 1.9375,
-    #Scale: 0.929,
-    Scale: .75,
+    Scale: 0.929,
+    #Scale: .75,
     Model: "Robinson",
-    Texture: 1,
+    Texture: 0,
     Animations: [
         { 
             Name: "Idle",

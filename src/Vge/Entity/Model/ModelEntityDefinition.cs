@@ -13,6 +13,11 @@ namespace Vge.Entity.Model
     public class ModelEntityDefinition
     {
         /// <summary>
+        /// Название кости меняющее от Pitch, голова
+        /// </summary>
+        private const string _nameBoneHead = "Head";
+
+        /// <summary>
         /// Буфер сетки моба, для рендера
         /// </summary>
         public VertexEntityBuffer BufferMesh { get; private set; }
@@ -26,17 +31,13 @@ namespace Vge.Entity.Model
         /// </summary>
         private readonly string _alias;
         /// <summary>
-        /// Название кости меняющее от Pitch
-        /// </summary>
-        private const string _nameBonePitch = "Head";
-        /// <summary>
         /// Список кубов
         /// </summary>
         private readonly List<ModelCube> _cubes = new List<ModelCube>();
         /// <summary>
-        /// Список костей они же папки
+        /// Дерево костей они же папки
         /// </summary>
-        private readonly List<ModelElement> _bones = new List<ModelElement>();
+        private readonly List<ModelElement> _treeBones = new List<ModelElement>();
         /// <summary>
         /// Карта костей, по индексам
         /// </summary>
@@ -45,10 +46,6 @@ namespace Vge.Entity.Model
         /// Список анимаций
         /// </summary>
         private readonly List<ModelAnimation> _animations = new List<ModelAnimation>();
-        /// <summary>
-        /// Карта смены индексов, key=old value=new
-        /// </summary>
-        private readonly Dictionary<byte, byte> _mapIndexs = new Dictionary<byte, byte>();
 
         /// <summary>
         /// Счётчик индекс кости, для шейдора и не только
@@ -110,34 +107,50 @@ namespace Vge.Entity.Model
 
                 // Древо скелета
                 _log = Cte.Outliner;
-                _Outliner(model.GetArray(Cte.Outliner), _bones, _amountBoneIndex);
+                _Outliner(model.GetArray(Cte.Outliner), _treeBones);//, _amountBoneIndex);
+
+                // Определения уровня на кубах
+                _LevelDefinitions(_treeBones);
+
+                // Удаляем невидемые кубы
+                _ClearVisibleCube(_treeBones, null);
+
+                // Перенести кубы с папки префиксом "_" в родительскую папку, чтоб не создавать не нужные кости
+                byte byteTree = 0;
+                while (_MoveCubesFromFolderToParent(null, _treeBones) > 0)
+                {
+                    if (++byteTree >= 8)
+                    {
+                        // Защита от рекурсии
+                        // Переносящая вложенная папка не должна быть глубже 8.
+                        throw new Exception(Sr.GetString(Sr.TransferNestedFolderMustNotBeDeeperThan, 8, _log));
+                    }
+                }
+
+                // После всех корректировок, строим индекксацию костей и кубов
+                _cubes.Clear();
                 _amountBoneIndex = 0;
-                _ClearCubeBone(_bones);
+                _Indexing(_treeBones, 0);
 
                 // Анимация
                 _log = Cte.Animations;
                 _Animations(model.GetArray(Cte.Animations).ToArrayObject());
 
-                // Сортируем кубы как в Blockbench
-                ModelCube[] cubes = new ModelCube[_cubes.Count];
-                for (int i = 0; i < cubes.Length; i++)
-                {
-                    // Смена индексов в кубах
-                    _cubes[i].BoneIndex = _mapIndexs[_cubes[i].BoneIndex];
-                    cubes[_cubes[i].Index] = _cubes[i];
-                }
-
                 // Генерируем буффер
                 List<float> listFloat = new List<float>();
                 List<int> listInt = new List<int>();
-                foreach (ModelCube cube in cubes)
+                foreach (ModelCube cube in _cubes)
                 {
                     // Генерация буфера
-                    cube.GenBuffer(listFloat, listInt);
+                    if (cube.Layer == 0)
+                   // if (cube.Name.Substring(0, 1) != "_")
+                        //&& cube.Name != "head")
+                    {
+                        cube.GenBuffer(listFloat, listInt);
+                    }
                 }
 
                 BufferMesh = new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
-
             }
             catch (Exception ex)
             {
@@ -174,58 +187,56 @@ namespace Vge.Entity.Model
         {
             for (int i = 0; i < elements.Length; i++)
             {
-                if (!elements[i].IsKey(Cte.Visibility) || elements[i].GetBool(Cte.Visibility))
+                _log = "CubeNameUuid";
+                ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
+                    elements[i].GetString(Cte.Name), _width, _height, 
+                    !elements[i].IsKey(Cte.Visibility) || elements[i].GetBool(Cte.Visibility));
+
+                _log = "CubeFromTo";
+                cube.SetPosition(
+                    elements[i].GetArray(Cte.From).ToArrayFloat(),
+                    elements[i].GetArray(Cte.To).ToArrayFloat()
+                    );
+                if (elements[i].IsKey(Cte.Rotation))
                 {
-                    _log = "CubeNameUuid";
-                    ModelCube cube = new ModelCube(elements[i].GetString(Cte.Uuid),
-                        elements[i].GetString(Cte.Name), _width, _height);
-
-                    _log = "CubeFromTo";
-                    cube.SetPosition(
-                        elements[i].GetArray(Cte.From).ToArrayFloat(),
-                        elements[i].GetArray(Cte.To).ToArrayFloat()
-                        );
-                    if (elements[i].IsKey(Cte.Rotation))
-                    {
-                        _log = "CubeRotationOrigin";
-                        cube.SetRotation(
-                            elements[i].GetArray(Cte.Rotation).ToArrayFloat(),
-                            elements[i].GetArray(Cte.Origin).ToArrayFloat()
-                        );
-                    }
-
-                    _log = Cte.Faces;
-                    JsonCompound faces = elements[i].GetObject(Cte.Faces);
-
-                    // Собираем 6 сторон текстур
-                    _log = Cte.Up;
-                    cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up,
-                        faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
-                    _log = Cte.Down;
-                    cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down,
-                        faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
-                    _log = Cte.East;
-                    cube.Faces[(int)Pole.East] = new ModelFace(Pole.East,
-                        faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
-                    _log = Cte.West;
-                    cube.Faces[(int)Pole.West] = new ModelFace(Pole.West,
-                        faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
-                    _log = Cte.North;
-                    cube.Faces[(int)Pole.North] = new ModelFace(Pole.North,
-                        faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
-                    _log = Cte.South;
-                    cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
-                        faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
-
-                    _cubes.Add(cube);
+                    _log = "CubeRotationOrigin";
+                    cube.SetRotation(
+                        elements[i].GetArray(Cte.Rotation).ToArrayFloat(),
+                        elements[i].GetArray(Cte.Origin).ToArrayFloat()
+                    );
                 }
+
+                _log = Cte.Faces;
+                JsonCompound faces = elements[i].GetObject(Cte.Faces);
+
+                // Собираем 6 сторон текстур
+                _log = Cte.Up;
+                cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up,
+                    faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.Down;
+                cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down,
+                    faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.East;
+                cube.Faces[(int)Pole.East] = new ModelFace(Pole.East,
+                    faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.West;
+                cube.Faces[(int)Pole.West] = new ModelFace(Pole.West,
+                    faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.North;
+                cube.Faces[(int)Pole.North] = new ModelFace(Pole.North,
+                    faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
+                _log = Cte.South;
+                cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
+                    faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
+
+                _cubes.Add(cube);
             }
         }
 
         /// <summary>
         /// Строим древо скелета
         /// </summary>
-        private void _Outliner(JsonArray outliner, List<ModelElement> bones, byte boneIndex)
+        private void _Outliner(JsonArray outliner, List<ModelElement> bones)//, byte boneIndex)
         {
             int count = outliner.GetCount();
             for (int i = 0; i < count; i++)
@@ -237,7 +248,7 @@ namespace Vge.Entity.Model
                     ModelCube cube = _FindCune(uuid);
                     if (cube != null)
                     {
-                        cube.BoneIndex = boneIndex;
+                        //cube.BoneIndex = boneIndex;
                         cube.Index = _cubeIndex++;
                         bones.Add(cube);
                     }
@@ -246,11 +257,13 @@ namespace Vge.Entity.Model
                 {
                     // Объект, значит папка
                     JsonCompound compound = outliner.GetCompound(i);
-                    if (!compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
+                    _log = "BoneNameUuid";
+                    string name = compound.GetString(Cte.Name);
+                    bool notBone = name.Substring(0, 1) == "_";
+                    if (notBone || !compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
                     {
-                        _log = "BoneNameUuid";
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
-                            compound.GetString(Cte.Name), _amountBoneIndex++);
+                            name, notBone);//, _amountBoneIndex++);
 
                         if (compound.IsKey(Cte.Origin))
                         {
@@ -266,7 +279,7 @@ namespace Vge.Entity.Model
                         if (children.GetCount() > 0)
                         {
                             // Имеются детишки
-                            _Outliner(children, bone.Children, bone.BoneIndex);
+                            _Outliner(children, bone.Children);//, bone.BoneIndex);
                         }
 
                         bones.Add(bone);
@@ -291,35 +304,106 @@ namespace Vge.Entity.Model
             return null;
         }
 
+        #region Корректировки древа костей с кубами
+
         /// <summary>
-        /// Очистить кубы в костях
+        /// Определения уровня
         /// </summary>
-        private void _ClearCubeBone(List<ModelElement> bones)
+        private void _LevelDefinitions(List<ModelElement> bones)
+        {
+            foreach (ModelElement element in bones)
+            {
+                if (element is ModelCube modelCube)
+                {
+                    if (modelCube.Name.Substring(0, 1) == "_")
+                    {
+                        modelCube.Layer = 1;
+                    }
+                }
+                else if (element is ModelBone modelBone)
+                {
+                    _LevelDefinitions(modelBone.Children);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Очистить невидемые кубы, исключение кубы в папках с префиксом "_"
+        /// </summary>
+        private void _ClearVisibleCube(List<ModelElement> bones, ModelBone parent)
         {
             int count = bones.Count - 1;
             for (int i = count; i >= 0; i--)
             {
-                if (bones[i] is ModelBone modelBone)
+                if (bones[i] is ModelCube modelCube)
                 {
-                    if (modelBone.Children.Count == 0)
+                    if (!modelCube.Visible && parent != null && !parent.NotBone)
                     {
-                        _mapBones.Remove(bones[i].Name);
-                        bones.RemoveAt(i);
-                    }
-                    else
-                    {
-                        _mapIndexs.Add(modelBone.BoneIndex, _amountBoneIndex);
-                        modelBone.BoneIndex = _amountBoneIndex++;
-
-                        _ClearCubeBone(modelBone.Children);
+                        parent.Children.Remove(bones[i]);
                     }
                 }
-                else
+                else if (bones[i] is ModelBone modelBone)
                 {
-                    bones.RemoveAt(i);
+                    _ClearVisibleCube(modelBone.Children, modelBone);
+                    if (modelBone.Children.Count == 0)
+                    {
+                        // Если в кости нет ничего, удаляем папку-кость
+                        bones.RemoveAt(i);
+                    }
                 }
             }
         }
+
+        /// <summary>
+        /// Перенести кубы с папки которая не кость, в папку родителя
+        /// </summary>
+        private int _MoveCubesFromFolderToParent(ModelBone coreBone, List<ModelElement> bones)
+        {
+            int countMove = 0;
+            int count = bones.Count - 1;
+            for (int i = count; i >= 0; i--)
+            {
+                if (bones[i] is ModelBone modelBone && modelBone.Children.Count > 0)
+                {
+                    if (modelBone.NotBone && coreBone != null)
+                    {
+                        foreach (ModelElement child in modelBone.Children)
+                        {
+                            coreBone.Children.Add(child);
+                            bones.RemoveAt(i);
+                            countMove++;
+                        }
+                    }
+                    else
+                    {
+                        countMove += _MoveCubesFromFolderToParent(modelBone, modelBone.Children);
+                    }
+                }
+            }
+            return countMove;
+        }
+
+        /// <summary>
+        /// Индексация костей и кубов
+        /// </summary>
+        private void _Indexing(List<ModelElement> bones, byte parentIndex)
+        {
+            foreach (ModelElement cube in bones)
+            {
+                if (cube is ModelBone modelBone)
+                {
+                    modelBone.BoneIndex = _amountBoneIndex++;
+                    _Indexing(modelBone.Children, modelBone.BoneIndex);
+                }
+                else if (cube is ModelCube modelCube)
+                {
+                    modelCube.BoneIndex = parentIndex;
+                    _cubes.Add(modelCube);
+                }
+            }
+        }
+
+        #endregion
 
         #region TreeBones
 
@@ -330,7 +414,7 @@ namespace Vge.Entity.Model
         {
             // Массив костей
             Bone[] resultBones = new Bone[_amountBoneIndex];
-            _ConvertTreeBones(resultBones, _bones, Bone.RootBoneParentIndex, scale);
+            _ConvertTreeBones(resultBones, _treeBones, Bone.RootBoneParentIndex, scale);
             return resultBones;
         }
 
@@ -345,12 +429,14 @@ namespace Vge.Entity.Model
                 if (modelBones[i] is ModelBone modelBone)
                 {
                     _ConvertTreeBones(resultBones, modelBone.Children, modelBone.BoneIndex, scale);
-                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBonePitch, parentIndex, scale);
+                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBoneHead, parentIndex, scale);
                 }
             }
         }
 
         #endregion
+
+        #region Animation
 
         /// <summary>
         /// Собираем анимации
@@ -444,5 +530,7 @@ namespace Vge.Entity.Model
             }
             return list.ToArray();
         }
+
+        #endregion
     }
 }

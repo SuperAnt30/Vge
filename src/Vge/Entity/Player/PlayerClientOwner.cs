@@ -434,7 +434,13 @@ namespace Vge.Entity.Player
                 pos = _GetPositionCamera(pos, front, 4); // 8
                 front *= -1f;
             }
-            
+            //else
+            //{
+            //    Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
+            //    pos += front2 * .3f;
+            //    pos -= up * .1f;
+            //}
+
             //if (!ViewCameraEye)
             //{
             //    pos -= front * 4; // 5
@@ -450,7 +456,7 @@ namespace Vge.Entity.Player
             //}
             // Матрица Projection
             Mat4 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
-               0.01f, OverviewChunk * 22f);
+                   0.01f, OverviewChunk * 22f);
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(View);
