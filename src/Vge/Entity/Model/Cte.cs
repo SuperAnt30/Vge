@@ -72,6 +72,14 @@
         /// Данные текстуры, в формате image/png;base64. (string)
         /// </summary>
         public const string Source = "source";
+        /// <summary>
+        /// Массив слоёв текстур. ([])
+        /// </summary>
+        public const string Layers = "layers";
+        /// <summary>
+        /// Данные текстуры для слоя, в формате image/png;base64. (string)
+        /// </summary>
+        public const string DataUrl = "data_url";
 
         #endregion
 

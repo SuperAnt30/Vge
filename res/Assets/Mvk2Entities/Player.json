@@ -4,6 +4,14 @@
     #Scale: .75,
     Model: "Robinson",
     Texture: 0,
+    Layer: [
+        {
+            Type: "Bracelet",
+            Index: 0,
+            Folder: "_Bracelet",
+            Texture: "02"
+        }
+    ]
     Animations: [
         { 
             Name: "Idle",

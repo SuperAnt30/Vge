@@ -44,7 +44,7 @@ namespace Vge.Entity
             _definition = new ModelEntityDefinition(alias);
             _definition.RunModelFromJson(jsonModel);
             _bufferMesh = _definition.BufferMesh;
-            Textures = _definition.Textures;
+            Textures = _definition.GenTextures();
             DepthTextures = new int[Textures.Length];
         }
 

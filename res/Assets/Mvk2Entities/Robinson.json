@@ -1,7 +1,7 @@
 {
     #Pitch: "Head",
     Model: "Robinson",
-    Texture: 1,
+    Texture: 0,
     Animations: [
         {
             Name: "Walk",

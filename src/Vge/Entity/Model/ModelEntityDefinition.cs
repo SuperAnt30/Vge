@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using Vge.Entity.Animation;
 using Vge.Entity.Render;
 using Vge.Json;
@@ -21,10 +22,6 @@ namespace Vge.Entity.Model
         /// Буфер сетки моба, для рендера
         /// </summary>
         public VertexEntityBuffer BufferMesh { get; private set; }
-        /// <summary>
-        /// Текстуры для моба
-        /// </summary>
-        public BufferedImage[] Textures { get; private set; }
         
         /// <summary>
         /// Псевдоним сущности
@@ -46,6 +43,10 @@ namespace Vge.Entity.Model
         /// Список анимаций
         /// </summary>
         private readonly List<ModelAnimation> _animations = new List<ModelAnimation>();
+        /// <summary>
+        /// Текстуры для моба
+        /// </summary>
+        private readonly List<ModelTexture> _textures = new List<ModelTexture>();
 
         /// <summary>
         /// Счётчик индекс кости, для шейдора и не только
@@ -158,27 +159,76 @@ namespace Vge.Entity.Model
             }
         }
 
+        #region Textures
+
         /// <summary>
         /// Определяем текстуры
         /// </summary>
         private void _Textures(JsonCompound[] textures)
         {
-            Textures = new BufferedImage[textures.Length];
             for (int i = 0; i < textures.Length; i++)
             {
-                _log = Cte.Source;
-                string source = textures[i].GetString(Cte.Source);
-                if (source.Length > 22 && source.Substring(0, 22) == "data:image/png;base64,")
+                if (textures[i].IsKey(Cte.Layers))
                 {
-                    Textures[i] = BufferedFileImage.FileToBufferedImage(
-                        Convert.FromBase64String(source.Substring(22)));
+                    // Имеются слои
+                    _log = Cte.Layers;
+                    JsonCompound[] layers = textures[i].GetArray(Cte.Layers).ToArrayObject();
+                    foreach (JsonCompound layer in layers)
+                    {
+                        _TextureImage(layer.GetString(Cte.Name), layer.GetString(Cte.DataUrl));
+                    }
                 }
                 else
                 {
-                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, _alias, _log));
+                    _log = Cte.Source;
+                    _TextureImage("", textures[i].GetString(Cte.Source));
                 }
             }
+            return;
         }
+
+        /// <summary>
+        /// Внести текстуру
+        /// </summary>
+        private void _TextureImage(string name, string source)
+        {
+            if (source.Length > 22 && source.Substring(0, 22) == "data:image/png;base64,")
+            {
+                _textures.Add(new ModelTexture(name, BufferedFileImage.FileToBufferedImage(
+                    Convert.FromBase64String(source.Substring(22)))));
+            }
+            else
+            {
+                throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, _alias, _log));
+            }
+        }
+
+        /// <summary>
+        /// Сгенерировать массив текстур
+        /// </summary>
+        public BufferedImage[] GenTextures()
+        {
+            // Пробегаемся и удаляем не нужные текстуры, которые не используются, в слоях
+            int count = _textures.Count - 1;
+            for (int i = count; i >= 0; i--)
+            {
+                if (_textures[i].IsLayer && !_textures[i].Used)
+                {
+                    // Удалить слои текстур не использующие
+                    _textures.RemoveAt(i);
+                }
+            }
+
+            // Создаём массив текстур
+            BufferedImage[] images = new BufferedImage[_textures.Count];
+            for (int i = 0; i < images.Length; i++)
+            {
+                images[i] = _textures[i].Image;
+            }
+            return images;
+        }
+
+        #endregion
 
         /// <summary>
         /// Определяем кубы
@@ -311,18 +361,43 @@ namespace Vge.Entity.Model
         /// </summary>
         private void _LevelDefinitions(List<ModelElement> bones)
         {
+            //TODO::2025-07-06 тут остановился, для определения уровней, надо задавать в JSON
             foreach (ModelElement element in bones)
             {
                 if (element is ModelCube modelCube)
                 {
-                    if (modelCube.Name.Substring(0, 1) == "_")
+                    if (modelCube.Name.Substring(0, 2) == "_5")
                     {
                         modelCube.Layer = 1;
                     }
                 }
                 else if (element is ModelBone modelBone)
                 {
+                    if (modelBone.Name.Length > 2 && modelBone.Name.Substring(0, 3) == "_Br")
+                    {
+                        _SetLevel(modelBone.Children, 1);
+                    }
+                    // Продолжаем проверять глубину, даже если уже знаем левел,
+                    // вдруг глубже есть другие уровни
                     _LevelDefinitions(modelBone.Children);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Задать в папке всем кубам уровень
+        /// </summary>
+        private void _SetLevel(List<ModelElement> bones, int level)
+        {
+            foreach (ModelElement element in bones)
+            {
+                if (element is ModelCube modelCube)
+                {
+                    modelCube.Layer = level;
+                }
+                else if (element is ModelBone modelBone)
+                {
+                    _SetLevel(modelBone.Children, level);
                 }
             }
         }
