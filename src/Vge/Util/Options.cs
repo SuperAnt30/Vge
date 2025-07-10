@@ -47,6 +47,10 @@ namespace Vge.Util
         /// </summary>
         public static string PathEntities { get; private set; }
         /// <summary>
+        /// Путь к папке слоёв сущностей
+        /// </summary>
+        public static string PathLayerEntities { get; private set; }
+        /// <summary>
         /// Путь к папке моделей сущностей
         /// </summary>
         public static string PathModelEntities { get; private set; }
@@ -142,6 +146,7 @@ namespace Vge.Util
             PathBlocks = PathAssets + PrefixPath + "Blocks" + Path.DirectorySeparatorChar;
             PathShapeBlocks = PathBlocks + "Shapes" + Path.DirectorySeparatorChar;
             PathEntities = PathAssets + PrefixPath + "Entities" + Path.DirectorySeparatorChar;
+            PathLayerEntities = PathEntities + "Layers" + Path.DirectorySeparatorChar;
             PathModelEntities = PathEntities + "Models" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 

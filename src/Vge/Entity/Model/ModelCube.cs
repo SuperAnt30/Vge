@@ -9,12 +9,13 @@ namespace Vge.Entity.Model
     {
         /// <summary>
         /// Индекс очерёдности куба в Blockbanch
+        /// Покуда не используется. 10.07.2025
         /// </summary>
         public byte Index;
         /// <summary>
-        /// Индекс слоя
+        /// Является ли этот куб одеждой
         /// </summary>
-        public int Layer;
+        public bool Layer;
 
         /// <summary>
         /// Количество сторон

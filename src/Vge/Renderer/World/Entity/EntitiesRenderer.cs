@@ -1,5 +1,6 @@
 ﻿using Vge.Entity;
 using Vge.Entity.Player;
+using Vge.Entity.Shape;
 using Vge.Games;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -71,24 +72,12 @@ namespace Vge.Renderer.World.Entity
                 EntitiesReg.TextureManager.HeightBig,
                 EntitiesReg.TextureManager.DepthBig, 
                 (uint)Gi.ActiveTextureSamplerBig);
-            
+
             // Заносим все текстуры сущностей
-            int count = EntitiesReg.Shapes.Count;
-            ShapeEntity shapeEntity;
-            for (int i = 0; i < count; i++)
-            {
-                shapeEntity = EntitiesReg.Shapes[i];
-                for (int t = 0; t < shapeEntity.Textures.Length; t++)
-                {
-                    Render.Texture.SetImageTexture2dArray(shapeEntity.Textures[t], 
-                        shapeEntity.DepthTextures[t],
-                        shapeEntity.TextureSmall ? _idTextureSmall : _idTextureBig,
-                        (uint)(shapeEntity.TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
-                }
-            }
+            EntitiesReg.SetImageTexture2dArray(Render.Texture, _idTextureSmall, _idTextureBig);
 
             // Создаём объекты рендора всех сущностей
-            count = Ce.Entities.Count;
+            int count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
             ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)

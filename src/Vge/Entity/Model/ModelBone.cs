@@ -9,16 +9,16 @@ namespace Vge.Entity.Model
     public class ModelBone : ModelElement
     {
         /// <summary>
-        /// Если true, то это папка, не кость
+        /// Тип папку кости
         /// </summary>
-        public readonly bool NotBone;
+        public readonly EnumType TypeFolder;
         /// <summary>
         /// Кости детей
         /// </summary>
         public readonly List<ModelElement> Children = new List<ModelElement>();
 
-        public ModelBone(string uuid, string name, bool notBone) : base(uuid, name)
-            => NotBone = notBone;
+        public ModelBone(string uuid, string name, EnumType typeFolder) : base(uuid, name)
+            => TypeFolder = typeFolder;
 
         /// <summary>
         /// Создать кость
@@ -28,5 +28,35 @@ namespace Vge.Entity.Model
             => new Bone(parentIndex, Name.Equals(nameBoneHead),
                 RotationX, RotationY, RotationZ, 
                 OriginX * scale, OriginY * scale, OriginZ * scale, Children.Count);
+
+        /// <summary>
+        /// Получить тип папки по префиксу
+        /// </summary>
+        public static EnumType ConvertPrefix(string prefix)
+        {
+            if (prefix == "_") return EnumType.Folder;
+            if (prefix == "#") return EnumType.Layer;
+            return EnumType.Bone;
+        }
+
+        /// <summary>
+        /// Тип папку кости
+        /// </summary>
+        public enum EnumType
+        {
+            /// <summary>
+            /// Кость, должна быть только видимой
+            /// </summary>
+            Bone,
+            /// <summary>
+            /// Папка, можно быить скрытой, дети подтянуться
+            /// </summary>
+            Folder,
+            /// <summary>
+            /// Одежда, можно быить скрытой, дети подтянуться
+            /// </summary>
+            Layer
+        }
+
     }
 }

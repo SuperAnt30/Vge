@@ -77,15 +77,19 @@ namespace Vge.Entity.Render
                     _bonesTransforms[i] = Mat4.Identity();
                 }
 
-                //TODO:!!* Создание модели для клиента, определяем анимацию стартовую
-
                 int count = _resourcesEntity.ModelAnimationClips.Length;
                 _animations = new AnimationClip[count];
                 for (int i = 0; i < count; i++)
                 {
                     _animations[i] = new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[i]);
                 }
-               // _animationClips.Add(0);
+
+                if (count > 0)
+                {
+                    // Если имеется анимация у сущности, временно запускаем первую
+                    _animationClips.Add(0);
+                    // TODO:2025-07-09 Определяем анимацию стартовую
+                }
 
                 // Временное включение анимациионного клипа
                 //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[2]));
@@ -210,8 +214,8 @@ namespace Vge.Entity.Render
 
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
-                _resourcesEntity.GetDepthTexture(), 
-                _resourcesEntity.GetSmallAnimation(),
+                _resourcesEntity.GetDepthTextureAndSmall(), 
+                _resourcesEntity.GetIsAnimation(),
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
@@ -266,6 +270,26 @@ namespace Vge.Entity.Render
                     "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
             }
             entityRender.MeshDraw();
+
+            // Layers
+
+            // TEST
+            if (Entity.IndexEntity == Ce.Entities.IndexPlayer)
+            {
+                // TODO::2025-07-09 Данный тест подтвердил, что матрицу повторно заливать не надо!
+                // Тут надо просто обратиться к одежде, получить индекс глубины текстуры и её размер (big || small)
+                // И тупо друколим!
+
+                // Заносим в шейдор
+                ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(0);
+
+                Entities.Render.ShaderBindEntity(
+                    resourcesEntity.GetDepthTextureAndSmall()
+                );
+                entityRender = Entities.GetEntityRender(0);
+
+                entityRender.MeshDraw();
+            }
         }
 
         #region Skeletion Matrix

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Vge.Entity.List;
 using Vge.Entity.Model;
 using Vge.Entity.Player;
+using Vge.Entity.Shape;
 using Vge.Entity.Texture;
 using Vge.Json;
+using Vge.Renderer;
 using Vge.Util;
 
 namespace Vge.Entity
@@ -31,6 +33,10 @@ namespace Vge.Entity
         /// Список всех форм
         /// </summary>
         public static readonly List<ShapeEntity> Shapes = new List<ShapeEntity>();
+        /// <summary>
+        /// Справочник всех слоёв форм (одежда)
+        /// </summary>
+        public static readonly List<ShapeLayer> LayerShapes = new List<ShapeLayer>();
 
         /// <summary>
         /// Справочник всех моделей
@@ -63,10 +69,18 @@ namespace Vge.Entity
             // Очистить таблицы и вспомогательные данные json
             _Clear();
             Shapes.Clear();
+            LayerShapes.Clear();
+
+            // Вначале регистрация форм слоёв одежды только для рендера
+            if (FlagRender)
+            {
+                RegisterLayerShapeEntityClass("Base");
+            }
+
             // Регистрация обязательных сущностей
-            RegisterModelEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
+            RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
             // Отладочный
-            RegisterModelEntityClass("Robinson", typeof(EntityThrowable));
+            RegisterEntityClass("Robinson", typeof(EntityThrowable));
             //RegisterModelEntityClass("Chicken2");
         }
 
@@ -86,6 +100,27 @@ namespace Vge.Entity
             {
                 shapeEntity.ClearDefinition();
             }
+            foreach (ShapeLayer shapeLayer in LayerShapes)
+            {
+                shapeLayer.ClearDefinition();
+            }
+        }
+
+        /// <summary>
+        /// Внести в текстуры в память OpenGL в массив текстур.
+        /// </summary>
+        public static void SetImageTexture2dArray(TextureMap textureMap, uint idTextureSmall, uint idTextureBig)
+        {
+            for (int i = 0; i < Shapes.Count; i++)
+            {
+                Shapes[i].SetImageTexture2dArray(textureMap,
+                    idTextureSmall, idTextureBig);
+            }
+            for (int i = 0; i < LayerShapes.Count; i++)
+            {
+                LayerShapes[i].SetImageTexture2dArray(textureMap,
+                    idTextureSmall, idTextureBig);
+            }
         }
 
         /// <summary>
@@ -100,9 +135,51 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Зарегистрировать слои к сущностям, это одежда, броня
+        /// </summary>
+        public static void RegisterLayerShapeEntityClass(string alias)
+        {
+            JsonRead jsonRead = new JsonRead(Options.PathLayerEntities + alias + ".json");
+
+            if (jsonRead.IsThereFile)
+            {
+                // В файле модели, может находится множество форм и типов одежды
+                
+                string modelFile = jsonRead.Compound.GetString(Cte.Model);
+                if (modelFile == "")
+                {
+                    // Отсутствует модель в файле json сущности
+                    throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
+                }
+
+                //TODO::!!! ВРОДЕ ПОРА Base.json
+
+                ShapeLayer shape = new ShapeLayer((ushort)LayerShapes.Count, modelFile, _GetModel(modelFile));
+                LayerShapes.Add(shape);
+
+                // TODO::2025-07-08 Надо создать типа ResourcesEntityLayer
+                // Вроде это надо только для рендера!
+
+                //ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType, shape.Index);
+                //modelEntity.ReadStateFromJson(jsonRead.Compound);
+                //if (FlagRender)
+                //{
+                //    modelEntity.ReadStateClientFromJson(jsonRead.Compound);
+                //}
+
+                //Table.Add(alias, modelEntity);
+            }
+            else
+            {
+                // Отсутствует файл json, сущности
+                throw new Exception(Sr.GetString(Sr.FileMissingLayersJsonEntity, alias));
+            }
+        }
+
+        /// <summary>
         /// Зврегистрировать сущность
         /// </summary>
-        public static void RegisterModelEntityClass(string alias, Type entityType)
+        public static void RegisterEntityClass(string alias, Type entityType)
         {
             JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".json");
             
@@ -172,6 +249,24 @@ namespace Vge.Entity
         {
             TextureManager.Init();
         }
-        
+
+        /// <summary>
+        /// Заменить буфер из-за смены размера текстуры
+        /// </summary>
+        public static void SetBufferMeshBecauseSizeTexture(ShapeBase shape)
+        {
+            if (shape is ShapeEntity shapeEntity)
+            {
+                for (int i = 0; i < Table.Count; i++)
+                {
+                    Table[i].SetBufferMeshBecauseSizeTexture(shapeEntity);
+                }
+            }
+            else if (shape is ShapeLayer shapeLayer)
+            {
+
+            }
+        }
+
     }
 }

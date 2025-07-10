@@ -126,6 +126,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер GuiLine
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindGuiLine()
         {
             ShGuiLine.Bind(gl);
@@ -135,6 +136,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер GuiColor
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindGuiColor()
         {
             ShGuiColor.Bind(gl);
@@ -167,18 +169,28 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер Entity
         /// </summary>
-        public void ShaderBindEntity(float depth, float smallAnim,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderBindEntity(float depthAndSmall, float anim,
             float lightBlock, float lightSky,
             float posX, float posY, float posZ)
         {
             ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
             ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
-            ShEntity.SetUniform2(gl, "depth", depth, smallAnim);
+            ShEntity.SetUniform1(gl, "depth", depthAndSmall);
+            ShEntity.SetUniform1(gl, "anim", anim);
         }
+
+        /// <summary>
+        /// Связать шейдер Entity
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderBindEntity(float depthAndSmall)
+            => ShEntity.SetUniform1(gl, "depth", depthAndSmall);
 
         /// <summary>
         /// Связать шейдер Line
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindLine(float[] view, float posX, float posY, float posZ)
         {
             ShLine.Bind(gl);

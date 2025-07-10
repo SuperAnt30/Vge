@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Vge.Entity.Shape;
 using Vge.Util;
 
 namespace Vge.Entity.Texture
@@ -74,7 +76,7 @@ namespace Vge.Entity.Texture
             // Изменить статус максимальной группы
             for (int i = 0; i < group.ArrayId.Count; i++)
             {
-                EntitiesReg.Shapes[group.ArrayId[i]].TextureGroupBig();
+                _TextureGroupBig(group.ArrayId[i]);
             }
             // Нет смысла пробегать с 0
             for (int i = 1; i < maxId; i++)
@@ -96,23 +98,23 @@ namespace Vge.Entity.Texture
         {
             // Используя справочник, мы создаём однотипные группы текстур
             Dictionary<string, GroupTexture> pairs = new Dictionary<string, GroupTexture>();
-            int count = EntitiesReg.Shapes.Count;
-            ShapeEntity resourcesEntity;
+            int count = _GetShapesCount();
+            ShapeBase shape;
             BufferedImage buffered;
             string key;
 
             for (ushort id = 0; id < count; id++)
             {
-                resourcesEntity = EntitiesReg.Shapes[id];
-                if (resourcesEntity.Textures.Length > 0)
+                shape = _GetShape(id);
+                if (shape.Textures.Length > 0)
                 {
-                    buffered = resourcesEntity.Textures[0];
+                    buffered = shape.Textures[0];
                     key = buffered.Width + ":" + buffered.Height;
                     if (!pairs.ContainsKey(key))
                     {
                         pairs.Add(key, new GroupTexture(buffered.Width, buffered.Height));
                     }
-                    pairs[key].SetId(id, resourcesEntity.Textures.Length);
+                    pairs[key].SetId(id, shape.Textures.Length);
                 }
             }
             // Создаём массив наших групп текстур
@@ -283,20 +285,29 @@ namespace Vge.Entity.Texture
         /// <param name="textureGroupBig">Если true то в максимальную группу</param>
         private void _ModifySize(GroupTexture group, ushort index, int width, int height, bool textureGroupBig)
         {
-            ShapeEntity resourcesEntity = EntitiesReg.Shapes[index];
+            ShapeBase shape = _GetShape(index);
             if (textureGroupBig)
             {
-                resourcesEntity.TextureGroupBig();
+                shape.TextureGroupBig();
             }
+            bool changeBuffer = false;
             if (group.Width != width)
             {
                 // Корректировка размера ширины текстуры
-                resourcesEntity.SizeAdjustmentTextureWidth(group.Width / (float)width);
+                shape.SizeAdjustmentTextureWidth(group.Width / (float)width);
+                changeBuffer = true;
             }
             if (group.Height != height)
             {
                 // Корректировка размера высоты текстуры
-                resourcesEntity.SizeAdjustmentTextureHeight(group.Height / (float)height);
+                shape.SizeAdjustmentTextureHeight(group.Height / (float)height);
+                changeBuffer = true;
+            }
+
+            if (changeBuffer)
+            {
+                // Меняем буфер, так-как менялся буфер из-за размера текстуры
+                EntitiesReg.SetBufferMeshBecauseSizeTexture(shape);
             }
         }
 
@@ -307,12 +318,12 @@ namespace Vge.Entity.Texture
         /// <param name="textureGroupBig">Большая ли текстура</param>
         private void _SetDepthTextures(GroupTexture group, bool textureGroupBig)
         {
-            ShapeEntity resourcesEntity;
+            ShapeBase shape;
             int depth;
             for (int i = 0; i < group.ArrayId.Count; i++)
             {
-                resourcesEntity = EntitiesReg.Shapes[group.ArrayId[i]];
-                for (int t = 0; t < resourcesEntity.DepthTextures.Length; t++)
+                shape = _GetShape(group.ArrayId[i]);
+                for (int t = 0; t < shape.DepthTextures.Length; t++)
                 {
                     if (textureGroupBig)
                     {
@@ -324,9 +335,38 @@ namespace Vge.Entity.Texture
                         depth = DepthSmall;
                         DepthSmall++;
                     }
-                    resourcesEntity.DepthTextures[t] = depth;
+                    shape.DepthTextures[t] = depth;
                 }
             }
         }
+
+        #region Shapes
+
+        /// <summary>
+        /// Пометить форму в максимальную группу текстур
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _TextureGroupBig(ushort id)
+            => _GetShape(id).TextureGroupBig();
+
+        /// <summary>
+        /// Получить общее количество форм, одежды и сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int _GetShapesCount() => EntitiesReg.Shapes.Count
+            + EntitiesReg.LayerShapes.Count;
+
+        /// <summary>
+        /// Получить форму для сущности или одежды, зависимости от id
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ShapeBase _GetShape(ushort id)
+        {
+            int count = EntitiesReg.Shapes.Count;
+            if (id < count) return EntitiesReg.Shapes[id];
+            return EntitiesReg.LayerShapes[id - count];
+        }
+
+        #endregion
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Policy;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Render;
 using Vge.Json;
 using Vge.Util;
+using static Vge.Entity.Model.ModelBone;
 
 namespace Vge.Entity.Model
 {
@@ -16,27 +17,23 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Название кости меняющее от Pitch, голова
         /// </summary>
-        private const string _nameBoneHead = "Head";
+        protected const string _nameBoneHead = "Head";
 
         /// <summary>
-        /// Буфер сетки моба, для рендера
+        /// Псевдоним
         /// </summary>
-        public VertexEntityBuffer BufferMesh { get; private set; }
-        
-        /// <summary>
-        /// Псевдоним сущности
-        /// </summary>
-        private readonly string _alias;
+        protected readonly string _alias;
         /// <summary>
         /// Список кубов
         /// </summary>
-        private readonly List<ModelCube> _cubes = new List<ModelCube>();
+        protected readonly List<ModelCube> _cubes = new List<ModelCube>();
         /// <summary>
         /// Дерево костей они же папки
         /// </summary>
-        private readonly List<ModelElement> _treeBones = new List<ModelElement>();
+        protected readonly List<ModelElement> _treeBones = new List<ModelElement>();
         /// <summary>
         /// Карта костей, по индексам
+        /// Имя начинающее на "_" не может быть костью, а является просто папкой для группировки только одежды
         /// </summary>
         private readonly Dictionary<string, ModelElement> _mapBones = new Dictionary<string, ModelElement>();
         /// <summary>
@@ -46,7 +43,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Текстуры для моба
         /// </summary>
-        private readonly List<ModelTexture> _textures = new List<ModelTexture>();
+        protected readonly List<ModelTexture> _textures = new List<ModelTexture>();
 
         /// <summary>
         /// Счётчик индекс кости, для шейдора и не только
@@ -70,10 +67,7 @@ namespace Vge.Entity.Model
         /// </summary>
         private int _height;
 
-        public ModelEntityDefinition(string alias)
-        {
-            _alias = alias;
-        }
+        public ModelEntityDefinition(string alias) => _alias = alias;
 
         /// <summary>
         /// Запуск определения модели
@@ -108,27 +102,18 @@ namespace Vge.Entity.Model
 
                 // Древо скелета
                 _log = Cte.Outliner;
-                _Outliner(model.GetArray(Cte.Outliner), _treeBones);//, _amountBoneIndex);
-
-                // Определения уровня на кубах
-                _LevelDefinitions(_treeBones);
-
-                // Удаляем невидемые кубы
-                _ClearVisibleCube(_treeBones, null);
+                _Outliner(model.GetArray(Cte.Outliner), _treeBones);
 
                 // Перенести кубы с папки префиксом "_" в родительскую папку, чтоб не создавать не нужные кости
-                byte byteTree = 0;
-                while (_MoveCubesFromFolderToParent(null, _treeBones) > 0)
-                {
-                    if (++byteTree >= 8)
-                    {
-                        // Защита от рекурсии
-                        // Переносящая вложенная папка не должна быть глубже 8.
-                        throw new Exception(Sr.GetString(Sr.TransferNestedFolderMustNotBeDeeperThan, 8, _log));
-                    }
-                }
+                _MoveCubesFromFolderToParent();
 
-                // После всех корректировок, строим индекксацию костей и кубов
+                // Определения уровней на кубах
+                _LayerDefinitions(null, _treeBones);
+
+                // Удаляем невидемые кубы и не используемые кости
+                _ClearVisibleCube(null, _treeBones);
+
+                // После всех корректировок, строим индекксацию костей у кубов
                 _cubes.Clear();
                 _amountBoneIndex = 0;
                 _Indexing(_treeBones, 0);
@@ -136,27 +121,29 @@ namespace Vge.Entity.Model
                 // Анимация
                 _log = Cte.Animations;
                 _Animations(model.GetArray(Cte.Animations).ToArrayObject());
-
-                // Генерируем буффер
-                List<float> listFloat = new List<float>();
-                List<int> listInt = new List<int>();
-                foreach (ModelCube cube in _cubes)
-                {
-                    // Генерация буфера
-                    if (cube.Layer == 0)
-                   // if (cube.Name.Substring(0, 1) != "_")
-                        //&& cube.Name != "head")
-                    {
-                        cube.GenBuffer(listFloat, listInt);
-                    }
-                }
-
-                BufferMesh = new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
             }
             catch (Exception ex)
             {
                 throw new Exception(Sr.GetString(Sr.ErrorReadJsonModelEntity, _alias, _log), ex);
             }
+        }
+        /// <summary>
+        /// Генерируем буфер сетки моба, для рендера
+        /// </summary>
+        public VertexEntityBuffer GenBufferMesh()
+        {
+            // Генерируем буффер
+            List<float> listFloat = new List<float>();
+            List<int> listInt = new List<int>();
+            foreach (ModelCube cube in _cubes)
+            {
+                // Генерация буфера только для сущности, не одежда!
+                if (!cube.Layer)
+                {
+                    cube.GenBuffer(listFloat, listInt);
+                }
+            }
+            return new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
         }
 
         #region Textures
@@ -192,6 +179,8 @@ namespace Vge.Entity.Model
         /// </summary>
         private void _TextureImage(string name, string source)
         {
+            // TODO::2025-07-06 идея, чтоб не забыл, разделить текстуру на 2 часть, сверху сущность, снизу слои
+            // И тут сразу их срезать, при этом вертикаль корректировать UV
             if (source.Length > 22 && source.Substring(0, 22) == "data:image/png;base64,")
             {
                 _textures.Add(new ModelTexture(name, BufferedFileImage.FileToBufferedImage(
@@ -208,16 +197,8 @@ namespace Vge.Entity.Model
         /// </summary>
         public BufferedImage[] GenTextures()
         {
-            // Пробегаемся и удаляем не нужные текстуры, которые не используются, в слоях
-            int count = _textures.Count - 1;
-            for (int i = count; i >= 0; i--)
-            {
-                if (_textures[i].IsLayer && !_textures[i].Used)
-                {
-                    // Удалить слои текстур не использующие
-                    _textures.RemoveAt(i);
-                }
-            }
+            // Очитстка не нужных текстур
+            _CleaningUpUnnecessaryTextures();
 
             // Создаём массив текстур
             BufferedImage[] images = new BufferedImage[_textures.Count];
@@ -226,6 +207,23 @@ namespace Vge.Entity.Model
                 images[i] = _textures[i].Image;
             }
             return images;
+        }
+
+        /// <summary>
+        /// Очитстка не нужных текстур
+        /// </summary>
+        protected virtual void _CleaningUpUnnecessaryTextures()
+        {
+            // Пробегаемся и удаляем не нужные текстуры, которые не используются, в слоях
+            int count = _textures.Count - 1;
+            for (int i = count; i >= 0; i--)
+            {
+                if (_textures[i].IsLayer) // Слои нужны только для одежды
+                {
+                    // Удалить слои текстур не использующие
+                    _textures.RemoveAt(i);
+                }
+            }
         }
 
         #endregion
@@ -298,7 +296,6 @@ namespace Vge.Entity.Model
                     ModelCube cube = _FindCune(uuid);
                     if (cube != null)
                     {
-                        //cube.BoneIndex = boneIndex;
                         cube.Index = _cubeIndex++;
                         bones.Add(cube);
                     }
@@ -309,11 +306,11 @@ namespace Vge.Entity.Model
                     JsonCompound compound = outliner.GetCompound(i);
                     _log = "BoneNameUuid";
                     string name = compound.GetString(Cte.Name);
-                    bool notBone = name.Substring(0, 1) == "_";
-                    if (notBone || !compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
+                    EnumType typeFolder = ModelBone.ConvertPrefix(name.Substring(0, 1));
+                    if (typeFolder != EnumType.Bone || !compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
                     {
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),
-                            name, notBone);//, _amountBoneIndex++);
+                            name, typeFolder);
 
                         if (compound.IsKey(Cte.Origin))
                         {
@@ -329,7 +326,7 @@ namespace Vge.Entity.Model
                         if (children.GetCount() > 0)
                         {
                             // Имеются детишки
-                            _Outliner(children, bone.Children);//, bone.BoneIndex);
+                            _Outliner(children, bone.Children);
                         }
 
                         bones.Add(bone);
@@ -357,69 +354,62 @@ namespace Vge.Entity.Model
         #region Корректировки древа костей с кубами
 
         /// <summary>
-        /// Определения уровня
+        /// Определения слоя
         /// </summary>
-        private void _LevelDefinitions(List<ModelElement> bones)
+        private void _LayerDefinitions(ModelBone parent, List<ModelElement> bones)
         {
-            //TODO::2025-07-06 тут остановился, для определения уровней, надо задавать в JSON
-            foreach (ModelElement element in bones)
+            int count = bones.Count - 1;
+            for (int i = count; i >= 0; i--)
             {
-                if (element is ModelCube modelCube)
+                if (bones[i] is ModelBone modelBone && modelBone.Children.Count > 0)
                 {
-                    if (modelCube.Name.Substring(0, 2) == "_5")
+                    if (modelBone.TypeFolder == EnumType.Layer && parent != null)
                     {
-                        modelCube.Layer = 1;
+                        foreach (ModelElement child in modelBone.Children)
+                        {
+                            if (child is ModelCube modelCube)
+                            {
+                                _SetCubeLayer(modelBone, modelCube);
+                                parent.Children.Add(modelCube);
+                            }
+                        }
+                        modelBone.Children.Clear();
+                        bones.RemoveAt(i);
                     }
-                }
-                else if (element is ModelBone modelBone)
-                {
-                    if (modelBone.Name.Length > 2 && modelBone.Name.Substring(0, 3) == "_Br")
+                    else
                     {
-                        _SetLevel(modelBone.Children, 1);
+                        _LayerDefinitions(modelBone, modelBone.Children);
                     }
-                    // Продолжаем проверять глубину, даже если уже знаем левел,
-                    // вдруг глубже есть другие уровни
-                    _LevelDefinitions(modelBone.Children);
                 }
             }
         }
+       
 
         /// <summary>
-        /// Задать в папке всем кубам уровень
+        /// Задать смену уровня
         /// </summary>
-        private void _SetLevel(List<ModelElement> bones, int level)
-        {
-            foreach (ModelElement element in bones)
-            {
-                if (element is ModelCube modelCube)
-                {
-                    modelCube.Layer = level;
-                }
-                else if (element is ModelBone modelBone)
-                {
-                    _SetLevel(modelBone.Children, level);
-                }
-            }
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _SetCubeLayer(ModelBone modelBoneParent, ModelCube modelCube)
+            => modelCube.Layer = true;
 
         /// <summary>
         /// Очистить невидемые кубы, исключение кубы в папках с префиксом "_"
         /// </summary>
-        private void _ClearVisibleCube(List<ModelElement> bones, ModelBone parent)
+        private void _ClearVisibleCube(ModelBone parent, List<ModelElement> bones)
         {
             int count = bones.Count - 1;
             for (int i = count; i >= 0; i--)
             {
                 if (bones[i] is ModelCube modelCube)
                 {
-                    if (!modelCube.Visible && parent != null && !parent.NotBone)
+                    if (!modelCube.Visible && !modelCube.Layer)
                     {
                         parent.Children.Remove(bones[i]);
                     }
                 }
                 else if (bones[i] is ModelBone modelBone)
                 {
-                    _ClearVisibleCube(modelBone.Children, modelBone);
+                    _ClearVisibleCube(modelBone, modelBone.Children);
                     if (modelBone.Children.Count == 0)
                     {
                         // Если в кости нет ничего, удаляем папку-кость
@@ -432,7 +422,24 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Перенести кубы с папки которая не кость, в папку родителя
         /// </summary>
-        private int _MoveCubesFromFolderToParent(ModelBone coreBone, List<ModelElement> bones)
+        private void _MoveCubesFromFolderToParent()
+        {
+            byte byteTree = 0;
+            while (_MoveCubesFromFolderToParent(null, _treeBones) > 0)
+            {
+                if (++byteTree >= 8)
+                {
+                    // Защита от рекурсии
+                    // Переносящая вложенная папка не должна быть глубже 8.
+                    throw new Exception(Sr.GetString(Sr.TransferNestedFolderMustNotBeDeeperThan, 8, _log));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Перенести кубы с папки которая не кость, в папку родителя
+        /// </summary>
+        private int _MoveCubesFromFolderToParent(ModelBone parent, List<ModelElement> bones)
         {
             int countMove = 0;
             int count = bones.Count - 1;
@@ -440,14 +447,12 @@ namespace Vge.Entity.Model
             {
                 if (bones[i] is ModelBone modelBone && modelBone.Children.Count > 0)
                 {
-                    if (modelBone.NotBone && coreBone != null)
+                    if (modelBone.TypeFolder == EnumType.Folder && parent != null)
                     {
-                        foreach (ModelElement child in modelBone.Children)
-                        {
-                            coreBone.Children.Add(child);
-                            bones.RemoveAt(i);
-                            countMove++;
-                        }
+                        parent.Children.AddRange(modelBone.Children);
+                        modelBone.Children.Clear();
+                        bones.RemoveAt(i);
+                        countMove++;
                     }
                     else
                     {
@@ -516,7 +521,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Собираем анимации
         /// </summary>
-        private void _Animations(JsonCompound[] animations)
+        protected virtual void _Animations(JsonCompound[] animations)
         {
             for (int i = 0; i < animations.Length; i++)
             {
