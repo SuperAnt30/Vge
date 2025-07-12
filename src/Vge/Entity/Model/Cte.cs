@@ -6,6 +6,19 @@
     public sealed class Cte
     {
 
+        #region Layer
+
+        /// <summary>
+        /// Название группы. (string)
+        /// </summary>
+        public const string Group = "Group";
+        /// <summary>
+        /// Массив названий папок. ([])
+        /// </summary>
+        public const string Folder = "Folder";
+
+        #endregion
+
         #region Entity
 
         /// <summary>

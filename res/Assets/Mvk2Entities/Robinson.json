@@ -1,7 +1,7 @@
 {
     #Pitch: "Head",
-    #Model: "Robinson",
-    Model: "skeleton"
+    Model: "Robinson",
+    #Model: "skeleton"
     Texture: 0,
     Animations: [
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Vge.Entity.Render
@@ -26,6 +27,25 @@ namespace Vge.Entity.Render
         {
             BufferFloat = bufferFloat;
             BufferInt = bufferInt;
+        }
+
+        /// <summary>
+        /// Склеит два буфера в новый
+        /// </summary>
+        public static VertexEntityBuffer CopyConcat(VertexEntityBuffer buffer1, VertexEntityBuffer buffer2)
+        {
+            int count1 = buffer1.BufferFloat.Length;
+            int count2 = buffer2.BufferFloat.Length;
+            float[] bf = new float[count1 + count2];
+            Array.Copy(buffer1.BufferFloat, bf, count1);
+            Array.Copy(buffer2.BufferFloat, 0, bf, count1, count2);
+
+            count1 = buffer1.BufferInt.Length;
+            count2 = buffer2.BufferInt.Length;
+            int[] bi = new int[count1 + count2];
+            Array.Copy(buffer1.BufferInt, bi, count1);
+            Array.Copy(buffer2.BufferInt, 0, bi, count1, count2);
+            return new VertexEntityBuffer(bf, bi);
         }
 
         /// <summary>
@@ -61,6 +81,28 @@ namespace Vge.Entity.Render
             for (int i = 4; i < BufferFloat.Length; i += 5)
             {
                 BufferFloat[i] *= coef;
+            }
+        }
+
+        /// <summary>
+        /// Задать глубины текстуры на вершину, для одежды
+        /// </summary>
+        public void SetDepthTexture(int depth)
+        {
+            for (int i = 1; i < BufferInt.Length; i += _sizeInt)
+            {
+                BufferInt[i] = depth;
+            }
+        }
+
+        /// <summary>
+        /// Изменить глубину текстуры для маленькой текстуры. На вершину, для одежды
+        /// </summary>
+        public void SetSmallDepthTexture()
+        {
+            for (int i = 1; i < BufferInt.Length; i += _sizeInt)
+            {
+                BufferInt[i] += 65536;
             }
         }
 

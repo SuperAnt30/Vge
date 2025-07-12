@@ -127,6 +127,7 @@ namespace Vge.Entity.Model
                 throw new Exception(Sr.GetString(Sr.ErrorReadJsonModelEntity, _alias, _log), ex);
             }
         }
+
         /// <summary>
         /// Генерируем буфер сетки моба, для рендера
         /// </summary>

@@ -18,8 +18,13 @@ namespace Vge.Entity.Shape
         private readonly VertexEntityBuffer _bufferMesh;
         
         public ShapeEntity(ushort index, string alias, JsonCompound jsonModel)
-            : base(index, alias, jsonModel)
+            : base(index)
         {
+            _definition = new ModelEntityDefinition(alias);
+            _definition.RunModelFromJson(jsonModel);
+            Textures = _definition.GenTextures();
+            DepthTextures = new int[Textures.Length];
+
             _bufferMesh = _definition.GenBufferMesh();
         }
 

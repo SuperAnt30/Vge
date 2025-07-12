@@ -335,7 +335,7 @@ namespace Vge.Entity.Texture
                         depth = DepthSmall;
                         DepthSmall++;
                     }
-                    shape.DepthTextures[t] = depth;
+                    shape.SetDepthTextures(t, depth);
                 }
             }
         }

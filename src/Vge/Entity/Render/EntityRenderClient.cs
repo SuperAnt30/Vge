@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
+using Vge.Entity.Layer;
+using Vge.Entity.Shape;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
@@ -88,7 +90,7 @@ namespace Vge.Entity.Render
                 {
                     // Если имеется анимация у сущности, временно запускаем первую
                     _animationClips.Add(0);
-                    // TODO:2025-07-09 Определяем анимацию стартовую
+                    // TODO::2025-07-09 Определяем анимацию стартовую
                 }
 
                 // Временное включение анимациионного клипа
@@ -199,6 +201,9 @@ namespace Vge.Entity.Render
             }
         }
 
+        int fffd = 1;
+        bool fffb;
+
         /// <summary>
         /// Метод для прорисовки
         /// </summary>
@@ -212,6 +217,7 @@ namespace Vge.Entity.Render
             float ppfy = entityRender.Player.PosFrameY;
             float ppfz = entityRender.Player.PosFrameZ;
 
+            fffd++;
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
                 _resourcesEntity.GetDepthTextureAndSmall(), 
@@ -280,15 +286,28 @@ namespace Vge.Entity.Render
                 // Тут надо просто обратиться к одежде, получить индекс глубины текстуры и её размер (big || small)
                 // И тупо друколим!
 
-                // Заносим в шейдор
-                ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(0);
+                if (fffd > 300)
+                {
+                    fffd = 0;
+                    ShapeLayers shapeLayers = EntitiesReg.LayerShapes[0];
+                    LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
+                    LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
+                    LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
+                    //Entities.Render.ShaderBindEntity(shapeLayers.DepthTextures[layer.TextureId]);
 
-                Entities.Render.ShaderBindEntity(
-                    resourcesEntity.GetDepthTextureAndSmall()
-                );
-                entityRender = Entities.GetEntityRender(0);
-
-                entityRender.MeshDraw();
+                    if (fffb)
+                    {
+                        entityRender.Reload2(VertexEntityBuffer.CopyConcat(layer3.BufferMesh,
+                            layer2.BufferMesh).CopyBufferMesh(1.75f));
+                    }
+                    else
+                    {
+                        entityRender.Reload2(VertexEntityBuffer.CopyConcat(layer.BufferMesh,
+                            layer2.BufferMesh).CopyBufferMesh(1.75f));
+                    }
+                    fffb = !fffb;
+                }
+                entityRender.Mesh2Draw();
             }
         }
 

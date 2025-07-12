@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Layer;
+using Vge.Entity.Render;
 using Vge.Json;
 
 namespace Vge.Entity.Model
@@ -15,6 +17,38 @@ namespace Vge.Entity.Model
         private readonly Dictionary<string, Data> _mapLevels = new Dictionary<string, Data>();
 
         public ModelLayerDefinition(string alias) : base(alias) { }
+
+        /// <summary>
+        /// Помечаем текстуры которые используем
+        /// </summary>
+        public void TexturesUsed(Dictionary<string, GroupLayers> groups)
+        {
+            ushort i = 0;
+            bool b = false;
+            foreach(ModelTexture texture in _textures)
+            {
+                foreach (GroupLayers group in groups.Values)
+                {
+                    foreach (LayerBuffer layer in group.Layers)
+                    {
+                        if (texture.Name == layer.Texture)
+                        {
+                            layer.TextureId = i;
+                            if (!texture.Used)
+                            {
+                                b = true;
+                                texture.Used = true;
+                            }
+                        }
+                    }
+                }
+                if (b)
+                {
+                    b = false;
+                    i++;
+                }
+            }
+        }
 
         /// <summary>
         /// Собираем анимации
@@ -40,6 +74,27 @@ namespace Vge.Entity.Model
             }
             modelCube.Layer = true;
             data.Add(modelCube);
+        }
+
+        /// <summary>
+        /// Генерируем буфер сетки моба, только выбранных папок для рендера
+        /// </summary>
+        public VertexEntityBuffer GenBufferMesh(string[] folders)
+        {
+            // Генерируем буффер
+            List<float> listFloat = new List<float>();
+            List<int> listInt = new List<int>();
+            foreach(string folder in folders)
+            {
+                if (_mapLevels.ContainsKey(folder))
+                {
+                    foreach (ModelCube cube in _mapLevels[folder].Layers)
+                    {
+                        cube.GenBuffer(listFloat, listInt);
+                    }
+                }
+            }
+            return new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
         }
 
         private class Data

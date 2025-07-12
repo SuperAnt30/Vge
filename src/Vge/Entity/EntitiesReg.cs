@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Entity.Layer;
 using Vge.Entity.List;
 using Vge.Entity.Model;
 using Vge.Entity.Player;
@@ -36,7 +37,7 @@ namespace Vge.Entity
         /// <summary>
         /// Справочник всех слоёв форм (одежда)
         /// </summary>
-        public static readonly List<ShapeLayer> LayerShapes = new List<ShapeLayer>();
+        public static readonly List<ShapeLayers> LayerShapes = new List<ShapeLayers>();
 
         /// <summary>
         /// Справочник всех моделей
@@ -100,7 +101,7 @@ namespace Vge.Entity
             {
                 shapeEntity.ClearDefinition();
             }
-            foreach (ShapeLayer shapeLayer in LayerShapes)
+            foreach (ShapeLayers shapeLayer in LayerShapes)
             {
                 shapeLayer.ClearDefinition();
             }
@@ -152,28 +153,76 @@ namespace Vge.Entity
                     throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
                 }
 
-                //TODO::!!! ВРОДЕ ПОРА Base.json
-
-                ShapeLayer shape = new ShapeLayer((ushort)LayerShapes.Count, modelFile, _GetModel(modelFile));
+                ShapeLayers shape = new ShapeLayers((ushort)LayerShapes.Count, modelFile,
+                    _ReadGroupLayers(alias, jsonRead.Compound), _GetModel(modelFile));
+                // TODO::2025-07-12 Надо продумать про индекс!
                 LayerShapes.Add(shape);
-
-                // TODO::2025-07-08 Надо создать типа ResourcesEntityLayer
-                // Вроде это надо только для рендера!
-
-                //ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType, shape.Index);
-                //modelEntity.ReadStateFromJson(jsonRead.Compound);
-                //if (FlagRender)
-                //{
-                //    modelEntity.ReadStateClientFromJson(jsonRead.Compound);
-                //}
-
-                //Table.Add(alias, modelEntity);
             }
             else
             {
                 // Отсутствует файл json, сущности
-                throw new Exception(Sr.GetString(Sr.FileMissingLayersJsonEntity, alias));
+                throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, alias));
             }
+        }
+
+        /// <summary>
+        /// Прочесть с json данные слоёв
+        /// </summary>
+        /// <param name="alias">Имя файла</param>
+        /// <param name="compound">объект json</param>
+        private static Dictionary<string, GroupLayers> _ReadGroupLayers(string alias, JsonCompound compound)
+        {
+           // List<GroupLayers> list = new List<GroupLayers>();
+            Dictionary<string, GroupLayers> map = new Dictionary<string, GroupLayers>();
+
+            if (!compound.IsKey(Cte.Layers))
+            {
+                // Отсутствует требуемый параметр
+                throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingLayers, alias, Cte.Layers));
+            }
+
+            JsonCompound[] layers = compound.GetArray(Cte.Layers).ToArrayObject();
+            string group, name;
+            string texture;
+            string[] folder;
+            GroupLayers groupLayers;
+            foreach (JsonCompound layer in layers)
+            {
+                group = layer.GetString(Cte.Group);
+                if (group == "")
+                {
+                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingLayers, alias, Cte.Group));
+                }
+                name = layer.GetString(Cte.Name);
+                if (name == "")
+                {
+                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingLayers, alias, Cte.Name));
+                }
+                texture = layer.GetString(Cte.Texture);
+                if (texture == "")
+                {
+                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingLayers, alias, Cte.Texture));
+                }
+                if (!layer.IsKey(Cte.Folder))
+                {
+                    throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingLayers, alias, Cte.Folder));
+                }
+                folder = layer.GetArray(Cte.Folder).ToArrayString();
+
+                if (map.ContainsKey(group))
+                {
+                    groupLayers = map[group];
+                }
+                else
+                {
+                    groupLayers = new GroupLayers(group);
+                    map.Add(group, groupLayers);
+                    //list.Add(groupLayers);
+                }
+                groupLayers.Add(new LayerBuffer(name, texture, folder));
+            }
+
+            return map; // list.ToArray();
         }
 
         /// <summary>
@@ -262,7 +311,7 @@ namespace Vge.Entity
                     Table[i].SetBufferMeshBecauseSizeTexture(shapeEntity);
                 }
             }
-            else if (shape is ShapeLayer shapeLayer)
+            else if (shape is ShapeLayers shapeLayer)
             {
 
             }

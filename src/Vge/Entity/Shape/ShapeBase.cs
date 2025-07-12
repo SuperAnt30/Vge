@@ -15,35 +15,22 @@ namespace Vge.Entity.Shape
         /// <summary>
         /// Текстуры для моба
         /// </summary>
-        public BufferedImage[] Textures { get; private set; }
+        public BufferedImage[] Textures { get; protected set; }
         /// <summary>
         /// Индекс глубины текстуры для моба
         /// </summary>
-        public readonly int[] DepthTextures;
+        public int[] DepthTextures { get; protected set; }
         /// <summary>
         /// Минимальная текстура
         /// </summary>
-        public bool TextureSmall { get; private set; } = true;
+        public bool TextureSmall { get; protected set; } = true;
 
         /// <summary>
         /// Объект отвечает за определяение модели сущности
         /// </summary>
         protected ModelEntityDefinition _definition;
 
-        public ShapeBase(ushort index, string alias, JsonCompound jsonModel)
-        {
-            Index = index;
-            _CreateDefinition(alias);
-            _definition.RunModelFromJson(jsonModel);
-            Textures = _definition.GenTextures();
-            DepthTextures = new int[Textures.Length];
-        }
-
-        /// <summary>
-        /// Создаём объект отвечает за определяение модели сущности
-        /// </summary>
-        protected virtual void _CreateDefinition(string alias)
-            => _definition = new ModelEntityDefinition(alias);
+        public ShapeBase(ushort index) => Index = index;
 
         /// <summary>
         /// Очистить объект отвечает за определяение модели сущности
@@ -69,7 +56,14 @@ namespace Vge.Entity.Shape
         /// Пометить модель в максимальную группу текстур
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void TextureGroupBig() => TextureSmall = false;
+        public virtual void TextureGroupBig() => TextureSmall = false;
+
+        /// <summary>
+        /// Задать глубину в текстуру
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetDepthTextures(int index, int depth) 
+            => DepthTextures[index] = depth;
 
         /// <summary>
         /// Корректировка размера ширины текстуры, в буффере UV

@@ -127,7 +127,7 @@ namespace Vge.Entity.Model
                         Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
                         Vertex[i].U, Vertex[i].V
                     });
-                    bufferInt.AddRange(new int[] { modelCube.BoneIndex, 0 });
+                    bufferInt.AddRange(new int[] { modelCube.BoneIndex, -1 });
                 }
             }
         }

@@ -21,7 +21,14 @@ void main()
 {
 	a_texCoord = v_texCoord;
     a_light = light;
-	a_depth = depth;
+    if (v_clothId == -1)
+    {
+        a_depth = depth;
+    }
+    else 
+    {
+        a_depth = float(v_clothId);
+    }
     
 	if (anim < 1)
 	{
