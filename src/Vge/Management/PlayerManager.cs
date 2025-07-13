@@ -435,7 +435,7 @@ namespace Vge.Management
                     // Отправить всем игрокам, чтоб убрать с чата
                     SendToAll(new PacketS06PlayerEntryRemove(player.Id));
                 }
-                player.GetWorld().RemoveEntityInWorld(player);
+                player.SetDead();
                 player.LeftGame();
             }
         }

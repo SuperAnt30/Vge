@@ -121,13 +121,14 @@ namespace Vge.Entity.Model
                 Vertex[1].V = Vertex[2].V = v1;
 
                 // Формируем буфер
+                int param = modelCube.Eye << 8 | modelCube.BoneIndex;
                 for (int i = 0; i < 4; i++)
                 {
                     bufferFloat.AddRange(new float[] {
                         Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
                         Vertex[i].U, Vertex[i].V
                     });
-                    bufferInt.AddRange(new int[] { modelCube.BoneIndex, -1 });
+                    bufferInt.AddRange(new int[] { param, -1 });
                 }
             }
         }

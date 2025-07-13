@@ -27,12 +27,23 @@ namespace Vge.Entity.Render
         /// </summary>
         public readonly EntitiesRenderer Entities;
 
+        /// <summary>
+        /// Статичный объект сетки типа сущности, не меняется
+        /// </summary>
+        private EntityRender _entityRender;
+        /// <summary>
+        /// Объект для рендера слоёв (предметов или одежды) на сущности
+        /// </summary>
+        private readonly EntityLayerRender _entityLayerRender;
+
+        /// <summary>
+        /// Ресурсы сущности, нужны везде, но форма только на клиенте
+        /// </summary>
         private readonly ResourcesEntity _resourcesEntity;
         /// <summary>
         /// Массив отдельных анимационных клипов
         /// </summary>
         private readonly ListMessy<int> _animationClips = new ListMessy<int>();
-
         /// <summary>
         /// Массив всех клипов данной сущности
         /// </summary>
@@ -66,6 +77,12 @@ namespace Vge.Entity.Render
         {
             Entities = entities;
             _resourcesEntity = Ce.Entities.GetModelEntity(indexModel);
+
+            // Если имеется инвентарь, то создаём объект слоёв
+            if (Entity is EntityLiving || _resourcesEntity.IsAnimation) // Временно реагируем на живую сущность
+            {
+                _entityLayerRender = new EntityLayerRender(entities);
+            }
 
             if (_resourcesEntity.IsAnimation)
             {
@@ -132,7 +149,6 @@ namespace Vge.Entity.Render
         {
             // Проверяем освещение
             _BrightnessForRender(world);
-            Entities.OnTick(deltaTime);
 
             if (_resourcesEntity.IsAnimation)
             {
@@ -199,10 +215,45 @@ namespace Vge.Entity.Render
                     }
                 }
             }
+
+            // TEST
+            timeeye++;
+            if (timeeye > 150) timeeye = 0;
+            fffd++;
+            if (_entityLayerRender != null)
+            {
+                if (fffd > 30)
+                {
+                    fffd = 0;
+                    ShapeLayers shapeLayers = EntitiesReg.LayerShapes[0];
+                    LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
+                    LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
+                    LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
+                    LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
+                    //Entities.Render.ShaderBindEntity(shapeLayers.DepthTextures[layer.TextureId]);
+
+
+                    if (fffb)
+                    {
+                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                    }
+                    else
+                    {
+                        //_entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                    }
+                    _entityLayerRender.Reload();
+                    fffb = !fffb;
+                }
+            }
         }
 
-        int fffd = 1;
-        bool fffb;
+        int fffd = 100;
+        bool fffb = true;
+
+        int timeeye = 0;
 
         /// <summary>
         /// Метод для прорисовки
@@ -211,17 +262,20 @@ namespace Vge.Entity.Render
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
         public override void Draw(float timeIndex, float deltaTime)
         {
-            EntityRender entityRender = Entities.GetEntityRender(Entity.IndexEntity);
+            if (_entityRender == null)
+            {
+                _entityRender = Entities.GetEntityRender(Entity.IndexEntity);
+            }
 
-            float ppfx = entityRender.Player.PosFrameX;
-            float ppfy = entityRender.Player.PosFrameY;
-            float ppfz = entityRender.Player.PosFrameZ;
-
-            fffd++;
+            float ppfx = Entities.Player.PosFrameX;
+            float ppfy = Entities.Player.PosFrameY;
+            float ppfz = Entities.Player.PosFrameZ;
+            
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
                 _resourcesEntity.GetDepthTextureAndSmall(), 
                 _resourcesEntity.GetIsAnimation(),
+                timeeye > 5, // глаза
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
@@ -275,40 +329,11 @@ namespace Vge.Entity.Render
                 Entities.Render.ShEntity.SetUniformMatrix4x3(Entities.GetOpenGL(),
                     "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
             }
-            entityRender.MeshDraw();
+            // Рисуем основную сетку сущности
+            _entityRender.MeshDraw();
 
-            // Layers
-
-            // TEST
-            if (Entity.IndexEntity == Ce.Entities.IndexPlayer)
-            {
-                // TODO::2025-07-09 Данный тест подтвердил, что матрицу повторно заливать не надо!
-                // Тут надо просто обратиться к одежде, получить индекс глубины текстуры и её размер (big || small)
-                // И тупо друколим!
-
-                if (fffd > 300)
-                {
-                    fffd = 0;
-                    ShapeLayers shapeLayers = EntitiesReg.LayerShapes[0];
-                    LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
-                    LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
-                    LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
-                    //Entities.Render.ShaderBindEntity(shapeLayers.DepthTextures[layer.TextureId]);
-
-                    if (fffb)
-                    {
-                        entityRender.Reload2(VertexEntityBuffer.CopyConcat(layer3.BufferMesh,
-                            layer2.BufferMesh).CopyBufferMesh(1.75f));
-                    }
-                    else
-                    {
-                        entityRender.Reload2(VertexEntityBuffer.CopyConcat(layer.BufferMesh,
-                            layer2.BufferMesh).CopyBufferMesh(1.75f));
-                    }
-                    fffb = !fffb;
-                }
-                entityRender.Mesh2Draw();
-            }
+            // Если имеются слои, рисуем сетку слоёв
+            _entityLayerRender?.MeshDraw();
         }
 
         #region Skeletion Matrix
@@ -435,5 +460,8 @@ namespace Vge.Entity.Render
                 _lightSky = 1;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Dispose() => _entityLayerRender?.Dispose();
     }
 }

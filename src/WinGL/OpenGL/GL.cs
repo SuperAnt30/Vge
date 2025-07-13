@@ -510,18 +510,7 @@ namespace WinGL.OpenGL
         /// <param name="type">Specifies the type of the values in indices.	Must be one of OpenGL.GL_UNSIGNED_BYTE, OpenGL.GL_UNSIGNED_SHORT, or OpenGL.GL_UNSIGNED_INT.</param>
         /// <param name="indices">Specifies a pointer to the location where the indices are stored.</param>
         public void DrawElements(uint mode, int count, uint type, IntPtr indices)
-        {
-            // TODO::Crash 2024-12-06 GL Crash
-            try
-            {
-                glDrawElements(mode, count, type, indices);
-            }
-            catch(Exception ex)
-            {
-                return;
-            }
-        }
-            //=> glDrawElements(mode, count, type, indices);
+            => glDrawElements(mode, count, type, indices);
 
         /// <summary>
 		/// Use this function to query OpenGL parameter values.

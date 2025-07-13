@@ -1,12 +1,13 @@
-﻿using System.Runtime.CompilerServices;
-using Vge.Entity.Physics;
-using Vge.Entity.Sizes;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
+using Vge.Entity.Physics;
+using Vge.Entity.Render;
+using Vge.Entity.Sizes;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
-using Vge.Entity.Render;
 
 namespace Vge.Entity
 {
@@ -19,7 +20,7 @@ namespace Vge.Entity
     /// <summary>
     /// Базовый объект сущности
     /// </summary>
-    public abstract class EntityBase//<TSize> where TSize : ISizeEntity
+    public abstract class EntityBase : IDisposable//<TSize> where TSize : ISizeEntity
     {
         /// <summary>
         /// Уникальный порядковый номер игрока в базе
@@ -529,6 +530,12 @@ namespace Vge.Entity
 
 
         #endregion
+
+        /// <summary>
+        /// Выгрузить графику с OpenGL, только в потоке где OpneGL (основной)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Dispose() => Render?.Dispose();
 
         /// <summary>
         /// Получить массив XZ с вращением

@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Vge.Renderer;
 using Vge.World;
 
 namespace Vge.Entity.Render
@@ -6,7 +8,7 @@ namespace Vge.Entity.Render
     /// <summary>
     /// Базовый класс рендера для сущности, объект пустой, для сервера
     /// </summary>
-    public class EntityRenderBase
+    public class EntityRenderBase : IDisposable
     {
         /// <summary>
         /// Сущность к которой прекреплена физика
@@ -45,5 +47,8 @@ namespace Vge.Entity.Render
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void RemoveClip(int index) { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Dispose() { }
     }
 }

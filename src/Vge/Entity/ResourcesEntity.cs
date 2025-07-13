@@ -43,6 +43,10 @@ namespace Vge.Entity
         /// Буфер сетки моба по умолчанию, для рендера
         /// </summary>
         public VertexEntityBuffer BufferMesh { get; private set; }
+        /// <summary>
+        /// Масштаб формы
+        /// </summary>
+        public float Scale { get; private set; }
 
         /// <summary>
         /// Индекс формы
@@ -52,10 +56,6 @@ namespace Vge.Entity
         /// Индекс текстуры
         /// </summary>
         private ushort _indexTexture;
-        /// <summary>
-        /// Масштаб формы
-        /// </summary>
-        private float _scale;
 
         public ResourcesEntity(string alias, Type entityType, ushort indexShape)
         {
@@ -126,7 +126,7 @@ namespace Vge.Entity
         /// </summary>
         public void ReadStateClientFromJson(JsonCompound state)
         {
-            _scale = 1;
+            Scale = 1;
             // Массив данных анимации
             AnimationData[] animationDatas = new AnimationData[0];
             if (state.Items != null)
@@ -152,8 +152,8 @@ namespace Vge.Entity
                         }
                         else if (json.IsKey(Cte.Scale))
                         {
-                            _scale = json.GetFloat();
-                            if (_scale == 0) _scale = 1;
+                            Scale = json.GetFloat();
+                            if (Scale == 0) Scale = 1;
                         }
                         else if (json.IsKey(Ctb.Texture)) _indexTexture = (ushort)json.GetInt();
                     }
@@ -166,11 +166,11 @@ namespace Vge.Entity
 
             // Копия буффера
             ShapeEntity shapeEntity = EntitiesReg.Shapes[_indexShape];
-            BufferMesh = shapeEntity.CopyBufferFloatMesh(_scale);
+            BufferMesh = shapeEntity.CopyBufferFloatMesh(Scale);
             if (IsAnimation)
             {
                 // Если только есть анимация, нужны кости и клипы
-                Bones = shapeEntity.GenBones(_scale);
+                Bones = shapeEntity.GenBones(Scale);
                 ModelAnimationClips = shapeEntity.GetModelAnimationClips(animationDatas);
             }
         }
@@ -182,7 +182,7 @@ namespace Vge.Entity
         {
             if (_indexShape == shapeEntity.Index)
             {
-                BufferMesh = shapeEntity.CopyBufferFloatMesh(_scale);
+                BufferMesh = shapeEntity.CopyBufferFloatMesh(Scale);
             }
         }
 

@@ -24,8 +24,8 @@ namespace Vge.Entity.Model
         /// Создать кость
         /// </summary>
         /// <param name="nameBoneHead">Название кости меняющее от Pitch</param>
-        public Bone CreateBone(string nameBoneHead, byte parentIndex, float scale)
-            => new Bone(parentIndex, Name.Equals(nameBoneHead),
+        public Bone CreateBone(byte parentIndex, float scale)
+            => new Bone(parentIndex, Name == ModelEntityDefinition.NameBoneHead,
                 RotationX, RotationY, RotationZ, 
                 OriginX * scale, OriginY * scale, OriginZ * scale, Children.Count);
 

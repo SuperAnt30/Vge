@@ -59,7 +59,7 @@ namespace Vge.Renderer
         }
 
         /// <summary>
-        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// Перезаписать полигоны
         /// </summary>
         public void Reload(VertexEntityBuffer buffers)
         {
@@ -67,9 +67,25 @@ namespace Vge.Renderer
 
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferFloat, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferFloat, GL.GL_STATIC_DRAW);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboInt);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferInt, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.BufferInt, GL.GL_STATIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STATIC_DRAW);
+        }
+
+        /// <summary>
+        /// Перезаписать полигоны слоёв
+        /// </summary>
+        public void ReloadLayers(VertexLayersBuffer buffers)
+        {
+            _countVertices = buffers.CountVertices;
+
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.ToArrayFloat(), GL.GL_DYNAMIC_DRAW);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboInt);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, buffers.ToArrayInt(), GL.GL_DYNAMIC_DRAW);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
         }

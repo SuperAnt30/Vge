@@ -17,7 +17,15 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Название кости меняющее от Pitch, голова
         /// </summary>
-        protected const string _nameBoneHead = "Head";
+        public const string NameBoneHead = "Head";
+        /// <summary>
+        /// Название куба открытых глаз 
+        /// </summary>
+        public const string NameCubeEyeOn = "eyeOpen";
+        /// <summary>
+        /// Название куба закрытых глаз
+        /// </summary>
+        public const string NameCubeEyeOff = "eyeClose";
 
         /// <summary>
         /// Псевдоним
@@ -510,7 +518,7 @@ namespace Vge.Entity.Model
                 if (modelBones[i] is ModelBone modelBone)
                 {
                     _ConvertTreeBones(resultBones, modelBone.Children, modelBone.BoneIndex, scale);
-                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(_nameBoneHead, parentIndex, scale);
+                    resultBones[modelBone.BoneIndex] = modelBone.CreateBone(parentIndex, scale);
                 }
             }
         }

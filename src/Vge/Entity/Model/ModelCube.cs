@@ -60,12 +60,29 @@ namespace Vge.Entity.Model
         /// Видимость куба
         /// </summary>
         public readonly bool Visible;
+        /// <summary>
+        /// Тип блока глаз 0 - не глаза, 1 - глаза открыты, 2 - глаза закрыты
+        /// </summary>
+        public readonly byte Eye; 
 
         public ModelCube(string uuid, string name, int width, int height, bool visible) : base(uuid, name)
         {
             Width = width;
             Height = height;
-            Visible = visible;
+            if (name == ModelEntityDefinition.NameCubeEyeOn)
+            {
+                Eye = 1;
+                Visible = true;
+            }
+            else if (name == ModelEntityDefinition.NameCubeEyeOff)
+            {
+                Eye = 2;
+                Visible = true;
+            }
+            else
+            {
+                Visible = visible;
+            }
         }
 
         /// <summary>

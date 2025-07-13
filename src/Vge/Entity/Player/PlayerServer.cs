@@ -366,7 +366,7 @@ namespace Vge.Entity.Player
                     }
                     try
                     {
-                        isBox = !isBox;
+                       // isBox = !isBox;
                         //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
                         // Для сервера
                         EntityThrowable entityThrowable = Ce.Entities.CreateEntityServer((ushort)id, world.Collision) as EntityThrowable;

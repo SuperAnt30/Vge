@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
 using Vge.Renderer.World;
@@ -66,7 +67,7 @@ namespace Vge.World
             Filer.StartSection("Entities");
             _UpdateEntities();
             Filer.EndSection();
-            
+
             if (Ce.IsDebugDrawChunks && _flagDebugChunkMappingChanged)
             {
                 _flagDebugChunkMappingChanged = false;
@@ -130,23 +131,19 @@ namespace Vge.World
         /// <summary>
         /// Возвращает сущностьь с заданным идентификатором или null, если он не существует в этом мире.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EntityBase GetEntityByID(int id)
         {
             if (id == Game.Player.Id) return Game.Player;
-            return LoadedEntityList.Get(id) as EntityBase;
+            return LoadedEntityList.Get(id);
         }
 
         /// <summary>
         /// Удаление сущности по индексу в текущем мире
         /// </summary>
-        public void RemoveEntityInWorld(int id)
-        {
-            EntityBase entity = GetEntityByID(id);
-            if (entity != null)
-            {
-                RemoveEntityInWorld(entity);
-            }
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveEntityInWorld(int id) => GetEntityByID(id)?.SetDead();
+            
 
         protected override void _UpdateEntity(EntityBase entity)
         {
@@ -155,6 +152,18 @@ namespace Vge.World
                 entity.UpdateClient(this, Game.DeltaTime);
             }
             base._UpdateEntity(entity);
+        }
+
+        /// <summary>
+        /// Вызывается для всех World, когда сущность выгружается или уничтожается. 
+        /// В клиентских мирах освобождает любые загруженные текстуры.
+        /// В серверных мирах удаляет сущность из трекера сущностей.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _OnEntityRemoved(EntityBase entity)
+        {
+            base._OnEntityRemoved(entity);
+            entity.Dispose();
         }
 
         #endregion

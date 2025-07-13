@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Vge.Entity.Render
@@ -12,7 +11,7 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Количество элементов в типе buffersInt в одной вершине
         /// </summary>
-        private const byte _sizeInt = 2;
+        public const byte SizeInt = 2;
 
         /// <summary>
         /// Буфер для склейки рендера, Float данных
@@ -58,7 +57,7 @@ namespace Vge.Entity.Render
         /// Получить количество вершин
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetCountVertices() => BufferInt.Length / _sizeInt;
+        public int GetCountVertices() => BufferInt.Length / SizeInt;
 
         /// <summary>
         /// Корректировка размера ширины текстуры, в буффере UV
@@ -89,7 +88,7 @@ namespace Vge.Entity.Render
         /// </summary>
         public void SetDepthTexture(int depth)
         {
-            for (int i = 1; i < BufferInt.Length; i += _sizeInt)
+            for (int i = 1; i < BufferInt.Length; i += SizeInt)
             {
                 BufferInt[i] = depth;
             }
@@ -100,7 +99,7 @@ namespace Vge.Entity.Render
         /// </summary>
         public void SetSmallDepthTexture()
         {
-            for (int i = 1; i < BufferInt.Length; i += _sizeInt)
+            for (int i = 1; i < BufferInt.Length; i += SizeInt)
             {
                 BufferInt[i] += 65536;
             }

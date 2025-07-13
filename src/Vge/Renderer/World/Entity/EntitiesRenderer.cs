@@ -1,6 +1,7 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Player;
-using Vge.Entity.Shape;
+using Vge.Entity.Render;
 using Vge.Games;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -22,6 +23,11 @@ namespace Vge.Renderer.World.Entity
         public bool IsHitBox = false;
 
         /// <summary>
+        /// Объект буфера
+        /// </summary>
+        public readonly VertexLayersBuffer Buffer = new VertexLayersBuffer();
+
+        /// <summary>
         /// Объект OpenGL для элемента управления
         /// </summary>
         private readonly GL gl;
@@ -34,9 +40,8 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly HitboxEntityRender _hitbox;
         
-
         /// <summary>
-        /// Массив всех сущностей
+        /// Массив всех типов сущностей
         /// </summary>
         private EntityRender[] _entityRender;
 
@@ -54,6 +59,15 @@ namespace Vge.Renderer.World.Entity
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
             _arrayChunkRender = arrayChunkRender;
+        }
+
+        /// <summary>
+        /// Объект игрока для клиента
+        /// </summary>
+        public PlayerClientOwner Player
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _game.Player;
         }
 
         /// <summary>
@@ -76,14 +90,14 @@ namespace Vge.Renderer.World.Entity
             // Заносим все текстуры сущностей
             EntitiesReg.SetImageTexture2dArray(Render.Texture, _idTextureSmall, _idTextureBig);
 
-            // Создаём объекты рендора всех сущностей
+            // Создаём объекты рендора всех типов сущностей
             int count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
             ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)
             {
                 resourcesEntity = Ce.Entities.GetModelEntity(id);
-                _entityRender[id] = new EntityRender(gl, Render, resourcesEntity, _game.Player);
+                _entityRender[id] = new EntityRender(gl, resourcesEntity);
             }
         }
 
@@ -158,6 +172,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Получить объект рендера сущности по индексу
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EntityRender GetEntityRender(int indexEntity) => _entityRender[indexEntity];
 
         /// <summary>
@@ -179,14 +194,6 @@ namespace Vge.Renderer.World.Entity
                 _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
                 _hitbox.Draw(timeIndex, _game.Player);
             }
-        }
-
-        /// <summary>
-        /// Игровой такт
-        /// </summary>
-        /// <param name="deltaTime">Дельта последнего тика в mc</param>
-        public override void OnTick(float deltaTime)
-        {
         }
 
         public override void Dispose()

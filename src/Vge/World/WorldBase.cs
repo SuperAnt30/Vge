@@ -73,6 +73,7 @@ namespace Vge.World
         /// <summary>
         /// Получить время в тактах объекта Stopwatch с момента запуска проекта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual long ElapsedTicks() => 0;
 
         #region Chunk
@@ -173,18 +174,11 @@ namespace Vge.World
         /// <summary>
         /// Вызывается, когда объект появляется в мире. Это включает в себя игроков
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SpawnEntityInWorld(EntityBase entity)
             => _OnEntityAdded(entity);
 
-        /// <summary>
-        /// Удаление сущности в текущем мире
-        /// </summary>
-        public virtual void RemoveEntityInWorld(EntityBase entity)
-        {
-            entity.SetDead();
-            _OnEntityRemoved(entity);
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _OnEntityAdded(EntityBase entity)
         {
             if (entity is PlayerBase player)
@@ -201,6 +195,7 @@ namespace Vge.World
         /// В клиентских мирах освобождает любые загруженные текстуры.
         /// В серверных мирах удаляет сущность из трекера сущностей.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _OnEntityRemoved(EntityBase entity)
         {
             if (entity is PlayerBase player)
@@ -208,7 +203,6 @@ namespace Vge.World
                 PlayerEntities.Remove(player);
                 //TODO::2023-07-07 Флаг сна всех игроков
                 //UpdateAllPlayersSleepingFlag();
-                
             }
         }
 
