@@ -268,27 +268,27 @@ namespace Vge.Entity.Model
 
                 // Собираем 6 сторон текстур
                 _log = Cte.Up;
-                cube.Faces[(int)Pole.Up] = new ModelFace(Pole.Up,
-                    faces.GetObject(Cte.Up).GetArray(Cte.Uv).ToArrayFloat());
+                cube.Faces[(int)Pole.Up] = _CreateFace(Pole.Up, faces.GetObject(Cte.Up));
                 _log = Cte.Down;
-                cube.Faces[(int)Pole.Down] = new ModelFace(Pole.Down,
-                    faces.GetObject(Cte.Down).GetArray(Cte.Uv).ToArrayFloat());
+                cube.Faces[(int)Pole.Down] = _CreateFace(Pole.Down, faces.GetObject(Cte.Down));
                 _log = Cte.East;
-                cube.Faces[(int)Pole.East] = new ModelFace(Pole.East,
-                    faces.GetObject(Cte.East).GetArray(Cte.Uv).ToArrayFloat());
+                cube.Faces[(int)Pole.East] = _CreateFace(Pole.East, faces.GetObject(Cte.East));
                 _log = Cte.West;
-                cube.Faces[(int)Pole.West] = new ModelFace(Pole.West,
-                    faces.GetObject(Cte.West).GetArray(Cte.Uv).ToArrayFloat());
+                cube.Faces[(int)Pole.West] = _CreateFace(Pole.West, faces.GetObject(Cte.West));
                 _log = Cte.North;
-                cube.Faces[(int)Pole.North] = new ModelFace(Pole.North,
-                    faces.GetObject(Cte.North).GetArray(Cte.Uv).ToArrayFloat());
+                cube.Faces[(int)Pole.North] = _CreateFace(Pole.North, faces.GetObject(Cte.North));
                 _log = Cte.South;
-                cube.Faces[(int)Pole.South] = new ModelFace(Pole.South,
-                    faces.GetObject(Cte.South).GetArray(Cte.Uv).ToArrayFloat());
-
+                cube.Faces[(int)Pole.South] = _CreateFace(Pole.South, faces.GetObject(Cte.South));
                 _cubes.Add(cube);
             }
         }
+
+        /// <summary>
+        /// Создаём сторону куба
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ModelFace _CreateFace(Pole side, JsonCompound face) => new ModelFace(side, 
+                face.GetArray(Cte.Uv).ToArrayFloat(), face.GetString(Cte.Texture) == "null");
 
         /// <summary>
         /// Строим древо скелета

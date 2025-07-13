@@ -20,16 +20,16 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly Pole Side;
         /// <summary>
-        /// Пустой ли
-        /// </summary>
-        public readonly bool Empty;
-
-        /// <summary>
         /// Четыре вершины
         /// </summary>
         public readonly Vertex3d[] Vertex = new Vertex3d[4];
 
-        public ModelFace(Pole side, float[] uv)
+        /// <summary>
+        /// Пустой ли
+        /// </summary>
+        private readonly bool _empty;
+
+        public ModelFace(Pole side, float[] uv, bool empty)
         {
             Side = side;
             FromU = uv[0];
@@ -37,7 +37,7 @@ namespace Vge.Entity.Model
             ToU = uv[2];
             ToV = uv[3];
 
-            Empty = FromU == 0 && ToU == 0;
+            _empty = empty;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Vge.Entity.Model
         /// </summary>
         public void GenBuffer(List<float> bufferFloat, List<int> bufferInt, ModelCube modelCube)
         {
-            if (!Empty)
+            if (!_empty)
             {
                 // Устанавливаем вершины согласно стороны
                 float x1 = modelCube.FromX / 16f;
@@ -102,7 +102,6 @@ namespace Vge.Entity.Model
                 }
 
                 // Вращение если имеется
-
                 if (modelCube.RotationX != 0 || modelCube.RotationY != 0 || modelCube.RotationZ != 0)
                 {
                     _Rotate(modelCube.RotationY, modelCube.RotationX, modelCube.RotationZ,
@@ -158,7 +157,7 @@ namespace Vge.Entity.Model
 
         public override string ToString()
         {
-            if (Empty) return Side.ToString() + " Empty";
+            if (_empty) return Side.ToString() + " Empty";
             return Side.ToString() + " " + FromU + " " + FromV + " " + ToU + " " + ToV;
         }
     }
