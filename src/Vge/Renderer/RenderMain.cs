@@ -169,8 +169,9 @@ namespace Vge.Renderer
         /// <summary>
         /// Связать шейдер Entity
         /// </summary>
+        /// <param name="eyelips">bit [0000 0LLE], где E=1 глаза открыты, LL-губы 1=открыты, 2=улыбка </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderBindEntity(float depthAndSmall, float anim, bool eyeOpen,
+        public void ShaderBindEntity(float depthAndSmall, float anim, int eyelips,
             float lightBlock, float lightSky,
             float posX, float posY, float posZ)
         {
@@ -178,7 +179,7 @@ namespace Vge.Renderer
             ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
             ShEntity.SetUniform1(gl, "depth", depthAndSmall);
             ShEntity.SetUniform1(gl, "anim", anim);
-            ShEntity.SetUniform1(gl, "eyeOpen", eyeOpen ? 1 : 2);
+            ShEntity.SetUniform1(gl, "eyeLips", eyelips);
         }
 
         /// <summary>

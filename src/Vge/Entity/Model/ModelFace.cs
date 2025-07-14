@@ -120,7 +120,7 @@ namespace Vge.Entity.Model
                 Vertex[1].V = Vertex[2].V = v1;
 
                 // Формируем буфер
-                int param = modelCube.Eye << 8 | modelCube.BoneIndex;
+                int param = modelCube.EyeLips << 8 | modelCube.BoneIndex;
                 for (int i = 0; i < 4; i++)
                 {
                     bufferFloat.AddRange(new float[] {

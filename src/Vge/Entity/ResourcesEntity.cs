@@ -47,6 +47,10 @@ namespace Vge.Entity
         /// Масштаб формы
         /// </summary>
         public float Scale { get; private set; }
+        /// <summary>
+        /// Индекс глубины текстуры
+        /// </summary>
+        public int DepthTexture { get; private set; } = -1;
 
         /// <summary>
         /// Индекс формы
@@ -74,14 +78,13 @@ namespace Vge.Entity
         /// Получить параметр глубины текстуры и параметр группы текстуры для шейдера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetDepthTextureAndSmall()
+        public int GetDepthTextureAndSmall()
         {
-            ShapeEntity shapeEntity = EntitiesReg.Shapes[_indexShape];
-            if (!shapeEntity.TextureSmall)
+            if (DepthTexture == -1)
             {
-                return shapeEntity.DepthTextures[_indexTexture] + 65536;
+                DepthTexture = EntitiesReg.Shapes[_indexShape].DepthTextures[_indexTexture];
             }
-            return shapeEntity.DepthTextures[_indexTexture];
+            return DepthTexture;
         }
 
         /// <summary>

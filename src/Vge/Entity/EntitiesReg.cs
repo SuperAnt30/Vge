@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Layer;
 using Vge.Entity.List;
 using Vge.Entity.Model;
@@ -38,7 +39,11 @@ namespace Vge.Entity
         /// Справочник всех слоёв форм (одежда)
         /// </summary>
         public static readonly List<ShapeLayers> LayerShapes = new List<ShapeLayers>();
-
+        
+        /// <summary>
+        /// Карта индексов к формам слоёв (одежды) [название, индекс]
+        /// </summary>
+        private static readonly Dictionary<string, int> _indexLayerShapes = new Dictionary<string, int>();
         /// <summary>
         /// Справочник всех моделей
         /// </summary>
@@ -47,6 +52,30 @@ namespace Vge.Entity
         /// Справочник всех моделей
         /// </summary>
         private static readonly Dictionary<string, ShapeEntity> _shapes = new Dictionary<string, ShapeEntity>();
+
+        /// <summary>
+        /// Перед инициализацией
+        /// </summary>
+        private static void _InitializationBegin()
+        {
+            // Очистить таблицы и вспомогательные данные json
+            _Clear();
+            Shapes.Clear();
+            LayerShapes.Clear();
+            _indexLayerShapes.Clear();
+
+            // Вначале регистрация форм слоёв одежды только для рендера
+            if (FlagRender)
+            {
+                RegisterLayerShapeEntityClass("Base");
+            }
+
+            // Регистрация обязательных сущностей
+            RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
+            // Отладочный
+            RegisterEntityClass("Robinson", typeof(EntityThrowable));
+            //RegisterModelEntityClass("Chicken2");
+        }
 
         /// <summary>
         /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
@@ -60,29 +89,6 @@ namespace Vge.Entity
             }
 
             _InitializationBegin();
-        }
-
-        /// <summary>
-        /// Перед инициализацией
-        /// </summary>
-        private static void _InitializationBegin()
-        {
-            // Очистить таблицы и вспомогательные данные json
-            _Clear();
-            Shapes.Clear();
-            LayerShapes.Clear();
-
-            // Вначале регистрация форм слоёв одежды только для рендера
-            if (FlagRender)
-            {
-                RegisterLayerShapeEntityClass("Base");
-            }
-
-            // Регистрация обязательных сущностей
-            RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
-            // Отладочный
-            RegisterEntityClass("Robinson", typeof(EntityThrowable));
-            //RegisterModelEntityClass("Chicken2");
         }
 
         /// <summary>
@@ -135,6 +141,8 @@ namespace Vge.Entity
             _shapes.Clear();
         }
 
+        #region Register...
+
         /// <summary>
         /// Зарегистрировать слои к сущностям, это одежда, броня
         /// </summary>
@@ -155,8 +163,9 @@ namespace Vge.Entity
 
                 ShapeLayers shape = new ShapeLayers((ushort)LayerShapes.Count, modelFile,
                     _ReadGroupLayers(alias, jsonRead.Compound), _GetModel(modelFile));
-                // TODO::2025-07-12 Надо продумать про индекс!
+
                 LayerShapes.Add(shape);
+                _indexLayerShapes.Add(alias, shape.Index);
             }
             else
             {
@@ -172,7 +181,6 @@ namespace Vge.Entity
         /// <param name="compound">объект json</param>
         private static Dictionary<string, GroupLayers> _ReadGroupLayers(string alias, JsonCompound compound)
         {
-           // List<GroupLayers> list = new List<GroupLayers>();
             Dictionary<string, GroupLayers> map = new Dictionary<string, GroupLayers>();
 
             if (!compound.IsKey(Cte.Layers))
@@ -217,12 +225,11 @@ namespace Vge.Entity
                 {
                     groupLayers = new GroupLayers(group);
                     map.Add(group, groupLayers);
-                    //list.Add(groupLayers);
                 }
                 groupLayers.Add(new LayerBuffer(name, texture, folder));
             }
 
-            return map; // list.ToArray();
+            return map;
         }
 
         /// <summary>
@@ -291,13 +298,12 @@ namespace Vge.Entity
             throw new Exception(Sr.GetString(Sr.FileMissingModelEntity, name));
         }
 
+        #endregion
+
         /// <summary>
         /// Запустить текстурный менеджер
         /// </summary>
-        public static void TextureManagerRun()
-        {
-            TextureManager.Init();
-        }
+        public static void TextureManagerRun() => TextureManager.Init();
 
         /// <summary>
         /// Заменить буфер из-за смены размера текстуры
@@ -311,11 +317,14 @@ namespace Vge.Entity
                     Table[i].SetBufferMeshBecauseSizeTexture(shapeEntity);
                 }
             }
-            else if (shape is ShapeLayers shapeLayer)
-            {
-
-            }
+            // Слоям не надо, буфер будет выдоваться потом по мере надобности
         }
+
+        /// <summary>
+        /// Получить слой одежды по названию
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ShapeLayers GetShapeLayers(string name) => LayerShapes[_indexLayerShapes[name]];
 
     }
 }

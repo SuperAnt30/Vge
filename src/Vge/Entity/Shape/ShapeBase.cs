@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Model;
-using Vge.Json;
 using Vge.Renderer;
 using Vge.Util;
 
@@ -42,12 +41,18 @@ namespace Vge.Entity.Shape
         /// </summary>
         public void SetImageTexture2dArray(TextureMap textureMap, uint idTextureSmall, uint idTextureBig)
         {
-            for (int t = 0; t < Textures.Length; t++)
+            for (int i = 0; i < Textures.Length; i++)
             {
-                textureMap.SetImageTexture2dArray(Textures[t],
-                    DepthTextures[t],
+                textureMap.SetImageTexture2dArray(Textures[i],
+                    DepthTextures[i],
                     TextureSmall ? idTextureSmall : idTextureBig,
                     (uint)(TextureSmall ? Gi.ActiveTextureSamplerSmall : Gi.ActiveTextureSamplerBig));
+
+                if (!TextureSmall)
+                {
+                    // Если текстура большая, делаем корректировку по данным для будушего шейдора
+                    DepthTextures[i] += 65536;
+                }
             }
             Textures = null;
         }

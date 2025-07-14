@@ -8,7 +8,7 @@ layout(location = 3) in int v_clothId;
 out vec2 a_texCoord;
 out vec2 a_light;
 out float a_depth;
-out float a_eye;
+out float a_eyeLips;
 
 uniform mat4 view;
 
@@ -16,16 +16,25 @@ uniform vec3 pos;
 uniform vec2 light;
 uniform float depth;
 uniform float anim;
-uniform int eyeOpen;
+uniform int eyeLips;
 uniform mat4x3 elementTransforms[24];
 
 void main()
 {
     int jointId = v_jointId & 0xFF;
-    a_eye = float((v_jointId >> 8) & 0xFF);
-    if (a_eye != 0)
+    a_eyeLips = float((v_jointId >> 8) & 0xFF);
+    if (a_eyeLips != 0)
     {
-        if (eyeOpen == a_eye) a_eye = 0;
+        if (a_eyeLips > 2)
+        {
+            int lips = eyeLips >> 1;
+            if (lips == a_eyeLips - 3) a_eyeLips = 0;
+        }
+        else
+        {
+            int eye = eyeLips & 1;
+            if (eye == a_eyeLips - 1) a_eyeLips = 0;
+        }
     }
 	a_texCoord = v_texCoord;
     a_light = light;

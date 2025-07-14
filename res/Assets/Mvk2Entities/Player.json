@@ -3,7 +3,7 @@
     #Scale: 0.929,
     Scale: .75,
     Model: "Robinson",
-    Texture: 0,
+    Texture: 1,
     BoneCloth:
     {
         Mascot: ["Body"],

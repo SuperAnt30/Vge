@@ -91,29 +91,11 @@ namespace Vge.Entity.Shape
             return _groups[group].GetLayer(name).BufferMesh.CopyBufferMesh(scale);
         }
 
+        /// <summary>
+        /// Получить слой одежды, по запросе для смены её
+        /// </summary>
+        /// <param name="group">Группа одежды</param>
+        /// <param name="name">Имя одежды</param>
         public LayerBuffer GetLayer(string group, string name) => _groups[group].GetLayer(name);
-
-        /*
-        /// <summary>
-        /// Корректировка размера ширины текстуры, в буффере UV
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SizeAdjustmentTextureWidth(float coef)
-            => _bufferMesh.SizeAdjustmentTextureWidth(coef);
-
-        /// <summary>
-        /// Корректировка размера высоты текстуры, в буффере UV
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SizeAdjustmentTextureHeight(float coef)
-            => _bufferMesh.SizeAdjustmentTextureHeight(coef);
-
-        /// <summary>
-        /// Копия буфера сетки с масштабом
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public VertexEntityBuffer CopyBufferFloatMesh(float scale = 1)
-            => _bufferMesh.CopyBufferMesh(scale);
-        */
     }
 }

@@ -21,11 +21,23 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Название куба открытых глаз 
         /// </summary>
-        public const string NameCubeEyeOn = "eyeOpen";
+        public const string NameCubeEyeOpen = "eyeOpen";
         /// <summary>
         /// Название куба закрытых глаз
         /// </summary>
-        public const string NameCubeEyeOff = "eyeClose";
+        public const string NameCubeEyeClose = "eyeClose";
+        /// <summary>
+        /// Название куба открытых губ 
+        /// </summary>
+        public const string NameCubeLipsOpen = "lipsOpen";
+        /// <summary>
+        /// Название куба закрытых губ
+        /// </summary>
+        public const string NameCubeLipsClose = "lipsClose";
+        /// <summary>
+        /// Название куба улыбка губ
+        /// </summary>
+        public const string NameCubeLipsSmile = "lipsSmile";
 
         /// <summary>
         /// Псевдоним

@@ -218,20 +218,22 @@ namespace Vge.Entity.Render
 
             // TEST
             timeeye++;
-            if (timeeye > 150) timeeye = 0;
+            if (timeeye > 50) timeeye = 0;
+            timelips++;
+            if (timelips > 8) timelips = 0;
+            timelipsSmile++;
+            if (timelipsSmile > 100) timelipsSmile = 0;
             fffd++;
             if (_entityLayerRender != null)
             {
                 if (fffd > 30)
                 {
                     fffd = 0;
-                    ShapeLayers shapeLayers = EntitiesReg.LayerShapes[0];
+                    ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers("Base");
                     LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
                     LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
                     LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
                     LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
-                    //Entities.Render.ShaderBindEntity(shapeLayers.DepthTextures[layer.TextureId]);
-
 
                     if (fffb)
                     {
@@ -242,7 +244,7 @@ namespace Vge.Entity.Render
                     {
                         //_entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                     }
                     _entityLayerRender.Reload();
                     fffb = !fffb;
@@ -254,6 +256,9 @@ namespace Vge.Entity.Render
         bool fffb = true;
 
         int timeeye = 0;
+
+        int timelipsSmile = 0;
+        int timelips = 0;
 
         /// <summary>
         /// Метод для прорисовки
@@ -270,12 +275,17 @@ namespace Vge.Entity.Render
             float ppfx = Entities.Player.PosFrameX;
             float ppfy = Entities.Player.PosFrameY;
             float ppfz = Entities.Player.PosFrameZ;
-            
+
+
+            int eye = (timeeye > 5) ? 1 : 0; // глаза
+            int lips = (timelips > 4) ? 1 : 0; // губы
+            if (timelipsSmile > 80) lips = 2; // улыбка
+            int eyeLips = lips << 1 | eye;
             // Заносим в шейдор
             Entities.Render.ShaderBindEntity(
                 _resourcesEntity.GetDepthTextureAndSmall(), 
                 _resourcesEntity.GetIsAnimation(),
-                timeeye > 5, // глаза
+                eyeLips,
                 _lightBlock, _lightSky,
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
