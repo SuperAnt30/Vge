@@ -59,6 +59,11 @@ public sealed class Gi
     /// GL_TEXTURE0 + ActiveTextureSamplerBig
     /// </summary>
     public static int ActiveTextureSamplerBig = 9;
+    /// <summary>
+    /// ID Активации текстуры карты теней
+    /// GL_TEXTURE0 + ActiveTextureShadowMap
+    /// </summary>
+    public static int ActiveTextureShadowMap = 10;
 
     #endregion
 

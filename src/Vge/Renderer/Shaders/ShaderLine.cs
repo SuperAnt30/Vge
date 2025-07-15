@@ -8,10 +8,11 @@ namespace Vge.Renderer.Shaders
     {
         public ShaderLine(GL gl)
         {
+            this.gl = gl;
             string vsh = FileAssets.ReadString(Options.PathShaders + "Line.vsh");
             string fsh = FileAssets.ReadString(Options.PathShaders + "Line.fsh");
 
-            Create(gl, vsh, fsh,
+            Create(vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_color" }

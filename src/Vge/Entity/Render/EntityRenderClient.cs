@@ -2,6 +2,7 @@
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
 using Vge.Entity.Shape;
+using Vge.Renderer.Shaders;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
@@ -222,7 +223,7 @@ namespace Vge.Entity.Render
             timelips++;
             if (timelips > 8) timelips = 0;
             timelipsSmile++;
-            if (timelipsSmile > 100) timelipsSmile = 0;
+            if (timelipsSmile > 150) timelipsSmile = 0;
             fffd++;
             if (_entityLayerRender != null)
             {
@@ -276,21 +277,26 @@ namespace Vge.Entity.Render
             float ppfy = Entities.Player.PosFrameY;
             float ppfz = Entities.Player.PosFrameZ;
 
-
             int eye = (timeeye > 5) ? 1 : 0; // глаза
-            int lips = (timelips > 4) ? 1 : 0; // губы
-            if (timelipsSmile > 80) lips = 2; // улыбка
+            int lips = 0; // губы
+            if (timelipsSmile > 130) lips = 2; // улыбка
+            else if (timelipsSmile > 70) lips = (timelips > 4) ? 1 : 0; // балтает
             int eyeLips = lips << 1 | eye;
+
             // Заносим в шейдор
-            Entities.Render.ShaderBindEntity(
-                _resourcesEntity.GetDepthTextureAndSmall(), 
-                _resourcesEntity.GetIsAnimation(),
-                eyeLips,
-                _lightBlock, _lightSky,
+            ShaderEntity shader = Entities.Render.GetShaderEntityAction();
+            shader.SetUniform3("pos",
                 Entity.GetPosFrameX(timeIndex) - ppfx,
                 Entity.GetPosFrameY(timeIndex) - ppfy,
-                Entity.GetPosFrameZ(timeIndex) - ppfz
-            );
+                Entity.GetPosFrameZ(timeIndex) - ppfz);
+            if (!shader.IsShadowMap)
+            {
+                // Свет для карты теней не нужен
+                shader.SetUniform2("light", _lightBlock, _lightSky);
+            }
+            shader.SetUniform1("depth", (float)_resourcesEntity.GetDepthTextureAndSmall());
+            shader.SetUniform1("anim", _resourcesEntity.GetIsAnimation());
+            shader.SetUniform1("eyeLips", eyeLips);
 
             if (_resourcesEntity.IsAnimation)
             {
@@ -336,8 +342,7 @@ namespace Vge.Entity.Render
                 // Собираем конечные матрицы
                 _GetMatrixPalette(yaw, yawBody, pitch);
 
-                Entities.Render.ShEntity.SetUniformMatrix4x3(Entities.GetOpenGL(),
-                    "elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
+                shader.SetUniformMatrix4x3("elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
             }
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();

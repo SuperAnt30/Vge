@@ -6,12 +6,13 @@ namespace Vge.Renderer.Shaders
 {
     public class ShaderVoxel : ShaderProgram
     {
-        public ShaderVoxel(GL gl)
+        public ShaderVoxel(GL gl, string name)
         {
-            string vsh = FileAssets.ReadString(Options.PathShaders + "Voxel.vsh");
-            string fsh = FileAssets.ReadString(Options.PathShaders + "Voxel.fsh");
+            this.gl = gl;
+            string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
+            string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
 
-            Create(gl, vsh, fsh,
+            Create(vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },

@@ -105,7 +105,7 @@ namespace Vge.Renderer.World.Entity
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public override void Draw(float timeIndex)
+        public void Draw(float timeIndex, float[] view)
         {
             CountEntitiesFC = 0;
             int count = _arrayChunkRender.Count;
@@ -118,8 +118,8 @@ namespace Vge.Renderer.World.Entity
             float z = _game.Player.PosFrameZ;
 
             // Параметрв шейдоров
-            Render.ShEntity.Bind(gl);
-            Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
+            Render.ShEntity.Bind();
+            Render.ShEntity.SetUniformMatrix4("view", view);
 
             for (int i = 0; i < count; i++)
             {
@@ -144,8 +144,8 @@ namespace Vge.Renderer.World.Entity
             {
                 // Есть хит бокс сущности
                 // Пробегаемся заного по всем сущностям, это будет быстрее, чем биндить шейдера
-                Render.ShLine.Bind(gl);
-                Render.ShLine.SetUniformMatrix4(gl, "view", _game.Player.View);
+                Render.ShLine.Bind();
+                Render.ShLine.SetUniformMatrix4("view", view);
                 for (int i = 0; i < count; i++)
                 {
                     chunkRender = _arrayChunkRender[i];
@@ -157,13 +157,42 @@ namespace Vge.Renderer.World.Entity
                             entity = chunkRender.ListEntities.GetAt(j);
                             if (entity.Id != playerId)
                             {
-                                Render.ShLine.SetUniform3(gl, "pos",
+                                Render.ShLine.SetUniform3("pos",
                                     entity.GetPosFrameX(timeIndex) - x,
                                     entity.GetPosFrameY(timeIndex) - y,
                                     entity.GetPosFrameZ(timeIndex) - z);
                                 _hitbox.Draw(timeIndex, entity);
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Метод для прорисовки кадра теней
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public void DrawShadowMap(float timeIndex, float[] view)
+        {
+            int count = _arrayChunkRender.Count;
+            if (count > WorldRenderer.CountChunkShadowMap) count = WorldRenderer.CountChunkShadowMap;
+            int countEntity;
+            ChunkRender chunkRender;
+
+            // Параметрв шейдоров
+            Render.ShEntityShadowMap.Bind();
+            Render.ShEntityShadowMap.SetUniformMatrix4("view", view);
+
+            for (int i = 0; i < count; i++)
+            {
+                chunkRender = _arrayChunkRender[i];
+                countEntity = chunkRender.ListEntities.Count;
+                if (countEntity > 0)
+                {
+                    for (int j = 0; j < countEntity; j++)
+                    {
+                        chunkRender.ListEntities.GetAt(j).Render.Draw(timeIndex, _game.DeltaTimeFrame);
                     }
                 }
             }
@@ -184,8 +213,8 @@ namespace Vge.Renderer.World.Entity
             // Параметрв шейдоров
             if (_game.Player.ViewCamera != EnumViewCamera.Eye)
             {
-                Render.ShEntity.Bind(gl);
-                Render.ShEntity.SetUniformMatrix4(gl, "view", _game.Player.View);
+                Render.ShEntity.Bind();
+                Render.ShEntity.SetUniformMatrix4("view", _game.Player.View);
                 _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
             }
 
@@ -214,7 +243,7 @@ namespace Vge.Renderer.World.Entity
             {
                 for (int i = 0; i < _entityRender.Length; i++)
                 {
-                    if (_entityRender[i] != null) _entityRender[i].Dispose();
+                    _entityRender[i]?.Dispose();
                 }
             }
         }

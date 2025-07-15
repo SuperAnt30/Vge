@@ -4,7 +4,6 @@ using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World;
 using Vge.Util;
-using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Renderer
@@ -42,18 +41,34 @@ namespace Vge.Renderer
         /// </summary>
         public readonly ShaderGuiLine ShGuiLine;
         /// <summary>
-        /// Шейдоры для вокселей
-        /// </summary>
-        public readonly ShaderVoxel ShVoxel;
-        /// <summary>
         /// Шейдоры для 3d линий с альфа цветом
         /// </summary>
         public readonly ShaderLine ShLine;
         /// <summary>
+        /// Шейдоры для вокселей
+        /// </summary>
+        public readonly ShaderVoxel ShVoxel;
+        /// <summary>
         /// Шейдоры для сущностей
         /// </summary>
         public readonly ShaderEntity ShEntity;
+        /// <summary>
+        /// Шейдоры для вокселей карты теней 
+        /// </summary>
+        public readonly ShaderVoxel ShVoxelShadowMap;
+        /// <summary>
+        /// Шейдоры для сущностей карты теней
+        /// </summary>
+        public readonly ShaderEntity ShEntityShadowMap;
+        /// <summary>
+        /// Шейдоры для отладки карты теней
+        /// </summary>
+        public readonly ShaderShadowMap ShShadowMap;
 
+        /// <summary>
+        /// Активный шейдор для сущности, обычный или для теней
+        /// </summary>
+        private ShaderEntity _shEntityAction;
         /// <summary>
         /// Время выполнения кадра
         /// </summary>
@@ -86,11 +101,14 @@ namespace Vge.Renderer
         public RenderMain(WindowMain window) : base(window)
         {
             Texture = new TextureMap(gl);
-            ShGuiColor = new ShaderGuiColor(gl);
+            ShGuiColor = new ShaderGuiColor(gl, "GuiColor");
             ShGuiLine = new ShaderGuiLine(gl);
-            ShVoxel = new ShaderVoxel(gl);
-            ShEntity = new ShaderEntity(gl);
             ShLine = new ShaderLine(gl);
+            ShVoxel = new ShaderVoxel(gl, "Voxel");
+            ShEntity = new ShaderEntity(gl, false, "Entity");
+            ShVoxelShadowMap = new ShaderVoxel(gl, "VoxelShadow");
+            ShEntityShadowMap = new ShaderEntity(gl, true, "EntityShadow");
+            ShShadowMap = new ShaderShadowMap(gl);
 
             _Initialize();
         }
@@ -114,14 +132,41 @@ namespace Vge.Renderer
 
         public override void Dispose()
         {
-            ShGuiColor.Delete(gl);
-            ShGuiLine.Delete(gl);
-            ShVoxel.Delete(gl);
-            ShEntity.Delete(gl);
-            ShLine.Delete(gl);
+            ShGuiColor.Delete();
+            ShGuiLine.Delete();
+            ShVoxel.Delete();
+            ShEntity.Delete();
+            ShLine.Delete();
+            ShShadowMap.Delete();
+            ShVoxelShadowMap.Delete();
+            ShEntityShadowMap.Delete();
         }
 
         #region ShaderBind
+
+        /// <summary>
+        /// Активный шейдор для сущности, обычный или для теней
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ShaderEntity GetShaderEntityAction() => _shEntityAction;
+
+        /// <summary>
+        /// Активировать обычный шейдор
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderEntityAction() => _shEntityAction = ShEntity;
+
+        /// <summary>
+        /// Активировать шейдор для теней
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderEntityActionShadowMap() => _shEntityAction = ShEntityShadowMap;
+
+        /// <summary>
+        /// Получить массив матрицы для проецирования двумерных координат на экран
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float[] GetOrtho2D() => window.Ortho2D;
 
         /// <summary>
         /// Связать шейдер GuiLine
@@ -129,8 +174,8 @@ namespace Vge.Renderer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindGuiLine()
         {
-            ShGuiLine.Bind(gl);
-            ShGuiLine.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            ShGuiLine.Bind();
+            ShGuiLine.SetUniformMatrix4("projview", window.Ortho2D);
         }
 
         /// <summary>
@@ -139,8 +184,8 @@ namespace Vge.Renderer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindGuiColor()
         {
-            ShGuiColor.Bind(gl);
-            ShGuiColor.SetUniformMatrix4(gl, "projview", window.Ortho2D);
+            ShGuiColor.Bind();
+            ShGuiColor.SetUniformMatrix4("projview", window.Ortho2D);
         }
 
         /// <summary>
@@ -151,43 +196,38 @@ namespace Vge.Renderer
         public void ShaderBindVoxels(float[] view, float timeIndex, int overview, 
             float colorFogR, float colorFogG, float colorFogB, byte torchInHand)
         {
-            ShVoxel.Bind(gl);
-            ShVoxel.SetUniformMatrix4(gl, "view", view);
-            ShVoxel.SetUniform1(gl, "takt", (int)window.Game.TickCounter);
-            ShVoxel.SetUniform1(gl, "overview", (float)overview);
-            ShVoxel.SetUniform3(gl, "colorfog", colorFogR, colorFogG, colorFogB);
-            ShVoxel.SetUniform1(gl, "torch", (float)torchInHand);
-            ShVoxel.SetUniform1(gl, "animOffset", Ce.ShaderAnimOffset);
+            ShVoxel.Bind();
+            ShVoxel.SetUniformMatrix4("view", view);
+            ShVoxel.SetUniform1("takt", (int)window.Game.TickCounter);
+            ShVoxel.SetUniform1("overview", (float)overview);
+            ShVoxel.SetUniform3("colorfog", colorFogR, colorFogG, colorFogB);
+            ShVoxel.SetUniform1("torch", (float)torchInHand);
+            ShVoxel.SetUniform1("animOffset", Ce.ShaderAnimOffset);
             // Ветер, значение от -1 до 1
             int wind = (int)window.Time() / 48 & 0x7F;
-            ShVoxel.SetUniform1(gl, "wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
-            ShVoxel.SetUniform3(gl, "player", window.Game.Player.PosFrameX,
+            ShVoxel.SetUniform1("wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
+            ShVoxel.SetUniform3("player", window.Game.Player.PosFrameX,
                 window.Game.Player.PosFrameY,
                 window.Game.Player.PosFrameZ);
         }
 
         /// <summary>
-        /// Связать шейдер Entity
+        /// Связать шейдер Voxels для карты теней
         /// </summary>
-        /// <param name="eyelips">bit [0000 0LLE], где E=1 глаза открыты, LL-губы 1=открыты, 2=улыбка </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderBindEntity(float depthAndSmall, float anim, int eyelips,
-            float lightBlock, float lightSky,
-            float posX, float posY, float posZ)
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public void ShaderBindVoxelsShadowMap(float[] view, float timeIndex)
         {
-            ShEntity.SetUniform3(gl, "pos", posX, posY, posZ);
-            ShEntity.SetUniform2(gl, "light", lightBlock, lightSky);
-            ShEntity.SetUniform1(gl, "depth", depthAndSmall);
-            ShEntity.SetUniform1(gl, "anim", anim);
-            ShEntity.SetUniform1(gl, "eyeLips", eyelips);
+            ShVoxelShadowMap.Bind();
+            ShVoxelShadowMap.SetUniformMatrix4("view", view);
+            ShVoxelShadowMap.SetUniform1("takt", (int)window.Game.TickCounter);
+            ShVoxelShadowMap.SetUniform1("animOffset", Ce.ShaderAnimOffset);
+            // Ветер, значение от -1 до 1
+            int wind = (int)window.Time() / 48 & 0x7F;
+            ShVoxelShadowMap.SetUniform1("wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
+            ShVoxelShadowMap.SetUniform3("player", window.Game.Player.PosFrameX,
+                window.Game.Player.PosFrameY,
+                window.Game.Player.PosFrameZ);
         }
-
-        /// <summary>
-        /// Связать шейдер Entity
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderBindEntity(float depthAndSmall)
-            => ShEntity.SetUniform1(gl, "depth", depthAndSmall);
 
         /// <summary>
         /// Связать шейдер Line
@@ -195,9 +235,9 @@ namespace Vge.Renderer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ShaderBindLine(float[] view, float posX, float posY, float posZ)
         {
-            ShLine.Bind(gl);
-            ShLine.SetUniformMatrix4(gl, "view", view);
-            ShLine.SetUniform3(gl, "pos", posX, posY, posZ);
+            ShLine.Bind();
+            ShLine.SetUniformMatrix4("view", view);
+            ShLine.SetUniform3("pos", posX, posY, posZ);
         }
 
         #endregion
@@ -264,17 +304,6 @@ namespace Vge.Renderer
         }
 
         #region Draw
-
-        /// <summary>
-        /// Прорисовка в начале мира
-        /// </summary>
-        public virtual void DrawWorldBegin()
-        {
-            //OpenGLError er = gl.GetError();
-            gl.Enable(GL.GL_CULL_FACE);
-            gl.PolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-            //gl.ClearColor(.5f, .7f, .99f, 1f);
-        }
 
         public virtual void DrawBegin()
         {

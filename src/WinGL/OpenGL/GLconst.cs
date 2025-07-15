@@ -865,6 +865,12 @@ namespace WinGL.OpenGL
         public const uint GL_VERTEX_SHADER = 0x8B31;
         public const uint GL_FRAGMENT_SHADER = 0x8B30;
         public const uint GL_LINK_STATUS = 0x8B82;
+
+        public const uint GL_FRAMEBUFFER = 0x8D40;
+        public const uint GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
+        public const uint GL_DEPTH_ATTACHMENT = 0x8D00;
+        public const uint GL_COLOR_ATTACHMENT0 = 0x8CE0;
+
         #endregion
 
         #region The GLU DLL Constant Definitions.

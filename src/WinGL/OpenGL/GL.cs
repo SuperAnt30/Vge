@@ -128,6 +128,17 @@ namespace WinGL.OpenGL
         private delegate bool glTexStorage3D(uint target, int level, uint internalformat, int width, int height, int depth);
         private glTexStorage3D delegateTexStorage3D;
 
+        private delegate void glBindFramebuffer(uint target, uint framebuffer);
+        private glBindFramebuffer delegateBindFramebuffer;
+        private delegate void glDeleteFramebuffers(uint n, uint[] framebuffers);
+        private glDeleteFramebuffers delegateDeleteFramebuffers;
+        private delegate void glGenFramebuffers(uint n, uint[] framebuffers);
+        private glGenFramebuffers delegateGenFramebuffers;
+        private delegate uint glCheckFramebufferStatus(uint target);
+        private glCheckFramebufferStatus delegateCheckFramebufferStatus;
+        private delegate void glFramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level);
+        private glFramebufferTexture2D delegateFramebufferTexture2D;
+
         #endregion
 
         public bool SwapIntervalEXT(int interval)
@@ -416,6 +427,38 @@ namespace WinGL.OpenGL
                 delegateTexStorage3D = GetDelegate<glTexStorage3D>() as glTexStorage3D;
             delegateTexStorage3D(target, level, internalformat, width, height, depth);
         }
+
+        public void BindFramebuffer(uint target, uint framebuffer)
+        {
+            if (delegateBindFramebuffer == null)
+                delegateBindFramebuffer = GetDelegate<glBindFramebuffer>() as glBindFramebuffer;
+            delegateBindFramebuffer(target, framebuffer);
+        }
+        public void DeleteFramebuffers(uint n, uint[] framebuffers)
+        {
+            if (delegateDeleteFramebuffers == null)
+                delegateDeleteFramebuffers = GetDelegate<glDeleteFramebuffers>() as glDeleteFramebuffers;
+            delegateDeleteFramebuffers(n, framebuffers);
+        }
+        public void GenFramebuffers(uint n, uint[] framebuffers)
+        {
+            if (delegateGenFramebuffers == null)
+                delegateGenFramebuffers = GetDelegate<glGenFramebuffers>() as glGenFramebuffers;
+            delegateGenFramebuffers(n, framebuffers);
+        }
+        public uint CheckFramebufferStatus(uint target)
+        {
+            if (delegateCheckFramebufferStatus == null)
+                delegateCheckFramebufferStatus = GetDelegate<glCheckFramebufferStatus>() as glCheckFramebufferStatus;
+            return delegateCheckFramebufferStatus(target);
+        }
+        public void FramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level)
+        {
+            if (delegateFramebufferTexture2D == null)
+                delegateFramebufferTexture2D = GetDelegate<glFramebufferTexture2D>() as glFramebufferTexture2D;
+            delegateFramebufferTexture2D(target, attachment, textarget, texture, level);
+        }
+
         #endregion
 
         #region Wrapped OpenGL Functions
@@ -588,6 +631,9 @@ namespace WinGL.OpenGL
 		public void TexImage2D(uint target, int level, uint internalformat, int width, int height, int border, uint format, uint type, byte[] pixels)
             => glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 
+        public void TexImage2D(uint target, int level, uint internalformat, int width, int height, int border, uint format, uint type, IntPtr pixels)
+            => glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+
         public void TexSubImage2D(uint target, int level, int xoffset, int yoffset, int width, int height, uint format, uint type, byte[] pixels)
             => glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
 
@@ -624,10 +670,15 @@ namespace WinGL.OpenGL
 
         public void PolygonOffset(float factor, float units) => glPolygonOffset(factor, units);
 
+        public void DrawBuffer(uint mode) => glDrawBuffer(mode);
+        public void ReadBuffer(uint mode) => glReadBuffer(mode);
+
         /// <summary>
         /// Get the current OpenGL error code.
         /// </summary>
         public OpenGLError GetError() => (OpenGLError)glGetError();
+
+        
 
         #endregion
 

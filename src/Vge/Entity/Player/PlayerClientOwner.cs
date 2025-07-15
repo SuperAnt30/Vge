@@ -35,6 +35,10 @@ namespace Vge.Entity.Player
         /// Матрица просмотра Projection * LookAt
         /// </summary>
         public readonly float[] View = new float[16];
+        /// <summary>
+        /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
+        /// </summary>
+        public readonly float[] ViewDepthMap = new float[16];
 
         /// <summary>
         /// Массив всех видимых чанков 
@@ -460,6 +464,11 @@ namespace Vge.Entity.Player
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(View);
+
+            // Матрица солнца, для тени
+            matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
+            matrix.Multiply(Glm.LookAt(new Vector3(32, 50, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
+            matrix.ConvArray(ViewDepthMap);
         }
 
         /// <summary>

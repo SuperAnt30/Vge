@@ -6,12 +6,19 @@ namespace Vge.Renderer.Shaders
 {
     public class ShaderEntity : ShaderProgram
     {
-        public ShaderEntity(GL gl)
-        {
-            string vsh = FileAssets.ReadString(Options.PathShaders + "Entity.vsh");
-            string fsh = FileAssets.ReadString(Options.PathShaders + "Entity.fsh");
+        /// <summary>
+        /// Шейдор сущности для карты теней
+        /// </summary>
+        public readonly bool IsShadowMap;
 
-            Create(gl, vsh, fsh,
+        public ShaderEntity(GL gl, bool isShadowMap, string name)
+        {
+            this.gl = gl;
+            IsShadowMap = isShadowMap;
+            string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
+            string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
+
+            Create(vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },

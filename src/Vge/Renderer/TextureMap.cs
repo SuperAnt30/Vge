@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -42,6 +43,7 @@ namespace Vge.Renderer
         /// Запустить текстуру, указав индекс текстуры массива
         /// </summary>
         /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTexture(uint index, uint texture = 0)
         {
             gl.ActiveTexture(GL.GL_TEXTURE0 + texture);
@@ -133,6 +135,7 @@ namespace Vge.Renderer
         /// Запустить 2d массив текстур, указав индекс текстуры массива
         /// </summary>
         /// <param name="texture">OpenGL.GL_TEXTURE0 + texture</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTexture2dArray(uint index, uint texture = 0)
         {
             gl.ActiveTexture(GL.GL_TEXTURE0 + texture);

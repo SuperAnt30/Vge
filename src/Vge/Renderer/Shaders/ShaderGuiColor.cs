@@ -6,12 +6,13 @@ namespace Vge.Renderer.Shaders
 {
     public class ShaderGuiColor : ShaderProgram
     {
-        public ShaderGuiColor(GL gl)
+        public ShaderGuiColor(GL gl, string name)
         {
-            string vsh = FileAssets.ReadString(Options.PathShaders + "GuiColor.vsh");
-            string fsh = FileAssets.ReadString(Options.PathShaders + "GuiColor.fsh");
+            this.gl = gl;
+            string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
+            string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
 
-            Create(gl, vsh, fsh,
+            Create(vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },
