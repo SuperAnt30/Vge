@@ -9,8 +9,8 @@ namespace Vge.Renderer.Shaders
         public ShaderBlocks(GL gl, string name)
         {
             this.gl = gl;
-            string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
-            string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
+            string vsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".vsh");
+            string fsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".fsh");
 
             Create(name, vsh, fsh,
                 new Dictionary<uint, string> {
