@@ -17,7 +17,7 @@ internal sealed class Sr
 
     #region Shader
 
-    internal const string FailedToCompileShaderWithID = "Не удалось скомпилировать шейдер {3}-{2} с ID {0}\r\n{1}";
+    internal const string FailedToCompileShaderWithID = "Не удалось скомпилировать шейдер {3}-{2} имя файла {4} с ID {0}\r\n{1}";
     internal const string FailedToAssociateShaderProgramWithID = "Не удалось связать шейдерную программу с ID {0}";
 
     #endregion

@@ -4,6 +4,7 @@ in vec2 a_light;
 in vec2 a_texCoord;
 in float a_depth;
 in float a_eyeLips;
+in vec4 a_fragToLight;
 
 out vec4 f_color;
 
@@ -22,5 +23,7 @@ void main()
     if (big) tex_color = texture(sampler_big, uv);
     else tex_color = texture(sampler_small, uv);
     if (tex_color.a < 0.1) discard;
-    f_color = tex_color * texture(light_map, a_light);
+    
+    vec4 color = tex_color * texture(light_map, a_light);
+    f_color = vec4(vec3(color), color.a);
 }

@@ -22,12 +22,12 @@ namespace WinGL.OpenGL
         /// <param name="vertexShaderSource">Строка вершинного шейдера</param>
         /// <param name="fragmentShaderSource">Строка фрагментного шейдера</param>
         /// <param name="attributeLocations">Расположение атрибутов. Это необязательный массив расположения атрибутов uint для их имен.</param>
-        public void Create(string vertexShaderSource, string fragmentShaderSource,
+        public void Create(string name, string vertexShaderSource, string fragmentShaderSource,
             Dictionary<uint, string> attributeLocations)
         {
             // Создание шейдоров
-            vertexShader.Create(gl, GL.GL_VERTEX_SHADER, vertexShaderSource, GetType().Name);
-            fragmentShader.Create(gl, GL.GL_FRAGMENT_SHADER, fragmentShaderSource, GetType().Name);
+            vertexShader.Create(gl, GL.GL_VERTEX_SHADER, vertexShaderSource, GetType().Name, name);
+            fragmentShader.Create(gl, GL.GL_FRAGMENT_SHADER, fragmentShaderSource, GetType().Name, name);
 
             // Создайте программу, прикрепите шейдеры
             ShaderProgramObject = gl.CreateProgram();

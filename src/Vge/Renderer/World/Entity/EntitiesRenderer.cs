@@ -3,6 +3,7 @@ using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Games;
+using Vge.Renderer.Shaders;
 using Vge.Util;
 using WinGL.OpenGL;
 
@@ -54,9 +55,16 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private uint _idTextureBig;
 
+        /// <summary>
+        /// Шейдора для сущностей
+        /// </summary>
+        public readonly ShadersEntity ShsEntity;
+        
+
         public EntitiesRenderer(GameBase game, ArrayFast<ChunkRender> arrayChunkRender) : base(game)
         {
             gl = GetOpenGL();
+            ShsEntity = game.Render.ShsEntity;
             _hitbox = new HitboxEntityRender(gl);
             _arrayChunkRender = arrayChunkRender;
         }
@@ -105,7 +113,7 @@ namespace Vge.Renderer.World.Entity
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public void Draw(float timeIndex, float[] view)
+        public override void Draw(float timeIndex)
         {
             CountEntitiesFC = 0;
             int count = _arrayChunkRender.Count;
@@ -118,8 +126,7 @@ namespace Vge.Renderer.World.Entity
             float z = _game.Player.PosFrameZ;
 
             // Параметрв шейдоров
-            Render.ShEntity.Bind();
-            Render.ShEntity.SetUniformMatrix4("view", view);
+            ShsEntity.BindUniformBigin();
 
             for (int i = 0; i < count; i++)
             {
@@ -145,7 +152,7 @@ namespace Vge.Renderer.World.Entity
                 // Есть хит бокс сущности
                 // Пробегаемся заного по всем сущностям, это будет быстрее, чем биндить шейдера
                 Render.ShLine.Bind();
-                Render.ShLine.SetUniformMatrix4("view", view);
+                Render.ShLine.SetUniformMatrix4("view", Gi.MatrixView);
                 for (int i = 0; i < count; i++)
                 {
                     chunkRender = _arrayChunkRender[i];
@@ -173,16 +180,15 @@ namespace Vge.Renderer.World.Entity
         /// Метод для прорисовки кадра теней
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public void DrawShadowMap(float timeIndex, float[] view)
+        public void DrawDepthMap(float timeIndex)
         {
             int count = _arrayChunkRender.Count;
-            if (count > WorldRenderer.CountChunkShadowMap) count = WorldRenderer.CountChunkShadowMap;
+            if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
             int countEntity;
             ChunkRender chunkRender;
 
             // Параметрв шейдоров
-            Render.ShEntityShadowMap.Bind();
-            Render.ShEntityShadowMap.SetUniformMatrix4("view", view);
+            ShsEntity.BindUniformBiginDepthMap();
 
             for (int i = 0; i < count; i++)
             {
@@ -193,6 +199,29 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         chunkRender.ListEntities.GetAt(j).Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Метод для прорисовки кадра теней
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public void UpdateMatrix(float timeIndex)
+        {
+            int count = _arrayChunkRender.Count;
+            int countEntity;
+            ChunkRender chunkRender;
+            for (int i = 0; i < count; i++)
+            {
+                chunkRender = _arrayChunkRender[i];
+                countEntity = chunkRender.ListEntities.Count;
+                if (countEntity > 0)
+                {
+                    for (int j = 0; j < countEntity; j++)
+                    {
+                        chunkRender.ListEntities.GetAt(j).Render.UpdateMatrix(timeIndex, _game.DeltaTimeFrame);
                     }
                 }
             }
@@ -213,14 +242,13 @@ namespace Vge.Renderer.World.Entity
             // Параметрв шейдоров
             if (_game.Player.ViewCamera != EnumViewCamera.Eye)
             {
-                Render.ShEntity.Bind();
-                Render.ShEntity.SetUniformMatrix4("view", _game.Player.View);
+                ShsEntity.BindUniformBigin();
                 _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
             }
 
             if (IsHitBox)
             {
-                _game.WorldRender.Render.ShaderBindLine(_game.Player.View, 0, 0, 0);
+                _game.WorldRender.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0);
                 _hitbox.Draw(timeIndex, _game.Player);
             }
         }

@@ -14,7 +14,7 @@ namespace WinGL.OpenGL
         /// </summary>
         public uint ShaderObject { get; private set; }
 
-        public void Create(GL gl, uint shaderType, string source, string nameClass)
+        public void Create(GL gl, uint shaderType, string source, string nameClass, string name)
         {
             // Создайте объект шейдера OpenGL
             ShaderObject = gl.CreateShader(shaderType);
@@ -34,7 +34,7 @@ namespace WinGL.OpenGL
                 if (shaderType == GL.GL_VERTEX_SHADER) type = "Vertex";
                 else if (shaderType == GL.GL_FRAGMENT_SHADER) type = "Fragment";
                 throw new ShaderCompilationException(
-                    Sr.GetString(Sr.FailedToCompileShaderWithID, ShaderObject, log, type, nameClass), log);
+                    Sr.GetString(Sr.FailedToCompileShaderWithID, ShaderObject, log, type, nameClass, name), log);
             }
         }
 

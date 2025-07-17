@@ -4,15 +4,15 @@ using WinGL.OpenGL;
 
 namespace Vge.Renderer.Shaders
 {
-    public class ShaderVoxel : ShaderProgram
+    public class ShaderBlocks : ShaderProgram
     {
-        public ShaderVoxel(GL gl, string name)
+        public ShaderBlocks(GL gl, string name)
         {
             this.gl = gl;
             string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
             string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
 
-            Create(vsh, fsh,
+            Create(name, vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },

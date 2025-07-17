@@ -3,9 +3,9 @@ using WinGL.OpenGL;
 
 namespace Vge.Renderer.Shaders
 {
-    public class ShaderShadowMap : ShaderProgram
+    public class ShaderDepthMap : ShaderProgram
     {
-        public ShaderShadowMap(GL gl)
+        public ShaderDepthMap(GL gl)
         {
             this.gl = gl;
 
@@ -23,21 +23,14 @@ void main()
 in vec2 a_texCoord;
 out vec4 f_color;
 uniform sampler2D shadow_map;
-float zNear = 0.1; 
-float zFar  = 100.0; 
-float LinearizeDepth(float depth) 
-{
-    float z = depth * 2.0 - 1.0; 
-    return (2.0 * zNear * zFar) / (zFar + zNear - z * (zFar - zNear));	
-}
 void main()
 {
-    float depth = LinearizeDepth(texture(shadow_map, a_texCoord).r) / zFar;
+    float depth = texture(shadow_map, a_texCoord).r;
     f_color = vec4(vec3(depth), 1.0);
 }
 ";
 
-            Create(vsh, fsh,
+            Create("DepthMap", vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" }

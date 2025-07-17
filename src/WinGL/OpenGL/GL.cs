@@ -516,6 +516,8 @@ namespace WinGL.OpenGL
 		/// <param name="cap">The capability you wish to enable.</param>
 		public void Enable(uint cap) => glEnable(cap);
 
+        public void CullFace(uint mode) => glCullFace(mode);
+
         /// <summary>
 		/// Эта функция устанавливает текущую функцию сравнения буфера глубины, по умолчанию она МЕНЬШЕ.
 		/// </summary>
@@ -645,6 +647,15 @@ namespace WinGL.OpenGL
 		/// <param name="param">The value to set it to.</param>
 		public void TexParameter(uint target, uint pname, float param)
             => glTexParameterf(target, pname, param);
+
+        /// <summary>
+		///	This function sets the parameters for the currently binded texture object.
+		/// </summary>
+		/// <param name="target">The type of texture you are setting the parameter to, e.g. TEXTURE_2D</param>
+		/// <param name="pname">The parameter to set.</param>
+		/// <param name="param">The value to set it to.</param>
+		public void TexParameterv(uint target, uint pname, float[] param)
+            => glTexParameterfv(target, pname, param);
 
         /// <summary>
 		/// This sets the viewport of the current Render Context. Normally x and y are 0

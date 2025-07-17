@@ -29,6 +29,7 @@ internal sealed class Sr
 
     internal const string TheSymbolIsNotInTheList = "Символ [{0}] отсутствует в перечне";
     internal const string ThereIsNoDrawing = "Отсутствует прорисовка";
+    internal const string ShadowFramebufferError = "Ошибка кадрового буфера для теней";
 
     #endregion
 

@@ -175,6 +175,7 @@ namespace Vge.Gui.Screens
                 if (window.Game != null)
                 {
                     window.Game.Player.RerenderAllChunks();
+                    window.Game.WorldRender.ModifyQualitatively();
                 }
             }
 

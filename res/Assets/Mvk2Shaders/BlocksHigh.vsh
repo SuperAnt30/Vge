@@ -11,9 +11,11 @@ out float fog_factor;
 out vec3 fog_color;
 out vec2 a_light;
 out float a_sharpness;
-
+out vec4 a_fragToLight;
 
 uniform mat4 view;
+uniform mat4 lightMatrix;
+
 uniform int takt;
 uniform float overview;
 uniform vec3 colorfog;
@@ -26,8 +28,12 @@ uniform vec2 chunk;
 
 void main()
 {
+    vec3 pos = vec3(chunk.x - player.x, -player.y, chunk.y - player.z);
+
+    a_fragToLight = lightMatrix * vec4(pos + v_position, 1.0);
     vec3 camera = vec3(player.x - chunk.x, player.y, player.z - chunk.y);
-	vec3 pos = vec3(chunk.x - player.x, -player.y, chunk.y - player.z);
+	
+    
     fog_color = colorfog;
     float camera_distance = distance(camera, vec3(v_position));
     fog_factor = pow(clamp(camera_distance / overview, 0.0, 1.0), 4.0);

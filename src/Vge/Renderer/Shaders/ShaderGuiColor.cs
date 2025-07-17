@@ -12,7 +12,7 @@ namespace Vge.Renderer.Shaders
             string vsh = FileAssets.ReadString(Options.PathShaders + name + ".vsh");
             string fsh = FileAssets.ReadString(Options.PathShaders + name + ".fsh");
 
-            Create(vsh, fsh,
+            Create(name, vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
                     { 1, "v_texCoord" },

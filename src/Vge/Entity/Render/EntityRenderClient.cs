@@ -21,7 +21,7 @@ namespace Vge.Entity.Render
         /// Буфер для шейдера матриц скелетной анимации, на 24 кости (матрица 4*3 и 24 кости)
         /// struct AnimationMatrixPalette - https://habr.com/ru/articles/501212/
         /// </summary>
-        private static float[] _bufferBonesTransforms = new float[12 * Ce.MaxAnimatedBones];
+        private float[] _bufferBonesTransforms = new float[12 * Ce.MaxAnimatedBones];
 
         /// <summary>
         /// Объект рендера всех сущностей
@@ -262,45 +262,21 @@ namespace Vge.Entity.Render
         int timelips = 0;
 
         /// <summary>
-        /// Метод для прорисовки
+        /// Обновить рассчитать матрицы для кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
-        public override void Draw(float timeIndex, float deltaTime)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdateMatrix(float timeIndex, float deltaTime)
         {
             if (_entityRender == null)
             {
                 _entityRender = Entities.GetEntityRender(Entity.IndexEntity);
             }
 
-            float ppfx = Entities.Player.PosFrameX;
-            float ppfy = Entities.Player.PosFrameY;
-            float ppfz = Entities.Player.PosFrameZ;
-
-            int eye = (timeeye > 5) ? 1 : 0; // глаза
-            int lips = 0; // губы
-            if (timelipsSmile > 130) lips = 2; // улыбка
-            else if (timelipsSmile > 70) lips = (timelips > 4) ? 1 : 0; // балтает
-            int eyeLips = lips << 1 | eye;
-
-            // Заносим в шейдор
-            ShaderEntity shader = Entities.Render.GetShaderEntityAction();
-            shader.SetUniform3("pos",
-                Entity.GetPosFrameX(timeIndex) - ppfx,
-                Entity.GetPosFrameY(timeIndex) - ppfy,
-                Entity.GetPosFrameZ(timeIndex) - ppfz);
-            if (!shader.IsShadowMap)
-            {
-                // Свет для карты теней не нужен
-                shader.SetUniform2("light", _lightBlock, _lightSky);
-            }
-            shader.SetUniform1("depth", (float)_resourcesEntity.GetDepthTextureAndSmall());
-            shader.SetUniform1("anim", _resourcesEntity.GetIsAnimation());
-            shader.SetUniform1("eyeLips", eyeLips);
-
             if (_resourcesEntity.IsAnimation)
             {
-                // Увеличивает счётчик прошедшего с начала анимации времени:
+                // Увеличивает счётчик прошедшего с начала анимации времени
                 _IncreaseCurrentTime(deltaTime);
 
                 float yaw;// = 0;
@@ -309,15 +285,15 @@ namespace Vge.Entity.Render
                 if (Entity is EntityLiving entityLiving)
                 {
                     yaw = entityLiving.GetRotationFrameYaw(timeIndex);
-                    yawBody = entityLiving.SolidHeadWithBody 
+                    yawBody = entityLiving.SolidHeadWithBody
                         ? yaw : entityLiving.GetRotationFrameYawBody(timeIndex);
                     pitch = entityLiving.GetRotationFramePitch(timeIndex);
                 }
                 else
                 {
-                    float x = Entity.PosX - ppfx;
-                    float y = Entity.PosY - ppfy;
-                    float z = Entity.PosZ - ppfz;
+                    float x = Entity.PosX - Entities.Player.PosFrameX;
+                    float y = Entity.PosY - Entities.Player.PosFrameY;
+                    float z = Entity.PosZ - Entities.Player.PosFrameZ;
                     yawBody = yaw = Glm.Atan2(z, x) - Glm.Pi90;
                     pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
                     //pitch = 0;
@@ -338,11 +314,41 @@ namespace Vge.Entity.Render
                 {
                     _GenBoneCurrentPose(ai);
                 }
-
                 // Собираем конечные матрицы
                 _GetMatrixPalette(yaw, yawBody, pitch);
+            }
+        }
 
-                shader.SetUniformMatrix4x3("elementTransforms", _bufferBonesTransforms, Ce.MaxAnimatedBones);
+        /// <summary>
+        /// Метод для прорисовки
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        /// <param name="deltaTime">Дельта последнего кадра в mc</param>
+        public override void Draw(float timeIndex, float deltaTime)
+        {
+            float ppfx = Entities.Player.PosFrameX;
+            float ppfy = Entities.Player.PosFrameY;
+            float ppfz = Entities.Player.PosFrameZ;
+
+            int eye = (timeeye > 5) ? 1 : 0; // глаза
+            int lips = 0; // губы
+            if (timelipsSmile > 130) lips = 2; // улыбка
+            else if (timelipsSmile > 70) lips = (timelips > 4) ? 1 : 0; // балтает
+            int eyeLips = lips << 1 | eye;
+
+            // Заносим в шейдор
+            Entities.ShsEntity.UniformData(
+                Entity.GetPosFrameX(timeIndex) - ppfx,
+                Entity.GetPosFrameY(timeIndex) - ppfy,
+                Entity.GetPosFrameZ(timeIndex) - ppfz,
+                _lightBlock, _lightSky,
+                _resourcesEntity.GetDepthTextureAndSmall(),
+                _resourcesEntity.GetIsAnimation(), eyeLips
+                );
+
+            if (_resourcesEntity.IsAnimation)
+            {
+                Entities.ShsEntity.UniformData(_bufferBonesTransforms);
             }
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();

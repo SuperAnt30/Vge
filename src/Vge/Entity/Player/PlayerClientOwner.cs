@@ -32,13 +32,9 @@ namespace Vge.Entity.Player
         public readonly ChatList Chat;
 
         /// <summary>
-        /// Матрица просмотра Projection * LookAt
+        /// Позиция света
         /// </summary>
-        public readonly float[] View = new float[16];
-        /// <summary>
-        /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
-        /// </summary>
-        public readonly float[] ViewDepthMap = new float[16];
+        public Vector3 PosLight;
 
         /// <summary>
         /// Массив всех видимых чанков 
@@ -463,12 +459,18 @@ namespace Vge.Entity.Player
                    0.01f, OverviewChunk * 22f);
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
-            matrix.ConvArray(View);
+            matrix.ConvArray(Gi.MatrixView);
 
             // Матрица солнца, для тени
-            matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
-            matrix.Multiply(Glm.LookAt(new Vector3(32, 50, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
-            matrix.ConvArray(ViewDepthMap);
+            //PosLight = new Vector3(32, 50, 0);
+            //matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
+            //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
+
+            PosLight = new Vector3(-1, 4, 1);
+            matrix = Glm.Ortho(-64, 64, -64, 64, -64f, 64f);
+            matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
+
+            matrix.ConvArray(Gi.MatrixViewDepthMap);
         }
 
         /// <summary>
@@ -493,7 +495,7 @@ namespace Vge.Entity.Player
         /// </summary>
         private void _InitFrustumCulling()
         {
-            _frustumCulling.Init(View);
+            _frustumCulling.Init(Gi.MatrixView);
 
             int chunkPosX = ChunkPositionX;
             int chunkPosZ = ChunkPositionZ;

@@ -142,4 +142,13 @@ public sealed class Gi
     /// Дистанция в чанках, для прорисовки сетки без MipMap, как правило это уникальные блоки
     /// </summary>
     public const int MaxDistanceNotMipMap = 12;
+
+    /// <summary>
+    /// Матрица просмотра Projection * LookAt
+    /// </summary>
+    public static readonly float[] MatrixView = new float[16];
+    /// <summary>
+    /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
+    /// </summary>
+    public static readonly float[] MatrixViewDepthMap = new float[16];
 }

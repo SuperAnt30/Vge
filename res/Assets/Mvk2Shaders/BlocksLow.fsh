@@ -27,8 +27,8 @@ void main()
     
     if (tex_color.a < 0.1) discard;
     vec4 light_color = texture(light_map, a_light);
+    
     vec4 color = a_color * tex_color * light_color;
-    vec3 col3 = vec3(color);
-    col3 = mix(col3, fog_color, fog_factor);
+    vec3 col3 = mix(vec3(color), fog_color, fog_factor);
     f_color = vec4(col3, color.a);
 }

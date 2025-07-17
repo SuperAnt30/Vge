@@ -45,30 +45,14 @@ namespace Vge.Renderer
         /// </summary>
         public readonly ShaderLine ShLine;
         /// <summary>
-        /// Шейдоры для вокселей
+        /// Шейдора для сущностей
         /// </summary>
-        public readonly ShaderVoxel ShVoxel;
+        public readonly ShadersEntity ShsEntity;
         /// <summary>
-        /// Шейдоры для сущностей
+        /// Шейдора для блоков
         /// </summary>
-        public readonly ShaderEntity ShEntity;
-        /// <summary>
-        /// Шейдоры для вокселей карты теней 
-        /// </summary>
-        public readonly ShaderVoxel ShVoxelShadowMap;
-        /// <summary>
-        /// Шейдоры для сущностей карты теней
-        /// </summary>
-        public readonly ShaderEntity ShEntityShadowMap;
-        /// <summary>
-        /// Шейдоры для отладки карты теней
-        /// </summary>
-        public readonly ShaderShadowMap ShShadowMap;
+        public readonly ShadersBlocks ShsBlocks;
 
-        /// <summary>
-        /// Активный шейдор для сущности, обычный или для теней
-        /// </summary>
-        private ShaderEntity _shEntityAction;
         /// <summary>
         /// Время выполнения кадра
         /// </summary>
@@ -104,11 +88,8 @@ namespace Vge.Renderer
             ShGuiColor = new ShaderGuiColor(gl, "GuiColor");
             ShGuiLine = new ShaderGuiLine(gl);
             ShLine = new ShaderLine(gl);
-            ShVoxel = new ShaderVoxel(gl, "Voxel");
-            ShEntity = new ShaderEntity(gl, false, "Entity");
-            ShVoxelShadowMap = new ShaderVoxel(gl, "VoxelShadow");
-            ShEntityShadowMap = new ShaderEntity(gl, true, "EntityShadow");
-            ShShadowMap = new ShaderShadowMap(gl);
+            ShsBlocks = new ShadersBlocks(gl, "BlocksLow", "BlocksHigh", "BlocksDepthMap");
+            ShsEntity = new ShadersEntity(gl, "EntityLow", "EntityHigh", "EntityDepthMap");
 
             _Initialize();
         }
@@ -134,33 +115,12 @@ namespace Vge.Renderer
         {
             ShGuiColor.Delete();
             ShGuiLine.Delete();
-            ShVoxel.Delete();
-            ShEntity.Delete();
             ShLine.Delete();
-            ShShadowMap.Delete();
-            ShVoxelShadowMap.Delete();
-            ShEntityShadowMap.Delete();
+            ShsBlocks.Dispose();
+            ShsEntity.Dispose();
         }
 
         #region ShaderBind
-
-        /// <summary>
-        /// Активный шейдор для сущности, обычный или для теней
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ShaderEntity GetShaderEntityAction() => _shEntityAction;
-
-        /// <summary>
-        /// Активировать обычный шейдор
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderEntityAction() => _shEntityAction = ShEntity;
-
-        /// <summary>
-        /// Активировать шейдор для теней
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderEntityActionShadowMap() => _shEntityAction = ShEntityShadowMap;
 
         /// <summary>
         /// Получить массив матрицы для проецирования двумерных координат на экран
@@ -186,47 +146,6 @@ namespace Vge.Renderer
         {
             ShGuiColor.Bind();
             ShGuiColor.SetUniformMatrix4("projview", window.Ortho2D);
-        }
-
-        /// <summary>
-        /// Связать шейдер Voxels
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        /// <param name="torchInHand">0-15 яркость в руке</param>
-        public void ShaderBindVoxels(float[] view, float timeIndex, int overview, 
-            float colorFogR, float colorFogG, float colorFogB, byte torchInHand)
-        {
-            ShVoxel.Bind();
-            ShVoxel.SetUniformMatrix4("view", view);
-            ShVoxel.SetUniform1("takt", (int)window.Game.TickCounter);
-            ShVoxel.SetUniform1("overview", (float)overview);
-            ShVoxel.SetUniform3("colorfog", colorFogR, colorFogG, colorFogB);
-            ShVoxel.SetUniform1("torch", (float)torchInHand);
-            ShVoxel.SetUniform1("animOffset", Ce.ShaderAnimOffset);
-            // Ветер, значение от -1 до 1
-            int wind = (int)window.Time() / 48 & 0x7F;
-            ShVoxel.SetUniform1("wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
-            ShVoxel.SetUniform3("player", window.Game.Player.PosFrameX,
-                window.Game.Player.PosFrameY,
-                window.Game.Player.PosFrameZ);
-        }
-
-        /// <summary>
-        /// Связать шейдер Voxels для карты теней
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public void ShaderBindVoxelsShadowMap(float[] view, float timeIndex)
-        {
-            ShVoxelShadowMap.Bind();
-            ShVoxelShadowMap.SetUniformMatrix4("view", view);
-            ShVoxelShadowMap.SetUniform1("takt", (int)window.Game.TickCounter);
-            ShVoxelShadowMap.SetUniform1("animOffset", Ce.ShaderAnimOffset);
-            // Ветер, значение от -1 до 1
-            int wind = (int)window.Time() / 48 & 0x7F;
-            ShVoxelShadowMap.SetUniform1("wind", Glm.Cos((wind + timeIndex) * .049f) * .16f);
-            ShVoxelShadowMap.SetUniform3("player", window.Game.Player.PosFrameX,
-                window.Game.Player.PosFrameY,
-                window.Game.Player.PosFrameZ);
         }
 
         /// <summary>

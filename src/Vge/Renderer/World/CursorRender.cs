@@ -86,7 +86,7 @@ namespace Vge.Renderer.World
             // Прорисовка
             if (!_hiddenBlock)
             {
-                _worldRenderer.Render.ShaderBindLine(_player.View, 0, 0, 0);
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0);
                 _meshBlock.Draw();
             }
             if (!_hiddenChunk)
@@ -94,7 +94,7 @@ namespace Vge.Renderer.World
                 Vector2i posCh = new Vector2i(Mth.Floor(_player.PosFrameX) >> 4, Mth.Floor(_player.PosFrameZ) >> 4);
                 posCh.X = posCh.X << 4;
                 posCh.Y = posCh.Y << 4;
-                _worldRenderer.Render.ShaderBindLine(_player.View,
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView,
                     posCh.X - _player.PosFrameX,
                     -_player.PosFrameY,
                     posCh.Y - _player.PosFrameZ);

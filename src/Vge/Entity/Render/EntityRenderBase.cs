@@ -30,6 +30,14 @@ namespace Vge.Entity.Render
         public virtual void Draw(float timeIndex, float deltaTime) { }
 
         /// <summary>
+        /// Обновить рассчитать матрицы для кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        /// <param name="deltaTime">Дельта последнего кадра в mc</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void UpdateMatrix(float timeIndex, float deltaTime) { }
+
+        /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
