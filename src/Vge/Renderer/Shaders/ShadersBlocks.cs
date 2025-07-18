@@ -113,6 +113,8 @@ namespace Vge.Renderer.Shaders
 
             if (_qualitatively)
             {
+                _shderAction.SetUniform1("brightness", Gi.Brightness);
+                _shderAction.SetUniform3("lightDir", Gi.PosViewLightDir.X, Gi.PosViewLightDir.Y, Gi.PosViewLightDir.Z);
                 _shderAction.SetUniformMatrix4("lightMatrix", Gi.MatrixViewDepthMap);
             }
         }

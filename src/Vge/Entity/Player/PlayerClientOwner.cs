@@ -7,6 +7,7 @@ using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
+using Vge.Renderer;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
@@ -30,11 +31,6 @@ namespace Vge.Entity.Player
         /// Объект кэш чата
         /// </summary>
         public readonly ChatList Chat;
-
-        /// <summary>
-        /// Позиция света
-        /// </summary>
-        public Vector3 PosLight;
 
         /// <summary>
         /// Массив всех видимых чанков 
@@ -466,9 +462,11 @@ namespace Vge.Entity.Player
             //matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
             //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
 
-            PosLight = new Vector3(-1, 4, 1);
-            matrix = Glm.Ortho(-64, 64, -64, 64, -64f, 64f);
-            matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
+            // Gi.PosViewLightDir = new Vector3(-1, 4, 1).Normalize();
+            Gi.PosViewLightDir = new Vector3(1, 4, 1).Normalize();
+            int s = ShadowMapping.SizeOrthShadowMap;
+            matrix = Glm.Ortho(-s, s, -s, s, -s * 2, s);
+            matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
 
             matrix.ConvArray(Gi.MatrixViewDepthMap);
         }

@@ -9,15 +9,16 @@ namespace Vge.Renderer.Shaders
         public ShaderEntity(GL gl, string name)
         {
             this.gl = gl;
-            string vsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".vsh");
-            string fsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".fsh");
+            string vsh = FileAssets.ReadStringToShader(name + ".vsh");
+            string fsh = FileAssets.ReadStringToShader(name + ".fsh");
 
             Create(name, vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
-                    { 1, "v_texCoord" },
-                    { 2, "v_jointId" },
-                    { 3, "v_clothId" }
+                    { 1, "v_normal" },
+                    { 2, "v_texCoord" },
+                    { 3, "v_jointId" },
+                    { 4, "v_clothId" }
                 });
         }
     }

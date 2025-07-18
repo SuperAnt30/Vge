@@ -65,7 +65,7 @@ namespace Vge.Entity.Render
         public void SizeAdjustmentTextureWidth(float coef)
         {
             // XYZ UV B - 6 флоатов на вершину
-            for (int i = 3; i < BufferFloat.Length; i += 5)
+            for (int i = 3; i < BufferFloat.Length; i += 8)
             {
                 BufferFloat[i] *= coef;
             }
@@ -77,7 +77,7 @@ namespace Vge.Entity.Render
         public void SizeAdjustmentTextureHeight(float coef)
         {
             // XYZ UV B - 6 флоатов на вершину
-            for (int i = 4; i < BufferFloat.Length; i += 5)
+            for (int i = 4; i < BufferFloat.Length; i += 8)
             {
                 BufferFloat[i] *= coef;
             }
@@ -117,7 +117,7 @@ namespace Vge.Entity.Render
 
             if (scale != 1)
             {
-                for (int i = 0; i < bufferFloat.Length; i += 5)
+                for (int i = 0; i < bufferFloat.Length; i += 8)
                 {
                     bufferFloat[i] *= scale;
                     bufferFloat[i + 1] *= scale;

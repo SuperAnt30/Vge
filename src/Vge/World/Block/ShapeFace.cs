@@ -204,6 +204,14 @@ namespace Vge.World.Block
         /// </summary>
         public void SetNotExtremeSide() => _quad.SetNotExtremeSide();
 
-        public QuadSide GetQuadSide() => _quad;
+        /// <summary>
+        /// Получить объект квада
+        /// </summary>
+        public QuadSide GetQuadSide()
+        {
+            // Нахождение нормали
+            _quad.GenNormal();
+            return _quad;
+        }
     }
 }

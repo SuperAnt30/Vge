@@ -29,11 +29,11 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Сетка чанка сплошных блоков
         /// </summary>
-        private MeshVoxel _meshDense;
+        private MeshBlocks _meshDense;
         /// <summary>
         /// Сетка чанка альфа блоков
         /// </summary>
-        private MeshVoxel _meshAlpha;
+        private MeshBlocks _meshAlpha;
         /// <summary>
         /// Список всех видимых альфа блоков
         /// Координаты в битах 0000 yyyy zzzz xxxx
@@ -90,11 +90,11 @@ namespace Vge.Renderer.World
         {
             if (_meshDense == null)
             {
-                _meshDense = new MeshVoxel(_worldClient.WorldRender.GetOpenGL())
+                _meshDense = new MeshBlocks(_worldClient.WorldRender.GetOpenGL())
                 {
                     IsModifiedRender = true
                 };
-                _meshAlpha = new MeshVoxel(_worldClient.WorldRender.GetOpenGL());
+                _meshAlpha = new MeshBlocks(_worldClient.WorldRender.GetOpenGL());
             }
         }
 
@@ -456,30 +456,30 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Статсус возможности для рендера сплошных блоков
         /// </summary>
-        public bool IsMeshDenseWait => _meshDense.Status == MeshVoxel.StatusMesh.Wait 
-            || _meshDense.Status == MeshVoxel.StatusMesh.Null;
+        public bool IsMeshDenseWait => _meshDense.Status == MeshBlocks.StatusMesh.Wait 
+            || _meshDense.Status == MeshBlocks.StatusMesh.Null;
         /// <summary>
         /// Статсус возможности для рендера альфа блоков
         /// </summary>
-        public bool IsMeshAlphaWait => _meshAlpha.Status == MeshVoxel.StatusMesh.Wait 
-            || _meshAlpha.Status == MeshVoxel.StatusMesh.Null;
+        public bool IsMeshAlphaWait => _meshAlpha.Status == MeshBlocks.StatusMesh.Wait 
+            || _meshAlpha.Status == MeshBlocks.StatusMesh.Null;
         /// <summary>
         /// Статсус связывания сетки с OpenGL для рендера сплошных блоков
         /// </summary>
-        public bool IsMeshDenseBinding => _meshDense.Status == MeshVoxel.StatusMesh.Binding;
+        public bool IsMeshDenseBinding => _meshDense.Status == MeshBlocks.StatusMesh.Binding;
         /// <summary>
         /// Статсус связывания сетки с OpenGL для рендера альфа блоков
         /// </summary>
-        public bool IsMeshAlphaBinding => _meshAlpha.Status == MeshVoxel.StatusMesh.Binding;
+        public bool IsMeshAlphaBinding => _meshAlpha.Status == MeshBlocks.StatusMesh.Binding;
         /// <summary>
         /// Статсус не пустой для рендера сплошных или уникальных блоков
         /// </summary>
-        public bool NotNullMeshDense => _meshDense.Status != MeshVoxel.StatusMesh.Null;
+        public bool NotNullMeshDense => _meshDense.Status != MeshBlocks.StatusMesh.Null;
         /// <summary>
         /// Статсус не пустой для рендера альфа блоков
         /// </summary>
         
-        public bool NotNullMeshAlpha => _meshAlpha.Status != MeshVoxel.StatusMesh.Null;
+        public bool NotNullMeshAlpha => _meshAlpha.Status != MeshBlocks.StatusMesh.Null;
         /// <summary>
         /// Изменить статус на отмена рендеринга альфа блоков
         /// </summary>

@@ -282,6 +282,7 @@ namespace Vge.Renderer.World
                     blockUV.AnimationPause = _rectangularSide.AnimationPause;
                     blockUV.Sharpness = _rectangularSide.Sharpness;
                     blockUV.Vertex = _rectangularSide.Vertex;
+                    blockUV.Normal = _rectangularSide.Normal;
                     if (_rectangularSide.Wind == 0)
                     {
                         blockUV.Building();

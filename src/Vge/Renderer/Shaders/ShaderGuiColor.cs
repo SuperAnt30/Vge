@@ -9,8 +9,8 @@ namespace Vge.Renderer.Shaders
         public ShaderGuiColor(GL gl, string name)
         {
             this.gl = gl;
-            string vsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".vsh");
-            string fsh = FileAssets.ReadStringToShader(Options.PathShaders + name + ".fsh");
+            string vsh = FileAssets.ReadStringToShader(name + ".vsh");
+            string fsh = FileAssets.ReadStringToShader(name + ".fsh");
 
             Create(name, vsh, fsh,
                 new Dictionary<uint, string> {

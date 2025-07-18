@@ -18,9 +18,14 @@ namespace Vge.Renderer
         /// </summary>
         public const int CountChunkShadowMap = 45;
         /// <summary>
-        /// Размер стороны текстуры карты теней (квадрат) 1024*1024
+        /// Размер ортогональной матрицы
         /// </summary>
-        public const int SizeTextureShadowMap = 2048;
+        public const int SizeOrthShadowMap = 48;
+        /// <summary>
+        /// Размер стороны текстуры карты теней (квадрат) 1024*1024
+        /// 2048 4096 8192
+        /// </summary>
+        public const int SizeTextureShadowMap = 4096;
 
 
         /// <summary>

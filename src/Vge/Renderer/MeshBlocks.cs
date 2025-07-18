@@ -7,7 +7,7 @@ namespace Vge.Renderer
     /// <summary>
     /// Объект сетки для воксельного мира с цветом альфа без текстуры
     /// </summary>
-    public class MeshVoxel : Mesh
+    public class MeshBlocks : Mesh
     {
         /// <summary>
         /// Пометка изменения
@@ -32,7 +32,7 @@ namespace Vge.Renderer
         /// </summary>
         private uint _vboByte;
 
-        public MeshVoxel(GL gl) : base(gl) { }
+        public MeshBlocks(GL gl) : base(gl) { }
 
         protected override void _InitVbo()
         {
@@ -60,12 +60,16 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
 
             // layout(location = 2) in int v_rgbl;
-            _gl.VertexAttribPointer(2, 1, GL.GL_FLOAT, false, 8, new IntPtr(0 * sizeof(int)));
+            _gl.VertexAttribPointer(2, 1, GL.GL_FLOAT, false, 12, new IntPtr(0 * sizeof(int)));
             _gl.EnableVertexAttribArray(2);
 
             // layout(location = 3) in int v_anim;
-            _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 8, new IntPtr(1 * sizeof(int)));
+            _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 12, new IntPtr(1 * sizeof(int)));
             _gl.EnableVertexAttribArray(3);
+
+            // layout(location = 4) in int v_normal;
+            _gl.VertexAttribPointer(4, 1, GL.GL_FLOAT, false, 12, new IntPtr(2 * sizeof(int)));
+            _gl.EnableVertexAttribArray(4);
         }
 
         /// <summary>

@@ -7,7 +7,18 @@ namespace Mvk2
         
         static void Main(string[] args)
         {
+            //Glm.Initialized();
+            //Vector3 v = new Vector3(1, 0, 0);
+            //Vector3 v2 = new Vector3(1, 0, 0);
+            //for (int i = -180; i < 360; i+=5)
+            //{
+            //    v2 = Glm.Rotate(new Vector3(1, 0, 0), Glm.Radians(i), new Vector3(0, 1, 0));
+            //    Console.WriteLine(i + " = " + Glm.Dot(v, v2));
+            //}
+            //Console.Read();
             
+            
+
             Window.Run(new WindowMvk());
 
             //double t = 0;

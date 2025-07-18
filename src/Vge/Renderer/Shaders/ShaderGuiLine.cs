@@ -9,8 +9,8 @@ namespace Vge.Renderer.Shaders
         public ShaderGuiLine(GL gl)
         {
             this.gl = gl;
-            string vsh = FileAssets.ReadStringToShader(Options.PathShaders + "GuiLine.vsh");
-            string fsh = FileAssets.ReadStringToShader(Options.PathShaders + "GuiLine.fsh");
+            string vsh = FileAssets.ReadStringToShader("GuiLine.vsh");
+            string fsh = FileAssets.ReadStringToShader("GuiLine.fsh");
 
             Create("GuiLine", vsh, fsh,
                 new Dictionary<uint, string> {

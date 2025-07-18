@@ -226,8 +226,7 @@ namespace Vge.Renderer.World
             // В игровом такте, для подсчёта чтоб максимально можно было нагрузить CPU
             _BindChunkVoxel();
 
-            //Render.LightMap.Update(_game.World.Settings.HasNoSky,
-                //Glm.Cos(_game.TickCounter * .01f), .24f );
+            //Render.LightMap.Update(_game.World.Settings.HasNoSky, Glm.Cos(_game.TickCounter * .01f), .24f );
                 //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
             Render.LightMap.Update(_game.World.Settings.HasNoSky, 1, .12f);
         }
@@ -249,9 +248,13 @@ namespace Vge.Renderer.World
                 // --- Начало сцены ТЕНЕЙ
 
                 // Рисуем воксели сплошных и уникальных блоков
+               // gl.Enable(GL.GL_CULL_FACE);
+                //gl.Disable(GL.GL_CULL_FACE);
+               // gl.CullFace(GL.GL_BACK);
                 _DrawVoxelDenseDepthMap(timeIndex);
+               // gl.CullFace(GL.GL_BACK);
                 // Сущности
-                gl.Disable(GL.GL_CULL_FACE);
+                
                 Entities.DrawDepthMap(timeIndex);
                 gl.Enable(GL.GL_CULL_FACE);
                 // Облака
@@ -289,7 +292,7 @@ namespace Vge.Renderer.World
             // --- Конец сцены
 
             // Отладка на экране карта глубины для теней
-            //Shadow.DrawQuadDebug(Render.GetOrtho2D());
+            Shadow.DrawQuadDebug(Render.GetOrtho2D());
         }
 
         /// <summary>

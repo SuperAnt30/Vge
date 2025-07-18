@@ -11,14 +11,15 @@ namespace Vge.Util
         /// </summary>
         public static string ReadStringToShader(string fileName)
         {
-            if (!File.Exists(fileName))
+            string path = Options.PathShaders;
+            string pathName = path + fileName;
+            if (!File.Exists(pathName))
             {
-                throw new Exception(Sr.GetString(Sr.FileMissing, fileName));
+                throw new Exception(Sr.GetString(Sr.FileMissing, pathName));
             }
-
             string text = "";
             // Получить доступ к существующему либо создать новый
-            using (StreamReader file = new StreamReader(fileName))
+            using (StreamReader file = new StreamReader(pathName))
             {
                 while (true)
                 {
@@ -28,12 +29,41 @@ namespace Vge.Util
                     if (strLine == null) break;
                     // ищем комментарий
                     int index = strLine.IndexOf("//");
-                    if (index == -1) text += strLine;
-                    else text += strLine.Substring(0, index);
+                    if (index != -1)
+                    {
+                        // Кооментарий, оставляем всё, что было до //
+                        text += strLine.Substring(0, index);
+                    }
+                    else
+                    {
+                        // Ищем #include
+                        index = strLine.IndexOf("#include");
+                        if (index != -1)
+                        {
+                            // include
+                            index += 9;
+                            if (strLine.Length > index)
+                            {
+                                text += _ParserIncludeGLSL(strLine.Substring(index));
+                            }
+                        }
+                        else
+                        {
+                            text += strLine;
+                        }
+                    }
                     text += "\r\n";
                 }
             }
             return text;
+        }
+
+        /// <summary>
+        /// Если имеется include вытаскиваем из файла
+        /// </summary>
+        private static string _ParserIncludeGLSL(string fileName)
+        {
+            return ReadStringToShader(fileName);
         }
     }
 }

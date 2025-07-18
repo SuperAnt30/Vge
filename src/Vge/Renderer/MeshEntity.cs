@@ -32,22 +32,26 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
 
             // layout(location = 0) in vec3 v_position;
-            _gl.VertexAttribPointer(0, 3, GL.GL_FLOAT, false, 20, new IntPtr(0 * sizeof(float)));
+            _gl.VertexAttribPointer(0, 3, GL.GL_FLOAT, false, 32, new IntPtr(0 * sizeof(float)));
             _gl.EnableVertexAttribArray(0);
 
-            // layout(location = 1) in vec2 v_texCoord;
-            _gl.VertexAttribPointer(1, 2, GL.GL_FLOAT, false, 20, new IntPtr(3 * sizeof(float)));
+            // layout(location = 1) in vec3 v_normal;
+            _gl.VertexAttribPointer(1, 3, GL.GL_FLOAT, false, 32, new IntPtr(3 * sizeof(float)));
             _gl.EnableVertexAttribArray(1);
+
+            // layout(location = 2) in vec2 v_texCoord;
+            _gl.VertexAttribPointer(2, 2, GL.GL_FLOAT, false, 32, new IntPtr(6 * sizeof(float)));
+            _gl.EnableVertexAttribArray(2);
 
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboInt);
 
-            // layout(location = 2) in int v_jointId;
-            _gl.VertexAttribPointer(2, 1, GL.GL_FLOAT, false, 8, new IntPtr(0 * sizeof(int)));
-            _gl.EnableVertexAttribArray(2);
-
-            // layout(location = 3) in int v_clothId;
-            _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 8, new IntPtr(1 * sizeof(int)));
+            // layout(location = 3) in int v_jointId;
+            _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 8, new IntPtr(0 * sizeof(int)));
             _gl.EnableVertexAttribArray(3);
+
+            // layout(location = 4) in int v_clothId;
+            _gl.VertexAttribPointer(4, 1, GL.GL_FLOAT, false, 8, new IntPtr(1 * sizeof(int)));
+            _gl.EnableVertexAttribArray(4);
         }
 
 

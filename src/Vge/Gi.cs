@@ -104,7 +104,8 @@ public sealed class Gi
     /// <summary>
     /// Затемнение стороны от стороны блока
     /// </summary>
-    public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f };
+    //public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f };
+    public readonly static float[] LightPoles = new float[] { 1, 1, 1, 1, 1, 1 };
 
     /// <summary>
     /// Буфер для склейки рендера сплошных блоков всего ряда
@@ -151,4 +152,12 @@ public sealed class Gi
     /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
     /// </summary>
     public static readonly float[] MatrixViewDepthMap = new float[16];
+    /// <summary>
+    /// Положение солнца
+    /// </summary>
+    public static Vector3 PosViewLightDir = new Vector3(0);
+    /// <summary>
+    /// Яркость теней
+    /// </summary>
+    public static float Brightness = 0.3f;
 }

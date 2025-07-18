@@ -13,6 +13,10 @@ namespace Vge.World.Block
         /// </summary>
         public readonly Vertex3d[] Vertex = new Vertex3d[4];
         /// <summary>
+        /// Нормаль
+        /// </summary>
+        public uint Normal;
+        /// <summary>
         /// С какой стороны
         /// </summary>
         public int Side;
@@ -493,6 +497,21 @@ namespace Vge.World.Block
             //        }
             //    }
             //}
+        }
+
+        /// <summary>
+        /// Нахождение нормали
+        /// </summary>
+        public void GenNormal()
+        {
+            Vector3 normal = Vertex[0].ToPosition();
+            Vector3 vec1 = Vertex[2].ToPosition() - normal;
+            Vector3 vec2 = Vertex[1].ToPosition() - normal;
+            normal = Glm.Cross(vec2.Normalize(), vec1.Normalize()).Normalize();
+            int x = (int)(normal.X * 127) + 127;
+            int y = (int)(normal.Y * 127) + 127;
+            int z = (int)(normal.Z * 127) + 127;
+            Normal = (uint)(x | (y << 8) | (z << 16));
         }
     }
 }

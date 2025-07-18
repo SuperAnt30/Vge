@@ -121,10 +121,18 @@ namespace Vge.Entity.Model
 
                 // Формируем буфер
                 int param = modelCube.EyeLips << 8 | modelCube.BoneIndex;
+
+                // Нахождение нормали
+                Vector3 normal = Vertex[0].ToPosition();
+                Vector3 vec1 = Vertex[2].ToPosition() - normal;
+                Vector3 vec2 = Vertex[1].ToPosition() - normal;
+                normal = Glm.Cross(vec2.Normalize(), vec1.Normalize()).Normalize();
+
                 for (int i = 0; i < 4; i++)
                 {
                     bufferFloat.AddRange(new float[] {
-                        Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
+                        Vertex[i].X,  Vertex[i].Y,  Vertex[i].Z,
+                        normal.X, normal.Y, normal.Z,
                         Vertex[i].U, Vertex[i].V
                     });
                     bufferInt.AddRange(new int[] { param, -1 });

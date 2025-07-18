@@ -9,8 +9,8 @@ namespace Vge.Renderer.Shaders
         public ShaderLine(GL gl)
         {
             this.gl = gl;
-            string vsh = FileAssets.ReadStringToShader(Options.PathShaders + "Line.vsh");
-            string fsh = FileAssets.ReadStringToShader(Options.PathShaders + "Line.fsh");
+            string vsh = FileAssets.ReadStringToShader("Line.vsh");
+            string fsh = FileAssets.ReadStringToShader("Line.fsh");
 
             Create("Line", vsh, fsh,
                 new Dictionary<uint, string> {

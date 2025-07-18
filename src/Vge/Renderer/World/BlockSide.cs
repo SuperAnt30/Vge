@@ -17,6 +17,7 @@ namespace Vge.Renderer.World
         public VertexBlockBuffer BufferCache;
 
         public Vertex3d[] Vertex;
+        public uint Normal;
 
         public byte[] ColorsR;
         public byte[] ColorsG;
@@ -51,16 +52,16 @@ namespace Vge.Renderer.World
         {
             // С EBO
             Buffer.AddVertex(Vertex[0].X + PosCenterX, Vertex[0].Y + PosCenterY, Vertex[0].Z + PosCenterZ,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[1].X + PosCenterX, Vertex[1].Y + PosCenterY, Vertex[1].Z + PosCenterZ,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[2].X + PosCenterX, Vertex[2].Y + PosCenterY, Vertex[2].Z + PosCenterZ,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[3].X + PosCenterX, Vertex[3].Y + PosCenterY, Vertex[3].Z + PosCenterZ,
-                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+                Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                 AnimationFrame, AnimationPause, Sharpness);
         }
 
@@ -95,16 +96,16 @@ namespace Vge.Renderer.World
             }
             
             Buffer.AddVertex(Vertex[0].X + PosCenterX, Vertex[0].Y + PosCenterY, Vertex[0].Z + PosCenterZ,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, f1);
             Buffer.AddVertex(Vertex[1].X + PosCenterX, Vertex[1].Y + PosCenterY, Vertex[1].Z + PosCenterZ,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, f2);
             Buffer.AddVertex(Vertex[2].X + PosCenterX, Vertex[2].Y + PosCenterY, Vertex[2].Z + PosCenterZ,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, f3);
             Buffer.AddVertex(Vertex[3].X + PosCenterX, Vertex[3].Y + PosCenterY, Vertex[3].Z + PosCenterZ,
-                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+                Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                 AnimationFrame, AnimationPause, f4);
         }
 
@@ -115,16 +116,16 @@ namespace Vge.Renderer.World
         {
             // С EBO
             Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind1));
             Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind2));
             Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind3));
             Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
-                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+                Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind4));
         }
 
@@ -135,16 +136,16 @@ namespace Vge.Renderer.World
         {
             // С EBO
             Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
-                Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+                Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                 AnimationFrame, AnimationPause, Sharpness);
         }
 
@@ -154,16 +155,16 @@ namespace Vge.Renderer.World
         public void BuildingLiquidInsideWind(byte wind1, byte wind2, byte wind3, byte wind4)
         {
             Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
-               Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+               Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                AnimationFrame, AnimationPause, (byte)(Sharpness + wind4));
             Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind3));
             Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind2));
             Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, (byte)(Sharpness + wind1));
         }
 
@@ -173,16 +174,16 @@ namespace Vge.Renderer.World
         public void BuildingLiquidInside()
         {
             Buffer.AddVertex(Vertex[3].X, Vertex[3].Y, Vertex[3].Z,
-               Vertex[3].U, Vertex[3].V, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
+               Vertex[3].U, Vertex[3].V, Normal, ColorsR[3], ColorsG[3], ColorsB[3], Lights[3],
                AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[2].X, Vertex[2].Y, Vertex[2].Z,
-                Vertex[2].U, Vertex[2].V, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
+                Vertex[2].U, Vertex[2].V, Normal, ColorsR[2], ColorsG[2], ColorsB[2], Lights[2],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[1].X, Vertex[1].Y, Vertex[1].Z,
-                Vertex[1].U, Vertex[1].V, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
+                Vertex[1].U, Vertex[1].V, Normal, ColorsR[1], ColorsG[1], ColorsB[1], Lights[1],
                 AnimationFrame, AnimationPause, Sharpness);
             Buffer.AddVertex(Vertex[0].X, Vertex[0].Y, Vertex[0].Z,
-                Vertex[0].U, Vertex[0].V, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
+                Vertex[0].U, Vertex[0].V, Normal, ColorsR[0], ColorsG[0], ColorsB[0], Lights[0],
                 AnimationFrame, AnimationPause, Sharpness);
         }
 
