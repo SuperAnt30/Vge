@@ -97,10 +97,10 @@ namespace Vge.Renderer.Shaders
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
             _shderAction.Bind();
             _shderAction.SetUniformMatrix4("view", Gi.MatrixView);
+            _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
+            _shderAction.SetUniform3("lightDir", Gi.PosViewLightDir.X, Gi.PosViewLightDir.Y, Gi.PosViewLightDir.Z);
             if (_qualitatively)
             {
-                _shderAction.SetUniform1("brightness", Gi.Brightness);
-                _shderAction.SetUniform3("lightDir", Gi.PosViewLightDir.X, Gi.PosViewLightDir.Y, Gi.PosViewLightDir.Z);
                 _shderAction.SetUniformMatrix4("lightMatrix", Gi.MatrixViewDepthMap);
             }
         }

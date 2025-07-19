@@ -30,6 +30,8 @@ float ShadowCalculation()
     
     // Проверка нахождения текущего фрагмента в тени
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    // Отсечение границ
+    if(projCoords.z > 1.0) shadow = 0.0;
     
     if (shadow == 1.0)
     {
@@ -64,6 +66,10 @@ float ShadowCalculation()
                 shadow -= ps;
             }
         }
+        
+        // Уменьшаем из-за растояния
+        float dist = 1.0 - distance(vec2(0.0), a_fragToLight.xy);
+        shadow *= dist;
     }
     // Если тень от дифузии больше, то указываем её как основу
     if (diffuse > shadow) shadow = diffuse;

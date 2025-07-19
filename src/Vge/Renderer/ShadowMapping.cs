@@ -15,12 +15,13 @@ namespace Vge.Renderer
         /// Сколько чанков в обзоре, для карты теней. 
         /// Квадрат 5*5 минус углы = 21
         /// Квадрат 7*7 минус углы = 45
+        /// Квадрат 9*9 минус углы = 77
         /// </summary>
         public const int CountChunkShadowMap = 45;
         /// <summary>
         /// Размер ортогональной матрицы
         /// </summary>
-        public const int SizeOrthShadowMap = 48;
+        public const int SizeOrthShadowMap = 64;
         /// <summary>
         /// Размер стороны текстуры карты теней (квадрат) 1024*1024
         /// 2048 4096 8192
@@ -57,7 +58,7 @@ namespace Vge.Renderer
         {
             this.gl = gl;
             _shShadowMap = new ShaderDepthMap(gl);
-            IsShadow = Options.Qualitatively;
+            ReloadInit();
         }
 
         /// <summary>
@@ -99,6 +100,8 @@ namespace Vge.Renderer
         public void ReloadInit()
         {
             IsShadow = Options.Qualitatively;
+            Gi.BlockBrightness = IsShadow ? 0.3f : 0.15f;
+            Gi.EntityBrightness = 0.3f;
         }
 
         /// <summary>

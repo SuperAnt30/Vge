@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
-using Vge.Renderer.Shaders;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World.Block;

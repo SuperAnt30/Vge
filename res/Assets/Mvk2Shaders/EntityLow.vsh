@@ -11,7 +11,13 @@ out vec2 a_light;
 out float a_depth;
 out float a_eyeLips;
 
+out vec3 a_normal;
+out vec3 a_lightDir;
+out float a_brightness;
+
 uniform mat4 view;
+uniform vec3 lightDir;
+uniform float brightness;
 
 uniform vec3 pos;
 uniform vec2 light;
@@ -22,6 +28,9 @@ uniform mat4x3 elementTransforms[24];
 
 void main()
 {
+    a_brightness = brightness;
+    a_lightDir = lightDir;
+    
     int jointId = v_jointId & 0xFF;
     a_eyeLips = float((v_jointId >> 8) & 0xFF);
     if (a_eyeLips != 0)
@@ -50,12 +59,14 @@ void main()
     
 	if (anim < 1)
 	{
-	  gl_Position = view * vec4(pos + v_position, 1.0); 
+	  gl_Position = view * vec4(pos + v_position, 1.0);
+      a_normal = v_normal; 
     }	
 	else
 	{
 	  // Матрица модели, расположения в мире
       mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
+      a_normal = vec3(mat4(elementTransforms[jointId]) * vec4(v_normal, 1.0));
       gl_Position = view * modelMatrix * mat4(elementTransforms[jointId]) * vec4(v_position, 1.0);
 	}
 }

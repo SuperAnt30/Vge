@@ -36,12 +36,12 @@ uniform vec2 chunk;
 
 void main()
 {
+    a_brightness = brightness;
+    a_lightDir = lightDir;
+    
     vec3 pos = vec3(chunk.x - player.x, -player.y, chunk.y - player.z);
-
     a_fragToLight = lightMatrix * vec4(pos + v_position, 1.0);
     vec3 camera = vec3(player.x - chunk.x, player.y, player.z - chunk.y);
-	a_brightness = brightness;
-    a_lightDir = lightDir;
     
     fog_color = colorfog;
     float camera_distance = distance(camera, vec3(v_position));

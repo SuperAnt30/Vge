@@ -463,7 +463,7 @@ namespace Vge.Entity.Player
             //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
 
             // Gi.PosViewLightDir = new Vector3(-1, 4, 1).Normalize();
-            Gi.PosViewLightDir = new Vector3(1, 4, 1).Normalize();
+            Gi.PosViewLightDir = new Vector3(-1, 4, 1).Normalize();
             int s = ShadowMapping.SizeOrthShadowMap;
             matrix = Glm.Ortho(-s, s, -s, s, -s * 2, s);
             matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));

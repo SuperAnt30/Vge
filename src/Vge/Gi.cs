@@ -104,8 +104,8 @@ public sealed class Gi
     /// <summary>
     /// Затемнение стороны от стороны блока
     /// </summary>
-    //public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f };
-    public readonly static float[] LightPoles = new float[] { 1, 1, 1, 1, 1, 1 };
+    //public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f }; //  без Diffuse
+    public readonly static float[] LightPoles = new float[] { 1, .6f, .7f, .7f, .85f, .85f }; // С Diffuse
 
     /// <summary>
     /// Буфер для склейки рендера сплошных блоков всего ряда
@@ -157,7 +157,11 @@ public sealed class Gi
     /// </summary>
     public static Vector3 PosViewLightDir = new Vector3(0);
     /// <summary>
-    /// Яркость теней
+    /// Яркость теней сущностей
     /// </summary>
-    public static float Brightness = 0.3f;
+    public static float EntityBrightness = 0.3f;
+    /// <summary>
+    /// Яркость теней блоков
+    /// </summary>
+    public static float BlockBrightness = 0.3f;
 }

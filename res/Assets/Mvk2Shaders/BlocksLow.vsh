@@ -13,7 +13,13 @@ out vec3 fog_color;
 out vec2 a_light;
 out float a_sharpness;
 
+out vec3 a_normal;
+out vec3 a_lightDir;
+out float a_brightness;
+
 uniform mat4 view;
+uniform vec3 lightDir;
+uniform float brightness;
 
 uniform int takt;
 uniform float overview;
@@ -27,6 +33,9 @@ uniform vec2 chunk;
 
 void main()
 {
+    a_brightness = brightness;
+    a_lightDir = lightDir;
+    
     vec3 pos = vec3(chunk.x - player.x, -player.y, chunk.y - player.z);
     vec3 camera = vec3(player.x - chunk.x, player.y, player.z - chunk.y);
     
@@ -86,5 +95,8 @@ void main()
     {
         gl_Position = view * vec4(pos + v_position, 1.0);
     }
+    a_normal = normalize(vec3(float((v_normal & 0xFF) - 127) / 127.0, 
+        float(((v_normal >> 8) & 0xFF) - 127) / 127.0, 
+        float(((v_normal >> 16) & 0xFF) - 127) / 127.0));
     a_color = vec4(r, g, b, 1.0);
 }

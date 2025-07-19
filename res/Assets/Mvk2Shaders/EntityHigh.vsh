@@ -30,6 +30,9 @@ uniform mat4x3 elementTransforms[24];
 
 void main()
 {
+    a_brightness = brightness;
+    a_lightDir = lightDir;
+    
     int jointId = v_jointId & 0xFF;
     a_eyeLips = float((v_jointId >> 8) & 0xFF);
     if (a_eyeLips != 0)
@@ -55,9 +58,6 @@ void main()
     {
         a_depth = float(v_clothId);
     }
-    
-    a_brightness = brightness;
-    a_lightDir = lightDir;
     
 	if (anim < 1)
 	{
