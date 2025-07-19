@@ -46,30 +46,46 @@ float ShadowCalculation()
                 if (currentDepth - bias > pcfDepth) shadow++;
             }    
         }
-        if (shadow == 9) shadow = a_brightness; // Тень
-        else shadow = 0.0; // Нет тени
-    
-        // Poisson Sampling (https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/)
-        vec2 poissonDisk[4] = vec2[](
-            vec2( -0.74201624, -0.49906216 ),
-            vec2( 0.74558609, -0.66890725 ),
-            vec2( -0.394184101, -0.72938870 ),
-            vec2( 0.44495938, 0.39387760 )
-        );
-        
-        float ps = a_brightness / 5.0;
-        for (int i = 0; i < 4; i++)
+        if (shadow == 9) // Тень
         {
-            if (texture( depth_map, projCoords.xy + poissonDisk[i] / 900).r  >  projCoords.z-bias)
+            float ps = 0;
+            // PCF
+            for(int x = -2; x <= 2; x+=2)
             {
-                //if (shadow > 0.8) 
-                shadow -= ps;
+                for(int y = -2; y <= 2; y+=2)
+                {
+                    float pcfDepth = texture(depth_map, projCoords.xy + vec2(x, y) * texelSize).r;
+                    if (currentDepth - bias > pcfDepth) ps++;
+                }    
+            }
+            shadow = ps / 9.0;
+            
+            if (shadow > 0) 
+            {
+                shadow *= a_brightness;
+                // Poisson Sampling (https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/)
+                vec2 poissonDisk[4] = vec2[](
+                    vec2( -0.74201624, -0.49906216 ),
+                    vec2( 0.74558609, -0.66890725 ),
+                    vec2( -0.394184101, -0.72938870 ),
+                    vec2( 0.44495938, 0.39387760 )
+                );
+        
+                float ps = shadow / 4;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (texture( depth_map, projCoords.xy + poissonDisk[i] / 900).r  >  projCoords.z-bias) shadow -= ps;
+                }
+                if (shadow < 0.0) shadow = 0;
+                else
+                {
+                    // Уменьшаем из-за растояния
+                    float dist = 1.0 - distance(vec2(0.0), a_fragToLight.xy);
+                    shadow *= dist;
+                }
             }
         }
-        
-        // Уменьшаем из-за растояния
-        float dist = 1.0 - distance(vec2(0.0), a_fragToLight.xy);
-        shadow *= dist;
+        else shadow = 0.0; // Нет тени
     }
     // Если тень от дифузии больше, то указываем её как основу
     if (diffuse > shadow) shadow = diffuse;
