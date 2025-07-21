@@ -1,4 +1,5 @@
 ﻿using Vge.World;
+using Vge.World.Сalendar;
 
 namespace Mvk2.World
 {
@@ -9,9 +10,11 @@ namespace Mvk2.World
     {
         public WorldSettingsNightmare()
         {
-           // HasNoSky = true;
+            IdSetting = 2;
+            HasNoSky = true;
             ActiveRadius = 3;
             NumberChunkSections = 16;
+            Calendar = new СalendarNone();
         }
     }
 }

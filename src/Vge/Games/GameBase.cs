@@ -68,9 +68,9 @@ namespace Vge.Games
         public readonly Dictionary<int, string> Players = new Dictionary<int, string>();
 
         /// <summary>
-        /// Увеличивается каждый тик 
+        /// Увеличивается каждый тик
         /// </summary>
-        public uint TickCounter { get; private set; } = 0;
+        //public uint TickCounter { get; private set; } = 0;
         /// <summary>
         /// Флаг запущена ли игра, надо для сервера
         /// </summary>
@@ -381,12 +381,11 @@ namespace Vge.Games
             if (_flagTick && !IsGamePaused)
             {
                 _tickCounterClient++;
-                TickCounter++;
-
+                //TickCounter++;
                 //Filer.StartSection("Player.Update");
                 // Обновить игрока
                 //Player.Update();
-               // Filer.EndStartSection("World.Update", 10);
+                // Filer.EndStartSection("World.Update", 10);
                 // Обновить мир
                 World.UpdateClient();
                 //Filer.EndStartSection("WorldRender.Update", 10);
@@ -432,7 +431,7 @@ namespace Vge.Games
         /// <summary>
         /// Задать время с сервера
         /// </summary>
-        public void SetTickCounter(uint time) => TickCounter = time;
+       // public void SetTickCounter(uint time) => TickCounter = time;
 
         /// <summary>
         /// Изменён размер окна
@@ -524,7 +523,7 @@ namespace Vge.Games
             return string.Format("{0} ping: {1} ms Traffic: {3}{2} Tick {4}\r\n{5}\r\n{6} {7}",
                 IsLoacl ? "Local" : "Net", // 0
                 Player.Ping, IsGamePaused ? " Pause" : "", // 1-2
-                _ToTraffic(),TickCounter, // 3-4
+                _ToTraffic(), 0,//TickCounter, // 3-4
                 Player, // 5
                 WorldRender.ToString(), // 6
                 World != null ? World.ToString() : "" // 7

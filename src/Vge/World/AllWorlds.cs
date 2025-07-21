@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using System.Runtime.CompilerServices;
+using Vge.Games;
 
 namespace Vge.World
 {
@@ -84,6 +85,10 @@ namespace Vge.World
             }
         }
 
+        /// <summary>
+        /// Получить мир по id
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public WorldServer GetWorld(int index) => _worldServers[index];
 
         public override string ToString()

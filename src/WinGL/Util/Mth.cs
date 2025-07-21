@@ -149,5 +149,11 @@ namespace WinGL.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(int param, int min, int max) => param < min ? min : (param > max ? max : param);
+        /// <summary>
+        /// Возвращает значение первого параметра, ограниченное нижним и верхним пределами, 
+        /// заданными вторым и третьим параметрами. 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Clamp(float param, float min, float max) => param < min ? min : (param > max ? max : param);
     }
 }

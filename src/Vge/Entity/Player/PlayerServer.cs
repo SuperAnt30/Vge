@@ -156,7 +156,7 @@ namespace Vge.Entity.Player
         public PlayerServer(string login, string token, GameServer server)
             : this(login, token, null, server) { }
 
-#region Tracker
+        #region Tracker
 
         /// <summary>
         /// Была ли смена обзора чанков, для трекера
@@ -168,9 +168,9 @@ namespace Vge.Entity.Player
         /// </summary>
         public override void MadeOverviewChunkChanged() => _flagOverviewChunkChanged = false;
 
-#endregion
+        #endregion
 
-#region GetSet
+        #region GetSet
 
         /// <summary>
         /// Изменить позицию игрока на стороне сервера
@@ -184,9 +184,9 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
 
         /// <summary>
         /// Игровой такт
@@ -195,12 +195,21 @@ namespace Vge.Entity.Player
         {
             // Добавить время к игроку
             TimesExisted += _server.DeltaTime;
+            WorldServer worldServer = GetWorld();
+
+            // Синхронизация времени с клиентом
+            uint tick = worldServer.Settings.Calendar.TickCounter;
+            if (tick % 600 == 0)
+            {
+                // Раз в 30 секунд обновляем тик с клиентом
+                SendPacket(new PacketS04TickUpdate(tick));
+            }
 
             // Тут надо анализ сделать было ли перемещение
             if (IsPositionChange() || IsChangeOverview())
             {
                 //server.Filer.StartSection("Fragment" + OverviewChunk);
-                GetWorld().Fragment.UpdateMountedMovingAnchor(this);
+                worldServer.Fragment.UpdateMountedMovingAnchor(this);
                 //server.Filer.EndSection();
                 PosPrevX = PosX;
                 PosPrevY = PosY;
@@ -278,9 +287,9 @@ namespace Vge.Entity.Player
             }
         }
 
-#endregion
+        #endregion
 
-#region Packet
+        #region Packet
 
         /// <summary>
         /// Отправить сетевой пакет этому игроку
@@ -452,9 +461,9 @@ namespace Vge.Entity.Player
             _desiredBatchSize = Mth.Min(_batchSizeReceive, _batchSizeUnpack);
         }
 
-#endregion
+        #endregion
 
-#region JoinLeftGame
+        #region JoinLeftGame
 
         /// <summary>
         /// Пройдены все проверки, отправляем нужные пакеты игроку
@@ -463,8 +472,6 @@ namespace Vge.Entity.Player
         {
             // Id игрока
             SendPacket(new PacketS03JoinGame(Id, UUID));
-            // Тикущий счётчик тика сервера
-            SendPacket(new PacketS04TimeUpdate(_server.TickCounter));
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
 
@@ -493,9 +500,9 @@ namespace Vge.Entity.Player
             WriteToFile();
         }
 
-#endregion
+        #endregion
 
-#region World
+        #region World
 
         /// <summary>
         /// Получить мир в котором находится игрок
@@ -519,9 +526,9 @@ namespace Vge.Entity.Player
             MountedMovedAnchor();
         }
 
-#endregion
+        #endregion
 
-#region WriteRead
+        #region WriteRead
 
         /// <summary>
         /// Прочесть данные игрока с файла, возращает true если файл существола
@@ -569,9 +576,9 @@ namespace Vge.Entity.Player
             NBTTools.WriteToFile(nbt, _pathName, true);
         }
 
-#endregion
+        #endregion
 
-#region ChunkAddRemove
+        #region ChunkAddRemove
 
         /// <summary>
         /// Добавить игрока в конкретный чанк для клиента
@@ -588,9 +595,9 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS21ChunkData(chunkPosX, chunkPosY));
         }
 
-#endregion
+        #endregion
 
-#region Anchor
+        #region Anchor
 
         /// <summary>
         /// Проверить имеется ли чанк в загрузке (loadingChunksSort)

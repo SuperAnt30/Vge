@@ -462,13 +462,7 @@ namespace Vge.Entity.Player
             //matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
             //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
 
-            // Gi.PosViewLightDir = new Vector3(-1, 4, 1).Normalize();
-            Gi.PosViewLightDir = new Vector3(-1, 4, 1).Normalize();
-            int s = ShadowMapping.SizeOrthShadowMap;
-            matrix = Glm.Ortho(-s, s, -s, s, -s * 2, s);
-            matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
-
-            matrix.ConvArray(Gi.MatrixViewDepthMap);
+            
         }
 
         /// <summary>
@@ -902,9 +896,7 @@ namespace Vge.Entity.Player
         public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
         {
             IdWorld = packet.IdWorld;
-            _game.World.ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
-            _game.World.Settings.PacketRespawnInWorld(packet);
-            _game.World.Collision.Init();
+            _game.World.PacketRespawnInWorld(packet);
             _game.WorldRender.RespawnInWorld();
             _heightChinkFrustumCulling = _game.World.ChunkPrClient.Settings.NumberBlocks;
         }

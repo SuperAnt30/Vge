@@ -2,6 +2,7 @@
 using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
+using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -36,7 +37,8 @@ namespace Vge.World
             Game = game;
             IsRemote = true;
             Rnd = new Rand();
-            Settings = new WorldSettings();
+           
+           // Settings = new WorldSettings();
             WorldRender = game.WorldRender;
             ChunkPr = ChunkPrClient = new ChunkProviderClient(this);
             Filer = new Profiler(game.Log, "[Client] ");
@@ -54,7 +56,14 @@ namespace Vge.World
         /// <summary>
         /// Получить время в тактах объекта Stopwatch с момента запуска проекта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override long ElapsedTicks() => Game.ElapsedTicks();
+
+        /// <summary>
+        /// Получить тактовое время мира
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public uint GetTickCounter() => Settings == null ? 0 : Settings.Calendar.TickCounter;
 
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
             => _flagDebugChunkMappingChanged = true;
@@ -64,6 +73,8 @@ namespace Vge.World
         /// </summary>
         public void UpdateClient()
         {
+            Settings.Calendar.UpdateClient();
+
             Filer.StartSection("Entities");
             _UpdateEntities();
             Filer.EndSection();
@@ -82,6 +93,17 @@ namespace Vge.World
         {
             WorldRender.Stoping();
             ChunkPrClient.Stoping();
+        }
+
+        /// <summary>
+        /// Пакет Возраждение в мире
+        /// </summary>
+        public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
+        {
+            ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
+            Settings = Game.ModClient.CreateWorldSettings(packet.IdSetting);
+            Settings.PacketRespawnInWorld(packet);
+            Collision.Init();
         }
 
         #region Mark

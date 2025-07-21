@@ -93,6 +93,7 @@ namespace Vge.World
         public void Update()
         {
             long timeBegin = Server.Time();
+            Settings.Calendar.UpdateServer();
 
             // Обработка фрагментов в начале такта
             _FragmentBegin();

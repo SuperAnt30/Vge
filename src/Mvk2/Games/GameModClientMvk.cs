@@ -1,5 +1,6 @@
-﻿using Vge;
+﻿using Mvk2.World;
 using Vge.Games;
+using Vge.World;
 
 namespace Mvk2.Games
 {
@@ -14,5 +15,11 @@ namespace Mvk2.Games
         private readonly WindowMvk _windowMvk;
 
         public GameModClientMvk(WindowMvk window) : base(window) => _windowMvk = window;
+
+        /// <summary>
+        /// Создать настройки мира по id
+        /// </summary>
+        public override WorldSettings CreateWorldSettings(byte id)
+            => id == 2 ? new WorldSettingsNightmare() : new WorldSettings();
     }
 }

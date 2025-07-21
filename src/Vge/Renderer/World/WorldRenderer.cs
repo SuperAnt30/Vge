@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
@@ -227,7 +228,43 @@ namespace Vge.Renderer.World
 
             //Render.LightMap.Update(_game.World.Settings.HasNoSky, Glm.Cos(_game.TickCounter * .01f), .24f );
                 //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
-            Render.LightMap.Update(_game.World.Settings.HasNoSky, 1, .12f);
+            Render.LightMap.Update(_game.World.Settings);
+
+            Gi.PosViewLightDir = _game.World.Settings.Calendar.GetVectorLight(); 
+
+            Vector3 vu = new Vector3(0, 1, 0);
+            Vector3 vr = Glm.Cross(vu, Gi.PosViewLightDir);
+            vu = Glm.Cross(Gi.PosViewLightDir, vr);
+            int s = ShadowMapping.SizeOrthShadowMap;
+            Mat4 matrix = Glm.Ortho(-s, s, -s, s, -s * 2, s);
+            //matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
+            matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), vu));
+
+            matrix.ConvArray(Gi.MatrixViewDepthMap);
+
+            //Console.WriteLine(tick + " " + fc + " " + fs + " " + Gi.PosViewLightDir);
+
+            Debug.Text = Gi.PosViewLightDir.ToString();
+        }
+
+        /// <summary>
+        /// Вычисляет угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        private float _CalculateCelestialAngle()//float timeIndex)
+        {
+            long totalWorldTime = _game.Time();
+            int SPEED_DAY = 3600;
+            int time = (int)(totalWorldTime % SPEED_DAY);
+            float timeFloat = (time)/* + timeIndex)*/ / (float)SPEED_DAY - .25f;
+
+            if (timeFloat < 0f) timeFloat++;
+            if (timeFloat > 1f) timeFloat--;
+
+            float time2 = timeFloat;
+            timeFloat = 1f - ((Glm.Cos(timeFloat * Glm.Pi) + 1f) / 2f);
+            timeFloat = time2 + (timeFloat - time2) / 3.0F;
+            return timeFloat;
         }
 
         /// <summary>
@@ -290,8 +327,10 @@ namespace Vge.Renderer.World
             // Прорисовка руки
             // --- Конец сцены
 
+
+
             // Отладка на экране карта глубины для теней
-            Shadow.DrawQuadDebug(Render.GetOrtho2D());
+            //Shadow.DrawQuadDebug(Render.GetOrtho2D());
         }
 
         /// <summary>
@@ -374,7 +413,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBiginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.TickCounter, _Wind(timeIndex));
+                (int)_game.World.GetTickCounter(), _Wind(timeIndex));
             
             int count = _arrayChunkRender.Count;
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
@@ -399,7 +438,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.TickCounter, _Wind(timeIndex), _overviewBlock, .4f, .4f, .7f, 5);
+                (int)_game.World.GetTickCounter(), _Wind(timeIndex), _overviewBlock, .4f, .4f, .7f, 5);
 
             if (Debug.IsDrawVoxelLine)
             {

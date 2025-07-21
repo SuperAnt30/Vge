@@ -5,6 +5,7 @@ using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Light;
+using Vge.World.Сalendar;
 using WinGL.Util;
 
 namespace Vge.World
@@ -48,7 +49,6 @@ namespace Vge.World
         /// Список игроков в мире
         /// </summary>
         public ListMessy<PlayerBase> PlayerEntities { get; protected set; } = new ListMessy<PlayerBase>();
-
 
         /// <summary>
         /// Объект обработки освещения для мира

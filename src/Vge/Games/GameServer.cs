@@ -534,12 +534,6 @@ namespace Vge.Games
             {
                 UpCountClients();
 
-                if (TickCounter % 600 == 0)
-                {
-                    // раз в 30 секунд обновляем тик с клиентом
-                    Players.SendToAll(new PacketS04TimeUpdate(TickCounter));
-                }
-
                 _rxPrev = _rx;
                 _txPrev = _tx;
                 _rx = 0;

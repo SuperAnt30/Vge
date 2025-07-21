@@ -1,4 +1,5 @@
 ﻿using Vge.Util;
+using Vge.World;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World
@@ -53,29 +54,35 @@ namespace Vge.Renderer.World
         /// <summary>
         /// В каждом такте корректировка
         /// </summary>
-        /// <param name="hasNoSky">Неба нет</param>
-        /// <param name="sunLight">Яркость солнца, 0.0 - 1.0</param>
-        /// <param name="moonLight">Значение яркости луны, можно использовать фазу луны 0.0 - 0.5</param>
-        public void Update(bool hasNoSky, float sunLight, float moonLight)
+        /// <param name="worldSettings">Настройки мира</param>
+        public void Update(WorldSettings worldSettings)
         {
-            if (_hasNoSkyPrev != hasNoSky || _skyLightPrev != sunLight)
+            if (_hasNoSkyPrev != worldSettings.HasNoSky)
             {
-                _skyLightPrev = sunLight;
-                _hasNoSkyPrev = hasNoSky;
-
-                if (hasNoSky)
+                // Скорее всего обновился мир, ибо сменилось небо
+                _hasNoSkyPrev = worldSettings.HasNoSky;
+                if (_hasNoSkyPrev)
                 {
                     _GenTextureNotSky();
+                    _UpdateLightmap();
                 }
                 else
                 {
-                    _GenTextureSky(sunLight, moonLight);
+                    _skyLightPrev = worldSettings.Calendar.GetSunLight();
+                    _GenTextureSky(_skyLightPrev, worldSettings.Calendar.GetMoonLight());
+                    _UpdateLightmap();
                 }
-
-                _UpdateLightmap();
-#if DEBUG
-                _UpdateLightmapDebug();
-#endif
+            }
+            else if (!_hasNoSkyPrev)
+            {
+                // Есть небо, проверяем смену яркости солнца
+                float sunLight = worldSettings.Calendar.GetSunLight();
+                if (_skyLightPrev != sunLight)
+                {
+                    _skyLightPrev = sunLight;
+                    _GenTextureSky(_skyLightPrev, worldSettings.Calendar.GetMoonLight());
+                    _UpdateLightmap();
+                }
             }
         }
 
@@ -293,6 +300,10 @@ namespace Vge.Renderer.World
                 gl.TexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 16, 16,
                         GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, _buffer);
             }
+
+#if DEBUG
+            _UpdateLightmapDebug();
+#endif
         }
 
         #region Debug

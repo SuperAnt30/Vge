@@ -111,7 +111,7 @@ namespace Vge.Entity
             EntityTracker entityTracker2;
             for (int i = 0; i < _trackedEntities.Count; i++)
             {
-                entityTracker = _trackedEntities.GetAt(i) as EntityTracker;
+                entityTracker = _trackedEntities.GetAt(i);
                 if (entityTracker != null)
                 {
                     entityTracker.UpdatePlayerList(_trackedPlayers);
@@ -120,7 +120,7 @@ namespace Vge.Entity
                     {
                         for (int j = 0; j < _trackedEntities.Count; j++)
                         {
-                            entityTracker2 = _trackedEntities.GetAt(j) as EntityTracker;
+                            entityTracker2 = _trackedEntities.GetAt(j);
                             if (entityTracker2 != null && entityTracker2.TrackedEntity.Id != playerServer.Id)
                             {
                                 entityTracker2.UpdatePlayerEntity(playerServer);
