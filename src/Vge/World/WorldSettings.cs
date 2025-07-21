@@ -6,12 +6,12 @@ namespace Vge.World
     /// <summary>
     /// Опции мира
     /// </summary>
-    public class WorldSettings
+    abstract public class WorldSettings
     {
         /// <summary>
         /// ID объекта настроек мира
         /// </summary>
-        public byte IdSetting { get; protected set; } = 1;
+        public byte IdSetting { get; protected set; }
         /// <summary>
         /// Не имеет неба, true
         /// </summary>
@@ -28,10 +28,6 @@ namespace Vge.World
         /// Календарь
         /// </summary>
         public IСalendar Calendar { get; protected set; }
-
-        public WorldSettings()
-            //=> Calendar = new Сalendar32(36000); // 24000 при 20 тиках = 20 мин. При 30 тиках = 36000
-            => Calendar = new Сalendar32(360);
 
         /// <summary>
         /// Пакет Возраждение в мире

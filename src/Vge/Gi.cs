@@ -153,9 +153,9 @@ public sealed class Gi
     /// </summary>
     public static readonly float[] MatrixViewDepthMap = new float[16];
     /// <summary>
-    /// Положение солнца
+    /// Вектор источника света для тени
     /// </summary>
-    public static Vector3 PosViewLightDir = new Vector3(0);
+    public static Vector3 ViewLightDir = new Vector3(0);
     /// <summary>
     /// Яркость теней сущностей
     /// </summary>

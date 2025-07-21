@@ -31,7 +31,7 @@ namespace Mvk2.World
             _InitAfterStartGame();
 
             _worldServers[0] = new WorldServer(server, 0, new WorldSettingsNightmare());
-            _worldServers[1] = new WorldServer(server, 1, new WorldSettings());
+            _worldServers[1] = new WorldServer(server, 1, new WorldSettingsIsland());
         }
 
         /// <summary>

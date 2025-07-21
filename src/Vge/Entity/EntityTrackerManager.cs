@@ -2,6 +2,7 @@
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network;
+using Vge.Network.Packets.Server;
 using Vge.World;
 using WinGL.Util;
 
@@ -132,6 +133,23 @@ namespace Vge.Entity
         }
 
         #region Send
+
+        /// <summary>
+        /// Отправить всем сообщение
+        /// </summary>
+        public void SendToAllMessage(string message)
+            => SendToAll(new PacketS3AMessage(message));
+
+        /// <summary>
+        /// Отправить пакет всем игрокам конкретного треккера
+        /// </summary>
+        public void SendToAll(IPacket packet)
+        {
+            for (int i = 0; i < _trackedPlayers.Count; i++)
+            {
+                _trackedPlayers.GetAt(i).SendPacket(packet);
+            }
+        }
 
         /// <summary>
         /// Отправить всем отслеживаемым игрока пакет, кроме тикущей

@@ -452,7 +452,7 @@ namespace Vge.Games
         public override void Draw(float timeIndex)
         {
             // Тут прорисовка мира
-            gl.ClearColor(.4f, .4f, .7f, 1f);
+            //gl.ClearColor(.4f, .4f, .7f, 1f);
             // Мир
             if (FlagGameStarted)
             {

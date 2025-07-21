@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World.Block;
+using Vge.World.Сalendar;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -67,6 +69,16 @@ namespace Vge.Renderer.World
         /// Обзор в блоках
         /// </summary>
         private int _overviewBlock = 32;
+
+        /// <summary>
+        /// Цвет неба
+        /// </summary>
+        private Vector3 _colorSky = new Vector3(0);
+        /// <summary>
+        /// Цвет тумана
+        /// </summary>
+        private Vector3 _colorFog = new Vector3(0);
+
 
         public WorldRenderer(GameBase game) : base(game)
         {
@@ -230,41 +242,10 @@ namespace Vge.Renderer.World
                 //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
             Render.LightMap.Update(_game.World.Settings);
 
-            Gi.PosViewLightDir = _game.World.Settings.Calendar.GetVectorLight(); 
+            // Считаем вектор, матрицы и прочее из календаря
+            _GenVectorLightСalendar(0);
 
-            Vector3 vu = new Vector3(0, 1, 0);
-            Vector3 vr = Glm.Cross(vu, Gi.PosViewLightDir);
-            vu = Glm.Cross(Gi.PosViewLightDir, vr);
-            int s = ShadowMapping.SizeOrthShadowMap;
-            Mat4 matrix = Glm.Ortho(-s, s, -s, s, -s * 2, s);
-            //matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), new Vector3(0, 1, 0)));
-            matrix.Multiply(Glm.LookAt(Gi.PosViewLightDir, new Vector3(0, 0, 0), vu));
-
-            matrix.ConvArray(Gi.MatrixViewDepthMap);
-
-            //Console.WriteLine(tick + " " + fc + " " + fs + " " + Gi.PosViewLightDir);
-
-            Debug.Text = Gi.PosViewLightDir.ToString();
-        }
-
-        /// <summary>
-        /// Вычисляет угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        private float _CalculateCelestialAngle()//float timeIndex)
-        {
-            long totalWorldTime = _game.Time();
-            int SPEED_DAY = 3600;
-            int time = (int)(totalWorldTime % SPEED_DAY);
-            float timeFloat = (time)/* + timeIndex)*/ / (float)SPEED_DAY - .25f;
-
-            if (timeFloat < 0f) timeFloat++;
-            if (timeFloat > 1f) timeFloat--;
-
-            float time2 = timeFloat;
-            timeFloat = 1f - ((Glm.Cos(timeFloat * Glm.Pi) + 1f) / 2f);
-            timeFloat = time2 + (timeFloat - time2) / 3.0F;
-            return timeFloat;
+            // Debug.Text = Gi.ViewLightDir.ToString();
         }
 
         /// <summary>
@@ -304,13 +285,16 @@ namespace Vge.Renderer.World
             }
             
             gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-            
+
+
             // --- Начало сцены
+            gl.ClearColor(_colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
+
             // Небо
             //DrawSky(timeIndex);
 
             // Рисуем воксели сплошных и уникальных блоков
-            _DrawVoxelDense(timeIndex, Gi.MatrixView);
+            _DrawVoxelDense(timeIndex);
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
             Entities.Draw(timeIndex);
@@ -331,6 +315,28 @@ namespace Vge.Renderer.World
 
             // Отладка на экране карта глубины для теней
             //Shadow.DrawQuadDebug(Render.GetOrtho2D());
+        }
+
+        /// <summary>
+        /// Считаем вектор, матрицы и прочее из календаря
+        /// </summary>
+        private void _GenVectorLightСalendar(float timeIndex)
+        {
+            //if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
+            //{
+                IСalendar calendar = _game.World.Settings.Calendar;
+                calendar.UpdateFrame(timeIndex);
+                Gi.ViewLightDir = calendar.GetVectorLight();
+                _colorSky = calendar.GetColorSky();
+                _colorFog = calendar.GetColorFog();
+
+                Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
+                Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
+                int sosm = ShadowMapping.SizeOrthShadowMap;
+                Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 2, sosm);
+                matrix.Multiply(Glm.LookAt(Gi.ViewLightDir, new Vector3(0, 0, 0), vu));
+                matrix.ConvArray(Gi.MatrixViewDepthMap);
+            //}
         }
 
         /// <summary>
@@ -433,12 +439,13 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Рисуем воксели сплошных и уникальных блоков
         /// </summary>
-        private void _DrawVoxelDense(float timeIndex, float[] view)
+        private void _DrawVoxelDense(float timeIndex)
         {
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _Wind(timeIndex), _overviewBlock, .4f, .4f, .7f, 5);
+                (int)_game.World.GetTickCounter(), _Wind(timeIndex), _overviewBlock,
+                _colorFog, 5);
 
             if (Debug.IsDrawVoxelLine)
             {

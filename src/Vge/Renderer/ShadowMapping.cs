@@ -28,7 +28,6 @@ namespace Vge.Renderer
         /// </summary>
         public const int SizeTextureShadowMap = 4096;
 
-
         /// <summary>
         /// Включена ли тень
         /// </summary>

@@ -20,6 +20,9 @@ namespace Mvk2.Games
         /// Создать настройки мира по id
         /// </summary>
         public override WorldSettings CreateWorldSettings(byte id)
-            => id == 2 ? new WorldSettingsNightmare() : new WorldSettings();
+        {
+            if (id == 2) return new WorldSettingsNightmare();
+            return new WorldSettingsIsland();
+        }
     }
 }

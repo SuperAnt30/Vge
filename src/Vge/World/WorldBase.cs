@@ -5,7 +5,6 @@ using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Light;
-using Vge.World.Сalendar;
 using WinGL.Util;
 
 namespace Vge.World

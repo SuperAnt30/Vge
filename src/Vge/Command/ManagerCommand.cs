@@ -19,9 +19,11 @@ namespace Vge.Command
         {
             //_Registration(new CommandKill(world));
             _Registration(new CommandTeleport(server));
+            _Registration(new CommandTime(server));
+
             //_Registration(new CommandKick(server));
 
-            //Registration(new CommandTime(world));
+
             //Registration(new CommandGameMode(world));
             //Registration(new CommandFix(world));
             //Registration(new CommandRegen(world));

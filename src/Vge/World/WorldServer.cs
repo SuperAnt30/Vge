@@ -1,7 +1,10 @@
-﻿using Vge.Entity;
+﻿using NVorbis.Contracts;
+using System.Globalization;
+using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Management;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Chunk;
 
@@ -128,6 +131,15 @@ namespace Vge.World
                 Wait.Stoping();
             }
             _WriteToFile();
+        }
+
+        /// <summary>
+        /// Внести изменение по мировому времени
+        /// </summary>
+        public void SetTickCounter(uint tickCounter)
+        {
+            Settings.Calendar.SetTickCounter(tickCounter);
+            Tracker.SendToAll(new PacketS04TickUpdate(tickCounter));
         }
 
         #region Fragments (Chunks)

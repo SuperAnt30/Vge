@@ -22,7 +22,7 @@ namespace Vge.Games
         /// <summary>
         /// Создать настройки мира по id
         /// </summary>
-        public virtual WorldSettings CreateWorldSettings(byte id) => new WorldSettings();
+        public virtual WorldSettings CreateWorldSettings(byte id) => null;
 
     }
 }

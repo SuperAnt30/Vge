@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using WinGL.OpenGL;
+using WinGL.Util;
 
 namespace Vge.Renderer.Shaders
 {
@@ -97,7 +98,7 @@ namespace Vge.Renderer.Shaders
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindUniformBigin(float x, float y, float z, int takt, float wind,
-            float overview, float colorFogR, float colorFogG, float colorFogB, float torchInHand)
+            float overview, Vector3 colorFog, float torchInHand)
         {
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
             _shderAction.Bind();
@@ -108,10 +109,10 @@ namespace Vge.Renderer.Shaders
             _shderAction.SetUniform1("wind", wind);
             _shderAction.SetUniform3("player", x, y, z);
             _shderAction.SetUniform1("overview", overview);
-            _shderAction.SetUniform3("colorfog", colorFogR, colorFogG, colorFogB);
+            _shderAction.SetUniform3("colorfog", colorFog.X, colorFog.Y, colorFog.Z);
             _shderAction.SetUniform1("torch", torchInHand);
             _shderAction.SetUniform1("brightness", Gi.BlockBrightness);
-            _shderAction.SetUniform3("lightDir", Gi.PosViewLightDir.X, Gi.PosViewLightDir.Y, Gi.PosViewLightDir.Z);
+            _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);
 
             if (_qualitatively)
             {
