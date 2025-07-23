@@ -10,7 +10,7 @@ namespace Vge.Entity.Physics
     {
 #if TPS20
 
-        // TPS 20 1 метр блок как в minecraft
+#region TPS 20 1 метр блок как в minecraft
           
         /// <summary>
         /// Параметр падения
@@ -45,9 +45,11 @@ namespace Vge.Entity.Physics
         /// </summary>
         public const float DebugKoef = Ce.Tps; // =20;
 
+#endregion
+
 #elif TPS30sm50
 
-        // TPS 30 50 см блок
+#region TPS 30 50 см блок
 
         /// <summary>
         /// Параметр падения
@@ -82,9 +84,11 @@ namespace Vge.Entity.Physics
         /// </summary>
         public const float DebugKoef = Ce.Tps * .5f; // 30 * .5 = 15;
 
+        #endregion
+
 #else
 
-        // 30 TPS 1 метр блок
+#region 30 TPS 1 метр блок
 
         /// <summary>
         /// Параметр падения
@@ -118,6 +122,8 @@ namespace Vge.Entity.Physics
         /// Коэффициент для отладки перемещения скорости в м/с
         /// </summary>
         public const float DebugKoef = Ce.Tps; // =30;
+
+#endregion 
 
 #endif
 
