@@ -75,8 +75,9 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToStringPositionRotation()
-            => string.Format("{0:0.00}; {1:0.00}; {2:0.00} Y:{3:0.00} P:{4:0.00}",
-                PosX, PosY, PosZ, Glm.Degrees(RotationYaw), Glm.Degrees(RotationPitch));
+            => string.Format("{0:0.000}; {1:0.000}; {2:0.000} Y:{3:0.0} Yb:{4:0.0} P:{5:0.0}",
+                PosX, PosY, PosZ, Glm.Degrees(RotationYaw), 
+                Glm.Degrees(_rotationYawBody), Glm.Degrees(RotationPitch));
 
         /// <summary>
         /// Получить угол Yaw тела для кадра

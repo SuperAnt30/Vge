@@ -103,23 +103,23 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
-        protected override void _InitSize()
-            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.68f, 80);
-
+        protected override void _InitSize() => Standing();
 
         /// <summary>
         /// Положение стоя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Standing()
-            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.68f, 80);
+            //=> Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.68f, 80);
+            => Size = SizeLiving = new SizeEntityLiving(this, .6f, 3.6f, 3.36f, 80); // 50см
 
         /// <summary>
         /// Положение сидя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Sitting()
-            => Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.49f, 1.38f, 80);
+            //=> Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.49f, 1.38f, 80);
+            => Size = SizeLiving = new SizeEntityLiving(this, .6f, 2.98f, 2.76f, 80); // 50 см
 
     }
 }

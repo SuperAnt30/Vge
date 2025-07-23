@@ -39,12 +39,12 @@ namespace Vge.Entity.Physics
             }
 
             // Параметр падение 
-            MotionY -= PhysicsGround.Gravity;
+            MotionY -= Cp.Gravity;
 
             // Инерция
-            MotionX *= PhysicsGround.AirDrag;
-            MotionY *= PhysicsGround.AirDrag;
-            MotionZ *= PhysicsGround.AirDrag;
+            MotionX *= Cp.AirDrag;
+            MotionY *= Cp.AirDrag;
+            MotionZ *= Cp.AirDrag;
         }
     }
 }

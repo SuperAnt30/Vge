@@ -110,7 +110,7 @@ namespace Vge.Entity.Sizes
         /// </summary>
         /// <param name="offset">смещение</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float CalculateYOffset(AxisAlignedBB other, float offset) 
+        public float CalculateYOffset(AxisAlignedBB other, float offset)
             => GetBoundingBox().CalculateYOffset(other, offset);
 
         /// <summary>

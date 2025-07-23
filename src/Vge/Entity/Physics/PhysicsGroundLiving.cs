@@ -1,5 +1,4 @@
-﻿//#define TPS20
-using System.Collections.Generic;
+﻿using System;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -11,27 +10,6 @@ namespace Vge.Entity.Physics
     /// </summary>
     public class PhysicsGroundLiving : PhysicsGround
     {
-        /// <summary>
-        /// Ускорение при прыжке в высоту
-        /// </summary>
-        private const float _airborneJumpInHeight = .3013f;
-        /// <summary>
-        /// Повторный прыжок через количество тиков
-        /// </summary>
-        private const byte _reJump = 15;
-        /// <summary>
-        /// Ускорение при прыжке с бегом в длину
-        /// </summary>
-        private const float _airborneJumpInLength = .2f;
-        /// <summary>
-        /// Скорость бега
-        /// </summary>
-        private const float _sprintSpeed = .3f;
-        /// <summary>
-        /// Скорость подкрадывания
-        /// </summary>
-        private const float _sneakSpeed = .3f;
-
         /// <summary>
         /// Живая сущность, игрок или моб
         /// </summary>
@@ -47,8 +25,23 @@ namespace Vge.Entity.Physics
         public PhysicsGroundLiving(CollisionBase collision, EntityLiving entity)
             : base(collision, entity) => _entityLiving = entity;
 
-
         #region Living
+
+        // TODO::2025-07-23 отладка дистанции прыжка
+        Vector2 jumpBegin;
+        bool jump = false;
+
+        public override void LivingUpdate()
+        {
+            base.LivingUpdate();
+            if (jump && Entity.OnGround)
+            {
+                // Прыжок закончен
+                jump = false;
+                float dis = Glm.Distance(new Vector2(Entity.PosX, Entity.PosZ), jumpBegin);
+                Console.WriteLine(dis);
+            }
+        }
 
         /// <summary>
         /// Проверяем наличие прыжка для живой сущности
@@ -59,18 +52,23 @@ namespace Vge.Entity.Physics
             if (_jumpTicks > 0) _jumpTicks--;
 
             bool isSneakingPrev = _entityLiving.IsSneaking();
+            bool isSprintingPrev = _entityLiving.IsSprinting();
 
             if (Movement.Jump)
             {
                 if (Entity.OnGround && _jumpTicks == 0)
                 {
-                    _jumpTicks = _reJump;
-                    MotionY = _airborneJumpInHeight;
-                    if (isSneakingPrev)
+                    jump = true;
+                    Console.WriteLine("Jump");
+                    jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
+                    _jumpTicks = Cp.ReJump;
+                    MotionY = Cp.AirborneJumpInHeight;
+
+                    if (isSprintingPrev)
                     {
                         // Если прыжок с бегом, то скорость увеличивается
-                        MotionX += Glm.Sin(_entityLiving.RotationYaw) * _airborneJumpInLength;
-                        MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * _airborneJumpInLength;
+                        MotionX += Glm.Sin(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                        MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
                     }
                 }
             }
@@ -99,7 +97,7 @@ namespace Vge.Entity.Physics
 
             // Sprinting
             bool isSprinting = Movement.Sprinting && Movement.Forward && !isSneakingPrev;
-            if (_entityLiving.IsSprinting() != isSprinting)
+            if (isSprintingPrev != isSprinting)
             {
                 _entityLiving.SetSprinting(isSprinting);
                 // Тут надо сменить анимацию 
@@ -108,14 +106,18 @@ namespace Vge.Entity.Physics
         }
 
         /// <summary>
-        /// Определяем и передаём скорость перемещения для живой сущности
+        /// Определяем и передаём скорость перемещения для живой сущности.
+        /// Крадётся используем позже, в _LivingUpdateMotion
         /// </summary>
         protected override float _LivingUpdateSpeed()
         {
-            float speed = Mth.Max(_speed * Mth.Abs(Movement.GetMoveStrafe()),
-                        _speed * Mth.Abs(Movement.GetMoveForward()));
-            if (Movement.Sneak) speed *= _sneakSpeed;
-            else if (Movement.Sprinting) speed += speed * _sprintSpeed;
+            float speed = Mth.Max(Cp.Speed * Mth.Abs(Movement.GetMoveStrafe()),
+                        Cp.Speed * Mth.Abs(Movement.GetMoveForward()));
+            if (Movement.Sprinting)
+            {
+                // Если ускорение
+                speed += speed * Cp.SprintSpeed;
+            }
             return speed;
         }
 
@@ -124,10 +126,11 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected override float _LivingUpdateSprinting()
         {
-            float acceleration = _airborneAcceleration;
+            float acceleration = Cp.AirborneAcceleration;
             if (Movement.Sprinting)
             {
-                acceleration += acceleration * _sprintSpeed;
+                // Если ускорение
+                acceleration += acceleration * Cp.SprintSpeed;
             }
             return acceleration;
         }
@@ -137,6 +140,11 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected override void _LivingUpdateMotion(float acceleration)
         {
+            if (Movement.Sneak)
+            {
+                // Если крадёмся 
+                acceleration *= Cp.SneakSpeed;
+            }
             Vector2 motion = Sundry.MotionAngle(
                     Movement.GetMoveStrafe() * .98f,
                     Movement.GetMoveForward() * .98f,

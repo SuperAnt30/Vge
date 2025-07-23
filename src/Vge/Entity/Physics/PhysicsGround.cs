@@ -1,6 +1,4 @@
-﻿//#define TPS20
-using System;
-using System.Collections.Generic;
+﻿using System;
 using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
@@ -13,66 +11,6 @@ namespace Vge.Entity.Physics
     /// </summary>
     public class PhysicsGround : PhysicsBase
     {
-#if TPS20
-        // TPS 20 
-          
-        /// <summary>
-        /// Параметр падения
-        /// </summary>
-        public const float Gravity = .08f;
-        /// <summary>
-        /// Сопротивление воздуха
-        /// </summary>
-        private const float _airDrag = .98f;
-        /// <summary>
-        /// Ускорение в воздухе
-        /// </summary>
-        private const float _airborneAcceleration = .02f;
-        /// <summary>
-        /// Скорость
-        /// </summary>
-        private const float _speed = .1f;
-        /// <summary>
-        /// Ускорение при прыжке в высоту
-        /// </summary>
-        private const float _airborneJumpInHeight = .42f;
-        /// <summary>
-        /// Повторный прыжок через количество тиков
-        /// </summary>
-        private const byte _reJump = 10;
-
-#else
-
-        // 30 TPS
-        /// <summary>
-        /// Параметр падения
-        /// </summary>
-        public const float Gravity = .039f;
-        /// <summary>
-        /// Сопротивление воздуха
-        /// </summary>
-        public const float AirDrag = .9869f;
-        /// <summary>
-        /// Ускорение в воздухе
-        /// </summary>
-        protected const float _airborneAcceleration = .01333f;
-        /// <summary>
-        /// Скорость
-        /// </summary>
-        protected const float _speed = .0667f;
-
-#endif
-        /// <summary>
-        /// Отскок от гравитации горизонта
-        /// </summary>
-        public const float GravityRebound = Gravity * 2f;
-
-        /// <summary>
-        /// Скользкость по умолчанию
-        /// </summary>
-        private const float _defaultSlipperiness = .6f;
-        
-        
         /// <summary>
         /// Не прыгаем (момент взлёта)
         /// </summary>
@@ -94,15 +32,15 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
-        protected PhysicsGround(CollisionBase collision, EntityBase entity) 
-            : base(collision, entity) => _airborneInertia = .91f;
+        protected PhysicsGround(CollisionBase collision, EntityBase entity)
+            : base(collision, entity) => _airborneInertia = Cp.AirDragWithForce;
 
         /// <summary>
         /// Физика для предмета которые не имеет силы для перемещения но может имет отскок от предметов
         /// </summary>
         /// <param name="rebound">Коэффициент отскока, 0 нет отскока, 1 максимальный</param>
         public PhysicsGround(CollisionBase collision, EntityBase entity, float rebound)
-            : base(collision, entity, rebound) => _airborneInertia = AirDrag;
+            : base(collision, entity, rebound) => _airborneInertia = Cp.AirDrag;
 
         /// <summary>
         /// Задать высоту автопрыжка, если 0 нет авто прыжка
@@ -133,7 +71,7 @@ namespace Vge.Entity.Physics
             if (Entity.OnGround)
             {
                 // трение блока под ногами
-                inertia = _airborneInertia * _defaultSlipperiness; // блок под ногами
+                inertia = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
 
                 // корректировка скорости, с трением
                 //friction = GetAIMoveSpeed(strafe, forward) * param;
@@ -151,8 +89,13 @@ namespace Vge.Entity.Physics
                 // Ускорение
                 acceleration = _LivingUpdateSprinting();
             }
+
             // Если имеется сила для движения, задаём вектор передвижения
             _LivingUpdateMotion(acceleration);
+
+            // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
+            float motionX0 = MotionX;
+            float motionZ0 = MotionZ;
 
             // Проверка каллизии
             if (Entity.Size is ISizeEntityBox sizeEntityBox)
@@ -175,6 +118,8 @@ namespace Vge.Entity.Physics
                 Entity.PosX += MotionX;
                 Entity.PosY += MotionY;
                 Entity.PosZ += MotionZ;
+                //Console.WriteLine(Entity.PosZ + " =z= " + MotionZ);
+                //Console.WriteLine(Entity.PosY + " =y= " + MotionY);
                 MotionHorizon = Glm.Distance(new Vector2(MotionX, MotionZ));
                 MotionVertical = Mth.Abs(MotionY);
                 AwakenPhysics();
@@ -196,14 +141,25 @@ namespace Vge.Entity.Physics
             else
             {
                 MotionHorizon = MotionVertical = 0;
-                if (_indexSleep > 0) _indexSleep--;
+                if (motionX0 != 0 || motionZ0 != 0)
+                {
+                    AwakenPhysics();
+                }
+                else
+                {
+                    if (_indexSleep > 0) _indexSleep--;
+                }
             }
+
+            MotionX = motionX0;
+            MotionZ = motionZ0;
+
             // Параметр падение 
-            MotionY -= Gravity; // minecraft .08f
+            MotionY -= Cp.Gravity; // minecraft .08f
 
             // Инерция
             MotionX *= inertia;
-            MotionY *= AirDrag;
+            MotionY *= Cp.AirDrag;
             MotionZ *= inertia;
         }
 
@@ -322,12 +278,12 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Определяем и передаём скорость перемещения для живой сущности
         /// </summary>
-        protected virtual float _LivingUpdateSpeed() => _speed;
+        protected virtual float _LivingUpdateSpeed() => Cp.Speed;
 
         /// <summary>
         /// Проверяем наличие ускорения для живой сущности, возвращает скорость
         /// </summary>
-        protected virtual float _LivingUpdateSprinting() => _airborneAcceleration;
+        protected virtual float _LivingUpdateSprinting() => Cp.AirborneAcceleration;
 
         /// <summary>
         /// Если имеется задаём вектор передвижени для живой сущности

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
@@ -250,18 +251,17 @@ namespace Vge.Entity.Physics
                 Collision.StaticBoundingBoxes(boundingBox.AddCoordBias(x, y, z));
                 ListFast<AxisAlignedBB> aabbs = Collision.ListBlock;
                 int count = aabbs.Count;
-
                 if (count > 0)
                 {
                     // Находим смещение по Y
                     for (int i = 0; i < count; i++) y = aabbs[i].CalculateYOffset(aabbEntity, y);
                     // Рикошет от препятствия
-                    if (_isRebound && MotionY != y && MotionY < PhysicsGround.GravityRebound)
+                    if (_isRebound && MotionY != y && MotionY < Cp.GravityRebound)
                     {
-                        float y0 = -(MotionY + PhysicsGround.GravityRebound) * _rebound;
+                        float y0 = -(MotionY + Cp.GravityRebound) * _rebound;
                         if (y0 > y) y = y0;
                     }
-                    if (MotionY != y) aabbEntity = aabbEntity.Offset(0, y, 0);
+                    /*if (MotionY != y)*/ aabbEntity = aabbEntity.Offset(0, y, 0);
 
                     // Фиксация возможен ли авто прыжок
                     _AutoNotJump(y);
@@ -270,7 +270,7 @@ namespace Vge.Entity.Physics
                     for (int i = 0; i < count; i++) x = aabbs[i].CalculateXOffset(aabbEntity, x);
                     // Рикошет от препятствия
                     if (_isRebound && MotionX != x) x = -MotionX * _rebound;
-                    if (MotionX != x) aabbEntity = aabbEntity.Offset(x, 0, 0);
+                    /*if (MotionX != x)*/ aabbEntity = aabbEntity.Offset(x, 0, 0);
 
                     // Находим смещение по Z
                     for (int i = 0; i < count; i++) z = aabbs[i].CalculateZOffset(aabbEntity, z);
@@ -329,7 +329,7 @@ namespace Vge.Entity.Physics
         protected void _CheckMoveCollidingEntity(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z)
         {
             // Собираем все близлижащий сущностей для дальнейше проверки
-            Collision.EntityBoundingBoxesFromSector(boundingBox.Expand(.2f), Entity.Id);
+            Collision.EntityBoundingBoxesFromSector(boundingBox.AddCoordBias(x, y, z).Expand(.2f), Entity.Id);
 
             // Если нет сущностей, то не зачем дальше обрабатывать
             if (Collision.ListEntity.Count == 0)
@@ -396,7 +396,6 @@ namespace Vge.Entity.Physics
                         Entity.AwakenPhysicSleep(entity);
                     }
                 }
-                
                 if (y < -.005f)
                 {
                     // Проверяем что снизу
@@ -419,7 +418,7 @@ namespace Vge.Entity.Physics
                     if ((x != 0 || z != 0) && y0 != y) y += .02f;
 
                     // Рикошет от сущности через импульс
-                    if (_isRebound && y0 != y) ImpulseY -= (y0 + PhysicsGround.GravityRebound) * _rebound;
+                    if (_isRebound && y0 != y) ImpulseY -= (y0 + Cp.GravityRebound) * _rebound;
                     aabbEntity = aabbEntity.Offset(0, y, 0);
                 }
                 else

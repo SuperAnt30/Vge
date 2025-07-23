@@ -7,7 +7,6 @@ using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
-using Vge.Renderer;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
@@ -257,6 +256,11 @@ namespace Vge.Entity.Player
         public void KeySneak(bool value)
         {
             Movement.Sneak = value;
+            if (value && Movement.Sprinting)
+            {
+                // Если присели, а было ускорение, отключаем ускорение
+                Movement.Sprinting = false;
+            }
             Movement.MovingChanged();
             Physics.AwakenPhysics();
         }
@@ -266,11 +270,15 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeySprinting(bool value)
         {
-            if (value || (!value && !Movement.Forward))
+            if (!Movement.Sneak)
             {
-                Movement.Sprinting = value;
-                Movement.MovingChanged();
-                Physics.AwakenPhysics();
+                // Нельзя ускорится если крадёмся
+                if (value || (!value && !Movement.Forward))
+                {
+                    Movement.Sprinting = value;
+                    Movement.MovingChanged();
+                    Physics.AwakenPhysics();
+                }
             }
         }
 
@@ -422,12 +430,12 @@ namespace Vge.Entity.Player
             if (ViewCamera == EnumViewCamera.Back)
             {
                 // вид сзади
-                pos = _GetPositionCamera(pos, front * -1f, 4); // 8
+                pos = _GetPositionCamera(pos, front * -1f, 8); // 8
             }
             else if (ViewCamera == EnumViewCamera.Front)
             {
                 // вид спереди
-                pos = _GetPositionCamera(pos, front, 4); // 8
+                pos = _GetPositionCamera(pos, front, 8); // 8
                 front *= -1f;
             }
             //else
@@ -975,11 +983,9 @@ namespace Vge.Entity.Player
         public override string ToString()
         {
             if (Physics == null) return "null";
-            float k = 10f; // 20 tps * .5f ширина блока
-            k = Ce.Tps;// * .5f;
             string motion = string.Format("{0:0.00} | {1:0.00} м/с {2} {3}", 
-                Physics.MotionHorizon * k,
-                Physics.MotionVertical * k,
+                Physics.MotionHorizon * Cp.DebugKoef,
+                Physics.MotionVertical * Cp.DebugKoef,
                 new Vector3(Physics.MotionX, Physics.MotionY, Physics.MotionZ),
                 Physics.ToDebugString()
                 );

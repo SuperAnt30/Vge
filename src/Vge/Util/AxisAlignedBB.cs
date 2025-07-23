@@ -13,7 +13,7 @@ namespace Vge.Util
         /// <summary>
         /// Погрешность
         /// </summary>
-        private const float _fault = 0.001f;
+        private const float _fault = 0.0001f;
 
         public Vector3 Min { get; private set; }
         public Vector3 Max { get; private set; }
@@ -191,15 +191,16 @@ namespace Vge.Util
         {
             if (other.Max.X > Min.X && other.Min.X < Max.X && other.Max.Z > Min.Z && other.Min.Z < Max.Z)
             {
+                // fault не нужен, так-как тогда стоим не на блоке, а чуть выше
                 if (offset > 0f && other.Max.Y <= Min.Y)
                 {
                     float bias = Min.Y - other.Max.Y;
-                    if (bias < offset) offset = bias - _fault;
+                    if (bias < offset) offset = bias;// - _fault;
                 }
                 else if (offset < 0f && other.Min.Y >= Max.Y)
                 {
                     float bias = Max.Y - other.Min.Y;
-                    if (bias > offset) offset = bias + _fault;
+                    if (bias > offset) offset = bias;// + _fault;
                 }
             }
             return offset;
