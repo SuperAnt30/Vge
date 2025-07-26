@@ -147,10 +147,23 @@ namespace Vge.Entity
                             animationDatas = new AnimationData[animations.Length];
                             for (int i = 0; i < animations.Length; i++)
                             {
-                                animationDatas[i] = new AnimationData(
+                                AnimationData animationData = new AnimationData(
                                     animations[i].GetString(Cte.Name),
                                     animations[i].GetFloat(Cte.AnimationSpeed)
                                 );
+
+                                if (animations[i].IsKey(Cte.ElementWeight))
+                                {
+                                    // Имеются веса для костей
+                                    JsonCompound elementsWeight = animations[i].GetObject(Cte.ElementWeight);
+                                    foreach (JsonKeyValue elementWeight in elementsWeight.Items)
+                                    {
+                                        animationData.ElementWeight.Add(
+                                            elementWeight.Key,
+                                            (byte)elementWeight.GetInt());
+                                    }
+                                }
+                                animationDatas[i] = animationData;
                             }
                         }
                         else if (json.IsKey(Cte.Scale))

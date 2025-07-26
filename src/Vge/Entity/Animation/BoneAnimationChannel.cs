@@ -1,6 +1,4 @@
-﻿using Vge.Entity.Model;
-
-namespace Vge.Entity.Animation
+﻿namespace Vge.Entity.Animation
 {
     /// <summary>
     /// Объект анимационного конкретного клипа с набором ключевых кадров отдельной кости.
@@ -12,13 +10,13 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly string Name;
         /// <summary>
-        /// Анимация без перерыва, цикл
-        /// </summary>
-        public readonly ModelLoop Loop;
-        /// <summary>
         /// Имеется ли у этой кости анимация
         /// </summary>
         public readonly bool IsAnimation;
+        /// <summary>
+        /// Вес кости в момент смешивания
+        /// </summary>
+        public readonly byte Weight;
         /// <summary>
         /// Массив кадров с позицией кости
         /// </summary>
@@ -28,12 +26,12 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly BoneAnimationFrame[] OrientationFrames;
 
-        public BoneAnimationChannel(string name, ModelLoop loop,
+        public BoneAnimationChannel(string name, byte weight,
             BoneAnimationFrame[] positionFrames,
             BoneAnimationFrame[] orientationFrames)
         {
             Name = name;
-            Loop = loop;
+            Weight = weight;
             PositionFrames = positionFrames;
             OrientationFrames = orientationFrames;
             IsAnimation = positionFrames.Length != 0 || orientationFrames.Length != 0;

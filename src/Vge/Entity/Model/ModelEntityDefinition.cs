@@ -586,7 +586,8 @@ namespace Vge.Entity.Model
                 string nameBone = animator.GetString(Cte.Name);
                 if (_mapBones.ContainsKey(nameBone))
                 {
-                    ModelAnimation.AnimationBone bone = new ModelAnimation.AnimationBone(_mapBones[nameBone].BoneIndex);
+                    ModelAnimation.AnimationBone bone = new ModelAnimation.AnimationBone(
+                        _mapBones[nameBone].BoneIndex, nameBone);
                     JsonCompound[] keyframes = animator.GetArray(Cte.Keyframes).ToArrayObject();
 
                     _log = "AnimKeyFrames";
@@ -625,7 +626,7 @@ namespace Vge.Entity.Model
                 {
                     if (animationData.Name.Equals(_animations[i2].Name))
                     {
-                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData.Speed));
+                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData));
                     }
                 }
             }

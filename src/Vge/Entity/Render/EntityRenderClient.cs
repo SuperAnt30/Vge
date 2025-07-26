@@ -176,37 +176,46 @@ namespace Vge.Entity.Render
 
                 Trigger.SetAnimation(mov);
                 Trigger.UpdatePrev();
-                /*
-                if (Entity.Physics != null)
+
+                if (Trigger.IsSneak())
                 {
-                    if (Entity.Physics.IsMotionChange)
-                    {
-                        // TODO::TEST
-                        // Позиция сменена
-                        if (!m)
-                        {
-                            m = true;
-                            RemoveClip(0);
-                            AddClip(1);
-
-                            if (Entity.Physics.Movement.Sprinting) _animations[1].Speed = 2;
-                            else _animations[1].Speed = 1;
-                        }
-                    }
-                    else
-                    {
-                        // Стоит
-                        if (m)
-                        {
-                            m = false;
-                            RemoveClip(1);
-                            AddClip(0);
-                        }
-                    }
+                    AddClip(2);
                 }
-                */
+                else
+                {
+                    RemoveClip(2);
+                }
+                    /*
+                    if (Entity.Physics != null)
+                    {
+                        if (Entity.Physics.IsMotionChange)
+                        {
+                            // TODO::TEST
+                            // Позиция сменена
+                            if (!m)
+                            {
+                                m = true;
+                                RemoveClip(0);
+                                AddClip(1);
 
-                int i = 0;
+                                if (Entity.Physics.Movement.Sprinting) _animations[1].Speed = 2;
+                                else _animations[1].Speed = 1;
+                            }
+                        }
+                        else
+                        {
+                            // Стоит
+                            if (m)
+                            {
+                                m = false;
+                                RemoveClip(1);
+                                AddClip(0);
+                            }
+                        }
+                    }
+                    */
+
+                    int i = 0;
                 int count = _animationClips.Count - 1;
                 for (i = count; i >= 0; i--)
                 {
@@ -224,7 +233,7 @@ namespace Vge.Entity.Render
             if (timelips > 8) timelips = 0;
             timelipsSmile++;
             if (timelipsSmile > 150) timelipsSmile = 0;
-            fffd++;
+           // fffd++;
             if (_entityLayerRender != null)
             {
                 if (fffd > 30)
@@ -253,7 +262,7 @@ namespace Vge.Entity.Render
             }
         }
 
-        int fffd = 100;
+        int fffd = 0;//100;
         bool fffb = true;
 
         int timeeye = 0;
@@ -309,11 +318,8 @@ namespace Vge.Entity.Render
                     }
                 }
 
-                // Пробегаемся по анимациям
-                for (int ai = 0; ai < _animationClips.Count; ai++)
-                {
-                    _GenBoneCurrentPose(ai);
-                }
+                // Генерируем кости текущих поз из анимации
+                _GenBoneCurrentPoses();
                 // Собираем конечные матрицы
                 _GetMatrixPalette(yaw, yawBody, pitch);
             }
@@ -372,32 +378,74 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
-        /// Генерируем кости текущей позы
+        /// Генерируем кости текущих поз
         /// </summary>
-        private void _GenBoneCurrentPose(int indexPose)
+        private void _GenBoneCurrentPoses()
         {
-            int index = _animationClips[indexPose];
-            _animations[index].GenBoneCurrentPose();
-            float mix = _animations[index].GetCoefMix();
-            //Console.WriteLine(index + " " + mix);
-            if (mix > 0)
+            int ai;
+            int count = _animationClips.Count;
+            AnimationClip animationClip;
+            // Бежим по костям
+            float weightAll;
+            for (byte i = 0; i < _countBones; i++)
             {
-                for (byte i = 0; i < _countBones; i++)
+                if (count > 1)
                 {
-                    if (_animations[index].IsAnimation(i))
+                    weightAll = 0;
+                    // Надо найти сумму веса в текущей кости
+                    for (ai = 0; ai < count; ai++)
                     {
-                        _bonesFlagModify[i] = true;
-                        // TODO:: смешивание загрузки и выгрузки! коэффициент, 0..1 
-                        if (mix == 1)
+                        animationClip = _animations[_animationClips[ai]];
+                        if (animationClip.IsAnimation(i))
                         {
-                            _bones[i].Add(_animations[index].CurrentPoseBones[i]);
+                            weightAll += animationClip.GetWeight(i);
                         }
-                        else
+                    }
+                    // Смешивание кости boneIndex из клипа animationClip с весом
+                    for (ai = 0; ai < count; ai++)
+                    {
+                        animationClip = _animations[_animationClips[ai]];
+                        if (animationClip.IsAnimation(i))
                         {
-                            _bones[i].Add(_animations[index].CurrentPoseBones[i], mix);
+                            if (weightAll > 0)
+                            {
+                                _MixBoneClip(animationClip, i, animationClip.GetWeight(i) / weightAll);
+                            }
+                            else
+                            {
+                                _MixBoneClip(animationClip, i, 1f);
+                            }
                         }
                     }
                 }
+                else
+                {
+                    animationClip = _animations[_animationClips[0]];
+                    if (animationClip.IsAnimation(i))
+                    {
+                        _MixBoneClip(animationClip, i, 1f);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Смешивание кости boneIndex из клипа animationClip с весом weight 0..1.0
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _MixBoneClip(AnimationClip animationClip, byte boneIndex, float weight)
+        {
+            animationClip.GenBoneCurrentPose();
+            _bonesFlagModify[boneIndex] = true;
+            // Смешивание загрузки и выгрузки! коэффициент, 0..1  и умножим вес
+            float mix = animationClip.GetCoefMix() * weight;
+            if (mix == 1)
+            {
+                _bones[boneIndex].Add(animationClip.CurrentPoseBones[boneIndex]);
+            }
+            else
+            {
+                _bones[boneIndex].Add(animationClip.CurrentPoseBones[boneIndex], mix);
             }
         }
 

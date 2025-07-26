@@ -151,6 +151,12 @@ namespace Vge.Entity.Animation
         public bool IsAnimation(byte boneIndex) => _modelClip.Bones[boneIndex].IsAnimation;
 
         /// <summary>
+        /// Вес кости в момент смешивания
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte GetWeight(byte boneIndex) => _modelClip.Bones[boneIndex].Weight;
+
+        /// <summary>
         /// Получает среднее значение позиции
         /// </summary>
         private BoneAnimationFrame _GetMixedAdjacentFrames(BoneAnimationFrame[] positionFrames)

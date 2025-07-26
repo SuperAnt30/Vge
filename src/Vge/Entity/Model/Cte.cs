@@ -41,6 +41,10 @@
         /// Имя триггера. (string)
         /// </summary>
         public const string Trigger = "Trigger";
+        /// <summary>
+        /// Объект силы элементов костей. ({})
+        /// </summary>
+        public const string ElementWeight = "ElementWeight";
 
         #endregion
 

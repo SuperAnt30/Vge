@@ -1,9 +1,10 @@
 {
     #Scale: 1.9375,
     #Scale: 0.929,
-    Scale: 1.858,
-    Model: "Robinson",
-    Texture: 1,
+    Scale: 0.976,
+    #Model: "Robinson",
+    Model: "Player",
+    Texture: 0,
     BoneCloth:
     {
         Mascot: ["Body"],
@@ -30,8 +31,20 @@
         },
         {
             Name: "Walk",
-            AnimationSpeed: 1.7,
+            #AnimationSpeed: 2.15,
+            AnimationSpeed: 1.4,
+            #AnimationSpeed: 1.075,
             Trigger: "Forward"
+        },
+        {
+            Name: "AttackRight",
+            AnimationSpeed: 2.0,
+            Trigger: "Attack",
+            ElementWeight: {
+                ArmRight: 80,
+                ForearmRight: 80,
+                HandRight: 80
+            }
         },
         { 
             Name: "Chop",

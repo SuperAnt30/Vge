@@ -44,21 +44,21 @@ namespace Vge.Entity.Model
         /// Создать модель отдельного анимационного клипа
         /// </summary>
         /// <param name="amountBoneIndex">Количество костей</param>
-        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, float speed)
+        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, AnimationData animationData)
             => new ModelAnimationClip(Name, _loop, _length * 1000f, _timeMix,
-                speed, _GetBoneAnimationClip(amountBoneIndex));
+                animationData.Speed, _GetBoneAnimationClip(amountBoneIndex, animationData));
 
         /// <summary>
         /// Сгенерировать cписки ключевых кадров для каждой кости скелета
         /// </summary>
-        private BoneAnimationChannel[] _GetBoneAnimationClip(byte amountBoneIndex)
+        private BoneAnimationChannel[] _GetBoneAnimationClip(byte amountBoneIndex, AnimationData animationData)
         {
             // Массив костей
             BoneAnimationChannel[] animationChannels = new BoneAnimationChannel[amountBoneIndex];
 
             for (int i = 0; i < amountBoneIndex; i++)
             {
-                animationChannels[i] = _CreateBoneAnimation(i);
+                animationChannels[i] = _CreateBoneAnimation(i, animationData);
             }
             return animationChannels;
         }
@@ -66,19 +66,22 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Создать класс набора ключевых кадров отдельной кости
         /// </summary>
-        private BoneAnimationChannel _CreateBoneAnimation(int boneIndex)
+        private BoneAnimationChannel _CreateBoneAnimation(int boneIndex, AnimationData animationData)
         {
             // Массив кадров с позицией кости
             List<BoneAnimationFrame> positionFrames = new List<BoneAnimationFrame>();
             // Массив кадров с ориентацией кости
             List<BoneAnimationFrame> orientationFrames = new List<BoneAnimationFrame>();
-
+            // Вес кости конкретного клипа
+            byte weight = 0;
             foreach(AnimationBone animationBone in _bones)
             {
                 // Ищем нужную кость
                 if (animationBone.Index == boneIndex)
                 {
-                    foreach(KeyFrames keyFrames in animationBone.Frames)
+                    //Название костей с силой 
+                    weight = animationData.GetWeight(animationBone.Name);
+                    foreach (KeyFrames keyFrames in animationBone.Frames)
                     {
                         if (keyFrames.IsRotation)
                         {
@@ -95,7 +98,7 @@ namespace Vge.Entity.Model
             }
             positionFrames.Sort();
             orientationFrames.Sort();
-            return new BoneAnimationChannel(Name, _loop,
+            return new BoneAnimationChannel(Name, weight,
                 positionFrames.ToArray(), orientationFrames.ToArray());
         }
 
@@ -110,13 +113,20 @@ namespace Vge.Entity.Model
             /// Индекс кости
             /// </summary>
             public readonly int Index;
-
+            /// <summary>
+            /// Название кости
+            /// </summary>
+            public readonly string Name;
             /// <summary>
             /// Кадры
             /// </summary>
             public readonly List<KeyFrames> Frames = new List<KeyFrames>();
 
-            public AnimationBone(int index) => Index = index;
+            public AnimationBone(int index, string name)
+            {
+                Index = index;
+                Name = name;
+            }
 
             public override string ToString() => Index + " " + Frames.Count;
         }
