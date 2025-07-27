@@ -28,20 +28,20 @@ namespace Vge.Entity.Physics
         #region Living
 
         // TODO::2025-07-23 отладка дистанции прыжка
-        Vector2 jumpBegin;
-        bool jump = false;
+        //Vector2 jumpBegin;
+        //bool jump = false;
 
-        public override void LivingUpdate()
-        {
-            base.LivingUpdate();
-            if (jump && Entity.OnGround)
-            {
-                // Прыжок закончен
-                jump = false;
-                float dis = Glm.Distance(new Vector2(Entity.PosX, Entity.PosZ), jumpBegin);
-                Console.WriteLine(dis);
-            }
-        }
+        //public override void LivingUpdate()
+        //{
+        //    base.LivingUpdate();
+        //    if (jump && Entity.OnGround)
+        //    {
+        //        // Прыжок закончен
+        //        jump = false;
+        //        float dis = Glm.Distance(new Vector2(Entity.PosX, Entity.PosZ), jumpBegin);
+        //        Console.WriteLine(dis);
+        //    }
+        //}
 
         /// <summary>
         /// Проверяем наличие прыжка для живой сущности
@@ -58,9 +58,9 @@ namespace Vge.Entity.Physics
             {
                 if (Entity.OnGround && _jumpTicks == 0)
                 {
-                    jump = true;
-                    Console.WriteLine("Jump");
-                    jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
+                    //jump = true;
+                    //Console.WriteLine("Jump");
+                    //jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
                     _jumpTicks = Cp.ReJump;
                     MotionY = Cp.AirborneJumpInHeight;
 

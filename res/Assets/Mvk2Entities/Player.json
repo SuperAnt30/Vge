@@ -38,7 +38,7 @@
         },
         {
             Name: "AttackRight",
-            AnimationSpeed: 2.0,
+            AnimationSpeed: 0.5,
             Trigger: "Attack",
             ElementWeight: {
                 ArmRight: 80,

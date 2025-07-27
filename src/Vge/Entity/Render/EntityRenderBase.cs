@@ -48,7 +48,7 @@ namespace Vge.Entity.Render
         /// Добавить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void AddClip(int index) { }
+        public virtual void AddClip(int index, float speed) { }
 
         /// <summary>
         /// Отменить клип

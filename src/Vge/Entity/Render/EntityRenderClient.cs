@@ -122,7 +122,7 @@ namespace Vge.Entity.Render
         /// Добавить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void AddClip(int index)
+        public override void AddClip(int index, float speed = 1)
         {
             if (_animationClips.Contains(index))
             {
@@ -131,7 +131,7 @@ namespace Vge.Entity.Render
             else
             {
                 _animationClips.Add(index);
-                _animations[index].Reset();
+                _animations[index].Reset(speed);
             }
         }
 
@@ -162,6 +162,10 @@ namespace Vge.Entity.Render
                     RemoveClip(1);
                     AddClip(0);
                 }
+                if (Trigger.IsSneak())
+                {
+                   // RemoveClip(2);
+                }
 
                 Trigger.SetAnimation(mov);
 
@@ -173,18 +177,14 @@ namespace Vge.Entity.Render
                     RemoveClip(0);
                     AddClip(1);
                 }
+                if (Trigger.IsSneak())
+                {
+                    AddClip(2, 5f);
+                }
 
                 Trigger.SetAnimation(mov);
                 Trigger.UpdatePrev();
 
-                if (Trigger.IsSneak())
-                {
-                    AddClip(2);
-                }
-                else
-                {
-                    RemoveClip(2);
-                }
                     /*
                     if (Entity.Physics != null)
                     {
@@ -439,6 +439,9 @@ namespace Vge.Entity.Render
             _bonesFlagModify[boneIndex] = true;
             // Смешивание загрузки и выгрузки! коэффициент, 0..1  и умножим вес
             float mix = animationClip.GetCoefMix() * weight;
+
+           
+
             if (mix == 1)
             {
                 _bones[boneIndex].Add(animationClip.CurrentPoseBones[boneIndex]);

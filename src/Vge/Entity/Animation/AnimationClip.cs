@@ -19,7 +19,7 @@ namespace Vge.Entity.Animation
         /// <summary>
         /// Скорость клипа, 1 норма
         /// </summary>
-        public float Speed;
+        private float _speed;
 
         /// <summary>
         /// Модель отдельного анимационного клипа
@@ -52,7 +52,7 @@ namespace Vge.Entity.Animation
             _resourcesEntity = resourcesEntity;
             _modelClip = modelClip;
             // Скорость по умолчанию
-            Speed = _modelClip.Speed;
+            _speed = _modelClip.Speed;
             // Количество костей в текущей модели
             _countBones = (byte)_resourcesEntity.Bones.Length;
             CurrentPoseBones = new BonePose[_countBones];
@@ -62,7 +62,11 @@ namespace Vge.Entity.Animation
         /// Cбросить данные в исходное положение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Reset() => _currentTimeFull = _currentTime = _stopTime = 0;
+        public void Reset(float speed)
+        {
+            _currentTimeFull = _currentTime = _stopTime = 0;
+            _speed = _modelClip.Speed * speed;
+        }
         /// <summary>
         /// Cбросить стоп
         /// </summary>
@@ -74,7 +78,7 @@ namespace Vge.Entity.Animation
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsStoped() 
-            => _stopTime != 0 && _modelClip.TimeMix <= _currentTimeFull - _stopTime;
+            => _stopTime != 0 && _GetTimeMix() <= _currentTimeFull - _stopTime;
         /// <summary>
         /// Начинаем остановку клипа
         /// </summary>
@@ -82,21 +86,35 @@ namespace Vge.Entity.Animation
         public void Stoping() => _stopTime = _currentTimeFull;
 
         /// <summary>
+        /// Время микса в милисекундах
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private float _GetTimeMix() => _modelClip.TimeMix * _speed;
+
+        /// <summary>
         /// Получить коэффициент микса 0..1
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetCoefMix()
         {
-            if (_modelClip.TimeMix != 0)
+            float timeMix = _GetTimeMix();
+            if (timeMix != 0)
             {
-                if (_modelClip.TimeMix > _currentTimeFull)
+                if (timeMix > _currentTimeFull)
                 {
-                    return _currentTimeFull / _modelClip.TimeMix;
+                    return _currentTimeFull / timeMix;
                 }
                 if (_stopTime != 0)
                 {
-                    return 1f - (_currentTimeFull - _stopTime) / _modelClip.TimeMix;
+                    float f = (_currentTimeFull - _stopTime) / timeMix;
+                    if (f >= 1) return 0;
+                    return 1f - f;
                 }
+            }
+            else if (_stopTime != 0)
+            {
+                // Клип отработал, у него нет время на микса
+                return 0;
             }
             return 1f;
         }
@@ -108,11 +126,25 @@ namespace Vge.Entity.Animation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void IncreaseCurrentTime(float delta)
         {
+            delta *= _speed;
             _currentTimeFull += delta;
-            _currentTime += delta * Speed;
-            if (_currentTime > _modelClip.Duration)
+            _currentTime += delta;
+
+            if (_modelClip.Loop == Model.ModelLoop.Once)
             {
-                _currentTime -= _modelClip.Duration;
+                // Надо с учётом микса остановить
+                if (_stopTime == 0 && _currentTimeFull > _modelClip.Duration - _GetTimeMix())
+                {
+                    Stoping();
+                }
+            }
+            else if (_modelClip.Loop == Model.ModelLoop.Loop)
+            {
+                // Для зацикливания
+                if (_currentTime > _modelClip.Duration)
+                {
+                    _currentTime -= _modelClip.Duration;
+                }
             }
         }
 
