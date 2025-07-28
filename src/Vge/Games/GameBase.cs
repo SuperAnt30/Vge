@@ -387,7 +387,10 @@ namespace Vge.Games
                 //Player.Update();
                 // Filer.EndStartSection("World.Update", 10);
                 // Обновить мир
-                World.UpdateClient();
+                if (World.Settings != null) // Покуда не пришёл пакет данных мира, нечего его обновлять
+                {
+                    World.UpdateClient();
+                }
                 //Filer.EndStartSection("WorldRender.Update", 10);
                
                 // Обновить рендоровский мир

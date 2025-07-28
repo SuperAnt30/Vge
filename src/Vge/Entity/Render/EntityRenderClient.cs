@@ -179,7 +179,7 @@ namespace Vge.Entity.Render
                 }
                 if (Trigger.IsSneak())
                 {
-                    AddClip(2, 5f);
+                    AddClip(2, 2f);
                 }
 
                 Trigger.SetAnimation(mov);

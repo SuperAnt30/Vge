@@ -128,22 +128,36 @@ namespace Vge.Entity.Animation
         {
             delta *= _speed;
             _currentTimeFull += delta;
-            _currentTime += delta;
 
-            if (_modelClip.Loop == Model.ModelLoop.Once)
+            if (_modelClip.Loop == Model.ModelLoop.Loop)
             {
+                _currentTime += delta;
+                // Для зацикливания
+                if (_currentTime > _modelClip.Duration)
+                {
+                    _currentTime -= _modelClip.Duration;
+                }
+            }
+            else if (_modelClip.Loop == Model.ModelLoop.Once)
+            {
+                _currentTimeFull += delta;
+                _currentTime += delta;
                 // Надо с учётом микса остановить
                 if (_stopTime == 0 && _currentTimeFull > _modelClip.Duration - _GetTimeMix())
                 {
                     Stoping();
                 }
             }
-            else if (_modelClip.Loop == Model.ModelLoop.Loop)
+            else
             {
-                // Для зацикливания
-                if (_currentTime > _modelClip.Duration)
+                // Остановить на последнем кадре
+                if (_currentTime < _modelClip.Duration)
                 {
-                    _currentTime -= _modelClip.Duration;
+                    _currentTime += delta;
+                    if (_currentTime > _modelClip.Duration)
+                    {
+                        _currentTime = _modelClip.Duration;
+                    }
                 }
             }
         }
