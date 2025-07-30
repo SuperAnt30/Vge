@@ -47,13 +47,13 @@ namespace Vge.Entity.Render
         /// Добавить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void AddClip(int index, float speed) { }
+        public virtual void AddClip(string key, float speed) { }
 
         /// <summary>
         /// Отменить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void RemoveClip(int index) { }
+        public virtual void RemoveClip(string key) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Dispose() { }

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
 using Vge.Entity.Shape;
@@ -23,11 +24,11 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Массив отдельных анимационных клипов
         /// </summary>
-        private readonly ListMessy<int> _animationClips = new ListMessy<int>();
+        private readonly ListMessy<string> _animationClips = new ListMessy<string>();
         /// <summary>
-        /// Массив всех клипов данной сущности
+        /// Карта всех клипов данной сущности
         /// </summary>
-        private readonly AnimationClip[] _animations;
+        private readonly Dictionary<string, AnimationClip> _animations = new Dictionary<string, AnimationClip>();
         /// <summary>
         /// Массив костей в заданный момент времени
         /// </summary>
@@ -58,40 +59,29 @@ namespace Vge.Entity.Render
                 _bonesTransforms[i] = Mat4.Identity();
             }
 
-            int count = _resourcesEntity.ModelAnimationClips.Length;
-            _animations = new AnimationClip[count];
-            for (int i = 0; i < count; i++)
+            foreach(ModelAnimationClip clip in _resourcesEntity.ModelAnimationClips)
             {
-                _animations[i] = new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[i]);
+                _animations.Add(clip.Name, new AnimationClip(_resourcesEntity, clip));
             }
 
-            if (count > 0)
-            {
-                // Если имеется анимация у сущности, временно запускаем первую
-                _animationClips.Add(0);
-                // TODO::2025-07-09 Определяем анимацию стартовую
-            }
-
-            // Временное включение анимациионного клипа
-            //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[2]));
-            //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[1]));
-            //_animationClips.Add(new AnimationClip(_resourcesEntity, _resourcesEntity.ModelAnimationClips[0]));
+            // Запускаем анимацию бездействия
+            _animationClips.Add("Idle");
         }
 
         /// <summary>
         /// Добавить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void AddClip(int index, float speed = 1)
+        public override void AddClip(string key, float speed = 1)
         {
-            if (_animationClips.Contains(index))
+            if (_animationClips.Contains(key))
             {
-                _animations[index].ResetStop();
+                _animations[key].ResetStop();
             }
             else
             {
-                _animationClips.Add(index);
-                _animations[index].Reset(speed);
+                _animationClips.Add(key);
+                _animations[key].Reset(speed);
             }
         }
 
@@ -99,9 +89,8 @@ namespace Vge.Entity.Render
         /// Отменить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void RemoveClip(int index) => _animations[index].Stoping();
+        public override void RemoveClip(string key) => _animations[key].Stoping();
 
-      //  private bool m = false;
         /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
@@ -117,12 +106,12 @@ namespace Vge.Entity.Render
 
             if (Trigger.IsForward())
             {
-                RemoveClip(1);
-                AddClip(0);
+                RemoveClip("Walk");
+                AddClip("Idle");
             }
             if (Trigger.IsSneak())
             {
-                // RemoveClip(2);
+                // RemoveClip("AttackRight");
             }
 
             Trigger.SetAnimation(mov);
@@ -132,46 +121,16 @@ namespace Vge.Entity.Render
 
             if (Trigger.IsForward())
             {
-                RemoveClip(0);
-                AddClip(1);
+                RemoveClip("Idle");
+                AddClip("Walk");
             }
             if (Trigger.IsSneak())
             {
-                AddClip(2, 2f);
+                AddClip("AttackRight", 2f);
             }
 
             Trigger.SetAnimation(mov);
             Trigger.UpdatePrev();
-
-                /*
-                if (Entity.Physics != null)
-                {
-                    if (Entity.Physics.IsMotionChange)
-                    {
-                        // TODO::TEST
-                        // Позиция сменена
-                        if (!m)
-                        {
-                            m = true;
-                            RemoveClip(0);
-                            AddClip(1);
-
-                            if (Entity.Physics.Movement.Sprinting) _animations[1].Speed = 2;
-                            else _animations[1].Speed = 1;
-                        }
-                    }
-                    else
-                    {
-                        // Стоит
-                        if (m)
-                        {
-                            m = false;
-                            RemoveClip(1);
-                            AddClip(0);
-                        }
-                    }
-                }
-                */
 
                 int i = 0;
             int count = _animationClips.Count - 1;
