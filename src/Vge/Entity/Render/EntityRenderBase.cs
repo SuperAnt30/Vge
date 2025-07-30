@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Vge.Renderer;
 using Vge.World;
 
 namespace Vge.Entity.Render

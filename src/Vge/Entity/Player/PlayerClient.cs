@@ -58,7 +58,7 @@ namespace Vge.Entity.Player
             Id = id;
             IdWorld = idWorld;
             _InitIndexPlayer();
-            Render = new EntityRenderClient(this, _game.WorldRender.Entities, IndexEntity);
+            InitRender(IndexEntity, _game.WorldRender.Entities);
         }
 
         /// <summary>

@@ -150,7 +150,7 @@ namespace Vge.Entity.Player
             Physics = new PhysicsPlayer(_game.World.Collision, this);
 
             // Создание объекта рендера не в конструкторе, так-как там ещё не создан рендер мир
-            Render = new EntityRenderClient(this, _game.WorldRender.Entities, IndexEntity);
+            InitRender(IndexEntity, _game.WorldRender.Entities);
         }
 
         #region Методы от Entity

@@ -168,7 +168,10 @@ namespace Vge.Entity
         public void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
         {
             IndexEntity = index;
-            Render = new EntityRenderClient(this, entitiesRenderer, IndexEntity);
+            ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(IndexEntity);
+            Render = resourcesEntity.IsAnimation 
+                ? new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
+                : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
             _InitMetaData();
             _InitSize();
         }
