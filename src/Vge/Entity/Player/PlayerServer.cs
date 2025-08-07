@@ -145,7 +145,7 @@ namespace Vge.Entity.Player
                 = _desiredBatchSize = Ce.MinDesiredBatchSize;
             Id = server.LastEntityId();
             _lastTimeServer = server.Time();
-            Render = new EntityRenderBase(this);
+            Render = new EntityRenderBase();
             _InitMetaData();
             _InitSize();
         }

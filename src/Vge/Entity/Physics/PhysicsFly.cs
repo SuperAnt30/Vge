@@ -42,7 +42,7 @@ namespace Vge.Entity.Physics
             float speed = .1f;
 
             Vector2 motion = Sundry.MotionAngle(
-               Movement.GetMoveStrafe(), Movement.GetMoveForward(),
+               Movement.MoveStrafe, Movement.MoveForward,
                //.5951f 
                .39673f
                * speed * (Movement.Sprinting ? 5f : 1f),
@@ -50,7 +50,7 @@ namespace Vge.Entity.Physics
 
             // Временно меняем перемещение если это надо
             MotionX += motion.X;
-            MotionY += Movement.GetMoveVertical() * speed * 1.0f;
+            MotionY += Movement.MoveVertical * speed * 1.0f;
             //if (Movement.Jump)
             //{
             //    MotionY += .84f;

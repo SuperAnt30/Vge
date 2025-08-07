@@ -160,6 +160,7 @@ namespace Vge.Entity
         /// <summary>
         /// Поворот тела от поворота головы или движения.
         /// Для сущностей где голова вращается отдельно от тела.
+        /// Запускается ТОЛЬКО на клиенте, где есть Render
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void _RotationBody()
@@ -195,11 +196,20 @@ namespace Vge.Entity
                 if (xDis * xDis + zDis * zDis > .0025f)
                 {
                     // Движение, высчитываем угол направления
-                    yawOffset = Glm.Atan2(zDis, xDis) + Glm.Pi90;
-                    // Реверс для бега назад
-                    float yawRev = Glm.WrapAngleToPi(yawOffset - _rotationYawBody);
-                    if (yawRev < -1.8f) yawOffset += Glm.Pi;
-                    else if (yawRev > 1.8f) yawOffset -= Glm.Pi;
+                    if (Render.IsMovingStrafe())
+                    {
+                        // Этот вариант, если тело при твещении стремится к голове, для анимации
+                        yawOffset = RotationYaw;
+                    }
+                    else
+                    {
+                        // Вариант если надо повернуть тело, как в minecraft
+                        yawOffset = Glm.Atan2(zDis, xDis) + Glm.Pi90;
+                        // Реверс для бега назад
+                        float yawRev = Glm.WrapAngleToPi(yawOffset - _rotationYawBody);
+                        if (yawRev < -1.8f) yawOffset += Glm.Pi;
+                        else if (yawRev > 1.8f) yawOffset -= Glm.Pi;
+                    }
                 }
 
                 float yaw = Glm.WrapAngleToPi(yawOffset - _rotationYawBody);

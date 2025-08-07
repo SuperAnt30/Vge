@@ -147,5 +147,13 @@ namespace Vge.Entity.Physics
         /// Скорость подкрадывания
         /// </summary>
         public const float SneakSpeed = .3f;
+        /// <summary>
+        /// Скорость смещения в сторону, по умолчанию 1.0, перед корнем в физике
+        /// </summary>
+        public const float StrafeSpeed = .75f;
+        /// <summary>
+        /// Скорость назад, по умолчанию 1.0, перед корнем в физике
+        /// </summary>
+        public const float BackSpeed = .8f;
     }
 }

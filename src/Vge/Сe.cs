@@ -93,6 +93,11 @@ public sealed class Ce
     /// Максимальное количество костей у сущностей
     /// </summary>
     public const int MaxAnimatedBones = 24;
+    /// <summary>
+    /// Обязательный анимационный клип, бездвижения.
+    /// Является как поумолчанию, если нет нужного
+    /// </summary>
+    public const string MandatoryAnimationClipIdle = "Idle";
 
     /// <summary>
     /// Количество спрайтов на стороне текстурного атласа,

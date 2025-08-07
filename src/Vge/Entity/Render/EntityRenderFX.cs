@@ -9,12 +9,18 @@ namespace Vge.Entity.Render
     public class EntityRenderFX : EntityRenderBase
     {
         /// <summary>
+        /// Сущность к которой прекреплена физика
+        /// </summary>
+        public readonly EntityBase Entity;
+
+        /// <summary>
         /// Объект рендера всех сущностей
         /// </summary>
         public readonly EntitiesRenderer Entities;
 
-        public EntityRenderFX(EntityBase entity, EntitiesRenderer entities) : base(entity)
+        public EntityRenderFX(EntityBase entity, EntitiesRenderer entities)
         {
+            Entity = entity;
             Entities = entities;
         }
 

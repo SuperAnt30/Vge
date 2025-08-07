@@ -6,10 +6,6 @@
     public class BoneAnimationChannel
     {
         /// <summary>
-        /// Имя анимации из Blockbench
-        /// </summary>
-        public readonly string Name;
-        /// <summary>
         /// Имеется ли у этой кости анимация
         /// </summary>
         public readonly bool IsAnimation;
@@ -26,11 +22,10 @@
         /// </summary>
         public readonly BoneAnimationFrame[] OrientationFrames;
 
-        public BoneAnimationChannel(string name, byte weight,
+        public BoneAnimationChannel(byte weight,
             BoneAnimationFrame[] positionFrames,
             BoneAnimationFrame[] orientationFrames)
         {
-            Name = name;
             Weight = weight;
             PositionFrames = positionFrames;
             OrientationFrames = orientationFrames;

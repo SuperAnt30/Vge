@@ -71,7 +71,14 @@ namespace Vge.Entity.Animation
         /// Cбросить стоп
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ResetStop() => _currentTimeFull = _stopTime = 0;
+        public void ResetStop()
+        {
+            _currentTimeFull = _stopTime = 0;
+            if (_modelClip.Loop != Model.ModelLoop.Loop)
+            {
+                _currentTime = 0;
+            }
+        }
         /// <summary>
         /// Проверяем закончено ли остановка клипа.
         /// После этого можно удалить клип.
@@ -140,7 +147,6 @@ namespace Vge.Entity.Animation
             }
             else if (_modelClip.Loop == Model.ModelLoop.Once)
             {
-                _currentTimeFull += delta;
                 _currentTime += delta;
                 // Надо с учётом микса остановить
                 if (_stopTime == 0 && _currentTimeFull > _modelClip.Duration - _GetTimeMix())

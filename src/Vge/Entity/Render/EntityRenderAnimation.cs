@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
+using Vge.Entity.Player;
 using Vge.Entity.Shape;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
@@ -30,6 +32,10 @@ namespace Vge.Entity.Render
         /// </summary>
         private readonly Dictionary<string, AnimationClip> _animations = new Dictionary<string, AnimationClip>();
         /// <summary>
+        /// Карта всех клипов данной сущности
+        /// </summary>
+        private readonly Dictionary<EnumEntityActivity, string> _animationsActivity = new Dictionary<EnumEntityActivity, string>();
+        /// <summary>
         /// Массив костей в заданный момент времени
         /// </summary>
         private readonly BonePose[] _bones;
@@ -45,6 +51,19 @@ namespace Vge.Entity.Render
         /// Количество костей
         /// </summary>
         private readonly byte _countBones;
+        /// <summary>
+        /// Анимационный триггер для сущности
+        /// </summary>
+        private readonly TriggerAnimation _trigger = new TriggerAnimation();
+
+        /// <summary>
+        /// Имя текущего клипа, чтоб можно было закрыть
+        /// </summary>
+        private string _activeClip;
+        /// <summary>
+        /// Текущий триггерный активотора
+        /// </summary>
+        private EnumEntityActivity _activity;
 
         public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
@@ -61,11 +80,29 @@ namespace Vge.Entity.Render
 
             foreach(ModelAnimationClip clip in _resourcesEntity.ModelAnimationClips)
             {
-                _animations.Add(clip.Name, new AnimationClip(_resourcesEntity, clip));
+                AnimationClip animationClip = new AnimationClip(_resourcesEntity, clip);
+                _animations.Add(clip.Code, animationClip);
+                if (clip.Activity != EnumEntityActivity.None)
+                {
+                    _animationsActivity.Add(clip.Activity, clip.Code);
+                }
             }
 
             // Запускаем анимацию бездействия
-            _animationClips.Add("Idle");
+            AddClipActivity(EnumEntityActivity.Idle);
+        }
+
+        /// <summary>
+        /// Добавить клип по триггерному активатору
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddClipActivity(EnumEntityActivity activity, float speed = 1)
+        {
+            _activity = activity;
+            _activeClip = _animationsActivity.ContainsKey(activity)
+                ? _animationsActivity[activity] : Ce.MandatoryAnimationClipIdle;
+
+            AddClip(_activeClip, speed);
         }
 
         /// <summary>
@@ -78,7 +115,7 @@ namespace Vge.Entity.Render
             {
                 _animations[key].ResetStop();
             }
-            else
+            else if (_animations.ContainsKey(key)) // TODO::2025-07-30 надо продумать, чтоб тут всегда было
             {
                 _animationClips.Add(key);
                 _animations[key].Reset(speed);
@@ -99,40 +136,69 @@ namespace Vge.Entity.Render
         {
             base.UpdateClient(world, deltaTime);
 
+            if (!_trigger.Levitate)
+            {
+                if (!Entity.OnGround) _trigger.SetLevitate(true);
+            }
+            else
+            {
+                if (Entity.OnGround)
+                {
+                    _trigger.SetLevitate(false);
+                }  
+            }
+
             // Animation
-            byte mov = Trigger.GetMoving();
-            // Что убрать
-            Trigger.PrepareRemoved();
-
-            if (Trigger.IsForward())
+            if (_trigger.Changed)
             {
-                RemoveClip("Walk");
-                AddClip("Idle");
+                //Console.Write(_trigger + _trigger.GetMove().ToString());
+
+                // Что убрать
+                // Подготовка, чтоб понять, что отключилось
+                // _trigger.PrepareRemoved();
+
+                // bool idle = _trigger.IsIdleAll();
+
+                // Название клипа, который надо выключить
+                //string nameClipStop = _GetNameClipByTrigger();
+                //Console.Write(" remov: " + _trigger + _trigger.GetMove().ToString());
+                //if (nameClipStop != "") RemoveClip(nameClipStop);
+
+                //Console.Write(" remov: " + _trigger.ActiveClip);
+                //RemoveClip(_trigger.ActiveClip);
+
+                //if (_trigger.IsSneak()) RemoveClip("AttackRight");
+
+                // Подготовка, чтоб понять, что добавить
+                //_trigger.PrepareAddendum();
+
+                // Название клипа, который надо включить
+                EnumEntityActivity clipStart = _GetNameClipByTrigger();
+               // Console.Write(" add: " + _trigger + _trigger.GetMove().ToString());
+
+                if (clipStart != _activity)
+                {
+                    Console.Write(" remov: " + _activeClip + " add: " + clipStart);
+                    RemoveClip(_activeClip);
+                    AddClipActivity(clipStart);
+                }
+
+                 Console.WriteLine(" tick: " + world.GetTickCounter());
+                // Другие слои тригерров
+               
+
+                // Обновить данные в конце после отправки данных игрового такта
+                _trigger.Done();
             }
-            if (Trigger.IsSneak())
-            {
-                // RemoveClip("AttackRight");
-            }
 
-            Trigger.SetAnimation(mov);
-
-            // Что добавить
-            Trigger.PrepareAddendum();
-
-            if (Trigger.IsForward())
+            // Временно клик
+            if (Entity is PlayerClientOwner playerClient && playerClient.TestHandAction)
             {
-                RemoveClip("Idle");
-                AddClip("Walk");
-            }
-            if (Trigger.IsSneak())
-            {
+                playerClient.TestHandAction = false;
                 AddClip("AttackRight", 2f);
             }
 
-            Trigger.SetAnimation(mov);
-            Trigger.UpdatePrev();
-
-                int i = 0;
+            int i = 0;
             int count = _animationClips.Count - 1;
             for (i = count; i >= 0; i--)
             {
@@ -176,6 +242,49 @@ namespace Vge.Entity.Render
                     fffb = !fffb;
                 }
             }
+        }
+
+        /// <summary>
+        /// Получить имя клипа по триггеру
+        /// </summary>
+        private EnumEntityActivity _GetNameClipByTrigger()
+        {
+            EnumEntityActivity clip;
+
+            if (_trigger.IsMove())
+            {
+                // Что-то имеется, проверяем сразу на движение
+                if (_resourcesEntity.OnlyMove)
+                {
+                    // Только движение
+                    //clip = "Move";
+                    clip = EnumEntityActivity.Move;
+                }
+                else
+                {
+                    if (_trigger.IsMovingStrafe())
+                    {
+                        // Только стрейф
+                        clip = _trigger.IsStrafeLeft() ? EnumEntityActivity.Left : EnumEntityActivity.Right;
+                    }
+                    else
+                    {
+                        // Вперёд и назад
+                        clip = _trigger.IsForward() ? EnumEntityActivity.Forward : EnumEntityActivity.Back;
+                    }
+                }
+            }
+            else
+            {
+                clip = EnumEntityActivity.Idle;
+            }
+
+            if (_trigger.Levitate) clip |= EnumEntityActivity.Levitate;
+            else if (_trigger.IsSneak()) clip |= EnumEntityActivity.Sneak;
+
+           // if (clip == EnumEntityActivity.None) return EnumEntityActivity.Idle;
+
+            return clip;
         }
 
         int fffd = 0;//100;
@@ -414,6 +523,19 @@ namespace Vge.Entity.Render
         }
 
         #endregion
+
+        /// <summary>
+        /// Задать байт флагов анимации движения
+        /// FBLRSnSp
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetMovingFlags(byte moving) => _trigger.SetMovingFlags(moving);
+
+        /// <summary>
+        /// Имеется ли сейчас движение только стрейф, без движения вперёд или назад или бездействия
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsMovingStrafe() => _trigger.IsMovingStrafe();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Dispose() => _entityLayerRender?.Dispose();

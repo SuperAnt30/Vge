@@ -2,23 +2,23 @@
     #Pitch: "Head",
     Model: "Robinson",
     #Model: "skeleton"
-    Texture: 0,
+    TextureId: 1,
     Animations: [
         {
-            Name: "Walk",
+            Code: "Walk",
+            Animation: "Walk",
             AnimationSpeed: 1.1,
-            TriggeredBy: { onControls: ["Move"], matchExact: true } 
+            #TriggeredBy: { onControls: ["Move"], matchExact: true } 
         },
         { 
-            Name: "Idle", 
-            TriggeredBy: { onControls: ["Idle"], matchExact: true, defaultAnim: true }
+            Code: "Idle",
+            Animation: "Idle",            
+            #TriggeredBy: { onControls: ["Idle"], matchExact: true, defaultAnim: true }
         },
         { 
-            Name: "Run", 
-            TriggeredBy: { onControls: ["Run"], matchExact: true, defaultAnim: true }
-        },
-        { 
-            Name: "Chop", 
+            Code: "Run", 
+            Animation: "Run", 
+            #TriggeredBy: { onControls: ["Run"], matchExact: true, defaultAnim: true }
         }
     ],
     #Model: "skeleton"

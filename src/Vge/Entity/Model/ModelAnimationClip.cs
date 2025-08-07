@@ -1,4 +1,5 @@
-﻿using Vge.Entity.Model;
+﻿using System;
+using Vge.Entity.Model;
 
 namespace Vge.Entity.Animation
 {
@@ -8,9 +9,9 @@ namespace Vge.Entity.Animation
     public class ModelAnimationClip
     {
         /// <summary>
-        /// Имя анимации из Blockbench
+        /// Имя клипа как ключ для программы, должны быть уникальны в одной сущности
         /// </summary>
-        public readonly string Name;
+        public readonly string Code;
         /// <summary>
         /// Анимация без перерыва, цикл
         /// </summary>
@@ -28,21 +29,36 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly float Speed;
         /// <summary>
+        /// Перечень триггеров для активации текущей анимации
+        /// </summary>
+        public readonly EnumEntityActivity Activity;
+        /// <summary>
         /// Списки ключевых кадров для каждой кости скелета
         /// </summary>
         public readonly BoneAnimationChannel[] Bones;
 
-        public ModelAnimationClip(string name, ModelLoop loop, float duration,
-            int timeMix, float speed, BoneAnimationChannel[] bones)
+        public ModelAnimationClip(string entityName, string code, ModelLoop loop, float duration,
+            int timeMix, AnimationData animationData, BoneAnimationChannel[] bones)
         {
-            Name = name;
+            Code = code;
             Loop = loop;
             TimeMix = timeMix;
-            Speed = speed;
+            Speed = animationData.Speed;
+            Activity = EnumEntityActivity.None;
+            for (int i = 0; i < animationData.TriggeredBy.Length; i++)
+            {
+                Enum.TryParse(animationData.TriggeredBy[i], out EnumEntityActivity activity);
+                if (activity == EnumEntityActivity.None)
+                {
+                    throw new Exception(Sr.GetString(Sr.InvalidTriggerInAnimationEntity,
+                        animationData.TriggeredBy[i], Code, entityName));
+                }
+                Activity |= activity;
+            }
             Duration = duration;
             Bones = bones;
         }
 
-        public override string ToString() => "Clip " + Name + " " + Duration;
+        public override string ToString() => "Clip " + Code + " " + Duration;
     }
 }

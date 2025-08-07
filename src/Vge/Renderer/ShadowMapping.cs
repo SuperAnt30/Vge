@@ -156,7 +156,10 @@ namespace Vge.Renderer
                 gl.DeleteTextures(1, new uint[] { _shadowMapTexture });
                 _shadowMapTexture = 0;
             }
-            _meshShadowMap.Dispose();
+            if (_meshShadowMap != null)
+            {
+                _meshShadowMap.Dispose();
+            }
             _shShadowMap.Delete();
         }
     }

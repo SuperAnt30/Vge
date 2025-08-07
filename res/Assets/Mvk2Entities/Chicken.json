@@ -1,5 +1,5 @@
 {
-    Texture: 0,
+    TextureId: 0,
     Model: "Chicken"
     #Model: "skeleton"
 }

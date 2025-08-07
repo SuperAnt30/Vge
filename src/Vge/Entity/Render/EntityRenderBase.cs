@@ -10,17 +10,6 @@ namespace Vge.Entity.Render
     public class EntityRenderBase : IDisposable
     {
         /// <summary>
-        /// Сущность к которой прекреплена физика
-        /// </summary>
-        public readonly EntityBase Entity;
-        /// <summary>
-        /// Анимационный триггер для сущности
-        /// </summary>
-        public readonly TriggerAnimation Trigger = new TriggerAnimation();
-
-        public EntityRenderBase(EntityBase entity) => Entity = entity;
-
-        /// <summary>
         /// Метод для прорисовки
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
@@ -54,6 +43,19 @@ namespace Vge.Entity.Render
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void RemoveClip(string key) { }
+
+        /// <summary>
+        /// Задать байт флагов анимации движения
+        /// FBLRSnSp
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetMovingFlags(byte moving) { }
+
+        /// <summary>
+        /// Имеется ли сейчас движение только стрейф, без движения вперёд или назад или бездействия
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool IsMovingStrafe() => false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Dispose() { }

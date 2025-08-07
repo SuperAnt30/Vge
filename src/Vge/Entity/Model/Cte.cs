@@ -32,15 +32,28 @@
         /// <summary>
         /// Индекс текстуры. (int)
         /// </summary>
-        public const string Texture = "texture";
+        public const string TextureId = "TextureId";
+        /// <summary>
+        /// Только двигаться для тригерров анимации, вместо Forward, Back, Left, Right. (bool)
+        /// </summary>
+        public const string OnlyMove = "OnlyMove";
+
+        /// <summary>
+        /// Имя клипа как ключ для программы, должны быть уникальны в одной сущности. (string)
+        /// </summary>
+        public const string Code = "Code";
+        /// <summary>
+        /// Имя клипа в Blockbanche. (string)
+        /// </summary>
+        public const string Animation = "Animation";
         /// <summary>
         /// Скорость анимации. (float)
         /// </summary>
         public const string AnimationSpeed = "AnimationSpeed";
         /// <summary>
-        /// Имя триггера. (string)
+        /// Название тригеров для активации текущей анимации. ([string])
         /// </summary>
-        public const string Trigger = "Trigger";
+        public const string TriggeredBy = "TriggeredBy";
         /// <summary>
         /// Объект силы элементов костей. ({})
         /// </summary>
@@ -80,11 +93,15 @@
         /// Анимация. ([])
         /// </summary>
         public const string Animations = "animations";
-        
+
         #endregion
 
         #region Texture
 
+        /// <summary>
+        /// Название текстуры с модели. (string)
+        /// </summary>
+        public const string Texture = "texture";
         /// <summary>
         /// Данные текстуры, в формате image/png;base64. (string)
         /// </summary>

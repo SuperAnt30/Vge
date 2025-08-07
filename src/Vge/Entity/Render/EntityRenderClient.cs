@@ -12,6 +12,11 @@ namespace Vge.Entity.Render
     public class EntityRenderClient : EntityRenderBase
     {
         /// <summary>
+        /// Сущность к которой прекреплена физика
+        /// </summary>
+        public readonly EntityBase Entity;
+
+        /// <summary>
         /// Объект рендера всех сущностей
         /// </summary>
         public readonly EntitiesRenderer Entities;
@@ -40,8 +45,9 @@ namespace Vge.Entity.Render
         /// </summary>
         protected float _lightSky;
 
-        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) : base(entity)
+        public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity)
         {
+            Entity = entity;
             Entities = entities;
             _resourcesEntity = resourcesEntity;
 

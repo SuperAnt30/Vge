@@ -224,7 +224,7 @@ namespace Vge.Network
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
             if (entity != null && entity.Render != null)
             {
-                entity.Render.Trigger.SetAnimation(packet.Animation);
+                entity.Render.SetMovingFlags(packet.Animation);
             }
         }
 

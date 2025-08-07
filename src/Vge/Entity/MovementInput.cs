@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Physics;
+using WinGL.Util;
 
 namespace Vge.Entity
 {
@@ -10,76 +12,132 @@ namespace Vge.Entity
         /// <summary>
         /// Перемещение вперёд
         /// </summary>
-        public bool Forward;
+        public bool Forward { get; private set; }
         /// <summary>
         /// Перемещение назад
         /// </summary>
-        public bool Back;
+        public bool Back { get; private set; }
         /// <summary>
         /// Шаг влево
         /// </summary>
-        public bool StrafeLeft;
+        public bool StrafeLeft { get; private set; }
         /// <summary>
         /// Шаг вправо
         /// </summary>
-        public bool StrafeRight;
-        /// <summary>
-        /// Прыжок
-        /// </summary>
-        public bool Jump;
+        public bool StrafeRight { get; private set; }
         /// <summary>
         /// Присесть
         /// </summary>
-        public bool Sneak;
+        public bool Sneak { get; private set; }
+        /// <summary>
+        /// Прыжок
+        /// </summary>
+        public bool Jump { get; private set; }
         /// <summary>
         /// Ускорение
         /// </summary>
-        public bool Sprinting;
+        public bool Sprinting { get; private set; }
+        
+        /// <summary>
+        /// Было ли изменение по управлению
+        /// </summary>
+        public bool Changed { get; private set; }
+
+        /// <summary>
+        /// Тип байт данных общего перемещения
+        /// FBLRSnJSp
+        /// </summary>
+        public byte Flags { get; private set; }
+        /// <summary>
+        /// Скорость перемещения в любую сторону кроме вертиалки 0 .. +n
+        /// </summary>
+        public float MoveSpeed { get; private set; }
+        /// <summary>
+        /// Скорость перемещения шага влево -n .. +n право
+        /// </summary>
+        public float MoveStrafe { get; private set; }
+        /// <summary>
+        /// Скорость перемещения вперёд -n .. +n назад
+        /// </summary>
+        public float MoveForward { get; private set; }
+        /// <summary>
+        /// Скорость перемещения вертикали вниз -n .. +n вверх
+        /// </summary>
+        public float MoveVertical { get; private set; }
+
         /// <summary>
         /// Коэффициент ускорения вперёд, для мобов
         /// </summary>
-        public float Speed = 1;
+        private float _speed = 1;
 
         /// <summary>
-        /// Изменение в данных общего перемещения
-        /// </summary>
-        private bool _movingChanged;
-        /// <summary>
-        /// Прыжок прошлого такта
-        /// </summary>
-        private bool _jumpPrev;
-        /// <summary>
-        /// Тип байт данных общего перемещения
-        /// FBLRSnSp
-        /// </summary>
-        private byte _moving;
-        /// <summary>
-        /// Предыдущее значение
-        /// </summary>
-        private byte _movingPrev;
-
-        /// <summary>
-        /// Задать управление
+        /// Перегенерировать атрибуты передвежения
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetMoveState(bool forward, bool jump, bool sneak, bool sprinting)
+        private void _GenMove()
         {
-            Back = StrafeLeft = StrafeRight = false;
-            Forward = forward;
-            Jump = jump;
-            Sneak = sneak;
-            Sprinting = sprinting;
+            MoveForward = (Back ? _speed * Cp.BackSpeed : 0) - (Forward ? _speed : 0);
+            MoveStrafe = (StrafeRight ? _speed * Cp.StrafeSpeed : 0) - (StrafeLeft ? _speed * Cp.StrafeSpeed : 0);
+            MoveSpeed = Mth.Max(Mth.Abs(MoveStrafe), Mth.Abs(MoveForward));
         }
 
         /// <summary>
-        /// Задать перемещение вперёд с заданным ускорением
+        /// Перегенерировать атрибуты вертикали
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetForward(float speed)
+        private float _GenMoveVertical() => MoveVertical = (Jump ? _speed : 0) - (Sneak ? _speed : 0);
+
+        #region Flags
+
+        /// <summary>
+        /// Задать значение бита по флагу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetFlag(int flag, bool value)
         {
-            Forward = true;
-            Speed = speed;
+            if (value) Flags = (byte)(Flags | 1 << flag);
+            else Flags = (byte)(Flags & ~(1 << flag));
         }
+
+        /// <summary>
+        /// Задать перемещение вперёд
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Forward(bool value) => _SetFlag(0, value);
+        /// <summary>
+        /// Задать перемещение назад
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Back(bool value) => _SetFlag(1, value);
+        /// <summary>
+        /// Задать шаг влево
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _StrafeLeft(bool value) => _SetFlag(2, value);
+        /// <summary>
+        /// Задать шаг вправо
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _StrafeRight(bool value) => _SetFlag(3, value);
+        /// <summary>
+        /// Задать присесть
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Sneak(bool value) => _SetFlag(4, value);
+        /// <summary>
+        /// Задать прыжок
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Jump(bool value) => _SetFlag(5, value);
+        /// <summary>
+        /// Задать ускорение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Sprinting(bool value) => _SetFlag(6, value);
+
+        #endregion
+
+        #region Set
 
         /// <summary>
         /// Задать остановиться
@@ -88,85 +146,187 @@ namespace Vge.Entity
         public void SetStop()
         {
             Forward = Sprinting = Sneak = Jump = Back = StrafeLeft = StrafeRight = false;
-            _moving = 0;
+            MoveForward = MoveStrafe = MoveSpeed = 0;
+            Flags = 0;
         }
 
         /// <summary>
-        /// Перемещение шага влево -1.0 .. +1.0 право
+        /// Задать перемещение вперёд с заданным ускорением
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetMoveStrafe() => (StrafeRight ? 1 : 0) - (StrafeLeft ? 1 : 0);
-
-        /// <summary>
-        /// Перемещение назад 1.0 .. -1.0 вперёд
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetMoveForward() => (Back ? 1 : 0) - (Forward ? Speed : 0);
-
-        /// <summary>
-        /// Перемещение вертикали вверх 1.0 .. -1.0 вниз
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetMoveVertical() => (Jump ? 1 : 0) - (Sneak ? 1 : 0);
-
-        #region AnimationTrigger
-
-        /// <summary>
-        /// Изменение в данных общего перемещения
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MovingChanged() => _movingChanged = true;
-
-        /// <summary>
-        /// Получить байт данных общего перемещения
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte GetMoving() => _moving;
-
-        /// <summary>
-        /// Подготовить данные для различия и вернуть было ли отличие от прошлого такта
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool PrepareDataForDistinction()
+        public void SetForward(float speed)
         {
-            if (_movingChanged)
-            {
-                _moving = 0;
-                if (Forward) _moving += 1;
-                if (Back) _moving += 2;
-                if (StrafeLeft) _moving += 4;
-                if (StrafeRight) _moving += 8;
-                if (Sneak) _moving += 16;
-                if (Sprinting) _moving += 32;
-                _movingChanged = false;
-                return _moving != _movingPrev || Jump && !_jumpPrev;
-            }
-
-            return false;
+            _speed = speed;
+            SetForward(true);
         }
+
+        /// <summary>
+        /// Изменено перемещение вперёд
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetForward(bool value)
+        {
+            if (value != Forward)
+            {
+                Forward = value;
+                _Forward(value);
+
+                if (value && Back)
+                {
+                    // Отмена идти назад если зажаты две клавиши
+                    Back = false;
+                    _Back(false);
+                }
+                else if (!value && Sprinting)
+                {
+                    // Отменить ускорение если оно было
+                    Sprinting = false;
+                    _Sprinting(false);
+                }
+                _GenMove();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменено перемещение назад
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBack(bool value)
+        {
+            if (value != Back)
+            {
+                Back = value;
+                _Back(value);
+
+                if (value && Forward)
+                {
+                    // Отмена идти вперёд если зажаты две клавиши
+                    Forward = false;
+                    _Forward(false);
+                    if (Sprinting)
+                    {
+                        // Отменить ускорение если оно было
+                        Sprinting = false;
+                        _Sprinting(false);
+                    }
+                }
+                _GenMove();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменен шаг влево
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetStrafeLeft(bool value)
+        {
+            if (value != StrafeLeft)
+            {
+                StrafeLeft = value;
+                _StrafeLeft(value);
+
+                if (value && StrafeRight)
+                {
+                    // Отмена шага вправо если зажаты две клавиши
+                    StrafeRight = false;
+                    _StrafeRight(false);
+                }
+                _GenMove();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменен шаг вправо
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetStrafeRight(bool value)
+        {
+            if (value != StrafeRight)
+            {
+                StrafeRight = value;
+                _StrafeRight(value);
+
+                if (value && StrafeLeft)
+                {
+                    // Отмена шага вправо если зажаты две клавиши
+                    StrafeLeft = false;
+                    _StrafeLeft(false);
+                }
+                _GenMove();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменен присесть
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSneak(bool value)
+        {
+            if (value != Sneak)
+            {
+                Sneak = value;
+                _Sneak(value);
+
+                if (value && Sprinting)
+                {
+                    // Если присели, а было ускорение, отключаем ускорение
+                    Sprinting = false;
+                    _Sprinting(false);
+                }
+                _GenMoveVertical();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменен прыжок
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetJump(bool value)
+        {
+            if (value != Jump)
+            {
+                Jump = value;
+                _Jump(value);
+                _GenMoveVertical();
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Изменено ускорение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSprinting(bool value)
+        {
+            if (value != Sprinting)
+            {
+                // Нельзя ускорится если крадёмся
+                if (!Sneak && (value || (!value && !Forward)))
+                {
+                    Sprinting = value;
+                    _Sprinting(value);
+                    Changed = true;
+                }
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Обновить данные в после после отправки данных игрового такта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateAfter()
-        {
-            _movingPrev = _moving;
-            _jumpPrev = Jump;
-        }
-
-        /// <summary>
-        /// Было ли прыжок в этом такте
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsJump() => Jump && !_jumpPrev;
-
-        #endregion
+        public void UpdateAfter() => Changed = false;
 
         public override string ToString()
         {
             string s = "";
-            if (Forward) s += "F" + Speed.ToString("0.0");
+            if (Forward) s += "F" + _speed.ToString("0.0");
             if (Back) s += "B";
             if (StrafeRight) s += "R";
             if (StrafeLeft) s += "L";

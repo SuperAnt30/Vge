@@ -73,6 +73,7 @@ internal sealed class Sr
     internal const string RequiredParameterIsMissingEntity = "Отсутствует требуемый параметр {1} сущности {0}";
     internal const string RequiredParameterIsMissingLayers = "Отсутствует требуемый параметр {1} слоях {0}";
     internal const string TransferNestedFolderMustNotBeDeeperThan = "Переносящая вложенная папка не должна быть глубже {1}. Сущность {0}";
+    internal const string InvalidTriggerInAnimationEntity = "Не верный триггер {0} в анимации {1}, сущности {2}";
 
     #endregion
 }

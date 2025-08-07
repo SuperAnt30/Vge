@@ -4,7 +4,8 @@
     Scale: 0.976,
     #Model: "Robinson",
     Model: "Player",
-    Texture: 0,
+    TextureId: 0,
+    #OnlyMove: true,
     BoneCloth:
     {
         Mascot: ["Body"],
@@ -25,21 +26,67 @@
     ],
     Animations: [
         { 
-            Name: "Idle",
+            Code: "Idle",
+            Animation: "Idle",
+            #Default: true,
             AnimationSpeed: 0.3,
-            Trigger: "Idle"
+            TriggeredBy: ["Idle"]
+        },
+        { 
+            Code: "SneakForward",
+            Animation: "Sneak",
+            AnimationSpeed: 0.3,
+            TriggeredBy: ["Sneak", "Forward"]
+        },
+        { 
+            Code: "Sneak",
+            Animation: "Sneak",
+            AnimationSpeed: 0.3,
+            TriggeredBy: ["Sneak", "Idle"]
+        },
+        { 
+            Code: "Levitate",
+            Animation: "Levitate",
+            AnimationSpeed: 0.3,
+            TriggeredBy: ["Levitate", "Idle"]
+        },
+        { 
+            Code: "LevitateForward",
+            Animation: "Levitate",
+            AnimationSpeed: 0.5,
+            TriggeredBy: ["Levitate", "Forward"]
         },
         {
-            Name: "Walk",
+            Code: "Walk",
+            Animation: "Walk",
             #AnimationSpeed: 2.15,
             AnimationSpeed: 1.4,
             #AnimationSpeed: 1.075,
-            Trigger: "Forward"
+            TriggeredBy: ["Forward"]
         },
         {
-            Name: "AttackRight",
+            Code: "Back",
+            Animation: "Back",
+            AnimationSpeed: 1.8,
+            TriggeredBy: ["Back"]
+        },
+        {
+            Code: "Left",
+            Animation: "Left",
             AnimationSpeed: 0.5,
-            Trigger: "Attack",
+            TriggeredBy: ["Left"]
+        },
+        {
+            Code: "Right",
+            Animation: "Right",
+            AnimationSpeed: 1.0,
+            TriggeredBy: ["Right"]
+        },
+        {
+            Code: "AttackRight",
+            Animation: "AttackRight",
+            AnimationSpeed: 1.0,
+            #Trigger: "Attack",
             ElementWeight: {
                 ArmRight: 80,
                 ForearmRight: 80,

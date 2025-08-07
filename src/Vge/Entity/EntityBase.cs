@@ -182,7 +182,7 @@ namespace Vge.Entity
         public void InitServer(ushort index, CollisionBase collision)
         {
             IndexEntity = index;
-            Render = new EntityRenderBase(this);
+            Render = new EntityRenderBase();
             _InitMetaData();
             _InitSize();
             _InitPhysics(collision);

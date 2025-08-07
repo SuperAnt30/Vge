@@ -111,8 +111,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected override float _LivingUpdateSpeed()
         {
-            float speed = Mth.Max(Cp.Speed * Mth.Abs(Movement.GetMoveStrafe()),
-                        Cp.Speed * Mth.Abs(Movement.GetMoveForward()));
+            float speed = Cp.Speed * Movement.MoveSpeed;
             if (Movement.Sprinting)
             {
                 // Если ускорение
@@ -146,8 +145,8 @@ namespace Vge.Entity.Physics
                 acceleration *= Cp.SneakSpeed;
             }
             Vector2 motion = Sundry.MotionAngle(
-                    Movement.GetMoveStrafe() * .98f,
-                    Movement.GetMoveForward() * .98f,
+                    Movement.MoveStrafe * .98f,
+                    Movement.MoveForward * .98f,
                     acceleration, _entityLiving.RotationYaw);
             MotionX += motion.X;
             MotionZ += motion.Y;

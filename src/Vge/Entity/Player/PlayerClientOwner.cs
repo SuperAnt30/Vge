@@ -176,18 +176,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeyForward(bool value)
         {
-            Movement.Forward = value;
-            if (value && Movement.Back)
-            {
-                // Отмена идти назад если зажаты две клавиши
-                Movement.Back = false;
-            }
-            else if (!value && Movement.Sprinting)
-            {
-                // Отменить ускорение если оно было
-                Movement.Sprinting = false;
-            }
-            Movement.MovingChanged();
+            Movement.SetForward(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -196,18 +185,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeyBack(bool value)
         {
-            Movement.Back = value;
-            if (value && Movement.Forward)
-            {
-                // Отмена идти вперёд если зажаты две клавиши
-                Movement.Forward = false;
-                if (Movement.Sprinting)
-                {
-                    // Отменить ускорение если оно было
-                    Movement.Sprinting = false;
-                }
-            }
-            Movement.MovingChanged();
+            Movement.SetBack(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -216,13 +194,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeyStrafeLeft(bool value)
         {
-            Movement.StrafeLeft = value;
-            if (value && Movement.StrafeRight)
-            {
-                // Отмена шага вправо если зажаты две клавиши
-                Movement.StrafeRight = false;
-            }
-            Movement.MovingChanged();
+            Movement.SetStrafeLeft(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -231,13 +203,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeyStrafeRight(bool value)
         {
-            Movement.StrafeRight = value;
-            if (value && Movement.StrafeLeft)
-            {
-                // Отмена шага влево если зажаты две клавиши
-                Movement.StrafeLeft = false;
-            }
-            Movement.MovingChanged();
+            Movement.SetStrafeRight(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -246,7 +212,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeyJump(bool value)
         {
-            Movement.Jump = value;
+            Movement.SetJump(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -255,13 +221,7 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeySneak(bool value)
         {
-            Movement.Sneak = value;
-            if (value && Movement.Sprinting)
-            {
-                // Если присели, а было ускорение, отключаем ускорение
-                Movement.Sprinting = false;
-            }
-            Movement.MovingChanged();
+            Movement.SetSneak(value);
             Physics.AwakenPhysics();
         }
         /// <summary>
@@ -270,16 +230,8 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void KeySprinting(bool value)
         {
-            if (!Movement.Sneak)
-            {
-                // Нельзя ускорится если крадёмся
-                if (value || (!value && !Movement.Forward))
-                {
-                    Movement.Sprinting = value;
-                    Movement.MovingChanged();
-                    Physics.AwakenPhysics();
-                }
-            }
+            Movement.SetSprinting(value);
+            Physics.AwakenPhysics();
         }
 
         /// <summary>
@@ -341,6 +293,9 @@ namespace Vge.Entity.Player
 
         #region Действие рук, левый или правый клик
 
+        // TODO::2025-08-07 Временый тест, убрать...
+        public bool TestHandAction;
+
         /// <summary>
         /// Основное действие правой рукой. Левый клик мыши
         /// (old HandAction)
@@ -351,6 +306,8 @@ namespace Vge.Entity.Player
             {
                 if (MovingObject.IsBlock())
                 {
+                    TestHandAction = true;
+
                     _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
                 }
                 else
@@ -376,6 +333,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public void ItemUse()
         {
+            TestHandAction = true;
             if (MovingObject.IsBlock())
             {
                 _game.TrancivePacket(new PacketC08PlayerBlockPlacement(MovingObject.BlockPosition,
@@ -731,12 +689,14 @@ namespace Vge.Entity.Player
             _RotationBody();
 
             // Подготовка анимационных триггеров
-            if (Movement.PrepareDataForDistinction())
+            if (Movement.Changed)
             {
                 // Отправить анимацию
-                _game.TrancivePacket(new PacketC0APlayerAnimation(Movement.GetMoving()));
+                _game.TrancivePacket(new PacketC0APlayerAnimation(Movement.Flags));
                 // Задать анимацию
-                Render.Trigger.SetAnimation(Movement.GetMoving());
+                Render.SetMovingFlags(Movement.Flags);
+
+                Console.WriteLine("Flags: " + Movement.Flags);
 
                 // Зачистить
                 Movement.UpdateAfter();

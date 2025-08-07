@@ -554,7 +554,6 @@ namespace Vge.Entity.Model
                     : sLoop.Equals(Cte.Hold) ? ModelLoop.Hold : ModelLoop.Loop,
                     animations[i].GetFloat(Cte.Length),
                     animations[i].GetInt(Cte.StartDelay)
-                    
                );
 
                 // Массив элементов анимаций
@@ -624,9 +623,10 @@ namespace Vge.Entity.Model
                 animationData = animationDatas[i1];
                 for (i2 = 0; i2 < count2; i2++)
                 {
-                    if (animationData.Name.Equals(_animations[i2].Name))
+                    if (animationData.Animation.Equals(_animations[i2].Name))
                     {
-                        list.Add(_animations[i2].CreateModelAnimationClip(_amountBoneIndex, animationData));
+                        list.Add(_animations[i2].CreateModelAnimationClip(
+                            _alias, animationData.Code, _amountBoneIndex, animationData));
                     }
                 }
             }

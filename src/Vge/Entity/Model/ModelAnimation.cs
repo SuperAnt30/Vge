@@ -10,7 +10,7 @@ namespace Vge.Entity.Model
     public class ModelAnimation
     {
         /// <summary>
-        /// Имя анимации из Blockbench
+        /// Имя клипа в Blockbanche
         /// </summary>
         public readonly string Name;
         /// <summary>
@@ -44,9 +44,9 @@ namespace Vge.Entity.Model
         /// Создать модель отдельного анимационного клипа
         /// </summary>
         /// <param name="amountBoneIndex">Количество костей</param>
-        public ModelAnimationClip CreateModelAnimationClip(byte amountBoneIndex, AnimationData animationData)
-            => new ModelAnimationClip(Name, _loop, _length * 1000f, _timeMix,
-                animationData.Speed, _GetBoneAnimationClip(amountBoneIndex, animationData));
+        public ModelAnimationClip CreateModelAnimationClip(string alias, string code, byte amountBoneIndex, AnimationData animationData)
+            => new ModelAnimationClip(alias, code, _loop, _length * 1000f, _timeMix,
+                animationData, _GetBoneAnimationClip(amountBoneIndex, animationData));
 
         /// <summary>
         /// Сгенерировать cписки ключевых кадров для каждой кости скелета
@@ -98,8 +98,7 @@ namespace Vge.Entity.Model
             }
             positionFrames.Sort();
             orientationFrames.Sort();
-            return new BoneAnimationChannel(Name, weight,
-                positionFrames.ToArray(), orientationFrames.ToArray());
+            return new BoneAnimationChannel(weight, positionFrames.ToArray(), orientationFrames.ToArray());
         }
 
         public override string ToString() => Name + " " + _bones.Count;

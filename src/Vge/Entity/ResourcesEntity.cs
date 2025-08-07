@@ -32,6 +32,10 @@ namespace Vge.Entity
         /// </summary>
         public bool IsAnimation { get; private set; }
         /// <summary>
+        /// Только двигаться для тригерров анимации, вместо Forward, Back, Left, Right.
+        /// </summary>
+        public bool OnlyMove { get; private set; }
+        /// <summary>
         /// Массив костей скелета
         /// </summary>
         public Bone[] Bones { get; private set; }
@@ -148,8 +152,10 @@ namespace Vge.Entity
                             for (int i = 0; i < animations.Length; i++)
                             {
                                 AnimationData animationData = new AnimationData(
-                                    animations[i].GetString(Cte.Name),
-                                    animations[i].GetFloat(Cte.AnimationSpeed)
+                                    animations[i].GetString(Cte.Code),
+                                    animations[i].GetString(Cte.Animation),
+                                    animations[i].GetFloat(Cte.AnimationSpeed),
+                                    animations[i].GetArray(Cte.TriggeredBy).ToArrayString()
                                 );
 
                                 if (animations[i].IsKey(Cte.ElementWeight))
@@ -171,10 +177,11 @@ namespace Vge.Entity
                             Scale = json.GetFloat();
                             if (Scale == 0) Scale = 1;
                         }
-                        else if (json.IsKey(Ctb.Texture)) _indexTexture = (ushort)json.GetInt();
+                        else if (json.IsKey(Cte.TextureId)) _indexTexture = (ushort)json.GetInt();
+                        else if (json.IsKey(Cte.OnlyMove)) OnlyMove = json.GetBool();
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     throw new Exception(Sr.GetString(Sr.ErrorReadJsonEntityStat, Alias));
                 }

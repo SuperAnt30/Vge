@@ -8,55 +8,53 @@ namespace Vge.Entity
     public class TriggerAnimation
     {
         /// <summary>
-        /// Прыжок
+        /// Было ли изменение
         /// </summary>
-        private bool _jump;
+        public bool Changed { get; private set; }
+        /// <summary>
+        /// Состояние когда сущность не стоит на земле, парит в воздухе
+        /// </summary>
+        public bool Levitate { get; private set; }
+        /// <summary>
+        /// Состояние когда сущность находится в воде, для состояния плавания
+        /// </summary>
+        public bool Water { get; private set; }
+        /// <summary>
+        /// Состояние когда сущность соприкосается с элементом лазить по вертикали
+        /// </summary>
+        public bool Climb { get; private set; }
+
         /// <summary>
         /// Тип байт данных общего перемещения
+        /// FBLRSnJSp
+        /// </summary>
+        private byte _movingWork;
+        
+        /// <summary>
+        /// Задать состояние в воздухе
+        /// </summary>
+        public void SetLevitate(bool value)
+        {
+            Levitate = value;
+            Changed = true;
+        }
+
+        /// <summary>
+        /// Задать байт флагов анимации движения
         /// FBLRSnSp
         /// </summary>
-        private byte _moving;
-        /// <summary>
-        /// Предыдущее значение
-        /// </summary>
-        private byte _movingPrev;
-
-        /// <summary>
-        /// Получить байт данных общего перемещения
-        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte GetMoving() => _moving;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetAnimation(byte moving) => _moving = moving;
-
-        /// <summary>
-        /// Подготовить удаление
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PrepareRemoved() => _moving = (byte)(_movingPrev & ~_moving);
-
-        /// <summary>
-        /// Подготовить Добавление
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PrepareAddendum() => _moving = (byte)(_moving & ~_movingPrev);
-
-        /// <summary>
-        /// Было ли изменение с предыдущим значением
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsChanged() => _moving != _movingPrev;
-
-        /// <summary>
-        /// Обновить данные в конце после отправки данных игрового такта
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdatePrev()
+        public void SetMovingFlags(byte moving)
         {
-            _movingPrev = _moving;
-            _jump = false;
+            _movingWork = moving;
+            Changed = true;
         }
+
+        /// <summary>
+        /// Выполнено, данные в конце после отправки данных игрового такта
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Done() => Changed = false;
 
         /// <summary>
         /// Очистить, предать в исходное положение
@@ -64,51 +62,16 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
-            _moving = 0;
-            _jump = false;
+            _movingWork = 0;
+            Levitate = Water = Climb = false;
+            Changed = true;
         }
 
         /// <summary>
-        /// Задать прыжок
+        /// Полностью без движения, все значение пустые
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Jump() => _jump = true;
-        /// <summary>
-        /// Было ли прыжок
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsJump() => _jump;
-
-        /// <summary>
-        /// Задать перемещение вперёд
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Forward(bool value) => _SetFlag(0, value);
-        /// <summary>
-        /// Задать перемещение назад
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Back(bool value) => _SetFlag(1, value);
-        /// <summary>
-        /// Задать шаг влево
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void StrafeLeft(bool value) => _SetFlag(2, value);
-        /// <summary>
-        /// Задать шаг вправо
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void StrafeRight(bool value) => _SetFlag(3, value);
-        /// <summary>
-        /// Задать присесть
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Sneak(bool value) => _SetFlag(4, value);
-        /// <summary>
-        /// Задать ускорение
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Sprinting(bool value) => _SetFlag(5, value);
+        public bool IsIdleAll() => _movingWork == 0;
 
         /// <summary>
         /// Было ли перемещение вперёд
@@ -136,26 +99,31 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsSneak() => _GetFlag(4);
         /// <summary>
+        /// Было ли прыжок
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsJump() => _GetFlag(5);
+        /// <summary>
         /// Было ли ускорение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSprinting() => _GetFlag(5);
-
+        public bool IsSprinting() => _GetFlag(6);
         /// <summary>
-        /// Задать значение бита по флагу
+        /// Горизонтальное перемещение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SetFlag(int flag, bool value)
-        {
-            if (value) _moving = (byte)(_moving | 1 << flag);
-            else _moving = (byte)(_moving & ~(1 << flag));
-        }
+        public bool IsMove() => (_movingWork & 0xF) != 0;
+        /// <summary>
+        /// Имеется ли сейчас движение только стрейф, без движения вперёд или назад или бездействия
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsMovingStrafe() => (_movingWork & 3) == 0 && ((_movingWork >> 2) & 3) != 0;
 
         /// <summary>
         /// Получить значение бита по флагу
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool _GetFlag(int flag) => (_moving & 1 << flag) != 0;
+        private bool _GetFlag(int flag) => (_movingWork & 1 << flag) != 0;
 
         public override string ToString() => (IsForward() ? "F" : "")
             + (IsBack() ? "B" : "")
@@ -163,6 +131,6 @@ namespace Vge.Entity
             + (IsStrafeRight() ? "R" : "")
             + (IsSneak() ? "Sn" : "")
             + (IsSprinting() ? "Sp" : "")
-            + (_jump ? "Jump" : "");
+            + (IsJump() ? "J" : "");
     }
 }
