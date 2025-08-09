@@ -685,9 +685,6 @@ namespace Vge.Entity.Player
                 }
             }
 
-            // Поворот тела от поворота головы или движения
-            _RotationBody();
-
             // Подготовка анимационных триггеров
             if (Movement.Changed)
             {
@@ -696,11 +693,14 @@ namespace Vge.Entity.Player
                 // Задать анимацию
                 Render.SetMovingFlags(Movement.Flags);
 
-                Console.WriteLine("Flags: " + Movement.Flags);
+               // Console.WriteLine("Flags: " + Movement.Flags);
 
                 // Зачистить
                 Movement.UpdateAfter();
             }
+
+            // Поворот тела от поворота головы или движения
+            RotationBody();
 
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)

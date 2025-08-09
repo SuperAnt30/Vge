@@ -136,61 +136,9 @@ namespace Vge.Entity.Render
         {
             base.UpdateClient(world, deltaTime);
 
-            if (!_trigger.Levitate)
-            {
-                if (!Entity.OnGround) _trigger.SetLevitate(true);
-            }
-            else
-            {
-                if (Entity.OnGround)
-                {
-                    _trigger.SetLevitate(false);
-                }  
-            }
+            _AnimationByMotion();
 
-            // Animation
-            if (_trigger.Changed)
-            {
-                //Console.Write(_trigger + _trigger.GetMove().ToString());
-
-                // Что убрать
-                // Подготовка, чтоб понять, что отключилось
-                // _trigger.PrepareRemoved();
-
-                // bool idle = _trigger.IsIdleAll();
-
-                // Название клипа, который надо выключить
-                //string nameClipStop = _GetNameClipByTrigger();
-                //Console.Write(" remov: " + _trigger + _trigger.GetMove().ToString());
-                //if (nameClipStop != "") RemoveClip(nameClipStop);
-
-                //Console.Write(" remov: " + _trigger.ActiveClip);
-                //RemoveClip(_trigger.ActiveClip);
-
-                //if (_trigger.IsSneak()) RemoveClip("AttackRight");
-
-                // Подготовка, чтоб понять, что добавить
-                //_trigger.PrepareAddendum();
-
-                // Название клипа, который надо включить
-                EnumEntityActivity clipStart = _GetNameClipByTrigger();
-               // Console.Write(" add: " + _trigger + _trigger.GetMove().ToString());
-
-                if (clipStart != _activity)
-                {
-                    Console.Write(" remov: " + _activeClip + " add: " + clipStart);
-                    RemoveClip(_activeClip);
-                    AddClipActivity(clipStart);
-                }
-
-                 Console.WriteLine(" tick: " + world.GetTickCounter());
-                // Другие слои тригерров
-               
-
-                // Обновить данные в конце после отправки данных игрового такта
-                _trigger.Done();
-            }
-
+            
             // Временно клик
             if (Entity is PlayerClientOwner playerClient && playerClient.TestHandAction)
             {
@@ -245,46 +193,72 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
-        /// Получить имя клипа по триггеру
+        /// Анимация по движению
         /// </summary>
-        private EnumEntityActivity _GetNameClipByTrigger()
+        private void _AnimationByMotion()
         {
-            EnumEntityActivity clip;
-
-            if (_trigger.IsMove())
+            // Сразу определяем смену доп параметров сущности
+            if (!_trigger.Levitate)
             {
-                // Что-то имеется, проверяем сразу на движение
-                if (_resourcesEntity.OnlyMove)
-                {
-                    // Только движение
-                    //clip = "Move";
-                    clip = EnumEntityActivity.Move;
-                }
-                else
-                {
-                    if (_trigger.IsMovingStrafe())
-                    {
-                        // Только стрейф
-                        clip = _trigger.IsStrafeLeft() ? EnumEntityActivity.Left : EnumEntityActivity.Right;
-                    }
-                    else
-                    {
-                        // Вперёд и назад
-                        clip = _trigger.IsForward() ? EnumEntityActivity.Forward : EnumEntityActivity.Back;
-                    }
-                }
+                if (!Entity.OnGround) _trigger.SetLevitate(true);
             }
             else
             {
-                clip = EnumEntityActivity.Idle;
+                if (Entity.OnGround)
+                {
+                    _trigger.SetLevitate(false);
+                }
             }
 
-            if (_trigger.Levitate) clip |= EnumEntityActivity.Levitate;
-            else if (_trigger.IsSneak()) clip |= EnumEntityActivity.Sneak;
+            // Если было изменение
+            if (_trigger.Changed)
+            {
+                // Проверяем текущее состояние
+                EnumEntityActivity clip;
+                if (_trigger.IsMove())
+                {
+                    // Что-то имеется, проверяем сразу на движение
+                    if (_resourcesEntity.OnlyMove)
+                    {
+                        // Только движение
+                        clip = EnumEntityActivity.Move;
+                    }
+                    else
+                    {
+                        if (_trigger.IsMovingStrafe())
+                        {
+                            // Только стрейф
+                            clip = _trigger.IsStrafeLeft() ? EnumEntityActivity.Left : EnumEntityActivity.Right;
+                        }
+                        else
+                        {
+                            // Вперёд и назад
+                            clip = _trigger.IsForward() ? EnumEntityActivity.Forward : EnumEntityActivity.Back;
+                        }
+                    }
+                }
+                else
+                {
+                    clip = EnumEntityActivity.Idle;
+                }
 
-           // if (clip == EnumEntityActivity.None) return EnumEntityActivity.Idle;
+                if (_trigger.IsSprinting()) clip |= EnumEntityActivity.Sprint;
+                if (_trigger.Levitate) clip |= EnumEntityActivity.Levitate;
+                else if (_trigger.IsSneak())
+                {
+                    // У ливитации положения сидя не должно быть
+                    clip |= EnumEntityActivity.Sneak;
+                }
 
-            return clip;
+                // Если клип поменялся
+                if (clip != _activity)
+                {
+                    RemoveClip(_activeClip);
+                    AddClipActivity(clip);
+                }
+                // Обновить данные в конце после отправки данных игрового такта
+                _trigger.Done();
+            }
         }
 
         int fffd = 0;//100;

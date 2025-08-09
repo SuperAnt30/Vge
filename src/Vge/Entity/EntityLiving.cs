@@ -163,10 +163,10 @@ namespace Vge.Entity
         /// Запускается ТОЛЬКО на клиенте, где есть Render
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _RotationBody()
+        public void RotationBody(bool notCheck = false)
         {
             if (SolidHeadWithBody) _RotationBodyEqualHead();
-            else _RotationBodyFromHead();
+            else _RotationBodyFromHead(notCheck);
         }
 
         /// <summary>
@@ -183,9 +183,9 @@ namespace Vge.Entity
         /// Поворот тела от поворота головы или движения.
         /// Для сущностей где голова вращается отдельно от тела.
         /// </summary>
-        private void _RotationBodyFromHead()
+        private void _RotationBodyFromHead(bool notCheck)
         {
-            if (PosX != PosPrevX || PosZ != PosPrevZ
+            if (notCheck || PosX != PosPrevX || PosZ != PosPrevZ
                 || RotationYaw != RotationPrevYaw || _rotationYawBody != _rotationPrevYawBody)
             {
                 _rotationPrevYawBody = _rotationYawBody;

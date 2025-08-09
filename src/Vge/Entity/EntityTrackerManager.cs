@@ -54,15 +54,16 @@ namespace Vge.Entity
             {
                 _AddEntityToTracker(entity, 64);// 256);
 
-                EntityTracker trackerEntry;
-                for (int i = 0; i < _trackedEntities.Count; i++)
-                {
-                    trackerEntry = _trackedEntities.GetAt(i) as EntityTracker;
-                    if (trackerEntry != null)
-                    {
-                        trackerEntry.UpdatePlayerEntity(playerServer);
-                    }
-                }
+                // Fix, это нельзя, так-как вблизи не видны были игроки
+                //EntityTracker trackerEntry;
+                //for (int i = 0; i < _trackedEntities.Count; i++)
+                //{
+                //    trackerEntry = _trackedEntities.GetAt(i);
+                //    if (trackerEntry != null)
+                //    {
+                //        trackerEntry.UpdatePlayerEntity("Add", playerServer);
+                //    }
+                //}
             }
             //else if (entity is EntityItem)
             //{
@@ -85,7 +86,7 @@ namespace Vge.Entity
             {
                 for (int i = 0; i < _trackedEntities.Count; i++)
                 {
-                    trackerEntry = _trackedEntities.GetAt(i) as EntityTracker;
+                    trackerEntry = _trackedEntities.GetAt(i);
                     if (trackerEntry != null)
                     {
                         trackerEntry.RemoveTrackedPlayerSymmetric(playerServer);
@@ -93,7 +94,7 @@ namespace Vge.Entity
                 }
             }
 
-            trackerEntry = _trackedEntities.Get(entity.Id) as EntityTracker;
+            trackerEntry = _trackedEntities.Get(entity.Id);
 
             if (trackerEntry != null)
             {

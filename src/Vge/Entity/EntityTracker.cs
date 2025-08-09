@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Network;
 using Vge.Network.Packets.Server;
@@ -25,7 +26,7 @@ namespace Vge.Entity
         public bool FlagUpdatePlayerEntity { get; private set; }
         
         /// <summary>
-        /// Счётчитк обновлений
+        /// Счётчитк обновлений конкретной сущности
         /// </summary>
         public int UpdateCounter { get; private set; }
 

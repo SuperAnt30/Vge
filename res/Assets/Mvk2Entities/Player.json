@@ -5,7 +5,7 @@
     #Model: "Robinson",
     Model: "Player",
     TextureId: 0,
-    #OnlyMove: true,
+    OnlyMove: true,
     BoneCloth:
     {
         Mascot: ["Body"],
@@ -33,16 +33,22 @@
             TriggeredBy: ["Idle"]
         },
         { 
-            Code: "SneakForward",
-            Animation: "Sneak",
-            AnimationSpeed: 0.3,
-            TriggeredBy: ["Sneak", "Forward"]
-        },
-        { 
-            Code: "Sneak",
+            Code: "SneakIdle",
             Animation: "Sneak",
             AnimationSpeed: 0.3,
             TriggeredBy: ["Sneak", "Idle"]
+        },
+        { 
+            Code: "Sneak",
+            Animation: "SneakWalk",
+            AnimationSpeed: 0.55,
+            TriggeredBy: ["Sneak", "Forward"]
+        },
+        { 
+            Code: "mSneak",
+            Animation: "SneakWalk",
+            AnimationSpeed: 0.55,
+            TriggeredBy: ["Sneak", "Move"]
         },
         { 
             Code: "Levitate",
@@ -51,10 +57,28 @@
             TriggeredBy: ["Levitate", "Idle"]
         },
         { 
-            Code: "LevitateForward",
+            Code: "LevitateF",
             Animation: "Levitate",
             AnimationSpeed: 0.5,
             TriggeredBy: ["Levitate", "Forward"]
+        },
+        { 
+            Code: "mLevitateF",
+            Animation: "Levitate",
+            AnimationSpeed: 0.5,
+            TriggeredBy: ["Levitate", "Move"]
+        },
+        { 
+            Code: "LevitateRun",
+            Animation: "Levitate",
+            AnimationSpeed: 1.0,
+            TriggeredBy: ["Levitate", "Forward", "Sprint"]
+        },
+        { 
+            Code: "mLevitateRun",
+            Animation: "Levitate",
+            AnimationSpeed: 1.0,
+            TriggeredBy: ["Levitate", "Move", "Sprint"]
         },
         {
             Code: "Walk",
@@ -65,6 +89,24 @@
             TriggeredBy: ["Forward"]
         },
         {
+            Code: "mWalk",
+            Animation: "Walk",
+            AnimationSpeed: 1.4,
+            TriggeredBy: ["Move"]
+        },
+        {
+            Code: "mRun",
+            Animation: "Walk",
+            AnimationSpeed: 2.15,
+            TriggeredBy: ["Move", "Sprint"]
+        },
+        {
+            Code: "Run",
+            Animation: "Walk",
+            AnimationSpeed: 2.15,
+            TriggeredBy: ["Forward", "Sprint"]
+        },
+        {
             Code: "Back",
             Animation: "Back",
             AnimationSpeed: 1.8,
@@ -72,8 +114,8 @@
         },
         {
             Code: "Left",
-            Animation: "Left",
-            AnimationSpeed: 0.5,
+            Animation: "Walk",
+            AnimationSpeed: 1.0,
             TriggeredBy: ["Left"]
         },
         {
@@ -92,9 +134,6 @@
                 ForearmRight: 80,
                 HandRight: 80
             }
-        },
-        { 
-            Name: "Chop",
         }
     ]
 }

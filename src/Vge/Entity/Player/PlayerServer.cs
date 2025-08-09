@@ -325,6 +325,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public void PacketPlayerPosition(PacketC04PlayerPosition packet)
         {
+            OnGround = packet.OnGround;
             if (packet.IsPosition)
             {
                 PosX = packet.X;

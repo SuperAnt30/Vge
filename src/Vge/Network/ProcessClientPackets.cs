@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System;
+using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
@@ -238,15 +239,17 @@ namespace Vge.Network
             if (Game.Player.IdWorld == packet.IdWorld)
             {
                 // После проверки, что оба в одном мире
-
                 PlayerClient player = new PlayerClient(Game, 
                     packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
+
                 player.PosServerX = player.PosPrevX = player.PosX = packet.X;
                 player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
                 player.PosServerZ = player.PosPrevZ = player.PosZ = packet.Z;
-                player.RotationPrevYaw = player.RotationYaw = packet.Yaw;
-                player.RotationPrevPitch = player.RotationPitch = packet.Pitch;
+
+                player.RotationServerYaw = player.RotationPrevYaw = player.RotationYaw = packet.Yaw;
+                player.RotationServerPitch = player.RotationPrevPitch = player.RotationPitch = packet.Pitch;
                 player.OnGround = packet.OnGround;
+                player.RotationBody(true);
 
                 //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
                 //ArrayList list = packet.GetList();
@@ -265,6 +268,7 @@ namespace Vge.Network
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
             EntityBase entity = Ce.Entities.CreateEntityClient(packet.IndexEntity, Game.WorldRender.Entities);
+
             entity.SetEntityId(packet.Index);
             entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
             entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;
