@@ -5,7 +5,6 @@ using Vge.Entity.Model;
 using Vge.Entity.Render;
 using Vge.Entity.Shape;
 using Vge.Json;
-using Vge.World.Block;
 
 namespace Vge.Entity
 {
@@ -35,6 +34,10 @@ namespace Vge.Entity
         /// Только двигаться для тригерров анимации, вместо Forward, Back, Left, Right.
         /// </summary>
         public bool OnlyMove { get; private set; }
+        /// <summary>
+        /// Имеются ли у модели глаза и возможно рот
+        /// </summary>
+        public bool EyeLips { get; private set; }
         /// <summary>
         /// Массив костей скелета
         /// </summary>
@@ -151,8 +154,9 @@ namespace Vge.Entity
                             animationDatas = new AnimationData[animations.Length];
                             for (int i = 0; i < animations.Length; i++)
                             {
-                                AnimationData animationData = new AnimationData(
-                                    animations[i].GetString(Cte.Code),
+                                string code = animations[i].GetString(Cte.Code);
+                                if (code == "") code = i.ToString();
+                                AnimationData animationData = new AnimationData(code,
                                     animations[i].GetString(Cte.Animation),
                                     animations[i].GetFloat(Cte.AnimationSpeed),
                                     animations[i].GetArray(Cte.TriggeredBy).ToArrayString()
@@ -179,6 +183,7 @@ namespace Vge.Entity
                         }
                         else if (json.IsKey(Cte.TextureId)) _indexTexture = (ushort)json.GetInt();
                         else if (json.IsKey(Cte.OnlyMove)) OnlyMove = json.GetBool();
+                        else if (json.IsKey(Cte.EyeLips)) EyeLips = json.GetBool();
                     }
                 }
                 catch (Exception ex)

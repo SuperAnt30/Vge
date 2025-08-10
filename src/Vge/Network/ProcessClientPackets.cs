@@ -242,14 +242,9 @@ namespace Vge.Network
                 PlayerClient player = new PlayerClient(Game, 
                     packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
 
-                player.PosServerX = player.PosPrevX = player.PosX = packet.X;
-                player.PosServerY = player.PosPrevY = player.PosY = packet.Y;
-                player.PosServerZ = player.PosPrevZ = player.PosZ = packet.Z;
-
-                player.RotationServerYaw = player.RotationPrevYaw = player.RotationYaw = packet.Yaw;
-                player.RotationServerPitch = player.RotationPrevPitch = player.RotationPitch = packet.Pitch;
+                player.SpawnPosition(packet.X, packet.Y, packet.Z);
                 player.OnGround = packet.OnGround;
-                player.RotationBody(true);
+                player.SpawnRotation(packet.Yaw, packet.Pitch);
 
                 //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
                 //ArrayList list = packet.GetList();
@@ -270,14 +265,11 @@ namespace Vge.Network
             EntityBase entity = Ce.Entities.CreateEntityClient(packet.IndexEntity, Game.WorldRender.Entities);
 
             entity.SetEntityId(packet.Index);
-            entity.PosServerX = entity.PosPrevX = entity.PosX = packet.X;
-            entity.PosServerY = entity.PosPrevY = entity.PosY = packet.Y;
-            entity.PosServerZ = entity.PosPrevZ = entity.PosZ = packet.Z;
+            entity.SpawnPosition(packet.X, packet.Y, packet.Z);
+            entity.OnGround = packet.OnGround;
             if (entity is EntityLiving entityLiving)
             {
-                entityLiving.RotationPrevYaw = entityLiving.RotationYaw = packet.Yaw;
-                // YawHead подумать!
-                entityLiving.RotationPrevPitch = entityLiving.RotationPitch = packet.Pitch;
+                entityLiving.SpawnRotation(packet.Yaw, packet.Pitch);
             }
             Game.World.SpawnEntityInWorld(entity);
         }

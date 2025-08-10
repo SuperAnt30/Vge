@@ -16,6 +16,7 @@ namespace Vge.Network.Packets.Server
         public float Z { get; private set; }
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
+        public bool OnGround { get; private set; }
 
         private bool _isLiving;
 
@@ -26,6 +27,7 @@ namespace Vge.Network.Packets.Server
             X = entity.PosX;
             Y = entity.PosY;
             Z = entity.PosZ;
+            OnGround = entity.OnGround;
 
             if (entity is EntityLiving entityLiving)
             {
@@ -47,6 +49,7 @@ namespace Vge.Network.Packets.Server
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
+            OnGround = stream.Bool();
             _isLiving = stream.Bool();
             if (_isLiving)
             {
@@ -62,6 +65,7 @@ namespace Vge.Network.Packets.Server
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
+            stream.Bool(OnGround);
             stream.Bool(_isLiving);
             if (_isLiving)
             {

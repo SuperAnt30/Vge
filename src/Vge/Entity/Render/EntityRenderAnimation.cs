@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
@@ -115,7 +114,7 @@ namespace Vge.Entity.Render
             {
                 _animations[key].ResetStop();
             }
-            else if (_animations.ContainsKey(key)) // TODO::2025-07-30 надо продумать, чтоб тут всегда было
+            else// if (_animations.ContainsKey(key)) // TODO::2025-07-30 надо продумать, чтоб тут всегда было
             {
                 _animationClips.Add(key);
                 _animations[key].Reset(speed);
@@ -136,6 +135,7 @@ namespace Vge.Entity.Render
         {
             base.UpdateClient(world, deltaTime);
 
+            // Анимация по движению
             _AnimationByMotion();
 
             
@@ -156,13 +156,6 @@ namespace Vge.Entity.Render
                 }
             }
 
-            // TEST
-            timeeye++;
-            if (timeeye > 50) timeeye = 0;
-            timelips++;
-            if (timelips > 8) timelips = 0;
-            timelipsSmile++;
-            if (timelipsSmile > 150) timelipsSmile = 0;
            // fffd++;
             if (_entityLayerRender != null)
             {
@@ -191,6 +184,9 @@ namespace Vge.Entity.Render
                 }
             }
         }
+
+        int fffd = 0;//100;
+        bool fffb = true;
 
         /// <summary>
         /// Анимация по движению
@@ -261,14 +257,6 @@ namespace Vge.Entity.Render
             }
         }
 
-        int fffd = 0;//100;
-        bool fffb = true;
-
-        int timeeye = 0;
-
-        int timelipsSmile = 0;
-        int timelips = 0;
-
         /// <summary>
         /// Обновить рассчитать матрицы для кадра
         /// </summary>
@@ -332,12 +320,6 @@ namespace Vge.Entity.Render
             float ppfy = Entities.Player.PosFrameY;
             float ppfz = Entities.Player.PosFrameZ;
 
-            int eye = (timeeye > 5) ? 1 : 0; // глаза
-            int lips = 0; // губы
-            if (timelipsSmile > 130) lips = 2; // улыбка
-            else if (timelipsSmile > 70) lips = (timelips > 4) ? 1 : 0; // балтает
-            int eyeLips = lips << 1 | eye;
-
             // Заносим в шейдор
             Entities.ShsEntity.UniformData(
                 Entity.GetPosFrameX(timeIndex) - ppfx,
@@ -345,19 +327,23 @@ namespace Vge.Entity.Render
                 Entity.GetPosFrameZ(timeIndex) - ppfz,
                 _lightBlock, _lightSky,
                 _resourcesEntity.GetDepthTextureAndSmall(),
-                _resourcesEntity.GetIsAnimation(), eyeLips
+                _resourcesEntity.GetIsAnimation(), GetEyeLips()
                 );
 
-            if (_resourcesEntity.IsAnimation)
-            {
-                Entities.ShsEntity.UniformData(_bufferBonesTransforms);
-            }
+            Entities.ShsEntity.UniformData(_bufferBonesTransforms);
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
 
             // Если имеются слои, рисуем сетку слоёв
             _entityLayerRender?.MeshDraw();
         }
+
+        /// <summary>
+        /// Получить параметр для шейдора, на состояния глаз и рта
+        /// Значение 1 это открыты глаза, закрыт рот.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual int GetEyeLips() => 1;
 
         #region Skeletion Matrix
 

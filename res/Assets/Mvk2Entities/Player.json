@@ -6,6 +6,7 @@
     Model: "Player",
     TextureId: 0,
     OnlyMove: true,
+    EyeLips: true,
     BoneCloth:
     {
         Mascot: ["Body"],
@@ -33,55 +34,46 @@
             TriggeredBy: ["Idle"]
         },
         { 
-            Code: "SneakIdle",
             Animation: "Sneak",
             AnimationSpeed: 0.3,
             TriggeredBy: ["Sneak", "Idle"]
         },
         { 
-            Code: "Sneak",
             Animation: "SneakWalk",
             AnimationSpeed: 0.55,
             TriggeredBy: ["Sneak", "Forward"]
         },
         { 
-            Code: "mSneak",
             Animation: "SneakWalk",
             AnimationSpeed: 0.55,
             TriggeredBy: ["Sneak", "Move"]
         },
         { 
-            Code: "Levitate",
             Animation: "Levitate",
             AnimationSpeed: 0.3,
             TriggeredBy: ["Levitate", "Idle"]
         },
         { 
-            Code: "LevitateF",
             Animation: "Levitate",
             AnimationSpeed: 0.5,
             TriggeredBy: ["Levitate", "Forward"]
         },
         { 
-            Code: "mLevitateF",
             Animation: "Levitate",
             AnimationSpeed: 0.5,
             TriggeredBy: ["Levitate", "Move"]
         },
         { 
-            Code: "LevitateRun",
             Animation: "Levitate",
             AnimationSpeed: 1.0,
             TriggeredBy: ["Levitate", "Forward", "Sprint"]
         },
         { 
-            Code: "mLevitateRun",
             Animation: "Levitate",
             AnimationSpeed: 1.0,
             TriggeredBy: ["Levitate", "Move", "Sprint"]
         },
         {
-            Code: "Walk",
             Animation: "Walk",
             #AnimationSpeed: 2.15,
             AnimationSpeed: 1.4,
@@ -89,37 +81,31 @@
             TriggeredBy: ["Forward"]
         },
         {
-            Code: "mWalk",
             Animation: "Walk",
             AnimationSpeed: 1.4,
             TriggeredBy: ["Move"]
         },
         {
-            Code: "mRun",
             Animation: "Walk",
             AnimationSpeed: 2.15,
             TriggeredBy: ["Move", "Sprint"]
         },
         {
-            Code: "Run",
             Animation: "Walk",
             AnimationSpeed: 2.15,
             TriggeredBy: ["Forward", "Sprint"]
         },
         {
-            Code: "Back",
             Animation: "Back",
             AnimationSpeed: 1.8,
             TriggeredBy: ["Back"]
         },
         {
-            Code: "Left",
             Animation: "Walk",
             AnimationSpeed: 1.0,
             TriggeredBy: ["Left"]
         },
         {
-            Code: "Right",
             Animation: "Right",
             AnimationSpeed: 1.0,
             TriggeredBy: ["Right"]
@@ -128,7 +114,6 @@
             Code: "AttackRight",
             Animation: "AttackRight",
             AnimationSpeed: 1.0,
-            #Trigger: "Attack",
             ElementWeight: {
                 ArmRight: 80,
                 ForearmRight: 80,

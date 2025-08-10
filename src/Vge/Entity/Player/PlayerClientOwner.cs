@@ -700,7 +700,7 @@ namespace Vge.Entity.Player
             }
 
             // Поворот тела от поворота головы или движения
-            RotationBody();
+            _RotationBody();
 
             if (_countUnusedFrustumCulling > 0
                 && ++_countTickLastFrustumCulling > Ce.CheckTickInitFrustumCulling)

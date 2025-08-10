@@ -70,7 +70,7 @@ namespace Vge.Entity.Player
             UpdatePositionServer();
 
             // Поворот тела от поворота головы или движения
-            RotationBody();
+            _RotationBody();
 
             Render.UpdateClient(world, deltaTime);
         }

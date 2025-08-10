@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NVorbis.Contracts;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Physics;
@@ -169,8 +170,10 @@ namespace Vge.Entity
         {
             IndexEntity = index;
             ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(IndexEntity);
-            Render = resourcesEntity.IsAnimation 
-                ? new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
+            Render = resourcesEntity.IsAnimation
+                ? resourcesEntity.EyeLips 
+                    ? new EntityRenderEyeLips(this, entitiesRenderer, resourcesEntity)
+                    : new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
                 : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
             _InitMetaData();
             _InitSize();
@@ -204,12 +207,6 @@ namespace Vge.Entity
         protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
 
         #endregion
-
-        /// <summary>
-        /// Задать индекс
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEntityId(int id) => Id = id;
 
         #region Методы для Position Chunk
 
@@ -345,7 +342,17 @@ namespace Vge.Entity
             PosY = PosServerY;
             PosZ = PosServerZ;
         }
-       
+
+        /// <summary>
+        /// Спавн сущности, первый пакет, позиция
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SpawnPosition(float x, float y, float z)
+        {
+            PosServerX = PosPrevX = PosX = x;
+            PosServerY = PosPrevY = PosY = y;
+            PosServerZ = PosPrevZ = PosZ = z;
+        }
 
         #endregion
 
@@ -504,12 +511,20 @@ namespace Vge.Entity
         #endregion
 
         /// <summary>
+        /// Задать индекс
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEntityId(int id) => Id = id;
+
+        /// <summary>
         /// Будет уничтожен следующим тиком
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetDead() => IsDead = true;
         /// <summary>
         /// Получить название для рендеринга
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual string GetName() => "";
 
         /// <summary>

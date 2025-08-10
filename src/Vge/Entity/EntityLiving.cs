@@ -163,7 +163,7 @@ namespace Vge.Entity
         /// Запускается ТОЛЬКО на клиенте, где есть Render
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RotationBody(bool notCheck = false)
+        protected void _RotationBody(bool notCheck = false)
         {
             if (SolidHeadWithBody) _RotationBodyEqualHead();
             else _RotationBodyFromHead(notCheck);
@@ -229,6 +229,17 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Спавн сущности, первый пакет, вращение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SpawnRotation(float yaw, float pitch)
+        {
+            RotationServerYaw = RotationPrevYaw = RotationYaw = yaw;
+            RotationServerPitch = RotationPrevPitch = RotationPitch = pitch;
+            _RotationBody(true);
+        }
+
+        /// <summary>
         /// Задать вращение для сущностей с AI
         /// </summary>
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -237,7 +248,6 @@ namespace Vge.Entity
         //    RotationYaw = yaw;
         //    RotationPitch = pitch;
         //    _RotationBody();
-        //    //Trigger = Look;
         //}
 
         #endregion
@@ -327,5 +337,7 @@ namespace Vge.Entity
         public virtual void Sitting() { }
 
         #endregion
+
+        
     }
 }
