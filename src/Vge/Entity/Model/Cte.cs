@@ -38,9 +38,9 @@
         /// </summary>
         public const string OnlyMove = "OnlyMove";
         /// <summary>
-        /// Имеются ли у модели глаза и возможно рот. (bool)
+        /// Интервал между морганием глаз в игровых тиках, если равно 0, значит нет глаз. (int)
         /// </summary>
-        public const string EyeLips = "EyeLips";
+        public const string BlinkEye = "BlinkEye";
 
         /// <summary>
         /// Имя клипа как ключ для программы, должны быть уникальны в одной сущности. (string)

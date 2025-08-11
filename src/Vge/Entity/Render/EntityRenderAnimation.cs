@@ -135,10 +135,27 @@ namespace Vge.Entity.Render
         {
             base.UpdateClient(world, deltaTime);
 
+            if (_trigger.Changed)
+            {
+                SetEyeOpen(!_trigger.IsSneak());
+
+                if (!Entity.OnGround)
+                {
+                    SetMouthState(EnumMouthState.Open);
+                }
+                else
+                {
+                    SetMouthState(_trigger.IsSneak() ? EnumMouthState.Speaks :
+                        _trigger.IsSprinting() ? EnumMouthState.Smile : EnumMouthState.Close);
+                }
+            }
+
             // Анимация по движению
             _AnimationByMotion();
 
             
+            
+
             // Временно клик
             if (Entity is PlayerClientOwner playerClient && playerClient.TestHandAction)
             {
@@ -327,7 +344,7 @@ namespace Vge.Entity.Render
                 Entity.GetPosFrameZ(timeIndex) - ppfz,
                 _lightBlock, _lightSky,
                 _resourcesEntity.GetDepthTextureAndSmall(),
-                _resourcesEntity.GetIsAnimation(), GetEyeLips()
+                _resourcesEntity.GetIsAnimation(), GetEyeMouth()
                 );
 
             Entities.ShsEntity.UniformData(_bufferBonesTransforms);
@@ -343,7 +360,7 @@ namespace Vge.Entity.Render
         /// Значение 1 это открыты глаза, закрыт рот.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual int GetEyeLips() => 1;
+        protected virtual int GetEyeMouth() => 1;
 
         #region Skeletion Matrix
 

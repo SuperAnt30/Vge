@@ -1,5 +1,4 @@
-﻿using NVorbis.Contracts;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Physics;
@@ -171,8 +170,8 @@ namespace Vge.Entity
             IndexEntity = index;
             ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(IndexEntity);
             Render = resourcesEntity.IsAnimation
-                ? resourcesEntity.EyeLips 
-                    ? new EntityRenderEyeLips(this, entitiesRenderer, resourcesEntity)
+                ? resourcesEntity.BlinkEye != 0
+                    ? new EntityRenderEyeMouth(this, entitiesRenderer, resourcesEntity)
                     : new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
                 : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
             _InitMetaData();

@@ -122,12 +122,12 @@ namespace Vge.Renderer.Shaders
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UniformData(float x, float y, float z, 
-            float lightBlock, float lightSky, float depth, float anim, int eyeLips)
+            float lightBlock, float lightSky, float depth, float anim, int eyeMouth)
         {
             _shderAction.SetUniform3("pos", x, y, z);
             _shderAction.SetUniform1("depth", depth);
             _shderAction.SetUniform1("anim", anim);
-            _shderAction.SetUniform1("eyeLips", eyeLips);
+            _shderAction.SetUniform1("eyeMouth", eyeMouth);
             if (!_flagActionDepthMap)
             {
                 // Свет для карты теней не нужен

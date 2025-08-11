@@ -120,7 +120,7 @@ namespace Vge.Entity.Model
                 Vertex[1].V = Vertex[2].V = v1;
 
                 // Формируем буфер
-                int param = modelCube.EyeLips << 8 | modelCube.BoneIndex;
+                int param = modelCube.EyeMouth << 8 | modelCube.BoneIndex;
 
                 // Нахождение нормали
                 Vector3 normal = Vertex[0].ToPosition();

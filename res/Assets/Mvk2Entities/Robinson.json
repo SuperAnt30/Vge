@@ -3,6 +3,7 @@
     Model: "Robinson",
     #Model: "skeleton"
     TextureId: 1,
+    BlinkEye: 20,
     Animations: [
         {
             Code: "Walk",

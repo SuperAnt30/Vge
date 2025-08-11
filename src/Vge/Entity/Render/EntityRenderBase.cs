@@ -45,6 +45,18 @@ namespace Vge.Entity.Render
         public virtual void RemoveClip(string key) { }
 
         /// <summary>
+        /// Задать состояние открытости глаз
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetEyeOpen(bool value) { }
+
+        /// <summary>
+        /// Задать состояние рта
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetMouthState(EnumMouthState value) { }
+
+        /// <summary>
         /// Задать байт флагов анимации движения
         /// FBLRSnSp
         /// </summary>

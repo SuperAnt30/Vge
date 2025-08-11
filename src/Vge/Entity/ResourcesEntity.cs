@@ -35,9 +35,9 @@ namespace Vge.Entity
         /// </summary>
         public bool OnlyMove { get; private set; }
         /// <summary>
-        /// Имеются ли у модели глаза и возможно рот
+        /// Интервал между морганием глаз в игровых тиках, если равно 0, значит нет глаз
         /// </summary>
-        public bool EyeLips { get; private set; }
+        public int BlinkEye { get; private set; }
         /// <summary>
         /// Массив костей скелета
         /// </summary>
@@ -183,7 +183,7 @@ namespace Vge.Entity
                         }
                         else if (json.IsKey(Cte.TextureId)) _indexTexture = (ushort)json.GetInt();
                         else if (json.IsKey(Cte.OnlyMove)) OnlyMove = json.GetBool();
-                        else if (json.IsKey(Cte.EyeLips)) EyeLips = json.GetBool();
+                        else if (json.IsKey(Cte.BlinkEye)) BlinkEye = json.GetInt();
                     }
                 }
                 catch (Exception ex)

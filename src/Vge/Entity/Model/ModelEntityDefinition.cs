@@ -29,15 +29,15 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Название куба открытых губ 
         /// </summary>
-        public const string NameCubeLipsOpen = "lipsOpen";
+        public const string NameCubeMouthOpen = "mouthOpen";
         /// <summary>
         /// Название куба закрытых губ
         /// </summary>
-        public const string NameCubeLipsClose = "lipsClose";
+        public const string NameCubeMouthClose = "mouthClose";
         /// <summary>
         /// Название куба улыбка губ
         /// </summary>
-        public const string NameCubeLipsSmile = "lipsSmile";
+        public const string NameCubeMouthSmile = "mouthSmile";
 
         /// <summary>
         /// Псевдоним

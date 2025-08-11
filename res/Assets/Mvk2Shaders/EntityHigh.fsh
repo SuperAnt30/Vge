@@ -3,7 +3,7 @@
 in vec2 a_light;
 in vec2 a_texCoord;
 in float a_depth;
-in float a_eyeLips;
+in float a_eyeMouth;
 
 out vec4 f_color;
 
@@ -16,7 +16,7 @@ uniform sampler2D depth_map;
 
 void main()
 {
-    if (a_eyeLips > 0) discard;
+    if (a_eyeMouth > 0) discard;
     float depth = a_depth;
     bool big = depth > 65535;
     if (big) depth -= 65536;

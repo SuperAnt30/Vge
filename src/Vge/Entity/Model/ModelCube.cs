@@ -61,9 +61,9 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly bool Visible;
         /// <summary>
-        /// Тип блока глаз 0-куб, 1-глаза закрыты, 2-глаза открыты, 3-губы закрыты, 4-губы открыты, 5-губы улыбка 
+        /// Тип блока глаз 0-куб, 1-глаза закрыты, 2-глаза открыты, 3-рот закрыт, 4-рот открыт, 5-рот улыбка 
         /// </summary>
-        public readonly byte EyeLips; 
+        public readonly byte EyeMouth; 
 
         public ModelCube(string uuid, string name, int width, int height, bool visible) : base(uuid, name)
         {
@@ -71,11 +71,11 @@ namespace Vge.Entity.Model
             Height = height;
             switch(name)
             {
-                case ModelEntityDefinition.NameCubeEyeClose: EyeLips = 1; Visible = true; break;
-                case ModelEntityDefinition.NameCubeEyeOpen: EyeLips = 2; Visible = true; break;
-                case ModelEntityDefinition.NameCubeLipsClose: EyeLips = 3; Visible = true; break;
-                case ModelEntityDefinition.NameCubeLipsOpen: EyeLips = 4; Visible = true; break;
-                case ModelEntityDefinition.NameCubeLipsSmile: EyeLips = 5; Visible = true; break;
+                case ModelEntityDefinition.NameCubeEyeClose: EyeMouth = 1; Visible = true; break;
+                case ModelEntityDefinition.NameCubeEyeOpen: EyeMouth = 2; Visible = true; break;
+                case ModelEntityDefinition.NameCubeMouthClose: EyeMouth = 3; Visible = true; break;
+                case ModelEntityDefinition.NameCubeMouthOpen: EyeMouth = 4; Visible = true; break;
+                case ModelEntityDefinition.NameCubeMouthSmile: EyeMouth = 5; Visible = true; break;
                 default: Visible = visible; break;
             }
         }

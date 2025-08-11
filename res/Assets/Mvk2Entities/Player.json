@@ -6,7 +6,7 @@
     Model: "Player",
     TextureId: 0,
     OnlyMove: true,
-    EyeLips: true,
+    BlinkEye: 70,
     BoneCloth:
     {
         Mascot: ["Body"],
