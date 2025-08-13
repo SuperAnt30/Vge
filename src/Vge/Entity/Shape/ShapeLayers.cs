@@ -29,7 +29,7 @@ namespace Vge.Entity.Shape
             _groups = groups;
 
             _definition = _definitionLevel = new ModelLayerDefinition(alias);
-            _definition.RunModelFromJson(jsonModel);
+            _definition.RunModelFromJson(jsonModel, true);
             _definitionLevel.TexturesUsed(_groups);
             Textures = _definition.GenTextures();
             DepthTextures = new int[Textures.Length];

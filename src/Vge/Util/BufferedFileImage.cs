@@ -50,5 +50,27 @@ namespace Vge.Util
                     bitmap.UnlockBits(bmpdata);
             }
         }
+
+        /// <summary>
+        /// Оставить половину сверху
+        /// </summary>
+        public static BufferedImage LeaveHalfOnTop(BufferedImage buffered)
+        {
+            int count = buffered.Buffer.Length / 2;
+            byte[] buffer = new byte[count];
+            Buffer.BlockCopy(buffered.Buffer, 0, buffer, 0, count);
+            return new BufferedImage(buffered.Width, buffered.Height / 2, buffer);
+        }
+
+        /// <summary>
+        /// Оставить половину снизу
+        /// </summary>
+        public static BufferedImage LeaveHalfOnBottom(BufferedImage buffered)
+        {
+            int count = buffered.Buffer.Length / 2;
+            byte[] buffer = new byte[count];
+            Buffer.BlockCopy(buffered.Buffer, count, buffer, 0, count);
+            return new BufferedImage(buffered.Width, buffered.Height / 2, buffer);
+        }
     }
 }

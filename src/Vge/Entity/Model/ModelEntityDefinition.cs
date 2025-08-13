@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Render;
 using Vge.Json;
@@ -27,15 +28,15 @@ namespace Vge.Entity.Model
         /// </summary>
         public const string NameCubeEyeClose = "eyeClose";
         /// <summary>
-        /// Название куба открытых губ 
+        /// Название куба открыт рот 
         /// </summary>
         public const string NameCubeMouthOpen = "mouthOpen";
         /// <summary>
-        /// Название куба закрытых губ
+        /// Название куба закрыт рот
         /// </summary>
         public const string NameCubeMouthClose = "mouthClose";
         /// <summary>
-        /// Название куба улыбка губ
+        /// Название куба улыбка
         /// </summary>
         public const string NameCubeMouthSmile = "mouthSmile";
 
@@ -86,13 +87,18 @@ namespace Vge.Entity.Model
         /// Высота
         /// </summary>
         private int _height;
+        /// <summary>
+        /// Какой тип текстур
+        /// </summary>
+        private EnumTextureLayer _textureLayer = EnumTextureLayer.None;
+
 
         public ModelEntityDefinition(string alias) => _alias = alias;
 
         /// <summary>
         /// Запуск определения модели
         /// </summary>
-        public void RunModelFromJson(JsonCompound model)
+        public void RunModelFromJson(JsonCompound model, bool isLayer)
         {
             try
             {
@@ -109,7 +115,7 @@ namespace Vge.Entity.Model
                 {
                     throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingEntity, _alias, _log));
                 }
-                _Textures(textures);
+                _Textures(textures, isLayer);
 
                 // Массив элементов параллелепипедов
                 _log = Cte.Elements;
@@ -172,8 +178,18 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Определяем текстуры
         /// </summary>
-        private void _Textures(JsonCompound[] textures)
+        private void _Textures(JsonCompound[] textures, bool isLayer)
         {
+            // Определяем наличие слоёв в текстурах
+            foreach(JsonCompound texture in textures)
+            {
+                if (texture.IsKey(Cte.Layers))
+                {
+                    _textureLayer = isLayer ? EnumTextureLayer.ForLayer : EnumTextureLayer.ThereAreLayers;
+                    break;
+                }
+            }
+
             for (int i = 0; i < textures.Length; i++)
             {
                 if (textures[i].IsKey(Cte.Layers))
@@ -200,12 +216,20 @@ namespace Vge.Entity.Model
         /// </summary>
         private void _TextureImage(string name, string source)
         {
-            // TODO::2025-07-06 идея, чтоб не забыл, разделить текстуру на 2 часть, сверху сущность, снизу слои
-            // И тут сразу их срезать, при этом вертикаль корректировать UV
             if (source.Length > 22 && source.Substring(0, 22) == "data:image/png;base64,")
             {
-                _textures.Add(new ModelTexture(name, BufferedFileImage.FileToBufferedImage(
-                    Convert.FromBase64String(source.Substring(22)))));
+                BufferedImage bufferedImage = BufferedFileImage.FileToBufferedImage(
+                    Convert.FromBase64String(source.Substring(22)));
+
+                if (_textureLayer == EnumTextureLayer.ThereAreLayers)
+                {
+                    bufferedImage = BufferedFileImage.LeaveHalfOnTop(bufferedImage);
+                }
+                else if (_textureLayer == EnumTextureLayer.ForLayer)
+                {
+                    bufferedImage = BufferedFileImage.LeaveHalfOnBottom(bufferedImage);
+                }
+                _textures.Add(new ModelTexture(name, bufferedImage));
             }
             else
             {
@@ -299,8 +323,26 @@ namespace Vge.Entity.Model
         /// Создаём сторону куба
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ModelFace _CreateFace(Pole side, JsonCompound face) => new ModelFace(side, 
-                face.GetArray(Cte.Uv).ToArrayFloat(), face.GetString(Cte.Texture) == "null");
+        private ModelFace _CreateFace(Pole side, JsonCompound face)
+        {
+            int[] uv = face.GetArray(Cte.Uv).ToArrayInt();
+            if (_textureLayer == EnumTextureLayer.ThereAreLayers)
+            {
+                for (int i = 1; i < uv.Length; i += 2)
+                {
+                    uv[i] *= 2;
+                }
+            }
+            else if (_textureLayer == EnumTextureLayer.ForLayer)
+            {
+                int half = _height / 2;
+                for (int i = 1; i < uv.Length; i += 2)
+                {
+                    uv[i] = (uv[i] - half) * 2;
+                }
+            }
+            return new ModelFace(side, uv, face.GetString(Cte.Texture) == "null");
+        }
 
         /// <summary>
         /// Строим древо скелета
@@ -327,7 +369,7 @@ namespace Vge.Entity.Model
                     JsonCompound compound = outliner.GetCompound(i);
                     _log = "BoneNameUuid";
                     string name = compound.GetString(Cte.Name);
-                    EnumType typeFolder = ModelBone.ConvertPrefix(name.Substring(0, 1));
+                    EnumType typeFolder = ConvertPrefix(name.Substring(0, 1));
                     if (typeFolder != EnumType.Bone || !compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
                     {
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),

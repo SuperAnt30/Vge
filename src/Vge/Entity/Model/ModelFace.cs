@@ -29,7 +29,7 @@ namespace Vge.Entity.Model
         /// </summary>
         private readonly bool _empty;
 
-        public ModelFace(Pole side, float[] uv, bool empty)
+        public ModelFace(Pole side, int[] uv, bool empty)
         {
             Side = side;
             FromU = uv[0];

@@ -153,9 +153,6 @@ namespace Vge.Entity.Render
             // Анимация по движению
             _AnimationByMotion();
 
-            
-            
-
             // Временно клик
             if (Entity is PlayerClientOwner playerClient && playerClient.TestHandAction)
             {
@@ -173,28 +170,29 @@ namespace Vge.Entity.Render
                 }
             }
 
-           // fffd++;
+            fffd++;
             if (_entityLayerRender != null)
             {
-                if (fffd > 30)
+                if (fffd > 50)
                 {
                     fffd = 0;
                     ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers("Base");
                     LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
-                    LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
-                    LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
+                    //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
+                    //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
                     LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
 
                     if (fffb)
                     {
                         _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //     _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                     }
                     else
                     {
-                        //_entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                      //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                     }
                     _entityLayerRender.Reload();
                     fffb = !fffb;

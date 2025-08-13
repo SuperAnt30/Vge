@@ -21,7 +21,7 @@ namespace Vge.Entity.Shape
             : base(index)
         {
             _definition = new ModelEntityDefinition(alias);
-            _definition.RunModelFromJson(jsonModel);
+            _definition.RunModelFromJson(jsonModel, false);
             Textures = _definition.GenTextures();
             DepthTextures = new int[Textures.Length];
 

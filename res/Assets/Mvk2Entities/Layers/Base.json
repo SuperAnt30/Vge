@@ -1,18 +1,5 @@
 {
-    Model: "Robinson",
-    BoneCloth:
-    {
-        Mascot: ["Body"],
-        Cap: ["Head"],
-        Backpack: ["Body"],
-        Jacket: ["Body", "ArmRight", "Arm2Right", "ArmLeft", "Arm2Left"],
-        BraceletL: ["Arm2Left"],
-        BraceletR: ["Arm2Right"],
-        Shoes: ["Leg2Right", "FootRight", "Leg2Left", "FootLeft"],
-        Trousers: ["Body", "LegRight", "Leg2Right", "LegLeft", "Leg2Left"],
-        Cloak: ["Body"],
-        Eye: ["Head"],
-    }
+    Model: "Player",
     Layers: [
         {
             Group: "BraceletL",
@@ -29,14 +16,14 @@
         {
             Group: "Trousers",
             Name: "Trousers1",
-            Folder: ["#TrousersB1", "#TrousersL1", "#TrousersR1", "#TrousersR12"],
-            Texture: "03"
+            Folder: ["#TrousersB1", "#TrousersH1", "#TrousersR1", "#TrousersL1", "#TrousersSR1", "#TrousersSL1"],
+            Texture: "Base"
         },
         {
             Group: "Cap",
             Name: "Cap1",
             Folder: ["#Cap1"],
-            Texture: "01"
+            Texture: "Base"
         }
     ]
 }
