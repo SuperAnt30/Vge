@@ -5,7 +5,7 @@ using Vge.World;
 namespace Vge.Entity
 {
     /// <summary>
-    /// Различные массивы моделей сущности
+    /// Различные массивы сущности
     /// </summary>
     public sealed class EntityArrays
     {

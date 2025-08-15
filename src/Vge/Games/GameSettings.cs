@@ -27,6 +27,10 @@ namespace Vge.Games
         /// </summary>
         public readonly CorrectTable TableBlocks = new CorrectTable();
         /// <summary>
+        /// Корректировочная таблица Id предметов
+        /// </summary>
+        public readonly CorrectTable TableItems = new CorrectTable();
+        /// <summary>
         /// Корректировочная таблица Id сущностей
         /// </summary>
         public readonly CorrectTable TableEntities = new CorrectTable();
@@ -99,6 +103,7 @@ namespace Vge.Games
                 server.SetDataFile(nbt.GetLong("TimeCounter"), (uint)nbt.GetLong("TickCounter"));
                 Seed = nbt.GetLong("Seed");
                 TableBlocks.Read("TableBlocks", nbt);
+                TableItems.Read("TableItems", nbt);
                 TableEntities.Read("TableEntities", nbt);
             }
             return true;

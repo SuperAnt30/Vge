@@ -68,7 +68,8 @@ namespace Vge.World.Block
         /// <summary>
         /// Инициализация атласа блоков, после инициализации блоков
         /// </summary>
-        public static void InitializationAtlas(WindowMain window) => BlockAtlas.EndImage(window.Render.Texture);
+        public static void InitializationAtlas(WindowMain window) 
+            => BlockAtlas.EndImage(window.Render.Texture);
 
         /// <summary>
         /// Корректировка блоков после загрузки, если загрузки нет,
@@ -97,7 +98,7 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Зврегистрировать блок
+        /// Зарегистрировать блок
         /// </summary>
         public static void RegisterBlockClass(string alias, BlockBase blockObject)
         {

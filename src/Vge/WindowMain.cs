@@ -13,6 +13,7 @@ using Vge.Gui.Screens;
 using Vge.World;
 using Vge.World.Block;
 using Vge.Entity;
+using Vge.Item;
 
 namespace Vge
 {
@@ -526,18 +527,24 @@ namespace Vge
         /// </summary>
         protected virtual void _InitializationBlocks() => BlocksReg.Initialization(this);
         /// <summary>
-        /// Инициализация модели сущностей
+        /// Инициализация предметов
         /// </summary>
-        protected virtual void _InitializationModelsEntities() => EntitiesReg.Initialization(this);
+        protected virtual void _InitializationItems() => ItemsReg.Initialization(this);
+        /// <summary>
+        /// Инициализация сущностей
+        /// </summary>
+        protected virtual void _InitializationEntities() => EntitiesReg.Initialization(this);
 
         /// <summary>
-        /// Инициализация блоков, атласа, модели сущностей
+        /// Инициализация блоков, атласа, модели сущностей и предметов
         /// </summary>
         private void _InitializationBlocksAtlasEntities()
         {
             _InitializationBlocks();
             BlocksReg.InitializationAtlas(this);
-            _InitializationModelsEntities();
+            _InitializationItems();
+            ItemsReg.InitializationAtlas(this);
+            _InitializationEntities();
             EntitiesReg.TextureManagerRun();
         }
 

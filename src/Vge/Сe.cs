@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Vge.Entity;
+using Vge.Item;
 using Vge.World.Block;
 using WinGL.Util;
 
@@ -47,6 +48,10 @@ public sealed class Ce
     /// Различные массивы сущностей
     /// </summary>
     public static EntityArrays Entities;
+    /// <summary>
+    /// Различные массивы предметов
+    /// </summary>
+    public static ItemArrays Items;
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
     /// </summary>

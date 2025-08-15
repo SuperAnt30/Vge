@@ -54,6 +54,20 @@ namespace Vge.Entity
         private static readonly Dictionary<string, ShapeEntity> _shapes = new Dictionary<string, ShapeEntity>();
 
         /// <summary>
+        /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
+        /// </summary>
+        public static void Initialization(WindowMain window = null)
+        {
+            if (window != null)
+            {
+                window.LScreen.Process(L.T("CreateModelsEntities"));
+                window.DrawFrame();
+            }
+
+            _InitializationBegin();
+        }
+
+        /// <summary>
         /// Перед инициализацией
         /// </summary>
         private static void _InitializationBegin()
@@ -68,6 +82,7 @@ namespace Vge.Entity
             if (FlagRender)
             {
                 RegisterLayerShapeEntityClass("Base");
+                RegisterLayerShapeEntityClass("BaseOld");
             }
 
             // Регистрация обязательных сущностей
@@ -75,20 +90,6 @@ namespace Vge.Entity
             // Отладочный
             RegisterEntityClass("Robinson", typeof(EntityThrowable));
             //RegisterModelEntityClass("Chicken2");
-        }
-
-        /// <summary>
-        /// Инициализация моделей сущности, если window не указывать, прорисовки о статусе не будет (для сервера)
-        /// </summary>
-        public static void Initialization(WindowMain window = null)
-        {
-            if (window != null)
-            {
-                window.LScreen.Process(L.T("CreateModelsEntities"));
-                window.DrawFrame();
-            }
-
-            _InitializationBegin();
         }
 
         /// <summary>

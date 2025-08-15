@@ -170,13 +170,15 @@ namespace Vge.Entity.Render
                 }
             }
 
+            // TODO::2025-08-13 Временно одевается одежда!
             fffd++;
             if (_entityLayerRender != null)
             {
                 if (fffd > 50)
                 {
                     fffd = 0;
-                    ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers("Base");
+                    string name = Entity is PlayerBase ? "Base" : "BaseOld";
+                    ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers(name);
                     LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
                     //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
                     //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");

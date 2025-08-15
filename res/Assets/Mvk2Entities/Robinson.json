@@ -2,7 +2,8 @@
     #Pitch: "Head",
     Model: "Robinson",
     #Model: "skeleton"
-    TextureId: 1,
+    Scale: 1.92,
+    TextureId: 0,
     BlinkEye: 20,
     Animations: [
         {

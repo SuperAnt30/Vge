@@ -1,5 +1,6 @@
 ﻿using Vge.Entity;
 using Vge.Games;
+using Vge.Item;
 using Vge.World;
 using Vge.World.Block;
 
@@ -24,6 +25,7 @@ namespace Mvk2.World
         {
             base.Init(server);
             BlocksReg.Correct(server.Settings.TableBlocks);
+            ItemsReg.Correct(server.Settings.TableItems);
             EntitiesReg.Correct(server.Settings.TableEntities);
 
             // Инициализация ID сущностей и прочего

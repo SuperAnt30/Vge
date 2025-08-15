@@ -58,9 +58,8 @@ namespace Vge.World.Block
             BlocksRandomTick = new bool[Count];
             BlocksMetadata = new bool[Count];
 
-            ushort id;
             BlockBase block;
-            for (id = 0; id < Count; id++)
+            for (ushort id = 0; id < Count; id++)
             {
                 BlockAlias[id] = BlocksReg.Table.GetAlias(id);
                 block = BlocksReg.Table[id];

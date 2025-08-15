@@ -43,6 +43,10 @@ namespace Vge.Util
         /// </summary>
         public static string PathShapeBlocks { get; private set; }
         /// <summary>
+        /// Путь к папке данных предмета
+        /// </summary>
+        public static string PathItems { get; private set; }
+        /// <summary>
         /// Путь к папке данных сущностей
         /// </summary>
         public static string PathEntities { get; private set; }
@@ -145,6 +149,7 @@ namespace Vge.Util
             PathTextures = PathAssets + PrefixPath + "Textures" + Path.DirectorySeparatorChar;
             PathBlocks = PathAssets + PrefixPath + "Blocks" + Path.DirectorySeparatorChar;
             PathShapeBlocks = PathBlocks + "Shapes" + Path.DirectorySeparatorChar;
+            PathItems = PathAssets + PrefixPath + "Items" + Path.DirectorySeparatorChar;
             PathEntities = PathAssets + PrefixPath + "Entities" + Path.DirectorySeparatorChar;
             PathLayerEntities = PathEntities + "Layers" + Path.DirectorySeparatorChar;
             PathModelEntities = PathEntities + "Models" + Path.DirectorySeparatorChar;

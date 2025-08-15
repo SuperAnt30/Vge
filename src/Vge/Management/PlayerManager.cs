@@ -282,7 +282,8 @@ namespace Vge.Management
             }
 
             // Таблицу блоков
-            socketSide.SendPacket(new PacketS05Tables(Ce.Blocks.BlockAlias, Ce.Entities.EntitiesAlias));
+            socketSide.SendPacket(new PacketS05Tables(Ce.Blocks.BlockAlias, 
+                Ce.Items.ItemAlias, Ce.Entities.EntitiesAlias));
 
             // Поставить в очередь на cоединение сетевого игрока
             _playerStartList.Add(playerServer);

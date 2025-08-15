@@ -2,6 +2,7 @@
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
+using Vge.Item;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -176,6 +177,7 @@ namespace Vge.Network
         private void _Handle05Tables(PacketS05Tables packet)
         {
             BlocksReg.Correct(new CorrectTable(packet.Blocks));
+            ItemsReg.Correct(new CorrectTable(packet.Items));
             EntitiesReg.Correct(new CorrectTable(packet.Entities));
             
             // После получения таблиц блоков и сущностей, запускаем мир

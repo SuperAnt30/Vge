@@ -77,6 +77,8 @@ namespace Vge.Games
                 nbt.SetShort("Version", Ce.IndexVersion);
                 // Таблица блоков
                 gameSettings.TableBlocks.Write("TableBlocks", nbt);
+                // Таблица предметов
+                gameSettings.TableItems.Write("TableItems", nbt);
                 // Таблица сущностей
                 gameSettings.TableEntities.Write("TableEntities", nbt);
 

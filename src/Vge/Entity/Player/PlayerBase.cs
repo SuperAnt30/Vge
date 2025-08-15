@@ -109,7 +109,7 @@ namespace Vge.Entity.Player
         /// Положение стоя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Standing() // 59 единиц в Blocknench
+        public override void Standing() // 60 единиц в Blocknench
                                         //=> Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.8f, 1.68f, 80);
             => Size = SizeLiving = new SizeEntityLiving(this, .6f, 3.6f, 3.36f, 80); // 50см 59 единиц в Blocknench
 
@@ -117,7 +117,7 @@ namespace Vge.Entity.Player
         /// Положение сидя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Sitting() // 49 единиц в Blocknench согласно интерполяции
+        public override void Sitting() // 50 единиц в Blocknench согласно интерполяции
                                        //=> Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.49f, 1.38f, 80);
             => Size = SizeLiving = new SizeEntityLiving(this, .6f, 2.98f, 2.76f, 80); // 50 см 
 

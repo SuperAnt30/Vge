@@ -1,30 +1,12 @@
 {
     #Scale: 1.9375,
-    #Scale: 0.929,
-    Scale: 0.976,
+    Scale: 0.96,
+    #Scale: 0.976,
     #Model: "Robinson",
     Model: "Player",
     TextureId: 1,
     OnlyMove: true,
     BlinkEye: 70,
-    BoneCloth:
-    {
-        Mascot: ["Body"],
-        Cap: ["Head"],
-        Backpack: ["Body"],
-        Jacket: ["Body", "ArmRight", "Arm2Right", "ArmLeft", "Arm2Left"],
-        BraceletL: ["Arm2Left"],
-        BraceletR: ["Arm2Right"],
-        Shoes: ["Leg2Right", "FootRight", "Leg2Left", "FootLeft"],
-        Trousers: ["Body", "LegRight", "Leg2Right", "LegLeft", "Leg2Left"],
-        Cloak: ["Body"],
-        Eye: ["Head"],
-    },
-    Layers: [
-        "BraceletL1",
-        "BraceletL2",
-        "Cap1"
-    ],
     Animations: [
         { 
             Code: "Idle",
