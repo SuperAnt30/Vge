@@ -127,5 +127,14 @@ namespace Vge.Util
             }
             return motion;
         }
+
+        /// <summary>
+        /// Имеется ли строка не пустая и без коммента #,
+        /// если пустая или коммент вернёт false
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ChekComment(string strLine)
+            => strLine.Length == 0 || strLine.Substring(0, 1) == "#"
+                || strLine.TrimStart().Substring(0, 1) == "#";
     }
 }

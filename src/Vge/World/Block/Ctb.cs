@@ -51,7 +51,7 @@
         /// <summary>
         /// Объект фигуры ждикости. (string)
         /// </summary>
-        public const string Variant = "Variant";
+        public const string Liquid = "Liquid";
         /// <summary>
         /// Объект фигуры. ({})
         /// </summary>

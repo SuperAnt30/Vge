@@ -74,6 +74,11 @@ internal sealed class Sr
     internal const string RequiredParameterIsMissingLayers = "Отсутствует требуемый параметр {1} слоях {0}";
     internal const string TransferNestedFolderMustNotBeDeeperThan = "Переносящая вложенная папка не должна быть глубже {1}. Сущность {0}";
     internal const string InvalidTriggerInAnimationEntity = "Не верный триггер {0} в анимации {1}, сущности {2}";
+    internal const string SpriteErrorWidthIsIncorrect = "Ошибка спрайта [{0}], ширина не кратна {1}";
+    internal const string FileMissingJsonItem = "Отсутствует файл json, предмета {0}";
+    internal const string TheFigureObjectIsMissing = "Отсутствует фигура предмета в json, предмет {0}";
+    internal const string ErrorReadJsonItemStat = "Ошибка чтения из json, параметров предмета {0}";
+    internal const string ErrorReadJsonItemShape = "Ошибка чтения из json, фигура {1} предмета {0}";
 
     #endregion
 }

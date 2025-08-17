@@ -33,7 +33,7 @@ namespace Vge.Util
                         if (strLine == null) break;
 
                         // комментарий
-                        if (strLine.Length == 0 || strLine.Substring(0, 1) == "#") continue;
+                        if (Sundry.ChekComment(strLine)) continue;
 
                         string[] vs = strLine.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries);
 

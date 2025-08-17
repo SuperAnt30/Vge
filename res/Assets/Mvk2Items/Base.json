@@ -1,0 +1,10 @@
+{
+    MaxStackSize: 25,
+    MaxDamage: 0,
+    #Sprite: "Blocks/Cobblestone"
+    #Shape: "Model3d"
+    #ShapeBlock: "Cobblestone"
+    #SpriteGui: "Blocks/Cobblestone"
+    #ShapeGui: "Model3d"
+    #ShapeBlockGui: "Cobblestone"
+}

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using Vge.Item;
 using Vge.Json;
 using Vge.Util;
 using WinGL.Util;
@@ -8,7 +10,7 @@ namespace Vge.World.Block
     /// <summary>
     /// Объект отвечает за определяение формы блока
     /// </summary>
-    public class BlockShapeDefinition
+    public class BlockShapeDefinition : ItemShapeDefinition
     {
         /// <summary>
         /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
@@ -42,23 +44,6 @@ namespace Vge.World.Block
         public byte BiomeColor = 0;
 
         /// <summary>
-        /// Псевдоним блока
-        /// </summary>
-        private readonly string _alias;
-        /// <summary>
-        /// Объект данных готовой фигуры
-        /// </summary>
-        private readonly ShapeAdd _shapeAdd = new ShapeAdd();
-        /// <summary>
-        /// Текстуры к фигуре
-        /// </summary>
-        private readonly ShapeTexture _shapeTexture = new ShapeTexture();
-
-        /// <summary>
-        /// Для краша, название раздела
-        /// </summary>
-        private string _log;
-        /// <summary>
         /// Объект результата квада
         /// </summary>
         private QuadSide[][] _quads;
@@ -67,25 +52,29 @@ namespace Vge.World.Block
         /// </summary>
         private int _indexV;
         /// <summary>
-        /// Индекс квада
+        /// Контраст
         /// </summary>
-        private int _indexQ;
+        private bool _sharpness;
+        /// <summary>
+        /// Ветер
+        /// </summary>
+        private int _wind;
 
-        public BlockShapeDefinition(string alias) => _alias = alias;
+        public BlockShapeDefinition(string alias) : base(alias) { }
 
         /// <summary>
         /// Запустить определение жидкой формы
         /// </summary>
         public SideLiquid[] RunShapeLiquidFromJson(JsonCompound state, JsonCompound shapes)
         {
-            _log = Ctb.Variant;
+            _log = Ctb.Liquid;
             try
             {
-                if (state.IsKey(Ctb.Variant))
+                if (state.IsKey(Ctb.Liquid))
                 {
                     // Имеется форма
                     _log = Ctb.Shape;
-                    JsonCompound shape = shapes.GetObject(state.GetString(Ctb.Variant));
+                    JsonCompound shape = shapes.GetObject(state.GetString(Ctb.Liquid));
                     // Текстура
                     _log = Ctb.Texture;
                     _shapeTexture.RunShape(shape);
@@ -106,9 +95,9 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Запуск определения формы
+        /// Запуск определения формы для блока
         /// </summary>
-        public QuadSide[][] RunShapeFromJson(JsonCompound state, JsonCompound shapes)
+        public QuadSide[][] RunShapeBlockFromJson(JsonCompound state, JsonCompound shapes)
         {
             _log = Ctb.Variants;
             try
@@ -124,10 +113,10 @@ namespace Vge.World.Block
 
                     _indexV = 0;
 
-                    foreach (JsonCompound variant in variants)
+                    foreach (JsonCompound view in variants)
                     {
                         _log = Ctb.Shape;
-                        _Shape(variant, shapes);
+                        _ShapeBlock(view, shapes);
                         _indexV++;
                     }
 
@@ -144,13 +133,13 @@ namespace Vge.World.Block
             return new QuadSide[][] { new QuadSide[] { new QuadSide() } };
         }
 
-        private void _Shape(JsonCompound variant, JsonCompound shapes)
+        private void _ShapeBlock(JsonCompound view, JsonCompound shapes)
         {
-            string nameShape = variant.GetString(Ctb.Shape);
+            string nameShape = view.GetString(Ctb.Shape);
             if (nameShape == "") return;
 
             // Собираем дополнительные данные на фигуру
-            _shapeAdd.RunShape(variant);
+            _shapeAdd.RunShape(view);
             // Имеется форма
             JsonCompound shape = shapes.GetObject(nameShape);
 
@@ -183,72 +172,29 @@ namespace Vge.World.Block
             }
         }
 
-        private void _Element(JsonCompound element)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _Elements(JsonCompound element)
         {
-            JsonCompound[] faces;
-            ShapeFace shapeFace = new ShapeFace(_shapeAdd, _shapeTexture);
-            int[] arInt;
-
-            // Определяем размер
-            _log = Ctb.From;
-            arInt = element.GetArray(Ctb.From).ToArrayInt();
-            shapeFace.SetFrom(arInt[0], arInt[1], arInt[2]);
-            _log = Ctb.To;
-            arInt = element.GetArray(Ctb.To).ToArrayInt();
-            shapeFace.SetTo(arInt[0], arInt[1], arInt[2]);
-
-            // Перемещение элемента
-            _log = Ctb.Translate;
-            if (element.IsKey(Ctb.Translate))
-            {
-                float[] xyz = element.GetArray(Ctb.Translate).ToArrayFloat();
-                shapeFace.SetTranslate(xyz[0], xyz[1], xyz[2]);
-            }
-            else
-            {
-                shapeFace.NotTranslate();
-            }
-
-            // Вращение по центру блока
-            _log = Ctb.Rotate;
-            if (element.IsKey(Ctb.Rotate))
-            {
-                float[] ypr = element.GetArray(Ctb.Rotate).ToArrayFloat();
-                shapeFace.SetRotate(ypr[0], ypr[1], ypr[2]);
-            }
-            else
-            {
-                shapeFace.NotRotate();
-            }
-
-            // Отсутствие оттенка, т.е. зависит от стороны света, если true оттенка нет
-            shapeFace.Shade = element.GetBool(Ctb.Shade);
             // Контраст
-            bool sharpness = element.IsKey(Ctb.Sharpness);
+            _sharpness = element.IsKey(Ctb.Sharpness);
             // Ветер
-            int wind = element.GetInt(Ctb.Wind);
-            
-            // Собираем массив сторон
-            _log = Ctb.Faces;
-            faces = element.GetArray(Ctb.Faces).ToArrayObject();
-            for (int i = 0; i < faces.Length; i++)
+            _wind = element.GetInt(Ctb.Wind);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _ElementAdd(ShapeFace shapeFace)
+        {
+            shapeFace.Add(_sharpness, _wind);
+            if (MaskCullFaces[_indexV][shapeFace.Side] == null)
             {
-                shapeFace.RunShape(faces[i]);
-                shapeFace.Add(sharpness, wind);
-
-                if (MaskCullFaces[_indexV][shapeFace.Side] == null)
-                {
-                    MaskCullFaces[_indexV][shapeFace.Side] = new ulong[4];
-                }
-
-                if (shapeFace.GenMask(MaskCullFaces[_indexV][shapeFace.Side]))
-                {
-                    ForceDrawNotExtremeFaces[_indexV][shapeFace.Side] = true;
-                    shapeFace.SetNotExtremeSide();
-                }
-
-                _quads[_indexV][_indexQ++] = shapeFace.GetQuadSide();
+                MaskCullFaces[_indexV][shapeFace.Side] = new ulong[4];
             }
+            if (shapeFace.GenMask(MaskCullFaces[_indexV][shapeFace.Side]))
+            {
+                ForceDrawNotExtremeFaces[_indexV][shapeFace.Side] = true;
+                shapeFace.SetNotExtremeSide();
+            }
+            _quads[_indexV][_indexQ++] = shapeFace.GetQuadSide();
         }
 
         private SideLiquid[] _ElementLiquid(JsonCompound element)
@@ -297,7 +243,7 @@ namespace Vge.World.Block
                     throw new Exception(Sr.GetString(Sr.ErrorReadJsonNotFacesShape, _alias));
                 }
             }
-            
+
             return sideLiquids;
         }
 

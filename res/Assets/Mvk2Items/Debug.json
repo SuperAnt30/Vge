@@ -1,0 +1,6 @@
+{
+    Parent: "Base",
+    MaxStackSize: 5,
+    ShapeBlock: "Cobblestone",
+    View: { RotateY: 90, UvLock:true }
+}

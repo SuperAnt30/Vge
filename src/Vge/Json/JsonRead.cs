@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Vge.Util;
 
 namespace Vge.Json
 {
@@ -51,7 +52,7 @@ namespace Vge.Json
                         if (strLine == null) break;
 
                         // комментарий
-                        if (strLine.Length == 0 || strLine.Substring(0, 1) == "#") continue;
+                        if (Sundry.ChekComment(strLine)) continue;
 
                         _body += strLine + " ";
                     }

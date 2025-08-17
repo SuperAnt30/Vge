@@ -78,7 +78,7 @@ namespace Vge.World.Block
         {
             for (ushort id = 0; id < Count; id++)
             {
-                BlockObjects[id].InitializationAfterItemsN3();
+                BlockObjects[id].InitAfterItemsN3();
             }
         }
 

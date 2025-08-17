@@ -4,5 +4,5 @@
     LightOpacity: 1,
     Translucent: true,
     Color: [ 1, 1, 1 ],
-    Variant: "Water"
+    Liquid: "Water"
 }

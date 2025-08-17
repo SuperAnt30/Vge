@@ -541,9 +541,8 @@ namespace Vge
         private void _InitializationBlocksAtlasEntities()
         {
             _InitializationBlocks();
-            BlocksReg.InitializationAtlas(this);
             _InitializationItems();
-            ItemsReg.InitializationAtlas(this);
+            BlocksReg.InitializationAtlas(this);
             _InitializationEntities();
             EntitiesReg.TextureManagerRun();
         }

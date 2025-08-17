@@ -23,7 +23,7 @@ namespace Vge.World.Block
                 texture = shape.GetObject(Ctb.Texture);
                 foreach (JsonKeyValue texutreKV in texture.Items)
                 {
-                    Vector2i res = BlocksReg.BlockAtlas.AddSprite(texutreKV.GetString());
+                    Vector2i res = BlocksReg.BlockItemAtlas.AddSprite(texutreKV.GetString());
                     if (res.X != -1)
                     {
                         _textures.Add(texutreKV.Key, res);

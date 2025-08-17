@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vge.Util;
 
 /// <summary>
 /// Объект отвечающий за перевод языка на сервере
@@ -41,7 +42,7 @@ public sealed class L
         foreach (string strLine in strs)
         {
             // комментарий
-            if (strLine.Length == 0 || strLine.Substring(0, 1) == "#") continue;
+            if (Sundry.ChekComment(strLine)) continue;
             // Разделитель ключа и текста
             int index = strLine.IndexOf(":");
             if (index > 0)

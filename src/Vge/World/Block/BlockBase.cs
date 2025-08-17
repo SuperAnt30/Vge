@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Renderer.World;
 using Vge.Util;
@@ -149,7 +150,7 @@ namespace Vge.World.Block
         public bool ForceDrawFace = false;
 
         /// <summary>
-        /// Стороны целого блока для прорисовки блока quads
+        /// Массив сторон прямоугольных форм
         /// </summary>
         private QuadSide[][] _quads;
         /// <summary>
@@ -182,10 +183,15 @@ namespace Vge.World.Block
         /// <summary>
         /// Инициализация блоков, псевдоним и данные с json
         /// </summary>
-        public void InitAliasAndJoinN1(string alias, JsonCompound state, JsonCompound model)
+        public void InitAliasAndJoinN1(string alias, JsonCompound state, JsonCompound shapes)
         {
             Alias = alias;
-            _ReadStateFromJson(state, model);
+            if (state.Items != null)
+            {
+                _ReadStateFromJson(state);
+                // Модель
+                _ShapeDefinition(state, shapes);
+            }
             _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;
@@ -194,12 +200,13 @@ namespace Vge.World.Block
         /// <summary>
         /// Задать индекс блока, из таблицы
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetIndex(ushort id) => IndexBlock = id;
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов
         /// </summary>
-        public virtual void InitializationAfterItemsN3() { }
+        public virtual void InitAfterItemsN3() { }
 
         #endregion
 
@@ -208,35 +215,30 @@ namespace Vge.World.Block
         /// <summary>
         /// Прочесть состояние блока из Json формы
         /// </summary>
-        private void _ReadStateFromJson(JsonCompound state, JsonCompound shapes)
+        private void _ReadStateFromJson(JsonCompound state)
         {
-            if (state.Items != null)
+            try
             {
-                try
+                // Статы
+                foreach (JsonKeyValue json in state.Items)
                 {
-                    // Статы
-                    foreach (JsonKeyValue json in state.Items)
+                    if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
+                    if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
+                    if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
+                    if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
+                    if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
+                    if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
+                    if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
+                    if (json.IsKey(Ctb.Color))
                     {
-                        if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
-                        if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
-                        if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
-                        if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
-                        if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
-                        if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
-                        if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
-                        if (json.IsKey(Ctb.Color))
-                        {
-                            float[] ar = json.GetArray().ToArrayFloat();
-                            Color = new Vector3(ar[0], ar[1], ar[2]);
-                        }
+                        float[] ar = json.GetArray().ToArrayFloat();
+                        Color = new Vector3(ar[0], ar[1], ar[2]);
                     }
                 }
-                catch
-                {
-                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockStat, Alias));
-                }
-                // Модель
-                _ShapeDefinition(state, shapes);
+            }
+            catch
+            {
+                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockStat, Alias));
             }
         }
 
@@ -246,7 +248,7 @@ namespace Vge.World.Block
         protected virtual void _ShapeDefinition(JsonCompound state, JsonCompound shapes)
         {
             BlockShapeDefinition shapeDefinition = new BlockShapeDefinition(Alias);
-            _quads = shapeDefinition.RunShapeFromJson(state, shapes);
+            _quads = shapeDefinition.RunShapeBlockFromJson(state, shapes);
             BiomeColor = shapeDefinition.BiomeColor > 0 && shapeDefinition.BiomeColor < 4;
             CullFaceAll = shapeDefinition.CullFaceAll;
             FullBlock = CullFaceAll;
@@ -264,11 +266,13 @@ namespace Vge.World.Block
         /// <summary>
         /// Является ли блок проходимым, т.е. можно ли ходить через него
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsPassable(uint met) => false;
 
         /// <summary>
         /// Является ли блок проходимым на нём, т.е. можно ли ходить по нему
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsPassableOnIt(uint met) => !IsPassable(met);
 
         /// <summary>
@@ -301,6 +305,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Передать список  ограничительных рамок блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, uint met)
             => new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
 
@@ -332,29 +337,35 @@ namespace Vge.World.Block
         /// <summary>
         /// Получить перечень сторон по индексу
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected QuadSide[] _GetQuads(int index) => _quads[index];
 
         /// <summary>
-        /// Стороны целого блока для рендера
+        /// Массив сторон прямоугольных форм для рендера
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
 
         /// <summary>
         /// Получить сторону для прорисовки жидкого блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual SideLiquid GetSideLiquid(int index) => null;
 
         /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsCullFace(uint met, int indexSide) => _cullFaces[met][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать сторону, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsForceDrawFace(uint met, int indexSide) => _forceDrawFaces[met][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsForceDrawNotExtremeFace(uint met, int indexSide) => _forceDrawNotExtremeFaces[met][indexSide];
 
         /// <summary>

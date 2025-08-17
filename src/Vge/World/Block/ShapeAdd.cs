@@ -25,22 +25,22 @@ namespace Vge.World.Block
         /// </summary>
         private float[] _offset = new float[0];
 
-        public void RunShape(JsonCompound variant)
+        public void RunShape(JsonCompound view)
         {
-            IsOffset = variant.IsKey(Ctb.Offset);
+            IsOffset = view.IsKey(Ctb.Offset);
             if (IsOffset)
             {
-                _offset = variant.GetArray(Ctb.Offset).ToArrayFloat();
+                _offset = view.GetArray(Ctb.Offset).ToArrayFloat();
             }
             else
             {
                 _offset = new float[0];
             }
             // Имеется вращение по Y 90 | 180 | 270
-            RotateY = _CheckRotate(variant.GetInt(Ctb.RotateY));
+            RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
             
             // Защита от вращении текстуры
-            UvLock = variant.GetBool(Ctb.UvLock);
+            UvLock = view.GetBool(Ctb.UvLock);
         }
 
         public float GetOffsetX() => _offset.Length > 0 ? _offset[0] / 16f : 0;

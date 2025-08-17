@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Block.List;
@@ -16,9 +17,9 @@ namespace Vge.World.Block
         /// </summary>
         public static readonly BlockRegTable Table = new BlockRegTable();
         /// <summary>
-        /// Объект генерации атласа блоков
+        /// Объект генерации атласа блоков и предметов
         /// </summary>
-        public static readonly GeneratingBlockAtlas BlockAtlas = new GeneratingBlockAtlas();
+        public static readonly GeneratingBlockAtlas BlockItemAtlas = new GeneratingBlockAtlas();
 
         /// <summary>
         /// Справочник всех форм
@@ -49,7 +50,7 @@ namespace Vge.World.Block
         private static void _InitializationBegin()
         {
             // Создаём графический объект гдля генерации атласа блокоы
-            BlockAtlas.CreateImage(64, 16);
+            BlockItemAtlas.CreateImage(64, 16);
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
@@ -66,10 +67,10 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Инициализация атласа блоков, после инициализации блоков
+        /// Инициализация атласа блоков и предметов, после инициализации блоков и предметов
         /// </summary>
         public static void InitializationAtlas(WindowMain window) 
-            => BlockAtlas.EndImage(window.Render.Texture);
+            => BlockItemAtlas.EndImage(window.Render.Texture);
 
         /// <summary>
         /// Корректировка блоков после загрузки, если загрузки нет,
@@ -111,32 +112,15 @@ namespace Vge.World.Block
                 if (state.IsKey(Ctb.Variants))
                 {
                     JsonArray variants = state.GetArray(Ctb.Variants);
-                    bool bodyShape = false;
                     foreach (JsonCompound variant in variants.Items)
                     {
-                        string shapeName = variant.GetString(Ctb.Shape);
-                        foreach (JsonKeyValue shape in shapes)
-                        {
-                            if (shape.IsKey(shapeName))
-                            {
-                                bodyShape = true;
-                                break;
-                            }
-                        }
-                        if (bodyShape)
-                        {
-                            bodyShape = false;
-                        }
-                        else
-                        {
-                            shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
-                        }
+                        _ShapeAdd(variant.GetString(Ctb.Shape), shapes);
                     }
                 }
-                if (state.IsKey(Ctb.Variant))
+                if (state.IsKey(Ctb.Liquid))
                 {
-                    string shapeName = state.GetString(Ctb.Variant);
-                    shapes.Add(new JsonKeyValue(shapeName, _GetShape(shapeName)));
+                    string shapeName = state.GetString(Ctb.Liquid);
+                    shapes.Add(new JsonKeyValue(shapeName, GetShape(shapeName)));
                 }
                 blockObject.InitAliasAndJoinN1(alias, state, new JsonCompound(shapes.ToArray()));
                 Table.Add(alias, blockObject);
@@ -150,15 +134,32 @@ namespace Vge.World.Block
             //_window.DrawFrame();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void _ShapeAdd(string shapeName, List<JsonKeyValue> shapes)
+        {
+            foreach (JsonKeyValue shape in shapes)
+            {
+                if (shape.IsKey(shapeName))
+                {
+                    return;
+                }
+            }
+            shapes.Add(new JsonKeyValue(shapeName, GetShape(shapeName)));
+        }
+
         #region Shape
 
         /// <summary>
-        /// Добавить фигуру
+        /// Получить фигуру из кэша или сначала добавив в кэш и потом получим
         /// </summary>
-        private static JsonCompound _GetShape(string name)
+        public static JsonCompound GetShape(string name)
         {
-            if(name != "" && !_shapes.ContainsKey(name))
+            if(name != "")
             {
+                if (_shapes.ContainsKey(name))
+                {
+                    return _shapes[name];
+                }
                 // Добавляем фигуру
                 JsonRead jsonRead = new JsonRead(Options.PathShapeBlocks + name + ".json");
                 if (jsonRead.IsThereFile)
@@ -166,7 +167,7 @@ namespace Vge.World.Block
                     return _ParentShape(jsonRead.Compound);
                 }
             }
-            return new JsonCompound();
+            return new JsonCompound(); 
         }
 
         /// <summary>

@@ -175,6 +175,10 @@ namespace Vge.World.Block
                     {
                         index = _GenIndexAnim2d(buffered.Height / size, w);
                     }
+                    else
+                    {
+                        throw new Exception(Sr.GetString(Sr.SpriteErrorWidthIsIncorrect, fileName, size));
+                    }
                 }
                 if (index != -1)
                 {

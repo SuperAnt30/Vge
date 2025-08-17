@@ -511,7 +511,7 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
-            BlocksReg.BlockAtlas.DeleteTexture(Render.Texture);
+            BlocksReg.BlockItemAtlas.DeleteTexture(Render.Texture);
             Entities.Dispose();
             _cursorRender.Dispose();
             Shadow.Dispose();
