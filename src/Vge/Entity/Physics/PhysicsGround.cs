@@ -94,6 +94,7 @@ namespace Vge.Entity.Physics
             _LivingUpdateMotion(acceleration);
 
             // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
+            _ResetMinimumMotion();
             float motionX0 = MotionX;
             float motionZ0 = MotionZ;
 
