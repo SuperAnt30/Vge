@@ -49,8 +49,7 @@ namespace Vge.Entity.Render
                     Entity.GetPosFrameX(timeIndex) - ppfx,
                     Entity.GetPosFrameY(timeIndex) - ppfy,
                     Entity.GetPosFrameZ(timeIndex) - ppfz,
-                    _lightBlock, _lightSky,
-                    0, 0, 0);
+                    _lightBlock, _lightSky);
 
                 // Рисуем основную сетку сущности
                 _entityRender.MeshDraw();

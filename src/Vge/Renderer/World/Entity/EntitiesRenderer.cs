@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Games;
@@ -146,6 +147,8 @@ namespace Vge.Renderer.World.Entity
             // Параметрв шейдоров
             ShsEntity.BindUniformBigin();
 
+            // Сущности
+            gl.Disable(GL.GL_CULL_FACE);
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -155,7 +158,29 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
+                        if (!(entity is EntityItem) && entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
+                        {
+                            // Model
+                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                            CountEntitiesFC++;
+                        }
+                    }
+                }
+            }
+
+            // Предметы
+            gl.Enable(GL.GL_CULL_FACE);
+            ShsEntity.BindUniformItems();
+            for (int i = 0; i < count; i++)
+            {
+                chunkRender = _arrayChunkRender[i];
+                countEntity = chunkRender.ListEntities.Count;
+                if (countEntity > 0)
+                {
+                    for (int j = 0; j < countEntity; j++)
+                    {
+                        entity = chunkRender.ListEntities.GetAt(j);
+                        if (entity is EntityItem)
                         {
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
@@ -204,10 +229,12 @@ namespace Vge.Renderer.World.Entity
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
             int countEntity;
             ChunkRender chunkRender;
+            EntityBase entity;
 
             // Параметрв шейдоров
             ShsEntity.BindUniformBiginDepthMap();
-
+            // Сущности
+            gl.Disable(GL.GL_CULL_FACE);
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -216,7 +243,31 @@ namespace Vge.Renderer.World.Entity
                 {
                     for (int j = 0; j < countEntity; j++)
                     {
-                        chunkRender.ListEntities.GetAt(j).Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                        entity = chunkRender.ListEntities.GetAt(j);
+                        if (!(entity is EntityItem))
+                        {
+                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                        }
+                    }
+                }
+            }
+
+            // Предметы
+            gl.Enable(GL.GL_CULL_FACE);
+            ShsEntity.BindUniformItems();
+            for (int i = 0; i < count; i++)
+            {
+                chunkRender = _arrayChunkRender[i];
+                countEntity = chunkRender.ListEntities.Count;
+                if (countEntity > 0)
+                {
+                    for (int j = 0; j < countEntity; j++)
+                    {
+                        entity = chunkRender.ListEntities.GetAt(j);
+                        if (entity is EntityItem)
+                        {
+                            entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                        }
                     }
                 }
             }

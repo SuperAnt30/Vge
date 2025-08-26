@@ -296,8 +296,6 @@ namespace Vge.Renderer.World
             // Рисуем воксели сплошных и уникальных блоков
             _DrawVoxelDense(timeIndex);
             // Сущности
-            gl.Disable(GL.GL_CULL_FACE);
-
             Entities.Draw(timeIndex);
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
@@ -307,7 +305,6 @@ namespace Vge.Renderer.World
             //_DrawClouds(timeIndex);
 
             // Рисуем воксели альфа
-            gl.Enable(GL.GL_CULL_FACE);
             _DrawVoxelAlpha();
             // Прорисовка руки
             // --- Конец сцены

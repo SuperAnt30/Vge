@@ -124,6 +124,17 @@ namespace Vge.Renderer.Shaders
         }
 
         /// <summary>
+        /// Обнулить для предметов
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformItems()
+        {
+            _shderAction.SetUniform1("depth", 0f);
+            _shderAction.SetUniform1("anim", 0f);
+            _shderAction.SetUniform1("eyeMouth", 0);
+        }
+
+        /// <summary>
         /// Внести данные в юниформы
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,6 +145,20 @@ namespace Vge.Renderer.Shaders
             _shderAction.SetUniform1("depth", depth);
             _shderAction.SetUniform1("anim", anim);
             _shderAction.SetUniform1("eyeMouth", eyeMouth);
+            if (!_flagActionDepthMap)
+            {
+                // Свет для карты теней не нужен
+                _shderAction.SetUniform2("light", lightBlock, lightSky);
+            }
+        }
+
+        /// <summary>
+        /// Внести данные в юниформы для претмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformData(float x, float y, float z, float lightBlock, float lightSky)
+        {
+            _shderAction.SetUniform3("pos", x, y, z);
             if (!_flagActionDepthMap)
             {
                 // Свет для карты теней не нужен
