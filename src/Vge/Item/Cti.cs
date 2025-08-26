@@ -18,6 +18,18 @@
         /// </summary>
         public const string ShapeBlock = "ShapeBlock";
         /// <summary>
+        /// Имя строки к текстуре для Gui, спрайта 2д. (string)
+        /// </summary>
+        public const string SpriteGui = "SpriteGui";
+        /// <summary>
+        /// Имя к объекту фигуры предмета для Gui. (string)
+        /// </summary>
+        public const string ShapeGui = "ShapeGui";
+        /// <summary>
+        /// Имя к объекту фигуры блока для Gui. (string)
+        /// </summary>
+        public const string ShapeBlockGui = "ShapeBlockGui";
+        /// <summary>
         /// Имя объекта атрибут для внешнего вида фигуры. Это аналог данных из массива Variants из блока ({})
         /// </summary>
         public const string View = "View";

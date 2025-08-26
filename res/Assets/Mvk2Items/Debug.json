@@ -1,6 +1,6 @@
 {
     Parent: "Base",
     MaxStackSize: 5,
-    ShapeBlock: "Cobblestone",
+    ShapeBlock: "Debug",
     View: { RotateY: 90, UvLock:true }
 }

@@ -6,5 +6,5 @@
     #ShapeBlock: "Cobblestone"
     #SpriteGui: "Blocks/Cobblestone"
     #ShapeGui: "Model3d"
-    #ShapeBlockGui: "Cobblestone"
+    ##ShapeBlockGui: "Cobblestone"
 }

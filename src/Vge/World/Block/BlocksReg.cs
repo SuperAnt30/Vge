@@ -13,6 +13,15 @@ namespace Vge.World.Block
     public sealed class BlocksReg
     {
         /// <summary>
+        /// Псевбоним обязательного блока воздуха
+        /// </summary>
+        public const string Air = "Air";
+        /// <summary>
+        /// Псевбоним обязательного блока барьер
+        /// </summary>
+        public const string Barrier = "Barrier";
+
+        /// <summary>
         /// Таблица блоков для регистрации
         /// </summary>
         public static readonly BlockRegTable Table = new BlockRegTable();
@@ -57,10 +66,9 @@ namespace Vge.World.Block
 
             // Регистрация обязательных блоков
             // Воздух
-            string alias = "Air";
             BlockAir blockAir = new BlockAir();
-            blockAir.InitAliasAndJoinN1(alias, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
-            Table.Add(alias, blockAir);
+            blockAir.InitAliasAndJoinN1(Air, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
+            Table.Add(Air, blockAir);
 
             // Отладочный
             RegisterBlockClass("Debug", new BlockDebug());

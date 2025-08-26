@@ -87,6 +87,7 @@ namespace Vge.Entity
 
             // Регистрация обязательных сущностей
             RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
+            RegisterEntityClass("Item", typeof(EntityItem), true);
             // Отладочный
             RegisterEntityClass("Robinson", typeof(EntityThrowable));
             //RegisterModelEntityClass("Chicken2");
@@ -236,46 +237,54 @@ namespace Vge.Entity
         /// <summary>
         /// Зврегистрировать сущность
         /// </summary>
-        public static void RegisterEntityClass(string alias, Type entityType)
+        /// <param name="isItem">Сущность предмета, json не нужен</param>
+        public static void RegisterEntityClass(string alias, Type entityType, bool isItem = false)
         {
-            JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".json");
-            
-            if (jsonRead.IsThereFile)
+            if (isItem)
             {
-                ShapeEntity shape = null;
-                if (FlagRender)
-                {
-                    string modelFile = jsonRead.Compound.GetString(Cte.Model);
-                    if (modelFile == "")
-                    {
-                        // Отсутствует модель в файле json сущности
-                        throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
-                    }
-                    if (_shapes.ContainsKey(modelFile))
-                    {
-                        shape = _shapes[modelFile];
-                    }
-                    else
-                    {
-                        shape = new ShapeEntity((ushort)Shapes.Count, modelFile, _GetModel(modelFile));
-                        _shapes.Add(modelFile, shape);
-                        Shapes.Add(shape);
-                    }
-                }
-
-                ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType, shape.Index);
-                modelEntity.ReadStateFromJson(jsonRead.Compound);
-                if (FlagRender)
-                {
-                    modelEntity.ReadStateClientFromJson(jsonRead.Compound);
-                }
-
-                Table.Add(alias, modelEntity);
+                Table.Add(alias, new ResourcesEntityBase(alias, entityType));
             }
             else
             {
-                // Отсутствует файл json, сущности
-                throw new Exception(Sr.GetString(Sr.FileMissingJsonEntity, alias));
+                JsonRead jsonRead = new JsonRead(Options.PathEntities + alias + ".json");
+
+                if (jsonRead.IsThereFile)
+                {
+                    ShapeEntity shape = null;
+                    if (FlagRender)
+                    {
+                        string modelFile = jsonRead.Compound.GetString(Cte.Model);
+                        if (modelFile == "")
+                        {
+                            // Отсутствует модель в файле json сущности
+                            throw new Exception(Sr.GetString(Sr.FileMissingModelJsonEntity, alias));
+                        }
+                        if (_shapes.ContainsKey(modelFile))
+                        {
+                            shape = _shapes[modelFile];
+                        }
+                        else
+                        {
+                            shape = new ShapeEntity((ushort)Shapes.Count, modelFile, _GetModel(modelFile));
+                            _shapes.Add(modelFile, shape);
+                            Shapes.Add(shape);
+                        }
+                    }
+
+                    ResourcesEntity modelEntity = new ResourcesEntity(alias, entityType, shape.Index);
+                    modelEntity.ReadStateFromJson(jsonRead.Compound);
+                    if (FlagRender)
+                    {
+                        modelEntity.ReadStateClientFromJson(jsonRead.Compound);
+                    }
+
+                    Table.Add(alias, modelEntity);
+                }
+                else
+                {
+                    // Отсутствует файл json, сущности
+                    throw new Exception(Sr.GetString(Sr.FileMissingJsonEntity, alias));
+                }
             }
         }
 
@@ -326,6 +335,5 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ShapeLayers GetShapeLayers(string name) => LayerShapes[_indexLayerShapes[name]];
-
     }
 }

@@ -379,10 +379,11 @@ namespace Vge.Entity.Player
                         isBox = !isBox;
                         //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
                         // Для сервера
-                        EntityThrowable entityThrowable = Ce.Entities.CreateEntityServer((ushort)id, world.Collision) as EntityThrowable;
-                        entityThrowable.InitRun(this, i);
-                        entityThrowable.SetEntityId(_server.LastEntityId());
-                        world.SpawnEntityInWorld(entityThrowable);
+                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, world.Collision);
+                        if (entity is EntityItem entityItem) entityItem.InitRun(this, i);
+                        if (entity is EntityThrowable entityThrowable) entityThrowable.InitRun(this, i);
+                        entity.SetEntityId(_server.LastEntityId());
+                        world.SpawnEntityInWorld(entity);
                     }
                     catch (Exception ex)
                     {

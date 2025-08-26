@@ -5,5 +5,5 @@ namespace Vge.Entity
     /// <summary>
     /// Таблица моделей сущностей для регистрации
     /// </summary>
-    public class EntitiesRegTable : RegTable<ResourcesEntity> { }
+    public class EntitiesRegTable : RegTable<ResourcesEntityBase> { }
 }

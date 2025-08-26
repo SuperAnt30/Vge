@@ -11,21 +11,8 @@ namespace Vge.Entity
     /// <summary>
     /// Ресурсы сущности, нужны везде, но форма только на клиенте
     /// </summary>
-    public class ResourcesEntity
+    public class ResourcesEntity : ResourcesEntityBase
     {
-        /// <summary>
-        /// Индекс сущности из таблицы
-        /// </summary>
-        public ushort IndexEntity { get; private set; }
-        /// <summary>
-        /// Название сущности
-        /// </summary>
-        public readonly string Alias;
-        /// <summary>
-        /// Тип объекта сущности
-        /// </summary>
-        public readonly Type EntityType;
-        
         /// <summary>
         /// Имеется ли анимация
         /// </summary>
@@ -69,17 +56,7 @@ namespace Vge.Entity
         private ushort _indexTexture;
 
         public ResourcesEntity(string alias, Type entityType, ushort indexShape)
-        {
-            Alias = alias;
-            EntityType = entityType;
-            _indexShape = indexShape;
-        }
-
-        /// <summary>
-        /// Задать индекс сущности, из таблицы
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetIndex(ushort id) => IndexEntity = id;
+            : base (alias, entityType) => _indexShape = indexShape;
 
         /// <summary>
         /// Получить параметр глубины текстуры и параметр группы текстуры для шейдера
@@ -206,7 +183,7 @@ namespace Vge.Entity
         /// <summary>
         /// Заменить буфер из-за смены размера текстуры
         /// </summary>
-        public void SetBufferMeshBecauseSizeTexture(ShapeEntity shapeEntity)
+        public override void SetBufferMeshBecauseSizeTexture(ShapeEntity shapeEntity)
         {
             if (_indexShape == shapeEntity.Index)
             {

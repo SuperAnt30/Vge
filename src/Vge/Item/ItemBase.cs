@@ -44,30 +44,41 @@ namespace Vge.Item
         /// </summary>
         private QuadSide[] _quads;
         /// <summary>
-        /// Массив сторон прямоугольных форм
+        /// Массив сторон прямоугольных форм для Gui
         /// </summary>
-     //   private QuadSide[] _quads;
+        private QuadSide[] _quadsGui;
 
         #endregion
 
         #region Init
 
         /// <summary>
-        /// Инициализация предметов данные с json
+        /// Инициализация предметов данные с json, 
+        /// это не спрайти, а модель предмета или модель с блока
         /// </summary>
-        public virtual void InitAndJoinN2(JsonCompound state, JsonCompound shape)
+        public virtual void InitAndJoinN2(JsonCompound state, JsonCompound shape, bool isItem)
         {
             if (state.Items != null)
             {
                 _ReadStateFromJson(state);
                 // Модель
-                _ShapeDefinition(state, shape);
+                if (isItem)
+                {
+                    ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
+                    _quads = shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape);
+                }
+                else
+                {
+                    ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
+                    _quads = shapeDefinition.RunShapeItemFromJson(state, shape);
+                }
             }
             //_InitBlockRender();
         }
 
         /// <summary>
-        /// Инициализация предметов данные с json
+        /// Инициализация предметов данные с json, 
+        /// это спрайт
         /// </summary>
         public virtual void InitAndJoinN2(JsonCompound state)
         {
@@ -118,15 +129,6 @@ namespace Vge.Item
                     throw new Exception(Sr.GetString(Sr.ErrorReadJsonItemStat, Alias));
                 }
             }
-        }
-
-        /// <summary>
-        /// Получить модель
-        /// </summary>
-        protected virtual void _ShapeDefinition(JsonCompound state, JsonCompound shape)
-        {
-            ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-            _quads = shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape);
         }
 
         #endregion

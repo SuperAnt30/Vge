@@ -47,7 +47,8 @@ namespace Mvk2.World
             {
                 s = Ce.Entities.EntitiesAlias[id];
                 if (s == "Robinson") i1 = id;
-                else if (s == "Chicken") i2 = id;
+                //else if (s == "Chicken") i2 = id;
+                else if (s == "Item") i2 = id;
             }
             return;
         }

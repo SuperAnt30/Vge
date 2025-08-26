@@ -101,11 +101,12 @@ namespace Vge.Renderer.World.Entity
             // Создаём объекты рендора всех типов сущностей
             int count = Ce.Entities.Count;
             _entityRender = new EntityRender[count];
-            ResourcesEntity resourcesEntity;
             for (ushort id = 0; id < count; id++)
             {
-                resourcesEntity = Ce.Entities.GetModelEntity(id);
-                _entityRender[id] = new EntityRender(gl, resourcesEntity);
+                if (Ce.Entities.GetModelEntity(id) is ResourcesEntity resourcesEntity)
+                {
+                    _entityRender[id] = new EntityRender(gl, resourcesEntity);
+                }
             }
         }
 

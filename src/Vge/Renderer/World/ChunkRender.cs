@@ -226,6 +226,7 @@ namespace Vge.Renderer.World
                                     id = (ushort)(data & 0xFFF);
                                     // Определяем объект блока
                                     Gi.Block = Ce.Blocks.BlockObjects[id];
+                                    if (Gi.Block.IsAir) continue; // Надо для блоков которые отсутствуют
 
                                     if (Gi.Block.Alpha)
                                     {

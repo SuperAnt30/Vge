@@ -20,7 +20,7 @@ namespace Vge.Entity
         /// <summary>
         /// Массив объектов сущностей
         /// </summary>
-        private readonly ResourcesEntity[] _entitiesObjects;
+        private readonly ResourcesEntityBase[] _entitiesObjects;
         /// <summary>
         /// Количество всех различных сущностей
         /// </summary>
@@ -34,9 +34,9 @@ namespace Vge.Entity
         {
             Count = EntitiesReg.Table.Count;
             EntitiesAlias = new string[Count];
-            _entitiesObjects = new ResourcesEntity[Count];
+            _entitiesObjects = new ResourcesEntityBase[Count];
 
-            ResourcesEntity resourcesEntity;
+            ResourcesEntityBase resourcesEntity;
             for (ushort id = 0; id < Count; id++)
             {
                 EntitiesAlias[id] = EntitiesReg.Table.GetAlias(id);
@@ -53,7 +53,7 @@ namespace Vge.Entity
         /// <summary>
         /// Получить модель сущности по индексу из таблицы сервера.
         /// </summary>
-        public ResourcesEntity GetModelEntity(ushort index)
+        public ResourcesEntityBase GetModelEntity(ushort index)
         {
             if (index < Count)
             {

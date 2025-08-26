@@ -29,7 +29,7 @@ namespace Vge.Entity
         /// <summary>
         /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
-        public ushort IndexEntity { get; private set; }
+        public ushort IndexEntity { get; protected set; }
 
         /// <summary>
         /// Сущность мертва, не активна
@@ -165,15 +165,23 @@ namespace Vge.Entity
         /// <summary>
         /// Инициализация для клиента
         /// </summary>
-        public void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
+        public virtual void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
         {
             IndexEntity = index;
-            ResourcesEntity resourcesEntity = Ce.Entities.GetModelEntity(IndexEntity);
-            Render = resourcesEntity.IsAnimation
-                ? resourcesEntity.BlinkEye != 0
-                    ? new EntityRenderEyeMouth(this, entitiesRenderer, resourcesEntity)
-                    : new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
-                : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
+            if (Ce.Entities.GetModelEntity(IndexEntity) is ResourcesEntity resourcesEntity)
+            {
+                Render = resourcesEntity.IsAnimation
+                    ? resourcesEntity.BlinkEye != 0
+                        ? new EntityRenderEyeMouth(this, entitiesRenderer, resourcesEntity)
+                        : new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
+                    : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
+            }
+            else
+            {
+                // Отсутствует файл json, сущности
+                throw new Exception(Sr.GetString(Sr.FileMissingJsonEntity, GetType().Name));
+            }
+
             _InitMetaData();
             _InitSize();
         }

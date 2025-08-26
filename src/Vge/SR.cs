@@ -76,7 +76,8 @@ internal sealed class Sr
     internal const string InvalidTriggerInAnimationEntity = "Не верный триггер {0} в анимации {1}, сущности {2}";
     internal const string SpriteErrorWidthIsIncorrect = "Ошибка спрайта [{0}], ширина не кратна {1}";
     internal const string FileMissingJsonItem = "Отсутствует файл json, предмета {0}";
-    internal const string TheFigureObjectIsMissing = "Отсутствует фигура предмета в json, предмет {0}";
+    internal const string TheFigureBlockIsMissing = "Отсутствует фигура блока в json, блока {0}";
+    internal const string TheFigureItemIsMissing = "Отсутствует фигура предмета в json, предмет {0}";
     internal const string ErrorReadJsonItemStat = "Ошибка чтения из json, параметров предмета {0}";
     internal const string ErrorReadJsonItemShape = "Ошибка чтения из json, фигура {1} предмета {0}";
 

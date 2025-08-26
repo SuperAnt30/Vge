@@ -160,7 +160,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Для оптимизации отбраковка стороны, чтоб не использовать маску
         /// </summary>
-        private bool[][] _cullFaces;
+        protected bool[][] _cullFaces;
         /// <summary>
         /// Принудительное рисование стороны
         /// </summary>
@@ -189,9 +189,19 @@ namespace Vge.World.Block
             if (state.Items != null)
             {
                 _ReadStateFromJson(state);
-                // Модель
+                // Фигура
                 _ShapeDefinition(state, shapes);
+            } 
+            else if (BlocksReg.Air == alias)
+            {
+                // Если блок воздуха
             }
+            else
+            {
+                // Отсутствует фигура блока в json
+                throw new Exception(Sr.GetString(Sr.FileMissingJsonBlock, alias));
+            }
+
             _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;

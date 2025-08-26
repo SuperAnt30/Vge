@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Block;
@@ -49,15 +48,10 @@ namespace Vge.Item
             // Очистить таблицы и вспомогательные данные json
             _Clear();
 
-            // Регистрация обязательных блоков
-            // Воздух
-            //string alias = "Air";
-            //BlockAir blockAir = new BlockAir();
-            //blockAir.InitAliasAndJoinN1(alias, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
-            //Table.Add(alias, blockAir);
+            // Регистрация обязательных предметов
 
-            //// Отладочный
-            //RegisterBlockClass("Debug", new BlockDebug());
+            // Отладочный
+            RegisterItemClass("Debug", new ItemBase());
         }
 
         /// <summary>
@@ -104,23 +98,21 @@ namespace Vge.Item
                     // Только текстура
                     itemObject.InitAndJoinN2(state);
                 }
-                if (state.IsKey(Cti.Shape))
+                else if (state.IsKey(Cti.Shape))
                 {
                     // Фигура предмета
-                    itemObject.InitAndJoinN2(state, _GetShape(state.GetString(Cti.Shape)));
+                    itemObject.InitAndJoinN2(state, _GetShape(state.GetString(Cti.Shape)), true);
                 }
                 else if (state.IsKey(Cti.ShapeBlock))
                 {
                     // Фигура блока
-                    itemObject.InitAndJoinN2(state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlock)));
+                    itemObject.InitAndJoinN2(state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlock)), false);
                 }
                 else
                 {
                     // Отсутствует фигура предмета
-                    throw new Exception(Sr.GetString(Sr.TheFigureObjectIsMissing, alias));
+                    throw new Exception(Sr.GetString(Sr.TheFigureItemIsMissing, alias));
                 }
-
-                //itemObject.InitAliasAndJoinN2(alias, state, new JsonCompound(shapes.ToArray()));
                 Table.Add(alias, itemObject);
             }
             else
@@ -128,7 +120,7 @@ namespace Vge.Item
                 throw new Exception(Sr.GetString(Sr.FileMissingJsonItem, alias));
             }
 
-            //_window.LScreen.Process("Block init " + alias);
+            //_window.LScreen.Process("Item init " + alias);
             //_window.DrawFrame();
         }
 
