@@ -1,4 +1,5 @@
-﻿using Vge.Entity.MetaData;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity.MetaData;
 using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
@@ -14,10 +15,6 @@ namespace Vge.Entity.List
     /// </summary>
     public class EntityItem : EntityBase
     {
-        /// <summary>
-        /// Объект предмета
-        /// </summary>
-        public ItemBase Item { get; private set; }
         /// <summary>
         /// Сколько тиков жизни
         /// </summary>
@@ -55,12 +52,14 @@ namespace Vge.Entity.List
         /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize()
             => Size = new SizeEntityBox(this, .4375f, .125f, 10);
 
         /// <summary>
         /// Инициализация физики
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitPhysics(CollisionBase collision)
             => Physics = new PhysicsGround(collision, this, .5f);
 
@@ -70,11 +69,12 @@ namespace Vge.Entity.List
         public override void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
         {
             IndexEntity = index;
-            Render = new EntityRenderItem(this, entitiesRenderer, Item);
+            Render = new EntityRenderItem(this, entitiesRenderer);
             _InitMetaData();
             _InitSize();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitMetaData()
         {
             MetaData = new DataWatcher(1);
@@ -85,6 +85,7 @@ namespace Vge.Entity.List
         /// <summary>
         /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool CanBeCollidedWith() => true;
 
         /// <summary>
@@ -170,6 +171,40 @@ namespace Vge.Entity.List
         {
             UpdatePositionServer();
             Render.UpdateClient(world, deltaTime);
+        }
+
+        /// <summary>
+        /// Возвращает ItemStack, соответствующий Entity 
+        /// (Примечание: если предмет не существует, регистрируется ошибка, 
+        /// но все равно возвращается ItemStack, содержащий Block.stone)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ItemStack GetEntityItemStack()
+        {
+            ItemStack itemStack = MetaData.GetItemStack(0);
+            if (itemStack == null)
+            {
+                // TODO::2025-08-26 Ошибка отсутствия стака
+                return null;
+                //if (World != null && World is WorldServer worldServer)
+                //{
+                //    worldServer.Log.Log("Item entity " + Id + " has no item?!");
+                //}
+                //return new ItemStack(Blocks.GetBlockCache(EnumBlock.Stone));
+            }
+            return itemStack;
+        }
+
+        /// <summary>
+        /// Заменить данные по стаку в сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEntityItemStack(ItemStack itemStack)
+        {
+            if (!MetaData.UpdateObject(0, itemStack))
+            {
+                MetaData.SetObjectWatched(0);
+            }
         }
     }
 }

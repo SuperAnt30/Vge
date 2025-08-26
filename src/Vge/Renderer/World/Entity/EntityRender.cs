@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Vge.Entity;
+using Vge.Entity.Render;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World.Entity
@@ -15,10 +15,10 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly MeshEntity _mesh;
 
-        public EntityRender(GL gl, ResourcesEntity resourcesEntity)
+        public EntityRender(GL gl, VertexEntityBuffer buffers)
         {
             _mesh = new MeshEntity(gl);
-            _mesh.Reload(resourcesEntity.BufferMesh);
+            _mesh.Reload(buffers);
         }
 
         /// <summary>

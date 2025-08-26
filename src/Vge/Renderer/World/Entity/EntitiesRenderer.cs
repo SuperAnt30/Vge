@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
@@ -47,6 +48,11 @@ namespace Vge.Renderer.World.Entity
         private EntityRender[] _entityRender;
 
         /// <summary>
+        /// Массив всех типов предметов
+        /// </summary>
+        private EntityRender[] _itemRender;
+
+        /// <summary>
         /// Id маленьких текстур
         /// </summary>
         private uint _idTextureSmall;
@@ -59,7 +65,6 @@ namespace Vge.Renderer.World.Entity
         /// Шейдора для сущностей
         /// </summary>
         public readonly ShadersEntity ShsEntity;
-        
 
         public EntitiesRenderer(GameBase game, ArrayFast<ChunkRender> arrayChunkRender) : base(game)
         {
@@ -103,10 +108,22 @@ namespace Vge.Renderer.World.Entity
             _entityRender = new EntityRender[count];
             for (ushort id = 0; id < count; id++)
             {
-                if (Ce.Entities.GetModelEntity(id) is ResourcesEntity resourcesEntity)
+                if (Ce.Entities.GetResourcesEntity(id) is ResourcesEntity resourcesEntity)
                 {
-                    _entityRender[id] = new EntityRender(gl, resourcesEntity);
+                    _entityRender[id] = new EntityRender(gl, resourcesEntity.BufferMesh);
                 }
+            }
+            // Создаём объекты рендора всех типов предметов
+            count = Ce.Items.Count;
+            _itemRender = new EntityRender[count];
+            for (ushort id = 0; id < count; id++)
+            {
+                VertexEntityBuffer buffer = Ce.Items.ItemObjects[id].GetBuffer();
+                if (buffer == null)
+                {
+                    throw new Exception(Sr.GetString(Sr.BufferItemIsMissing, Ce.Items.ItemAlias[id]));
+                }
+                _itemRender[id] = new EntityRender(gl, Ce.Items.ItemObjects[id].GetBuffer());
             }
         }
 
@@ -233,6 +250,12 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EntityRender GetEntityRender(int indexEntity) => _entityRender[indexEntity];
+        /// <summary>
+        /// Получить объект рендера предмета по индексу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public EntityRender GetItemRender(int indexEntity) => _itemRender[indexEntity];
+        
 
         /// <summary>
         /// Метод для прорисовки основного игрока

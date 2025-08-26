@@ -8,17 +8,26 @@ out vec4 f_color;
 
 uniform sampler2DArray sampler_small;
 uniform sampler2DArray sampler_big;
+uniform sampler2D atlas;
 
 void main()
 {
-    if (a_eyeLips > 0) discard;
-    float depth = a_depth;
-    bool big = depth > 65535;
-    if (big) depth -= 65536;
-    vec3 uv = vec3(a_texCoord, depth);
     vec4 tex_color;
-    if (big) tex_color = texture(sampler_big, uv);
-    else tex_color = texture(sampler_small, uv);
+    if (a_depth < 0.0)
+    {
+        // Текстура атласа блоков и предметов
+        tex_color = texture(atlas, a_texCoord);
+    }
+    else
+    {
+        if (a_eyeLips > 0) discard;
+        float depth = a_depth;
+        bool big = depth > 65535;
+        if (big) depth -= 65536;
+        vec3 uv = vec3(a_texCoord, depth);
+        if (big) tex_color = texture(sampler_big, uv);
+        else tex_color = texture(sampler_small, uv);
+    }
     if (tex_color.a < 0.1) discard;
     f_color = tex_color;
 }

@@ -9,11 +9,6 @@ namespace Vge.Entity.Render
     public class EntityRenderClient : EntityRenderAbstract
     {
         /// <summary>
-        /// Статичный объект сетки типа сущности, не меняется
-        /// </summary>
-        protected EntityRender _entityRender;
-
-        /// <summary>
         /// Объект для рендера слоёв (предметов или одежды) на сущности
         /// </summary>
         protected readonly EntityLayerRender _entityLayerRender;
@@ -68,7 +63,7 @@ namespace Vge.Entity.Render
                 _lightBlock, _lightSky,
                 _resourcesEntity.GetDepthTextureAndSmall(),
                 _resourcesEntity.GetIsAnimation(), 0
-                );
+            );
 
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();

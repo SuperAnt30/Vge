@@ -54,6 +54,8 @@ namespace Vge.Renderer.Shaders
                 Gi.ActiveTextureSamplerSmall);
             gl.Uniform1(_shaderDepthMap.GetUniformLocation("sampler_big"),
                 Gi.ActiveTextureSamplerBig);
+            gl.Uniform1(_shaderDepthMap.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
 
             // Для максимального качества
             _shaderHigh.Bind();
@@ -61,6 +63,8 @@ namespace Vge.Renderer.Shaders
                 Gi.ActiveTextureSamplerSmall);
             gl.Uniform1(_shaderHigh.GetUniformLocation("sampler_big"),
                 Gi.ActiveTextureSamplerBig);
+            gl.Uniform1(_shaderHigh.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
             // Активация текстуры карты света
             gl.Uniform1(_shaderHigh.GetUniformLocation("light_map"),
                 Gi.ActiveTextureLightMap);
@@ -74,6 +78,8 @@ namespace Vge.Renderer.Shaders
                 Gi.ActiveTextureSamplerSmall);
             gl.Uniform1(_shaderLow.GetUniformLocation("sampler_big"),
                 Gi.ActiveTextureSamplerBig);
+            gl.Uniform1(_shaderLow.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
             // Активация текстуры карты света
             gl.Uniform1(_shaderLow.GetUniformLocation("light_map"),
                 Gi.ActiveTextureLightMap);

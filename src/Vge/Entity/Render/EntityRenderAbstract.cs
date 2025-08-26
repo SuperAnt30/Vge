@@ -11,6 +11,11 @@ namespace Vge.Entity.Render
     public abstract class EntityRenderAbstract : EntityRenderBase
     {
         /// <summary>
+        /// Статичный объект сетки типа сущности, не меняется
+        /// </summary>
+        protected EntityRender _entityRender;
+
+        /// <summary>
         /// Сущность к которой прекреплена физика
         /// </summary>
         public readonly EntityBase Entity;

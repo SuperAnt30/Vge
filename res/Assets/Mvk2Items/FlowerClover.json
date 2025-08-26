@@ -1,5 +1,5 @@
 {
     MaxStackSize: 50,
-    Sprite: "Blocks/FlowerClover"
-    #ShapeBlock: "FlowerClover"
+    #Sprite: "Blocks/FlowerClover"
+    ShapeBlock: "FlowerClover"
 }

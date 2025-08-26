@@ -168,7 +168,7 @@ namespace Vge.Entity
         public virtual void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
         {
             IndexEntity = index;
-            if (Ce.Entities.GetModelEntity(IndexEntity) is ResourcesEntity resourcesEntity)
+            if (Ce.Entities.GetResourcesEntity(IndexEntity) is ResourcesEntity resourcesEntity)
             {
                 Render = resourcesEntity.IsAnimation
                     ? resourcesEntity.BlinkEye != 0

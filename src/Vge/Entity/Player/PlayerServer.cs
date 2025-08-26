@@ -6,6 +6,7 @@ using System.Text;
 using Vge.Entity.List;
 using Vge.Entity.Render;
 using Vge.Games;
+using Vge.Item;
 using Vge.Management;
 using Vge.NBT;
 using Vge.Network;
@@ -346,7 +347,8 @@ namespace Vge.Entity.Player
         }
 
 
-        private bool isBox = true;
+        private int idBox = 0;
+        private int idItem = 0;
 
         /// <summary>
         /// Пакет: Игрок копает / ломает
@@ -368,19 +370,31 @@ namespace Vge.Entity.Player
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
-                   // isBox = false;
-                    int id = _server.Worlds.GetDebugIndex(isBox);
+                    // isBox = false;
+                    //isBox = true;
+                    int id = _server.Worlds.GetDebugIndex(idBox);
                     if (id == -1)
                     {
                         return;
                     }
                     try
                     {
-                        isBox = !isBox;
                         //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
                         // Для сервера
                         EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, world.Collision);
-                        if (entity is EntityItem entityItem) entityItem.InitRun(this, i);
+                        if (entity is EntityItem entityItem)
+                        {
+                            entityItem.InitRun(this, i);
+                            entityItem.SetEntityItemStack(new ItemStack(Ce.Items.ItemObjects[idItem], 1));
+                            idItem++;
+                            if (idItem > 3)
+                            {
+                                idItem = 0;
+                                idBox++;
+                            }
+                        }
+                        else idBox++;
+                        if (idBox > 2) idBox = 0;
                         if (entity is EntityThrowable entityThrowable) entityThrowable.InitRun(this, i);
                         entity.SetEntityId(_server.LastEntityId());
                         world.SpawnEntityInWorld(entity);

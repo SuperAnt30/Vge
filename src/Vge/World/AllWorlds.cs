@@ -41,7 +41,7 @@ namespace Vge.World
         /// <summary>
         /// Получить индекс кидаемого блока
         /// </summary>
-        public virtual int GetDebugIndex(bool b) => -1;
+        public virtual int GetDebugIndex(int b) => -1;
 
         /// <summary>
         /// Такт сервера

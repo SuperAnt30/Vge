@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Item;
 using Vge.Network;
 using WinGL.Util;
 
@@ -47,7 +48,7 @@ namespace Vge.Entity.MetaData
             if (type == typeof(int)) return EnumTypeWatcher.Int;
             if (type == typeof(float)) return EnumTypeWatcher.Float;
             if (type == typeof(string)) return EnumTypeWatcher.String;
-            //if (type == typeof(ItemStack)) return EnumTypeWatcher.ItemStack;
+            if (type == typeof(ItemStack)) return EnumTypeWatcher.ItemStack;
             if (type == typeof(Vector3i)) return EnumTypeWatcher.Vector3i;
             if (type == typeof(Vector3)) return EnumTypeWatcher.Vector3;
 
@@ -203,13 +204,13 @@ namespace Vge.Entity.MetaData
         /// <summary>
         /// Получить строковое значение по индексу
         /// </summary>
-        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetString(int id) => (string)_watched[id].WatchedObject;
         /// <summary>
         /// Получить объект ItemStack по индексу
         /// </summary>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public ItemStack GetItemStack(int id) => GetWatchedObject(id).WatchedObject as ItemStack;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ItemStack GetItemStack(int id) => _watched[id].WatchedObject as ItemStack;
         /// <summary>
         /// Получить объект BlockPos по индексу
         /// </summary>
@@ -252,7 +253,8 @@ namespace Vge.Entity.MetaData
                             watchables[index] = new WatchableObject(enumType, index, stream.Float()); break;
                         case EnumTypeWatcher.String:
                             watchables[index] = new WatchableObject(enumType, index, stream.String()); break;
-                        //case 5: ItemStack.WriteStream(watchableObject.GetObject() as ItemStack, stream); break;
+                        case EnumTypeWatcher.ItemStack:
+                            watchables[index] = new WatchableObject(enumType, index, ItemStack.ReadStream(stream)); break;
                         case EnumTypeWatcher.Vector3i:
                             watchables[index] = new WatchableObject(enumType, index,
                                 new Vector3i(stream.Int(), stream.Int(), stream.Int())); break;
@@ -284,7 +286,7 @@ namespace Vge.Entity.MetaData
                         case EnumTypeWatcher.Int: stream.Int((int)watchableObject.WatchedObject); break;
                         case EnumTypeWatcher.Float: stream.Float((float)watchableObject.WatchedObject); break;
                         case EnumTypeWatcher.String: stream.String((string)watchableObject.WatchedObject); break;
-                        //case 5: ItemStack.WriteStream(watchableObject.GetObject() as ItemStack, stream); break;
+                        case EnumTypeWatcher.ItemStack: ItemStack.WriteStream(watchableObject.WatchedObject as ItemStack, stream); break;
                         case EnumTypeWatcher.Vector3i:
                             Vector3i veci = (Vector3i)watchableObject.WatchedObject;
                             stream.Int(veci.X);

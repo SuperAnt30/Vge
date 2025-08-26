@@ -2,5 +2,5 @@
     Parent: "Base",
     MaxStackSize: 5,
     ShapeBlock: "Debug",
-    View: { RotateY: 90, UvLock:true }
+    #View: { RotateY: 90, UvLock:true }
 }

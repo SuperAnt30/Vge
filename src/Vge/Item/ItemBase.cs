@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Render;
 using Vge.Json;
 using Vge.World.Block;
 
@@ -40,9 +42,13 @@ namespace Vge.Item
         #region Для Render
 
         /// <summary>
+        /// Буфер сетки для рендера
+        /// </summary>
+        private VertexEntityBuffer _buffer;
+        /// <summary>
         /// Массив сторон прямоугольных форм
         /// </summary>
-        private QuadSide[] _quads;
+        //private QuadSide[] _quads;
         /// <summary>
         /// Массив сторон прямоугольных форм для Gui
         /// </summary>
@@ -61,17 +67,30 @@ namespace Vge.Item
             if (state.Items != null)
             {
                 _ReadStateFromJson(state);
+
+                QuadSide[] quads;
+                float offsetX = 0;
+                float offsetZ = 0;  
                 // Модель
                 if (isItem)
                 {
                     ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                    _quads = shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape);
+                    quads = shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape);
                 }
                 else
                 {
                     ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                    _quads = shapeDefinition.RunShapeItemFromJson(state, shape);
+                    quads = shapeDefinition.RunShapeItemFromJson(state, shape);
+                    offsetX = offsetZ = -.5f;
                 }
+                // Генерируем буффер
+                List<float> listFloat = new List<float>();
+                List<int> listInt = new List<int>();
+                foreach (QuadSide quad in quads)
+                {
+                    quad.GenBuffer(listFloat, listInt, offsetX, offsetZ);
+                }
+                _buffer = new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
             }
             //_InitBlockRender();
         }
@@ -136,10 +155,10 @@ namespace Vge.Item
         #region Render
 
         /// <summary>
-        /// Массив сторон прямоугольных форм для рендера
+        /// Получить буфер сетки предмета для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual QuadSide[] GetQuads() => _quads;
+        public virtual VertexEntityBuffer GetBuffer() => _buffer;
 
         #endregion
 

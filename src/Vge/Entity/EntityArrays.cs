@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Renderer.World.Entity;
 using Vge.World;
 
@@ -51,9 +52,10 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Получить модель сущности по индексу из таблицы сервера.
+        /// Получить ресурсы сущности по индексу из таблицы сервера.
         /// </summary>
-        public ResourcesEntityBase GetModelEntity(ushort index)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ResourcesEntityBase GetResourcesEntity(ushort index)
         {
             if (index < Count)
             {

@@ -297,6 +297,7 @@ namespace Vge.Renderer.World
             _DrawVoxelDense(timeIndex);
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
+
             Entities.Draw(timeIndex);
             // Рендер и прорисовка курсора если это необходимо
             _cursorRender.RenderDraw();
@@ -310,8 +311,6 @@ namespace Vge.Renderer.World
             _DrawVoxelAlpha();
             // Прорисовка руки
             // --- Конец сцены
-
-
 
             // Отладка на экране карта глубины для теней
             //Shadow.DrawQuadDebug(Render.GetOrtho2D());

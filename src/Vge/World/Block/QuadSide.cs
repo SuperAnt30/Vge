@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Collections.Generic;
+using Vge.Util;
 using WinGL.Util;
 
 namespace Vge.World.Block
@@ -500,18 +501,46 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Сгенерировать нормаль
+        /// </summary>
+        private Vector3 _GenNormal()
+        {
+            Vector3 vec0 = Vertex[0].ToPosition();
+            Vector3 vec1 = Vertex[2].ToPosition() - vec0;
+            Vector3 vec2 = Vertex[1].ToPosition() - vec0;
+            return Glm.Cross(vec2.Normalize(), vec1.Normalize()).Normalize();
+        }
+             
+        /// <summary>
         /// Нахождение нормали
         /// </summary>
         public void GenNormal()
         {
-            Vector3 normal = Vertex[0].ToPosition();
-            Vector3 vec1 = Vertex[2].ToPosition() - normal;
-            Vector3 vec2 = Vertex[1].ToPosition() - normal;
-            normal = Glm.Cross(vec2.Normalize(), vec1.Normalize()).Normalize();
+            Vector3 normal = _GenNormal();
             int x = (int)(normal.X * 127) + 127;
             int y = (int)(normal.Y * 127) + 127;
             int z = (int)(normal.Z * 127) + 127;
             Normal = (uint)(x | (y << 8) | (z << 16));
+        }
+
+        /// <summary>
+        /// Сгенерировать буффер для сущности предмета
+        /// </summary>
+        public void GenBuffer(List<float> bufferFloat, List<int> bufferInt, 
+            float offsetX, float offsetZ)
+        {
+            Vector3 normal = _GenNormal();
+            for (int i = 0; i < 4; i++)
+            {
+                bufferFloat.AddRange(new float[] {
+                    Vertex[i].X + offsetX,  
+                    Vertex[i].Y,  
+                    Vertex[i].Z + offsetZ,
+                    normal.X, normal.Y, normal.Z,
+                    Vertex[i].U, Vertex[i].V
+                });
+                bufferInt.AddRange(new int[] { 0, -2 });
+            }
         }
     }
 }

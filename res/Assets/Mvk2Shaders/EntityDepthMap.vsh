@@ -36,7 +36,12 @@ void main()
         }
     }
 	a_texCoord = v_texCoord;
-    if (v_clothId == -1)
+    if (v_clothId == -2)
+    {
+        // Для текстуры атласа блоков и предметов
+        a_depth = -1.0;
+    }
+    else if (v_clothId == -1)
     {
         a_depth = depth;
     }

@@ -14,6 +14,7 @@ namespace Mvk2.World
     {
         int i1;
         int i2;
+        int i3;
 
         public AllWorldsMvk()
         {
@@ -47,8 +48,8 @@ namespace Mvk2.World
             {
                 s = Ce.Entities.EntitiesAlias[id];
                 if (s == "Robinson") i1 = id;
-                //else if (s == "Chicken") i2 = id;
-                else if (s == "Item") i2 = id;
+                else if (s == "Chicken") i2 = id;
+                else if (s == "Item") i3 = id;
             }
             return;
         }
@@ -56,6 +57,11 @@ namespace Mvk2.World
         /// <summary>
         /// Получить индекс кидаемого блока
         /// </summary>
-        public override int GetDebugIndex(bool b) => b ? i1 : i2;
+        public override int GetDebugIndex(int b)
+        {
+            if (b == 1) return i2;
+            if (b == 2) return i3;
+            return i1;
+        }
     }
 }

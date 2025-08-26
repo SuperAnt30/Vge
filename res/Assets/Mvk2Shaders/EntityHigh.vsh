@@ -50,7 +50,12 @@ void main()
     }
 	a_texCoord = v_texCoord;
     a_light = light;
-    if (v_clothId == -1)
+    if (v_clothId == -2)
+    {
+        // Для текстуры атласа блоков и предметов
+        a_depth = -1.0;
+    }
+    else if (v_clothId == -1)
     {
         a_depth = depth;
     }
@@ -58,7 +63,6 @@ void main()
     {
         a_depth = float(v_clothId);
     }
-    
 	if (anim < 1)
 	{
 	  gl_Position = view * vec4(pos + v_position, 1.0); 

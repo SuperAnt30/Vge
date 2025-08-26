@@ -78,6 +78,7 @@ internal sealed class Sr
     internal const string FileMissingJsonItem = "Отсутствует файл json, предмета {0}";
     internal const string TheFigureBlockIsMissing = "Отсутствует фигура блока в json, блока {0}";
     internal const string TheFigureItemIsMissing = "Отсутствует фигура предмета в json, предмет {0}";
+    internal const string BufferItemIsMissing = "Отсутствует буфер сетки, предмет {0}";
     internal const string ErrorReadJsonItemStat = "Ошибка чтения из json, параметров предмета {0}";
     internal const string ErrorReadJsonItemShape = "Ошибка чтения из json, фигура {1} предмета {0}";
 
