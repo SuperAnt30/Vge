@@ -93,8 +93,10 @@ namespace Vge.Entity.Physics
             // Если имеется сила для движения, задаём вектор передвижения
             _LivingUpdateMotion(acceleration);
 
-            // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
+            
+            // Если мелочь убираем
             _ResetMinimumMotion();
+            // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
             float motionX0 = MotionX;
             float motionZ0 = MotionZ;
 
@@ -105,7 +107,11 @@ namespace Vge.Entity.Physics
             }
             else
             {
-                _CheckMoveCollidingPoint();
+                // Фиксируем перемещение
+                if (MotionX != 0 || MotionY != 0 || MotionZ != 0)
+                {
+                    _CheckMoveCollidingPoint();
+                }
             }
 
             // Если мелочь убираем
