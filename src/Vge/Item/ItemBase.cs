@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
 using Vge.Json;
@@ -46,13 +45,9 @@ namespace Vge.Item
         /// </summary>
         private VertexEntityBuffer _buffer;
         /// <summary>
-        /// Массив сторон прямоугольных форм
+        /// Буфер сетки для рендера для Gui
         /// </summary>
-        //private QuadSide[] _quads;
-        /// <summary>
-        /// Массив сторон прямоугольных форм для Gui
-        /// </summary>
-        private QuadSide[] _quadsGui;
+        private VertexEntityBuffer _bufferGui;
 
         #endregion
 
@@ -67,32 +62,22 @@ namespace Vge.Item
             if (state.Items != null)
             {
                 _ReadStateFromJson(state);
-
-                QuadSide[] quads;
-                float offsetX = 0;
-                float offsetZ = 0;  
-                // Модель
+                ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
                 if (isItem)
                 {
-                    ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                    quads = shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape);
+                    // Форма из предета
+                    _buffer = ItemShapeSprite.Convert(
+                        shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)
+                    );
                 }
                 else
                 {
-                    ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                    quads = shapeDefinition.RunShapeItemFromJson(state, shape);
-                    offsetX = offsetZ = -.5f;
+                    // Форма из блока
+                    _buffer = ItemShapeSprite.Convert(
+                        shapeDefinition.RunShapeItemFromJson(state, shape), -.5f, -.5f
+                    );
                 }
-                // Генерируем буффер
-                List<float> listFloat = new List<float>();
-                List<int> listInt = new List<int>();
-                foreach (QuadSide quad in quads)
-                {
-                    quad.GenBuffer(listFloat, listInt, offsetX, offsetZ);
-                }
-                _buffer = new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
             }
-            //_InitBlockRender();
         }
 
         /// <summary>
@@ -104,11 +89,11 @@ namespace Vge.Item
             if (state.Items != null)
             {
                 _ReadStateFromJson(state);
-                // Модель
-                // Cti.Sprite
-                //_ShapeDefinition(state, shape);
+                // Форма из спрайта
+                ItemShapeSprite shapeSprite = new ItemShapeSprite(Alias, state.GetString(Cti.Sprite));
+                _buffer = shapeSprite.GenBuffer();
+                return; 
             }
-            //_InitBlockRender();
         }
 
         /// <summary>

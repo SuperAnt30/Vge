@@ -81,6 +81,7 @@ internal sealed class Sr
     internal const string BufferItemIsMissing = "Отсутствует буфер сетки, предмет {0}";
     internal const string ErrorReadJsonItemStat = "Ошибка чтения из json, параметров предмета {0}";
     internal const string ErrorReadJsonItemShape = "Ошибка чтения из json, фигура {1} предмета {0}";
+    internal const string ErrorTextureItem = "Ошибка текстуры {1} предмета {0}";
 
     #endregion
 }

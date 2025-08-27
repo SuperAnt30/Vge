@@ -19,7 +19,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Псевбоним обязательного блока барьер
         /// </summary>
-        public const string Barrier = "Barrier";
+       // public const string Barrier = "Barrier";
 
         /// <summary>
         /// Таблица блоков для регистрации
@@ -28,7 +28,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Объект генерации атласа блоков и предметов
         /// </summary>
-        public static readonly GeneratingBlockAtlas BlockItemAtlas = new GeneratingBlockAtlas();
+        public static readonly GeneratingAtlas BlockItemAtlas = new GeneratingAtlas();
 
         /// <summary>
         /// Справочник всех форм

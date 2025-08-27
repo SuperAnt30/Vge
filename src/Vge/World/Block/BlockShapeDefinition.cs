@@ -221,11 +221,11 @@ namespace Vge.World.Block
                 if (pole != Pole.All)
                 {
                     int side = (int)pole;
-                    Vector2i resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
-                    sideLiquid = new SideLiquid(side, shade, resTexture.X, typeColor);
-                    if (resTexture.Y > 1)
+                    SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+                    sideLiquid = new SideLiquid(side, shade, resTexture.Index, typeColor);
+                    if (resTexture.CountHeight > 1)
                     {
-                        sideLiquid.SetAnimal((byte)resTexture.Y, (byte)face.GetInt(Ctb.Pause));
+                        sideLiquid.SetAnimal((byte)resTexture.CountHeight, (byte)face.GetInt(Ctb.Pause));
                     }
                     // Ветер
                     if (wind != 0)

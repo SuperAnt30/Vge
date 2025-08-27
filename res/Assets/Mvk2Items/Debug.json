@@ -1,6 +1,7 @@
 {
     Parent: "Base",
     MaxStackSize: 5,
-    ShapeBlock: "Debug",
+    #ShapeBlock: "Debug",
+    Sprite: "Items/Axe"
     #View: { RotateY: 90, UvLock:true }
 }

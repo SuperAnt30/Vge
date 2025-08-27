@@ -12,7 +12,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Справочник текстур, название текстуры, индекс расположения текстуры в атласе
         /// </summary>
-        private readonly Dictionary<string, Vector2i> _textures = new Dictionary<string, Vector2i>();
+        private readonly Dictionary<string, SpriteData> _textures = new Dictionary<string, SpriteData>();
 
         public void RunShape(JsonCompound shape)
         {
@@ -23,8 +23,8 @@ namespace Vge.World.Block
                 texture = shape.GetObject(Ctb.Texture);
                 foreach (JsonKeyValue texutreKV in texture.Items)
                 {
-                    Vector2i res = BlocksReg.BlockItemAtlas.AddSprite(texutreKV.GetString());
-                    if (res.X != -1)
+                    SpriteData res = BlocksReg.BlockItemAtlas.AddSprite(texutreKV.GetString());
+                    if (res.Index != -1)
                     {
                         _textures.Add(texutreKV.Key, res);
                     }
@@ -36,13 +36,13 @@ namespace Vge.World.Block
         /// Получить индекс текстуры, если нет по названию вернёт 0. И количество кадров для анимации, если 2 и более анимация.
         /// 0 должны создать первую текстуру в Debug
         /// </summary>
-        public Vector2i GetResult(string name)
+        public SpriteData GetResult(string name)
         {
             if (_textures.ContainsKey(name))
             {
                 return _textures[name];
             }
-            return new Vector2i(0);
+            return new SpriteData(0);
         }
     }
 }

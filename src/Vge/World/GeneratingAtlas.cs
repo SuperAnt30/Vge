@@ -6,15 +6,19 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Vge.Renderer;
 using Vge.Util;
-using WinGL.Util;
 
-namespace Vge.World.Block
+namespace Vge.World
 {
     /// <summary>
-    /// Создание атласа блоков
+    /// Создание атласа блоков и предметов
     /// </summary>
-    public class GeneratingBlockAtlas
+    public class GeneratingAtlas
     {
+        /// <summary>
+        /// Размер текстуры блока
+        /// </summary>
+        public int TextureBlockSize { get; private set; } = 16;
+
         /// <summary>
         /// Высота
         /// </summary>
@@ -33,14 +37,11 @@ namespace Vge.World.Block
         private bool[,] _mask; 
 
         /// <summary>
-        /// Справочник текстур, название текстуры, индекс расположения текстуры в атласе и количество кадров
+        /// Справочник текстур, название текстуры, индекс расположения текстуры 
+        /// в атласе и количество кадров
         /// </summary>
-        private readonly Dictionary<string, Vector2i> _textures = new Dictionary<string, Vector2i>();
-
-        /// <summary>
-        /// Размер текстуры блока
-        /// </summary>
-        private int _textureBlockSize = 16;
+        private readonly Dictionary<string, SpriteData> _textures = new Dictionary<string, SpriteData>();
+        
         /// <summary>
         /// Количество спрайтов на стороне текстурного атласа
         /// </summary>
@@ -69,7 +70,7 @@ namespace Vge.World.Block
         {
             Ce.TextureAtlasBlockCount = _textureAtlasBlockCount = textureAtlasBlockCount;
             Ce.ShaderAnimOffset = 1f / Ce.TextureAtlasBlockCount;
-            _textureBlockSize = textureBlockSize;
+            TextureBlockSize = textureBlockSize;
             _height = textureAtlasBlockCount * textureBlockSize;
             _stride = _height * 4;
             _buffer = new byte[_stride * _height];
@@ -145,7 +146,7 @@ namespace Vge.World.Block
             _buffer = new byte[0];
         }
 
-        public Vector2i AddSprite(string name)
+        public SpriteData AddSprite(string name)
         {
             if (_textures.ContainsKey(name))
             {
@@ -157,7 +158,7 @@ namespace Vge.World.Block
             if (File.Exists(fileName))
             {
                 //_profiler.StartSection(name);
-                int size = _textureBlockSize; // 16
+                int size = TextureBlockSize; // 16
                 int sizeRGBA = size * 4; // 64
                 BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
                 int index = -1;
@@ -182,18 +183,18 @@ namespace Vge.World.Block
                 }
                 if (index != -1)
                 {
-                    Vector2i res = new Vector2i(index, _BufferCopy(index, w, buffered, name));
+                    SpriteData res = new SpriteData(index, w, _BufferCopy(index, w, buffered, name));
                     _textures.Add(name, res);
                     return res;
                 }
                 //_profiler.EndSectionLog();
             }
-            return new Vector2i(-1, 0);
+            return new SpriteData(-1);
         }
 
         private int _BufferCopy(int index, int w, BufferedImage buffered, string name)
         {
-            int size = _textureBlockSize; // 16
+            int size = TextureBlockSize; // 16
             int sizeRGBA = size * 4; // 64
             int sizeRGBAw = sizeRGBA * w;
             int index2 = index / _textureAtlasBlockCount * _stride * size
@@ -203,7 +204,7 @@ namespace Vge.World.Block
                 Buffer.BlockCopy(buffered.Buffer, y * sizeRGBAw,
                     _buffer, index2 + (_stride * y), sizeRGBAw);
             }
-            return buffered.Height / _textureBlockSize;
+            return buffered.Height / TextureBlockSize;
         }
 
         /// <summary>

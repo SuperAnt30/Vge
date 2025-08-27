@@ -1,6 +1,5 @@
 ﻿using Vge.Json;
 using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -167,11 +166,11 @@ namespace Vge.World.Block
                 }
             }
 
-            Vector2i resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
-            _quad.SetTexture(resTexture.X, u1, v1, u2, v2, uvRotate);
-            if (resTexture.Y > 1)
+            SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+            _quad.SetTexture(resTexture.Index, u1, v1, u2, v2, uvRotate);
+            if (resTexture.CountHeight > 1)
             {
-                _quad.SetAnimal((byte)resTexture.Y, (byte)face.GetInt(Ctb.Pause));
+                _quad.SetAnimal((byte)resTexture.CountHeight, (byte)face.GetInt(Ctb.Pause));
             }
         }
 
