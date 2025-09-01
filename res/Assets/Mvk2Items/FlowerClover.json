@@ -1,5 +1,7 @@
 {
     MaxStackSize: 50,
-    Sprite: "Blocks/FlowerClover"
+    #Sprite: "Blocks/FlowerClover"
     #ShapeBlock: "FlowerClover"
+    Shape: "Axe"
+    View: { Offset:[-8, 0, -8] }
 }

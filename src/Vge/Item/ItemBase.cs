@@ -74,7 +74,7 @@ namespace Vge.Item
                 {
                     // Форма из блока
                     _buffer = ItemShapeSprite.Convert(
-                        shapeDefinition.RunShapeItemFromJson(state, shape), -.5f, -.5f
+                        shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)//, -.5f, -.5f
                     );
                 }
             }

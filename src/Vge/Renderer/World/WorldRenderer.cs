@@ -239,8 +239,11 @@ namespace Vge.Renderer.World
             _BindChunkVoxel();
 
             //Render.LightMap.Update(_game.World.Settings.HasNoSky, Glm.Cos(_game.TickCounter * .01f), .24f );
-                //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
-            Render.LightMap.Update(_game.World.Settings);
+            //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
+            if (_game.World.Settings != null)
+            {
+                Render.LightMap.Update(_game.World.Settings);
+            }
 
             // Считаем вектор, матрицы и прочее из календаря
             _GenVectorLightСalendar(0);
@@ -318,8 +321,8 @@ namespace Vge.Renderer.World
         /// </summary>
         private void _GenVectorLightСalendar(float timeIndex)
         {
-            //if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
-            //{
+            if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
+            {
                 IСalendar calendar = _game.World.Settings.Calendar;
                 calendar.UpdateFrame(timeIndex);
                 Gi.ViewLightDir = calendar.GetVectorLight();
@@ -332,7 +335,7 @@ namespace Vge.Renderer.World
                 Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 2, sosm);
                 matrix.Multiply(Glm.LookAt(Gi.ViewLightDir, new Vector3(0, 0, 0), vu));
                 matrix.ConvArray(Gi.MatrixViewDepthMap);
-            //}
+            }
         }
 
         /// <summary>

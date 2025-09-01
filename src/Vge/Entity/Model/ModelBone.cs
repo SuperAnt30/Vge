@@ -34,8 +34,8 @@ namespace Vge.Entity.Model
         /// </summary>
         public static EnumType ConvertPrefix(string prefix)
         {
-            if (prefix == "_") return EnumType.Folder;
-            if (prefix == "#") return EnumType.Layer;
+            if (prefix[0] == '_') return EnumType.Folder;
+            if (prefix.Length > 1 && prefix[0] == 'L' && prefix[1] == '-') return EnumType.Layer;
             return EnumType.Bone;
         }
 

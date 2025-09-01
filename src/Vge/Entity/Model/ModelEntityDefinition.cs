@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Render;
 using Vge.Json;
@@ -369,7 +368,7 @@ namespace Vge.Entity.Model
                     JsonCompound compound = outliner.GetCompound(i);
                     _log = "BoneNameUuid";
                     string name = compound.GetString(Cte.Name);
-                    EnumType typeFolder = ConvertPrefix(name.Substring(0, 1));
+                    EnumType typeFolder = ConvertPrefix(name);
                     if (typeFolder != EnumType.Bone || !compound.IsKey(Cte.Visibility) || compound.GetBool(Cte.Visibility))
                     {
                         ModelBone bone = new ModelBone(compound.GetString(Cte.Uuid),

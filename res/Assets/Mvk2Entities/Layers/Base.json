@@ -1,5 +1,5 @@
 {
-    Model: "Player",
+    Model: "PlayerBE",
     Layers: [
         {
             Group: "BraceletL",
@@ -16,13 +16,13 @@
         {
             Group: "Trousers",
             Name: "Trousers1",
-            Folder: ["#TrousersB1", "#TrousersH1", "#TrousersR1", "#TrousersL1", "#TrousersSR1", "#TrousersSL1"],
+            Folder: ["L-TrousersB1", "L-TrousersH1", "L-TrousersR1", "L-TrousersL1", "L-TrousersSR1", "L-TrousersSL1"],
             Texture: "Base"
         },
         {
             Group: "Cap",
             Name: "Cap1",
-            Folder: ["#Cap1"],
+            Folder: ["L-Cap1"],
             Texture: "Base"
         }
     ]
