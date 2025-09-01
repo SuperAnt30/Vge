@@ -70,8 +70,10 @@ internal sealed class Sr
     internal const string FileMissingModelJsonEntity = "Отсутствует модель в файле json сущности {0}";
     internal const string FileMissingModelEntity = "Отсутствует файл модели сущности {0}";
     internal const string ErrorReadJsonModelEntity = "Ошибка чтения из json, параметра {1} сущности {0}";
+    internal const string ErrorReadFileModel = "Ошибка чтения из фала, параметра {0}";
     internal const string RequiredParameterIsMissingEntity = "Отсутствует требуемый параметр {1} сущности {0}";
     internal const string RequiredParameterIsMissingLayers = "Отсутствует требуемый параметр {1} слоях {0}";
+    internal const string RequiredParameterIsMissing = "Отсутствует требуемый параметр {0}";
     internal const string TransferNestedFolderMustNotBeDeeperThan = "Переносящая вложенная папка не должна быть глубже {1}. Сущность {0}";
     internal const string InvalidTriggerInAnimationEntity = "Не верный триггер {0} в анимации {1}, сущности {2}";
     internal const string SpriteErrorWidthIsIncorrect = "Ошибка спрайта [{0}], ширина не кратна {1}";

@@ -68,6 +68,26 @@ namespace Vge.Json
             }
         }
 
+        public JsonRead(string name, string text)
+        {
+            _fileName = name;
+            string[] lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            foreach(string strLine in lines)
+            {
+                // комментарий
+                if (Sundry.ChekComment(strLine)) continue;
+                _body += strLine + " ";
+            }
+            if (_body != "")
+            {
+                _finishIndex = _body.Length;
+                _body += " ";
+                _index = 0;
+                Compound = new JsonCompound(_FindCompound());
+                IsThereFile = true;
+            }
+        }
+
         /// <summary>
         /// Повторная дикомпрессия, для отладки скорости
         /// </summary>
