@@ -59,7 +59,7 @@ namespace Vge.Item
         private void _ShapeItem(JsonCompound view, JsonCompound shape)
         {
             // Собираем дополнительные данные на фигуру
-            _shapeAdd.RunShape(view);
+            _shapeAdd.RunShape(view, false);
             // Имеется форма
             _log = Ctb.Texture;
             

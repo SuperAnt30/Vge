@@ -1,7 +1,7 @@
 {
     Elements: [
-        {   From: [ -2, 0, 8 ],
-            To: [ 18, 16, 8 ],
+        {   From: [ -10, 0, 0 ],
+            To: [ 10, 16, 0 ],
             Rotate: [ 0, 45, 0 ],
             Shade: true,
             Sharpness: true,
@@ -11,8 +11,8 @@
                 { Side:"South", Texture:"All", Uv:[16, 0, 0, 16] }
             ]
         },
-        {   From: [ 8, 0, -2 ],
-            To: [ 8, 16, 18 ],
+        {   From: [ 0, 0, -10 ],
+            To: [ 0, 16, 10 ],
             Rotate: [ 0, 45, 0 ],
             Shade: true,
             Sharpness: true,

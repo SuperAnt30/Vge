@@ -5,8 +5,8 @@
         Add: "Blocks/FlowerClover"
     },
     Elements: [
-        {   From: [ 0, 8, 0 ],
-            To: [ 8, 16, 16 ],
+        {   From: [ -8, 8, -8 ],
+            To: [ 0, 16, 8 ],
             #Rotate: [45, 0, 0],
 #            Translate: [-4, 0, -4],
             Faces: [
@@ -17,8 +17,8 @@
                 { Texture:"All", Side:"West", Uv:[0, 0, 16, 8]}
             ]
         },
-        {   From: [ 0, 0, 0 ],
-            To: [ 16, 8, 16 ],
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 8, 8 ],
             Faces: [
                 { Texture:"All", Side:"Down", Uv:[0, 0, 16, 16] },
                 { Texture:"Up", Side:"Up", Uv:[0, 0, 16, 16], Pause:15 },
@@ -28,8 +28,8 @@
                 { Texture:"All", Side:"West", Uv:[0, 8, 16, 16]}
             ]
         },
-        {   From: [ 0, 0, 0 ],
-            To: [ 16, 16, 16 ],
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
             Faces: [
                 { Texture:"Add", Side:"Down", Uv:[0, 0, 16, 16] },
             ]

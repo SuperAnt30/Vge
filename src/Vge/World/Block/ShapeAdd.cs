@@ -23,21 +23,31 @@ namespace Vge.World.Block
         /// <summary>
         /// Смещение фигуры
         /// </summary>
-        private float[] _offset = new float[0];
+        private int[] _offset = new int[0];
 
-        public void RunShape(JsonCompound view)
+        public void RunShape(JsonCompound view, bool isBlock)
         {
             if (view.Items != null)
             {
                 IsOffset = view.IsKey(Ctb.Offset);
                 if (IsOffset)
                 {
-                    _offset = view.GetArray(Ctb.Offset).ToArrayFloat();
+                    _offset = view.GetArray(Ctb.Offset).ToArrayInt();
                 }
                 else
                 {
-                    _offset = new float[0];
+                    _offset = new int[3];
                 }
+
+                // Если блок, смещаем на край блока, 0 .. +16 чтоб был.
+                // А был до этого -8 .. +8
+                if (isBlock)
+                {
+                    _offset[0] += 8;
+                    _offset[2] += 8;
+                    IsOffset = _offset[0] != 0 || _offset[1] != 0 || _offset[2] != 0;
+                }
+                
                 // Имеется вращение по Y 90 | 180 | 270
                 RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
 
