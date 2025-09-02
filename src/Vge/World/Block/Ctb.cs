@@ -99,9 +99,9 @@
         /// </summary>
         public const string To = "To";
         /// <summary>
-        /// Смещение в элементе, после вращения px. ([x, y, z]), координаты float
+        /// Центральная точка вращения куба. ([x, y, z]), координаты float
         /// </summary>
-        public const string Translate = "Translate";
+        public const string Origin = "Origin";
         /// <summary>
         /// Задаём вращение блока от центра, в градусах
         /// </summary>

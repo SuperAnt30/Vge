@@ -100,24 +100,17 @@ namespace Vge.Item
             arInt = element.GetArray(Ctb.To).ToArrayInt();
             shapeFace.SetTo(arInt[0], arInt[1], arInt[2]);
 
-            // Перемещение элемента
-            _log = Ctb.Translate;
-            if (element.IsKey(Ctb.Translate))
-            {
-                float[] xyz = element.GetArray(Ctb.Translate).ToArrayFloat();
-                shapeFace.SetTranslate(xyz[0], xyz[1], xyz[2]);
-            }
-            else
-            {
-                shapeFace.NotTranslate();
-            }
-
             // Вращение по центру блока
             _log = Ctb.Rotate;
             if (element.IsKey(Ctb.Rotate))
             {
-                float[] ypr = element.GetArray(Ctb.Rotate).ToArrayFloat();
-                shapeFace.SetRotate(ypr[0], ypr[1], ypr[2]);
+                float[] rotate = element.GetArray(Ctb.Rotate).ToArrayFloat();
+                float[] origin = element.IsKey(Ctb.Origin)
+                    ? element.GetArray(Ctb.Origin).ToArrayFloat()
+                    : new float[3];
+                shapeFace.SetRotate(rotate[0], rotate[1], rotate[2],
+                    origin[0], origin[1], origin[2]);
+
             }
             else
             {

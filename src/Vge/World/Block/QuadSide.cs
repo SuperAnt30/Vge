@@ -249,20 +249,23 @@ namespace Vge.World.Block
         /// <summary>
         /// Задать вращение в градусах по центру блока
         /// </summary>
-        public QuadSide SetRotate(float yaw, float pitch, float roll)
+        public QuadSide SetRotate(float xR, float yR, float zR, float xO, float yO, float zO)
         {
             Vector3 vec;
             for (int i = 0; i < 4; i++)
             {
-                vec = Vertex[i].ToPosition() - .5f;
+                vec = Vertex[i].ToPosition();
+                vec.X -= xO;
+                vec.Y -= yO;
+                vec.Z -= zO;
                 // Так правильно по Blockbench
-                if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
-                if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
-                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+                if (xR != 0) vec = Glm.Rotate(vec, Glm.Radians(xR), new Vector3(1, 0, 0));
+                if (yR != 0) vec = Glm.Rotate(vec, Glm.Radians(yR), new Vector3(0, 1, 0));
+                if (zR != 0) vec = Glm.Rotate(vec, Glm.Radians(zR), new Vector3(0, 0, 1));
 
-                Vertex[i].X = Mth.Round(vec.X + .5f, 3);
-                Vertex[i].Y = Mth.Round(vec.Y + .5f, 3);
-                Vertex[i].Z = Mth.Round(vec.Z + .5f, 3);
+                Vertex[i].X = Mth.Round(vec.X + xO, 3);
+                Vertex[i].Y = Mth.Round(vec.Y + yO, 3);
+                Vertex[i].Z = Mth.Round(vec.Z + zO, 3);
             }
             return this;
         }
@@ -275,7 +278,7 @@ namespace Vge.World.Block
         {
             if (rotate != 0)
             {
-                SetRotate(rotate, 0, 0);
+                SetRotate(0, rotate, 0, .5f, 0, .5f);
                 Side = PoleConvert.RotateY(Side, rotate);
                 LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             }
@@ -467,14 +470,16 @@ namespace Vge.World.Block
                 yf = y / 16f;
                 for (int x = 0; x < 16; x++)
                 {
-                    xf = x / 16f;
-                    b = xf >= x1 && xf < x2 && yf >= y1 && yf < y2;
-                    //s += b ? "1" : "0";
-                    if (b)
+                    if ((ar[i] & (ulong)(1L << index)) == 0)
                     {
-                        ar[i] += (ulong)(1L << index);
+                        xf = x / 16f;
+                        b = xf >= x1 && xf < x2 && yf >= y1 && yf < y2;
+                        //s += b ? "1" : "0";
+                        if (b)
+                        {
+                            ar[i] += (ulong)(1L << index);
+                        }
                     }
-
                     if (++index > 63)
                     {
                         index = 0;
@@ -542,5 +547,8 @@ namespace Vge.World.Block
                 bufferInt.AddRange(new int[] { 0, -2 });
             }
         }
+
+        public override string ToString()
+            => "Side:" + Side + (NotExtremeSide ? " NotExtremeSide" : "");
     }
 }

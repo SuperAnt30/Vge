@@ -143,6 +143,14 @@ namespace Vge.Json.Bbmodel
                     fvs = elements[i].GetArray(Ctbb.Rotation).ToArrayFloat();
                     _textOut += T + T + T + "Rotate: [" + _ToFloat(fvs[0]) + ", "
                         + _ToFloat(fvs[1]) + ", " + _ToFloat(fvs[2]) + "],\r\n";
+
+                    if (elements[i].IsKey(Ctbb.Origin))
+                    {
+                        _log = Ctbb.Origin;
+                        fvs = elements[i].GetArray(Ctbb.Origin).ToArrayFloat();
+                        _textOut += T + T + T + "Origin: [" + _ToFloat(fvs[0]) + ", "
+                            + _ToFloat(fvs[1]) + ", " + _ToFloat(fvs[2]) + "],\r\n";
+                    }
                 }
 
                 _Faces(elements[i]);

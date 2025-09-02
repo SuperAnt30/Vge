@@ -30,21 +30,17 @@ namespace Vge.World.Block
         /// </summary>
         private int _x1, _y1, _z1, _x2, _y2, _z2;
         /// <summary>
-        /// Имеется ли смещение объекта после вращения
-        /// </summary>
-        private bool _isTranslate;
-        /// <summary>
-        /// Координаты смещения блока, задаются в пикселах 16 сторона блока
-        /// </summary>
-        private float _xT, _yT, _zT;
-        /// <summary>
         /// Имеется ли вращение
         /// </summary>
         private bool _isRotate;
         /// <summary>
-        /// Параметры вращения по центру блока
+        /// Параметры вращения
         /// </summary>
-        private float _yaw, _pitch, _roll;
+        private float _xR, _yR, _zR;
+        /// <summary>
+        /// Координаты центра вращения
+        /// </summary>
+        private float _xO, _yO, _zO;
 
         public ShapeFace(ShapeAdd shapeAdd, ShapeTexture shapeTexture)
         {
@@ -70,32 +66,17 @@ namespace Vge.World.Block
             _z2 = z;
         }
         /// <summary>
-        /// Задаём смещение в элементе, после вращения, в пикселах 16 на стороне блока
-        /// </summary>
-        public void SetTranslate(float x, float y, float z)
-        {
-            _isTranslate = true;
-            _xT = x / 16f;
-            _yT = y / 16f;
-            _zT = z / 16f;
-        }
-        /// <summary>
-        /// Параметр нет смещения
-        /// </summary>
-        public void NotTranslate()
-        {
-            _isTranslate = false;
-            _xT = _yT = _zT = 0;
-        }
-        /// <summary>
         /// Задаём вращение блока от центра, в градусах
         /// </summary>
-        public void SetRotate(float yaw, float pitch, float roll)
+        public void SetRotate(float xR, float yR, float zR, float xO, float yO, float zO)
         {
             _isRotate = true;
-            _yaw = yaw;
-            _pitch = pitch;
-            _roll = roll;
+            _xR = xR;
+            _yR = yR;
+            _zR = zR;
+            _xO = xO / 16f;
+            _yO = yO / 16f;
+            _zO = zO / 16f;
         }
         /// <summary>
         /// Параметр нет вращения
@@ -103,7 +84,7 @@ namespace Vge.World.Block
         public void NotRotate()
         {
             _isRotate = false;
-            _yaw = _pitch = _roll = 0;
+            _yR = _xR = _zR = 0;
         }
 
         public void RunShape(JsonCompound face)
@@ -115,11 +96,7 @@ namespace Vge.World.Block
             _quad.SetSide(pole, Shade, _x1, _y1, _z1, _x2, _y2, _z2);
             if (_isRotate)
             {
-                _quad.SetRotate(_yaw, _pitch, _roll);
-            }
-            if (_isTranslate)
-            {
-                _quad.SetTranslate(_xT, _yT, _zT);
+                _quad.SetRotate(_xR, _yR, _zR, _xO, _yO, _zO);
             }
             if (_shapeAdd.IsOffset)
             {

@@ -1,0 +1,62 @@
+{
+    Texture: {
+        T0: "Blocks/Nest",
+        T1: "Blocks/NestUp"
+    },
+    Elements: [
+        {   From: [-8, 0, -8],
+            To: [8, 6, 8],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0,10,16,16]},
+                { Texture:"T0", Side:"East", Uv:[0,5,16,11]},
+                { Texture:"T0", Side:"South", Uv:[0,2,16,8]},
+                { Texture:"T0", Side:"West", Uv:[0,0,16,6]},
+                { Texture:"T1", Side:"Up"},
+                { Texture:"T0", Side:"Down"}
+            ]
+        },
+        {   From: [-8, 4, -5],
+            To: [-5, 6, 5],
+            Faces: [
+                { Texture:"T0", Side:"East", Uv:[3,0,13,2]}
+            ]
+        },
+        {   From: [5, 4, -5],
+            To: [8, 6, 5],
+            Faces: [
+                { Texture:"T0", Side:"West", Uv:[3,5,13,7]}
+            ]
+        },
+        {   From: [-5, 4, -8],
+            To: [5, 6, -5],
+            Faces: [
+                { Texture:"T0", Side:"South", Uv:[3,11,13,13]}
+            ]
+        },
+        {   From: [-5, 4, 5],
+            To: [5, 6, 8],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0,0,10,0]}
+            ]
+        },
+        {   From: [-5, 0, -5],
+            To: [5, 4, 5],
+            Faces: [
+                { Texture:"T0", Side:"Up", Uv:[0,0,10,10]}
+            ]
+        },
+        {   From: [-3, 4, 2],
+            To: [-1, 7, 4],
+            Rotate: [0, 45, 0],
+            Origin: [-2, 4, 3],
+            Faces: [
+                { Texture:"T1", Side:"North", Uv:[0,0,2,3]},
+                { Texture:"T1", Side:"East", Uv:[0,0,2,3]},
+                { Texture:"T1", Side:"South", Uv:[0,0,2,3]},
+                { Texture:"T1", Side:"West", Uv:[0,0,2,3]},
+                { Texture:"T1", Side:"Up", Uv:[0,0,2,2]},
+                { Texture:"T1", Side:"Down", Uv:[0,0,2,2]}
+            ]
+        }
+    ]
+}

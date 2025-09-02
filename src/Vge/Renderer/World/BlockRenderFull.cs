@@ -433,7 +433,8 @@ namespace Vge.Renderer.World
                     else if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
                     {
                         _emptySide = false;
-                        _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]);
+                        // Плюс пометка +256 чтоб дополнительно отбросили крайнюю сторону в RenderSide()
+                        _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]) | 256;
                     }
                     else
                     {
