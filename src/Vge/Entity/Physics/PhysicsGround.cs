@@ -28,12 +28,20 @@ namespace Vge.Entity.Physics
         /// Инерция в воздухе
         /// </summary>
         private readonly float _airborneInertia;
+        /// <summary>
+        /// Имеет силу передвижения
+        /// </summary>
+        private readonly bool _hasPowerMove;
 
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
         protected PhysicsGround(CollisionBase collision, EntityBase entity)
-            : base(collision, entity) => _airborneInertia = Cp.AirDragWithForce;
+            : base(collision, entity)
+        { 
+            _airborneInertia = Cp.AirDragWithForce;
+            _hasPowerMove = true;
+        }
 
         /// <summary>
         /// Физика для предмета которые не имеет силы для перемещения но может имет отскок от предметов
@@ -158,8 +166,12 @@ namespace Vge.Entity.Physics
                 }
             }
 
-            MotionX = motionX0;
-            MotionZ = motionZ0;
+            if (_hasPowerMove)
+            {
+                // Только если имеет силу передвижения
+                MotionX = motionX0;
+                MotionZ = motionZ0;
+            }
 
             // Параметр падение 
             MotionY -= Cp.Gravity; // minecraft .08f

@@ -370,9 +370,7 @@ namespace Vge.Entity.Player
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
-                    //idBox = 0;
-                    // isBox = false;
-                    //isBox = true;
+                    //idBox = 1;
                     int id = _server.Worlds.GetDebugIndex(idBox);
                     if (id == -1)
                     {
