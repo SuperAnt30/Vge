@@ -90,15 +90,15 @@ namespace Vge.Item
         {
             JsonCompound[] faces;
             ShapeFace shapeFace = new ShapeFace(_shapeAdd, _shapeTexture);
-            int[] arInt;
+            float[] ar;
 
             // Определяем размер
             _log = Ctb.From;
-            arInt = element.GetArray(Ctb.From).ToArrayInt();
-            shapeFace.SetFrom(arInt[0], arInt[1], arInt[2]);
+            ar = element.GetArray(Ctb.From).ToArrayFloat();
+            shapeFace.SetFrom(ar[0], ar[1], ar[2]);
             _log = Ctb.To;
-            arInt = element.GetArray(Ctb.To).ToArrayInt();
-            shapeFace.SetTo(arInt[0], arInt[1], arInt[2]);
+            ar = element.GetArray(Ctb.To).ToArrayFloat();
+            shapeFace.SetTo(ar[0], ar[1], ar[2]);
 
             // Вращение по центру блока
             _log = Ctb.Rotate;

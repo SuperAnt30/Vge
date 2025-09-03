@@ -83,7 +83,8 @@ namespace Vge.World.Block
         /// </summary>
         /// <param name="pole">индекс стороны</param>
         /// <param name="shade">shade Отсутствие оттенка / Нет бокового затемнения, пример: трава, цветы</param>
-        public QuadSide SetSide(Pole pole, bool shade = false, int x1i = 0, int y1i = 0, int z1i = 0, int x2i = 16, int y2i = 16, int z2i = 16)
+        public QuadSide SetSide(Pole pole, bool shade = false,
+            float x1i = 0, float y1i = 0, float z1i = 0, float x2i = 16, float y2i = 16, float z2i = 16)
         {
             float x1 = x1i / 16f;
             float y1 = y1i / 16f;
@@ -183,7 +184,8 @@ namespace Vge.World.Block
         /// <summary>
         /// Задать текстуру, и задать ей размеры не полного сэмпла и можно повернуть кратно 90 гр. 0, 90, 180, 270 
         /// </summary>
-        public QuadSide SetTexture(int numberTexture, int biasU1, int biasV1, int biasU2, int biasV2, int rotateYawUV = 0)
+        public QuadSide SetTexture(int numberTexture, float biasU1, float biasV1,
+            float biasU2, float biasV2, int rotateYawUV = 0)
         {
             float u = (numberTexture % Ce.TextureAtlasBlockCount) * Ce.ShaderAnimOffset;
             float v = numberTexture / Ce.TextureAtlasBlockCount * Ce.ShaderAnimOffset;

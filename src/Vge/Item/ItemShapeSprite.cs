@@ -37,7 +37,8 @@ namespace Vge.Item
         /// </summary>
         public VertexEntityBuffer GenBuffer()
         {
-            int size = BlocksReg.BlockItemAtlas.TextureBlockSize;
+            // TODO::2025-09-03 Вынести в константу, со всеми 16 для блоков и модели
+            int size = 16;// BlocksReg.BlockItemAtlas.TextureBlockSize;
             QuadSide[] quads = new QuadSide[2];
             int min = -8;
             int max = 8;

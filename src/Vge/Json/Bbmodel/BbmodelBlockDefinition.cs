@@ -33,7 +33,10 @@ namespace Vge.Json.Bbmodel
         /// </summary>
         private List<string> _textures = new List<string>();
 
-        public BbmodelBlockDefinition() { }
+        private readonly string _prefix;
+
+        public BbmodelBlockDefinition(bool isBlock)
+            => _prefix = isBlock ? "Blocks" : "Items";
 
         public string Convert(string textIn)
         {
@@ -77,7 +80,6 @@ namespace Vge.Json.Bbmodel
                 }
                 _Textures(textures);
 
-
                 _log = Ctbb.Elements;
                 JsonCompound[] elements = model.GetArray(Ctbb.Elements).ToArrayObject();
                 if (elements.Length == 0)
@@ -110,8 +112,12 @@ namespace Vge.Json.Bbmodel
             for (int i = 0; i < count; i++)
             {
                 string name = textures[i].GetString(Ctbb.Name);
+                if (name.Length > 3 && name.Substring(name.Length - 4, 4).ToLower() == ".png")
+                {
+                    name = name.Substring(0, name.Length - 4);
+                }
                 _textures.Add(name);
-                _textOut += T + T + "T" + i + ": \"Blocks/" + name + "\""
+                _textOut += T + T + "T" + i + ": \"" + _prefix + "/" + name + "\""
                      + (i == countEnd ? "\r\n" : ",\r\n");
             }
             _textOut += T + "},\r\n";
@@ -125,31 +131,20 @@ namespace Vge.Json.Bbmodel
             _textOut += T + "Elements: [\r\n";
             int count = elements.Length;
             int countEnd = elements.Length - 1;
-            int[] ivs;
-            float[] fvs;
             for (int i = 0; i < count; i++)
             {
                 _log = "ElementFromTo";
-                ivs = elements[i].GetArray(Ctbb.From).ToArrayInt();
-                _textOut += T + T + "{   From: [" + ivs[0] + ", " + ivs[1] + ", " 
-                    + ivs[2] + "],\r\n";
-                ivs = elements[i].GetArray(Ctbb.To).ToArrayInt();
-                _textOut += T + T + T + "To: [" + ivs[0] + ", " + ivs[1] + ", " 
-                    + ivs[2] + "],\r\n";
+                _textOut += T + T + "{   From: " + _ToVec(elements[i].GetArray(Ctbb.From).ToArrayFloat()) + ",\r\n";
+                _textOut += T + T + T + "To: " + _ToVec(elements[i].GetArray(Ctbb.To).ToArrayFloat()) + ",\r\n";
 
                 if (elements[i].IsKey(Ctbb.Rotation))
                 {
                     _log = Ctbb.Rotation;
-                    fvs = elements[i].GetArray(Ctbb.Rotation).ToArrayFloat();
-                    _textOut += T + T + T + "Rotate: [" + _ToFloat(fvs[0]) + ", "
-                        + _ToFloat(fvs[1]) + ", " + _ToFloat(fvs[2]) + "],\r\n";
-
+                    _textOut += T + T + T + "Rotate: " + _ToVec(elements[i].GetArray(Ctbb.Rotation).ToArrayFloat()) + ",\r\n";
                     if (elements[i].IsKey(Ctbb.Origin))
                     {
                         _log = Ctbb.Origin;
-                        fvs = elements[i].GetArray(Ctbb.Origin).ToArrayFloat();
-                        _textOut += T + T + T + "Origin: [" + _ToFloat(fvs[0]) + ", "
-                            + _ToFloat(fvs[1]) + ", " + _ToFloat(fvs[2]) + "],\r\n";
+                        _textOut += T + T + T + "Origin: " + _ToVec(elements[i].GetArray(Ctbb.Origin).ToArrayFloat()) + ",\r\n";
                     }
                 }
 
@@ -194,11 +189,11 @@ namespace Vge.Json.Bbmodel
                     + "Side:\"" + _ToUpper(side) + "\"";
                 if (face.IsKey(Ctbb.Uv))
                 {
-                    int[] arInt = face.GetArray(Ctbb.Uv).ToArrayInt();
-                    if (arInt[0] != 0 || arInt[1] != 0 || arInt[2] != 16 || arInt[3] != 16)
+                    float[] ar = face.GetArray(Ctbb.Uv).ToArrayFloat();
+                    if (ar[0] != 0 || ar[1] != 0 || ar[2] != 16 || ar[3] != 16)
                     {
-                        _textOut += ", Uv:[" + arInt[0] + "," + arInt[1] + ","
-                             + arInt[2] + "," + arInt[3] + "]";
+                        _textOut += ", Uv:[" + _ToFloat(ar[0]) + ", " + _ToFloat(ar[1]) + ", "
+                             + _ToFloat(ar[2]) + ", " + _ToFloat(ar[3]) + "]";
                     }
                 }
                     _textOut += "}";
@@ -220,6 +215,9 @@ namespace Vge.Json.Bbmodel
 
         private string _ToFloat(float value)
             => Mth.Round(value, 1).ToString(CultureInfo.InvariantCulture);
+
+        private string _ToVec(float[] vec) => "[" + _ToFloat(vec[0]) + ", " 
+            + _ToFloat(vec[1]) + ", " + _ToFloat(vec[2]) + "]";
 
     }
 }

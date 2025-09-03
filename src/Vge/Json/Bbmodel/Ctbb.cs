@@ -30,11 +30,11 @@
         #region Elements
 
         /// <summary>
-        /// Начальная позиция куба. ([x, y, z]), координаты int
+        /// Начальная позиция куба. ([x, y, z]), координаты float
         /// </summary>
         public const string From = "from";
         /// <summary>
-        /// Конечная позиция куба. ([x, y, z]), координаты int
+        /// Конечная позиция куба. ([x, y, z]), координаты float
         /// </summary>
         public const string To = "to";
 
@@ -53,7 +53,7 @@
         public const string Faces = "faces";
 
         /// <summary>
-        /// Расположение на текстуре. ([u1, v1, u2, v2]), координаты int
+        /// Расположение на текстуре. ([u1, v1, u2, v2]), координаты float
         /// </summary>
         public const string Uv = "uv";
 

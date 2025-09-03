@@ -91,11 +91,11 @@
         /// </summary>
         public const string Faces = "Faces";
         /// <summary>
-        /// Массив начальной точки параллелепипеда px. ([x, y, z]), координаты int
+        /// Массив начальной точки параллелепипеда px. ([x, y, z]), координаты float
         /// </summary>
         public const string From = "From";
         /// <summary>
-        /// Массив конечной точки параллелепипеда px. ([x, y, z]), координаты int
+        /// Массив конечной точки параллелепипеда px. ([x, y, z]), координаты float
         /// </summary>
         public const string To = "To";
         /// <summary>
@@ -138,7 +138,7 @@
         /// </summary>
         public const string TextureFace = "Texture";
         /// <summary>
-        /// Массив координат текстуры, по умолчанию [0, 0, 16, 16]. ([u1, v1, u2, v2]) координаты int
+        /// Массив координат текстуры, по умолчанию [0, 0, 16, 16]. ([u1, v1, u2, v2]) координаты float
         /// </summary>
         public const string Uv = "Uv";
         /// <summary>

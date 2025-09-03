@@ -59,7 +59,8 @@ namespace Vge.World.Block
         private static void _InitializationBegin()
         {
             // Создаём графический объект гдля генерации атласа блокоы
-            BlockItemAtlas.CreateImage(64, 16);
+            // TODO::2025-09-03 вынести в Mvk2
+            BlockItemAtlas.CreateImage(64, 32);
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();

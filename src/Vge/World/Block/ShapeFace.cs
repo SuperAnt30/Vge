@@ -28,7 +28,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Размер формы
         /// </summary>
-        private int _x1, _y1, _z1, _x2, _y2, _z2;
+        private float _x1, _y1, _z1, _x2, _y2, _z2;
         /// <summary>
         /// Имеется ли вращение
         /// </summary>
@@ -50,7 +50,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Указываем начальную точку параллелепипеда
         /// </summary>
-        public void SetFrom(int x, int y, int z)
+        public void SetFrom(float x, float y, float z)
         {
             _x1 = x;
             _y1 = y;
@@ -59,7 +59,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Указываем конечную точку параллелепипеда
         /// </summary>
-        public void SetTo(int x, int y, int z)
+        public void SetTo(float x, float y, float z)
         {
             _x2 = x;
             _y2 = y;
@@ -105,15 +105,15 @@ namespace Vge.World.Block
             }
 
             // Размеры текстуры
-            int u1, v1, u2, v2;
+            float u1, v1, u2, v2;
 
             if (face.IsKey(Ctb.Uv))
             {
-                int[] arInt = face.GetArray(Ctb.Uv).ToArrayInt();
-                u1 = arInt[0];
-                v1 = arInt[1];
-                u2 = arInt[2];
-                v2 = arInt[3];
+                float[] ar = face.GetArray(Ctb.Uv).ToArrayFloat();
+                u1 = ar[0];
+                v1 = ar[1];
+                u2 = ar[2];
+                v2 = ar[3];
             }
             else
             {
@@ -133,7 +133,7 @@ namespace Vge.World.Block
                     if (uvRotate > 270) uvRotate -= 360;
                     if (_shapeAdd.RotateY == 90 || _shapeAdd.RotateY == 270)
                     {
-                        int uv = v1;
+                        float uv = v1;
                         v1 = u1;
                         u1 = uv;
                         uv = v2;
