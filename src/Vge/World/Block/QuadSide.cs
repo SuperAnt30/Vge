@@ -533,16 +533,13 @@ namespace Vge.World.Block
         /// <summary>
         /// Сгенерировать буффер для сущности предмета
         /// </summary>
-        public void GenBuffer(List<float> bufferFloat, List<int> bufferInt, 
-            float offsetX, float offsetZ)
+        public void GenBuffer(List<float> bufferFloat, List<int> bufferInt)
         {
             Vector3 normal = _GenNormal();
             for (int i = 0; i < 4; i++)
             {
                 bufferFloat.AddRange(new float[] {
-                    Vertex[i].X + offsetX,  
-                    Vertex[i].Y,  
-                    Vertex[i].Z + offsetZ,
+                    Vertex[i].X, Vertex[i].Y, Vertex[i].Z,
                     normal.X, normal.Y, normal.Z,
                     Vertex[i].U, Vertex[i].V
                 });

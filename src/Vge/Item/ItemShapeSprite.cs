@@ -59,16 +59,14 @@ namespace Vge.Item
         /// Конвертировать квады в сетку сущности
         /// </summary>
         /// <param name="quads">Массив квадов</param>
-        /// <param name="offsetX">Смещение по X</param>
-        /// <param name="offsetZ">Смещение по Z</param>
-        public static VertexEntityBuffer Convert(QuadSide[] quads, float offsetX = 0, float offsetZ = 0)
+        public static VertexEntityBuffer Convert(QuadSide[] quads)
         {
             // Генерируем буффер
             List<float> listFloat = new List<float>();
             List<int> listInt = new List<int>();
             foreach (QuadSide quad in quads)
             {
-                quad.GenBuffer(listFloat, listInt, offsetX, offsetZ);
+                quad.GenBuffer(listFloat, listInt);
             }
             return new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
         }

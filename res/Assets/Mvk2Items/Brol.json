@@ -1,5 +1,5 @@
 {
     MaxStackSize: 1,
     ShapeBlock: "Brol",
-    View: { Offset:[-8, 0, -8] }
+    #View: { Offset:[-8, 0, -8] }
 }

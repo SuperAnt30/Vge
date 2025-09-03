@@ -5,8 +5,8 @@
         Side: "Blocks/BrolSide",
     },
     Elements: [
-        {   From: [ 0, 0, 0 ],
-            To: [ 16, 16, 16 ],
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
             Faces: [
                 { Texture:"Down", Side:"Down"},
                 { Texture:"Up", Side:"Up"},

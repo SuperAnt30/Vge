@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
 using Vge.Json;
-using Vge.World.Block;
 
 namespace Vge.Item
 {
@@ -63,20 +62,9 @@ namespace Vge.Item
             {
                 _ReadStateFromJson(state);
                 ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                if (isItem)
-                {
-                    // Форма из предета
-                    _buffer = ItemShapeSprite.Convert(
-                        shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)
-                    );
-                }
-                else
-                {
-                    // Форма из блока
-                    _buffer = ItemShapeSprite.Convert(
-                        shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)//, -.5f, -.5f
-                    );
-                }
+                _buffer = ItemShapeSprite.Convert(
+                    shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)
+                );
             }
         }
 
@@ -92,7 +80,6 @@ namespace Vge.Item
                 // Форма из спрайта
                 ItemShapeSprite shapeSprite = new ItemShapeSprite(Alias, state.GetString(Cti.Sprite));
                 _buffer = shapeSprite.GenBuffer();
-                return; 
             }
         }
 
