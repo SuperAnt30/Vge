@@ -225,7 +225,10 @@ namespace Vge.World.Block
                     sideLiquid = new SideLiquid(side, shade, resTexture.Index, typeColor);
                     if (resTexture.CountHeight > 1)
                     {
-                        sideLiquid.SetAnimal((byte)resTexture.CountHeight, (byte)face.GetInt(Ctb.Pause));
+                        byte frame = (byte)resTexture.CountHeight;
+                        // Текучая жидкость, ромбом захыватывает 4 спрайта, по этому надо один ряд запасной
+                        if (side > 1) frame--;
+                        sideLiquid.SetAnimal(frame, (byte)face.GetInt(Ctb.Pause));
                     }
                     // Ветер
                     if (wind != 0)

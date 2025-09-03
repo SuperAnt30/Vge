@@ -15,11 +15,6 @@ namespace Vge.World
     public class GeneratingAtlas
     {
         /// <summary>
-        /// Размер текстуры блока
-        /// </summary>
-        public int TextureBlockSize { get; private set; } = 16;
-
-        /// <summary>
         /// Высота
         /// </summary>
         private int _height;
@@ -56,22 +51,13 @@ namespace Vge.World
         /// </summary>
         public uint _idAtlasSharpness;
 
-        //private readonly Logger _logger = new Logger("Debug");
-        //private readonly Profiler _profiler;
-
-        //public GeneratingBlockAtlas() => _profiler = new Profiler(_logger);
-
         /// <summary>
         /// Создать картинку для атласа
         /// </summary>
-        /// <param name="textureAtlasBlockCount">Количество спрайтов на стороне текстурного атласа</param>
-        /// <param name="textureBlockSize">Размер спрайта в px</param>
-        public void CreateImage(int textureAtlasBlockCount, int textureBlockSize)
+        public void CreateImage()
         {
-            Ce.TextureAtlasBlockCount = _textureAtlasBlockCount = textureAtlasBlockCount;
-            Ce.ShaderAnimOffset = 1f / Ce.TextureAtlasBlockCount;
-            TextureBlockSize = textureBlockSize;
-            _height = textureAtlasBlockCount * textureBlockSize;
+            _textureAtlasBlockCount = Ce.TextureAtlasBlockCount;
+            _height = _textureAtlasBlockCount * Ce.TextureSpriteBlockSize;
             _stride = _height * 4;
             _buffer = new byte[_stride * _height];
             _mask = new bool[_textureAtlasBlockCount, _textureAtlasBlockCount];
@@ -158,7 +144,7 @@ namespace Vge.World
             if (File.Exists(fileName))
             {
                 //_profiler.StartSection(name);
-                int size = TextureBlockSize; // 16
+                int size = Ce.TextureSpriteBlockSize; // 16
                 int sizeRGBA = size * 4; // 64
                 BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
                 int index = -1;
@@ -194,7 +180,7 @@ namespace Vge.World
 
         private int _BufferCopy(int index, int w, BufferedImage buffered, string name)
         {
-            int size = TextureBlockSize; // 16
+            int size = Ce.TextureSpriteBlockSize; // 16
             int sizeRGBA = size * 4; // 64
             int sizeRGBAw = sizeRGBA * w;
             int index2 = index / _textureAtlasBlockCount * _stride * size
@@ -204,7 +190,7 @@ namespace Vge.World
                 Buffer.BlockCopy(buffered.Buffer, y * sizeRGBAw,
                     _buffer, index2 + (_stride * y), sizeRGBAw);
             }
-            return buffered.Height / TextureBlockSize;
+            return buffered.Height / size;
         }
 
         /// <summary>

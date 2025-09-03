@@ -37,8 +37,6 @@ namespace Vge.Item
         /// </summary>
         public VertexEntityBuffer GenBuffer()
         {
-            // TODO::2025-09-03 Вынести в константу, со всеми 16 для блоков и модели
-            int size = 16;// BlocksReg.BlockItemAtlas.TextureBlockSize;
             QuadSide[] quads = new QuadSide[2];
             int min = -8;
             int max = 8;
@@ -48,9 +46,11 @@ namespace Vge.Item
                 max *= _res.CountWidth;
             }
             quads[0] = new QuadSide();
-            quads[0].SetSide(Pole.Up, false, min, 0, min, max, 2, max).SetTexture(_res.Index, 0, 0, size * _res.CountWidth, size * _res.CountHeight);
+            quads[0].SetSide(Pole.Up, false, min, 0, min, max, 2, max).SetTexture(_res.Index, 
+                0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight);
             quads[1] = new QuadSide();
-            quads[1].SetSide(Pole.Down, false, min, 2, min, max, 2, max).SetTexture(_res.Index, 0, 0, size * _res.CountWidth, size * _res.CountHeight);
+            quads[1].SetSide(Pole.Down, false, min, 2, min, max, 2, max).SetTexture(_res.Index, 
+                0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight);
 
             return Convert(quads);
         }

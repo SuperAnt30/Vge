@@ -4,7 +4,7 @@
         Still: "Blocks/LavaStill",
     },
     Element: {
-	Wind:1,
+        Wind:1,
         Faces: [
             { Texture:"Still", Side:"Down", Pause:12 },
             { Texture:"Still", Side:"Up", Pause:8 },

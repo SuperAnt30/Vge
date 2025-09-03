@@ -193,6 +193,8 @@ namespace Mvk2
         /// </summary>
         protected override void _InitializationBlocks()
         {
+            // Затать количество спрайтов в длинну и ширину и размер спрайта
+            Ce.SetSpriteAtlasSize(64, 32);
             base._InitializationBlocks();
             BlocksRegMvk.Initialization();
         }

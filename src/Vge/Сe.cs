@@ -104,6 +104,10 @@ public sealed class Ce
     /// </summary>
     public const string MandatoryAnimationClipIdle = "Idle";
 
+    #endregion
+
+    #region TextureAtlas
+
     /// <summary>
     /// Количество спрайтов на стороне текстурного атласа,
     /// По умалчанию 64 (1024*1024) = 4096 спрайтов
@@ -113,6 +117,22 @@ public sealed class Ce
     /// Коэффициент смещения по кадрам для анимации текстур
     /// </summary>
     public static float ShaderAnimOffset = 1f / TextureAtlasBlockCount;
+    /// <summary>
+    /// Размер спрайта текстуры блока
+    /// </summary>
+    public static int TextureSpriteBlockSize = 16;
+
+    /// <summary>
+    /// Затать количество спрайтов в длинну и ширину и размер спрайта
+    /// </summary>
+    /// <param name="textureAtlasBlockCount">Количество спрайтов на стороне текстурного атласа</param>
+    /// <param name="textureSpriteBlockSize">Размер спрайта в px</param>
+    public static void SetSpriteAtlasSize(int textureAtlasBlockCount, int textureSpriteBlockSize)
+    {
+        TextureAtlasBlockCount = textureAtlasBlockCount;
+        ShaderAnimOffset = 1f / TextureAtlasBlockCount;
+        TextureSpriteBlockSize = textureSpriteBlockSize;
+    }
 
     #endregion
 
