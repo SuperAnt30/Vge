@@ -228,8 +228,9 @@ namespace Vge.Games
             Log.Server(Srl.ConnectedToTheServer, e.Side.ToString());
             if (_flagInLoop)
             {
-                // Отправляем ему его id и uuid
-                ResponsePacket(e.Side, new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.BeginNet));
+                // Отправляем ему таблицы для сверки
+                ResponsePacket(e.Side, new PacketS02LoadingGame(Ce.Blocks.BlockAlias, 
+                    Ce.Items.ItemAlias, Ce.Entities.EntitiesAlias));
             }
             else
             {

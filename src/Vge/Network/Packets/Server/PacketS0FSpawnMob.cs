@@ -1,4 +1,5 @@
 ﻿using Vge.Entity;
+using Vge.Entity.MetaData;
 
 namespace Vge.Network.Packets.Server
 {
@@ -17,6 +18,7 @@ namespace Vge.Network.Packets.Server
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
         public bool OnGround { get; private set; }
+        public WatchableObject[] List { get; private set; }
 
         private bool _isLiving;
 
@@ -40,6 +42,8 @@ namespace Vge.Network.Packets.Server
                 _isLiving = false;
                 Yaw = Pitch = 0;
             }
+
+            List = entity.MetaData.GetAllWatched();
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -56,6 +60,7 @@ namespace Vge.Network.Packets.Server
                 Yaw = stream.Float();
                 Pitch = stream.Float();
             }
+            List = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
         }
 
         public void WritePacket(WritePacket stream)
@@ -72,6 +77,7 @@ namespace Vge.Network.Packets.Server
                 stream.Float(Yaw);
                 stream.Float(Pitch);
             }
+            DataWatcher.WriteWatchedListToPacketBuffer(List, stream);
         }
     }
 }

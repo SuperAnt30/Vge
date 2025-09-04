@@ -10,14 +10,41 @@
         public EnumStatus Status { get; private set; }
         public ushort Value { get; private set; }
 
+        /// <summary>
+        /// Массив блоков
+        /// </summary>
+        public string[] Blocks { get; private set; }
+        /// <summary>
+        /// Массив предметов
+        /// </summary>
+        public string[] Items { get; private set; }
+        /// <summary>
+        /// Массив сущностей
+        /// </summary>
+        public string[] Entities { get; private set; }
+
+        /// <summary>
+        /// Передать таблицу блоков
+        /// </summary>
+        public PacketS02LoadingGame(string[] blocks, string[] items, string[] entities)
+        {
+            Status = EnumStatus.BeginNet;
+            Blocks = blocks;
+            Items = items;
+            Entities = entities;
+            Value = 0;
+        }
+
         public PacketS02LoadingGame(EnumStatus status)
         {
+            Entities = Items = Blocks = new string[0];
             Status = status;
             Value = 0;
         }
 
         public PacketS02LoadingGame(ushort value)
         {
+            Entities = Items = Blocks = new string[0];
             Status = EnumStatus.Begin;
             Value = value;
         }
@@ -29,6 +56,27 @@
             {
                 Value = stream.UShort();
             }
+            else if (Status == EnumStatus.BeginNet)
+            {
+                ushort count = stream.UShort();
+                Blocks = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    Blocks[i] = stream.String();
+                }
+                count = stream.UShort();
+                Items = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    Items[i] = stream.String();
+                }
+                count = stream.UShort();
+                Entities = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    Entities[i] = stream.String();
+                }
+            }
         }
 
         public void WritePacket(WritePacket stream)
@@ -37,6 +85,27 @@
             if (Status == EnumStatus.Begin)
             {
                 stream.UShort(Value);
+            }
+            else if (Status == EnumStatus.BeginNet)
+            {
+                ushort count = (ushort)Blocks.Length;
+                stream.UShort(count);
+                for (int i = 0; i < count; i++)
+                {
+                    stream.String(Blocks[i]);
+                }
+                count = (ushort)Items.Length;
+                stream.UShort(count);
+                for (int i = 0; i < count; i++)
+                {
+                    stream.String(Items[i]);
+                }
+                count = (ushort)Entities.Length;
+                stream.UShort(count);
+                for (int i = 0; i < count; i++)
+                {
+                    stream.String(Entities[i]);
+                }
             }
         }
 

@@ -71,7 +71,7 @@ namespace Vge.Entity
             //}
             else
             {
-                _AddEntityToTracker(entity, 128);
+                _AddEntityToTracker(entity, 16);
             }
         }
 

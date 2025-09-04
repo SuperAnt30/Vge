@@ -19,7 +19,11 @@ namespace Vge.Network
         /// <summary>
         /// Основной клиент
         /// </summary>
-        public GameBase Game { get; private set; }
+        public readonly GameBase Game;
+        /// <summary>
+        /// По сети, false значит сервер этого же клиента
+        /// </summary>
+        public readonly bool IsNet;
 
         /// <summary>
         /// Трафик в байтах
@@ -45,7 +49,11 @@ namespace Vge.Network
         /// </summary>
         private byte _countReceiveChunk;
 
-        public ProcessClientPackets(GameBase client) => Game = client;
+        public ProcessClientPackets(GameBase client)
+        {
+            Game = client;
+            IsNet = client is GameNet;
+        }
 
         /// <summary>
         /// Передача данных для клиента
@@ -62,6 +70,7 @@ namespace Vge.Network
             byte index = packet.Id;
             if (index <= 2 || index == 0x20)
             {
+                //if (IsNet) Game.Log.Client("Packet {0:X}", index);
                 switch (index)
                 {
                     case 0x00: _Handle00Pong((Packet00PingPong)packet); break;
@@ -82,11 +91,12 @@ namespace Vge.Network
         /// </summary>
         private void _UpdateReceivePacket(IPacket packet)
         {
+            //if (IsNet) Game.Log.Client("Packet {0:X}", packet.Id);
             switch (packet.Id)
             {
                 case 0x03: _Handle03JoinGame((PacketS03JoinGame)packet); break;
                 case 0x04: _Handle04TimeUpdate((PacketS04TickUpdate)packet); break;
-                case 0x05: _Handle05Tables((PacketS05Tables)packet); break;
+                case 0x05: _Handle05Ready((PacketS05Ready)packet); break;
                 case 0x06: _Handle06PlayerEntryRemove((PacketS06PlayerEntryRemove)packet); break;
                 case 0x07: _Handle07RespawnInWorld((PacketS07RespawnInWorld)packet); break;
                 case 0x08: _Handle08PlayerPosLook((PacketS08PlayerPosLook)packet); break;
@@ -172,17 +182,10 @@ namespace Vge.Network
             => Game.World.Settings.Calendar.SetTickCounter(packet.Tick);
 
         /// <summary>
-        /// Пакет передать таблицы блоков, сущностей
+        /// Пакет готовность игры
         /// </summary>
-        private void _Handle05Tables(PacketS05Tables packet)
-        {
-            BlocksReg.Correct(new CorrectTable(packet.Blocks));
-            ItemsReg.Correct(new CorrectTable(packet.Items));
-            EntitiesReg.Correct(new CorrectTable(packet.Entities));
-            
-            // После получения таблиц блоков и сущностей, запускаем мир
-            Game.GameStartingNet();
-        }
+        private void _Handle05Ready(PacketS05Ready packet)
+            => Game.GameStartingNet();
 
         /// <summary>
         /// Пакет игрок зашёл или вышел из сервера, для чата
@@ -272,6 +275,10 @@ namespace Vge.Network
             if (entity is EntityLiving entityLiving)
             {
                 entityLiving.SpawnRotation(packet.Yaw, packet.Pitch);
+            }
+            if (packet.List.Length > 0)
+            {
+                entity.MetaData.UpdateWatchedObjectsFromList(packet.List);
             }
             Game.World.SpawnEntityInWorld(entity);
         }

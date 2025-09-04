@@ -154,13 +154,11 @@ namespace Vge.Entity.MetaData
         public WatchableObject[] GetAllWatched()
         {
             int count = _watched.Length;
-            WatchableObject[] objects = new WatchableObject[count];
             for (int i = 0; i < count; i++)
             {
                 _watched[i].Changing = false;
-                objects[count++] = _watched[i];
             }
-            return objects;
+            return _watched;
         }
 
         /// <summary>
