@@ -13,7 +13,7 @@ namespace Vge.Entity.Sizes
         /// У кого больше вес тот больше толкает или меньше потдаётся импульсу.
         /// В килограммах.
         /// </summary>
-        float GetWeight();
+        int GetWeight();
 
         /// <summary>
         /// Пол ширины сущности

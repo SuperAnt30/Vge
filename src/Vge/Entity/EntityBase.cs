@@ -495,10 +495,10 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetWeightImpulse(EntityBase entity)
         {
-            float weightAnother = entity.Size.GetWeight();
-            float weightSum = Size.GetWeight() + weightAnother;
+            int weightAnother = entity.Size.GetWeight();
+            int weightSum = Size.GetWeight() + weightAnother;
             if (weightSum == 0) return 1f;
-            return weightAnother / weightSum;
+            return weightAnother / (float)weightSum;
         }
 
         #endregion
@@ -533,6 +533,16 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual string GetName() => "";
+
+        /// <summary>
+        /// Вызывается в момент спавна на клиенте
+        /// </summary>
+        public virtual void SpawnClient() { }
+
+        /// <summary>
+        /// Вызывается в момент спавна на сервере
+        /// </summary>
+        public virtual void SpawnServer() { }
 
         /// <summary>
         /// Игровой такт на сервере

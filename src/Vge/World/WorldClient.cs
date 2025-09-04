@@ -176,6 +176,12 @@ namespace Vge.World
             base._UpdateEntity(entity);
         }
 
+        protected override void _OnEntityAdded(EntityBase entity)
+        {
+            base._OnEntityAdded(entity);
+            entity.SpawnClient();
+        }
+
         /// <summary>
         /// Вызывается для всех World, когда сущность выгружается или уничтожается. 
         /// В клиентских мирах освобождает любые загруженные текстуры.

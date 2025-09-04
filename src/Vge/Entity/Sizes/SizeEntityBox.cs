@@ -23,11 +23,11 @@ namespace Vge.Entity.Sizes
         /// </summary>
         private readonly float _height;
         /// <summary>
-        /// Вес сущности
+        /// Вес сущности в килограммах
         /// </summary>
-        private readonly float _weight;
+        private readonly int _weight;
 
-        public SizeEntityBox(EntityBase entity, float width, float height, float weight)
+        public SizeEntityBox(EntityBase entity, float width, float height, int weight)
         {
             Entity = entity;
             _width = width;
@@ -53,7 +53,7 @@ namespace Vge.Entity.Sizes
         /// В килограммах.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetWeight() => _weight;
+        public int GetWeight() => _weight;
 
         /// <summary>
         /// Возвращает, пересекается ли данная ограничивающая рамка с этой

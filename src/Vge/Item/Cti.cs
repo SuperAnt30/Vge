@@ -43,5 +43,21 @@
         /// </summary>
         public const string MaxDamage = "MaxDamage";
 
+        /// <summary>
+        /// Имя к пол ширине предмета. (float)
+        /// </summary>
+        public const string Width = "Width";
+        /// <summary>
+        /// Имя к высоте предмета. (float)
+        /// </summary>
+        public const string Height = "Height";
+        /// <summary>
+        /// Имя к весу предмета в килограммах. (int)
+        /// </summary>
+        public const string Weight = "Weight";
+        /// <summary>
+        /// Имя к коэффициента рикошета, 0 нет отскока, 1 максимальный. (float)
+        /// </summary>
+        public const string Rebound = "Rebound";
     }
 }

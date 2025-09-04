@@ -54,7 +54,7 @@ namespace Vge.Entity.List
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize()
-            => Size = new SizeEntityBox(this, .4375f, .125f, 10);
+            => Size = new SizeEntityBox(this, .4375f, .125f, 2);
 
         /// <summary>
         /// Инициализация физики
@@ -80,6 +80,35 @@ namespace Vge.Entity.List
             MetaData = new DataWatcher(1);
             // Стак предмета
             MetaData.SetByDataType(0, EnumTypeWatcher.ItemStack);
+        }
+
+        /// <summary>
+        /// Вызывается в момент спавна на клиенте
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SpawnClient()
+        {
+            ItemStack itemStack = GetEntityItemStack();
+            if (itemStack != null)
+            {
+                Size = new SizeEntityBox(this, itemStack.Item.Width,
+                    itemStack.Item.Height, itemStack.Item.Weight);
+            }
+        }
+
+        /// <summary>
+        /// Вызывается в момент спавна на сервере
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SpawnServer()
+        {
+            ItemStack itemStack = GetEntityItemStack();
+            if (itemStack != null)
+            {
+                Size = new SizeEntityBox(this, itemStack.Item.Width,
+                    itemStack.Item.Height, itemStack.Item.Weight);
+                Physics.SetRebound(itemStack.Item.Rebound);
+            }
         }
 
         /// <summary>

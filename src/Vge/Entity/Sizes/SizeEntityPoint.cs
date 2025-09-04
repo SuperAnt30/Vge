@@ -17,9 +17,9 @@ namespace Vge.Entity.Sizes
         /// <summary>
         /// Вес сущности
         /// </summary>
-        private readonly float _weight;
+        private readonly int _weight;
 
-        public SizeEntityPoint(EntityBase entity, float weight)
+        public SizeEntityPoint(EntityBase entity, int weight)
         {
             Entity = entity;
             _weight = weight;
@@ -43,7 +43,7 @@ namespace Vge.Entity.Sizes
         /// В килограммах.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetWeight() => _weight;
+        public int GetWeight() => _weight;
 
         /// <summary>
         /// Возвращает, пересекается ли данная сущность с other

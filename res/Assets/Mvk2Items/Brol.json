@@ -1,5 +1,9 @@
 {
     MaxStackSize: 1,
     ShapeBlock: "Brol",
+    Width: 0.6,
+    Height: 1.2,
+    Weight: 50,
+    Rebound: 1.0,
     #View: { Offset:[-8, 0, -8] }
 }

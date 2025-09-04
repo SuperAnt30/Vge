@@ -234,6 +234,7 @@ namespace Vge.World
         {
             base._OnEntityAdded(entity);
             Tracker.EntityAdd(entity);
+            entity.SpawnServer();
         }
 
         protected override void _OnEntityRemoved(EntityBase entity)

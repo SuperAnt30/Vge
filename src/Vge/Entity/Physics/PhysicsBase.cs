@@ -84,11 +84,11 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Коэффициент рикошета, 0 нет отскока, 1 максимальный
         /// </summary>
-        protected readonly float _rebound;
+        private float _rebound;
         /// <summary>
         /// Имеется ли рикошет
         /// </summary>
-        protected readonly bool _isRebound;
+        private bool _isRebound;
         /// <summary>
         /// Индекс для сна, 0 спит, больше одного, количество тактов до сна
         /// </summary>
@@ -117,6 +117,16 @@ namespace Vge.Entity.Physics
             _rebound = rebound;
             _isRebound = _rebound != 0;
             AwakenPhysics();
+        }
+
+        /// <summary>
+        /// Задать коэффициент рикошета
+        /// </summary>
+        /// <param name="rebound">Коэффициент отскока, 0 нет отскока, 1 максимальный</param>
+        public void SetRebound(float rebound)
+        {
+            _rebound = rebound;
+            _isRebound = _rebound != 0;
         }
 
         /// <summary>

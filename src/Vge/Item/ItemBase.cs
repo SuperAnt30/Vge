@@ -37,6 +37,23 @@ namespace Vge.Item
         /// </summary>
         public int MaxDamage { get; protected set; }
 
+        /// <summary>
+        /// Пол ширина предмета
+        /// </summary>
+        public float Width { get; protected set; } = .4375f;
+        /// <summary>
+        /// Высота предмета
+        /// </summary>
+        public float Height { get; protected set; } = .125f;
+        /// <summary>
+        /// Вес предмета. В килограммах.
+        /// </summary>
+        public int Weight { get; protected set; } = 2;
+        /// <summary>
+        /// Коэффициент рикошета, 0 нет отскока, 1 максимальный
+        /// </summary>
+        public float Rebound { get; protected set; } = .5f;
+
         #region Для Render
 
         /// <summary>
@@ -113,6 +130,10 @@ namespace Vge.Item
                     {
                         if (json.IsKey(Cti.MaxStackSize)) MaxStackSize = json.GetInt();
                         if (json.IsKey(Cti.MaxDamage)) MaxDamage = json.GetInt();
+                        if (json.IsKey(Cti.Width)) Width = json.GetFloat();
+                        if (json.IsKey(Cti.Height)) Height = json.GetFloat();
+                        if (json.IsKey(Cti.Weight)) Weight = json.GetInt();
+                        if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
                     }
                 }
                 catch
