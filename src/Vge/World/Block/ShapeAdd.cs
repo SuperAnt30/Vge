@@ -12,18 +12,29 @@ namespace Vge.World.Block
         /// </summary>
         public bool IsOffset;
         /// <summary>
+        /// Имеется ли вращение, только для предмета
+        /// </summary>
+        public bool IsRotation;
+        /// <summary>
+        /// фращение фигуры
+        /// </summary>
+        public float[] Rotate;
+
+        /// <summary>
         /// Вращение по Y 0 | 90 | 180 | 270
+        /// Только для блока
         /// </summary>
         public int RotateY;
         /// <summary>
         /// При вращении RotateY сохраняется текстура, и не вращается сверху и снизу
+        /// Только для блока
         /// </summary>
         public bool UvLock;
 
         /// <summary>
         /// Смещение фигуры
         /// </summary>
-        private int[] _offset = new int[0];
+        private float[] _offset = new float[0];
 
         public void RunShape(JsonCompound view, bool isBlock)
         {
@@ -32,27 +43,35 @@ namespace Vge.World.Block
                 IsOffset = view.IsKey(Ctb.Offset);
                 if (IsOffset)
                 {
-                    _offset = view.GetArray(Ctb.Offset).ToArrayInt();
+                    _offset = view.GetArray(Ctb.Offset).ToArrayFloat();
                 }
                 else
                 {
-                    _offset = new int[3];
+                    _offset = new float[3];
                 }
 
                 // Если блок, смещаем на край блока, 0 .. +16 чтоб был.
                 // А был до этого -8 .. +8
                 if (isBlock)
                 {
-                    _offset[0] += 8;
-                    _offset[2] += 8;
+                    _offset[0] += 8f;
+                    _offset[2] += 8f;
                     IsOffset = _offset[0] != 0 || _offset[1] != 0 || _offset[2] != 0;
-                }
-                
-                // Имеется вращение по Y 90 | 180 | 270
-                RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
 
-                // Защита от вращении текстуры
-                UvLock = view.GetBool(Ctb.UvLock);
+                    // Имеется вращение по Y 90 | 180 | 270
+                    RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
+
+                    // Защита от вращении текстуры
+                    UvLock = view.GetBool(Ctb.UvLock);
+                }
+                else
+                {
+                    IsRotation = view.IsKey(Ctb.Rotate);
+                    if (IsRotation)
+                    {
+                        Rotate = view.GetArray(Ctb.Rotate).ToArrayFloat();
+                    }
+                }
             }
         }
 

@@ -57,15 +57,18 @@
         /// </summary>
         public const string Shape = "Shape";
         /// <summary>
-        /// Смещение готовой фигуры на количество px. ([x, y, z]), координаты int
+        /// Смещение готовой фигуры на количество px. ([x, y, z]), координаты float
         /// </summary>
         public const string Offset = "Offset";
+
         /// <summary>
         /// Фращение фигуры кратно 90 градусах по координате Y. (90 || 180 || 270)
+        /// Только для блока
         /// </summary>
         public const string RotateY = "RotateY";
         /// <summary>
         /// При вращении RotateY сохраняется текстура, и не вращается сверху и снизу. (bool)
+        /// Только для блока
         /// </summary>
         public const string UvLock = "UvLock";
 
@@ -103,7 +106,7 @@
         /// </summary>
         public const string Origin = "Origin";
         /// <summary>
-        /// Задаём вращение блока от центра, в градусах
+        /// Задаём вращение блока от центра, в градусах. ([x, y, z]), координаты float
         /// </summary>
         public const string Rotate = "Rotate";
         /// <summary>

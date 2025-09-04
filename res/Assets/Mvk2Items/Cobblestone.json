@@ -1,5 +1,5 @@
 {
+    Parent: "Block",
     MaxStackSize: 5,
-    Rebound: 0,
     ShapeBlock: "Cobblestone"
 }

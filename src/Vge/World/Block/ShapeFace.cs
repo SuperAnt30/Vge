@@ -98,6 +98,10 @@ namespace Vge.World.Block
             {
                 _quad.SetRotate(_xR, _yR, _zR, _xO, _yO, _zO);
             }
+            if (_shapeAdd.IsRotation)
+            {
+                _quad.SetRotate(_shapeAdd.Rotate[0], _shapeAdd.Rotate[1], _shapeAdd.Rotate[2], 0, 0, 0);
+            }
             if (_shapeAdd.IsOffset)
             {
                 _quad.SetTranslate(_shapeAdd.GetOffsetX(),
