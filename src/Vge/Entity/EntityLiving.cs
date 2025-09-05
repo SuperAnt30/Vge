@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Inventory;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
 using WinGL.Util;
@@ -64,7 +65,7 @@ namespace Vge.Entity
         /// <summary>
         /// Объект инвенторя
         /// </summary>
-        public IInventory Inventory { get; protected set; }
+        public InventoryBase Inventory { get; protected set; }
 
         #region Методы для Position и Rotation
 

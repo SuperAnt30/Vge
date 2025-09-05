@@ -75,7 +75,7 @@ namespace Vge.Entity.List
         /// Инициализация размеров сущности
         /// </summary>
         protected override void _InitSize()
-            => Size = new SizeEntityBox(this, .5f, 1, 100);
+            => Size = new SizeEntityBox(this, .6f, 3.5f, 100);
 
         /// <summary>
         /// Инициализация физики

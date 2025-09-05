@@ -1,11 +1,33 @@
-﻿using Vge.Item;
+﻿using System.Collections.Generic;
+using Vge.Item;
 using Vge.NBT;
 using Vge.Util;
 
-namespace Vge.Entity
+namespace Vge.Entity.Inventory
 {
-    public interface IInventory
+    /// <summary>
+    /// Базовый класс инвенторя
+    /// </summary>
+    public class InventoryBase
     {
+
+        public void Clear()
+        {
+            //int i;
+            //for (i = 0; i < mainInventory.Length; i++)
+            //{
+            //    mainInventory[i] = null;
+            //}
+            //for (i = 0; i < mainBackpack.Length; i++)
+            //{
+            //    mainBackpack[i] = null;
+            //}
+            //for (i = 0; i < clothInventory.Length; i++)
+            //{
+            //    clothInventory[i] = null;
+            //}
+            //OnChanged(-1);
+        }
         /*
         /// <summary>
         /// Получить выбранный стак правой руки
@@ -72,11 +94,38 @@ namespace Vge.Entity
         /// Дроп одежды и или инвентаря
         /// </summary>
         void DropEquipment(int index);
-
-        void WriteToNBT(TagCompound nbt);
-
-        void ReadFromNBT(TagCompound nbt);
-
         */
+
+        /// <summary>
+        /// Получить полный список всего инвентаря
+        /// Mvk было GetMainAndCloth
+        /// </summary>
+        public Slot[] GetAll()
+        {
+            return new Slot[] { new Slot() };
+        }
+
+        /// <summary>
+        /// Устанавливает данный стак предметов в указанный слот в инвентаре 
+        /// </summary>
+        public void SetInventorySlotContents(Slot slot)
+        {
+
+        }
+
+        public virtual void WriteToNBT(TagCompound nbt)
+            => NBTTools.ItemStacksWriteToNBT(nbt, "Inventory", GetAll());
+
+        public virtual void ReadFromNBT(TagCompound nbt)
+        {
+            Clear();
+            Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Inventory");
+            foreach (Slot slot in slots)
+            {
+                SetInventorySlotContents(slot);
+            }
+        }
+
+        
     }
 }
