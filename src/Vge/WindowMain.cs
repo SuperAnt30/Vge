@@ -593,6 +593,11 @@ namespace Vge
         protected virtual GameModClient _CreateGameModClient() => new GameModClient(this);
 
         /// <summary>
+        /// Создаём сетевой игровой мод 
+        /// </summary>
+        public virtual GameModServer CreateGameModServer() => new GameModServer();
+
+        /// <summary>
         /// Остановить игру
         /// </summary>
         public void GameStoping()

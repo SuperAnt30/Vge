@@ -218,9 +218,14 @@ namespace Mvk2
         }
 
         /// <summary>
-        /// Создаём игровой мод 
+        /// Создаём клиентский игровой мод 
         /// </summary>
         protected override GameModClient _CreateGameModClient() => new GameModClientMvk(this);
+
+        /// <summary>
+        /// Создаём сетевой игровой мод 
+        /// </summary>
+        public override GameModServer CreateGameModServer() => new GameModServerMvk();
 
         #endregion
 

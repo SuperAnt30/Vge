@@ -27,7 +27,8 @@ namespace Vge.Games
             AllWorlds worlds, GameModClient gameModClient) 
             : base(window, gameModClient)
         {
-            _server = new GameServer(Log, gameSettings, worlds);
+            _server = new GameServer(Log, window.CreateGameModServer(),
+                gameSettings, worlds);
             _server.Closeded += _Server_Closeded;
             _server.Error += _Server_Error;
             _server.TextDebug += _Server_TextDebug;

@@ -2,12 +2,10 @@
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
-using Vge.Item;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
-using Vge.World.Block;
 
 namespace Vge.Network
 {
@@ -244,8 +242,7 @@ namespace Vge.Network
             if (Game.Player.IdWorld == packet.IdWorld)
             {
                 // После проверки, что оба в одном мире
-                PlayerClient player = new PlayerClient(Game, 
-                    packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
+                PlayerClient player = Game.ModClient.CreatePlayerClient(packet);
 
                 player.SpawnPosition(packet.X, packet.Y, packet.Z);
                 player.OnGround = packet.OnGround;

@@ -61,6 +61,11 @@ namespace Vge.Entity
         /// </summary>
         public SizeEntityLiving SizeLiving { get; protected set; }
 
+        /// <summary>
+        /// Объект инвенторя
+        /// </summary>
+        public IInventory Inventory { get; protected set; }
+
         #region Методы для Position и Rotation
 
         /// <summary>

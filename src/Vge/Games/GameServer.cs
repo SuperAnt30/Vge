@@ -55,6 +55,10 @@ namespace Vge.Games
         /// Миры игры
         /// </summary>
         public readonly AllWorlds Worlds;
+        /// <summary>
+        /// Объект игрового мода для серверной части, этот объект наследуется другими проектами
+        /// </summary>
+        public readonly GameModServer ModServer;
 
         /// <summary>
         /// Часы для Tps
@@ -120,8 +124,10 @@ namespace Vge.Games
         /// </summary>
         private int _lastEntityId = 0;
 
-        public GameServer(Logger log, GameSettings gameSettings, AllWorlds worlds)
+        public GameServer(Logger log, GameModServer gameModServer, GameSettings gameSettings, AllWorlds worlds)
         {
+            ModServer = gameModServer;
+            ModServer.Init(this);
             Ce.InitServer();
             Settings = gameSettings;
             Log = log;
@@ -417,6 +423,9 @@ namespace Vge.Games
 
                 // Меняем флаг
                 _flagInLoop = true;
+
+                // Инициализация прямо перед циклом сервера
+                ModServer.InitBeforeLoop();
 
                 // Рабочий цикл сервера
                 while (IsServerRunning)

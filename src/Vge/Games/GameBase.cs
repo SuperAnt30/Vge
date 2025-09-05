@@ -130,11 +130,12 @@ namespace Vge.Games
         public GameBase(WindowMain window, GameModClient gameModClient) : base(window)
         {
             ModClient = gameModClient;
+            ModClient.Init(this);
             Ce.InitClient();
             Log = new Logger("Logs");
             Filer = new Profiler(Log, "[Client] ");
             _packets = new ProcessClientPackets(this);
-            Player = new PlayerClientOwner(this);
+            Player = ModClient.CreatePlayerClientOwner();
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
             Key.InChat += _Key_InChat;
@@ -185,7 +186,7 @@ namespace Vge.Games
         /// </summary>
         public virtual void GameStarting()
         {
-            // Инициализация ID сущностей и прочего
+            // Инициализация после старта игры, когда уже все блоки и сущности загружены
             ModClient.InitAfterStartGame();
 
             World = new WorldClient(this);

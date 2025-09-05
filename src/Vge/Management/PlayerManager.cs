@@ -68,7 +68,7 @@ namespace Vge.Management
         /// </summary>
         public void PlayerOwnerAdd(string login, string token)
         {
-            PlayerOwner = new PlayerServer(login, token, Server);
+            PlayerOwner = Server.ModServer.CreatePlayerServer(login, token, null);
 
             Server.Log.Server(Srl.ServerLoginStartOwner, login);
             // Проверка токена не важна для владельца
@@ -270,7 +270,7 @@ namespace Vge.Management
             }
 
             // Создаём объект Игрока
-            PlayerServer playerServer = new PlayerServer(login, packet.Token, socketSide, Server);
+            PlayerServer playerServer = Server.ModServer.CreatePlayerServer(login, packet.Token, socketSide);
 
             // Загружаем данные игрока если имеются
             if (!_GetPlayerData(playerServer))

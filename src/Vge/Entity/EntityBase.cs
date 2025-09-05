@@ -184,6 +184,7 @@ namespace Vge.Entity
 
             _InitMetaData();
             _InitSize();
+            _InitInventory();
         }
 
         /// <summary>
@@ -196,22 +197,32 @@ namespace Vge.Entity
             _InitMetaData();
             _InitSize();
             _InitPhysics(collision);
+            _InitInventory();
         }
 
         /// <summary>
         /// Инициализация физики
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitPhysics(CollisionBase collision) { }
 
         /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitSize() { }
 
         /// <summary>
-        /// Инициализация
+        /// Инициализация доп данных
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
+
+        /// <summary>
+        /// Инициализация инвенторя
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _InitInventory() { }
 
         #endregion
 

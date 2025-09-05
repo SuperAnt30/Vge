@@ -1,5 +1,8 @@
-﻿using Mvk2.World;
+﻿using Mvk2.Entity.List;
+using Mvk2.World;
+using Vge.Entity.Player;
 using Vge.Games;
+using Vge.Network.Packets.Server;
 using Vge.World;
 
 namespace Mvk2.Games
@@ -14,7 +17,8 @@ namespace Mvk2.Games
         /// </summary>
         private readonly WindowMvk _windowMvk;
 
-        public GameModClientMvk(WindowMvk window) : base(window) => _windowMvk = window;
+        public GameModClientMvk(WindowMvk window) : base(window) 
+            => _windowMvk = window;
 
         /// <summary>
         /// Создать настройки мира по id
@@ -24,5 +28,17 @@ namespace Mvk2.Games
             if (id == 2) return new WorldSettingsNightmare();
             return new WorldSettingsIsland();
         }
+
+        /// <summary>
+        /// Создать объект сетевого игрока
+        /// </summary>
+        public override PlayerClient CreatePlayerClient(PacketS0CSpawnPlayer packet)
+            => new PlayerClientMvk(Game, packet.Index, packet.Uuid, packet.Login, packet.IdWorld);
+
+        /// <summary>
+        /// Создать объект игрока владельца
+        /// </summary>
+        public override PlayerClientOwner CreatePlayerClientOwner()
+            => new PlayerClientOwnerMvk(Game);
     }
 }

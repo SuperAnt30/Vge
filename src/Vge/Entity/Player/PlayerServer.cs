@@ -151,12 +151,6 @@ namespace Vge.Entity.Player
             _InitSize();
         }
 
-        /// <summary>
-        /// Создать владельца
-        /// </summary>
-        public PlayerServer(string login, string token, GameServer server)
-            : this(login, token, null, server) { }
-
         #region Tracker
 
         /// <summary>
@@ -368,7 +362,7 @@ namespace Vge.Entity.Player
             else
             {
                 // TODO::2025-02-10 Временно спавн моба
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     idBox = 2;
                     int id = _server.Worlds.GetDebugIndex(idBox);
