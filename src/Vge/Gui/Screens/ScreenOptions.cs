@@ -96,7 +96,7 @@ namespace Vge.Gui.Screens
             buttonNet.Click += ButtonNet_Click;
 
             if (!isGameLocal) buttonNet.SetVisible(false);
-            if (inGame) checkBoxFullScreen.SetVisible(false);
+           // if (inGame) checkBoxFullScreen.SetVisible(false);
         }
 
         #region Clicks

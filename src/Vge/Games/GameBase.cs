@@ -5,10 +5,10 @@ using System.Threading;
 using Vge.Actions;
 using Vge.Entity.Player;
 using Vge.Event;
+using Vge.Gui.Huds;
 using Vge.Network;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Server;
-using Vge.Renderer.Huds;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
@@ -249,7 +249,7 @@ namespace Vge.Games
         {
             // Закрываем скрин загрузки
             window.ScreenClose();
-            Hud = new HubDebug(this);
+            Hud = ModClient.CreateHud();
         }
 
         #endregion
@@ -343,6 +343,18 @@ namespace Vge.Games
             {
                 _isMouseDownRight = false;
                 Player.StoppedUsingItem();
+            }
+        }
+
+        /// <summary>
+        /// Вращение колёсика мыши
+        /// </summary>
+        public override void OnMouseWheel(int delta, int x, int y)
+        {
+            if (_isMouseFirstPersonView)
+            {
+                if (delta > 0) Player.Inventory.SlotLess();
+                else if (delta < 0) Player.Inventory.SlotMore();
             }
         }
 

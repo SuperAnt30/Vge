@@ -27,8 +27,9 @@ namespace Mvk2.Gui.Screens
         protected override void RenderBegin()
         {
             int w = Gi.Width / 2;
-            int h = (Gi.Height - 608) / 2;
-            meshLogo.Reload(RenderFigure.Rectangle(w - 512, h, w + 512, h + 512, 0, 0, 1, 1));
+            int h = (Gi.Height - 608 * Gi.Si) / 2;
+            int wh = 512 * Gi.Si;
+            meshLogo.Reload(RenderFigure.Rectangle(w - wh, h, w + wh, h + wh, 0, 0, 1, 1));
         }
 
         /// <summary>

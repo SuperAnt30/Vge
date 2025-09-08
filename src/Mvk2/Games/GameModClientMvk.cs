@@ -1,7 +1,9 @@
 ﻿using Mvk2.Entity.List;
+using Mvk2.Gui;
 using Mvk2.World;
 using Vge.Entity.Player;
 using Vge.Games;
+using Vge.Gui.Huds;
 using Vge.Network.Packets.Server;
 using Vge.World;
 
@@ -40,5 +42,10 @@ namespace Mvk2.Games
         /// </summary>
         public override PlayerClientOwner CreatePlayerClientOwner()
             => new PlayerClientOwnerMvk(Game);
+
+        /// <summary>
+        /// Создать объект индикация
+        /// </summary>
+        public override HudBase CreateHud() => new HudMvk(Game, _windowMvk.GetRender());
     }
 }

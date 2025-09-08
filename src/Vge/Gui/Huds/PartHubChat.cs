@@ -1,8 +1,9 @@
 ﻿using Vge.Games;
 using Vge.Realms;
+using Vge.Renderer;
 using Vge.Renderer.Font;
 
-namespace Vge.Renderer.Huds
+namespace Vge.Gui.Huds
 {
     /// <summary>
     /// Чат, часть Heads-Up Display

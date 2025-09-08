@@ -26,6 +26,8 @@
      *  +-ScreenProcess *
      *  |
      *  +-ScreenChat * (Окно чата)
+     *  |
+     *  +-ScreenInventory -
      */
 
     /// <summary>

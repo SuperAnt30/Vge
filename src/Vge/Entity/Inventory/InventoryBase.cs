@@ -10,6 +10,30 @@ namespace Vge.Entity.Inventory
     public class InventoryBase
     {
         /// <summary>
+        /// Получить выбранный слот правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual int GetCurrentIndex() => 0;
+
+        /// <summary>
+        /// Задать активный слот быстрого доступа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool SetCurrentIndex(int slotIn) => false;
+
+        /// <summary>
+        /// Сместить слот быстрого доступа в большую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SlotMore() { }
+
+        /// <summary>
+        /// Сместить слот быстрого доступа в меньшую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SlotLess() { }
+
+        /// <summary>
         /// Возвращает стaк в слоте slotIn
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -56,6 +56,13 @@ namespace Mvk2.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureChat() => Texture.BindTexture(_textureIndexMvk.Chat);
+        /// <summary>
+        /// Запустить текстуру Heads-Up Display
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureHud() => Texture.BindTexture(_textureIndexMvk.Hud);
+
+        
 
         #endregion
 
@@ -78,6 +85,10 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.Chat.ToString()))
             {
                 _textureIndexMvk.Chat = Texture.SetTexture(buffereds[EnumTextureMvk.Chat.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Hud.ToString()))
+            {
+                _textureIndexMvk.Hud = Texture.SetTexture(buffereds[EnumTextureMvk.Hud.ToString()]);
             }
         }
     }

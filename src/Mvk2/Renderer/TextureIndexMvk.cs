@@ -11,6 +11,10 @@ namespace Mvk2.Renderer
         /// Текстура чат окна
         /// </summary>
         public uint Chat;
+        /// <summary>
+        /// Текстура Heads-Up Display
+        /// </summary>
+        public uint Hud;
     }
 
     /// <summary>
@@ -29,7 +33,11 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Чат окно
         /// </summary>
-        Chat
+        Chat,
+        /// <summary>
+        /// Heads-Up Display
+        /// </summary>
+        Hud
     }
 
 }

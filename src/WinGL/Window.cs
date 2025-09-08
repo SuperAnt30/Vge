@@ -538,7 +538,7 @@ namespace WinGL
         /// </summary>
         protected virtual void OnResized(int width, int height)
         {
-            Glm.Ortho(0, width, height, 0, 0, 1).ConvArray(Ortho2D);
+            Glm.Ortho(0, width, height, 0, 100, -100).ConvArray(Ortho2D);
             gl.Viewport(0, 0, width, height);
         }
 

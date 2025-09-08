@@ -6,7 +6,7 @@ in float a_brightness; // Яркость тени 1.0 чёрный, 0.1 свет
 float DiffuseCalculation()
 {
     // Скалярное произведение между нормали и луча солнца
-    float scalar = dot(a_normal, a_lightDir);
+    float scalar = dot(a_normal, a_lightDir) * 1.2;
     // Дифузию света стороны
     float diffuse = max(scalar, 0.0);
     if (diffuse > 1.0) diffuse = 1.0;

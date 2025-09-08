@@ -5,5 +5,5 @@
     #Sprite: "Blocks/FlowerClover"
     #ShapeBlock: "FlowerClover"
     Shape: "Axe"
-    View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] }
+    View: { Rotate:[-45, 45, -90], Offset:[-9, 1, 9] }
 }

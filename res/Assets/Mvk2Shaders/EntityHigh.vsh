@@ -48,7 +48,7 @@ void main()
             if (eye == a_eyeMouth - 1) a_eyeMouth = 0;
         }
     }
-	a_texCoord = v_texCoord;
+    a_texCoord = v_texCoord;
     a_light = light;
     if (v_clothId == -2)
     {
@@ -63,18 +63,18 @@ void main()
     {
         a_depth = float(v_clothId);
     }
-	if (anim < 1)
-	{
-	  gl_Position = view * vec4(pos + v_position, 1.0); 
+    if (anim < 1)
+    {
+    gl_Position = view * vec4(pos + v_position, 1.0); 
       a_fragToLight = lightMatrix * vec4(pos + v_position, 1.0); 
       a_normal = v_normal; 
-    }	
-	else
-	{
-	  // Матрица модели, расположения в мире
+    }
+    else
+    {
+    // Матрица модели, расположения в мире
       mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
       a_fragToLight = lightMatrix * modelMatrix * mat4(elementTransforms[jointId]) * vec4(v_position, 1.0);
       a_normal = vec3(mat4(elementTransforms[jointId]) * vec4(v_normal, 1.0));
       gl_Position = view * modelMatrix * mat4(elementTransforms[jointId]) * vec4(v_position, 1.0);
-	}
+    }
 }

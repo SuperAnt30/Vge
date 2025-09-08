@@ -1,4 +1,5 @@
 ﻿using Vge.Entity.Player;
+using Vge.Gui.Huds;
 using Vge.Network.Packets.Server;
 using Vge.World;
 
@@ -43,5 +44,10 @@ namespace Vge.Games
         /// </summary>
         public virtual PlayerClientOwner CreatePlayerClientOwner() 
             => new PlayerClientOwner(Game);
+
+        /// <summary>
+        /// Создать объект индикация
+        /// </summary>
+        public virtual HudBase CreateHud() => new HudDebug(Game);
     }
 }

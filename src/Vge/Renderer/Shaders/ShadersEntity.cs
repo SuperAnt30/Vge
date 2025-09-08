@@ -12,6 +12,10 @@ namespace Vge.Renderer.Shaders
     {
         private readonly GL gl;
         /// <summary>
+        /// Шейдоры для Gui
+        /// </summary>
+        private readonly ShaderGuiEntity _shaderGui;
+        /// <summary>
         /// Шейдоры с низким качеством
         /// </summary>
         private readonly ShaderEntity _shaderLow;
@@ -37,9 +41,10 @@ namespace Vge.Renderer.Shaders
         /// </summary>
         private bool _qualitatively;
 
-        public ShadersEntity(GL gl, string nameLow, string nameHigh, string nameDepthMap)
+        public ShadersEntity(GL gl, string nameGui, string nameLow, string nameHigh, string nameDepthMap)
         {
             this.gl = gl;
+            _shaderGui = new ShaderGuiEntity(gl, nameGui);
             _shaderLow = new ShaderEntity(gl, nameLow);
             _shaderHigh = new ShaderEntity(gl, nameHigh);
             _shaderDepthMap = new ShaderEntity(gl, nameDepthMap);
@@ -48,6 +53,15 @@ namespace Vge.Renderer.Shaders
 
         public void Init()
         {
+            // Для Gui
+            _shaderGui.Bind();
+            gl.Uniform1(_shaderGui.GetUniformLocation("sampler_small"),
+                Gi.ActiveTextureSamplerSmall);
+            gl.Uniform1(_shaderGui.GetUniformLocation("sampler_big"),
+                Gi.ActiveTextureSamplerBig);
+            gl.Uniform1(_shaderGui.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
+
             // Для карты глубины
             _shaderDepthMap.Bind();
             gl.Uniform1(_shaderDepthMap.GetUniformLocation("sampler_small"),
@@ -173,7 +187,33 @@ namespace Vge.Renderer.Shaders
         public void UniformData(float[] elementTransforms)
             => _shderAction.SetUniformMatrix4x3("elementTransforms", elementTransforms, Ce.MaxAnimatedBones);
 
+        /// <summary>
+        /// Занести начальные юниформы для GUI
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformBiginGui(float[] ortho2D)
+        {
+            //gl.Enable(GL.GL_DEPTH_TEST);
+            _shaderGui.Bind();
+            _shaderGui.SetUniformMatrix4("view", ortho2D);
+            _shaderGui.SetUniform1("brightness", Gi.EntityBrightness);
+            _shaderGui.SetUniform3("lightDir", 0, -1, 0);
+            _shaderGui.SetUniform1("scale", 32f * 2);
+        }
+
+        /// <summary>
+        /// Внести данные в юниформы для претмета Gui
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformDataGui(float x, float y, float depth = -1f)
+        {
+            _shaderGui.SetUniform2("pos", x, y);
+            _shaderGui.SetUniform1("depth", depth);
+        }
+
         #endregion
+
+
 
         public void Dispose()
         {

@@ -27,7 +27,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Выбранный слот правой руки
         /// </summary>
-        protected int _currentItem = 0;
+        protected int _currentIndex = 0;
 
         /// <summary>
         /// Массив предметов инвентаря
@@ -41,6 +41,49 @@ namespace Vge.Entity.Inventory
             _clothCount = clothCount;
             _allCount = _mainCount + _clothCount;
             _items = new ItemStack[_allCount];
+        }
+
+        /// <summary>
+        /// Получить выбранный слот правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetCurrentIndex() => _currentIndex;
+
+        /// <summary>
+        /// Задать активный слот быстрого доступа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool SetCurrentIndex(int slotIn)
+        {
+            if (slotIn < _mainCount && slotIn >= 0 && slotIn != _currentIndex)
+            {
+                _currentIndex = slotIn;
+                _OnCurrentItemChanged();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Сместить слот быстрого доступа в большую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SlotMore()
+        {
+            if (_currentIndex < _mainCount - 1) _currentIndex++;
+            else _currentIndex = 0;
+            _OnCurrentItemChanged();
+        }
+
+        /// <summary>
+        /// Сместить слот быстрого доступа в меньшую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SlotLess()
+        {
+            if (_currentIndex > 0) _currentIndex--;
+            else _currentIndex = _mainCount - 1;
+            _OnCurrentItemChanged();
         }
 
         /// <summary>
@@ -59,8 +102,8 @@ namespace Vge.Entity.Inventory
             if (slotIn < _allCount)
             {
                 _items[slotIn] = stack;
-                _OnChanged(_currentItem);
-                if (slotIn == _currentItem)
+                _OnChanged(_currentIndex);
+                if (slotIn == _currentIndex)
                 {
                     _OnCurrentItemChanged();
                 }
@@ -140,7 +183,7 @@ namespace Vge.Entity.Inventory
         /// Получить выбранный стак правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ItemStack GetCurrentItem() => _mainCount > 0 ? _items[_currentItem] : null;
+        public override ItemStack GetCurrentItem() => _mainCount > 0 ? _items[_currentIndex] : null;
 
         /// <summary>
         /// Задать в правую руку стак
@@ -151,8 +194,8 @@ namespace Vge.Entity.Inventory
             if (_mainCount > 0)
             {
                 //CheckKnowledge(stack);
-                _items[_currentItem] = stack;
-                _OnChanged(_currentItem);
+                _items[_currentIndex] = stack;
+                _OnChanged(_currentIndex);
                 _OnCurrentItemChanged();
             }
         }
