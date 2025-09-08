@@ -165,29 +165,28 @@ namespace Vge.NBT
         /// </summary>
         /// <param name="name">имя группы</param>
         /// <param name="stacks">массив стаков</param>
-        public static void ItemStacksWriteToNBT(TagCompound nbt, string name, Slot[] slots)
+        public static void ItemStacksWriteToNBT(TagCompound nbt, string name, ItemStack[] stacks)
         {
-            TagCompound compound;
-            TagList list = new TagList();
-            ItemStack itemStack;
-            for (int i = 0; i < slots.Length; i++)
+            if (stacks.Length > 0)
             {
-                int slot = slots[i].Index;
-                if (slot != -1)
+                TagCompound compound;
+                TagList list = new TagList();
+                ItemStack itemStack;
+                for (short i = 0; i < stacks.Length; i++)
                 {
-                    itemStack = slots[i].Stack;
+                    itemStack = stacks[i];
                     if (itemStack != null && itemStack.Amount > 0)
                     {
                         compound = new TagCompound();
-                        compound.SetShort("Slot", (short)slot);
+                        compound.SetShort("Slot", i);
                         itemStack.WriteToNBT(compound);
                         list.AppendTag(compound);
                     }
                 }
-            }
-            if (list.TagCount() > 0)
-            {
-                nbt.SetTag(name, list);
+                if (list.TagCount() > 0)
+                {
+                    nbt.SetTag(name, list);
+                }
             }
         }
         

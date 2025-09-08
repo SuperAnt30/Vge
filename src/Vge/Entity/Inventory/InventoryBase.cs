@@ -1,131 +1,99 @@
-﻿using System.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
 using Vge.Item;
 using Vge.NBT;
-using Vge.Util;
 
 namespace Vge.Entity.Inventory
 {
     /// <summary>
-    /// Базовый класс инвенторя
+    /// Базовый класс инвенторя, пустой, без предметов
     /// </summary>
     public class InventoryBase
     {
-
-        public void Clear()
-        {
-            //int i;
-            //for (i = 0; i < mainInventory.Length; i++)
-            //{
-            //    mainInventory[i] = null;
-            //}
-            //for (i = 0; i < mainBackpack.Length; i++)
-            //{
-            //    mainBackpack[i] = null;
-            //}
-            //for (i = 0; i < clothInventory.Length; i++)
-            //{
-            //    clothInventory[i] = null;
-            //}
-            //OnChanged(-1);
-        }
-        /*
-        /// <summary>
-        /// Получить выбранный стак правой руки
-        /// </summary>
-        ItemStack GetCurrentItem();
-
         /// <summary>
         /// Возвращает стaк в слоте slotIn
         /// </summary>
-        ItemStack GetStackInSlot(int slotIn);
-
-        /// <summary>
-        /// Получить стак одежды
-        /// </summary>
-        /// <param name="slot">0-7 InventoryPlayer.COUNT_CLOTH</param>
-        ItemStack GetClothInventory(int slot);
-
-        /// <summary>
-        /// Получить список стаков (что в руке и список одежды)
-        /// </summary>
-        ItemStack[] GetCurrentItemAndCloth();
-
-        /// <summary>
-        /// Задать в правую руку стак
-        /// </summary>
-        void SetCurrentItem(ItemStack stack);
-
-        /// <summary>
-        /// Задать стак одежды
-        /// </summary>
-        /// <param name="slot">0-7 InventoryPlayer.COUNT_CLOTH</param>
-        void SetClothInventory(int slot, ItemStack stack);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetStackInSlot(int slotIn) => null;
 
         /// <summary>
         /// Устанавливает данный стек предметов в указанный слот в инвентаре
         /// </summary>
-        void SetInventorySlotContents(int slotIn, ItemStack stack);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetInventorySlotContents(int slotIn, ItemStack stack) { }
+
+        /// <summary>
+        /// Получить список стаков (что в руке и список одежды)
+        /// для передачи по сети
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack[] GetCurrentItemAndCloth() => new ItemStack[0];
 
         /// <summary>
         /// Задать список стаков (что в руке и список одежды)
         /// </summary>
-        void SetCurrentItemAndCloth(ItemStack[] stacks);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetCurrentItemAndCloth(ItemStack[] stacks) { }
 
         /// <summary>
-        /// Уменьшает урон, в зависимости от брони
+        /// Получить стак одежды
         /// </summary>
-        float ApplyArmorCalculations(EnumBodyDamage enumBody, float amount);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetClothInventory(int slotIn) => null;
 
         /// <summary>
-        /// Уменьшает урон, в зависимости от магии
+        /// Задать стак одежды
         /// </summary>
-        float ApplyMagicDamageCalculations(EnumDamageSource source, EnumBodyDamage enumBody, float amount);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetClothInventory(int slotIn, ItemStack stack) { }
 
         /// <summary>
-        /// Получить урон для атаки предметом который в руке со всеми нюансами игрока
+        /// Получить выбранный стак правой руки
         /// </summary>
-        float GetDamageToAttack(float damage);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetCurrentItem() => null;
 
         /// <summary>
-        /// Дроп одежды и или инвентаря
+        /// Задать в правую руку стак
         /// </summary>
-        void DropEquipment(Rand rand);
-        /// <summary>
-        /// Дроп одежды и или инвентаря
-        /// </summary>
-        void DropEquipment(int index);
-        */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetCurrentItem(ItemStack stack) { }
 
         /// <summary>
         /// Получить полный список всего инвентаря
         /// Mvk было GetMainAndCloth
         /// </summary>
-        public Slot[] GetAll()
-        {
-            return new Slot[] { new Slot() };
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack[] GetAll() => new ItemStack[0];
 
-        /// <summary>
-        /// Устанавливает данный стак предметов в указанный слот в инвентаре 
-        /// </summary>
-        public void SetInventorySlotContents(Slot slot)
-        {
-
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _Clear() { }
 
         public virtual void WriteToNBT(TagCompound nbt)
             => NBTTools.ItemStacksWriteToNBT(nbt, "Inventory", GetAll());
 
         public virtual void ReadFromNBT(TagCompound nbt)
         {
-            Clear();
+            _Clear();
             Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Inventory");
             foreach (Slot slot in slots)
             {
-                SetInventorySlotContents(slot);
+                SetInventorySlotContents(slot.Index, slot.Stack);
             }
         }
 
-        
+        #region Event
+
+        /// <summary>
+        /// Событие изменён слот из инвентаря или одежды или рюкзака
+        /// </summary>
+        protected virtual void _OnChanged(int indexSlot) { }
+
+        /// <summary>
+        /// Событие изменён предмет в руке или выбраный слот правой руки
+        /// </summary>
+        protected virtual void _OnCurrentItemChanged() { }
+
+        #endregion
+
     }
 }
