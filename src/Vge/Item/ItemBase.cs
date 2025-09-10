@@ -54,50 +54,27 @@ namespace Vge.Item
         /// </summary>
         public float Rebound { get; protected set; } = .5f;
 
-        #region Для Render
-
         /// <summary>
-        /// Буфер сетки для рендера
+        /// Объект буферов для рендера
         /// </summary>
-        private VertexEntityBuffer _buffer;
-        /// <summary>
-        /// Буфер сетки для рендера для Gui
-        /// </summary>
-        private VertexEntityBuffer _bufferGui;
-
-        #endregion
+        public ItemRenderBuffer Buffer { get; protected set; }
 
         #region Init
 
         /// <summary>
         /// Инициализация предметов данные с json, 
-        /// это не спрайти, а модель предмета или модель с блока
         /// </summary>
-        public virtual void InitAndJoinN2(JsonCompound state, JsonCompound shape, bool isItem)
+        public virtual void Init(JsonCompound state)
         {
-            if (state.Items != null)
-            {
-                _ReadStateFromJson(state);
-                ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(Alias);
-                _buffer = ItemShapeSprite.Convert(
-                    shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)
-                );
-            }
+            _ReadStateFromJson(state);
+            Buffer = new ItemRenderBuffer();
         }
-
         /// <summary>
-        /// Инициализация предметов данные с json, 
-        /// это спрайт
+        /// Удалить объект данных буфера, он уже должен быть в буфере GPU
         /// </summary>
-        public virtual void InitAndJoinN2(JsonCompound state)
+        public void BufferClear()
         {
-            if (state.Items != null)
-            {
-                _ReadStateFromJson(state);
-                // Форма из спрайта
-                ItemShapeSprite shapeSprite = new ItemShapeSprite(Alias, state.GetString(Cti.Sprite));
-                _buffer = shapeSprite.GenBuffer();
-            }
+            Buffer = null;
         }
 
         /// <summary>
@@ -145,15 +122,7 @@ namespace Vge.Item
 
         #endregion
 
-        #region Render
-
-        /// <summary>
-        /// Получить буфер сетки предмета для рендера
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual VertexEntityBuffer GetBuffer() => _buffer;
-
-        #endregion
+        
 
         public override string ToString() => IndexItem.ToString() + " " + Alias;
     }

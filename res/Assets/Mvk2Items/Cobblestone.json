@@ -2,4 +2,5 @@
     Parent: "Block",
     MaxStackSize: 5,
     ShapeBlock: "Cobblestone"
+    ShapeBlockGui: "Cobblestone"
 }

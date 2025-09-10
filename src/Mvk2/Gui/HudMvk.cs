@@ -5,6 +5,7 @@ using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Item;
 using Vge.Renderer;
+using WinGL.OpenGL;
 
 namespace Mvk2.Gui
 {
@@ -24,16 +25,17 @@ namespace Mvk2.Gui
         private readonly MeshGuiColor _meshInventory;
 
         /// <summary>
-        /// Сетка сущности
+        /// Объект OpenGL для элемента управления
         /// </summary>
-        private readonly MeshEntity _mesh;
+        private readonly GL gl;
 
         public HudMvk(GameBase game, RenderMvk renderMvk) : base(game)
         {
             _renderMvk = renderMvk;
+            gl = game.GetOpenGL();
             _meshInventoryBg = new MeshGuiColor(game.GetOpenGL());
             _meshInventory = new MeshGuiColor(game.GetOpenGL());
-            _mesh = new MeshEntity(game.GetOpenGL());
+
             if (_game.Player.Inventory is InventoryPlayer inventoryPlayer)
             {
                 inventoryPlayer.CurrentItemChanged += InventoryPlayer_CurrentItemChanged;
@@ -69,7 +71,7 @@ namespace Mvk2.Gui
             
             int size = 50 * Gi.Si;
             int w = size * -4;
-            int h = Gi.Height - size - 8;
+            int h = Gi.Height - size - 8 * Gi.Si;
 
             for (int i = 0; i < 8; i++)
             {
@@ -134,7 +136,7 @@ namespace Mvk2.Gui
             int two = 2 * Gi.Si;
             int size = 50 * Gi.Si;
             int w = size * -4;
-            int h = Gi.Height - size - 8;
+            int h = Gi.Height - size - 8 * Gi.Si;
 
             int index = _game.Player.Inventory.GetCurrentIndex();
             int w0 = wc + w + index * size;
@@ -142,13 +144,6 @@ namespace Mvk2.Gui
             _meshInventory.Reload(RenderFigure.Rectangle(w0 - two, h - two, w0 + size + two, h + size + two,
                 0.390625f, .89453125f, .49609375f, 1));
 
-            ItemStack itemStack = _game.Player.Inventory.GetStackInSlot(index);
-
-            itemStack = new ItemStack(Ce.Items.ItemObjects[1]);
-            if (itemStack != null)
-            {
-                _mesh.Reload(itemStack.Item.GetBuffer());
-            }
             // Прорисовка предмета
             //ClientMain.World.WorldRender.GetItemGui(itemStack.Item.EItem).Render(w1, h1)
         }
@@ -161,18 +156,21 @@ namespace Mvk2.Gui
         {
             base.Draw(timeIndex);
 
+            _game.Render.DepthOff();
             _renderMvk.BindTextureHud();
             _meshInventoryBg.Draw();
             _meshInventory.Draw();
            
             // Заносим в шейдор
-            _game.Render.ShsEntity.BindUniformBiginGui(_game.Render.GetOrtho2D());
+            _game.Render.ShsEntity.BindUniformBiginGui();
             //_game.Render.ShsEntity.UniformDataGui(200, 200);
             //_game.WorldRender.Entities.GetItemRender(3).MeshDraw();
             ////_game.Render.ShsEntity.UniformDataGui(200, 200);
             ////_game.WorldRender.Entities.GetEntityRender(1).MeshDraw();
             //_game.Render.ShsEntity.UniformDataGui(300, 300);
-            // _mesh.Draw();
+
+            // Всё два 2 закончено, рисуем 3д элементы в Gui
+            _game.Render.DepthOn();
 
 
             int wc = Gi.Width / 2;
@@ -180,17 +178,19 @@ namespace Mvk2.Gui
 
             int size = 50 * Gi.Si;
             int w = size * -4;
-            int h = Gi.Height - size - 8;
+            int h = Gi.Height - 33 * Gi.Si;
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 4; i++)
             {
                 int w0 = wc + w + i * size;
-                int w1 = w0 + size / 2 + 4;
-                int h1 = h + 8 * Gi.Si;// - size / 2;
+                int w1 = w0 + size / 2;
+               // int h1 = h + 16 * Gi.Si;// - size / 2;
 
                 // Прорисовка предмета в стаке если есть
-                _game.Render.ShsEntity.UniformDataGui(w1, h1);
-                _mesh.Draw();
+                _game.Render.ShsEntity.UniformDataGui(w1, h, 
+                    _game.WorldRender.Entities.GetItemGuiRender(i).Volume);
+                _game.WorldRender.Entities.GetItemGuiRender(i).MeshDraw();
+
                 //if (itemStack.Amount > 1)
                 //{
                 //    GLWindow.Texture.BindTexture(Assets.ConvertFontToTexture(fontSize));
@@ -207,7 +207,7 @@ namespace Mvk2.Gui
                 //    GLRender.Texture2DEnable();
                 //}
             }
-
+            
             //_game.Render.ShaderBindGuiColor();
             //_renderMvk.BindTextureHud();
             //_meshInventoryBg.Draw();
@@ -217,7 +217,6 @@ namespace Mvk2.Gui
         {
             base.Dispose();
             _meshInventoryBg.Dispose();
-            _mesh.Dispose();
         }
     }
 }

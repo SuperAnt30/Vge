@@ -56,10 +56,44 @@ namespace Vge.Item
         }
 
         /// <summary>
+        /// Сгенерировать буфер для GUI
+        /// </summary>
+        public VertexEntityBuffer GenBufferGui()
+        {
+            QuadSide[] quads = new QuadSide[1];
+            int size = 256;
+            if (_res.CountWidth > 1)
+            {
+                size *= _res.CountWidth;
+            }
+            quads[0] = new QuadSide();
+            quads[0].SetSide(Pole.North, false, -size, -size, 0, size, size, 0).SetTexture(_res.Index,
+                0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight, 180);
+
+            return ConvertGui(quads);
+        }
+
+        /// <summary>
         /// Конвертировать квады в сетку сущности
         /// </summary>
         /// <param name="quads">Массив квадов</param>
         public static VertexEntityBuffer Convert(QuadSide[] quads)
+        {
+            // Генерируем буффер
+            List<float> listFloat = new List<float>();
+            List<int> listInt = new List<int>();
+            foreach (QuadSide quad in quads)
+            {
+                quad.GenBuffer(listFloat, listInt);
+            }
+            return new VertexEntityBuffer(listFloat.ToArray(), listInt.ToArray());
+        }
+
+        /// <summary>
+        /// Конвертировать квады в сетку сущности для Gui
+        /// </summary>
+        /// <param name="quads">Массив квадов</param>
+        public static VertexEntityBuffer ConvertGui(QuadSide[] quads)
         {
             // Генерируем буффер
             List<float> listFloat = new List<float>();

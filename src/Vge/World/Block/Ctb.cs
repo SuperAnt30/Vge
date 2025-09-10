@@ -60,6 +60,10 @@
         /// Смещение готовой фигуры на количество px. ([x, y, z]), координаты float
         /// </summary>
         public const string Offset = "Offset";
+        /// <summary>
+        /// Масштаб 1.0 == 100%. (float)
+        /// </summary>
+        public const string Scale = "Scale";
 
         /// <summary>
         /// Фращение фигуры кратно 90 градусах по координате Y. (90 || 180 || 270)

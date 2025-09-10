@@ -4,6 +4,7 @@ using Vge.Renderer.Font;
 using Vge.Renderer.Shaders;
 using Vge.Renderer.World;
 using Vge.Util;
+using WinGL.OpenGL;
 using WinGL.Util;
 
 namespace Vge.Renderer
@@ -220,6 +221,26 @@ namespace Vge.Renderer
             {
                 _textureIndex.Widgets = Texture.SetTexture(buffereds[EnumTexture.Widgets.ToString()]);
             }
+        }
+
+        /// <summary>
+        /// Отключаем запись в буфер глубины и контроль глубины, для Gui
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DepthOff()
+        {
+            gl.Disable(GL.GL_DEPTH_TEST);
+            gl.DepthMask(0);
+        }
+
+        /// <summary>
+        /// Включаем запись в буфер глубины и контроль глубины, после Gui
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DepthOn()
+        {
+            gl.Enable(GL.GL_DEPTH_TEST);
+            gl.DepthMask(1);
         }
 
         #region Draw

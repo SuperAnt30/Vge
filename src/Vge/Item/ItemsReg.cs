@@ -91,22 +91,47 @@ namespace Vge.Item
                 itemObject.SetAlias(alias);
 
                 JsonCompound state = _ParentState(jsonRead.Compound);
+
+                // Данные
+                itemObject.Init(state);
+
                 List<JsonKeyValue> shapes = new List<JsonKeyValue>();
                 
                 if (state.IsKey(Cti.Sprite))
                 {
                     // Только текстура
-                    itemObject.InitAndJoinN2(state);
+                    itemObject.Buffer.InitAndSprite(alias, state);
                 }
                 else if (state.IsKey(Cti.Shape))
                 {
                     // Фигура предмета
-                    itemObject.InitAndJoinN2(state, _GetShape(state.GetString(Cti.Shape)), true);
+                    itemObject.Buffer.InitAndShape(alias, state, _GetShape(state.GetString(Cti.Shape)), true);
                 }
                 else if (state.IsKey(Cti.ShapeBlock))
                 {
                     // Фигура блока
-                    itemObject.InitAndJoinN2(state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlock)), false);
+                    itemObject.Buffer.InitAndShape(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlock)), false);
+                }
+                else
+                {
+                    // Отсутствует фигура предмета
+                    throw new Exception(Sr.GetString(Sr.TheFigureItemIsMissing, alias));
+                }
+                // GUI
+                if (state.IsKey(Cti.SpriteGui))
+                {
+                    // Только текстура
+                    itemObject.Buffer.InitSpriteGui(alias, state);
+                }
+                else if (state.IsKey(Cti.ShapeGui))
+                {
+                    // Фигура предмета
+                    itemObject.Buffer.InitShapeGui(alias, state, _GetShape(state.GetString(Cti.ShapeGui)));
+                }
+                else if (state.IsKey(Cti.ShapeBlockGui))
+                {
+                    // Фигура блока
+                    itemObject.Buffer.InitShapeGui(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlockGui)));
                 }
                 else
                 {

@@ -8,9 +8,23 @@ namespace Vge.World.Block
     public class ShapeAdd
     {
         /// <summary>
+        /// Имеется ли масштаб
+        /// </summary>
+        public bool IsScale;
+        /// <summary>
+        /// Масштаб 1.0 == 100%
+        /// </summary>
+        public float Scale = 1f;
+
+        /// <summary>
         /// Имеется ли смещение
         /// </summary>
         public bool IsOffset;
+        /// <summary>
+        /// Смещение фигуры
+        /// </summary>
+        public float[] Offset = new float[0];
+
         /// <summary>
         /// Имеется ли вращение, только для предмета
         /// </summary>
@@ -31,32 +45,42 @@ namespace Vge.World.Block
         /// </summary>
         public bool UvLock;
 
-        /// <summary>
-        /// Смещение фигуры
-        /// </summary>
-        private float[] _offset = new float[0];
-
-        public void RunShape(JsonCompound view, bool isBlock)
+        public void RunShape(JsonCompound view, bool isBlock, bool isGui = false)
         {
             if (view.Items != null)
             {
-                IsOffset = view.IsKey(Ctb.Offset);
+                IsScale = view.IsKey(Ctb.Scale);
+                if (IsScale)
+                {
+                    Scale = view.GetFloat(Ctb.Scale);
+                    if (isGui)
+                    {
+                        Scale *= 32f;
+                    }
+                }
+                else if (isGui)
+                {
+                    IsScale = true;
+                    Scale = 32f;
+                }
+
+                    IsOffset = view.IsKey(Ctb.Offset);
                 if (IsOffset)
                 {
-                    _offset = view.GetArray(Ctb.Offset).ToArrayFloat();
+                    Offset = view.GetArray(Ctb.Offset).ToArrayFloat();
                 }
                 else
                 {
-                    _offset = new float[3];
+                    Offset = new float[3];
                 }
 
                 // Если блок, смещаем на край блока, 0 .. +16 чтоб был.
                 // А был до этого -8 .. +8
                 if (isBlock)
                 {
-                    _offset[0] += 8f;
-                    _offset[2] += 8f;
-                    IsOffset = _offset[0] != 0 || _offset[1] != 0 || _offset[2] != 0;
+                    Offset[0] += 8f;
+                    Offset[2] += 8f;
+                    IsOffset = Offset[0] != 0 || Offset[1] != 0 || Offset[2] != 0;
 
                     // Имеется вращение по Y 90 | 180 | 270
                     RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
@@ -72,12 +96,20 @@ namespace Vge.World.Block
                         Rotate = view.GetArray(Ctb.Rotate).ToArrayFloat();
                     }
                 }
+
+                if (IsOffset && !isGui)
+                {
+                    Offset[0] /= 16f;
+                    Offset[1] /= 16f;
+                    Offset[2] /= 16f;
+                }
+            }
+            else if(isGui)
+            {
+                IsScale = true;
+                Scale = 32f;
             }
         }
-
-        public float GetOffsetX() => _offset.Length > 0 ? _offset[0] / 16f : 0;
-        public float GetOffsetY() => _offset.Length > 1 ? _offset[1] / 16f : 0;
-        public float GetOffsetZ() => _offset.Length > 2 ? _offset[2] / 16f : 0;
 
         /// <summary>
         /// Проверка вращения кратно 90 || 180 || 270

@@ -93,7 +93,17 @@ namespace Vge.World.Block
 
             Pole pole = PoleConvert.GetPole(face.GetString(Ctb.Side));
 
-            _quad.SetSide(pole, Shade, _x1, _y1, _z1, _x2, _y2, _z2);
+            if (_shapeAdd.IsScale)
+            {
+                float scale = _shapeAdd.Scale;
+                _quad.SetSide(pole, Shade, 
+                    _x1 * scale, _y1 * scale, _z1 * scale,
+                    _x2 * scale, _y2 * scale, _z2 * scale);
+            }
+            else
+            {
+                _quad.SetSide(pole, Shade, _x1, _y1, _z1, _x2, _y2, _z2);
+            }
             if (_isRotate)
             {
                 _quad.SetRotate(_xR, _yR, _zR, _xO, _yO, _zO);
@@ -104,8 +114,7 @@ namespace Vge.World.Block
             }
             if (_shapeAdd.IsOffset)
             {
-                _quad.SetTranslate(_shapeAdd.GetOffsetX(),
-                    _shapeAdd.GetOffsetY(), _shapeAdd.GetOffsetZ());
+                _quad.SetTranslate(_shapeAdd.Offset[0], _shapeAdd.Offset[1], _shapeAdd.Offset[2]);
             }
 
             // Размеры текстуры

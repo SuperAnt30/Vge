@@ -146,6 +146,10 @@ public sealed class Gi
     public const int MaxDistanceNotMipMap = 12;
 
     /// <summary>
+    /// Массив матрицы для проецирования дрехмерных координат на экран
+    /// </summary>
+    public static readonly float[] Ortho = new float[16];
+    /// <summary>
     /// Матрица просмотра Projection * LookAt
     /// </summary>
     public static readonly float[] MatrixView = new float[16];
@@ -165,4 +169,10 @@ public sealed class Gi
     /// Яркость теней блоков
     /// </summary>
     public static float BlockBrightness = 0.3f;
+
+    /// <summary>
+    /// Обновить ортогональную проекцию
+    /// </summary>
+    public static void UpOrtho()
+        => Glm.Ortho(0, Width, Height, 0, 100, -200).ConvArray(Ortho);
 }

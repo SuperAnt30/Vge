@@ -5,6 +5,7 @@ using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Games;
+using Vge.Item;
 using Vge.Renderer.Shaders;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -26,7 +27,7 @@ namespace Vge.Renderer.World.Entity
         public bool IsHitBox = false;
 
         /// <summary>
-        /// Объект буфера
+        /// Объект буфера кеш для слоёв
         /// </summary>
         public readonly VertexLayersBuffer Buffer = new VertexLayersBuffer();
 
@@ -52,6 +53,11 @@ namespace Vge.Renderer.World.Entity
         /// Массив всех типов предметов
         /// </summary>
         private EntityRender[] _itemRender;
+
+        /// <summary>
+        /// Массив всех типов предметов для Gui
+        /// </summary>
+        private ItemRender[] _itemGuiRender;
 
         /// <summary>
         /// Id маленьких текстур
@@ -117,14 +123,19 @@ namespace Vge.Renderer.World.Entity
             // Создаём объекты рендора всех типов предметов
             count = Ce.Items.Count;
             _itemRender = new EntityRender[count];
+            _itemGuiRender = new ItemRender[count];
             for (ushort id = 0; id < count; id++)
             {
-                VertexEntityBuffer buffer = Ce.Items.ItemObjects[id].GetBuffer();
+                ItemRenderBuffer renderBuffer = Ce.Items.ItemObjects[id].Buffer;
+                VertexEntityBuffer buffer = renderBuffer.GetBuffer();
                 if (buffer == null)
                 {
                     throw new Exception(Sr.GetString(Sr.BufferItemIsMissing, Ce.Items.ItemAlias[id]));
                 }
-                _itemRender[id] = new EntityRender(gl, Ce.Items.ItemObjects[id].GetBuffer());
+                _itemRender[id] = new EntityRender(gl, buffer);
+                _itemGuiRender[id] = new ItemRender(id, gl, renderBuffer);
+                // Очищаем буфер
+                Ce.Items.ItemObjects[id].BufferClear();
             }
         }
 
@@ -306,7 +317,11 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EntityRender GetItemRender(int indexEntity) => _itemRender[indexEntity];
-        
+        /// <summary>
+        /// Получить объект рендера предмета для Gui по индексу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ItemRender GetItemGuiRender(int indexEntity) => _itemGuiRender[indexEntity];
 
         /// <summary>
         /// Метод для прорисовки основного игрока
@@ -349,7 +364,20 @@ namespace Vge.Renderer.World.Entity
                     _entityRender[i]?.Dispose();
                 }
             }
+            if (_itemRender != null)
+            {
+                for (int i = 0; i < _itemRender.Length; i++)
+                {
+                    _itemRender[i]?.Dispose();
+                }
+            }
+            if (_itemGuiRender != null)
+            {
+                for (int i = 0; i < _itemGuiRender.Length; i++)
+                {
+                    _itemGuiRender[i]?.Dispose();
+                }
+            }
         }
-
     }
 }

@@ -27,8 +27,7 @@ void main()
     a_lightDir = lightDir;
     a_depth = depth;
     
-    mat4 modelMatrix = mat4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1, 0, pos.x, pos.y, -scale, 1);
-    //gl_Position = view * vec4(pos + v_position, 1.0);
-    gl_Position = view * modelMatrix * vec4(v_position, 1.0);
+    mat4 mS = mat4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, pos.x, pos.y, 0, 1);
+    gl_Position = view * mS * vec4(v_position, 1.0);
     a_normal = v_normal; 
 }

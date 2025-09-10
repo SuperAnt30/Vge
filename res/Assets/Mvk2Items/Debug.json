@@ -3,5 +3,6 @@
     MaxStackSize: 5,
     #ShapeBlock: "Debug",
     Sprite: "Items/Axe"
+    SpriteGui: "Items/Axe"
     #View: { RotateY: 90, UvLock:true }
 }

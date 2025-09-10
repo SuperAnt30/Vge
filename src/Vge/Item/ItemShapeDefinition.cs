@@ -42,47 +42,42 @@ namespace Vge.Item
         /// <summary>
         /// Запуск определения формы для предмета, где view это объект доп параметров модели
         /// </summary>
-        public QuadSide[] RunShapeItemFromJson(JsonCompound view, JsonCompound shape)
+        public QuadSide[] RunShapeItemFromJson(JsonCompound view, JsonCompound shape, bool isGui = false)
         {
             _log = Cti.Shape;
             try
             {
-                _ShapeItem(view, shape);
+                // Собираем дополнительные данные на фигуру
+                _shapeAdd.RunShape(view, false, isGui);
+                // Имеется форма
+                _log = Ctb.Texture;
+
+                // Текстура
+                _shapeTexture.RunShape(shape);
+
+                _log = Ctb.Elements;
+                JsonCompound[] elements = shape.GetArray(Ctb.Elements).ToArrayObject();
+
+                _log = "FacesCount";
+                // Определяем количество квадов
+                int i;
+                _indexQ = 0;
+                for (i = 0; i < elements.Length; i++)
+                {
+                    _indexQ += elements[i].GetArray(Ctb.Faces).GetCount();
+                }
+                _quads = new QuadSide[_indexQ];
+                _indexQ = 0;
+                // Заполняем квады
+                for (i = 0; i < elements.Length; i++)
+                {
+                    _Element(elements[i]);
+                }
                 return _quads;
             }
             catch (Exception ex)
             {
                 throw new Exception(Sr.GetString(Sr.ErrorReadJsonItemShape, _alias, _log), ex);
-            }
-        }
-
-        private void _ShapeItem(JsonCompound view, JsonCompound shape)
-        {
-            // Собираем дополнительные данные на фигуру
-            _shapeAdd.RunShape(view, false);
-            // Имеется форма
-            _log = Ctb.Texture;
-            
-            // Текстура
-            _shapeTexture.RunShape(shape);
-
-            _log = Ctb.Elements;
-            JsonCompound[] elements = shape.GetArray(Ctb.Elements).ToArrayObject();
-
-            _log = "FacesCount";
-            // Определяем количество квадов
-            int i;
-            _indexQ = 0;
-            for (i = 0; i < elements.Length; i++)
-            {
-                _indexQ += elements[i].GetArray(Ctb.Faces).GetCount();
-            }
-            _quads = new QuadSide[_indexQ];
-            _indexQ = 0;
-            // Заполняем квады
-            for (i = 0; i < elements.Length; i++)
-            {
-                _Element(elements[i]);
             }
         }
 

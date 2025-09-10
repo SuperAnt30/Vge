@@ -350,7 +350,9 @@ namespace Vge
                 Game.Draw(timeIndex);
                 if (Screen != null)
                 {
+                    Render.DepthOff();
                     Screen.Draw(timeIndex);
+                    Render.DepthOn();
                 }
             }
             if (Ce.IsDebugDraw)
@@ -373,6 +375,7 @@ namespace Vge
             base.OnResized(width, height);
             Gi.Width = width;
             Gi.Height = height;
+            Gi.UpOrtho();
             UpdateSizeInterface();
             if (Screen != null) 
             {

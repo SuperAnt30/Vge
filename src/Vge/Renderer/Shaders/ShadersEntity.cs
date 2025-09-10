@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using WinGL.OpenGL;
+using WinGL.Util;
 
 namespace Vge.Renderer.Shaders
 {
@@ -191,24 +192,32 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы для GUI
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBiginGui(float[] ortho2D)
+        public void BindUniformBiginGui()
         {
-            //gl.Enable(GL.GL_DEPTH_TEST);
             _shaderGui.Bind();
-            _shaderGui.SetUniformMatrix4("view", ortho2D);
+            _shaderGui.SetUniformMatrix4("view", Gi.Ortho);
             _shaderGui.SetUniform1("brightness", Gi.EntityBrightness);
-            _shaderGui.SetUniform3("lightDir", 0, -1, 0);
-            _shaderGui.SetUniform1("scale", 32f * 2);
+            //_shaderGui.SetUniform3("lightDir", 0, 0, -1);
+            _shaderGui.SetUniform3("lightDir", .9f, -.9f, 0);
+            _shaderGui.SetUniform1("scale", (float)Gi.Si);
+            _shaderGui.SetUniform1("depth", -1f); // Нужен когда хотим сущность продемонстрировать
         }
 
         /// <summary>
         /// Внести данные в юниформы для претмета Gui
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UniformDataGui(float x, float y, float depth = -1f)
+        public void UniformDataGui(float x, float y, bool volume = false)
         {
             _shaderGui.SetUniform2("pos", x, y);
-            _shaderGui.SetUniform1("depth", depth);
+            if (volume)
+            {
+                _shaderGui.SetUniform3("lightDir", -0.707106769f, -0.707106769f, 0); // -1, -1, 0 нормализован
+            }
+            else
+            {
+                _shaderGui.SetUniform3("lightDir", 0, 0, -1);
+            }
         }
 
         #endregion

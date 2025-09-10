@@ -2,6 +2,8 @@
     Parent: "Block",
     MaxStackSize: 1,
     ShapeBlock: "Brol",
+    ShapeBlockGui: "Brol",
     #View: { Offset:[-8, 0, -8] }
-    View: { Rotate:[-45, 45, 0] }
+    View: { Rotate:[0, 0, 0], Scale: 0.6 }
+    #View: { Scale: 0.5 }
 }
