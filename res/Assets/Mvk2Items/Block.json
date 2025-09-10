@@ -5,5 +5,5 @@
     Height: 1,
     Weight: 50,
     Rebound: 0,
-    ViewGui: { Rotate:[30, 45, 22], Offset:[0, -12, 0] Scale: 0.75 }
+    ViewGui: { Rotate:[210, 45, 22], Offset:[0, 10, 0] Scale: 0.75 }
 }
