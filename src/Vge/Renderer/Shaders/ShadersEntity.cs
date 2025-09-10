@@ -41,6 +41,10 @@ namespace Vge.Renderer.Shaders
         /// Графика качественнее, красивее
         /// </summary>
         private bool _qualitatively;
+        /// <summary>
+        /// Объёмный предмет
+        /// </summary>
+        private bool _flagItemVolume;
 
         public ShadersEntity(GL gl, string nameGui, string nameLow, string nameHigh, string nameDepthMap)
         {
@@ -197,32 +201,40 @@ namespace Vge.Renderer.Shaders
             _shaderGui.Bind();
             _shaderGui.SetUniformMatrix4("view", Gi.Ortho);
             _shaderGui.SetUniform1("brightness", Gi.EntityBrightness);
-            //_shaderGui.SetUniform3("lightDir", 0, 0, -1);
             _shaderGui.SetUniform3("lightDir", .9f, -.9f, 0);
             _shaderGui.SetUniform1("scale", (float)Gi.Si);
             _shaderGui.SetUniform1("depth", -1f); // Нужен когда хотим сущность продемонстрировать
+            UniformVolumeGui(true);
         }
 
         /// <summary>
-        /// Внести данные в юниформы для претмета Gui
+        /// Внести позицию для претмета Gui
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UniformDataGui(float x, float y, bool volume = false)
+        public void UniformPosGui(float x, float y)
+            => _shaderGui.SetUniform2("pos", x, y);
+
+        /// <summary>
+        /// Внести значение объёмный ли предмет или нет
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformVolumeGui(bool volume = false)
         {
-            _shaderGui.SetUniform2("pos", x, y);
-            if (volume)
+            if (_flagItemVolume != volume)
             {
-                _shaderGui.SetUniform3("lightDir", -0.707106769f, -0.707106769f, 0); // -1, -1, 0 нормализован
-            }
-            else
-            {
-                _shaderGui.SetUniform3("lightDir", 0, 0, -1);
+                if (volume)
+                {
+                    _shaderGui.SetUniform3("lightDir", -0.707106769f, -0.707106769f, 0); // -1, -1, 0 нормализован
+                }
+                else
+                {
+                    _shaderGui.SetUniform3("lightDir", 0, 0, -1);
+                }
+                _flagItemVolume = volume;
             }
         }
 
         #endregion
-
-
 
         public void Dispose()
         {

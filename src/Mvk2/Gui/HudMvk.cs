@@ -187,9 +187,7 @@ namespace Mvk2.Gui
                // int h1 = h + 16 * Gi.Si;// - size / 2;
 
                 // Прорисовка предмета в стаке если есть
-                _game.Render.ShsEntity.UniformDataGui(w1, h, 
-                    _game.WorldRender.Entities.GetItemGuiRender(i).Volume);
-                _game.WorldRender.Entities.GetItemGuiRender(i).MeshDraw();
+                _game.WorldRender.Entities.GetItemGuiRender(i).MeshDraw(w1, h);
 
                 //if (itemStack.Amount > 1)
                 //{

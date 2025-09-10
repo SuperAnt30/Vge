@@ -62,6 +62,8 @@ namespace WinGL.OpenGL
         private glEnableVertexAttribArray delegateEnableVertexAttribArray;
         private delegate void glVertexAttribPointer(uint index, int size, uint type, bool normalized, int stride, IntPtr pointer);
         private glVertexAttribPointer delegateVertexAttribPointer;
+        private delegate void glVertexAttribIPointer(uint index, int size, uint type, int stride, IntPtr pointer);
+        private glVertexAttribIPointer delegateVertexAttribIPointer;
 
         private delegate uint glCreateShader(uint type);
         private glCreateShader delegateCreateShader;
@@ -237,6 +239,12 @@ namespace WinGL.OpenGL
             if (delegateVertexAttribPointer == null)
                 delegateVertexAttribPointer = GetDelegate<glVertexAttribPointer>() as glVertexAttribPointer;
             delegateVertexAttribPointer(index, size, type, normalized, stride, pointer);
+        }
+        public void VertexAttribIPointer(uint index, int size, uint type, int stride, IntPtr pointer)
+        {
+            if (delegateVertexAttribIPointer == null)
+                delegateVertexAttribIPointer = GetDelegate<glVertexAttribIPointer>() as glVertexAttribIPointer;
+            delegateVertexAttribIPointer(index, size, type, stride, pointer);
         }
 
         public uint CreateShader(uint type)

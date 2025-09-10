@@ -67,6 +67,7 @@ namespace Vge.Item
         public virtual void Init(JsonCompound state)
         {
             _ReadStateFromJson(state);
+            // Создание буфера для рендера
             Buffer = new ItemRenderBuffer();
         }
         /// <summary>

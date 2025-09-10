@@ -133,7 +133,7 @@ namespace Vge.Renderer.World.Entity
                     throw new Exception(Sr.GetString(Sr.BufferItemIsMissing, Ce.Items.ItemAlias[id]));
                 }
                 _itemRender[id] = new EntityRender(gl, buffer);
-                _itemGuiRender[id] = new ItemRender(id, gl, renderBuffer);
+                _itemGuiRender[id] = new ItemRender(id, gl, ShsEntity, renderBuffer);
                 // Очищаем буфер
                 Ce.Items.ItemObjects[id].BufferClear();
             }

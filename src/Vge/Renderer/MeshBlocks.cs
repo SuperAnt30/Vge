@@ -60,15 +60,15 @@ namespace Vge.Renderer
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
 
             // layout(location = 2) in int v_rgbl;
-            _gl.VertexAttribPointer(2, 1, GL.GL_FLOAT, false, 12, new IntPtr(0 * sizeof(int)));
+            _gl.VertexAttribIPointer(2, 1, GL.GL_INT, 12, new IntPtr(0 * sizeof(int)));
             _gl.EnableVertexAttribArray(2);
 
             // layout(location = 3) in int v_anim;
-            _gl.VertexAttribPointer(3, 1, GL.GL_FLOAT, false, 12, new IntPtr(1 * sizeof(int)));
+            _gl.VertexAttribIPointer(3, 1, GL.GL_INT, 12, new IntPtr(1 * sizeof(int)));
             _gl.EnableVertexAttribArray(3);
 
             // layout(location = 4) in int v_normal;
-            _gl.VertexAttribPointer(4, 1, GL.GL_FLOAT, false, 12, new IntPtr(2 * sizeof(int)));
+            _gl.VertexAttribIPointer(4, 1, GL.GL_INT, 12, new IntPtr(2 * sizeof(int)));
             _gl.EnableVertexAttribArray(4);
         }
 

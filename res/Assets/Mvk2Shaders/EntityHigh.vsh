@@ -71,7 +71,7 @@ void main()
     }
     else
     {
-    // Матрица модели, расположения в мире
+      // Матрица модели, расположения в мире
       mat4 modelMatrix = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, pos.x, pos.y, pos.z, 1);
       a_fragToLight = lightMatrix * modelMatrix * mat4(elementTransforms[jointId]) * vec4(v_position, 1.0);
       a_normal = vec3(mat4(elementTransforms[jointId]) * vec4(v_normal, 1.0));
