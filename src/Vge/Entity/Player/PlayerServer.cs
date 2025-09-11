@@ -149,6 +149,7 @@ namespace Vge.Entity.Player
             Render = new EntityRenderBase();
             _InitMetaData();
             _InitSize();
+            _InitInventory();
         }
 
         #region Tracker
@@ -364,7 +365,7 @@ namespace Vge.Entity.Player
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
-                    //idBox = 2;
+                    idBox = 2;
                     int id = _server.Worlds.GetDebugIndex(idBox);
                     if (id == -1)
                     {
@@ -374,6 +375,7 @@ namespace Vge.Entity.Player
                     {
                         //TODO::2025-06-04 Спавн сущности на сервере, продумать удобным!!!
                         // Для сервера
+                        idItem = Inventory.GetCurrentIndex();
                         EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, world.Collision);
                         if (entity is EntityItem entityItem)
                         {
@@ -429,6 +431,25 @@ namespace Vge.Entity.Player
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
             world.SetBlockState(blockPos, blockState, world.IsRemote ? 14 : 31);
         }
+
+        /// <summary>
+        /// Пакет: выбранный слот у игрока
+        /// </summary>
+        public void PacketHeldItemChange(PacketC09HeldItemChange packet)
+        {
+            // Тут нужна проверка слота который был в руке на сервере
+           // Inventory.CurrentItemChanging();
+            if (Inventory.SetCurrentIndex(packet.SlotId))
+            {
+                //MarkPlayerActive();
+            }
+            else
+            {
+             //   ServerMain.Log.Log(entityPlayer.GetName() + " пытался установить недопустимый переносимый предмет");
+            }
+        }
+            //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+
 
         /// <summary>
         /// Пакет: анимации игрока

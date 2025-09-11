@@ -124,6 +124,11 @@ namespace Vge.Entity.Player
         /// </summary>
         private float _eyeFrame;
 
+        /// <summary>
+        /// Выбранная ячейка
+        /// </summary>
+        private byte _currentPlayerItem = 0;
+
         public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
             Login = game.ToLoginPlayer();
@@ -713,7 +718,10 @@ namespace Vge.Entity.Player
 
             // Проверка на обновление чанков альфа блоков, в такте после перемещения
             _UpdateChunkRenderAlphe();
-            
+
+            // синхронизация выброного слота
+            _SyncCurrentPlayItem();
+
             Render.UpdateClient(world, deltaTime);
         }
 
@@ -855,6 +863,22 @@ namespace Vge.Entity.Player
         /// </summary>
         protected override void _SetAwakenPhysicSleep(int id)
             => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
+
+        /// <summary>
+        /// Проверить изменение слота если изменён, отправить на сервер
+        /// </summary>
+        private void _SyncCurrentPlayItem()
+        {
+            byte currentItem = Inventory.GetCurrentIndex();
+            if (currentItem != _currentPlayerItem)
+            {
+                _currentPlayerItem = currentItem;
+                _game.TrancivePacket(new PacketC09HeldItemChange(_currentPlayerItem));
+                // Отмена разрушения блока если было смена предмета в руке
+               // ClientMain.TrancivePacket(new PacketC07PlayerDigging(itemInWorldManager.BlockPosDestroy, PacketC07PlayerDigging.EnumDigging.About));
+               // ItemInWorldManagerDestroyAbout();
+            }
+        }
 
         #region Packet
 

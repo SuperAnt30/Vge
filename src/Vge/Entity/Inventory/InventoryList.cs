@@ -12,7 +12,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Количество ячеек для предметов быстрого доступа
         /// </summary>
-        protected readonly int _mainCount;
+        protected readonly byte _mainCount;
         
         /// <summary>
         /// Количество ячеек для одежды
@@ -27,7 +27,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Выбранный слот правой руки
         /// </summary>
-        protected int _currentIndex = 0;
+        protected byte _currentIndex = 0;
 
         /// <summary>
         /// Массив предметов инвентаря
@@ -35,7 +35,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         protected readonly ItemStack[] _items;
 
-        public InventoryList(int mainCount, int clothCount)
+        public InventoryList(byte mainCount, int clothCount)
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
@@ -47,13 +47,13 @@ namespace Vge.Entity.Inventory
         /// Получить выбранный слот правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetCurrentIndex() => _currentIndex;
+        public override byte GetCurrentIndex() => _currentIndex;
 
         /// <summary>
         /// Задать активный слот быстрого доступа
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool SetCurrentIndex(int slotIn)
+        public override bool SetCurrentIndex(byte slotIn)
         {
             if (slotIn < _mainCount && slotIn >= 0 && slotIn != _currentIndex)
             {
@@ -82,7 +82,7 @@ namespace Vge.Entity.Inventory
         public override void SlotLess()
         {
             if (_currentIndex > 0) _currentIndex--;
-            else _currentIndex = _mainCount - 1;
+            else _currentIndex = (byte)(_mainCount - 1);
             _OnCurrentItemChanged();
         }
 

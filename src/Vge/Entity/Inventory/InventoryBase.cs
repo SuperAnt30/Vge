@@ -13,13 +13,13 @@ namespace Vge.Entity.Inventory
         /// Получить выбранный слот правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual int GetCurrentIndex() => 0;
+        public virtual byte GetCurrentIndex() => 0;
 
         /// <summary>
         /// Задать активный слот быстрого доступа
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool SetCurrentIndex(int slotIn) => false;
+        public virtual bool SetCurrentIndex(byte slotIn) => false;
 
         /// <summary>
         /// Сместить слот быстрого доступа в большую сторону

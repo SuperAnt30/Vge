@@ -55,6 +55,7 @@ namespace Vge.Network
                 case 0x04: return new PacketC04PlayerPosition();
                 case 0x07: return new PacketC07PlayerDigging();
                 case 0x08: return new PacketC08PlayerBlockPlacement();
+                case 0x09: return new PacketC09HeldItemChange();
                 case 0x0A: return new PacketC0APlayerAnimation();
                 case 0x14: return new PacketC14Message();
                 case 0x15: return new PacketC15PlayerSetting();

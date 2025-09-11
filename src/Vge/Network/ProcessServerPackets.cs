@@ -98,6 +98,7 @@ namespace Vge.Network
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
+                    case 0x09: _Handle09HeldItemChange(sp.Side, (PacketC09HeldItemChange)sp.Packet); break;
                     case 0x0A: _Handle0APlayerAnimation(sp.Side, (PacketC0APlayerAnimation)sp.Packet); break;
                     case 0x14: _Handle14Message(sp.Side, (PacketC14Message)sp.Packet); break;
                     case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
@@ -154,7 +155,7 @@ namespace Vge.Network
             if (_pingKeySend == packet.Time)
             {
                 PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-                if (playerServer != null) playerServer.SetPing(_lastPingTime);
+                playerServer?.SetPing(_lastPingTime);
             }
         }
 
@@ -193,7 +194,7 @@ namespace Vge.Network
         private void _Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketPlayerPosition(packet);
+            playerServer?.PacketPlayerPosition(packet);
         }
 
         /// <summary>
@@ -202,7 +203,7 @@ namespace Vge.Network
         private void _Handle07PlayerDigging(SocketSide socketSide, PacketC07PlayerDigging packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketPlayerDigging(packet);
+            playerServer?.PacketPlayerDigging(packet);
         }
 
         /// <summary>
@@ -211,7 +212,16 @@ namespace Vge.Network
         private void _Handle08PlayerBlockPlacement(SocketSide socketSide, PacketC08PlayerBlockPlacement packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketPlayerBlockPlacement(packet);
+            playerServer?.PacketPlayerBlockPlacement(packet);
+        }
+
+        /// <summary>
+        /// Пакет игрок отправляем на сервер выбранный слот
+        /// </summary>
+        private void _Handle09HeldItemChange(SocketSide socketSide, PacketC09HeldItemChange packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            playerServer?.PacketHeldItemChange(packet);
         }
 
         /// <summary>
@@ -220,7 +230,7 @@ namespace Vge.Network
         private void _Handle0APlayerAnimation(SocketSide socketSide, PacketC0APlayerAnimation packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketPlayerAnimation(packet);
+            playerServer?.PacketPlayerAnimation(packet);
         }
 
         /// <summary>
@@ -235,7 +245,7 @@ namespace Vge.Network
         private void _Handle15PlayerSetting(SocketSide socketSide, PacketC15PlayerSetting packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketPlayerSetting(packet);
+            playerServer?.PacketPlayerSetting(packet);
         }
 
         /// <summary>
@@ -244,7 +254,7 @@ namespace Vge.Network
         private void _Handle20AcknowledgeChunks(SocketSide socketSide, PacketC20AcknowledgeChunks packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null) playerServer.PacketAcknowledgeChunks(packet);
+            playerServer?.PacketAcknowledgeChunks(packet);
         }
 
         #endregion
