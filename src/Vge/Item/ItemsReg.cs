@@ -12,6 +12,11 @@ namespace Vge.Item
     public sealed class ItemsReg
     {
         /// <summary>
+        /// Размер спрайта предмета в инвентаре, pix
+        /// </summary>
+        public static int SizeSprite = 16;
+
+        /// <summary>
         /// Таблица предметов для регистрации
         /// </summary>
         public static readonly ItemRegTable Table = new ItemRegTable();
@@ -121,17 +126,17 @@ namespace Vge.Item
                 if (state.IsKey(Cti.SpriteGui))
                 {
                     // Только текстура
-                    itemObject.Buffer.InitSpriteGui(alias, state);
+                    itemObject.Buffer.InitSpriteGui(alias, state, SizeSprite);
                 }
                 else if (state.IsKey(Cti.ShapeGui))
                 {
                     // Фигура предмета
-                    itemObject.Buffer.InitShapeGui(alias, state, _GetShape(state.GetString(Cti.ShapeGui)));
+                    itemObject.Buffer.InitShapeGui(alias, state, _GetShape(state.GetString(Cti.ShapeGui)), SizeSprite);
                 }
                 else if (state.IsKey(Cti.ShapeBlockGui))
                 {
                     // Фигура блока
-                    itemObject.Buffer.InitShapeGui(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlockGui)));
+                    itemObject.Buffer.InitShapeGui(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlockGui)), SizeSprite);
                 }
                 else
                 {

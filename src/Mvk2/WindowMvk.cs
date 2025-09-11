@@ -15,6 +15,7 @@ using Mvk2.Entity;
 using Vge.Games;
 using Mvk2.Games;
 using Mvk2.Item;
+using Vge.Item;
 
 namespace Mvk2
 {
@@ -204,6 +205,7 @@ namespace Mvk2
         /// </summary>
         protected override void _InitializationItems()
         {
+            ItemsReg.SizeSprite = 32;
             base._InitializationItems();
             ItemsRegMvk.Initialization();
         }

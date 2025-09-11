@@ -45,7 +45,7 @@ namespace Vge.World.Block
         /// </summary>
         public bool UvLock;
 
-        public void RunShape(JsonCompound view, bool isBlock, bool isGui = false)
+        public void RunShape(JsonCompound view, bool isBlock, int sizeSprite)
         {
             if (view.Items != null)
             {
@@ -53,15 +53,15 @@ namespace Vge.World.Block
                 if (IsScale)
                 {
                     Scale = view.GetFloat(Ctb.Scale);
-                    if (isGui)
+                    if (sizeSprite != 1)
                     {
-                        Scale *= 32f;
+                        Scale *= sizeSprite;
                     }
                 }
-                else if (isGui)
+                else if (sizeSprite != 1)
                 {
                     IsScale = true;
-                    Scale = 32f;
+                    Scale = sizeSprite;
                 }
 
                     IsOffset = view.IsKey(Ctb.Offset);
@@ -97,17 +97,17 @@ namespace Vge.World.Block
                     }
                 }
 
-                if (IsOffset && !isGui)
+                if (IsOffset && sizeSprite == 1) // Это не спрайт для GUI
                 {
                     Offset[0] /= 16f;
                     Offset[1] /= 16f;
                     Offset[2] /= 16f;
                 }
             }
-            else if(isGui)
+            else if(sizeSprite != 1)
             {
                 IsScale = true;
-                Scale = 32f;
+                Scale = sizeSprite;
             }
         }
 

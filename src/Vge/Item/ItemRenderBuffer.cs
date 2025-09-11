@@ -27,11 +27,11 @@ namespace Vge.Item
         /// Инициализация предметов данные с json, 
         /// это не спрайти, а модель предмета или модель с блока
         /// </summary>
-        public virtual void InitAndShape(string alias, JsonCompound state, JsonCompound shape, bool isItem)
+        public void InitAndShape(string alias, JsonCompound state, JsonCompound shape, bool isItem)
         {
             ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(alias);
             _buffer = ItemShapeSprite.Convert(
-                shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape)
+                shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape, 1)
             );
         }
 
@@ -39,7 +39,7 @@ namespace Vge.Item
         /// Инициализация предметов данные с json, 
         /// это спрайт
         /// </summary>
-        public virtual void InitAndSprite(string alias, JsonCompound state)
+        public void InitAndSprite(string alias, JsonCompound state)
         {
             ItemShapeSprite shapeSprite = new ItemShapeSprite(alias, state.GetString(Cti.Sprite));
             _buffer = shapeSprite.GenBuffer();
@@ -49,12 +49,12 @@ namespace Vge.Item
         /// Инициализация модели json для Gui, 
         /// это не спрайти, а модель предмета или модель с блока
         /// </summary>
-        public virtual void InitShapeGui(string alias, JsonCompound state, JsonCompound shape)
+        public void InitShapeGui(string alias, JsonCompound state, JsonCompound shape, int sizeSprite)
         {
             Valume = true;
             ItemShapeDefinition shapeDefinition = new ItemShapeDefinition(alias);
             _bufferGui = ItemShapeSprite.ConvertGui(
-                shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.ViewGui), shape, true)
+                shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.ViewGui), shape, sizeSprite)
             );
         }
 
@@ -62,22 +62,22 @@ namespace Vge.Item
         /// Инициализация модели json для Gui, 
         /// это спрайт
         /// </summary>
-        public virtual void InitSpriteGui(string alias, JsonCompound state)
+        public void InitSpriteGui(string alias, JsonCompound state, int sizeSprite)
         {
             ItemShapeSprite shapeSprite = new ItemShapeSprite(alias, state.GetString(Cti.SpriteGui));
-            _bufferGui = shapeSprite.GenBufferGui();
+            _bufferGui = shapeSprite.GenBufferGui(sizeSprite);
         }
 
         /// <summary>
         /// Получить буфер сетки предмета для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual VertexEntityBuffer GetBuffer() => _buffer;
+        public VertexEntityBuffer GetBuffer() => _buffer;
 
         /// <summary>
         /// Получить буфер сетки предмета для рендера Gui
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual VertexEntityBuffer GetBufferGui() => _bufferGui;
+        public VertexEntityBuffer GetBufferGui() => _bufferGui;
     }
 }

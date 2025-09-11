@@ -58,10 +58,10 @@ namespace Vge.Item
         /// <summary>
         /// Сгенерировать буфер для GUI
         /// </summary>
-        public VertexEntityBuffer GenBufferGui()
+        public VertexEntityBuffer GenBufferGui(int sizeSprite)
         {
             QuadSide[] quads = new QuadSide[1];
-            int size = 256;
+            int size = 8 * sizeSprite;
             if (_res.CountWidth > 1)
             {
                 size *= _res.CountWidth;

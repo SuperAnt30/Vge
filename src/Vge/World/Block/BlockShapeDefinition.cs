@@ -139,7 +139,7 @@ namespace Vge.World.Block
             if (nameShape == "") return;
 
             // Собираем дополнительные данные на фигуру
-            _shapeAdd.RunShape(view, true);
+            _shapeAdd.RunShape(view, true, 1);
             // Имеется форма
             JsonCompound shape = shapes.GetObject(nameShape);
 

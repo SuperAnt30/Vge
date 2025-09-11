@@ -42,13 +42,13 @@ namespace Vge.Item
         /// <summary>
         /// Запуск определения формы для предмета, где view это объект доп параметров модели
         /// </summary>
-        public QuadSide[] RunShapeItemFromJson(JsonCompound view, JsonCompound shape, bool isGui = false)
+        public QuadSide[] RunShapeItemFromJson(JsonCompound view, JsonCompound shape, int sizeSprite)
         {
             _log = Cti.Shape;
             try
             {
                 // Собираем дополнительные данные на фигуру
-                _shapeAdd.RunShape(view, false, isGui);
+                _shapeAdd.RunShape(view, false, sizeSprite);
                 // Имеется форма
                 _log = Ctb.Texture;
 
