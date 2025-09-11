@@ -1,5 +1,6 @@
 ﻿using Vge.Entity;
 using Vge.Entity.MetaData;
+using Vge.Item;
 
 namespace Vge.Network.Packets.Server
 {
@@ -18,7 +19,8 @@ namespace Vge.Network.Packets.Server
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
         public bool OnGround { get; private set; }
-        public WatchableObject[] List { get; private set; }
+        public WatchableObject[] Data { get; private set; }
+        public ItemStack[] Stacks { get; private set; }
 
         private bool _isLiving;
 
@@ -36,14 +38,23 @@ namespace Vge.Network.Packets.Server
                 _isLiving = true;
                 Yaw = entityLiving.RotationYaw;
                 Pitch = entityLiving.RotationPitch;
+                if (entityLiving.Inventory != null)
+                {
+                    Stacks = entityLiving.Inventory.GetCurrentItemAndCloth();
+                }
+                else
+                {
+                    Stacks = new ItemStack[0];
+                }
             }
             else
             {
                 _isLiving = false;
                 Yaw = Pitch = 0;
+                Stacks = null;
             }
 
-            List = entity.MetaData.GetAllWatched();
+            Data = entity.MetaData.GetAllWatched();
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -59,8 +70,14 @@ namespace Vge.Network.Packets.Server
             {
                 Yaw = stream.Float();
                 Pitch = stream.Float();
+                int count = stream.Byte();
+                Stacks = new ItemStack[count];
+                for (int i = 0; i < count; i++)
+                {
+                    Stacks[i] = ItemStack.ReadStream(stream);
+                }
             }
-            List = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
+            Data = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
         }
 
         public void WritePacket(WritePacket stream)
@@ -76,8 +93,14 @@ namespace Vge.Network.Packets.Server
             {
                 stream.Float(Yaw);
                 stream.Float(Pitch);
+                int count = Stacks.Length;
+                stream.Byte((byte)count);
+                for (int i = 0; i < count; i++)
+                {
+                    ItemStack.WriteStream(Stacks[i], stream);
+                }
             }
-            DataWatcher.WriteWatchedListToPacketBuffer(List, stream);
+            DataWatcher.WriteWatchedListToPacketBuffer(Data, stream);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Games;
 using Vge.Item;
 using Vge.World;
@@ -53,6 +54,12 @@ namespace Mvk2.World
             }
             return;
         }
+
+        /// <summary>
+        /// Получить индекс сущности предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetEntityItemIndex() => i3;
 
         /// <summary>
         /// Получить индекс кидаемого блока

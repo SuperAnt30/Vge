@@ -33,6 +33,5 @@
                 ItemObjects[id] = item;
             }
         }
-
     }
 }

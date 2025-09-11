@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Entity;
+using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
@@ -107,6 +108,8 @@ namespace Vge.Network
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
                 case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
+                case 0x2F: _Handle2FSetSlot((PacketS2FSetSlot)packet); break;
+                case 0x30: _Handle30WindowItems((PacketS30WindowItems)packet); break;
                 case 0x3A: _Handle3AMessage((PacketS3AMessage)packet); break;
             }
         }
@@ -247,13 +250,8 @@ namespace Vge.Network
                 player.SpawnPosition(packet.X, packet.Y, packet.Z);
                 player.OnGround = packet.OnGround;
                 player.SpawnRotation(packet.Yaw, packet.Pitch);
-
-                //entity.Inventory.SetCurrentItemAndCloth(packet.GetStacks());
-                //ArrayList list = packet.GetList();
-                //if (list != null && list.Count > 0)
-                //{
-                //    entity.MetaData.UpdateWatchedObjectsFromList(list);
-                //}
+                player.Inventory.SetCurrentItemAndCloth(packet.Stacks);
+                player.MetaData.UpdateWatchedObjectsFromList(packet.Data);
 
                 Game.World.SpawnEntityInWorld(player);
             }
@@ -272,11 +270,12 @@ namespace Vge.Network
             if (entity is EntityLiving entityLiving)
             {
                 entityLiving.SpawnRotation(packet.Yaw, packet.Pitch);
+                if (entityLiving.Inventory != null)
+                {
+                    entityLiving.Inventory.SetCurrentItemAndCloth(packet.Stacks);
+                }
             }
-            if (packet.List.Length > 0)
-            {
-                entity.MetaData.UpdateWatchedObjectsFromList(packet.List);
-            }
+            entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);
             Game.World.SpawnEntityInWorld(entity);
         }
 
@@ -334,9 +333,9 @@ namespace Vge.Network
         private void _Handle1CEntityMetadata(PacketS1CEntityMetadata packet)
         {
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
-            if (entity != null && packet.List.Length > 0)
+            if (entity != null && packet.Data.Length > 0)
             {
-                entity.MetaData.UpdateWatchedObjectsFromList(packet.List);
+                entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);
                 // TODO::2025-06-23 Вынести в анимацию!!!
                 if (entity is EntityLiving entityLiving)
                 {
@@ -383,6 +382,42 @@ namespace Vge.Network
         {
             Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
             Debug.BlockChange = "BlockChange";
+        }
+
+        /// <summary>
+        /// Пакет управления передвежением и изменением слота
+        /// </summary>
+        private void _Handle2FSetSlot(PacketS2FSetSlot packet)
+        {
+            Slot slot = packet.GetSlot();
+            //if (slot < 100 || slot == 255)
+            //{
+            //    ClientMain.Player.InventPlayer.SetInventorySlotContents(slot, packet.GetItemStack());
+            //    if (slot == ClientMain.Player.InventPlayer.CurrentItem)
+            //    {
+            //        ClientMain.Player.ItemInWorldManagerDestroyAbout();
+            //    }
+            //}
+            //else
+            //{
+            //    // Пришёл стак для склада
+            //    ClientMain.Screen.AcceptNetworkPackage(packet);
+            //}
+        }
+
+        /// <summary>
+        /// Пакет окна списка предметов, стартово все придметы игрока
+        /// </summary>
+        private void _Handle30WindowItems(PacketS30WindowItems packet)
+        {
+            if (packet.IsInventory)
+            {
+                Game.Player.Inventory.SetAll(packet.Stacks);
+            }
+            else
+            {
+              //  ClientMain.Screen.AcceptNetworkPackage(packet);
+            }
         }
 
         /// <summary>

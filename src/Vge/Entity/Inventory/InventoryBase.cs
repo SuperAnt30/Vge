@@ -89,6 +89,13 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ItemStack[] GetAll() => new ItemStack[0];
 
+        /// <summary>
+        /// Задать полный список всего инвентаря
+        /// Mvk было SetMainAndCloth
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetAll(ItemStack[] stacks) { }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _Clear() { }
 

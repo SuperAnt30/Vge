@@ -8,24 +8,24 @@ namespace Vge.Network.Packets.Server
 
         public int EntityId { get; private set; }
 
-        public WatchableObject[] List { get; private set; }
+        public WatchableObject[] Data { get; private set; }
 
-        public PacketS1CEntityMetadata(int entityId, WatchableObject[] list)
+        public PacketS1CEntityMetadata(int entityId, WatchableObject[] data)
         {
             EntityId = entityId;
-            List = list;
+            Data = data;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
             EntityId = stream.Int();
-            List = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
+            Data = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
         }
 
         public void WritePacket(WritePacket stream)
         {
             stream.Int(EntityId);
-            DataWatcher.WriteWatchedListToPacketBuffer(List, stream);
+            DataWatcher.WriteWatchedListToPacketBuffer(Data, stream);
         }
     }
 }

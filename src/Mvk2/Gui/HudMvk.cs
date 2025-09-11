@@ -180,14 +180,19 @@ namespace Mvk2.Gui
             int w = size * -4;
             int h = Gi.Height - 33 * Gi.Si;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
                 int w0 = wc + w + i * size;
                 int w1 = w0 + size / 2;
-               // int h1 = h + 16 * Gi.Si;// - size / 2;
+                // int h1 = h + 16 * Gi.Si;// - size / 2;
+
 
                 // Прорисовка предмета в стаке если есть
-                _game.WorldRender.Entities.GetItemGuiRender(i).MeshDraw(w1, h);
+                ItemStack itemStack = _game.Player.Inventory.GetStackInSlot(i);
+                if (itemStack != null)
+                {
+                    _game.WorldRender.Entities.GetItemGuiRender(itemStack.Item.IndexItem).MeshDraw(w1, h);
+                }
 
                 //if (itemStack.Amount > 1)
                 //{

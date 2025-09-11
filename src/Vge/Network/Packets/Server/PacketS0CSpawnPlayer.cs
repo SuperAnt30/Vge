@@ -1,4 +1,6 @@
-﻿using Vge.Entity.Player;
+﻿using Vge.Entity.MetaData;
+using Vge.Entity.Player;
+using Vge.Item;
 
 namespace Vge.Network.Packets.Server
 {
@@ -19,8 +21,8 @@ namespace Vge.Network.Packets.Server
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
         public bool OnGround { get; private set; }
-        //private ItemStack[] stacks;
-        //private ArrayList list;
+        public WatchableObject[] Data { get; private set; }
+        public ItemStack[] Stacks { get; private set; }
 
         public PacketS0CSpawnPlayer(PlayerServer player)
         {
@@ -34,8 +36,8 @@ namespace Vge.Network.Packets.Server
             Yaw = player.RotationYaw;
             Pitch = player.RotationPitch;
             OnGround = player.OnGround;
-            //stacks = entity.Inventory.GetCurrentItemAndCloth();
-            //list = entity.MetaData.GetAllWatched();
+            Stacks = player.Inventory.GetCurrentItemAndCloth();
+            Data = player.MetaData.GetAllWatched();
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -50,13 +52,13 @@ namespace Vge.Network.Packets.Server
             Yaw = stream.Float();
             Pitch = stream.Float();
             OnGround = stream.Bool();
-            //int count = stream.ReadByte();
-            //stacks = new ItemStack[count];
-            //for (int i = 0; i < count; i++)
-            //{
-            //    stacks[i] = ItemStack.ReadStream(stream);
-            //}
-            //list = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
+            int count = stream.Byte();
+            Stacks = new ItemStack[count];
+            for (int i = 0; i < count; i++)
+            {
+                Stacks[i] = ItemStack.ReadStream(stream);
+            }
+            Data = DataWatcher.ReadWatchedListFromPacketBuffer(stream);
         }
 
         public void WritePacket(WritePacket stream)
@@ -71,13 +73,13 @@ namespace Vge.Network.Packets.Server
             stream.Float(Yaw);
             stream.Float(Pitch);
             stream.Bool(OnGround);
-            //int count = stacks.Length;
-            //stream.WriteByte((byte)count);
-            //for (int i = 0; i < count; i++)
-            //{
-            //    ItemStack.WriteStream(stacks[i], stream);
-            //}
-            //DataWatcher.WriteWatchedListToPacketBuffer(list, stream);
+            int count = Stacks.Length;
+            stream.Byte((byte)count);
+            for (int i = 0; i < count; i++)
+            {
+                ItemStack.WriteStream(Stacks[i], stream);
+            }
+            DataWatcher.WriteWatchedListToPacketBuffer(Data, stream);
         }
     }
 }

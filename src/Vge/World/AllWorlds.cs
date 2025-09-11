@@ -39,6 +39,12 @@ namespace Vge.World
         public virtual void Init(GameServer server) => Server = server;
 
         /// <summary>
+        /// Получить индекс сущности предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual int GetEntityItemIndex() => -1;
+
+        /// <summary>
         /// Получить индекс кидаемого блока
         /// </summary>
         public virtual int GetDebugIndex(int b) => -1;

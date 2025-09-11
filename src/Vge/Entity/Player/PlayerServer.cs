@@ -362,6 +362,23 @@ namespace Vge.Entity.Player
             }
             else
             {
+                ItemStack itemStack = Inventory.GetCurrentItem();
+                if (itemStack != null)
+                {
+                    int id = _server.Worlds.GetEntityItemIndex();
+                    if (id > 0)
+                    {
+                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, world.Collision);
+                        if (entity is EntityItem entityItem)
+                        {
+                            entityItem.InitRun(this, 0);
+                            entityItem.SetEntityItemStack(itemStack);
+                        }
+                        entity.SetEntityId(_server.LastEntityId());
+                        world.SpawnEntityInWorld(entity);
+                    }
+                }
+                /*
                 // TODO::2025-02-10 Временно спавн моба
                 for (int i = 0; i < 1; i++)
                 {
@@ -398,7 +415,7 @@ namespace Vge.Entity.Player
                     {
                         return;
                     }
-                }
+                }*/
             }
         }
 
@@ -504,12 +521,17 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS03JoinGame(Id, UUID));
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
-
+            // Время на сервере
+            SendPacket(new PacketS04TickUpdate(GetWorld().Settings.Calendar.TickCounter));
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
+
+
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
-            
+            SendPacket(new PacketS30WindowItems(true, Inventory.GetAll()));
+
+
             // Вносим в менеджер фрагментов игрока
             GetWorld().Fragment.AddAnchor(this);
 

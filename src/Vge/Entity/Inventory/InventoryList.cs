@@ -207,6 +207,22 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override ItemStack[] GetAll() => _items;
 
+        /// <summary>
+        /// Задать полный список всего инвентаря
+        /// Mvk было SetMainAndCloth
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetAll(ItemStack[] stacks)
+        {
+            if (stacks.Length == _items.Length)
+            {
+                for (int i = 0; i < _items.Length; i++)
+                {
+                    _items[i] = stacks[i];
+                }
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _Clear()
         {

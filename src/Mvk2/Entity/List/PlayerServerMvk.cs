@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Games;
+using Vge.Item;
 using Vge.Network;
 
 namespace Mvk2.Entity.List
@@ -12,7 +13,13 @@ namespace Mvk2.Entity.List
     public class PlayerServerMvk : PlayerServer
     {
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
-            : base(login, token, socket, server) { }
+            : base(login, token, socket, server)
+        {
+            Inventory.SetInventorySlotContents(0, new ItemStack(Ce.Items.ItemObjects[1]));
+            Inventory.SetInventorySlotContents(2, new ItemStack(Ce.Items.ItemObjects[2]));
+            Inventory.SetInventorySlotContents(3, new ItemStack(Ce.Items.ItemObjects[3]));
+            Inventory.SetInventorySlotContents(6, new ItemStack(Ce.Items.ItemObjects[0]));
+        }
 
         /// <summary>
         /// Инициализация инвенторя
