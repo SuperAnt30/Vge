@@ -74,7 +74,11 @@ namespace Vge.Gui.Huds
         {
             // Для контура надо перекулючится без текстуры
             _game.Render.ShaderBindGuiLine();
-            _meshCrosshair.Draw();
+
+            if (_game.Player.ViewCamera == Entity.Player.EnumViewCamera.Eye)
+            {
+                _meshCrosshair.Draw();
+            }
 
             _partHubChat.Draw(timeIndex);
         }

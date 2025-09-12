@@ -75,7 +75,8 @@ namespace Vge.Item
         /// </summary>
         public void BufferClear()
         {
-            Buffer = null;
+            Buffer.Clear();
+            //Buffer = null;
         }
 
         /// <summary>

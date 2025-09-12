@@ -102,6 +102,27 @@
                 ForearmRight: 80,
                 HandRight: 80
             }
+        },
+        {
+            Code: "HoldRight",
+            Animation: "HoldRight",
+            AnimationSpeed: 1.0,
+            ElementWeight: {
+                ArmRight: 20,
+                ForearmRight: 20
+            }
+        },
+        {
+            Code: "HoldTwo",
+            Animation: "HoldTwo",
+            AnimationSpeed: 1.0,
+            ElementWeight: {
+                ArmRight: 90,
+                ForearmRight: 90,
+                Item: 90,
+                ArmLeft: 90,
+                ForearmLeft: 90,
+            }
         }
     ]
 }

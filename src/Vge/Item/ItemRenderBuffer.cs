@@ -22,6 +22,10 @@ namespace Vge.Item
         /// Буфер сетки для рендера для Gui
         /// </summary>
         private VertexEntityBuffer _bufferGui;
+        /// <summary>
+        /// Буфер сетки для рендера для сущности держать
+        /// </summary>
+        private VertexEntityBuffer _bufferHold;
 
         /// <summary>
         /// Инициализация предметов данные с json, 
@@ -33,6 +37,10 @@ namespace Vge.Item
             _buffer = ItemShapeSprite.Convert(
                 shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.View), shape, 1)
             );
+            shapeDefinition = new ItemShapeDefinition(alias);
+            _bufferHold = ItemShapeSprite.Convert(
+                shapeDefinition.RunShapeItemFromJson(state.GetObject(Cti.ViewHold), shape, 1)
+            );
         }
 
         /// <summary>
@@ -41,8 +49,10 @@ namespace Vge.Item
         /// </summary>
         public void InitAndSprite(string alias, JsonCompound state)
         {
+            // TODO::2025-09-13 продумать View для Sprite
             ItemShapeSprite shapeSprite = new ItemShapeSprite(alias, state.GetString(Cti.Sprite));
             _buffer = shapeSprite.GenBuffer();
+            _bufferHold = _buffer.CopyBufferMesh();
         }
 
         /// <summary>
@@ -68,11 +78,23 @@ namespace Vge.Item
             _bufferGui = shapeSprite.GenBufferGui(sizeSprite);
         }
 
+        public void Clear()
+        {
+            _buffer = null;
+            _bufferGui = null;
+        }
+
         /// <summary>
         /// Получить буфер сетки предмета для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VertexEntityBuffer GetBuffer() => _buffer;
+
+        /// <summary>
+        /// Получить буфер сетки предмета для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public VertexEntityBuffer GetBufferHold() => _bufferHold;
 
         /// <summary>
         /// Получить буфер сетки предмета для рендера Gui

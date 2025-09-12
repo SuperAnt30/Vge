@@ -5,8 +5,10 @@
     #Sprite: "Blocks/FlowerClover"
     #ShapeBlock: "FlowerClover"
     Shape: "Axe"
-    ShapeGui: "Axe"
+    #ShapeGui: "Axe"
+    SpriteGui: "Items/Axe"
     #SpriteGui: "Blocks/Debug"
     View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] }
-    ViewGui: { Rotate:[-135, -90, 0], Offset:[-12, 14, 0], Scale: 0.75 }
+    #ViewGui: { Rotate:[-135, -90, 0], Offset:[-12, 14, 0], Scale: 0.75 }
+    ViewHold: { Offset:[0, -5, 0] }
 }

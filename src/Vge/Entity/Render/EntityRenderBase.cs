@@ -69,6 +69,12 @@ namespace Vge.Entity.Render
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsMovingStrafe() => false;
 
+        /// <summary>
+        /// Изменён предмет в руке или выбраный слот правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void CurrentItemChanged() { }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Dispose() { }
     }

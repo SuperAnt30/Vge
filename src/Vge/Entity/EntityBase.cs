@@ -184,7 +184,7 @@ namespace Vge.Entity
 
             _InitMetaData();
             _InitSize();
-            _InitInventory();
+            _CreateInventory();
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Vge.Entity
             _InitMetaData();
             _InitSize();
             _InitPhysics(collision);
-            _InitInventory();
+            _CreateInventory();
         }
 
         /// <summary>
@@ -219,10 +219,10 @@ namespace Vge.Entity
         protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
 
         /// <summary>
-        /// Инициализация инвенторя
+        /// Создания инвенторя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void _InitInventory() { }
+        protected virtual void _CreateInventory() { }
 
         #endregion
 

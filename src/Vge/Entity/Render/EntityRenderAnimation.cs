@@ -63,6 +63,13 @@ namespace Vge.Entity.Render
         /// Текущий триггерный активотора
         /// </summary>
         private EnumEntityActivity _activity;
+        /// <summary>
+        /// Индекс кости для предмета
+        /// </summary>
+        private readonly byte _indexHandRight = 255;
+        private readonly float _posHandRightX;
+        private readonly float _posHandRightY;
+        private readonly float _posHandRightZ;
 
         public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
@@ -71,8 +78,16 @@ namespace Vge.Entity.Render
             _bones = new BonePose[_countBones];
             _bonesFlagModify = new bool[_countBones];
             _bonesTransforms = new Mat4[_countBones];
-            for (int i = 0; i < _countBones; i++)
+
+            for (byte i = 0; i < _countBones; i++)
             {
+                if (_resourcesEntity.Bones[i].IsHandRight)
+                {
+                    _indexHandRight = i;
+                    _posHandRightX = _resourcesEntity.Bones[i].OriginX;
+                    _posHandRightY = _resourcesEntity.Bones[i].OriginY;
+                    _posHandRightZ = _resourcesEntity.Bones[i].OriginZ;
+                }
                 _bones[i] = _resourcesEntity.Bones[i].CreateBonePose();
                 _bonesTransforms[i] = Mat4.Identity();
             }
@@ -170,6 +185,7 @@ namespace Vge.Entity.Render
                 }
             }
 
+            /*
             // TODO::2025-08-13 Временно одевается одежда!
             fffd++;
             if (_entityLayerRender != null)
@@ -199,7 +215,7 @@ namespace Vge.Entity.Render
                     _entityLayerRender.Reload();
                     fffb = !fffb;
                 }
-            }
+            }*/
         }
 
         int fffd = 0;//100;
@@ -500,6 +516,61 @@ namespace Vge.Entity.Render
         }
 
         #endregion
+
+        /// <summary>
+        /// Изменён предмет в руке или выбраный слот правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void CurrentItemChanged()
+        {
+            if (_entityLayerRender != null)
+            {
+                // Корректировка одевания слоёв
+                string name = Entity is PlayerBase ? "Base" : "BaseOld";
+                ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers(name);
+                LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
+                //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
+                //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
+                LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
+
+                if (Entity is EntityLiving entityLiving)
+                {
+                    byte currentItem = entityLiving.Inventory.GetCurrentIndex();
+                    RemoveClip("HoldRight");
+                    RemoveClip("HoldTwo");
+                    
+                    if (currentItem > 0 && currentItem < 4)
+                    {
+                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[currentItem].Buffer.GetBufferHold()
+                            .CreateBufferMeshItem(_indexHandRight, _posHandRightX,
+                            _posHandRightY, _posHandRightZ));
+
+                        if (currentItem < 2)
+                        {
+                            AddClip("HoldRight", 2f);
+                        }
+                        else
+                        {
+                            AddClip("HoldTwo", 2f);
+                        }
+                    }
+                    else if (currentItem == 4)
+                    {
+                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //     _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                    }
+                    else if (currentItem == 5)
+                    {
+                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                    }
+
+                    _entityLayerRender.Reload();
+                }
+            }
+        }
 
         /// <summary>
         /// Задать байт флагов анимации движения

@@ -15,16 +15,16 @@ namespace Mvk2.Entity.List
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
-            Inventory.SetInventorySlotContents(0, new ItemStack(Ce.Items.ItemObjects[1]));
+            Inventory.SetInventorySlotContents(1, new ItemStack(Ce.Items.ItemObjects[1]));
             Inventory.SetInventorySlotContents(2, new ItemStack(Ce.Items.ItemObjects[2]));
             Inventory.SetInventorySlotContents(3, new ItemStack(Ce.Items.ItemObjects[3]));
-            Inventory.SetInventorySlotContents(6, new ItemStack(Ce.Items.ItemObjects[0]));
+         //   Inventory.SetInventorySlotContents(6, new ItemStack(Ce.Items.ItemObjects[0]));
         }
 
         /// <summary>
         /// Инициализация инвенторя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _InitInventory() => Inventory = new InventoryPlayer();
+        protected override void _CreateInventory() => Inventory = new InventoryPlayer();
     }
 }

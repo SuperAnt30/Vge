@@ -19,6 +19,10 @@ namespace Vge.Entity.Model
         /// </summary>
         public const string NameBoneHead = "Head";
         /// <summary>
+        /// Название кости правой кисти руки, чтоб держать в руке предмет
+        /// </summary>
+        public const string NameHandRight = "Item";
+        /// <summary>
         /// Название куба открытых глаз 
         /// </summary>
         public const string NameCubeEyeOpen = "eyeOpen";
@@ -472,7 +476,7 @@ namespace Vge.Entity.Model
                 else if (bones[i] is ModelBone modelBone)
                 {
                     _ClearVisibleCube(modelBone, modelBone.Children);
-                    if (modelBone.Children.Count == 0)
+                    if (modelBone.Children.Count == 0 && modelBone.Name != NameHandRight)
                     {
                         // Если в кости нет ничего, удаляем папку-кость
                         bones.RemoveAt(i);

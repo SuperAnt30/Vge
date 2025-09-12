@@ -16,6 +16,14 @@ namespace Mvk2.Entity.List
         /// Инициализация инвенторя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _InitInventory() => Inventory = new InventoryPlayer();
+        protected override void _CreateInventory()
+        {
+            InventoryPlayer inventoryPlayer = new InventoryPlayer();
+            Inventory = inventoryPlayer;
+            inventoryPlayer.CurrentItemChanged += InventoryPlayer_CurrentItemChanged;
+        }
+
+        private void InventoryPlayer_CurrentItemChanged(object sender, System.EventArgs e)
+            => Render.CurrentItemChanged();
     }
 }

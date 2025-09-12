@@ -124,6 +124,35 @@ namespace Vge.Entity.Render
                     bufferFloat[i + 2] *= scale;
                 }
             }
+            return new VertexEntityBuffer(bufferFloat, bufferInt);
+        }
+
+        /// <summary>
+        /// Создать буфер для предмета с масштабом
+        /// </summary>
+        public VertexEntityBuffer CreateBufferMeshItem(int indexBone, float x, float y, float z, float scale = 1)
+        {
+            float[] bufferFloat = new float[BufferFloat.Length];
+            Array.Copy(BufferFloat, bufferFloat, bufferFloat.Length);
+            int[] bufferInt = new int[BufferInt.Length];
+            Array.Copy(BufferInt, bufferInt, bufferInt.Length);
+
+            for (int i = 0; i < bufferFloat.Length; i += 8)
+            {
+                bufferFloat[i] += x;
+                bufferFloat[i] *= scale;
+                bufferFloat[i + 1] += y;
+                bufferFloat[i + 1] *= scale;
+                bufferFloat[i + 2] += z;
+                bufferFloat[i + 2] *= scale;
+            }
+            if (indexBone != 255)
+            {
+                for (int i = 0; i < bufferInt.Length; i += SizeInt)
+                {
+                    bufferInt[i] = indexBone;
+                }
+            }
 
             return new VertexEntityBuffer(bufferFloat, bufferInt);
         }

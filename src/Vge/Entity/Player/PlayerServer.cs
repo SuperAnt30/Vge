@@ -149,7 +149,7 @@ namespace Vge.Entity.Player
             Render = new EntityRenderBase();
             _InitMetaData();
             _InitSize();
-            _InitInventory();
+            _CreateInventory();
         }
 
         #region Tracker

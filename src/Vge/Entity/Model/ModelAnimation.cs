@@ -91,7 +91,7 @@ namespace Vge.Entity.Model
                         else
                         {
                             positionFrames.Add(new BoneAnimationFrame(keyFrames.Time * 1000f,
-                                keyFrames.X / 16f, keyFrames.Y / 16f, keyFrames.Z / 16f));
+                                -keyFrames.X / 16f, keyFrames.Y / 16f, keyFrames.Z / 16f));
                         }
                     }
                 }

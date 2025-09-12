@@ -34,9 +34,13 @@
         /// </summary>
         public const string View = "View";
         /// <summary>
-        /// Имя объекта атрибут для внешнего вида фигуры для GUI. Это аналог данных из массива Variants из блока ({})
+        /// Имя объекта атрибут для внешнего вида фигуры для GUI. ({})
         /// </summary>
         public const string ViewGui = "ViewGui";
+        /// <summary>
+        /// Имя объекта атрибут для внешнего вида фигуры которую держат. ({})
+        /// </summary>
+        public const string ViewHold = "ViewHold";
 
         /// <summary>
         /// Имя к максимальному количеству однотипный вещей в одной ячейке. (int)
