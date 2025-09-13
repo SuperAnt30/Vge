@@ -17,16 +17,33 @@ namespace Vge.Entity.Model
         /// </summary>
         public readonly List<ModelElement> Children = new List<ModelElement>();
 
+        /// <summary>
+        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки
+        /// </summary>
+        private readonly byte _numberHold;
+
         public ModelBone(string uuid, string name, EnumType typeFolder) : base(uuid, name)
-            => TypeFolder = typeFolder;
+        {
+            TypeFolder = typeFolder;
+            if (TypeFolder == EnumType.Bone)
+            {
+                if (Name == ModelEntityDefinition.NameHoldItemOne)
+                {
+                    _numberHold = 1;
+                }
+                else if (Name == ModelEntityDefinition.NameHoldItemTwo)
+                {
+                    _numberHold = 2;
+                }
+            }
+        }
 
         /// <summary>
         /// Создать кость
         /// </summary>
         /// <param name="nameBoneHead">Название кости меняющее от Pitch</param>
         public Bone CreateBone(byte parentIndex, float scale)
-            => new Bone(parentIndex, Name == ModelEntityDefinition.NameBoneHead,
-                Name == ModelEntityDefinition.NameHandRight,
+            => new Bone(parentIndex, Name == ModelEntityDefinition.NameBoneHead, _numberHold,
                 RotationX, RotationY, RotationZ, 
                 OriginX * scale, OriginY * scale, OriginZ * scale, Children.Count);
 

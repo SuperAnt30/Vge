@@ -81,7 +81,8 @@ namespace Vge.Entity.Render
 
             for (byte i = 0; i < _countBones; i++)
             {
-                if (_resourcesEntity.Bones[i].IsHandRight)
+                // TODO::2025-09-13 Продумать мобильность количество предметов у сущности
+                if (_resourcesEntity.Bones[i].NumberHold == 1)
                 {
                     _indexHandRight = i;
                     _posHandRightX = _resourcesEntity.Bones[i].OriginX;

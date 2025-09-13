@@ -27,9 +27,9 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly bool IsHead;
         /// <summary>
-        /// Кость правой кисти руки, для предмета в руке
+        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки
         /// </summary>
-        public readonly bool IsHandRight;
+        public readonly byte NumberHold;
 
         /// <summary>
         /// Вращение по X (Pitch)
@@ -57,13 +57,13 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly float OriginZ;
 
-        public Bone(byte parentIndex, bool isHead, bool isHandRight,
+        public Bone(byte parentIndex, bool isHead, byte numberHold,
             float rotationX, float rotationY, float rotationZ,
             float originX, float originY, float originZ, int children)
         {
             ParentIndex = parentIndex;
             IsHead = isHead;
-            IsHandRight = isHandRight;
+            NumberHold = numberHold;
             RotationX = Glm.Radians(rotationX);
             RotationY = Glm.Radians(rotationY);
             RotationZ = Glm.Radians(rotationZ);
@@ -109,6 +109,7 @@ namespace Vge.Entity.Animation
         {
             string s = ParentIndex.ToString();
             if (IsHead) s += " Head";
+            if (NumberHold > 0) s += " Hold:" + NumberHold;
             return s;
         }
     }
