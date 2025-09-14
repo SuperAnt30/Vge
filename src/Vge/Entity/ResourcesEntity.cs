@@ -45,6 +45,10 @@ namespace Vge.Entity
         /// Индекс глубины текстуры
         /// </summary>
         public int DepthTexture { get; private set; } = -1;
+        /// <summary>
+        /// Количество предметов которые может держать, (не одежда)
+        /// </summary>
+        public byte CountPositionItem { get; private set; } = 0;
 
         /// <summary>
         /// Индекс формы
@@ -177,6 +181,13 @@ namespace Vge.Entity
                 // Если только есть анимация, нужны кости и клипы
                 Bones = shapeEntity.GenBones(Scale);
                 ModelAnimationClips = shapeEntity.GetModelAnimationClips(animationDatas);
+                foreach (Bone bone in Bones)
+                {
+                    if (bone.NumberHold > CountPositionItem)
+                    {
+                        CountPositionItem = bone.NumberHold;
+                    }
+                }
             }
         }
 

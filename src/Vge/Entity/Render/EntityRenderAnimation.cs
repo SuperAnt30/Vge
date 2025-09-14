@@ -64,12 +64,9 @@ namespace Vge.Entity.Render
         /// </summary>
         private EnumEntityActivity _activity;
         /// <summary>
-        /// Индекс кости для предмета
+        /// Массив позиций предметов
         /// </summary>
-        private readonly byte _indexHandRight = 255;
-        private readonly float _posHandRightX;
-        private readonly float _posHandRightY;
-        private readonly float _posHandRightZ;
+        private readonly PositionItemBone[] _positionItems;
 
         public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
@@ -79,17 +76,18 @@ namespace Vge.Entity.Render
             _bonesFlagModify = new bool[_countBones];
             _bonesTransforms = new Mat4[_countBones];
 
+            // Создаём количество возможных ячеек для держания предмета, не одежды
+            _positionItems = new PositionItemBone[_resourcesEntity.CountPositionItem];
+            Bone bone;
             for (byte i = 0; i < _countBones; i++)
             {
-                // TODO::2025-09-13 Продумать мобильность количество предметов у сущности
-                if (_resourcesEntity.Bones[i].NumberHold == 1)
+                bone = _resourcesEntity.Bones[i];
+                if (bone.NumberHold > 0)
                 {
-                    _indexHandRight = i;
-                    _posHandRightX = _resourcesEntity.Bones[i].OriginX;
-                    _posHandRightY = _resourcesEntity.Bones[i].OriginY;
-                    _posHandRightZ = _resourcesEntity.Bones[i].OriginZ;
+                    // Кость которая для держания предмета
+                    _positionItems[bone.NumberHold - 1] = new PositionItemBone(i, bone.OriginX, bone.OriginY, bone.OriginZ);
                 }
-                _bones[i] = _resourcesEntity.Bones[i].CreateBonePose();
+                _bones[i] = bone.CreateBonePose();
                 _bonesTransforms[i] = Mat4.Identity();
             }
 
@@ -538,22 +536,35 @@ namespace Vge.Entity.Render
                 {
                     byte currentItem = entityLiving.Inventory.GetCurrentIndex();
                     RemoveClip("HoldRight");
+                    RemoveClip("HoldLeft");
                     RemoveClip("HoldTwo");
                     
                     if (currentItem > 0 && currentItem < 4)
                     {
-                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[currentItem].Buffer.GetBufferHold()
-                            .CreateBufferMeshItem(_indexHandRight, _posHandRightX,
-                            _posHandRightY, _posHandRightZ));
-
-                        if (currentItem < 2)
+                        PositionItemBone posItem;
+                        if (currentItem < 3)
                         {
-                            AddClip("HoldRight", 2f);
+                            posItem = _positionItems[0];
                         }
                         else
                         {
+                            posItem = _positionItems[1];
+                        }
+
+                        if (currentItem == 2)
+                        {
                             AddClip("HoldTwo", 2f);
                         }
+                        else if (currentItem == 3)
+                        {
+                            AddClip("HoldLeft", 2f);
+                        }
+                        else
+                        {
+                            AddClip("HoldRight", 2f);
+                        }
+                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[currentItem].Buffer.GetBufferHold()
+                            .CreateBufferMeshItem(posItem.Index, posItem.X, posItem.Y, posItem.Z));
                     }
                     else if (currentItem == 4)
                     {

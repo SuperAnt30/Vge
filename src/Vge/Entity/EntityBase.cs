@@ -188,6 +188,12 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Создатьб объект рендер анимации
+        /// </summary>
+        protected virtual EntityRenderAnimation _CreateRenderAnimation(EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
+            => new EntityRenderAnimation(this, entities, resourcesEntity);
+
+        /// <summary>
         /// Инициализация для сервера
         /// </summary>
         public void InitServer(ushort index, CollisionBase collision)

@@ -27,7 +27,8 @@ namespace Vge.Entity.Animation
         /// </summary>
         public readonly bool IsHead;
         /// <summary>
-        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки
+        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки, 2 - левая кисть руки
+        /// Если надо только левая, она должны быть 1
         /// </summary>
         public readonly byte NumberHold;
 

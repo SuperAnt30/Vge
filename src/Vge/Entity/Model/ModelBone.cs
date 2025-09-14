@@ -18,7 +18,8 @@ namespace Vge.Entity.Model
         public readonly List<ModelElement> Children = new List<ModelElement>();
 
         /// <summary>
-        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки
+        /// Номер предмета кости, 0 - нет предмета, 1 - правая кисть руки, 2 - левая кисть руки
+        /// Если надо только левая, она должны быть 1
         /// </summary>
         private readonly byte _numberHold;
 

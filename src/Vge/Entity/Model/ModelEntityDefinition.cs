@@ -23,7 +23,7 @@ namespace Vge.Entity.Model
         /// </summary>
         public const string NameHoldItemOne = "HoldItemOne";
         /// <summary>
-        /// Название кости чтоб держать первый предмет (левая рука)
+        /// Название кости чтоб держать второй предмет (левая рука)
         /// </summary>
         public const string NameHoldItemTwo = "HoldItemTwo";
         /// <summary>

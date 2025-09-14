@@ -113,6 +113,15 @@
             }
         },
         {
+            Code: "HoldLeft",
+            Animation: "HoldLeft",
+            AnimationSpeed: 1.0,
+            ElementWeight: {
+                ArmRight: 20,
+                ForearmRight: 20
+            }
+        },
+        {
             Code: "HoldTwo",
             Animation: "HoldTwo",
             AnimationSpeed: 1.0,
