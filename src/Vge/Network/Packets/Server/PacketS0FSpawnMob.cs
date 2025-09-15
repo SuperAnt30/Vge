@@ -40,7 +40,7 @@ namespace Vge.Network.Packets.Server
                 Pitch = entityLiving.RotationPitch;
                 if (entityLiving.Inventory != null)
                 {
-                    Stacks = entityLiving.Inventory.GetCurrentItemAndCloth();
+                    Stacks = entityLiving.Inventory.GetOutside();
                 }
                 else
                 {

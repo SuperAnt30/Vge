@@ -250,7 +250,7 @@ namespace Vge.Network
                 player.SpawnPosition(packet.X, packet.Y, packet.Z);
                 player.OnGround = packet.OnGround;
                 player.SpawnRotation(packet.Yaw, packet.Pitch);
-                player.Inventory.SetCurrentItemAndCloth(packet.Stacks);
+                player.Inventory.SetOutside(packet.Stacks);
                 player.MetaData.UpdateWatchedObjectsFromList(packet.Data);
 
                 Game.World.SpawnEntityInWorld(player);
@@ -272,7 +272,7 @@ namespace Vge.Network
                 entityLiving.SpawnRotation(packet.Yaw, packet.Pitch);
                 if (entityLiving.Inventory != null)
                 {
-                    entityLiving.Inventory.SetCurrentItemAndCloth(packet.Stacks);
+                    entityLiving.Inventory.SetOutside(packet.Stacks);
                 }
             }
             entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);

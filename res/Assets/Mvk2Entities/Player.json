@@ -117,8 +117,8 @@
             Animation: "HoldLeft",
             AnimationSpeed: 1.0,
             ElementWeight: {
-                ArmRight: 20,
-                ForearmRight: 20
+                ArmLeft: 20,
+                ForearmLeft: 20
             }
         },
         {

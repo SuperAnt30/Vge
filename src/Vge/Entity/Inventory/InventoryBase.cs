@@ -16,22 +16,34 @@ namespace Vge.Entity.Inventory
         public virtual byte GetCurrentIndex() => 0;
 
         /// <summary>
-        /// Задать активный слот быстрого доступа
+        /// Задать активный слот правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool SetCurrentIndex(byte slotIn) => false;
 
         /// <summary>
-        /// Сместить слот быстрого доступа в большую сторону
+        /// Сместить слот правой руки в большую сторону
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SlotMore() { }
 
         /// <summary>
-        /// Сместить слот быстрого доступа в меньшую сторону
+        /// Сместить слот правой руки в меньшую сторону
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SlotLess() { }
+
+        /// <summary>
+        /// Получить текущий стак правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetCurrentItem() => null;
+
+        /// <summary>
+        /// Задать в текущий стак правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetCurrentItem(ItemStack stack) { }
 
         /// <summary>
         /// Возвращает стaк в слоте slotIn
@@ -46,17 +58,17 @@ namespace Vge.Entity.Inventory
         public virtual void SetInventorySlotContents(int slotIn, ItemStack stack) { }
 
         /// <summary>
-        /// Получить список стаков (что в руке и список одежды)
+        /// Получить список стаков для внешности (что в руках и одежда)
         /// для передачи по сети
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual ItemStack[] GetCurrentItemAndCloth() => new ItemStack[0];
+        public virtual ItemStack[] GetOutside() => new ItemStack[0];
 
         /// <summary>
-        /// Задать список стаков (что в руке и список одежды)
+        /// Задать список стаков для внешности (что в руках и одежда)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void SetCurrentItemAndCloth(ItemStack[] stacks) { }
+        public virtual void SetOutside(ItemStack[] stacks) { }
 
         /// <summary>
         /// Получить стак одежды
@@ -69,18 +81,6 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetClothInventory(int slotIn, ItemStack stack) { }
-
-        /// <summary>
-        /// Получить выбранный стак правой руки
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual ItemStack GetCurrentItem() => null;
-
-        /// <summary>
-        /// Задать в правую руку стак
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void SetCurrentItem(ItemStack stack) { }
 
         /// <summary>
         /// Получить полный список всего инвентаря

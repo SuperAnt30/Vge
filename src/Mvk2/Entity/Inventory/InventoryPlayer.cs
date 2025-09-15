@@ -13,7 +13,9 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private readonly int _backpackCount;
 
-        public InventoryPlayer() : base(8, 10)
+        public InventoryPlayer()
+            // Первый слот одеждый это ячейка левой руки
+            : base(9, 10) 
         {
             _backpackCount = 25;
             _allCount += _backpackCount;

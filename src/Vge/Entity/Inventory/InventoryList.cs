@@ -10,7 +10,7 @@ namespace Vge.Entity.Inventory
     public class InventoryList : InventoryBase
     {
         /// <summary>
-        /// Количество ячеек для предметов быстрого доступа
+        /// Количество ячеек для предметов быстрого доступа (правая рука)
         /// </summary>
         protected readonly byte _mainCount;
         
@@ -50,7 +50,7 @@ namespace Vge.Entity.Inventory
         public override byte GetCurrentIndex() => _currentIndex;
 
         /// <summary>
-        /// Задать активный слот быстрого доступа
+        /// Задать активный слот правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool SetCurrentIndex(byte slotIn)
@@ -65,7 +65,7 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Сместить слот быстрого доступа в большую сторону
+        /// Сместить слот правой руки в большую сторону
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SlotMore()
@@ -76,7 +76,7 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Сместить слот быстрого доступа в меньшую сторону
+        /// Сместить слот правой руки в меньшую сторону
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SlotLess()
@@ -84,6 +84,27 @@ namespace Vge.Entity.Inventory
             if (_currentIndex > 0) _currentIndex--;
             else _currentIndex = (byte)(_mainCount - 1);
             _OnCurrentItemChanged();
+        }
+
+        /// <summary>
+        /// Получить текущий стак правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override ItemStack GetCurrentItem() => _mainCount > 0 ? _items[_currentIndex] : null;
+
+        /// <summary>
+        /// Задать в текущий стак правой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetCurrentItem(ItemStack stack)
+        {
+            if (_mainCount > 0)
+            {
+                //CheckKnowledge(stack);
+                _items[_currentIndex] = stack;
+                _OnChanged(_currentIndex);
+                _OnCurrentItemChanged();
+            }
         }
 
         /// <summary>
@@ -111,16 +132,16 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Получить список стаков (что в руке и список одежды)
+        /// Получить список стаков для внешности (что в руках и одежда)
         /// для передачи по сети
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ItemStack[] GetCurrentItemAndCloth()
+        public override ItemStack[] GetOutside()
         {
             ItemStack[] stacks;
             if (_mainCount > 0)
             {
-                stacks = new ItemStack[_clothCount + 1];
+                stacks = new ItemStack[_mainCount + 1];
                 stacks[0] = GetCurrentItem();
                 Array.Copy(_items, _mainCount, stacks, 1, _clothCount);
             }
@@ -133,16 +154,16 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Задать список стаков (что в руке и список одежды)
+        /// Задать список стаков для внешности (что в руках и одежда)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SetCurrentItemAndCloth(ItemStack[] stacks)
+        public override void SetOutside(ItemStack[] stacks)
         {
             if (stacks.Length > 0)
             {
                 if (_mainCount > 0) 
                 {
-                    // Имеется что в руке
+                    // Имеется что-то в руке
                     SetCurrentItem(stacks[0]);
                     for (int i = 1; i < stacks.Length; i++)
                     {
@@ -176,27 +197,6 @@ namespace Vge.Entity.Inventory
             if (_clothCount > 0 && slotIn < _clothCount)
             {
                 _items[_mainCount + slotIn] = stack;
-            }
-        }
-
-        /// <summary>
-        /// Получить выбранный стак правой руки
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ItemStack GetCurrentItem() => _mainCount > 0 ? _items[_currentIndex] : null;
-
-        /// <summary>
-        /// Задать в правую руку стак
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SetCurrentItem(ItemStack stack)
-        {
-            if (_mainCount > 0)
-            {
-                //CheckKnowledge(stack);
-                _items[_currentIndex] = stack;
-                _OnChanged(_currentIndex);
-                _OnCurrentItemChanged();
             }
         }
 

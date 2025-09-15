@@ -36,7 +36,7 @@ namespace Vge.Network.Packets.Server
             Yaw = player.RotationYaw;
             Pitch = player.RotationPitch;
             OnGround = player.OnGround;
-            Stacks = player.Inventory.GetCurrentItemAndCloth();
+            Stacks = player.Inventory.GetOutside();
             Data = player.MetaData.GetAllWatched();
         }
 

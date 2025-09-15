@@ -568,11 +568,20 @@ namespace Vge.Entity.Render
                     }
                     else if (currentItem == 4)
                     {
+                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[1].Buffer.GetBufferHold()
+                            .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
+                        AddClip("HoldRight", 2f);
+                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[3].Buffer.GetBufferHold()
+                            .CreateBufferMeshItem(_positionItems[1].Index, _positionItems[1].X, _positionItems[1].Y, _positionItems[1].Z));
+                        AddClip("HoldLeft", 2f);
+                    }
+                    else if (currentItem == 5)
+                    {
                         _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         //     _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                     }
-                    else if (currentItem == 5)
+                    else if (currentItem == 6)
                     {
                         _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
