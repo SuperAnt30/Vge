@@ -8,6 +8,8 @@
     TextureId: 1,
     OnlyMove: true,
     BlinkEye: 70,
+    NameShapeLayers: "Base",
+    #NameShapeLayers: "BaseOld",
     Animations: [
         { 
             Code: "Idle",

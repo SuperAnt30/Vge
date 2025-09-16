@@ -50,8 +50,7 @@ internal sealed class Sr
     #region Game
 
     internal const string IndexOutsideEntityType = "Индекс [{0}] за пределами типа сущностей [{1}]. Не верно зарегистрированы сущности!";
-    // internal const string EmptyArrayIsNotAllowed = "Пустой массив не разрешон";
-
+    internal const string EntityClothingLayersObjectIsMissing = "Отсутствует объект слоёв одежды [{0}] у сущности [{1}].";
 
     #endregion
 

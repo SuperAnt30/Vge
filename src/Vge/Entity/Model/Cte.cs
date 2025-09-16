@@ -41,6 +41,10 @@
         /// Интервал между морганием глаз в игровых тиках, если равно 0, значит нет глаз. (int)
         /// </summary>
         public const string BlinkEye = "BlinkEye";
+        /// <summary>
+        /// Имя слоёв одежды. (string) 
+        /// </summary>
+        public const string NameShapeLayers = "NameShapeLayers";
 
         /// <summary>
         /// Имя клипа как ключ для программы, должны быть уникальны в одной сущности. (string)

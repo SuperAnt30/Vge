@@ -49,6 +49,10 @@ namespace Vge.Entity
         /// Количество предметов которые может держать, (не одежда)
         /// </summary>
         public byte CountPositionItem { get; private set; } = 0;
+        /// <summary>
+        /// Имя слоёв одежды
+        /// </summary>
+        public string NameShapeLayers { get; private set; } = "";
 
         /// <summary>
         /// Индекс формы
@@ -165,6 +169,7 @@ namespace Vge.Entity
                         else if (json.IsKey(Cte.TextureId)) _indexTexture = (ushort)json.GetInt();
                         else if (json.IsKey(Cte.OnlyMove)) OnlyMove = json.GetBool();
                         else if (json.IsKey(Cte.BlinkEye)) BlinkEye = json.GetInt();
+                        else if (json.IsKey(Cte.NameShapeLayers)) NameShapeLayers = json.GetString();
                     }
                 }
                 catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
@@ -68,10 +69,28 @@ namespace Vge.Entity.Render
         /// Массив позиций предметов
         /// </summary>
         private readonly PositionItemBone[] _positionItems;
+        /// <summary>
+        /// Объект слоёв одежды
+        /// </summary>
+        private readonly ShapeLayers _shapeLayers;
 
         public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
         {
+            if (resourcesEntity.NameShapeLayers != "")
+            {
+                // Имеется одежда для этой сущности
+                try
+                {
+                    _shapeLayers = EntitiesReg.GetShapeLayers(resourcesEntity.NameShapeLayers);
+                }
+                catch
+                {
+                    // Отсутствует объект слоёв одежды у сущности
+                    throw new Exception(Sr.GetString(Sr.EntityClothingLayersObjectIsMissing, 
+                        resourcesEntity.NameShapeLayers, resourcesEntity.Alias));
+                }
+            }
             _countBones = (byte)_resourcesEntity.Bones.Length;
             _bones = new BonePose[_countBones];
             _bonesFlagModify = new bool[_countBones];
@@ -525,11 +544,11 @@ namespace Vge.Entity.Render
         {
             // TODO::2025-09-16 Последний метод где надо навести порядок по выбранному инвентарю, одежда в том числе
 
-            if (_entityLayerRender != null)
+            if (_entityLayerRender != null && _shapeLayers != null)
             {
                 // Корректировка одевания слоёв
-                string name = Entity is PlayerBase ? "Base" : "BaseOld";
-                ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers(name);
+                //string name = Entity is PlayerBase ? "Base" : "BaseOld";
+                ShapeLayers shapeLayers = _shapeLayers;// EntitiesReg.GetShapeLayers(name);
                 LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
                 //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
                 //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
