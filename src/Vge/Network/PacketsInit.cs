@@ -28,6 +28,7 @@ namespace Vge.Network
                 case 0x0B: return new PacketS0BAnimation();
                 case 0x0C: return new PacketS0CSpawnPlayer();
                 case 0x0F: return new PacketS0FSpawnMob();
+                case 0x10: return new PacketS10EntityEquipment();
                 case 0x13: return new PacketS13DestroyEntities();
                 case 0x14: return new PacketS14EntityMotion();
                 case 0x1C: return new PacketS1CEntityMetadata();

@@ -4,6 +4,7 @@ using Vge.Entity.Animation;
 using Vge.Entity.Layer;
 using Vge.Entity.Player;
 using Vge.Entity.Shape;
+using Vge.Item;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
@@ -517,11 +518,13 @@ namespace Vge.Entity.Render
         #endregion
 
         /// <summary>
-        /// Изменён предмет в руке или выбраный слот правой руки
+        /// Изменён предмет внешности (что в руках и одежда)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void CurrentItemChanged()
+        public override void OutsideItemChanged()
         {
+            // TODO::2025-09-16 Последний метод где надо навести порядок по выбранному инвентарю, одежда в том числе
+
             if (_entityLayerRender != null)
             {
                 // Корректировка одевания слоёв
@@ -538,8 +541,20 @@ namespace Vge.Entity.Render
                     RemoveClip("HoldRight");
                     RemoveClip("HoldLeft");
                     RemoveClip("HoldTwo");
+
+                    if (currentItem == 0)
+                    {
+                        // Сетевой походу
+                        ItemStack itemStack = entityLiving.Inventory.GetStackInSlot(currentItem);
+                        if (itemStack != null)
+                        {
+                            _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                                .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
+                            AddClip("HoldRight", 2f);
+                        }
+                    }
                     
-                    if (currentItem > 0 && currentItem < 4)
+                    else if (currentItem > 0 && currentItem < 4)
                     {
                         PositionItemBone posItem;
                         if (currentItem < 3)

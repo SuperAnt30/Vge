@@ -102,6 +102,7 @@ namespace Vge.Network
                 case 0x0B: _Handle0BAnimation((PacketS0BAnimation)packet); break;
                 case 0x0C: _Handle0CSpawnPlayer((PacketS0CSpawnPlayer)packet); break;
                 case 0x0F: _Handle0FSpawnMob((PacketS0FSpawnMob)packet); break;
+                case 0x10: _Handle10EntityEquipment((PacketS10EntityEquipment)packet); break;
                 case 0x13: _Handle13DestroyEntities((PacketS13DestroyEntities)packet); break;
                 case 0x14: _Handle14EntityMotion((PacketS14EntityMotion)packet); break;
                 case 0x1C: _Handle1CEntityMetadata((PacketS1CEntityMetadata)packet); break;
@@ -258,7 +259,7 @@ namespace Vge.Network
         }
 
         /// <summary>
-        ///  Пакет спавна мобов
+        /// Пакет спавна мобов
         /// </summary>
         private void _Handle0FSpawnMob(PacketS0FSpawnMob packet)
         {
@@ -277,6 +278,18 @@ namespace Vge.Network
             }
             entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);
             Game.World.SpawnEntityInWorld(entity);
+        }
+
+        /// <summary>
+        /// Пакет смены видимых предметов у сущности
+        /// </summary>
+        private void _Handle10EntityEquipment(PacketS10EntityEquipment packet)
+        {
+            EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
+            if (entity != null && entity is EntityLiving entityLiving && entityLiving.Inventory != null)
+            {
+                entityLiving.Inventory.SetInventorySlotContents(packet.SlotId, packet.Stack);
+            }
         }
 
         /// <summary>

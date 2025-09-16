@@ -1,4 +1,5 @@
 ﻿using Mvk2.Entity.Inventory;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -20,10 +21,11 @@ namespace Mvk2.Entity.List
         {
             InventoryPlayer inventoryPlayer = new InventoryPlayer();
             Inventory = inventoryPlayer;
-            inventoryPlayer.CurrentItemChanged += InventoryPlayer_CurrentItemChanged;
+            Inventory.OutsideChanged += Inventory_OutsideChanged;
+            inventoryPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
         }
 
-        private void InventoryPlayer_CurrentItemChanged(object sender, System.EventArgs e)
-            => Render.CurrentItemChanged();
+        private void Inventory_OutsideChanged(object sender, EventArgs e)
+            => Render.OutsideItemChanged();
     }
 }

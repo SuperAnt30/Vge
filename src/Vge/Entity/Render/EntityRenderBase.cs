@@ -70,10 +70,10 @@ namespace Vge.Entity.Render
         public virtual bool IsMovingStrafe() => false;
 
         /// <summary>
-        /// Изменён предмет в руке или выбраный слот правой руки
+        /// Изменён предмет внешности (что в руках или одежда)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void CurrentItemChanged() { }
+        public virtual void OutsideItemChanged() { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Dispose() { }

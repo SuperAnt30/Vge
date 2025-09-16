@@ -1,6 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Item;
 using Vge.NBT;
+using Vge.World;
 
 namespace Vge.Entity.Inventory
 {
@@ -9,6 +11,12 @@ namespace Vge.Entity.Inventory
     /// </summary>
     public class InventoryBase
     {
+        /// <summary>
+        /// Обновление на сервере каждый тик
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void UpdateServer(EntityBase entity, WorldServer worldServer) { }
+
         /// <summary>
         /// Получить выбранный слот правой руки
         /// </summary>
@@ -96,6 +104,12 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetAll(ItemStack[] stacks) { }
 
+        /// <summary>
+        /// Изменение удерживаемого предмета на сервере. Предмет в руке сейчас будет изменён
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void ServerHeldItemChange() { }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _Clear() { }
 
@@ -115,14 +129,25 @@ namespace Vge.Entity.Inventory
         #region Event
 
         /// <summary>
-        /// Событие изменён слот из инвентаря или одежды или рюкзака
+        /// Событие изменён слот
         /// </summary>
-        protected virtual void _OnChanged(int indexSlot) { }
+        protected virtual void _OnSlotChanged(int indexSlot) { }
 
         /// <summary>
-        /// Событие изменён предмет в руке или выбраный слот правой руки
+        /// Событие изменён индекс выбраного слота правой руки
         /// </summary>
-        protected virtual void _OnCurrentItemChanged() { }
+        protected virtual void _OnCurrentIndexChanged() { }
+
+        /// <summary>
+        /// Событие изменён предмет внешности (что в руках или одежда)
+        /// </summary>
+        public event EventHandler OutsideChanged;
+        /// <summary>
+        /// Событие изменён предмет внешности (что в руках или одежда)
+        /// flags = -1 все
+        /// </summary>
+        protected virtual void _OnOutsideChanged(int flags)
+            => OutsideChanged?.Invoke(this, new EventArgs());
 
         #endregion
 

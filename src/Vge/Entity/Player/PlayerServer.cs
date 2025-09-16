@@ -224,6 +224,9 @@ namespace Vge.Entity.Player
                 _destroyedItemsNetCache.Clear();
             }
 
+            // Обновления предметов которые могут видеть игроки, что в руке, броня
+            Inventory.UpdateServer(this, worldServer);
+
             _UpdatePlayer();
         }
 
@@ -455,14 +458,14 @@ namespace Vge.Entity.Player
         public void PacketHeldItemChange(PacketC09HeldItemChange packet)
         {
             // Тут нужна проверка слота который был в руке на сервере
-           // Inventory.CurrentItemChanging();
+            Inventory.ServerHeldItemChange();
             if (Inventory.SetCurrentIndex(packet.SlotId))
             {
                 //MarkPlayerActive();
             }
             else
             {
-             //   ServerMain.Log.Log(entityPlayer.GetName() + " пытался установить недопустимый переносимый предмет");
+                _server.Log.Server(Srl.UnacceptablePortableItem, UUID, Login);
             }
         }
             //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));

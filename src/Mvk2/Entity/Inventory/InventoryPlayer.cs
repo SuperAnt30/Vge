@@ -15,7 +15,7 @@ namespace Mvk2.Entity.Inventory
 
         public InventoryPlayer()
             // Первый слот одеждый это ячейка левой руки
-            : base(9, 10) 
+            : base(8, 11) 
         {
             _backpackCount = 25;
             _allCount += _backpackCount;
@@ -24,24 +24,24 @@ namespace Mvk2.Entity.Inventory
         #region Event
 
         /// <summary>
-        /// Событие изменён слот из инвентаря или одежды или рюкзака
+        /// Событие изменён слот
         /// </summary>
-        public event SlotEventHandler Changed;
+        public event SlotEventHandler SlotChanged;
         /// <summary>
-        /// Событие изменён слот из инвентаря или одежды или рюкзака
+        /// Событие изменён слот
         /// </summary>
-        protected override void _OnChanged(int indexSlot) 
-            => Changed?.Invoke(this, new SlotEventArgs(indexSlot));
+        protected override void _OnSlotChanged(int indexSlot)
+            => SlotChanged?.Invoke(this, new SlotEventArgs(indexSlot));
 
         /// <summary>
-        /// Событие изменён предмет в руке или выбраный слот правой руки
+        /// Событие изменён индекс выбраного слота правой руки
         /// </summary>
-        public event EventHandler CurrentItemChanged;
+        public event EventHandler CurrentIndexChanged;
         /// <summary>
-        /// Событие изменён предмет в руке или выбраный слот правой руки
+        /// Событие изменён индекс выбраного слота правой руки
         /// </summary>
-        protected override void _OnCurrentItemChanged() 
-            => CurrentItemChanged?.Invoke(this, new EventArgs());
+        protected override void _OnCurrentIndexChanged()
+            => CurrentIndexChanged?.Invoke(this, new EventArgs());
 
         #endregion
     }

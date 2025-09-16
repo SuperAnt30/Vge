@@ -58,6 +58,7 @@ internal sealed class Srl
     internal const string ServerLoginStartOwner = "Игрок владелец [{0}] вошёл в игру.";
     internal const string EntityAlreadyBeingTracked = "Сущность [{0}] уже отслеживается!.";
     internal const string DetectingObjectTrackingError = "Обнаружение ошибки отслеживания объекта: {0}";
+    internal const string UnacceptablePortableItem = "{0} {1} пытался установить недопустимый переносимый предмет";
 
     #endregion
 

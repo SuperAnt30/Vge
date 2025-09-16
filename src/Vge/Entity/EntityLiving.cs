@@ -343,7 +343,5 @@ namespace Vge.Entity
         public virtual void Sitting() { }
 
         #endregion
-
-        
     }
 }

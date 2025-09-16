@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Item;
+using Vge.Network.Packets.Server;
+using Vge.World;
 
 namespace Vge.Entity.Inventory
 {
@@ -13,9 +15,10 @@ namespace Vge.Entity.Inventory
         /// Количество ячеек для предметов быстрого доступа (правая рука)
         /// </summary>
         protected readonly byte _mainCount;
-        
+
         /// <summary>
-        /// Количество ячеек для одежды
+        /// Количество ячеек для одежды.
+        /// (Первый слот одеждый может быть ячейкой левой руки)
         /// </summary>
         protected readonly int _clothCount;
 
@@ -23,6 +26,12 @@ namespace Vge.Entity.Inventory
         /// Общее количество ячеек
         /// </summary>
         protected int _allCount;
+
+        /// <summary>
+        /// Общее количество видимых ячеек, не должно привышать 30!
+        /// из-за битового флага, для обновлений
+        /// </summary>
+        protected int _outsideCount;
 
         /// <summary>
         /// Выбранный слот правой руки
@@ -35,13 +44,49 @@ namespace Vge.Entity.Inventory
         /// </summary>
         protected readonly ItemStack[] _items;
 
+        /// <summary>
+        /// Побитовый флаг изменений, если =-1 значит все
+        /// </summary>
+        private int _flagsChanged;
+
         public InventoryList(byte mainCount, int clothCount)
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
             _allCount = _mainCount + _clothCount;
+            _outsideCount = _clothCount;
+            if (_mainCount > 0) _outsideCount++;
+
             _items = new ItemStack[_allCount];
         }
+
+        #region UpdateServer
+
+        /// <summary>
+        /// Обновление на сервере каждый тик
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdateServer(EntityBase entity, WorldServer worldServer)
+        {
+            if (_flagsChanged != 0)
+            {
+                for (byte i = 0; i < _outsideCount; i++)
+                {
+                    if (_flagsChanged == -1 || (_flagsChanged & (1 << i)) != 0)
+                    {
+                        // Слот менялся
+                        worldServer.Tracker.SendToAllTrackingEntity(entity, 
+                            new PacketS10EntityEquipment(entity.Id, i,
+                            _mainCount > 0
+                                ? _items[i == 0 ? _currentIndex : _mainCount + i] 
+                                : _items[i]));
+                    }
+                }
+                _flagsChanged = 0;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Получить выбранный слот правой руки
@@ -58,7 +103,8 @@ namespace Vge.Entity.Inventory
             if (slotIn < _mainCount && slotIn >= 0 && slotIn != _currentIndex)
             {
                 _currentIndex = slotIn;
-                _OnCurrentItemChanged();
+                _OnCurrentIndexChanged();
+                _OnOutsideChanged(1);
                 return true;
             }
             return false;
@@ -72,7 +118,7 @@ namespace Vge.Entity.Inventory
         {
             if (_currentIndex < _mainCount - 1) _currentIndex++;
             else _currentIndex = 0;
-            _OnCurrentItemChanged();
+            _OnCurrentIndexChanged();
         }
 
         /// <summary>
@@ -83,7 +129,7 @@ namespace Vge.Entity.Inventory
         {
             if (_currentIndex > 0) _currentIndex--;
             else _currentIndex = (byte)(_mainCount - 1);
-            _OnCurrentItemChanged();
+            _OnCurrentIndexChanged();
         }
 
         /// <summary>
@@ -102,8 +148,8 @@ namespace Vge.Entity.Inventory
             {
                 //CheckKnowledge(stack);
                 _items[_currentIndex] = stack;
-                _OnChanged(_currentIndex);
-                _OnCurrentItemChanged();
+                _OnSlotChanged(_currentIndex);
+                _OnOutsideChanged(1); // 0 - правая рука
             }
         }
 
@@ -115,7 +161,7 @@ namespace Vge.Entity.Inventory
             => slotIn < _allCount ? _items[slotIn] : null;
 
         /// <summary>
-        /// Устанавливает данный стек предметов в указанный слот в инвентаре
+        /// Устанавливает данный стак предметов в указанный слот в инвентаре
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetInventorySlotContents(int slotIn, ItemStack stack)
@@ -123,10 +169,21 @@ namespace Vge.Entity.Inventory
             if (slotIn < _allCount)
             {
                 _items[slotIn] = stack;
-                _OnChanged(_currentIndex);
+                _OnSlotChanged(_currentIndex);
                 if (slotIn == _currentIndex)
                 {
-                    _OnCurrentItemChanged();
+                    _OnOutsideChanged(1); // 0 - правая рука
+                }
+                else if (slotIn >= _mainCount && slotIn < _clothCount)
+                {
+                    if (_mainCount > 0)
+                    {
+                        _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // одежда с минусом правой руки
+                    }
+                    else
+                    {
+                        _OnOutsideChanged(1 << slotIn); // одежда
+                    }
                 }
             }
         }
@@ -141,7 +198,7 @@ namespace Vge.Entity.Inventory
             ItemStack[] stacks;
             if (_mainCount > 0)
             {
-                stacks = new ItemStack[_mainCount + 1];
+                stacks = new ItemStack[_clothCount + 1];
                 stacks[0] = GetCurrentItem();
                 Array.Copy(_items, _mainCount, stacks, 1, _clothCount);
             }
@@ -155,28 +212,18 @@ namespace Vge.Entity.Inventory
 
         /// <summary>
         /// Задать список стаков для внешности (что в руках и одежда)
+        /// У данного персонажа должно быть _mainCount=0 || _mainCount=1 и _allCount == stacks.Length
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetOutside(ItemStack[] stacks)
         {
-            if (stacks.Length > 0)
+            if (stacks.Length > 0 && _allCount == stacks.Length)
             {
-                if (_mainCount > 0) 
+                for (int i = 0; i < stacks.Length; i++)
                 {
-                    // Имеется что-то в руке
-                    SetCurrentItem(stacks[0]);
-                    for (int i = 1; i < stacks.Length; i++)
-                    {
-                        SetInventorySlotContents(i - 1, stacks[i]);
-                    }
+                    _items[i] = stacks[i];
                 }
-                else
-                {
-                    for (int i = 0; i < stacks.Length; i++)
-                    {
-                        SetInventorySlotContents(i, stacks[i]);
-                    }
-                }
+                _OnOutsideChanged(-1); // любой
             }
         }
 
@@ -197,6 +244,15 @@ namespace Vge.Entity.Inventory
             if (_clothCount > 0 && slotIn < _clothCount)
             {
                 _items[_mainCount + slotIn] = stack;
+                _OnSlotChanged(slotIn);
+                if (_mainCount > 0)
+                {
+                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // одежда с минусом правой руки
+                }
+                else
+                {
+                    _OnOutsideChanged(1 << slotIn); // одежда
+                }
             }
         }
 
@@ -230,6 +286,30 @@ namespace Vge.Entity.Inventory
             {
                 _items[i] = null;
             }
+        }
+
+
+        protected override void _OnOutsideChanged(int flags)
+        {
+            if (_flagsChanged != -1)
+            {
+                if (flags == -1)
+                {
+                    _flagsChanged = -1;
+                }
+                else
+                {
+                    for (int i = 0; i < _outsideCount; i++)
+                    {
+                        if ((flags & (1 << i)) != 0
+                            && (_flagsChanged & (1 << i)) == 0)
+                        {
+                            _flagsChanged += 1 << i;
+                        }
+                    }
+                }
+            }
+            base._OnOutsideChanged(flags);
         }
     }
 }

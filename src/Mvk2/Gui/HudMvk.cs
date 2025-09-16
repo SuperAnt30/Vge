@@ -38,13 +38,14 @@ namespace Mvk2.Gui
 
             if (_game.Player.Inventory is InventoryPlayer inventoryPlayer)
             {
-                inventoryPlayer.CurrentItemChanged += InventoryPlayer_CurrentItemChanged;
+                // Смена ячейки правой руки
+                inventoryPlayer.CurrentIndexChanged += InventoryPlayer_CurrentIndexChanged;
             }
             _RenderInventoryBg();
             _RenderInventorySelect();
         }
 
-        private void InventoryPlayer_CurrentItemChanged(object sender, System.EventArgs e)
+        private void InventoryPlayer_CurrentIndexChanged(object sender, System.EventArgs e)
         {
             _RenderInventorySelect();
         }
