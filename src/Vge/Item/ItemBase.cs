@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Vge.Entity.Render;
 using Vge.Json;
 
 namespace Vge.Item
@@ -59,6 +58,11 @@ namespace Vge.Item
         /// </summary>
         public ItemRenderBuffer Buffer { get; protected set; }
 
+        /// <summary>
+        /// Название анимации держать, если не указана, то будет по умолчанию 
+        /// </summary>
+        public string Hold { get; protected set; } = "";
+
         #region Init
 
         /// <summary>
@@ -108,11 +112,12 @@ namespace Vge.Item
                     foreach (JsonKeyValue json in state.Items)
                     {
                         if (json.IsKey(Cti.MaxStackSize)) MaxStackSize = json.GetInt();
-                        if (json.IsKey(Cti.MaxDamage)) MaxDamage = json.GetInt();
-                        if (json.IsKey(Cti.Width)) Width = json.GetFloat();
-                        if (json.IsKey(Cti.Height)) Height = json.GetFloat();
-                        if (json.IsKey(Cti.Weight)) Weight = json.GetInt();
-                        if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
+                        else if (json.IsKey(Cti.MaxDamage)) MaxDamage = json.GetInt();
+                        else if (json.IsKey(Cti.Width)) Width = json.GetFloat();
+                        else if (json.IsKey(Cti.Height)) Height = json.GetFloat();
+                        else if (json.IsKey(Cti.Weight)) Weight = json.GetInt();
+                        else if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
+                        else if (json.IsKey(Cti.Hold)) Hold = json.GetString();
                     }
                 }
                 catch

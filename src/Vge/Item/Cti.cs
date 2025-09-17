@@ -77,5 +77,9 @@
         /// Имя к коэффициента рикошета, 0 нет отскока, 1 максимальный. (float)
         /// </summary>
         public const string Rebound = "Rebound";
+        /// <summary>
+        /// Имя анимации как держать предмет. (string)
+        /// </summary>
+        public const string Hold = "Hold";
     }
 }

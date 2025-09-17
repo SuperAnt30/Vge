@@ -155,6 +155,15 @@ namespace Vge.Entity.Inventory
             => slotIn < _allCount ? _items[slotIn] : null;
 
         /// <summary>
+        /// Устанавливает стaк в слоте slotIn, без событий!!!, для загрузки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetStackInSlot(int slotIn, ItemStack stack)
+        {
+            if (slotIn < _allCount) _items[slotIn] = stack;
+        }
+
+        /// <summary>
         /// Устанавливает данный стак предметов в указанный слот в инвентаре
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -280,6 +289,7 @@ namespace Vge.Entity.Inventory
                 {
                     _items[i] = stacks[i];
                 }
+                _OnOutsideChanged(-1);
             }
         }
 
@@ -291,7 +301,6 @@ namespace Vge.Entity.Inventory
                 _items[i] = null;
             }
         }
-
 
         protected override void _OnOutsideChanged(int flags)
         {

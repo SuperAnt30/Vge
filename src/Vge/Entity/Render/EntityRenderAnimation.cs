@@ -19,6 +19,24 @@ namespace Vge.Entity.Render
     public class EntityRenderAnimation : EntityRenderClient
     {
         /// <summary>
+        /// Название клипа для того чтоб держать предмет в правой руке, 
+        /// по умолчанию если не выбран параметр Hold в предмете.
+        /// </summary>
+        public const string HoldRight = "HoldRight";
+        /// <summary>
+        /// Название клипа для того чтоб держать предмет в левой руке
+        /// </summary>
+        public const string HoldLeft = "HoldLeft";
+        /// <summary>
+        /// Префикс названий клипов которые держат предмет, для массового удаления при смене предмета
+        /// </summary>
+        private const string _prefixHold = "Hold";
+        /// <summary>
+        /// Количество символов в префиксе
+        /// </summary>
+        private static int _prefixHoldLeght = _prefixHold.Length;
+
+        /// <summary>
         /// Буфер для шейдера матриц скелетной анимации, на 24 кости (матрица 4*3 и 24 кости)
         /// struct AnimationMatrixPalette - https://habr.com/ru/articles/501212/
         /// </summary>
@@ -156,10 +174,27 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
-        /// Отменить клип
+        /// Остановить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void RemoveClip(string key) => _animations[key].Stoping();
+        public override void StopingClip(string key) => _animations[key].Stoping();
+
+        /// <summary>
+        /// Остоновить все клипы которые держим
+        /// </summary>
+        private void _StopingClipsHold()
+        {
+            string s;
+            for (int i = 0; i < _animationClips.Count; i++)
+            {
+                s = _animationClips[i];
+                if (s.Length >= _prefixHoldLeght && s.Substring(0, 4) == _prefixHold)
+                {
+                    // Этот надо остановить
+                    _animations[s].Stoping();
+                }
+            }
+        }
 
         /// <summary>
         /// Игровой такт на клиенте
@@ -301,7 +336,7 @@ namespace Vge.Entity.Render
                 // Если клип поменялся
                 if (clip != _activity)
                 {
-                    RemoveClip(_activeClip);
+                    StopingClip(_activeClip);
                     AddClipActivity(clip);
                 }
                 // Обновить данные в конце после отправки данных игрового такта
@@ -548,35 +583,53 @@ namespace Vge.Entity.Render
             {
                 // Корректировка одевания слоёв
                 //string name = Entity is PlayerBase ? "Base" : "BaseOld";
-                ShapeLayers shapeLayers = _shapeLayers;// EntitiesReg.GetShapeLayers(name);
-                LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Jeans");
+               // ShapeLayers shapeLayers = _shapeLayers;// EntitiesReg.GetShapeLayers(name);
+               // LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Jeans");
                 //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
                 //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
-                LayerBuffer layer5 = shapeLayers.GetLayer("Cap", "Cap1");
+              //  LayerBuffer layer5 = shapeLayers.GetLayer("Cap", "Cap1");
 
                 if (Entity is EntityLiving entityLiving)
                 {
-                    byte currentItem = entityLiving.Inventory.GetCurrentIndex();
-                    RemoveClip("HoldRight");
-                    RemoveClip("HoldLeft");
-                    RemoveClip("HoldTwo");
-
+                    _StopingClipsHold();
                     for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
                     {
                         ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
                         if (itemStack != null)
                         {
-                            if (i > 0 && itemStack.Item is ItemCloth itemCloth)
+                            if (i < _resourcesEntity.CountPositionItem)
                             {
+                                // Предмет в руках
+                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                                    .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
+                                if (i == 0)
+                                {
+                                    AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
+                                }
+                                else
+                                {
+                                    // Левая рука, только держим предмет
+                                    AddClip(HoldLeft);
+                                }
+                            }
+                            else if (itemStack.Item is ItemCloth itemCloth)
+                            {
+                                // Одежда
                                 LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
                                 _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                             }
-                            else
-                            {
-                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                                    .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
-                                AddClip("HoldRight", 2f);
-                            }
+
+                            //if (i > 0 && itemStack.Item is ItemCloth itemCloth)
+                            //{
+                            //    LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
+                            //    _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                            //}
+                            //else
+                            //{
+                            //    _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                            //        .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
+                            //    AddClip("HoldRight", 2f);
+                            //}
                         }
                     }
                     /*

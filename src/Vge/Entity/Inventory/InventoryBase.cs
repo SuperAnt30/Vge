@@ -66,6 +66,12 @@ namespace Vge.Entity.Inventory
         public virtual ItemStack GetStackInSlot(int slotIn) => null;
 
         /// <summary>
+        /// Устанавливает стaк в слоте slotIn, без событий!!!, для загрузки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetStackInSlot(int slotIn, ItemStack stack) { }
+
+        /// <summary>
         /// Устанавливает данный стек предметов в указанный слот в инвентаре
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,7 +143,7 @@ namespace Vge.Entity.Inventory
             Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Inventory");
             foreach (Slot slot in slots)
             {
-                SetInventorySlotContents(slot.Index, slot.Stack);
+                SetStackInSlot(slot.Index, slot.Stack);
             }
         }
 

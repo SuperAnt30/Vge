@@ -42,7 +42,7 @@ namespace Vge.Entity.Render
         /// Отменить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void RemoveClip(string key) { }
+        public virtual void StopingClip(string key) { }
 
         /// <summary>
         /// Задать состояние открытости глаз

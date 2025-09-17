@@ -528,11 +528,10 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS04TickUpdate(GetWorld().Settings.Calendar.TickCounter));
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
-
+            // Передаём весь инвентарь
+            SendPacket(new PacketS30WindowItems(true, Inventory.GetAll()));
 
             // И другие пакеты, такие как позиция и инвентарь и прочее
-
-            SendPacket(new PacketS30WindowItems(true, Inventory.GetAll()));
 
 
             // Вносим в менеджер фрагментов игрока
