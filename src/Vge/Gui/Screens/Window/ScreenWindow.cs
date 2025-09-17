@@ -10,11 +10,11 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Ширина окна
         /// </summary>
-        public int WidthWindow { get; protected set; }
+        public readonly int WidthWindow;
         /// <summary>
         /// Высотаа окна
         /// </summary>
-        public int HeightWindow { get; protected set; }
+        public readonly int HeightWindow;
         /// <summary>
         /// Позиция X
         /// </summary>
@@ -33,9 +33,10 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected float _alpha = 1f;
 
-        protected ScreenWindow(WindowMain window) : base(window)
+        protected ScreenWindow(WindowMain window, int width, int height) : base(window)
         {
-
+            WidthWindow = width;
+            HeightWindow = height;
         }
 
         protected void _Close() => window.LScreen.Close();

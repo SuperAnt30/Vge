@@ -138,7 +138,6 @@ namespace Vge.Games
             Player = ModClient.CreatePlayerClientOwner();
             Key = new Keyboard(this);
             Key.InGameMenu += _Key_InGameMenu;
-            Key.InChat += _Key_InChat;
             WorldRender = new WorldRenderer(this);
         }
 
@@ -150,11 +149,6 @@ namespace Vge.Games
         /// Дельта последнего тика в mc
         /// </summary>
         public float DeltaTime => window.DeltaTime;
-
-        private void _Key_InChat(object sender, EventArgs e)
-        {
-            window.LScreen.Chat();
-        }
 
         /// <summary>
         /// Активация окна меню
@@ -365,8 +359,12 @@ namespace Vge.Games
         /// <summary>
         /// Клавиша нажата
         /// </summary>
-        public override void OnKeyDown(Keys keys) => Key.OnKeyDown(keys);
-
+        public override void OnKeyDown(Keys keys)
+        {
+            Key.OnKeyDown(keys);
+            ModClient.OnKeyDown(keys);
+        }
+        
         /// <summary>
         /// Клавиша отпущена
         /// </summary>

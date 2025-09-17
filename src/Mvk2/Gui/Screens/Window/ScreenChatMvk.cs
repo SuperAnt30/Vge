@@ -15,13 +15,14 @@ namespace Vge.Gui.Screens
 
         private readonly WindowMvk _windowMvk;
 
-        public ScreenChatMvk(WindowMvk window) : base(window)
+        public ScreenChatMvk(WindowMvk window) : base(window, 512, 354)
         {
             _windowMvk = window;
             _meshBg = new MeshGuiColor(gl);
-            // Размер окна
-            WidthWindow = 512;
-            HeightWindow = 354;
+
+            // Расположение окна
+            PosX = 8;
+            PosY = Height - HeightWindow - 8;
         }
 
         /// <summary>
@@ -37,11 +38,6 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            // Расположение окна
-            PosX = 8;
-            PosY = Height - HeightWindow - 8;
-            //PosX = 100;
-            //PosY = Height / 4;
             base.OnResized();
             _isRenderAdd = true;
         }

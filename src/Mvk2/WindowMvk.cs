@@ -26,6 +26,11 @@ namespace Mvk2
         /// </summary>
         private RenderMvk _renderMvk;
 
+        /// <summary>
+        /// Объект запуска экрана Mvk
+        /// </summary>
+        public LaunchScreenMvk LScreenMvk { get; private set; }
+
         #region Initialized
 
         public WindowMvk() : base()
@@ -36,7 +41,7 @@ namespace Mvk2
         protected override void Initialized()
         {
             Version = "Test Малювек2 by SuperAnt ver. " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            LScreen = new LaunchScreenMvk(this);
+            LScreen = LScreenMvk = new LaunchScreenMvk(this);
 
             // Загружаем опции
             OptionsLoad();

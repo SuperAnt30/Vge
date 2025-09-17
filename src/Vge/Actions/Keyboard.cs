@@ -63,7 +63,6 @@ namespace Vge.Actions
                 switch (keys)
                 {
                     case Keys.W: _game.Player.KeyForward(true); break;
-                    case Keys.E: _game.Player.KeyForward(true); break;
                     case Keys.A: _game.Player.KeyStrafeLeft(true); break;
                     case Keys.D: _game.Player.KeyStrafeRight(true); break;
                     case Keys.S: _game.Player.KeyBack(true); break;
@@ -72,7 +71,6 @@ namespace Vge.Actions
                     case Keys.ControlKey: _game.Player.KeySprinting(true); break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
 
-                    case Keys.T: case Keys.Oemtilde: _OnInChat(); break; // Окно чата Клавиша "T" или "~"
                     case Keys.F5: _game.Player.ViewCameraNext(); break;
                     case Keys.F8: Debug.IsDrawVoxelLine = !Debug.IsDrawVoxelLine; break;
                 }
@@ -136,14 +134,6 @@ namespace Vge.Actions
         public event EventHandler InGameMenu;
         protected virtual void _OnInGameMenu()
             => InGameMenu?.Invoke(this, new EventArgs());
-
-
-        /// <summary>
-        /// Событие активация чата
-        /// </summary>
-        public event EventHandler InChat;
-        protected virtual void _OnInChat()
-            => InChat?.Invoke(this, new EventArgs());
 
         #endregion
     }

@@ -2,6 +2,7 @@
 using Vge.Gui.Huds;
 using Vge.Network.Packets.Server;
 using Vge.World;
+using WinGL.Actions;
 
 namespace Vge.Games
 {
@@ -49,5 +50,14 @@ namespace Vge.Games
         /// Создать объект индикация
         /// </summary>
         public virtual HudBase CreateHud() => new HudDebug(Game);
+
+        #region Key
+
+        /// <summary>
+        /// Клавиша нажата
+        /// </summary>
+        public virtual void OnKeyDown(Keys keys) { }
+
+        #endregion
     }
 }

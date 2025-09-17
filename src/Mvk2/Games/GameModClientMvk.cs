@@ -6,6 +6,7 @@ using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Network.Packets.Server;
 using Vge.World;
+using WinGL.Actions;
 
 namespace Mvk2.Games
 {
@@ -47,5 +48,23 @@ namespace Mvk2.Games
         /// Создать объект индикация
         /// </summary>
         public override HudBase CreateHud() => new HudMvk(Game, _windowMvk.GetRender());
+
+        #region Key
+
+        /// <summary>
+        /// Клавиша нажата
+        /// </summary>
+        public override void OnKeyDown(Keys keys)
+        {
+            switch (keys)
+            {
+                // Окно чата Клавиша "T" или "~"
+                case Keys.T: case Keys.Oemtilde: _windowMvk.LScreenMvk.Chat(); break;
+                // скрин инвентаря
+                case Keys.E: _windowMvk.LScreenMvk.Inventory(); break;
+            }
+        }
+
+        #endregion
     }
 }
