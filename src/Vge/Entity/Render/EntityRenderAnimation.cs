@@ -578,6 +578,7 @@ namespace Vge.Entity.Render
         public override void OutsideItemChanged()
         {
             // TODO::2025-09-16 Последний метод где надо навести порядок по выбранному инвентарю, одежда в том числе
+            // 2025-09-17 Впринцепи тут всё, сделать инвентарь GUI и протестировать. Убрав все комменты
 
             if (_entityLayerRender != null && _shapeLayers != null)
             {

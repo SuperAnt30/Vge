@@ -19,6 +19,9 @@ namespace Vge.Gui.Screens
         {
             _windowMvk = window;
             _meshBg = new MeshGuiColor(gl);
+            // Размер окна
+            WidthWindow = 512;
+            HeightWindow = 354;
         }
 
         /// <summary>
@@ -34,16 +37,20 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
+            // Расположение окна
+            PosX = 8;
+            PosY = Height - HeightWindow - 8;
+            //PosX = 100;
+            //PosY = Height / 4;
             base.OnResized();
             _isRenderAdd = true;
-
         }
 
         protected override void _RenderingAdd()
         {
-            _meshBg.Reload(RenderFigure.Rectangle(8 * si, (Height - 354 - 8) * si,
-                (8 + 512) * si, (Height - 8) * si,
-                0, 0, 1, 354 / 512f));
+            _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si,
+                (PosX + WidthWindow) * si, (PosY + HeightWindow) * si,
+                0, 0, 1, HeightWindow / (float)WidthWindow));
             _isRenderAdd = false;
         }
 

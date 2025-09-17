@@ -11,7 +11,7 @@ namespace Vge.Gui.Screens
     /// <summary>
     /// Скрин окна чата
     /// </summary>
-    public class ScreenChat : ScreenBase
+    public class ScreenChat : ScreenWindow
     {
         /// <summary>
         /// Максимальное количество строк в чате
@@ -50,12 +50,14 @@ namespace Vge.Gui.Screens
 
         public ScreenChat(WindowMain window) : base(window)
         {
+            WidthWindow = 512;
+            HeightWindow = 354;
             FontBase font = window.Render.FontMain;
             _labelMessages = new Label(window, 
                 window.Game.Player.Chat.Font, "", true).SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
             _labelMessages.SetSize(Gi.WindowsChatWidthMessage, Gi.WindowsChatHeightMessage);
             _labelMessages.Multiline();
-            _textBoxMessage = new TextBox(window, window.Render.FontMain, 500, "", TextBox.EnumRestrictions.All, 255);
+            _textBoxMessage = new TextBox(window, window.Render.FontMain, WidthWindow, "", TextBox.EnumRestrictions.All, 255);
             _textBoxMessage.FixFocus();
 
             _sentHistoryCursor = window.Game.Player.Chat.SentMessages.Count;
@@ -75,8 +77,6 @@ namespace Vge.Gui.Screens
 
         private void _ScreenChat_Click(object sender, EventArgs e)
             => _textBoxMessage.SetText(((Label)sender).Text + ": " + _textBoxMessage.Text);
-
-        protected void _Close() => window.LScreen.Close();
 
         /// <summary>
         /// Игровой такт
@@ -112,11 +112,10 @@ namespace Vge.Gui.Screens
         protected override void OnResized()
         {
             base.OnResized();
-            int w = Width / 2;
-            int h = Height / 2;
-            _textBoxMessage.SetPosition(8, Height - 48);
-            _labelMessages.SetPosition(16, Height - 324);
+            _textBoxMessage.SetPosition(PosX, PosY + 314);// Height - 48);
+            _labelMessages.SetPosition(PosX + 8, PosY + 30);// Height - 324);
 
+            // Список игроков в игре
             int w2 = Width - 172;
             for (int i = 0; i < _labelplayer.Length; i++)
             {
