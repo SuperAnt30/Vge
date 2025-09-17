@@ -2,13 +2,9 @@
     MaxStackSize: 50,
     Width: 0.5625,
     Height: 0.1875,
-    #Sprite: "Blocks/FlowerClover"
-    #ShapeBlock: "FlowerClover"
-    Shape: "Axe"
-    #ShapeGui: "Axe"
-    SpriteGui: "Items/Axe"
-    #SpriteGui: "Blocks/Debug"
-    View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] }
+    ShapeBlock: "FlowerClover",
+    SpriteGui: "Blocks/FlowerClover",
+    View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] },
     #ViewGui: { Rotate:[-135, -90, 0], Offset:[-12, 14, 0], Scale: 0.75 }
     ViewHold: { Offset:[0, -5, 0] }
 }

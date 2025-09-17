@@ -70,6 +70,7 @@ internal sealed class Sr
     internal const string FileMissingModelEntity = "Отсутствует файл модели сущности {0}";
     internal const string ErrorReadJsonModelEntity = "Ошибка чтения из json, параметра {1} сущности {0}";
     internal const string ErrorReadFileModel = "Ошибка чтения из фала, параметра {0}";
+    internal const string RequiredParameterIsMissingItem = "Отсутствует требуемый параметр {1} предмета {0}";
     internal const string RequiredParameterIsMissingEntity = "Отсутствует требуемый параметр {1} сущности {0}";
     internal const string RequiredParameterIsMissingLayers = "Отсутствует требуемый параметр {1} слоях {0}";
     internal const string RequiredParameterIsMissing = "Отсутствует требуемый параметр {0}";

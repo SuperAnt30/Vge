@@ -98,7 +98,7 @@ namespace Vge.Item
         /// <summary>
         /// Прочесть состояние блока из Json формы
         /// </summary>
-        private void _ReadStateFromJson(JsonCompound state)
+        protected virtual void _ReadStateFromJson(JsonCompound state)
         {
             if (state.Items != null)
             {
@@ -124,7 +124,7 @@ namespace Vge.Item
 
         #endregion
 
-        
+
 
         public override string ToString() => IndexItem.ToString() + " " + Alias;
     }

@@ -9,9 +9,11 @@ namespace Mvk2.Item
     {
         public static void Initialization()
         {
+            ItemsReg.RegisterItemClass("AxeIron", new ItemBase());
             ItemsReg.RegisterItemClass("FlowerClover", new ItemBase());
             ItemsReg.RegisterItemClass("Cobblestone", new ItemBase());
             ItemsReg.RegisterItemClass("Brol", new ItemBase());
+            ItemsReg.RegisterItemClass("Jeans", new ItemCloth());
         }
     }
 }

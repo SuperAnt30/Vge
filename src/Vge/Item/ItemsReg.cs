@@ -54,9 +54,9 @@ namespace Vge.Item
             _Clear();
 
             // Регистрация обязательных предметов
-
+            //...
             // Отладочный
-            RegisterItemClass("Debug", new ItemBase());
+            //RegisterItemClass("Debug", new ItemBase());
         }
 
         /// <summary>

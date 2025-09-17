@@ -15,7 +15,7 @@
         },
         {
             Group: "Trousers",
-            Name: "Trousers1",
+            Name: "Jeans",
             Folder: ["L-TrousersB1", "L-TrousersH1", "L-TrousersR1", "L-TrousersL1", "L-TrousersSR1", "L-TrousersSL1"],
             Texture: "Base"
         },

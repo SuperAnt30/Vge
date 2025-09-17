@@ -1,5 +1,5 @@
 {
-    MaxStackSize: 25,
+    MaxStackSize: 1,
     MaxDamage: 0,
     Width: 0.5,
     Height: 1,

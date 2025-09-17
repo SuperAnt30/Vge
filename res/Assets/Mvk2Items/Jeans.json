@@ -1,0 +1,7 @@
+{
+    MaxStackSize: 1,
+    Sprite: "Items/Jeans",
+    SpriteGui: "Items/Jeans",
+    PutOnBody: "Trousers",
+    NameLayer: "Jeans"
+}

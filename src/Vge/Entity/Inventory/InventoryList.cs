@@ -28,12 +28,6 @@ namespace Vge.Entity.Inventory
         protected int _allCount;
 
         /// <summary>
-        /// Общее количество видимых ячеек, не должно привышать 30!
-        /// из-за битового флага, для обновлений
-        /// </summary>
-        protected int _outsideCount;
-
-        /// <summary>
         /// Выбранный слот правой руки
         /// </summary>
         protected byte _currentIndex = 0;
@@ -54,8 +48,8 @@ namespace Vge.Entity.Inventory
             _mainCount = mainCount;
             _clothCount = clothCount;
             _allCount = _mainCount + _clothCount;
-            _outsideCount = _clothCount;
-            if (_mainCount > 0) _outsideCount++;
+            OutsideCount = _clothCount;
+            if (_mainCount > 0) OutsideCount++;
 
             _items = new ItemStack[_allCount];
         }
@@ -70,7 +64,7 @@ namespace Vge.Entity.Inventory
         {
             if (_flagsChanged != 0)
             {
-                for (byte i = 0; i < _outsideCount; i++)
+                for (byte i = 0; i < OutsideCount; i++)
                 {
                     if (_flagsChanged == -1 || (_flagsChanged & (1 << i)) != 0)
                     {
@@ -189,6 +183,14 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
+        /// Получить стак по слоту внешности (что в руках и одежда)
+        /// для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override ItemStack GetOutside(int slotIn)
+            => _items[_mainCount > 0 ? slotIn == 0 ? _currentIndex : _mainCount + slotIn - 1 : slotIn];
+
+        /// <summary>
         /// Получить список стаков для внешности (что в руках и одежда)
         /// для передачи по сети
         /// </summary>
@@ -227,6 +229,7 @@ namespace Vge.Entity.Inventory
             }
         }
 
+        /*
         /// <summary>
         /// Получить стак одежды
         /// </summary>
@@ -255,6 +258,7 @@ namespace Vge.Entity.Inventory
                 }
             }
         }
+        */
 
         /// <summary>
         /// Получить полный список всего инвентаря
@@ -299,7 +303,7 @@ namespace Vge.Entity.Inventory
                 }
                 else
                 {
-                    for (int i = 0; i < _outsideCount; i++)
+                    for (int i = 0; i < OutsideCount; i++)
                     {
                         if ((flags & (1 << i)) != 0
                             && (_flagsChanged & (1 << i)) == 0)

@@ -12,6 +12,12 @@ namespace Vge.Entity.Inventory
     public class InventoryBase
     {
         /// <summary>
+        /// Общее количество видимых ячеек, не должно привышать 30!
+        /// из-за битового флага, для обновлений
+        /// </summary>
+        public int OutsideCount { get; protected set; } = 0;
+
+        /// <summary>
         /// Обновление на сервере каждый тик
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,6 +72,13 @@ namespace Vge.Entity.Inventory
         public virtual void SetInventorySlotContents(int slotIn, ItemStack stack) { }
 
         /// <summary>
+        /// Получить стак по слоту внешности (что в руках и одежда)
+        /// для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetOutside(int slotIn) => null;
+
+        /// <summary>
         /// Получить список стаков для внешности (что в руках и одежда)
         /// для передачи по сети
         /// </summary>
@@ -77,7 +90,8 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetOutside(ItemStack[] stacks) { }
-
+        
+        /*
         /// <summary>
         /// Получить стак одежды
         /// </summary>
@@ -89,6 +103,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetClothInventory(int slotIn, ItemStack stack) { }
+        */
 
         /// <summary>
         /// Получить полный список всего инвентаря

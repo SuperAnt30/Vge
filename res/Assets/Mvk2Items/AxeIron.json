@@ -1,0 +1,9 @@
+{
+    MaxStackSize: 1,
+    Width: 0.5625,
+    Height: 0.1875,
+    Shape: "Axe"
+    SpriteGui: "Items/Axe"
+    View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] }
+    ViewHold: { Offset:[0, -5, 0] }
+}

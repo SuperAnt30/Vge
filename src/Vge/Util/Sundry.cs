@@ -134,7 +134,9 @@ namespace Vge.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ChekComment(string strLine)
-            => strLine.Length == 0 || strLine.Substring(0, 1) == "#"
-                || strLine.TrimStart().Substring(0, 1) == "#";
+        {
+            strLine = strLine.TrimStart();
+            return strLine.Length == 0 || strLine.Substring(0, 1) == "#";
+        }
     }
 }

@@ -42,6 +42,16 @@
         /// </summary>
         public const string ViewHold = "ViewHold";
 
+
+        /// <summary>
+        /// Надеть на тело, указываем на какую часть тело может одеваться предмет. (string)
+        /// </summary>
+        public const string PutOnBody = "PutOnBody";
+        /// <summary>
+        /// Имя слоя, название слоя одежды из модели. (string)
+        /// </summary>
+        public const string NameLayer = "NameLayer";
+
         /// <summary>
         /// Имя к максимальному количеству однотипный вещей в одной ячейке. (int)
         /// </summary>

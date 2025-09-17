@@ -549,10 +549,10 @@ namespace Vge.Entity.Render
                 // Корректировка одевания слоёв
                 //string name = Entity is PlayerBase ? "Base" : "BaseOld";
                 ShapeLayers shapeLayers = _shapeLayers;// EntitiesReg.GetShapeLayers(name);
-                LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
+                LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Jeans");
                 //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
                 //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
-                LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
+                LayerBuffer layer5 = shapeLayers.GetLayer("Cap", "Cap1");
 
                 if (Entity is EntityLiving entityLiving)
                 {
@@ -561,15 +561,42 @@ namespace Vge.Entity.Render
                     RemoveClip("HoldLeft");
                     RemoveClip("HoldTwo");
 
+                    for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
+                    {
+                        ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
+                        if (itemStack != null)
+                        {
+                            if (i > 0 && itemStack.Item is ItemCloth itemCloth)
+                            {
+                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
+                                _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                            }
+                            else
+                            {
+                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                                    .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
+                                AddClip("HoldRight", 2f);
+                            }
+                        }
+                    }
+                    /*
                     if (currentItem == 0)
                     {
                         // Сетевой походу
                         ItemStack itemStack = entityLiving.Inventory.GetStackInSlot(currentItem);
                         if (itemStack != null)
                         {
-                            _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                                .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
-                            AddClip("HoldRight", 2f);
+                            if (itemStack.Item is ItemCloth itemCloth)
+                            {
+                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
+                                _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                            }
+                            else
+                            {
+                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                                    .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
+                                AddClip("HoldRight", 2f);
+                            }
                         }
                     }
                     
@@ -619,9 +646,9 @@ namespace Vge.Entity.Render
                     {
                         _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                        _entityLayerRender.AddRangeBuffer(layer5.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                     }
-
+                    */
                     _entityLayerRender.Reload();
                 }
             }
