@@ -15,7 +15,12 @@ namespace Mvk2.Renderer
         /// Текстура Heads-Up Display
         /// </summary>
         public uint Hud;
+        /// <summary>
+        /// Текстура Inventory
+        /// </summary>
+        public uint Inventory;
     }
+
 
     /// <summary>
     /// Перечисление разных ключей текстур для малювек
@@ -37,7 +42,11 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Heads-Up Display
         /// </summary>
-        Hud
+        Hud,
+        /// <summary>
+        /// Текстура Inventory
+        /// </summary>
+        Inventory
     }
 
 }

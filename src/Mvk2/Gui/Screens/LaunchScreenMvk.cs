@@ -48,9 +48,6 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Создать скрин инвентаря
         /// </summary>
-        public void Inventory()
-        {
-            return;
-        }
+        public void Inventory() => window.ScreenCreate(new ScreenInventoryMvk(_windowMvk));
     }
 }

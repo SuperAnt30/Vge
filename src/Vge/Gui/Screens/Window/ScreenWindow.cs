@@ -1,4 +1,7 @@
-﻿using WinGL.Actions;
+﻿using System;
+using Vge.Gui.Controls;
+using Vge.Renderer;
+using WinGL.Actions;
 
 namespace Vge.Gui.Screens
 {
@@ -24,22 +27,39 @@ namespace Vge.Gui.Screens
         /// </summary>
         public int PosY { get; protected set; }
 
+        protected Label _labelTitle;
+        protected Button _buttonCancel;
+
         /// <summary>
-        /// Заголовок окна
+        /// Сетка фона
         /// </summary>
-        protected string _title = "";
-        /// <summary>
-        /// Прозрачность окна
-        /// </summary>
-        protected float _alpha = 1f;
+        protected readonly MeshGuiColor _meshBg;
 
         protected ScreenWindow(WindowMain window, int width, int height) : base(window)
         {
             WidthWindow = width;
             HeightWindow = height;
+            _meshBg = new MeshGuiColor(gl);
+
+            _InitTitle();
+            _buttonCancel.Click += ButtonCancel_Click;
         }
 
+        protected virtual void _InitTitle() { }
+
+        private void ButtonCancel_Click(object sender, EventArgs e) => _Close();
+
         protected void _Close() => window.LScreen.Close();
+
+        /// <summary>
+        /// Запускается при создании объекта и при смене режима FullScreen
+        /// </summary>
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
+            AddControls(_labelTitle);
+            AddControls(_buttonCancel);
+        }
 
         /// <summary>
         /// Курсор за пределами окна
@@ -66,6 +86,40 @@ namespace Vge.Gui.Screens
             {
                 base.OnMouseDown(button, x, y);
             }
+        }
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void OnResized()
+        {
+            base.OnResized();
+            _isRenderAdd = true;
+        }
+
+        protected override void _RenderingAdd()
+        {
+            _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si,
+                (PosX + WidthWindow) * si, (PosY + HeightWindow) * si,
+                0, 0, 1, HeightWindow / (float)WidthWindow));
+            _isRenderAdd = false;
+        }
+
+        protected override void _DrawAdd()
+        {
+            _BindTextureBg();
+            _meshBg.Draw();
+        }
+
+        /// <summary>
+        /// Запустить текстуру фона
+        /// </summary>
+        protected virtual void _BindTextureBg() { }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _meshBg?.Dispose();
         }
     }
 }

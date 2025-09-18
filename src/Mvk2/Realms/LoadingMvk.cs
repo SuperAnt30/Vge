@@ -1,4 +1,5 @@
 ﻿using Mvk2.Renderer;
+using System;
 using Vge.Realms;
 using Vge.Util;
 
@@ -16,7 +17,7 @@ namespace Mvk2.Realms
         /// <summary>
         /// Количество текстур
         /// </summary>
-        private readonly int _countTexture = 4;
+        private readonly int _countTexture = Enum.GetNames(typeof(EnumTextureMvk)).Length;
         /// <summary>
         /// Количество звуков
         /// </summary>
@@ -60,14 +61,14 @@ namespace Mvk2.Realms
                 _FileToBufferedImage(EnumTextureMvk.FontLarge.ToString(), 
                 Options.PathTextures + EnumTextureMvk.FontLarge.ToString() + ".png"));
             OnStep();
-            // Чат Gui
-            _FileToBufferedImage(EnumTextureMvk.Chat.ToString(),
-                Options.PathTextures + EnumTextureMvk.Chat.ToString() + ".png");
-            OnStep();
 
-            _FileToBufferedImage(EnumTextureMvk.Hud.ToString(),
-                Options.PathTextures + EnumTextureMvk.Hud.ToString() + ".png");
-            OnStep();
+            // Остальные после шрифтов
+            for (int i = 2; i < _countTexture; i++)
+            {
+                string name = ((EnumTextureMvk)i).ToString();
+                _FileToBufferedImage(name, Options.PathTextures + name + ".png");
+                OnStep();
+            }
         }
 
         /// <summary>

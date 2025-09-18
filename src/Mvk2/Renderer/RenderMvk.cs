@@ -61,8 +61,12 @@ namespace Mvk2.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureHud() => Texture.BindTexture(_textureIndexMvk.Hud);
+        /// <summary>
+        /// Запустить текстуру Inventory
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureInventory() => Texture.BindTexture(_textureIndexMvk.Inventory);
 
-        
 
         #endregion
 
@@ -89,6 +93,10 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.Hud.ToString()))
             {
                 _textureIndexMvk.Hud = Texture.SetTexture(buffereds[EnumTextureMvk.Hud.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Inventory.ToString()))
+            {
+                _textureIndexMvk.Inventory = Texture.SetTexture(buffereds[EnumTextureMvk.Inventory.ToString()]);
             }
         }
     }
