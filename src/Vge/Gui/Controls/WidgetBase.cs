@@ -38,7 +38,7 @@
         /// </summary>
         public int PosY { get; private set; }
         /// <summary>
-        /// Текст кнопки
+        /// Текст
         /// </summary>
         public string Text { get; private set; }
         /// <summary>

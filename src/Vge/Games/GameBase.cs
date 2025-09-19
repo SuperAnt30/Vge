@@ -191,7 +191,8 @@ namespace Vge.Games
             // Рендер мира информируем, что готово всё
             WorldRender.GameStarting();
             //Ce.IsDebugDrawChunks = 
-            Ce.IsDebugDraw = true;
+            // TODO::2025-09-19 включение F3
+            //Ce.IsDebugDraw = true;
             FlagGameStarted = true;
         }
 

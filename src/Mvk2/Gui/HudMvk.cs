@@ -170,7 +170,7 @@ namespace Mvk2.Gui
             ////_game.WorldRender.Entities.GetEntityRender(1).MeshDraw();
             //_game.Render.ShsEntity.UniformDataGui(300, 300);
 
-            // Всё два 2 закончено, рисуем 3д элементы в Gui
+            // Всё 2d закончено, рисуем 3д элементы в Gui
             _game.Render.DepthOn();
 
 
