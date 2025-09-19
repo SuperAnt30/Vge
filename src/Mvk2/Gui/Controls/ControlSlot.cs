@@ -1,7 +1,10 @@
 ﻿using Mvk2.Renderer;
+using System;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
 using Vge.Renderer;
+using Vge.Renderer.Font;
+using WinGL.Actions;
 
 namespace Mvk2.Gui.Controls
 {
@@ -16,6 +19,18 @@ namespace Mvk2.Gui.Controls
         /// Сетка фона
         /// </summary>
         private readonly MeshGuiColor _meshBg;
+        /// <summary>
+        /// Сетка текста
+        /// </summary>
+        private readonly MeshGuiColor _meshTxt;
+        /// <summary>
+        /// Объект шрифта
+        /// </summary>
+        public readonly FontBase _font;
+        /// <summary>
+        /// Имеется ли текст
+        /// </summary>
+        public bool _isText;
 
         /// <summary>
         /// Слот
@@ -37,6 +52,8 @@ namespace Mvk2.Gui.Controls
             SetSize(50, 50).SetText("");
             _slot = slot;
             _meshBg = new MeshGuiColor(gl);
+            _meshTxt = new MeshGuiColor(gl);
+            _font = window.GetRender().FontSmall;
         }
 
         public void SetSlot(Slot slot)
@@ -46,6 +63,27 @@ namespace Mvk2.Gui.Controls
         }
 
         public Slot GetSlot() => _slot;
+
+        #region OnMouse
+
+        /// <summary>
+        /// Нажатие клавиши мышки
+        /// </summary>
+        public override void OnMouseDown(MouseButton button, int x, int y)
+        {
+            if (button == MouseButton.Left)
+            {
+                OnMouseMove(x, y);
+                if (enter) _OnClickLeft();
+            }
+            else if (button == MouseButton.Right)
+            {
+                OnMouseMove(x, y);
+                if (enter) _OnClickRight();
+            }
+        }
+
+        #endregion
 
         #region Draw
 
@@ -79,6 +117,27 @@ namespace Mvk2.Gui.Controls
 
             _posItemX = (PosX + 25) * si;
             _posItemY = (PosY + 25) * si;
+
+            // Ренедер текста
+            if (_slot.Stack != null && _slot.Stack.Amount != 1)
+            {
+                // Чистим буфер
+                _font.Clear();
+                // Указываем опции
+                _font.SetFontFX(EnumFontFX.Outline);
+                // Готовим рендер текста
+                _font.RenderString((PosX + 7) * si, (PosY + 36) * si, _slot.Stack.Amount.ToString());
+                // Имеется Outline значит рендерим FX
+                _font.RenderFX();
+                // Вносим сетку
+                _font.Reload(_meshTxt);
+                _isText = true;
+            }
+            else
+            {
+                _isText = false;
+            }
+
             IsRender = false;
         }
 
@@ -103,8 +162,12 @@ namespace Mvk2.Gui.Controls
                 _render.DepthOff();
                 _render.ShaderBindGuiColor();
 
-                // Рисуем текст кнопки
-                //...
+                if (_isText)
+                {
+                    // Рисуем текст
+                    _font.BindTexture();
+                    _meshTxt.Draw();
+                }
             }
         }
 
@@ -114,6 +177,29 @@ namespace Mvk2.Gui.Controls
         {
             base.Dispose();
             _meshBg?.Dispose();
+            _meshTxt?.Dispose();
         }
+
+        #region Event
+
+        /// <summary>
+        /// Событие клика ЛКМ
+        /// </summary>
+        public event EventHandler ClickLeft;
+        /// <summary>
+        /// Событие клика ЛКМ
+        /// </summary>
+        private void _OnClickLeft() => ClickLeft?.Invoke(this, new EventArgs());
+
+        /// <summary>
+        /// Событие клика ПКМ
+        /// </summary>
+        public event EventHandler ClickRight;
+        /// <summary>
+        /// Событие клика ПКМ
+        /// </summary>
+        private void _OnClickRight() => ClickRight?.Invoke(this, new EventArgs());
+
+        #endregion
     }
 }
