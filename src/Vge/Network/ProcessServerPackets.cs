@@ -100,6 +100,7 @@ namespace Vge.Network
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
                     case 0x09: _Handle09HeldItemChange(sp.Side, (PacketC09HeldItemChange)sp.Packet); break;
                     case 0x0A: _Handle0APlayerAnimation(sp.Side, (PacketC0APlayerAnimation)sp.Packet); break;
+                    case 0x0E: _Handle0EClickWindow(sp.Side, (PacketC0EClickWindow)sp.Packet); break;
                     case 0x14: _Handle14Message(sp.Side, (PacketC14Message)sp.Packet); break;
                     case 0x15: _Handle15PlayerSetting(sp.Side, (PacketC15PlayerSetting)sp.Packet); break;
                     case 0x20: _Handle20AcknowledgeChunks(sp.Side, (PacketC20AcknowledgeChunks)sp.Packet); break;
@@ -231,6 +232,15 @@ namespace Vge.Network
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             playerServer?.PacketPlayerAnimation(packet);
+        }
+
+        /// <summary>
+        /// Пакет кликов по окну и контролам
+        /// </summary>
+        private void _Handle0EClickWindow(SocketSide socketSide, PacketC0EClickWindow packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            playerServer?.PacketClickWindow(packet);
         }
 
         /// <summary>

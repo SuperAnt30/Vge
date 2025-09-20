@@ -2,6 +2,7 @@
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
+using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
 
 namespace Mvk2.Gui.Screens
@@ -20,11 +21,29 @@ namespace Mvk2.Gui.Screens
             _windowMvk = window;
             _slot = new ControlSlot[8];
 
+            ControlSlot slot;
             for (int i = 0; i < 8; i++)
             {
-                _slot[i] = new ControlSlot(window, new Slot((short)i,
+                slot = new ControlSlot(window, new Slot((short)i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
+                slot.ClickLeft += Slot_ClickLeft;
+                slot.ClickRight += Slot_ClickRight;
+                _slot[i] = slot;
             }
+        }
+
+        private void Slot_ClickRight(object sender, System.EventArgs e)
+            => _SendPacket(((ControlSlot)sender).GetSlot(), true);
+
+        private void Slot_ClickLeft(object sender, System.EventArgs e)
+            => _SendPacket(((ControlSlot)sender).GetSlot(), false);
+
+        private void _SendPacket(Slot slot, bool isRight)
+        {
+            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(0, 
+                false,//_windowMvk.Game.Key.
+                isRight,
+                slot.Index));
         }
 
         protected override void _InitTitle()

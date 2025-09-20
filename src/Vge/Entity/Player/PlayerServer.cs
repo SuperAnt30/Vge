@@ -286,6 +286,11 @@ namespace Vge.Entity.Player
             }
         }
 
+        /// <summary>
+        /// TODO:: Пометка активности игрока
+        /// </summary>
+        public void MarkPlayerActive() { }// => playerLastActiveTime = ServerMain.TickCounter;
+
         #endregion
 
         #region Packet
@@ -461,7 +466,7 @@ namespace Vge.Entity.Player
             Inventory.ServerHeldItemChange();
             if (Inventory.SetCurrentIndex(packet.SlotId))
             {
-                //MarkPlayerActive();
+                MarkPlayerActive();
             }
             else
             {
@@ -476,6 +481,16 @@ namespace Vge.Entity.Player
         /// </summary>
         public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
             => GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+
+        /// <summary>
+        /// Пакет: кликов по окну и контролам
+        /// </summary>
+        public void PacketClickWindow(PacketC0EClickWindow packet)
+        {
+            MarkPlayerActive();
+            return;
+        }
+            
 
         /// <summary>
         /// Пакет: Параметры игрока
