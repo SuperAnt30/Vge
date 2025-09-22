@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Item;
 
@@ -17,15 +18,18 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Количество ячеек для предметов рюкзака
         /// </summary>
-        private readonly int _backpackCount;
+        private readonly int _backpackCount = 25;
 
         public InventoryPlayer()
             // Первый слот одеждый это ячейка левой руки
-            : base(8, 11) 
-        {
-            _backpackCount = 25;
-            _allCount += _backpackCount;
-        }
+            : base(8, 11) { }
+
+        /// <summary>
+        /// Инициализация общего количества
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _InitAllCount()
+            => _allCount = _mainCount + _clothCount + _backpackCount;
 
         /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
@@ -36,6 +40,7 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         public void ClickInventoryOnServer(int slotIn, bool isRight, bool isShift)
         {
+            // TODO::2025-09-22 !!!
             return;
         }
 

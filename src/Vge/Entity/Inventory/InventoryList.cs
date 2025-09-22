@@ -47,12 +47,19 @@ namespace Vge.Entity.Inventory
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
-            _allCount = _mainCount + _clothCount;
+            _InitAllCount();
             OutsideCount = _clothCount;
             if (_mainCount > 0) OutsideCount++;
 
             _items = new ItemStack[_allCount];
         }
+
+        /// <summary>
+        /// Инициализация общего количества
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _InitAllCount()
+            => _allCount = _mainCount + _clothCount;
 
         #region UpdateServer
 
