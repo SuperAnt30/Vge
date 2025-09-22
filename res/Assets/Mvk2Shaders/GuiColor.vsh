@@ -8,10 +8,11 @@ out vec4 a_color;
 out vec2 a_texCoord;
 
 uniform mat4 projview;
+uniform vec2 pos;
 
 void main()
 {
 	a_color = v_color;
 	a_texCoord = v_texCoord;
-	gl_Position = projview * vec4(v_position.xy, 0, 1.0);
+	gl_Position = projview * vec4(pos + v_position.xy, 0, 1.0);
 }

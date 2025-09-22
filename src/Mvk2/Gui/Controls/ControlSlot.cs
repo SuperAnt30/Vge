@@ -1,10 +1,6 @@
-﻿using Mvk2.Renderer;
-using System;
-using Vge.Entity.Inventory;
-using Vge.Gui.Controls;
+﻿using System;
 using Vge.Item;
 using Vge.Renderer;
-using Vge.Renderer.Font;
 using WinGL.Actions;
 
 namespace Mvk2.Gui.Controls
@@ -12,63 +8,23 @@ namespace Mvk2.Gui.Controls
     /// <summary>
     /// Контрол слота предмета
     /// </summary>
-    public class ControlSlot : WidgetBase
+    public class ControlSlot : ControlIcon
     {
         /// <summary>
         /// Номер слота
         /// </summary>
         public byte SlotId { get; private set; }
-        /// <summary>
-        /// Стак
-        /// </summary>
-        public ItemStack Stack { get; private set; }
-
-        private readonly RenderMvk _render;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
         private readonly MeshGuiColor _meshBg;
-        /// <summary>
-        /// Сетка текста
-        /// </summary>
-        private readonly MeshGuiColor _meshTxt;
-        /// <summary>
-        /// Объект шрифта
-        /// </summary>
-        public readonly FontBase _font;
-        /// <summary>
-        /// Имеется ли текст
-        /// </summary>
-        public bool _isText;
 
-        /// <summary>
-        /// Расположение предмета по Х
-        /// </summary>
-        private int _posItemX;
-        /// <summary>
-        /// Расположение предмета по Y
-        /// </summary>
-        private int _posItemY;
-
-        public ControlSlot(WindowMvk window, byte sloyId, ItemStack stack) : base(window)
+        public ControlSlot(WindowMvk window, byte slotId, ItemStack stack) : base(window, stack)
         {
-            _render = window.GetRender();
-            SetSize(50, 50).SetText("");
-            SlotId = sloyId;
+            SlotId = slotId;
             Stack = stack;
             _meshBg = new MeshGuiColor(gl);
-            _meshTxt = new MeshGuiColor(gl);
-            _font = window.GetRender().FontSmall;
-        }
-
-        /// <summary>
-        /// Задать новый или изменённый стак
-        /// </summary>
-        public void SetStack(ItemStack stack)
-        {
-            Stack = stack;
-            IsRender = true;
         }
 
         #region OnMouse
@@ -89,6 +45,11 @@ namespace Mvk2.Gui.Controls
                 if (enter) _OnClickRight();
             }
         }
+
+        /// <summary>
+        /// Нажатие клавиши мышки
+        /// </summary>
+        public override void OnMouseMove(int x, int y) => _CanEnter(x, y);
 
         #endregion
 
@@ -122,30 +83,7 @@ namespace Mvk2.Gui.Controls
             _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
                     v1, .90234375f, v2, 1));
 
-            _posItemX = (PosX + 25) * si;
-            _posItemY = (PosY + 25) * si;
-
-            // Ренедер текста
-            if (Stack != null && Stack.Amount != 1)
-            {
-                // Чистим буфер
-                _font.Clear();
-                // Указываем опции
-                _font.SetFontFX(EnumFontFX.Outline);
-                // Готовим рендер текста
-                _font.RenderString((PosX + 7) * si, (PosY + 36) * si, Stack.Amount.ToString());
-                // Имеется Outline значит рендерим FX
-                _font.RenderFX();
-                // Вносим сетку
-                _font.Reload(_meshTxt);
-                _isText = true;
-            }
-            else
-            {
-                _isText = false;
-            }
-
-            IsRender = false;
+            base.Rendering();
         }
 
         /// <summary>
@@ -158,24 +96,7 @@ namespace Mvk2.Gui.Controls
             _render.BindTextureHud();
             _meshBg.Draw();
             
-            // Рисуем предмет
-            if (Stack != null)
-            {
-                // Всё 2d закончено, рисуем 3д элементы в Gui
-                _render.DepthOn();
-                // Заносим в шейдор
-                _render.ShsEntity.BindUniformBiginGui();
-                window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem).MeshDraw(_posItemX, _posItemY);
-                _render.DepthOff();
-                _render.ShaderBindGuiColor();
-
-                if (_isText)
-                {
-                    // Рисуем текст
-                    _font.BindTexture();
-                    _meshTxt.Draw();
-                }
-            }
+            base.Draw(timeIndex);
         }
 
         #endregion
@@ -184,7 +105,6 @@ namespace Mvk2.Gui.Controls
         {
             base.Dispose();
             _meshBg?.Dispose();
-            _meshTxt?.Dispose();
         }
 
         #region Event

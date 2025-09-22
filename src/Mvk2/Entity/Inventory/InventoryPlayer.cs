@@ -16,6 +16,10 @@ namespace Mvk2.Entity.Inventory
         public ItemStack StackAir { get; private set; }
 
         /// <summary>
+        /// Лимит ячеек рюкзака
+        /// </summary>
+        public int LimitBackpack { get; private set; } = 0;
+        /// <summary>
         /// Количество ячеек для предметов рюкзака
         /// </summary>
         private readonly int _backpackCount = 25;
@@ -49,11 +53,10 @@ namespace Mvk2.Entity.Inventory
                 if (stackAir != null)
                 {
                     // В воздухе имеется, укладываем в пустой слот
-                   // if (CanPutItemStack(slotIn, stackAir))
+                    if (_CanPutItemStack(slotIn, stackAir))
                     {
-                      //  bool b = slotIn >= COUNT_CURRENT && slotIn < CountAll;
-
-                     //   if (!b || (b && slotIn - COUNT_CURRENT < LimitBackpack))
+                        bool b = slotIn >= _mainCount && slotIn < _allCount;
+                        if (!b || (b && slotIn - _mainCount < LimitBackpack))
                         {
                             // Если в воздухе есть так будем укладывать в ячейку
                             if (isRight && stackAir.Amount > 1)
@@ -75,73 +78,73 @@ namespace Mvk2.Entity.Inventory
             else
             {
                 // Имеется что-то в ячейке
-                //if (isShift)
-                //{
-                //    // Если держим шифт, то задача перебрасывать предмет с инвентаря в свободную ячейку склада или наоборот
-                //    if (slotIn < 100)
-                //    {
-                //        // Кликнули на инвентарь
-                //        if (((EntityPlayerServer)Player).IsOpenInventory)
-                //        {
-                //            // Тут клики через шифт по инвентарю
-                //            if (slotIn < COUNT_CURRENT)
-                //            {
-                //                // Кликнули на инвентарь быстрого доступа
-                //                if (!conteiner.AddItemStackToInventory(mainBackpack, CheckSlotToAir(stackSlot), LimitBackpack, COUNT_CURRENT))
-                //                {
-                //                    _SetSendSlotContents(slotIn, stackSlot);
-                //                }
-                //                else
-                //                {
-                //                    _SetSendSlotContents(slotIn);
-                //                }
-                //            }
-                //            else
-                //            {
-                //                // Кликнули на рюкзак
-                //                if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
-                //                {
-                //                    _SetSendSlotContents(slotIn, stackSlot);
-                //                }
-                //                else
-                //                {
-                //                    _SetSendSlotContents(slotIn);
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
-                //            if (tileEntity != null)
-                //            {
-                //                if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
-                //                {
-                //                    _SetSendSlotContents(slotIn, stackSlot);
-                //                }
-                //                else
-                //                {
-                //                    _SetSendSlotContents(slotIn);
-                //                }
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (CanPutItemStack(slotIn, stackSlot))
-                //        {
-                //            // Кликнули на склад
-                //            if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
-                //            {
-                //                _SetSendSlotContents(slotIn, stackSlot);
-                //            }
-                //            else
-                //            {
-                //                _SetSendSlotContents(slotIn);
-                //            }
-                //        }
-                //    }
-                //}
-                //else
+                /*if (isShift)
+                {
+                    // Если держим шифт, то задача перебрасывать предмет с инвентаря в свободную ячейку склада или наоборот
+                    if (slotIn < 100)
+                    {
+                        // Кликнули на инвентарь
+                        if (((EntityPlayerServer)Player).IsOpenInventory)
+                        {
+                            // Тут клики через шифт по инвентарю
+                            if (slotIn < COUNT_CURRENT)
+                            {
+                                // Кликнули на инвентарь быстрого доступа
+                                if (!conteiner.AddItemStackToInventory(mainBackpack, CheckSlotToAir(stackSlot), LimitBackpack, COUNT_CURRENT))
+                                {
+                                    _SetSendSlotContents(slotIn, stackSlot);
+                                }
+                                else
+                                {
+                                    _SetSendSlotContents(slotIn);
+                                }
+                            }
+                            else
+                            {
+                                // Кликнули на рюкзак
+                                if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                                {
+                                    _SetSendSlotContents(slotIn, stackSlot);
+                                }
+                                else
+                                {
+                                    _SetSendSlotContents(slotIn);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
+                            if (tileEntity != null)
+                            {
+                                if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
+                                {
+                                    _SetSendSlotContents(slotIn, stackSlot);
+                                }
+                                else
+                                {
+                                    _SetSendSlotContents(slotIn);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (_CanPutItemStack(slotIn, stackSlot))
+                        {
+                            // Кликнули на склад
+                            if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                            {
+                                _SetSendSlotContents(slotIn, stackSlot);
+                            }
+                            else
+                            {
+                                _SetSendSlotContents(slotIn);
+                            }
+                        }
+                    }
+                }
+                else*/
                 {
                     if (stackAir == null)
                     {
@@ -162,7 +165,7 @@ namespace Mvk2.Entity.Inventory
                     }
                     else
                     {
-                    //    if (CanPutItemStack(slotIn, stackAir))
+                        if (_CanPutItemStack(slotIn, stackAir))
                         {
                             // В воздухе имеется и в ячейке имеется
                             if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamage == stackAir.ItemDamage)
@@ -205,6 +208,26 @@ namespace Mvk2.Entity.Inventory
                 }
             }
             return;
+        }
+
+        /// <summary>
+        /// Проверяем можно ли установить данный стак в определённой ячейке склада
+        /// </summary>
+        private bool _CanPutItemStack(int slotIn, ItemStack stack)
+        {
+            return true;
+            //if (tileEntityCache == null)
+            //{
+            //    if (slotIn < 100 && slotIn >= CountAll)
+            //    {
+            //        // Для одежды свои правила
+            //        return stack != null && stack.Item is ItemUniCloth itemUniCloth
+            //            && itemUniCloth.CanPutItemStack(slotIn - CountAll);
+            //    }
+            //    return true;
+            //}
+
+            //return tileEntityCache.CanPutItemStack(stack);
         }
 
         /// <summary>

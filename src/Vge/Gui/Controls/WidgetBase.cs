@@ -83,7 +83,12 @@
         /// <summary>
         /// Перемещение мышки
         /// </summary>
-        public override void OnMouseMove(int x, int y)
+        public override void OnMouseMove(int x, int y) => _CanEnter(x, y);
+
+        /// <summary>
+        /// Перемещение мышки, для контроля мышь над элементом
+        /// </summary>
+        protected void _CanEnter(int x, int y)
         {
             bool b = IsRectangleMouse(x, y);
             if (enter != b)

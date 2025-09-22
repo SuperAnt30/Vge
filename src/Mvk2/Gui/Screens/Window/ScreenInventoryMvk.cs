@@ -25,6 +25,10 @@ namespace Mvk2.Gui.Screens
         private readonly ControlSlot[] _slot;
 
         /// <summary>
+        /// Иконка для предмета в воздухе
+        /// </summary>
+        private readonly ControlIcon _icon;
+        /// <summary>
         /// Стак который используется в перемещении из слотов, образно он в указателе мыши
         /// </summary>
         private ItemStack _stakAir;
@@ -33,6 +37,8 @@ namespace Mvk2.Gui.Screens
         {
             _windowMvk = window;
             _slot = new ControlSlot[8];
+
+            _icon = new ControlIcon(_windowMvk, null);
 
             ControlSlot slot;
             for (int i = 0; i < 8; i++)
@@ -55,6 +61,7 @@ namespace Mvk2.Gui.Screens
             if (e.SlotId == 255)
             {
                 _stakAir = e.Stack;
+                _icon.SetStack(e.Stack);
             }
             else
             {
@@ -102,6 +109,7 @@ namespace Mvk2.Gui.Screens
             {
                 AddControls(_slot[i]);
             }
+            AddControls(_icon);
         }
 
         /// <summary>
