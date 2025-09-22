@@ -30,7 +30,7 @@ namespace Vge.Item
         /// <summary>
         /// Максимальное количество однотипный вещей в одной ячейке
         /// </summary>
-        public int MaxStackSize { get; protected set; }
+        public byte MaxStackSize { get; protected set; }
         /// <summary>
         /// Максимальное количество урона, при 0, нет учёта урона
         /// </summary>
@@ -97,6 +97,20 @@ namespace Vge.Item
 
         #endregion
 
+        /// <summary>
+        /// Имеется ли замена предмета при выборе его в StackAir
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool CheckToAir() => false;
+
+        /// <summary>
+        /// Заменить предмет из-за воздуха, при выборе его в StackAir
+        /// TODO::2025-09-22 это надо горящий факел, чтоб зутухал, для горяжего факела, сделать доп индекс хранения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ushort IndexReplaceItemDueAir() => 0;
+
         #region Методы для импорта данных с json
 
         /// <summary>
@@ -111,7 +125,13 @@ namespace Vge.Item
                     // Статы
                     foreach (JsonKeyValue json in state.Items)
                     {
-                        if (json.IsKey(Cti.MaxStackSize)) MaxStackSize = json.GetInt();
+                        if (json.IsKey(Cti.MaxStackSize))
+                        {
+                            int size = json.GetInt();
+                            if (size > 255) size = 255;
+                            if (size < 1) size = 1;
+                            MaxStackSize = (byte)size;
+                        }
                         else if (json.IsKey(Cti.MaxDamage)) MaxDamage = json.GetInt();
                         else if (json.IsKey(Cti.Width)) Width = json.GetFloat();
                         else if (json.IsKey(Cti.Height)) Height = json.GetFloat();

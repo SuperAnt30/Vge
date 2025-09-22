@@ -62,11 +62,14 @@ namespace Mvk2.Gui.Controls
             _font = window.GetRender().FontSmall;
         }
 
-        //public void SetSlot(Slot slot)
-        //{
-        //    _slot = slot;
-        //    IsRender = true;
-        //}
+        /// <summary>
+        /// Задать новый или изменённый стак
+        /// </summary>
+        public void SetStack(ItemStack stack)
+        {
+            Stack = stack;
+            IsRender = true;
+        }
 
         #region OnMouse
 

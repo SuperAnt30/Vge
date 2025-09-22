@@ -20,6 +20,11 @@ namespace Mvk2.Games
         /// </summary>
         private readonly WindowMvk _windowMvk;
 
+        /// <summary>
+        /// Игрок мода, на клиенте
+        /// </summary>
+        public PlayerClientOwnerMvk Player { get; private set; }
+
         public GameModClientMvk(WindowMvk window) : base(window) 
             => _windowMvk = window;
 
@@ -42,7 +47,10 @@ namespace Mvk2.Games
         /// Создать объект игрока владельца
         /// </summary>
         public override PlayerClientOwner CreatePlayerClientOwner()
-            => new PlayerClientOwnerMvk(Game);
+        {
+            Player = new PlayerClientOwnerMvk(Game);
+            return Player;
+        }
 
         /// <summary>
         /// Создать объект индикация

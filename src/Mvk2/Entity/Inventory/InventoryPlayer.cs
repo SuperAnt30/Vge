@@ -40,12 +40,281 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         public void ClickInventoryOnServer(int slotIn, bool isRight, bool isShift)
         {
-            // TODO::2025-09-22 !!!
+            ItemStack stackAir = StackAir?.Copy();
+            ItemStack stackSlot = _GetStackInSlotAndStorage(slotIn)?.Copy();
+
+            if (stackSlot == null) 
+            {
+                // Клик по пустому слоту
+                if (stackAir != null)
+                {
+                    // В воздухе имеется, укладываем в пустой слот
+                   // if (CanPutItemStack(slotIn, stackAir))
+                    {
+                      //  bool b = slotIn >= COUNT_CURRENT && slotIn < CountAll;
+
+                     //   if (!b || (b && slotIn - COUNT_CURRENT < LimitBackpack))
+                        {
+                            // Если в воздухе есть так будем укладывать в ячейку
+                            if (isRight && stackAir.Amount > 1)
+                            {
+                                // Если был клик правой клавишей, то укладываем только одну единицу
+                                _SetSendSlotContents(slotIn, stackAir.Copy().SetAmount(1));
+                                _SetSendAirContents(stackAir.ReduceAmount(1));
+                            }
+                            else
+                            {
+                                // Перекладываем всё из воздуха в ячейку
+                                _SetSendAirContents();
+                                _SetSendSlotContents(slotIn, stackAir);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Имеется что-то в ячейке
+                //if (isShift)
+                //{
+                //    // Если держим шифт, то задача перебрасывать предмет с инвентаря в свободную ячейку склада или наоборот
+                //    if (slotIn < 100)
+                //    {
+                //        // Кликнули на инвентарь
+                //        if (((EntityPlayerServer)Player).IsOpenInventory)
+                //        {
+                //            // Тут клики через шифт по инвентарю
+                //            if (slotIn < COUNT_CURRENT)
+                //            {
+                //                // Кликнули на инвентарь быстрого доступа
+                //                if (!conteiner.AddItemStackToInventory(mainBackpack, CheckSlotToAir(stackSlot), LimitBackpack, COUNT_CURRENT))
+                //                {
+                //                    _SetSendSlotContents(slotIn, stackSlot);
+                //                }
+                //                else
+                //                {
+                //                    _SetSendSlotContents(slotIn);
+                //                }
+                //            }
+                //            else
+                //            {
+                //                // Кликнули на рюкзак
+                //                if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                //                {
+                //                    _SetSendSlotContents(slotIn, stackSlot);
+                //                }
+                //                else
+                //                {
+                //                    _SetSendSlotContents(slotIn);
+                //                }
+                //            }
+                //        }
+                //        else
+                //        {
+                //            TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
+                //            if (tileEntity != null)
+                //            {
+                //                if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
+                //                {
+                //                    _SetSendSlotContents(slotIn, stackSlot);
+                //                }
+                //                else
+                //                {
+                //                    _SetSendSlotContents(slotIn);
+                //                }
+                //            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (CanPutItemStack(slotIn, stackSlot))
+                //        {
+                //            // Кликнули на склад
+                //            if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                //            {
+                //                _SetSendSlotContents(slotIn, stackSlot);
+                //            }
+                //            else
+                //            {
+                //                _SetSendSlotContents(slotIn);
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                {
+                    if (stackAir == null)
+                    {
+                        // В воздухе нет ничего
+                        if (isRight && stackSlot.Amount > 1)
+                        {
+                            // Берём половину в воздух
+                            byte amount = (byte)(stackSlot.Amount / 2);
+                            _SetSendAirContents(_CheckSlotToAir(stackSlot.Copy().SetAmount(amount)));
+                            _SetSendSlotContents(slotIn, stackSlot.ReduceAmount(amount));
+                        }
+                        else
+                        {
+                            // Перекладываем всё из ячейку в воздух
+                            _SetSendAirContents(_CheckSlotToAir(stackSlot));
+                            _SetSendSlotContents(slotIn);
+                        }
+                    }
+                    else
+                    {
+                    //    if (CanPutItemStack(slotIn, stackAir))
+                        {
+                            // В воздухе имеется и в ячейке имеется
+                            if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamage == stackAir.ItemDamage)
+                            {
+                                // Если предметы одинаковые
+                                if (isRight && stackAir.Amount > 1)
+                                {
+                                    if (stackSlot.Item.MaxStackSize > stackSlot.Amount)
+                                    {
+                                        // Если был клик правой клавишей, то добавляем только одну единицу
+                                        _SetSendSlotContents(slotIn, stackSlot.AddAmount(1));
+                                        _SetSendAirContents(stackAir.ReduceAmount(1));
+                                    }
+                                }
+                                else
+                                {
+                                    byte aw = (byte)(stackSlot.Amount + stackAir.Amount);
+                                    if (aw > stackSlot.Item.MaxStackSize)
+                                    {
+                                        // сумма больше слота значит не весь перекладываем в руке останется
+                                        _SetSendSlotContents(slotIn, stackSlot.SetAmount(stackSlot.Item.MaxStackSize));
+                                        _SetSendAirContents(stackAir.SetAmount((byte)(aw - stackSlot.Item.MaxStackSize)));
+                                    }
+                                    else
+                                    {
+                                        // весь можно переложить
+                                        _SetSendSlotContents(slotIn, stackSlot.SetAmount(aw));
+                                        _SetSendAirContents();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Если разные, меняем местами
+                                _SetSendAirContents(_CheckSlotToAir(stackSlot));
+                                _SetSendSlotContents(slotIn, stackAir);
+                            }
+                        }
+                    }
+                }
+            }
             return;
         }
 
+        /// <summary>
+        /// Возвращает стак слота, из инвентаря или хранилища выбранного блока
+        /// </summary>
+        private ItemStack _GetStackInSlotAndStorage(int slotIn)
+        {
+            //tileEntityCache = null;
+            if (slotIn > 99)
+            {
+                // слот склада
+                //if (Player is EntityPlayerServer entityPlayerServer)
+                //{
+                //    tileEntityCache = entityPlayerServer.GetTileEntityAction();
+                //    if (tileEntityCache != null)
+                //    {
+                //        return tileEntityCache.GetStackInSlot(slotIn - 100);
+                //    }
+                //}
+                return null;
+            }
+            // слот у игрока
+            return GetStackInSlot(slotIn);
+        }
+
+        /// <summary>
+        /// Устанавливает данный стак предметов в указанный слот в инвентаре
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetInventorySlotContents(int slotIn, ItemStack stack)
+        {
+            if (slotIn == 255)
+            {
+                // Воздух
+                StackAir = stack;
+                _OnSlotSetted(slotIn, stack);
+            }
+            else // TODO:: 2025-09-22 добавить склад, рюкзак.
+            {
+                base.SetInventorySlotContents(slotIn, stack);
+                _OnSlotSetted(slotIn, stack);
+            }
+        }
+
+        #region Send or Set
+
+        /// <summary>
+        /// Проверка и замена стака если мы берём в воздух
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ItemStack _CheckSlotToAir(ItemStack stack) => stack.CheckToAir();
+
+        /// <summary>
+        /// Задать потом отправить игроку изменения слота со стакам.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetSendSlotContents(int slotIn, ItemStack stack = null)
+        {
+            SetInventorySlotContents(slotIn, stack);
+            _SendSetSlotPlayer(slotIn);
+        }
+
+        /// <summary>
+        /// Задать потом отправить игроку изменения воздушного стака.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetSendAirContents(ItemStack stack = null)
+        {
+            SetInventorySlotContents(255, stack);
+            _OnSlotSetted(255, StackAir);
+        }
+
+        /// <summary>
+        /// Отправить изменение размера слота игроку
+        /// </summary>
+        private void _SendSetSlotPlayer(int slotId)
+        {
+            if (slotId < 100)
+            {
+                _OnSlotSetted(slotId, GetStackInSlot(slotId));
+            }
+            else if (slotId != 255)
+            {
+                _OnSlotStorageChanged(slotId);
+            }
+        }
+
+        #endregion
 
         #region Event
+
+        /// <summary>
+        /// Событие слот задан
+        /// </summary>
+        public event SlotEventHandler SlotSetted;
+        /// <summary>
+        /// Событие слот задан
+        /// </summary>
+        protected void _OnSlotSetted(int slotId, ItemStack stack)
+            => SlotSetted?.Invoke(this, new SlotEventArgs(slotId, stack));
+
+        /// <summary>
+        /// Событие слот хранилища изменён
+        /// </summary>
+        public event SlotEventHandler SlotStorageChanged;
+        /// <summary>
+        /// Событие слот хранилища изменён
+        /// </summary>
+        protected void _OnSlotStorageChanged(int slotId)
+            => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId));
 
         /// <summary>
         /// Событие изменён слот
@@ -54,8 +323,8 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Событие изменён слот
         /// </summary>
-        protected override void _OnSlotChanged(int indexSlot)
-            => SlotChanged?.Invoke(this, new SlotEventArgs(indexSlot));
+        protected override void _OnSlotChanged(int slotId)
+            => SlotChanged?.Invoke(this, new SlotEventArgs(slotId));
 
         /// <summary>
         /// Событие изменён индекс выбраного слота правой руки

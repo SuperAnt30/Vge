@@ -1,11 +1,13 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Packets;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
+using Vge.Network.Packets.Server;
 
 namespace Mvk2.Entity.List
 {
@@ -17,12 +19,12 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Объект инвенторя игрока
         /// </summary>
-        private InventoryPlayer _inventoryPlayer;
+        public InventoryPlayer InvPlayer { get; private set; }
 
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
-            Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[0], 315));
+            Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 12));
             Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
 
@@ -35,8 +37,27 @@ namespace Mvk2.Entity.List
         /// Инициализация инвенторя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _CreateInventory() 
-            => Inventory = _inventoryPlayer = new InventoryPlayer();
+        protected override void _CreateInventory()
+        {
+            Inventory = InvPlayer = new InventoryPlayer();
+            InvPlayer.SlotSetted += _InventoryPlayer_SlotSetted;
+            InvPlayer.SlotStorageChanged += _InventoryPlayer_SlotStorageChanged;
+        }
+
+        /// <summary>
+        /// Событие слот хранилища изменён
+        /// </summary>
+        private void _InventoryPlayer_SlotStorageChanged(object sender, SlotEventArgs e)
+        {
+            // SendToAllPlayersUseTileEntity Mvk 1
+        }
+            //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+
+        /// <summary>
+        /// Событие изменён слот
+        /// </summary>
+        private void _InventoryPlayer_SlotSetted(object sender, SlotEventArgs e)
+            => SendPacket(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
 
         /// <summary>
         /// Пакет: кликов по окну и контролам
@@ -48,7 +69,7 @@ namespace Mvk2.Entity.List
             if (packet.Action == (byte)EnumActionClickWindow.ClickSlot)
             {
                 // Клик по слоту
-                _inventoryPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
+                InvPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
             }
         }
     }

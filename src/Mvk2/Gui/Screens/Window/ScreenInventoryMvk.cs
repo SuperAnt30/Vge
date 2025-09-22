@@ -1,4 +1,6 @@
-﻿using Mvk2.Gui.Controls;
+﻿using Mvk2.Entity.List;
+using Mvk2.Games;
+using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
@@ -15,6 +17,10 @@ namespace Mvk2.Gui.Screens
     public class ScreenInventoryMvk : ScreenWindow
     {
         private readonly WindowMvk _windowMvk;
+        /// <summary>
+        /// Игрок мода, на клиенте
+        /// </summary>
+        private readonly PlayerClientOwnerMvk _player;
 
         private readonly ControlSlot[] _slot;
 
@@ -37,6 +43,26 @@ namespace Mvk2.Gui.Screens
                 slot.ClickRight += Slot_ClickRight;
                 _slot[i] = slot;
             }
+            _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
+            _player.InvPlayer.SlotSetted += InvPlayer_SlotSetted;
+        }
+
+        /// <summary>
+        /// Изменился слот игрока
+        /// </summary>
+        private void InvPlayer_SlotSetted(object sender, SlotEventArgs e)
+        {
+            if (e.SlotId == 255)
+            {
+                _stakAir = e.Stack;
+            }
+            else
+            {
+                if (e.SlotId < _slot.Length)
+                {
+                    _slot[e.SlotId].SetStack(e.Stack);
+               }
+            }
         }
 
         private void Slot_ClickRight(object sender, System.EventArgs e)
@@ -48,7 +74,7 @@ namespace Mvk2.Gui.Screens
         private void _SendPacket(byte slotId, bool isRight)
         {
             // Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
-            if (_windowMvk.Game.Player.Inventory.GetStackInSlot(slotId) != null || _stakAir != null)
+            if (_player.Inventory.GetStackInSlot(slotId) != null || _stakAir != null)
             {
                 _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
                     (byte)EnumActionClickWindow.ClickSlot,

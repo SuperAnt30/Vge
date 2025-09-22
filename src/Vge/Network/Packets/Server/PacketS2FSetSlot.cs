@@ -1,5 +1,4 @@
-﻿using Vge.Entity.Inventory;
-using Vge.Item;
+﻿using Vge.Item;
 
 namespace Vge.Network.Packets.Server
 {

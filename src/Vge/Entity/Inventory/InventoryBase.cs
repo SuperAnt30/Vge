@@ -152,7 +152,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Событие изменён слот
         /// </summary>
-        protected virtual void _OnSlotChanged(int indexSlot) { }
+        protected virtual void _OnSlotChanged(int slotId) { }
 
         /// <summary>
         /// Событие изменён индекс выбраного слота правой руки

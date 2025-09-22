@@ -15,7 +15,7 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Объект инвенторя игрока
         /// </summary>
-        private InventoryPlayer _inventoryPlayer;
+        public InventoryPlayer InvPlayer { get; private set; }
 
         public PlayerClientOwnerMvk(GameBase game) : base(game) { }
 
@@ -25,9 +25,9 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = _inventoryPlayer = new InventoryPlayer();
+            Inventory = InvPlayer = new InventoryPlayer();
             Inventory.OutsideChanged += Inventory_OutsideChanged;
-            _inventoryPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
+            InvPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
         }
 
         private void Inventory_OutsideChanged(object sender, EventArgs e)
@@ -41,16 +41,12 @@ namespace Mvk2.Entity.List
         public override void PacketSetSlot(PacketS2FSetSlot packet)
         {
             short slotId = packet.SlotId;
-            // Slot slot = packet.GetSlot();
-            if (slotId == 255)
-            {
-                // Пришёл стак для воздуха
 
-            }
-            else if (slotId < 100)
+            if (slotId < 100 || slotId == 255)
             {
                 // Пришёл стак для инвентаря
-                _inventoryPlayer.SetInventorySlotContents(slotId, packet.Stack);
+                InvPlayer.SetInventorySlotContents(slotId, packet.Stack);
+
             //    if (slot == ClientMain.Player.InventPlayer.CurrentItem)
             //    {
             //        ClientMain.Player.ItemInWorldManagerDestroyAbout();
