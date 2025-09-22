@@ -1,9 +1,11 @@
 ﻿using Mvk2.Entity.Inventory;
+using Mvk2.Packets;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network;
+using Vge.Network.Packets.Client;
 
 namespace Mvk2.Entity.List
 {
@@ -12,6 +14,11 @@ namespace Mvk2.Entity.List
     /// </summary>
     public class PlayerServerMvk : PlayerServer
     {
+        /// <summary>
+        /// Объект инвенторя игрока
+        /// </summary>
+        private InventoryPlayer _inventoryPlayer;
+
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
@@ -28,6 +35,21 @@ namespace Mvk2.Entity.List
         /// Инициализация инвенторя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _CreateInventory() => Inventory = new InventoryPlayer();
+        protected override void _CreateInventory() 
+            => Inventory = _inventoryPlayer = new InventoryPlayer();
+
+        /// <summary>
+        /// Пакет: кликов по окну и контролам
+        /// </summary>
+        public override void PacketClickWindow(PacketC0EClickWindow packet)
+        {
+            // Пометка активности игрока
+            MarkPlayerActive();
+            if (packet.Action == (byte)EnumActionClickWindow.ClickSlot)
+            {
+                // Клик по слоту
+                _inventoryPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
+            }
+        }
     }
 }

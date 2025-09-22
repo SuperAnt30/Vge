@@ -402,7 +402,8 @@ namespace Vge.Network
         /// </summary>
         private void _Handle2FSetSlot(PacketS2FSetSlot packet)
         {
-            Slot slot = packet.GetSlot();
+            short slotId = packet.SlotId;
+           // Slot slot = packet.GetSlot();
             //if (slot < 100 || slot == 255)
             //{
             //    ClientMain.Player.InventPlayer.SetInventorySlotContents(slot, packet.GetItemStack());

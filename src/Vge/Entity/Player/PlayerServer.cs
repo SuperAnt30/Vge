@@ -485,12 +485,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Пакет: кликов по окну и контролам
         /// </summary>
-        public void PacketClickWindow(PacketC0EClickWindow packet)
-        {
-            MarkPlayerActive();
-            return;
-        }
-            
+        public virtual void PacketClickWindow(PacketC0EClickWindow packet) { }
 
         /// <summary>
         /// Пакет: Параметры игрока

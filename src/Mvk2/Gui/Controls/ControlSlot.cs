@@ -2,6 +2,7 @@
 using System;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
+using Vge.Item;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 using WinGL.Actions;
@@ -13,6 +14,15 @@ namespace Mvk2.Gui.Controls
     /// </summary>
     public class ControlSlot : WidgetBase
     {
+        /// <summary>
+        /// Номер слота
+        /// </summary>
+        public byte SlotId { get; private set; }
+        /// <summary>
+        /// Стак
+        /// </summary>
+        public ItemStack Stack { get; private set; }
+
         private readonly RenderMvk _render;
 
         /// <summary>
@@ -33,11 +43,6 @@ namespace Mvk2.Gui.Controls
         public bool _isText;
 
         /// <summary>
-        /// Слот
-        /// </summary>
-        private Slot _slot;
-
-        /// <summary>
         /// Расположение предмета по Х
         /// </summary>
         private int _posItemX;
@@ -46,23 +51,22 @@ namespace Mvk2.Gui.Controls
         /// </summary>
         private int _posItemY;
 
-        public ControlSlot(WindowMvk window, Slot slot) : base(window)
+        public ControlSlot(WindowMvk window, byte sloyId, ItemStack stack) : base(window)
         {
             _render = window.GetRender();
             SetSize(50, 50).SetText("");
-            _slot = slot;
+            SlotId = sloyId;
+            Stack = stack;
             _meshBg = new MeshGuiColor(gl);
             _meshTxt = new MeshGuiColor(gl);
             _font = window.GetRender().FontSmall;
         }
 
-        public void SetSlot(Slot slot)
-        {
-            _slot = slot;
-            IsRender = true;
-        }
-
-        public Slot GetSlot() => _slot;
+        //public void SetSlot(Slot slot)
+        //{
+        //    _slot = slot;
+        //    IsRender = true;
+        //}
 
         #region OnMouse
 
@@ -119,14 +123,14 @@ namespace Mvk2.Gui.Controls
             _posItemY = (PosY + 25) * si;
 
             // Ренедер текста
-            if (_slot.Stack != null && _slot.Stack.Amount != 1)
+            if (Stack != null && Stack.Amount != 1)
             {
                 // Чистим буфер
                 _font.Clear();
                 // Указываем опции
                 _font.SetFontFX(EnumFontFX.Outline);
                 // Готовим рендер текста
-                _font.RenderString((PosX + 7) * si, (PosY + 36) * si, _slot.Stack.Amount.ToString());
+                _font.RenderString((PosX + 7) * si, (PosY + 36) * si, Stack.Amount.ToString());
                 // Имеется Outline значит рендерим FX
                 _font.RenderFX();
                 // Вносим сетку
@@ -152,13 +156,13 @@ namespace Mvk2.Gui.Controls
             _meshBg.Draw();
             
             // Рисуем предмет
-            if (_slot.Stack != null)
+            if (Stack != null)
             {
                 // Всё 2d закончено, рисуем 3д элементы в Gui
                 _render.DepthOn();
                 // Заносим в шейдор
                 _render.ShsEntity.BindUniformBiginGui();
-                window.Game.WorldRender.Entities.GetItemGuiRender(_slot.Stack.Item.IndexItem).MeshDraw(_posItemX, _posItemY);
+                window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem).MeshDraw(_posItemX, _posItemY);
                 _render.DepthOff();
                 _render.ShaderBindGuiColor();
 

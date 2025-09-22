@@ -13,13 +13,11 @@ namespace Vge.Network.Packets.Server
         public short SlotId { get; private set; }
         public ItemStack Stack { get; private set; }
 
-        public PacketS2FSetSlot(Slot slot)
+        public PacketS2FSetSlot(short slotId, ItemStack stack)
         {
-            SlotId = slot.Index;
-            Stack = slot.Stack;
+            SlotId = slotId;
+            Stack = stack;
         }
-
-        public Slot GetSlot() => new Slot(SlotId, Stack);
 
         public void ReadPacket(ReadPacket stream)
         {

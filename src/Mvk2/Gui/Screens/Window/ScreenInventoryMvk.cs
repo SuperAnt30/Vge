@@ -1,7 +1,9 @@
 ﻿using Mvk2.Gui.Controls;
+using Mvk2.Packets;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
+using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
 
@@ -24,8 +26,8 @@ namespace Mvk2.Gui.Screens
             ControlSlot slot;
             for (int i = 0; i < 8; i++)
             {
-                slot = new ControlSlot(window, new Slot((short)i,
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
+                slot = new ControlSlot(window, (byte)i,
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
                 slot.ClickLeft += Slot_ClickLeft;
                 slot.ClickRight += Slot_ClickRight;
                 _slot[i] = slot;
@@ -33,17 +35,19 @@ namespace Mvk2.Gui.Screens
         }
 
         private void Slot_ClickRight(object sender, System.EventArgs e)
-            => _SendPacket(((ControlSlot)sender).GetSlot(), true);
+            => _SendPacket(((ControlSlot)sender).SlotId, true);
 
         private void Slot_ClickLeft(object sender, System.EventArgs e)
-            => _SendPacket(((ControlSlot)sender).GetSlot(), false);
+            => _SendPacket(((ControlSlot)sender).SlotId, false);
 
-        private void _SendPacket(Slot slot, bool isRight)
+        private void _SendPacket(byte slotId, bool isRight)
         {
-            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(0, 
+            //TODO::2025-09-21 Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
+            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
+                (byte)EnumActionClickWindow.ClickSlot, 
                 false,//_windowMvk.Game.Key.
                 isRight,
-                slot.Index));
+                slotId));
         }
 
         protected override void _InitTitle()

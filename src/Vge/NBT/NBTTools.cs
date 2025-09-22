@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Vge.Entity.Inventory;
@@ -172,13 +171,13 @@ namespace Vge.NBT
                 TagCompound compound;
                 TagList list = new TagList();
                 ItemStack itemStack;
-                for (short i = 0; i < stacks.Length; i++)
+                for (byte i = 0; i < stacks.Length; i++)
                 {
                     itemStack = stacks[i];
                     if (itemStack != null && itemStack.Amount > 0)
                     {
                         compound = new TagCompound();
-                        compound.SetShort("Slot", i);
+                        compound.SetByte("Slot", i);
                         itemStack.WriteToNBT(compound);
                         list.AppendTag(compound);
                     }
@@ -205,7 +204,7 @@ namespace Vge.NBT
                 nbtBase = list.Get(i);
                 if (nbtBase.GetId() == 10 && nbtBase is TagCompound compound)
                 {
-                    slots[i] = new Slot(compound.GetShort("Slot"), ItemStack.ReadFromNBT(compound));
+                    slots[i] = new Slot(compound.GetByte("Slot"), ItemStack.ReadFromNBT(compound));
                 }
             }
             return slots;

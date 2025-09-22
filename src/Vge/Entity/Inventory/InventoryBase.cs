@@ -143,7 +143,7 @@ namespace Vge.Entity.Inventory
             Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Inventory");
             foreach (Slot slot in slots)
             {
-                SetStackInSlot(slot.Index, slot.Stack);
+                SetStackInSlot(slot.SlotId, slot.Stack);
             }
         }
 
