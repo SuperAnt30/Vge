@@ -10,7 +10,7 @@ namespace Mvk2.Entity.Inventory
     public class InventoryPlayer : InventoryList
     {
         /// <summary>
-        /// Слот который используется в перемещении из слотов, образно он в указателе мыши
+        /// Стак который используется в перемещении из слотов, образно он в указателе мыши
         /// </summary>
         public ItemStack StackAir { get; private set; }
 

@@ -18,6 +18,11 @@ namespace Mvk2.Gui.Screens
 
         private readonly ControlSlot[] _slot;
 
+        /// <summary>
+        /// Стак который используется в перемещении из слотов, образно он в указателе мыши
+        /// </summary>
+        private ItemStack _stakAir;
+
         public ScreenInventoryMvk(WindowMvk window) : base(window, 512, 354)
         {
             _windowMvk = window;
@@ -42,12 +47,15 @@ namespace Mvk2.Gui.Screens
 
         private void _SendPacket(byte slotId, bool isRight)
         {
-            //TODO::2025-09-21 Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
-            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
-                (byte)EnumActionClickWindow.ClickSlot, 
-                false,//_windowMvk.Game.Key.
-                isRight,
-                slotId));
+            // Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
+            if (_windowMvk.Game.Player.Inventory.GetStackInSlot(slotId) != null || _stakAir != null)
+            {
+                _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
+                    (byte)EnumActionClickWindow.ClickSlot,
+                    _windowMvk.Game.Key.KeyShift,
+                    isRight,
+                    slotId));
+            }
         }
 
         protected override void _InitTitle()

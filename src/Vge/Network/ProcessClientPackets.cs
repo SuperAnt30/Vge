@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
@@ -361,6 +362,7 @@ namespace Vge.Network
         /// Замер скорости закачки чанков.
         /// Обрабатываем сразу, не дожидаясь такта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle20ChunkSend(PacketS20ChunkSend packet)
             => Game.Player.PacketChunckSend(packet);
 
@@ -382,6 +384,7 @@ namespace Vge.Network
         /// <summary>
         /// Пакет много изменённых блоков
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle22MultiBlockChange(PacketS22MultiBlockChange packet)
         {
             packet.ReceivedBlocks(Game.World);
@@ -391,6 +394,7 @@ namespace Vge.Network
         /// <summary>
         /// Пакет один изменённый блок
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle23BlockChange(PacketS23BlockChange packet)
         {
             Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
@@ -400,24 +404,9 @@ namespace Vge.Network
         /// <summary>
         /// Пакет управления передвежением и изменением слота
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle2FSetSlot(PacketS2FSetSlot packet)
-        {
-            short slotId = packet.SlotId;
-           // Slot slot = packet.GetSlot();
-            //if (slot < 100 || slot == 255)
-            //{
-            //    ClientMain.Player.InventPlayer.SetInventorySlotContents(slot, packet.GetItemStack());
-            //    if (slot == ClientMain.Player.InventPlayer.CurrentItem)
-            //    {
-            //        ClientMain.Player.ItemInWorldManagerDestroyAbout();
-            //    }
-            //}
-            //else
-            //{
-            //    // Пришёл стак для склада
-            //    ClientMain.Screen.AcceptNetworkPackage(packet);
-            //}
-        }
+            => Game.Player.PacketSetSlot(packet);
 
         /// <summary>
         /// Пакет окна списка предметов, стартово все придметы игрока
@@ -437,9 +426,10 @@ namespace Vge.Network
         /// <summary>
         /// Пакет получения сообщения с сервера
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle3AMessage(PacketS3AMessage packet)
             => Game.Player.PacketMessage(packet);
 
-#endregion
+        #endregion
     }
 }

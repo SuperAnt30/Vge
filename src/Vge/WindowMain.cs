@@ -228,6 +228,8 @@ namespace Vge
         {
             if (Screen != null) Screen.OnKeyDown(keys);
             else if (Game != null) Game.OnKeyDown(keys);
+            // Принудительно, не вожно открыт ли Screen
+            if (Game != null) Game.Key.OnKeyDownForcedly(keys);
             if (keys == Keys.F11) SetFullScreen(!FullScreen);
         }
 
@@ -238,6 +240,8 @@ namespace Vge
         {
             if (Screen != null) Screen.OnKeyUp(keys);
             else if (Game != null) Game.OnKeyUp(keys);
+            // Принудительно, не вожно открыт ли Screen
+            if (Game != null) Game.Key.OnKeyUpForcedly(keys);
         }
 
         /// <summary>

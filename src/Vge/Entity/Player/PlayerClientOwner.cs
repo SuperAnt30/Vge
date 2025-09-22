@@ -913,6 +913,11 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Пакет управления передвежением и изменением слота
+        /// </summary>
+        public virtual void PacketSetSlot(PacketS2FSetSlot packet) { }
+
+        /// <summary>
         /// Пакет получения сообщения с сервера
         /// </summary>
         public void PacketMessage(PacketS3AMessage packet)
