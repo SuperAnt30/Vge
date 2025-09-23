@@ -218,16 +218,16 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private bool _CanPutItemStack(int slotIn, ItemStack stack)
         {
-            return true;
+            //return true;
             //if (tileEntityCache == null)
             //{
-            //    if (slotIn < 100 && slotIn >= CountAll)
-            //    {
-            //        // Для одежды свои правила
-            //        return stack != null && stack.Item is ItemUniCloth itemUniCloth
-            //            && itemUniCloth.CanPutItemStack(slotIn - CountAll);
-            //    }
-            //    return true;
+            //if (slotIn < 100 && slotIn >= CountAll)
+            //{
+            //    // Для одежды свои правила
+            //    return stack != null && stack.Item is ItemUniCloth itemUniCloth
+            //        && itemUniCloth.CanPutItemStack(slotIn - CountAll);
+            //}
+            return true;
             //}
 
             //return tileEntityCache.CanPutItemStack(stack);

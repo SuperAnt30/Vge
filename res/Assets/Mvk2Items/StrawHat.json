@@ -1,0 +1,7 @@
+{
+    MaxStackSize: 1,
+    Sprite: "Items/StrawHat",
+    SpriteGui: "Items/StrawHat",
+    PutOnBody: "Cap",
+    NameLayer: "StrawHat"
+}

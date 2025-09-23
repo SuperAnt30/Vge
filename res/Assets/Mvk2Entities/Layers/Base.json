@@ -21,7 +21,7 @@
         },
         {
             Group: "Cap",
-            Name: "Cap1",
+            Name: "StrawHat",
             Folder: ["L-Cap1"],
             Texture: "Base"
         }

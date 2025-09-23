@@ -14,6 +14,7 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("Cobblestone", new ItemBase());
             ItemsReg.RegisterItemClass("Brol", new ItemBase());
             ItemsReg.RegisterItemClass("Jeans", new ItemCloth());
+            ItemsReg.RegisterItemClass("StrawHat", new ItemCloth());
         }
     }
 }
