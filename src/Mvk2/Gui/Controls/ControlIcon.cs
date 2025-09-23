@@ -68,8 +68,8 @@ namespace Mvk2.Gui.Controls
         /// </summary>
         public override void OnMouseMove(int x, int y)
         {
-            _mouseX = x;
-            _mouseY = y;
+            _mouseX = x - 25 * si;
+            _mouseY = y - 25 * si;
         }
 
         #endregion
@@ -114,12 +114,10 @@ namespace Mvk2.Gui.Controls
             if (Stack != null)
             {
                 // Всё 2d закончено, рисуем 3д элементы в Gui
-                _render.DepthOn();
                 // Заносим в шейдор
                 _render.ShsEntity.BindUniformBiginGui();
                 window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem)
                     .MeshDraw(_posItemX + _mouseX, _posItemY + _mouseY);
-                _render.DepthOff();
                 
                 if (_isText)
                 {

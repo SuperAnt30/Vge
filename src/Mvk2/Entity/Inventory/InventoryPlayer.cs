@@ -55,8 +55,8 @@ namespace Mvk2.Entity.Inventory
                     // В воздухе имеется, укладываем в пустой слот
                     if (_CanPutItemStack(slotIn, stackAir))
                     {
-                        bool b = slotIn >= _mainCount && slotIn < _allCount;
-                        if (!b || (b && slotIn - _mainCount < LimitBackpack))
+                        if (slotIn >= 100 // Проверка в ячейку хранилища
+                            || slotIn < _allCount - _backpackCount + LimitBackpack) // Проверка по размеру рюкзака
                         {
                             // Если в воздухе есть так будем укладывать в ячейку
                             if (isRight && stackAir.Amount > 1)
@@ -265,11 +265,25 @@ namespace Mvk2.Entity.Inventory
                 StackAir = stack;
                 _OnSlotSetted(slotIn, stack);
             }
-            else // TODO:: 2025-09-22 добавить склад, рюкзак.
+            else if(slotIn < _allCount)
             {
-                base.SetInventorySlotContents(slotIn, stack);
+                _items[slotIn] = stack;
                 _OnSlotSetted(slotIn, stack);
+               // _OnSlotChanged(_currentIndex);
+                if (slotIn == _currentIndex)
+                {
+                    _OnOutsideChanged(1); // 0 - правая рука
+                }
+                else if (slotIn >= _mainCount && slotIn - _mainCount < _clothCount)
+                {
+                    _OnOutsideChanged(1 << (slotIn - _mainCount)); // одежда
+                }
             }
+            //else // TODO:: 2025-09-22 добавить склад, рюкзак.
+            //{
+            //   // base.SetInventorySlotContents(slotIn, stack);
+            //    _OnSlotSetted(slotIn, stack);
+            //}
         }
 
         #region Send or Set

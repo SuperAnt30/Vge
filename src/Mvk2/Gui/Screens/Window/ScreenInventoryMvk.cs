@@ -36,12 +36,12 @@ namespace Mvk2.Gui.Screens
         public ScreenInventoryMvk(WindowMvk window) : base(window, 512, 354)
         {
             _windowMvk = window;
-            _slot = new ControlSlot[8];
+            _slot = new ControlSlot[19];
 
             _icon = new ControlIcon(_windowMvk, null);
 
             ControlSlot slot;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < _slot.Length; i++)
             {
                 slot = new ControlSlot(window, (byte)i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
@@ -105,7 +105,7 @@ namespace Mvk2.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < _slot.Length; i++)
             {
                 AddControls(_slot[i]);
             }
@@ -118,8 +118,11 @@ namespace Mvk2.Gui.Screens
         protected override void OnResized()
         {
             // Расположение окна
-            PosX = (Width - WidthWindow) / 2;
-            PosY = (Height - HeightWindow) / 2;
+            //PosX = (Width - WidthWindow) / 2;
+            //PosY = (Height - HeightWindow) / 2;
+            PosY = 10;
+            PosX = 10;
+            
             base.OnResized();
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
@@ -127,6 +130,11 @@ namespace Mvk2.Gui.Screens
             for (int i = 0; i < 8; i++)
             {
                 _slot[i].SetPosition(PosX + 56 + i * 50, PosY + 300);
+            }
+            _slot[8].SetPosition(PosX + 56, PosY + 250);
+            for (int i = 0; i < 10; i++)
+            {
+                _slot[i + 9].SetPosition(PosX + 6 + i * 50, PosY + 200);
             }
         }
 
