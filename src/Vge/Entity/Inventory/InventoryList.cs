@@ -43,7 +43,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private int _flagsChanged;
 
-        public InventoryList(byte mainCount, int clothCount)
+        public InventoryList(byte mainCount, int clothCount) // 1 - 11 сетевой игрок
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
@@ -79,7 +79,7 @@ namespace Vge.Entity.Inventory
                         worldServer.Tracker.SendToAllTrackingEntity(entity, 
                             new PacketS10EntityEquipment(entity.Id, i,
                             _mainCount > 0
-                                ? _items[i == 0 ? _currentIndex : _mainCount + i] 
+                                ? _items[i == 0 ? _currentIndex : _mainCount + i - 1] 
                                 : _items[i]));
                     }
                 }
@@ -105,7 +105,7 @@ namespace Vge.Entity.Inventory
             {
                 _currentIndex = slotIn;
                 _OnCurrentIndexChanged();
-                _OnOutsideChanged(1);
+                _OnOutsideChanged(1); // 0 - правая рука
                 return true;
             }
             return false;
@@ -179,21 +179,25 @@ namespace Vge.Entity.Inventory
             if (slotIn < _allCount)
             {
                 _items[slotIn] = stack;
-                _OnSlotChanged(_currentIndex);
-                if (slotIn == _currentIndex)
+                // События для визуализации внешности
+                if (_mainCount > 0)
                 {
-                    _OnOutsideChanged(1); // 0 - правая рука
+                    // Имеется предмет в правой руке 0, 1-N одежда
+                    if (slotIn == _currentIndex)
+                    {
+                        _OnOutsideChanged(1); // 0 - правая рука
+                    }
+                    else if (slotIn >= _mainCount
+                        && slotIn <= _clothCount) // Равно это на один больше, так-как один предмет в левой руке
+                    {
+                        // одежда с минусом правой руки
+                        _OnOutsideChanged(1 << (slotIn - _mainCount + 1));
+                    }
                 }
-                else if (slotIn >= _mainCount && slotIn < _clothCount)
+                else
                 {
-                    if (_mainCount > 0)
-                    {
-                        _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // одежда с минусом правой руки
-                    }
-                    else
-                    {
-                        _OnOutsideChanged(1 << slotIn); // одежда
-                    }
+                    // Только одежда, и возможно левая рука 0-N
+                    _OnOutsideChanged(1 << slotIn);
                 }
             }
         }

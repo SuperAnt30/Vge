@@ -143,5 +143,7 @@ namespace Vge.Item
             }
             return null;
         }
+
+        public override string ToString() => Item.ToString() + " (" + Amount + ")";
     }
 }

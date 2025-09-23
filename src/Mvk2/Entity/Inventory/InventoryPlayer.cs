@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Inventory;
 using Vge.Item;
+using Vge.Network.Packets.Server;
+using Vge.World;
 
 namespace Mvk2.Entity.Inventory
 {
@@ -269,14 +272,14 @@ namespace Mvk2.Entity.Inventory
             {
                 _items[slotIn] = stack;
                 _OnSlotSetted(slotIn, stack);
-               // _OnSlotChanged(_currentIndex);
+                // События для визуализации внешности, 0 правая рука 1 левая рука 2-11 одежда
                 if (slotIn == _currentIndex)
                 {
                     _OnOutsideChanged(1); // 0 - правая рука
                 }
                 else if (slotIn >= _mainCount && slotIn - _mainCount < _clothCount)
                 {
-                    _OnOutsideChanged(1 << (slotIn - _mainCount)); // одежда
+                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // 1-11 одежда
                 }
             }
             //else // TODO:: 2025-09-22 добавить склад, рюкзак.
