@@ -43,7 +43,14 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private int _flagsChanged;
 
-        public InventoryList(byte mainCount, int clothCount) // 1 - 11 сетевой игрок
+        /// <summary>
+        /// Массив ключей слотов одежды для ограничения установки предмета. 
+        /// </summary>
+        protected readonly byte[] _slotClothKeys;
+
+        /// <param name="isLimitationSlot">Установить ограничение по ячейкам одежды, порядковая нумерация от 1-N,
+        /// равенства ItemBase._slotClothIndex  </param>
+        public InventoryList(byte mainCount, int clothCount, bool isLimitationSlot = true) // 1 - 11 сетевой игрок
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
@@ -52,6 +59,14 @@ namespace Vge.Entity.Inventory
             if (_mainCount > 0) OutsideCount++;
 
             _items = new ItemStack[_allCount];
+            _slotClothKeys = new byte[_clothCount];
+            if (isLimitationSlot && _clothCount > 0)
+            {
+                for (byte b = 1; b <= _clothCount; b++)
+                {
+                    _slotClothKeys[b - 1] = b;
+                }
+            }
         }
 
         /// <summary>
@@ -248,6 +263,23 @@ namespace Vge.Entity.Inventory
                 _OnOutsideChanged(-1); // любой
             }
         }
+
+        /// <summary>
+        /// Получить ключи слота одежды, для ограничения установки предмета. Если слот не одежды вернёт 0
+        /// Если =0, то можно любой устанавливать.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override byte GetSlotClothKey(int slotIn) 
+            => (_clothCount > 0 && slotIn >= _mainCount && slotIn < _mainCount + _clothCount)
+            ? _slotClothKeys[slotIn - _mainCount] : (byte)0;
+
+        /// <summary>
+        /// Получить ключи слота внешности, для ограничения установки предмета.
+        /// для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override byte GetOutsideSlotKey(int slotIn)
+            => _mainCount > 0 && slotIn != 0 ? _slotClothKeys[slotIn - 1] : (byte)0;
 
         /*
         /// <summary>

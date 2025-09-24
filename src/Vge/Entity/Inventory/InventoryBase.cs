@@ -96,7 +96,21 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetOutside(ItemStack[] stacks) { }
-        
+
+        /// <summary>
+        /// Получить ключи слота, для ограничения установки предмета. Если слот не одежды вернёт 0
+        /// Если =0, то можно любой устанавливать.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual byte GetSlotClothKey(int slotIn) => 0;
+
+        /// <summary>
+        /// Получить ключи слота внешности, для ограничения установки предмета.
+        /// для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual byte GetOutsideSlotKey(int slotIn) => 0;
+
         /*
         /// <summary>
         /// Получить стак одежды

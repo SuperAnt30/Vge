@@ -63,6 +63,12 @@ namespace Vge.Item
         /// </summary>
         public string Hold { get; protected set; } = "";
 
+        /// <summary>
+        /// Массив ключей ячеек одежды инвентаря, куда можно устанавливать этот предмет.
+        /// Если null, то можно установить только в ячейку с ключём 0
+        /// </summary>
+        protected byte[] _slotClothIndex;
+
         #region Init
 
         /// <summary>
@@ -96,6 +102,20 @@ namespace Vge.Item
         public void SetAlias(string alias) => Alias = alias;
 
         #endregion
+
+        /// <summary>
+        /// Проверить может ли предмет быть в текущем слоте одежды с данным ключём
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool CheckSlotClothKey(byte key)
+        {
+            if (_slotClothIndex == null) return key == 0;
+            foreach(byte slot in _slotClothIndex)
+            {
+                if (slot == key) return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Имеется ли замена предмета при выборе его в StackAir
@@ -133,6 +153,17 @@ namespace Vge.Item
                             MaxStackSize = (byte)size;
                         }
                         else if (json.IsKey(Cti.MaxDamage)) MaxDamage = json.GetInt();
+                        else if (json.IsKey(Cti.SlotClothIndex))
+                        {
+                            if (json.IsValue()) // byte
+                            {
+                                _slotClothIndex = new byte[] { (byte)json.GetInt() };
+                            }
+                            else if (json.IsArray()) // Array
+                            {
+                                _slotClothIndex = json.GetArray().ToArrayByte();
+                            }
+                        }
                         else if (json.IsKey(Cti.Width)) Width = json.GetFloat();
                         else if (json.IsKey(Cti.Height)) Height = json.GetFloat();
                         else if (json.IsKey(Cti.Weight)) Weight = json.GetInt();

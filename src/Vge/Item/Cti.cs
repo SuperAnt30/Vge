@@ -48,10 +48,16 @@
         /// </summary>
         public const string PutOnBody = "PutOnBody";
         /// <summary>
-        /// Имя слоя, название слоя одежды из модели. (string)
+        /// Массив имён слоёв, название слоя одежды из модели. ([string]) или (string)
+        /// Количество элементов должно быть не больше чем как у SlotClothIndex, индексы массивов равны.
         /// </summary>
         public const string NameLayer = "NameLayer";
 
+        /// <summary>
+        /// Массив индексов ячеек одежды инвентаря, куда можно устанавливать этот предмет. ([byte]) или [byte]
+        /// Индексы должны со
+        /// </summary>
+        public const string SlotClothIndex = "SlotClothIndex";
         /// <summary>
         /// Имя к максимальному количеству однотипный вещей в одной ячейке. (int)
         /// </summary>

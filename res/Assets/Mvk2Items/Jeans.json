@@ -1,5 +1,6 @@
 {
     MaxStackSize: 1,
+    SlotClothIndex: 7,
     Sprite: "Items/Jeans",
     SpriteGui: "Items/Jeans",
     PutOnBody: "Trousers",

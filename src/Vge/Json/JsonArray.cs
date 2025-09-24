@@ -50,6 +50,17 @@
             return vs;
         }
 
+        public byte[] ToArrayByte()
+        {
+            int count = Items != null ? Items.Length : 0;
+            byte[] vs = new byte[count];
+            for (int i = 0; i < count; i++)
+            {
+                vs[i] = (byte)(Items[i].IsValue() ? ((JsonValue)Items[i]).GetInt() : 0);
+            }
+            return vs;
+        }
+
         public int[] ToArrayInt()
         {
             int count = Items != null ? Items.Length : 0;

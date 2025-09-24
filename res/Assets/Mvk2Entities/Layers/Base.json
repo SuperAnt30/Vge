@@ -2,16 +2,22 @@
     Model: "PlayerBE",
     Layers: [
         {
-            Group: "BraceletL",
-            Name: "BraceletL1",
-            Folder: ["#Bracelet2R", "#BraceletR"],
-            Texture: "01"
+            Group: "Bracelet",
+            Name: "BraceletL2",
+            Folder: ["L-BraceletL1",],
+            Texture: "Base2"
         },
         {
-            Group: "BraceletL",
-            Name: "BraceletL2",
-            Folder: ["#Bracelet2R", "#BraceletR"],
-            Texture: "02"
+            Group: "Bracelet",
+            Name: "BraceletL1",
+            Folder: ["L-BraceletL1",],
+            Texture: "Base"
+        },
+        {
+            Group: "Bracelet",
+            Name: "BraceletR1",
+            Folder: ["L-BraceletR1"],
+            Texture: "Base"
         },
         {
             Group: "Trousers",

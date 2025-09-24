@@ -27,6 +27,10 @@
 
         public JsonArray GetArray() => (JsonArray)Value;
 
+        public bool IsValue() => _type == 0;
+        public bool IsArray() => _type == 1;
+        public bool IsObject() => _type == 2;
+
         public override string ToString() => Key + ":" + Value.ToString();
     }
 }

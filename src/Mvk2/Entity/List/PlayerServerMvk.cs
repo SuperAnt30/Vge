@@ -27,6 +27,8 @@ namespace Mvk2.Entity.List
             Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
             Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
+            Inventory.SetStackInSlot(3, new ItemStack(Ce.Items.ItemObjects[6]));
+            Inventory.SetStackInSlot(4, new ItemStack(Ce.Items.ItemObjects[7]));
             Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
             Inventory.SetStackInSlot(6, new ItemStack(Ce.Items.ItemObjects[3], 3));
             Inventory.SetStackInSlot(7, new ItemStack(Ce.Items.ItemObjects[5]));

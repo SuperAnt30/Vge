@@ -616,7 +616,11 @@ namespace Vge.Entity.Render
                             else if (itemStack.Item is ItemCloth itemCloth)
                             {
                                 // Одежда
-                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
+                                // entityLiving.Inventory.GetSlotKey
+                                //itemCloth.
+                                //LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
+                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, 
+                                    itemCloth.GetNameLayer(entityLiving.Inventory.GetOutsideSlotKey(i)));
                                 _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                             }
 

@@ -1,0 +1,8 @@
+{
+    MaxStackSize: 1,
+    SlotClothIndex: [4, 5, 1],
+    Sprite: "Items/Bracelet",
+    SpriteGui: "Items/Bracelet",
+    PutOnBody: "Bracelet",
+    NameLayer: ["BraceletL1", "BraceletR1"]
+}

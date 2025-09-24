@@ -1,5 +1,6 @@
 {
     MaxStackSize: 1,
+    SlotClothIndex: 2,
     Sprite: "Items/StrawHat",
     SpriteGui: "Items/StrawHat",
     PutOnBody: "Cap",

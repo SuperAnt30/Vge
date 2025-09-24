@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Vge.Entity;
 using Vge.Entity.Inventory;
 using Vge.Item;
-using Vge.Network.Packets.Server;
-using Vge.World;
 
 namespace Mvk2.Entity.Inventory
 {
@@ -218,15 +215,14 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private bool _CanPutItemStack(int slotIn, ItemStack stack)
         {
-            //return true;
             //if (tileEntityCache == null)
             //{
-            //if (slotIn < 100 && slotIn >= CountAll)
-            //{
-            //    // Для одежды свои правила
-            //    return stack != null && stack.Item is ItemUniCloth itemUniCloth
-            //        && itemUniCloth.CanPutItemStack(slotIn - CountAll);
-            //}
+            if (slotIn < 100)// && slotIn >= _allCount)
+            {
+                // Для одежды свои правила
+                byte key = GetSlotClothKey(slotIn);
+                return key == 0 || (stack != null && stack.Item.CheckSlotClothKey(key));
+            }
             return true;
             //}
 

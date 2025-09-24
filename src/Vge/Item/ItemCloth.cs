@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Json;
 
 namespace Vge.Item
@@ -12,10 +13,31 @@ namespace Vge.Item
         /// Имя на что надеть на тело, указываем на какую часть тело может одеваться предмет
         /// </summary>
         public string PutOnBody { get; protected set; }
+        
         /// <summary>
-        /// Имя слоя, название слоя одежды из модели
+        /// Массив имён слоёв, название слоя одежды из модели
         /// </summary>
-        public string NameLayer { get; protected set; }
+        private string[] _nameLayer;
+
+        /// <summary>
+        /// Получить имя слоя в конкретном слоте
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual string GetNameLayer(byte slotKey)
+        {
+            if (_nameLayer.Length == 1 || _slotClothIndex.Length == 1)
+            {
+                return _nameLayer[0];
+            }
+            for (int i = 0; i < _slotClothIndex.Length; i++)
+            {
+                if (_slotClothIndex[i] == slotKey)
+                {
+                    return _nameLayer[i];
+                }
+            }
+            return _nameLayer[0];
+        }
 
         /// <summary>
         /// Прочесть состояние блока из Json формы
@@ -28,7 +50,19 @@ namespace Vge.Item
                 if (state.IsKey(Cti.PutOnBody) && state.IsKey(Cti.NameLayer))
                 {
                     PutOnBody = state.GetString(Cti.PutOnBody);
-                    NameLayer = state.GetString(Cti.NameLayer);
+
+                    foreach (JsonKeyValue json in state.Items)
+                    {
+                        if (json.IsKey(Cti.NameLayer))
+                        {
+                            if (json.IsValue()) _nameLayer = new string[] { json.GetString() };
+                            else if (json.IsArray()) _nameLayer = json.GetArray().ToArrayString();
+                        }
+                    }
+                    if (_nameLayer == null || _nameLayer.Length == 0)
+                    {
+                        throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingItem, Alias, Cti.NameLayer));
+                    }
                 }
                 else
                 {
