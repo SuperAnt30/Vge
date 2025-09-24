@@ -238,42 +238,7 @@ namespace Vge.Entity.Render
                     _animationClips.RemoveAt(i);
                 }
             }
-
-            /*
-            // TODO::2025-08-13 Временно одевается одежда!
-            fffd++;
-            if (_entityLayerRender != null)
-            {
-                if (fffd > 50)
-                {
-                    fffd = 0;
-                    string name = Entity is PlayerBase ? "Base" : "BaseOld";
-                    ShapeLayers shapeLayers = EntitiesReg.GetShapeLayers(name);
-                    LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Trousers1");
-                    //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
-                    //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
-                    LayerBuffer layer = shapeLayers.GetLayer("Cap", "Cap1");
-
-                    if (fffb)
-                    {
-                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //     _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                    }
-                    else
-                    {
-                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                      //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                    }
-                    _entityLayerRender.Reload();
-                    fffb = !fffb;
-                }
-            }*/
         }
-
-        int fffd = 0;//100;
-        bool fffb = true;
 
         /// <summary>
         /// Анимация по движению
@@ -577,138 +542,40 @@ namespace Vge.Entity.Render
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OutsideItemChanged()
         {
-            // TODO::2025-09-16 Последний метод где надо навести порядок по выбранному инвентарю, одежда в том числе
-            // 2025-09-17 Впринцепи тут всё, сделать инвентарь GUI и протестировать. Убрав все комменты
-
-            if (_entityLayerRender != null && _shapeLayers != null)
+            if (_entityLayerRender != null && _shapeLayers != null && Entity is EntityLiving entityLiving)
             {
                 // Корректировка одевания слоёв
-                //string name = Entity is PlayerBase ? "Base" : "BaseOld";
-               // ShapeLayers shapeLayers = _shapeLayers;// EntitiesReg.GetShapeLayers(name);
-               // LayerBuffer layer3 = shapeLayers.GetLayer("Trousers", "Jeans");
-                //LayerBuffer layer2 = shapeLayers.GetLayer("BraceletL", "BraceletL2");
-                //LayerBuffer layer4 = shapeLayers.GetLayer("BraceletL", "BraceletL1");
-              //  LayerBuffer layer5 = shapeLayers.GetLayer("Cap", "Cap1");
-
-                if (Entity is EntityLiving entityLiving)
+                _StopingClipsHold();
+                for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
                 {
-                    _StopingClipsHold();
-                    for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
+                    ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
+                    if (itemStack != null)
                     {
-                        ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
-                        if (itemStack != null)
+                        if (i < _resourcesEntity.CountPositionItem)
                         {
-                            if (i < _resourcesEntity.CountPositionItem)
+                            // Предмет в руках
+                            _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                                .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
+                            if (i == 0)
                             {
-                                // Предмет в руках
-                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                                    .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
-                                if (i == 0)
-                                {
-                                    AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
-                                }
-                                else
-                                {
-                                    // Левая рука, только держим предмет
-                                    AddClip(HoldLeft);
-                                }
-                            }
-                            else if (itemStack.Item is ItemCloth itemCloth)
-                            {
-                                // Одежда
-                                // entityLiving.Inventory.GetSlotKey
-                                //itemCloth.
-                                //LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
-                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, 
-                                    itemCloth.GetNameLayer(entityLiving.Inventory.GetOutsideSlotKey(i)));
-                                _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                            }
-
-                            //if (i > 0 && itemStack.Item is ItemCloth itemCloth)
-                            //{
-                            //    LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
-                            //    _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                            //}
-                            //else
-                            //{
-                            //    _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                            //        .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
-                            //    AddClip("HoldRight", 2f);
-                            //}
-                        }
-                    }
-                    /*
-                    if (currentItem == 0)
-                    {
-                        // Сетевой походу
-                        ItemStack itemStack = entityLiving.Inventory.GetStackInSlot(currentItem);
-                        if (itemStack != null)
-                        {
-                            if (itemStack.Item is ItemCloth itemCloth)
-                            {
-                                LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, itemCloth.NameLayer);
-                                _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
+                                AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
                             }
                             else
                             {
-                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                                    .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
-                                AddClip("HoldRight", 2f);
+                                // Левая рука, только держим предмет
+                                AddClip(HoldLeft);
                             }
                         }
-                    }
-                    
-                    else if (currentItem > 0 && currentItem < 4)
-                    {
-                        PositionItemBone posItem;
-                        if (currentItem < 3)
+                        else if (itemStack.Item is ItemCloth itemCloth)
                         {
-                            posItem = _positionItems[0];
+                            // Одежда
+                            LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, 
+                                itemCloth.GetNameLayer(entityLiving.Inventory.GetOutsideSlotKey(i)));
+                            _entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
                         }
-                        else
-                        {
-                            posItem = _positionItems[1];
-                        }
-
-                        if (currentItem == 2)
-                        {
-                            AddClip("HoldTwo", 2f);
-                        }
-                        else if (currentItem == 3)
-                        {
-                            AddClip("HoldLeft", 2f);
-                        }
-                        else
-                        {
-                            AddClip("HoldRight", 2f);
-                        }
-                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[currentItem].Buffer.GetBufferHold()
-                            .CreateBufferMeshItem(posItem.Index, posItem.X, posItem.Y, posItem.Z));
                     }
-                    else if (currentItem == 4)
-                    {
-                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[1].Buffer.GetBufferHold()
-                            .CreateBufferMeshItem(_positionItems[0].Index, _positionItems[0].X, _positionItems[0].Y, _positionItems[0].Z));
-                        AddClip("HoldRight", 2f);
-                        _entityLayerRender.AddRangeBuffer(Ce.Items.ItemObjects[3].Buffer.GetBufferHold()
-                            .CreateBufferMeshItem(_positionItems[1].Index, _positionItems[1].X, _positionItems[1].Y, _positionItems[1].Z));
-                        AddClip("HoldLeft", 2f);
-                    }
-                    else if (currentItem == 5)
-                    {
-                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //     _entityLayerRender.AddRangeBuffer(layer4.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //_entityLayerRender.AddRangeBuffer(layer.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                    }
-                    else if (currentItem == 6)
-                    {
-                        _entityLayerRender.AddRangeBuffer(layer3.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        //  _entityLayerRender.AddRangeBuffer(layer2.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                        _entityLayerRender.AddRangeBuffer(layer5.BufferMesh.CopyBufferMesh(_resourcesEntity.Scale));
-                    }
-                    */
-                    _entityLayerRender.Reload();
                 }
+                _entityLayerRender.Reload();
             }
         }
 
