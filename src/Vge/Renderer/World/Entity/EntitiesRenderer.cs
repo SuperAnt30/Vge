@@ -156,7 +156,7 @@ namespace Vge.Renderer.World.Entity
             float z = _game.Player.PosFrameZ;
 
             // Параметрв шейдоров
-            ShsEntity.BindUniformBigin();
+            ShsEntity.BindUniformBegin();
 
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
@@ -243,7 +243,7 @@ namespace Vge.Renderer.World.Entity
             EntityBase entity;
 
             // Параметрв шейдоров
-            ShsEntity.BindUniformBiginDepthMap();
+            ShsEntity.BindUniformBeginDepthMap();
             // Сущности
             gl.Disable(GL.GL_CULL_FACE);
             for (int i = 0; i < count; i++)
@@ -332,7 +332,7 @@ namespace Vge.Renderer.World.Entity
             // Параметрв шейдоров
             if (_game.Player.ViewCamera != EnumViewCamera.Eye)
             {
-                ShsEntity.BindUniformBigin();
+                ShsEntity.BindUniformBegin();
                 _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
             }
 

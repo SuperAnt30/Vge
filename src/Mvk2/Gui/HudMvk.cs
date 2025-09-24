@@ -163,7 +163,7 @@ namespace Mvk2.Gui
             _meshInventory.Draw();
            
             // Заносим в шейдор
-            _game.Render.ShsEntity.BindUniformBiginGui();
+            _game.Render.ShsEntity.BindUniformBeginGui();
             //_game.Render.ShsEntity.UniformDataGui(200, 200);
             //_game.WorldRender.Entities.GetItemRender(3).MeshDraw();
             ////_game.Render.ShsEntity.UniformDataGui(200, 200);

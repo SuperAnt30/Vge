@@ -391,6 +391,38 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
+        /// Метод для прорисовки для Gui
+        /// </summary>
+        public void DrawGui(float posX, float posY, float yaw, float pitch, float scale)
+        {
+            // Возвращаем значения костей в исходное положение, Оригинал
+            for (byte i = 0; i < _countBones; i++)
+            {
+                if (_bonesFlagModify[i])
+                {
+                    _resourcesEntity.Bones[i].SetBonePose(ref _bones[i]);
+                    _bonesFlagModify[i] = false;
+                }
+            }
+
+            // Генерируем кости текущих поз из анимации
+            _GenBoneCurrentPoses();
+            // Собираем конечные матрицы
+            _GetMatrixPalette(yaw, yaw, pitch);
+
+            Entities.ShsEntity.BindUniformAnimationGui(posX, posY, scale,
+                _resourcesEntity.GetDepthTextureAndSmall(),
+                _resourcesEntity.GetIsAnimation(), GetEyeMouth());
+
+            Entities.ShsEntity.UniformData(_bufferBonesTransforms);
+            // Рисуем основную сетку сущности
+            _entityRender.MeshDraw();
+
+            // Если имеются слои, рисуем сетку слоёв
+            _entityLayerRender?.MeshDraw();
+        }
+
+        /// <summary>
         /// Получить параметр для шейдора, на состояния глаз и рта
         /// Значение 1 это открыты глаза, закрыт рот.
         /// </summary>

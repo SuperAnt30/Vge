@@ -116,12 +116,13 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBigin()
+        public void BindUniformBegin()
         {
             _flagActionDepthMap = false;
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
             _shderAction.Bind();
             _shderAction.SetUniformMatrix4("view", Gi.MatrixView);
+            _shderAction.SetUniform2("scale", 1f, 1f);
             _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
             _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);
             if (_qualitatively)
@@ -134,7 +135,7 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы для карты глубины
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBiginDepthMap()
+        public void BindUniformBeginDepthMap()
         {
             _flagActionDepthMap = true;
             _shaderDepthMap.Bind();
@@ -196,7 +197,7 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы для GUI
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBiginGui()
+        public void BindUniformBeginGui()
         {
             _shaderGui.Bind();
             _shaderGui.SetUniformMatrix4("view", Gi.Ortho);
@@ -232,6 +233,24 @@ namespace Vge.Renderer.Shaders
                 }
                 _flagItemVolume = volume;
             }
+        }
+
+        /// <summary>
+        /// Занести юниформы для GUI анимированной сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformAnimationGui(float x, float y, float scale, float depth, float anim, int eyeMouth)
+        {
+            _shderAction.Bind();
+            _shderAction.SetUniformMatrix4("view", Gi.Ortho);
+            _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
+            _shderAction.SetUniform3("lightDir", -0.707106769f, 0.707106769f, 0);
+            _shderAction.SetUniform2("scale", scale, -scale);
+            _shderAction.SetUniform3("pos", x, y, 0);
+            _shderAction.SetUniform1("depth", depth);
+            _shderAction.SetUniform1("anim", anim);
+            _shderAction.SetUniform1("eyeMouth", eyeMouth);
+            _shderAction.SetUniform2("light", .96875f, .96875f);
         }
 
         #endregion

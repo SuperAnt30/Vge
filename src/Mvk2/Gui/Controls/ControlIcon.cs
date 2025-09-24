@@ -115,7 +115,7 @@ namespace Mvk2.Gui.Controls
             {
                 // Всё 2d закончено, рисуем 3д элементы в Gui
                 // Заносим в шейдор
-                _render.ShsEntity.BindUniformBiginGui();
+                _render.ShsEntity.BindUniformBeginGui();
                 window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem)
                     .MeshDraw(_posItemX + _mouseX, _posItemY + _mouseY);
                 

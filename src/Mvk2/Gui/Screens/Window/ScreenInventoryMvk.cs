@@ -2,12 +2,16 @@
 using Mvk2.Games;
 using Mvk2.Gui.Controls;
 using Mvk2.Packets;
+using Mvk2.Renderer;
+using System;
 using Vge.Entity.Inventory;
+using Vge.Entity.Render;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
+using WinGL.Util;
 
 namespace Mvk2.Gui.Screens
 {
@@ -17,6 +21,9 @@ namespace Mvk2.Gui.Screens
     public class ScreenInventoryMvk : ScreenWindow
     {
         private readonly WindowMvk _windowMvk;
+
+        protected readonly RenderMvk _render;
+
         /// <summary>
         /// Игрок мода, на клиенте
         /// </summary>
@@ -36,6 +43,7 @@ namespace Mvk2.Gui.Screens
         public ScreenInventoryMvk(WindowMvk window) : base(window, 512, 354)
         {
             _windowMvk = window;
+            _render = _windowMvk.GetRender();
             _slot = new ControlSlot[19];
 
             _icon = new ControlIcon(_windowMvk, null);
@@ -118,10 +126,10 @@ namespace Mvk2.Gui.Screens
         protected override void OnResized()
         {
             // Расположение окна
-            //PosX = (Width - WidthWindow) / 2;
-            //PosY = (Height - HeightWindow) / 2;
-            PosY = 10;
-            PosX = 10;
+            PosX = (Width - WidthWindow) / 2;
+            PosY = (Height - HeightWindow) / 2;
+            //PosY = 10;
+            //PosX = 10;
             
             base.OnResized();
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
@@ -142,5 +150,30 @@ namespace Mvk2.Gui.Screens
         /// Запустить текстуру фона
         /// </summary>
         protected override void _BindTextureBg() => _windowMvk.GetRender().BindTextureInventory();
+
+        /// <summary>
+        /// Метод для прорисовки кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public override void Draw(float timeIndex)
+        {
+            base.Draw(timeIndex);
+
+            // Прорисовки игрока
+            if (window.Game.Player.Render is EntityRenderAnimation renderAnimation)
+            {
+                int y = (PosY + 80) * si;
+                int x = (PosX + 115) * si;
+                float pitch = y > window.MouseY ? (1f - window.MouseY / (float)y)
+                    : -(window.MouseY - y) / (float)(Gi.Height - y);
+                float yaw = x > window.MouseX ? (1f - window.MouseX / (float)x)
+                    : -(window.MouseX - x) / (float)(Gi.Width - x);
+
+                window.Game.Render.DepthOn();
+                renderAnimation.DrawGui((PosX + 115) * si, (PosY + 190) * si,
+                    Glm.Sin(yaw), Glm.Sin(pitch), 36 * si);
+                window.Game.Render.DepthOff();
+            }
+        }
     }
 }
