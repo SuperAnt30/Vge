@@ -211,8 +211,9 @@ namespace Vge
         /// </summary>
         protected override void OnMouseWheel(int delta, int x, int y)
         {
-            MouseX = x;
-            MouseY = y;
+            // Закомитил, ибо при нескольких экранах, проскакивает координата суммы двух экранов
+            //MouseX = x; MouseY = y;
+            //Console.WriteLine(delta + " " + MouseX + " " + MouseY);
             if (Screen != null) Screen.OnMouseWheel(delta, x, y);
             else if (Game != null) Game.OnMouseWheel(delta, x, y);
         }
