@@ -11,6 +11,7 @@ using Vge.Gui.Screens;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
+using WinGL.Actions;
 using WinGL.Util;
 
 namespace Mvk2.Gui.Screens
@@ -146,6 +147,16 @@ namespace Mvk2.Gui.Screens
             }
         }
 
+        public override void OnKeyDown(Keys keys)
+        {
+            base.OnKeyDown(keys);
+
+            if (keys == Keys.E)
+            {
+                _Close();
+            }
+        }
+
         /// <summary>
         /// Запустить текстуру фона
         /// </summary>
@@ -164,6 +175,7 @@ namespace Mvk2.Gui.Screens
             {
                 int y = (PosY + 80) * si;
                 int x = (PosX + 115) * si;
+
                 float pitch = y > window.MouseY ? (1f - window.MouseY / (float)y)
                     : -(window.MouseY - y) / (float)(Gi.Height - y);
                 float yaw = x > window.MouseX ? (1f - window.MouseX / (float)x)
