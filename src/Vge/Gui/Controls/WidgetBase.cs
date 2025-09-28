@@ -45,11 +45,11 @@
         /// Дополнительный объект
         /// </summary>
         public object Tag { get; set; }
-
         /// <summary>
         /// Когда мышь находится на элементе
         /// </summary>
-        protected bool enter = false;
+        public bool Enter { get; private set; }
+
         /// <summary>
         /// Размер интерфеса
         /// </summary>
@@ -91,9 +91,9 @@
         protected void _CanEnter(int x, int y)
         {
             bool b = IsRectangleMouse(x, y);
-            if (enter != b)
+            if (Enter != b)
             {
-                enter = b;
+                Enter = b;
                 IsRender = true;
             }
         }
@@ -209,5 +209,10 @@
             => _RectangleTwo(Width, Height, x1, y1, u1, v1, vk, r, g, b, a);
 
         #endregion
+
+        /// <summary>
+        /// Вернуть подсказку у контрола
+        /// </summary>
+        public virtual string GetToolTip() => "";
     }
 }

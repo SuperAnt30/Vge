@@ -23,6 +23,11 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected bool _isRenderAdd = true;
 
+        /// <summary>
+        /// Объект подсказки
+        /// </summary>
+        protected ToolTip _toolTip;
+
         public ScreenBase(WindowMain window) : base(window) => si = Gi.Si;
 
         /// <summary>
@@ -89,6 +94,8 @@ namespace Vge.Gui.Screens
                     control.Draw(timeIndex);
                 }
             }
+
+            //_toolTip?.Draw();
         }
 
         /// <summary>
@@ -132,6 +139,7 @@ namespace Vge.Gui.Screens
             {
                 control.Dispose();
             }
+            _toolTip?.Dispose();
         }
 
         #region OnMouse
@@ -141,9 +149,24 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnMouseMove(int x, int y)
         {
+            bool tt = _toolTip != null;
+            bool ttCheck = false;
             foreach (WidgetBase control in controls)
             {
-                if (control.Visible && control.Enabled) control.OnMouseMove(x, y);
+                if (control.Visible && control.Enabled)
+                {
+                    control.OnMouseMove(x, y);
+                    if (tt && !ttCheck && control.Enter)
+                    {
+                        ttCheck = true;
+                        _toolTip.SetText(control.GetToolTip());
+                    }
+                }
+            }
+            if (tt)
+            {
+                _toolTip.OnMouseMove(x, y);
+                if (!ttCheck) _toolTip.Hide();
             }
         }
 

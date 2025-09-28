@@ -113,7 +113,7 @@ namespace Vge.Gui.Controls
             // Рендер текста
             RenderInside(render, x, y, text);
 
-            float v1 = Enabled ? enter ? vk + vk : vk : 0f;
+            float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
 
             // Рендер фона
             meshBg.Reload(_RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
@@ -137,7 +137,7 @@ namespace Vge.Gui.Controls
             // Рисуем фон кнопки
             window.Render.BindTextureWidgets();
             meshBg.Draw();
-            if (enter)
+            if (Enter)
             {
                 // Рисуем кнопку
                 meshBt.Draw();
@@ -166,7 +166,7 @@ namespace Vge.Gui.Controls
             if (button == MouseButton.Left)
             {
                 OnMouseMove(x, y);
-                if (enter)
+                if (Enter)
                 {
                     isLeftDown = true;
                     CheckMouse(x);

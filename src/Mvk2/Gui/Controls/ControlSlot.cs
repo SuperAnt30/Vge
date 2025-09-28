@@ -37,12 +37,12 @@ namespace Mvk2.Gui.Controls
             if (button == MouseButton.Left)
             {
                 OnMouseMove(x, y);
-                if (enter) _OnClickLeft();
+                if (Enter) _OnClickLeft();
             }
             else if (button == MouseButton.Right)
             {
                 OnMouseMove(x, y);
-                if (enter) _OnClickRight();
+                if (Enter) _OnClickRight();
             }
         }
 
@@ -64,7 +64,7 @@ namespace Mvk2.Gui.Controls
             float v1, v2;
             if (Enabled)
             {
-                if (enter)
+                if (Enter)
                 {
                     v1 = .1953125f;
                     v2 = .29296875f;
@@ -100,6 +100,18 @@ namespace Mvk2.Gui.Controls
         }
 
         #endregion
+
+        /// <summary>
+        /// Вернуть подсказку у контрола
+        /// </summary>
+        public override string GetToolTip()
+        {
+            if (Stack != null)
+            {
+                return Stack.ToString();
+            }
+            return "";
+        }
 
         public override void Dispose()
         {

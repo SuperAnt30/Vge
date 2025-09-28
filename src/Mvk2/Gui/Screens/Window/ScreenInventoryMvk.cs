@@ -45,6 +45,8 @@ namespace Mvk2.Gui.Screens
         {
             _windowMvk = window;
             _render = _windowMvk.GetRender();
+            _toolTip = new ToolTipMvk(window);
+
             _slot = new ControlSlot[19];
 
             _icon = new ControlIcon(_windowMvk, null);
@@ -186,6 +188,8 @@ namespace Mvk2.Gui.Screens
                     Glm.Sin(yaw), Glm.Sin(pitch), 36 * si);
                 window.Game.Render.DepthOff();
             }
+
+            _toolTip.Draw();
         }
     }
 }

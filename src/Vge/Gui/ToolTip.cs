@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 
@@ -26,45 +27,63 @@ namespace Vge.Gui
         /// Нужен ли рендер
         /// </summary>
         private bool _isRender;
-
         /// <summary>
-        /// Сетка фона
+        /// Видимость
         /// </summary>
-        private readonly MeshGuiColor _meshBg;
+        private bool _isVisible;
+
+        private float _mouseX;
+        private float _mouseY;
+
+        private readonly int _biasX;
+        private readonly int _biasY;
+
         /// <summary>
         /// Сетка текста
         /// </summary>
         private readonly MeshGuiColor _meshTxt;
 
-        public ToolTip(WindowMain window, FontBase font)
+        public ToolTip(WindowMain window, FontBase font, int biasX, int biasY)
         {
             _window = window;
             _font = font;
-            _meshBg = new MeshGuiColor(window.GetOpenGL());
+            _biasX = biasX;
+            _biasY = biasY;
             _meshTxt = new MeshGuiColor(window.GetOpenGL());
         }
 
         public void SetText(string text)
         {
-            _text = text;
-            _isRender = true;
-            Show();
+            if (text == "")
+            {
+                Hide();
+            }
+            else
+            {
+                _text = text;
+                _isRender = true;
+                Show();
+            }
         }
 
         /// <summary>
         /// Показывать
         /// </summary>
-        public void Show() { }
+        public void Show() => _isVisible = true;
 
         /// <summary>
         /// Скрывать
         /// </summary>
-        public void Hide() { }
+        public void Hide() => _isVisible = false;
 
         /// <summary>
         /// Перемещение мышки
         /// </summary>
-        public void OnMouseMove(int x, int y) { }
+        public void OnMouseMove(int x, int y)
+        {
+            _mouseX = x + _biasX * Gi.Si;
+            _mouseY = y + _biasX * Gi.Si;
+        }
 
         #region Draw
 
@@ -73,32 +92,47 @@ namespace Vge.Gui
         /// </summary>
         protected virtual void _Rendering()
         {
+            // Чистим буфер
+            _font.Clear();
+            // Указываем опции
+            _font.SetFontFX(EnumFontFX.Outline);
+            // Готовим рендер текста
+            _font.RenderString(0, 0, _text);
+            // Имеется Outline значит рендерим FX
+            _font.RenderFX();
+            // Вносим сетку
+            _font.Reload(_meshTxt);
         }
 
         /// <summary>
-        /// Метод для прорисовки кадра
+        /// Прорисовка кадра
         /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public virtual void Draw(float timeIndex)
+        protected virtual void _Draw()
         {
-            if (_isRender)
-            {
-                _Rendering();
-                _isRender = false;
-            }
-            _window.Render.BindTextureWidgets();
-            _meshBg.Draw();
-            _window.Render.ShaderBindGuiColor();
+            _window.Render.ShaderBindGuiColor(_mouseX, _mouseY);
             _font.BindTexture();
             _meshTxt.Draw();
+            _window.Render.ShaderBindGuiColor(0, 0);
+        }
+
+        /// <summary>
+        /// Прорисовки кадра
+        /// </summary>
+        public void Draw()
+        {
+            if (_isVisible)
+            {
+                if (_isRender)
+                {
+                    _Rendering();
+                    _isRender = false;
+                }
+                _Draw();
+            }
         }
 
         #endregion
 
-        public void Dispose()
-        {
-            _meshBg?.Dispose();
-            _meshTxt?.Dispose();
-        }
+        public virtual void Dispose() => _meshTxt?.Dispose();
     }
 }

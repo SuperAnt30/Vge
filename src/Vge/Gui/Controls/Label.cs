@@ -83,7 +83,7 @@ namespace Vge.Gui.Controls
             if (button == MouseButton.Left)
             {
                 OnMouseMove(x, y);
-                if (enter)
+                if (Enter)
                 {
                     OnClick();
                 }
@@ -111,7 +111,7 @@ namespace Vge.Gui.Controls
         protected void RenderInside(RenderMain render, int x, int y, string text)
         {
             // Определяем цвет текста
-            Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
+            Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
             // Чистим буфер
             Font.Clear();
             // Указываем опции

@@ -34,7 +34,7 @@ namespace Vge.Gui.Controls
             //for (int i = 0; i < 1000; i++)
             //{
                 base.RenderInside(render, x, y);
-                float v1 = Enabled ? enter ? vk + vk : vk : 0f;
+                float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
                 meshBg.Reload(_RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
             //}
             //stopwatch.Stop();

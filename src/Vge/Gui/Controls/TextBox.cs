@@ -100,7 +100,7 @@ namespace Vge.Gui.Controls
             if (button == MouseButton.Left)
             {
                 OnMouseMove(x, y);
-                if (enter)
+                if (Enter)
                 {
                     if (!Focus)
                     {
@@ -111,7 +111,7 @@ namespace Vge.Gui.Controls
                     UpCursor(x);
                     IsRender = true;
                 }
-                else if (!enter && Focus && !_fixFocus)
+                else if (!Enter && Focus && !_fixFocus)
                 {
                     // Потерять фокус
                     _isVisibleCursor = false;
@@ -349,7 +349,7 @@ namespace Vge.Gui.Controls
         protected virtual void RenderInside(RenderMain render, int x, int y)
         {
             // Определяем цвет текста
-            Vector3 color = Enabled ? enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
+            Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
             int biasY = (Height * si - _font.GetVert()) / 2;
 
             // Чистим буфер
@@ -378,7 +378,7 @@ namespace Vge.Gui.Controls
             _font.Reload(_meshTxt);
 
             // Сетка фона
-            float v1 = Enabled ? enter ? _vk * 4 : _vk * 3 : 0f;
+            float v1 = Enabled ? Enter ? _vk * 4 : _vk * 3 : 0f;
             _meshBg.Reload(_RectangleTwo(x, y, 0, v1, _vk, 1, 1, 1));
 
             try

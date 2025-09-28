@@ -35,11 +35,6 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
 
-        /// <summary>
-        /// Объект подсказки
-        /// </summary>
-        protected ToolTip _toolTip;
-
         protected ScreenWindow(WindowMain window, int width, int height) : base(window)
         {
             WidthWindow = width;

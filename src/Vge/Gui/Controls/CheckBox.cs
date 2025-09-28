@@ -72,7 +72,7 @@ namespace Vge.Gui.Controls
             SetSize(w, Height);
 
             // Рендер Значка
-            float u1 = Enabled ? enter ? vk + vk : vk : 0f;
+            float u1 = Enabled ? Enter ? vk + vk : vk : 0f;
             if (Checked) u1 += HorStepCheck;
 
             meshBg.Reload(RenderFigure.Rectangle(x, y, x + BoxWidth * si, y + Height * si,
