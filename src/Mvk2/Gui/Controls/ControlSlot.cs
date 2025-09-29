@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Item;
+using Vge.Realms;
 using Vge.Renderer;
 using WinGL.Actions;
 
@@ -108,7 +109,7 @@ namespace Mvk2.Gui.Controls
         {
             if (Stack != null)
             {
-                return Stack.ToString();
+                return "Testing" + ChatStyle.Blue + "Stak\r\n" + ChatStyle.Reset + ChatStyle.Bolb + Stack.ToString();
             }
             return "";
         }

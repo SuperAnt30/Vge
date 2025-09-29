@@ -6,9 +6,10 @@ layout (location = 1) in vec4 v_color;
 out vec4 a_color;
 
 uniform mat4 projview;
+uniform vec2 pos;
 
 void main()
 {
 	a_color = v_color;
-	gl_Position = projview * vec4(v_position.xy, 0, 1.0);
+	gl_Position = projview * vec4(pos + v_position.xy, 0, 1.0);
 }

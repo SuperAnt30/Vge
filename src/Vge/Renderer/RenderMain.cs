@@ -140,6 +140,17 @@ namespace Vge.Renderer
         }
 
         /// <summary>
+        /// Связать шейдер GuiLine
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderBindGuiLine(float posX, float posY)
+        {
+            ShGuiLine.Bind();
+            ShGuiLine.SetUniformMatrix4("projview", window.Ortho2D);
+            ShGuiLine.SetUniform2("pos", posX, posY);
+        }
+
+        /// <summary>
         /// Связать шейдер GuiColor
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

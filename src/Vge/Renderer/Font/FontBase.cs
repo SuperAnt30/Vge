@@ -392,15 +392,20 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Прорисовка текста
         /// </summary>
-        public void RenderText(int x, int y, string text)
+        public Vector2i RenderText(int x, int y, string text)
         {
             string[] strs = text.Split(TransferText.StringSeparators, StringSplitOptions.None);
-
+            int width = 0;
+            int y0 = y;
+            Vector2i result = new Vector2i(0);
             foreach (string str in strs)
             {
-                RenderString(x, y, str);
+                width = RenderString(x, y, str);
+                if (width > result.X) result.X = width;
                 y += GetVertStep();
             }
+            result.Y = y - y0;
+            return result;
         }
 
         /// <summary>

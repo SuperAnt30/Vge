@@ -140,12 +140,14 @@ namespace Mvk2.Gui.Screens
 
             for (int i = 0; i < 8; i++)
             {
-                _slot[i].SetPosition(PosX + 56 + i * 50, PosY + 300);
+                _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
             }
-            _slot[8].SetPosition(PosX + 56, PosY + 250);
-            for (int i = 0; i < 10; i++)
+            _slot[8].SetPosition(PosX + 6, PosY + 300);
+
+            for (int i = 0; i < 5; i++)
             {
-                _slot[i + 9].SetPosition(PosX + 6 + i * 50, PosY + 200);
+                _slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
+                _slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
             }
         }
 

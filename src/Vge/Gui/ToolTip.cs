@@ -2,6 +2,7 @@
 using System.Configuration;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using WinGL.Util;
 
 namespace Vge.Gui
 {
@@ -32,11 +33,16 @@ namespace Vge.Gui
         /// </summary>
         private bool _isVisible;
 
-        private float _mouseX;
-        private float _mouseY;
+        protected float _mouseX;
+        protected float _mouseY;
 
         private readonly int _biasX;
         private readonly int _biasY;
+
+        /// <summary>
+        /// Размер текста
+        /// </summary>
+        protected Vector2i _sizeText;
 
         /// <summary>
         /// Сетка текста
@@ -45,6 +51,7 @@ namespace Vge.Gui
 
         public ToolTip(WindowMain window, FontBase font, int biasX, int biasY)
         {
+            _sizeText = new Vector2i(0);
             _window = window;
             _font = font;
             _biasX = biasX;
@@ -82,24 +89,24 @@ namespace Vge.Gui
         public void OnMouseMove(int x, int y)
         {
             _mouseX = x + _biasX * Gi.Si;
-            _mouseY = y + _biasX * Gi.Si;
+            _mouseY = y + _biasY * Gi.Si;
         }
 
         #region Draw
 
         /// <summary>
-        /// рендер контрола
+        /// Рендер контрола
         /// </summary>
         protected virtual void _Rendering()
         {
             // Чистим буфер
             _font.Clear();
             // Указываем опции
-            _font.SetFontFX(EnumFontFX.Outline);
+            _font.SetFontFX(EnumFontFX.None);
             // Готовим рендер текста
-            _font.RenderString(0, 0, _text);
+            _sizeText = _font.RenderText(0, 0, _text);
             // Имеется Outline значит рендерим FX
-            _font.RenderFX();
+            //_font.RenderFX();
             // Вносим сетку
             _font.Reload(_meshTxt);
         }
