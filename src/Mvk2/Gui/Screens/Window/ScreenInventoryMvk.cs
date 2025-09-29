@@ -47,7 +47,7 @@ namespace Mvk2.Gui.Screens
             _render = _windowMvk.GetRender();
             _toolTip = new ToolTipMvk(window);
 
-            _slot = new ControlSlot[19];
+            _slot = new ControlSlot[19 + 25];
 
             _icon = new ControlIcon(_windowMvk, null);
 
@@ -62,7 +62,32 @@ namespace Mvk2.Gui.Screens
             }
             _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
             _player.InvPlayer.SlotSetted += InvPlayer_SlotSetted;
+            _player.InvPlayer.LimitBackpackChanged += InvPlayer_LimitBackpackChanged;
+
+            _UpBackpackEnabled();
         }
+
+        /// <summary>
+        /// Обновить слоты рюкзака
+        /// </summary>
+        private void _UpBackpackEnabled()
+        {
+            int chek = _player.InvPlayer.LimitBackpack + 19;
+            for (int i = 19; i < 44; i++)
+            {
+                bool b = _slot[i].Enabled;
+                if (b != chek > i)
+                {
+                    _slot[i].SetEnable(!b);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Событие изменён лимит рюкзака
+        /// </summary>
+        private void InvPlayer_LimitBackpackChanged(object sender, EventArgs e)
+            => _UpBackpackEnabled();
 
         /// <summary>
         /// Изменился слот игрока
@@ -146,8 +171,16 @@ namespace Mvk2.Gui.Screens
 
             for (int i = 0; i < 5; i++)
             {
+                // Одежда
                 _slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
                 _slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
+
+                // Рюкзак
+                _slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 45);
+                _slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 95);
+                _slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 145);
+                _slot[i + 34].SetPosition(PosX + 256 + i * 50, PosY + 195);
+                _slot[i + 39].SetPosition(PosX + 256 + i * 50, PosY + 245);
             }
         }
 

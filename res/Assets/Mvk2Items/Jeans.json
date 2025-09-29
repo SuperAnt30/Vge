@@ -1,5 +1,6 @@
 {
     MaxStackSize: 1,
+    CellsBackpack: 4,
     SlotClothIndex: 7,
     Sprite: "Items/Jeans",
     SpriteGui: "Items/Jeans",

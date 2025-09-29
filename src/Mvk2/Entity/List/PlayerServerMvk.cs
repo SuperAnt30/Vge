@@ -35,7 +35,9 @@ namespace Mvk2.Entity.List
 
             Inventory.SetStackInSlot(8, new ItemStack(Ce.Items.ItemObjects[0]));
             Inventory.SetStackInSlot(9, new ItemStack(Ce.Items.ItemObjects[4]));
-            
+
+            // При запуске на сервере
+            InvPlayer.CheckingClothes();
         }
 
         /// <summary>

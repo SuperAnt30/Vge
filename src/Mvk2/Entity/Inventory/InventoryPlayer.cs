@@ -18,11 +18,11 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Лимит ячеек рюкзака
         /// </summary>
-        public int LimitBackpack { get; private set; } = 0;
+        public byte LimitBackpack { get; private set; } = 0;
         /// <summary>
         /// Количество ячеек для предметов рюкзака
         /// </summary>
-        private readonly int _backpackCount = 25;
+        private readonly byte _backpackCount = 25;
 
         public InventoryPlayer()
             // Первый слот одеждый это ячейка левой руки
@@ -33,7 +33,7 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitAllCount()
-            => _allCount = _mainCount + _clothCount + _backpackCount;
+            => _allCount = (byte)(_mainCount + _clothCount + _backpackCount);
 
         /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
@@ -277,15 +277,67 @@ namespace Mvk2.Entity.Inventory
                 {
                     _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // 1-11 одежда
                 }
+
+                if (slotIn > _mainCount && slotIn < _mainCount + _clothCount)
+                {
+                    // Тут при смене одежды
+                    CheckingClothes();
+                }
             }
             //else // TODO:: 2025-09-22 добавить склад, рюкзак.
             //{
             //   // base.SetInventorySlotContents(slotIn, stack);
             //    _OnSlotSetted(slotIn, stack);
             //}
+
+            
+        }
+
+        /// <summary>
+        /// Проверка одетого
+        /// </summary>
+        public void CheckingClothes()
+        {
+            // Проверка лимита рюкзака, и прочей брони
+            int count = _mainCount + _clothCount;
+            ItemStack stack;
+            int limitBackpack = 0;
+            for (int i = _mainCount; i < count; i++)
+            {
+                stack = _items[i];
+                if (stack != null && stack.Item is ItemCloth itemCloth && itemCloth.CellsBackpack != 0)
+                {
+                    limitBackpack += itemCloth.CellsBackpack;
+                }
+            }
+            if (LimitBackpack != limitBackpack)
+            {
+                if (LimitBackpack < limitBackpack)
+                {
+                    // Надо выкинуть часть предметов
+                }
+                if (limitBackpack > _backpackCount)
+                {
+                    limitBackpack = _backpackCount;
+                }
+                LimitBackpack = (byte)limitBackpack;
+                _OnLimitBackpackChanged();
+            }
         }
 
         #region Send or Set
+
+        /// <summary>
+        /// Задать полный список всего инвентаря
+        /// Mvk было SetMainAndCloth
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetAll(ItemStack[] stacks)
+        {
+            base.SetAll(stacks);
+            // Тут поподаем при загрузке на клиент
+            CheckingClothes();
+        }
 
         /// <summary>
         /// Проверка и замена стака если мы берём в воздух
@@ -333,13 +385,23 @@ namespace Mvk2.Entity.Inventory
         #region Event
 
         /// <summary>
+        /// Событие изменён лимит рюкзака
+        /// </summary>
+        public event EventHandler LimitBackpackChanged;
+        /// <summary>
+        /// Событие изменён лимит рюкзака
+        /// </summary>
+        private void _OnLimitBackpackChanged()
+            => LimitBackpackChanged?.Invoke(this, new EventArgs());
+
+        /// <summary>
         /// Событие слот задан
         /// </summary>
         public event SlotEventHandler SlotSetted;
         /// <summary>
         /// Событие слот задан
         /// </summary>
-        protected void _OnSlotSetted(int slotId, ItemStack stack)
+        private void _OnSlotSetted(int slotId, ItemStack stack)
             => SlotSetted?.Invoke(this, new SlotEventArgs(slotId, stack));
 
         /// <summary>
@@ -349,7 +411,7 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Событие слот хранилища изменён
         /// </summary>
-        protected void _OnSlotStorageChanged(int slotId)
+        private void _OnSlotStorageChanged(int slotId)
             => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId));
 
         /// <summary>

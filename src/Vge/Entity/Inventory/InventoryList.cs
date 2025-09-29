@@ -20,12 +20,12 @@ namespace Vge.Entity.Inventory
         /// Количество ячеек для одежды.
         /// (Первый слот одеждый может быть ячейкой левой руки)
         /// </summary>
-        protected readonly int _clothCount;
+        protected readonly byte _clothCount;
 
         /// <summary>
         /// Общее количество ячеек
         /// </summary>
-        protected int _allCount;
+        protected byte _allCount;
 
         /// <summary>
         /// Выбранный слот правой руки
@@ -50,7 +50,7 @@ namespace Vge.Entity.Inventory
 
         /// <param name="isLimitationSlot">Установить ограничение по ячейкам одежды, порядковая нумерация от 1-N,
         /// равенства ItemBase._slotClothIndex  </param>
-        public InventoryList(byte mainCount, int clothCount, bool isLimitationSlot = true) // 1 - 11 сетевой игрок
+        public InventoryList(byte mainCount, byte clothCount, bool isLimitationSlot = true) // 1 - 11 сетевой игрок
         {
             _mainCount = mainCount;
             _clothCount = clothCount;
@@ -74,7 +74,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitAllCount()
-            => _allCount = _mainCount + _clothCount;
+            => _allCount = (byte)(_mainCount + _clothCount);
 
         #region UpdateServer
 

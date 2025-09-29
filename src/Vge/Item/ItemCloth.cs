@@ -10,10 +10,14 @@ namespace Vge.Item
     public class ItemCloth : ItemBase
     {
         /// <summary>
+        /// Ячейки рюкзака
+        /// </summary>
+        public byte CellsBackpack { get; protected set; }
+        /// <summary>
         /// Имя на что надеть на тело, указываем на какую часть тело может одеваться предмет
         /// </summary>
         public string PutOnBody { get; protected set; }
-        
+
         /// <summary>
         /// Массив имён слоёв, название слоя одежды из модели
         /// </summary>
@@ -68,6 +72,11 @@ namespace Vge.Item
                 {
                     throw new Exception(Sr.GetString(Sr.RequiredParameterIsMissingItem, Alias,
                         Cti.PutOnBody + "," + Cti.NameLayer));
+                }
+
+                if (state.IsKey(Cti.CellsBackpack))
+                {
+                    CellsBackpack = (byte)state.GetInt(Cti.CellsBackpack);
                 }
             }
         }

@@ -42,7 +42,10 @@
         /// </summary>
         public const string ViewHold = "ViewHold";
 
-
+        /// <summary>
+        /// Ячейки рюкзака, количество дополнительных ячеек. (int)
+        /// </summary>
+        public const string CellsBackpack = "CellsBackpack";
         /// <summary>
         /// Надеть на тело, указываем на какую часть тело может одеваться предмет. (string)
         /// </summary>
