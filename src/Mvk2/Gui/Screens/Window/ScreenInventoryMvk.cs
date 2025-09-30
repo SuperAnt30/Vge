@@ -64,6 +64,7 @@ namespace Mvk2.Gui.Screens
             _player.InvPlayer.SlotSetted += InvPlayer_SlotSetted;
             _player.InvPlayer.LimitBackpackChanged += InvPlayer_LimitBackpackChanged;
 
+            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenInventory));
             _UpBackpackEnabled();
         }
 
@@ -195,6 +196,29 @@ namespace Mvk2.Gui.Screens
         }
 
         /// <summary>
+        /// Клик за пределами окна
+        /// </summary>
+        protected override void _OnClickOutsideWindow() => _ThrowTheSlot();
+
+        /// <summary>
+        /// Выбросить слот который в руке
+        /// </summary>
+        protected virtual void _ThrowTheSlot()
+        {
+            if (_stakAir != null)
+            {
+                _windowMvk.Game.TrancivePacket(
+                    new PacketC0EClickWindow((byte)EnumActionClickWindow.ThrowOutAir));
+            }
+        }
+
+        /// <summary>
+        /// Происходит перед закрытием окна
+        /// </summary>
+        protected virtual void _OnFinishing() => _windowMvk.Game.TrancivePacket(
+            new PacketC0EClickWindow((byte)EnumActionClickWindow.Close));
+        
+        /// <summary>
         /// Запустить текстуру фона
         /// </summary>
         protected override void _BindTextureBg() => _windowMvk.GetRender().BindTextureInventory();
@@ -225,6 +249,12 @@ namespace Mvk2.Gui.Screens
             }
 
             _toolTip.Draw();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _OnFinishing();
         }
     }
 }

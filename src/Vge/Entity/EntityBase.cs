@@ -610,5 +610,10 @@ namespace Vge.Entity
         //    }
         //    return vectors;
         //}
+
+        /// <summary>
+        /// Перед созданием
+        /// </summary>
+        public virtual void BeforeDrop() { }
     }
 }

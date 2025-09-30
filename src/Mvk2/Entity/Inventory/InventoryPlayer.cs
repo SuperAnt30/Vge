@@ -35,6 +35,8 @@ namespace Mvk2.Entity.Inventory
         protected override void _InitAllCount()
             => _allCount = (byte)(_mainCount + _clothCount + _backpackCount);
 
+        #region Server
+
         /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
         /// isRight указывает флаг правый ли клик мыши
@@ -211,6 +213,50 @@ namespace Mvk2.Entity.Inventory
         }
 
         /// <summary>
+        /// Выкинуть предмет из рук который в воздухе.
+        /// Server
+        /// </summary>
+        public void ThrowOutAir()
+        {
+            if (StackAir != null)
+            {
+                _SetSendAirContents();
+            }
+        }
+
+        /// <summary>
+        /// Задать потом отправить игроку изменения слота со стакам.
+        /// Server
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetSendSlotContents(int slotIn, ItemStack stack = null)
+        {
+            SetInventorySlotContents(slotIn, stack);
+            if (slotIn != 255 && slotIn > 99)
+            {
+                // Изменения ячейки хранилища в TileEntity
+                _OnSlotStorageChanged(slotIn);
+            }
+        }
+
+        /// <summary>
+        /// Задать потом отправить игроку изменения воздушного стака.
+        /// Server
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetSendAirContents(ItemStack stack = null)
+            => SetInventorySlotContents(255, stack);
+
+        /// <summary>
+        /// Проверка и замена стака если мы берём в воздух.
+        /// Server
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ItemStack _CheckSlotToAir(ItemStack stack) => stack.CheckToAir();
+
+        #endregion
+
+        /// <summary>
         /// Проверяем можно ли установить данный стак в определённой ячейке склада
         /// </summary>
         private bool _CanPutItemStack(int slotIn, ItemStack stack)
@@ -326,8 +372,6 @@ namespace Mvk2.Entity.Inventory
             }
         }
 
-        #region Send or Set
-
         /// <summary>
         /// Задать полный список всего инвентаря
         /// Mvk было SetMainAndCloth
@@ -339,35 +383,6 @@ namespace Mvk2.Entity.Inventory
             // Тут поподаем при загрузке на клиент
             CheckingClothes();
         }
-
-        /// <summary>
-        /// Проверка и замена стака если мы берём в воздух
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ItemStack _CheckSlotToAir(ItemStack stack) => stack.CheckToAir();
-
-        /// <summary>
-        /// Задать потом отправить игроку изменения слота со стакам.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SetSendSlotContents(int slotIn, ItemStack stack = null)
-        {
-            SetInventorySlotContents(slotIn, stack);
-            if (slotIn != 255 && slotIn > 99)
-            {
-                // Изменения ячейки хранилища в TileEntity
-                _OnSlotStorageChanged(slotIn);
-            }
-        }
-
-        /// <summary>
-        /// Задать потом отправить игроку изменения воздушного стака.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SetSendAirContents(ItemStack stack = null)
-            => SetInventorySlotContents(255, stack);
-
-        #endregion
 
         #region Event
 

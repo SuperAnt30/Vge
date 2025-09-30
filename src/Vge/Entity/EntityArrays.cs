@@ -15,6 +15,11 @@ namespace Vge.Entity
         /// </summary>
         public const string AliasPlayer = "Player";
         /// <summary>
+        /// Псевдоним предмета
+        /// </summary>
+        public const string AliasItem = "Item";
+        
+        /// <summary>
         /// Массив названий сущностей
         /// </summary>
         public readonly string[] EntitiesAlias;
@@ -30,6 +35,10 @@ namespace Vge.Entity
         /// Индекс игрока, в целом должен быть 0, так-как первый по списку
         /// </summary>
         public readonly ushort IndexPlayer = 0;
+        /// <summary>
+        /// Индекс сущности предмета
+        /// </summary>
+        public readonly ushort IndexItem;
 
         public EntityArrays()
         {
@@ -44,6 +53,10 @@ namespace Vge.Entity
                 if (EntitiesAlias[id] == AliasPlayer)
                 {
                     IndexPlayer = id;
+                }
+                else if (EntitiesAlias[id] == AliasItem)
+                {
+                    IndexItem = id;
                 }
                 resourcesEntity = EntitiesReg.Table[id];
                 resourcesEntity.SetIndex(id);

@@ -355,7 +355,7 @@ namespace Vge.Games
                 // Тут должен знать его Ник, и место спавна
                 // Отправляем количество шагов на загрузку
 
-                WorldServer world = Players.PlayerOwner.GetWorld();
+                WorldServer world = Players.PlayerOwner.World;
                 int cpx = Players.PlayerOwner.ChunkPositionX;
                 int cpy = Players.PlayerOwner.ChunkPositionZ;
                 int radius = Players.PlayerOwner.ActiveRadius + FragmentManager.AddOverviewChunkServer;

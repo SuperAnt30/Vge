@@ -2,6 +2,8 @@
 using Vge.Entity.Inventory;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
+using Vge.Item;
+using Vge.World;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -341,6 +343,19 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Sitting() { }
+
+        #endregion
+
+        #region Drop
+
+        /// <summary>
+        /// Дропнуть предмет от сущности. Server
+        /// </summary>
+        /// <param name="itemStack">Стак предмета</param>
+        /// <param name="inFrontOf">Флаг перед собой</param>
+        /// <param name="longAway">Далеко бросить от себя</param>
+        public virtual void DropItem(WorldServer worldServer, 
+            ItemStack itemStack, bool inFrontOf, bool longAway) { }
 
         #endregion
     }

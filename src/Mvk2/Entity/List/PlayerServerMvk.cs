@@ -1,13 +1,16 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Packets;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Inventory;
+using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.World;
 
 namespace Mvk2.Entity.List
 {
@@ -73,11 +76,49 @@ namespace Mvk2.Entity.List
         {
             // Пометка активности игрока
             MarkPlayerActive();
-            if (packet.Action == (byte)EnumActionClickWindow.ClickSlot)
+            EnumActionClickWindow action = (EnumActionClickWindow)packet.Action;
+
+            if ((action == EnumActionClickWindow.Close || action == EnumActionClickWindow.ThrowOutAir)
+                && InvPlayer.StackAir != null)
             {
-                // Клик по слоту
-                InvPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
+                DropItem(World, InvPlayer.StackAir, true, false);
+                InvPlayer.ThrowOutAir();
+            }
+
+            switch (action)
+            {
+                case EnumActionClickWindow.OpenInventory:
+                    break;
+                case EnumActionClickWindow.Close:
+                   // entityPlayer.OnActionBlockWindowsClose();
+                    break;
+                case EnumActionClickWindow.ClickSlot:
+                    // Клик по слоту
+                    InvPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
+                    break;
             }
         }
+
+        #region Drop
+
+        /// <summary>
+        /// Дропнуть предмет от сущности. Server
+        /// </summary>
+        /// <param name="itemStack">Стак предмета</param>
+        /// <param name="inFrontOf">Флаг перед собой</param>
+        /// <param name="longAway">Далеко бросить от себя</param>
+        public override void DropItem(WorldServer worldServer, 
+            ItemStack itemStack, bool inFrontOf, bool longAway)
+        {
+            ushort id = Ce.Entities.IndexItem;
+            EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer.Collision);
+            if (entity is EntityItem entityItem)
+            {
+                entityItem.SetEntityItemStack(itemStack);
+            }
+            worldServer.EntityDropsEntityInWorld(this, entity, inFrontOf, longAway);
+        }
+
+        #endregion
     }
 }

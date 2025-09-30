@@ -411,7 +411,7 @@ namespace Vge.Management
                     // Можно по сути и не вносить...
                     PlayerOwner.SendPacket(new PacketS06PlayerEntryRemove(PlayerOwner.Id, PlayerOwner.Login));
                 }
-                player.GetWorld().SpawnEntityInWorld(player);
+                player.World.SpawnEntityInWorld(player);
                 player.JoinGame();
             }
         }

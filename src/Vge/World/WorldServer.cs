@@ -1,5 +1,4 @@
-﻿using NVorbis.Contracts;
-using System.Globalization;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -7,6 +6,7 @@ using Vge.Management;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Chunk;
+using WinGL.Util;
 
 namespace Vge.World
 {
@@ -126,10 +126,7 @@ namespace Vge.World
         {
             IsRuning = false;
             ChunkPrServ.Wait.Stoping();
-            if (Wait != null)
-            {
-                Wait.Stoping();
-            }
+            Wait?.Stoping();
             _WriteToFile();
         }
 
@@ -229,6 +226,82 @@ namespace Vge.World
         #endregion
 
         #region Entity
+
+        /// <summary>
+        /// Сущность бросатет другую сущность в мире.
+        /// </summary>
+        /// <param name="entity">Сущность кторая кидает</param>
+        /// <param name="entityThrown">Сущность которую кунули</param>
+        /// <param name="inFrontOf">Флаг перед собой</param>
+        /// <param name="longAway">Далеко бросить от себя</param>
+        public virtual void EntityDropsEntityInWorld(EntityLiving entity, EntityBase entityThrown, bool inFrontOf, bool longAway)
+        {
+            if (entityThrown.Physics != null)
+            {
+                if (inFrontOf)
+                {
+                    if (longAway)
+                    {
+                        float pitchxz = Glm.Cos(entity.RotationPitch);
+                        entityThrown.Physics.MotionX = Glm.Sin(entity.RotationYaw) * pitchxz * 1.4f;
+                        entityThrown.Physics.MotionY = Glm.Sin(entity.RotationPitch) * 1.4f;
+                        entityThrown.Physics.MotionZ = -Glm.Cos(entity.RotationYaw) * pitchxz * 1.4f;
+                        float f1 = Rnd.NextFloat() * .02f;
+                        float f2 = Rnd.NextFloat() * Glm.Pi360;
+                        entityThrown.Physics.MotionX += Glm.Cos(f2) * f1;
+                        entityThrown.Physics.MotionZ += Glm.Sin(f2) * f1;
+                    }
+                    else
+                    {
+                        float pitchxz = Glm.Cos(entity.RotationPitch);
+                        entityThrown.Physics.MotionX = Glm.Sin(entity.RotationYaw) * pitchxz * .3f;
+                        entityThrown.Physics.MotionY = Glm.Sin(entity.RotationPitch) * .3f + .1f;
+                        entityThrown.Physics.MotionZ = -Glm.Cos(entity.RotationYaw) * pitchxz * .3f;
+                        float f1 = Rnd.NextFloat() * .02f;
+                        float f2 = Rnd.NextFloat() * Glm.Pi360;
+                        entityThrown.Physics.MotionX += Glm.Cos(f2) * f1;
+                        entityThrown.Physics.MotionY += (Rnd.NextFloat() - Rnd.NextFloat()) * .1f;
+                        entityThrown.Physics.MotionZ += Glm.Sin(f2) * f1;
+                    }
+                }
+                else
+                {
+                    float f1 = Rnd.NextFloat() * .5f;
+                    float f2 = Rnd.NextFloat() * Glm.Pi360;
+                    entityThrown.Physics.MotionX = -Glm.Sin(f2) * f1;
+                    entityThrown.Physics.MotionY = .2f;
+                    entityThrown.Physics.MotionZ = Glm.Cos(f2) * f1;
+                }
+
+                entityThrown.PosX = entity.PosX;
+                entityThrown.PosY = entity.PosY;
+                entityThrown.PosZ = entity.PosZ;
+
+                if (longAway)
+                {
+                    entityThrown.PosX += Glm.Cos(entity.RotationYaw) * .32f;
+                    entityThrown.PosZ += Glm.Sin(entity.RotationYaw) * .32f;
+                    entityThrown.PosY += entity.GetEyeHeight() - .2f;
+                }
+                else
+                {
+                    entityThrown.PosY += entity.GetEyeHeight() / 2f;
+                }
+
+                entityThrown.BeforeDrop();
+                SpawnEntityInWorld(entityThrown);
+            }
+        }
+
+        /// <summary>
+        /// Вызывается, когда объект появляется в мире. Это включает в себя игроков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SpawnEntityInWorld(EntityBase entity)
+        {
+            entity.SetEntityId(Server.LastEntityId());
+            base.SpawnEntityInWorld(entity);
+        }
 
         protected override void _OnEntityAdded(EntityBase entity)
         {
