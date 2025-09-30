@@ -282,6 +282,7 @@ namespace Mvk2.Entity.Inventory
                 {
                     // Тут при смене одежды
                     CheckingClothes();
+                    //Console.WriteLine((_isClient ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
                 }
             }
             //else // TODO:: 2025-09-22 добавить склад, рюкзак.
@@ -352,7 +353,11 @@ namespace Mvk2.Entity.Inventory
         private void _SetSendSlotContents(int slotIn, ItemStack stack = null)
         {
             SetInventorySlotContents(slotIn, stack);
-            _SendSetSlotPlayer(slotIn);
+            if (slotIn != 255 && slotIn > 99)
+            {
+                // Изменения ячейки хранилища в TileEntity
+                _OnSlotStorageChanged(slotIn);
+            }
         }
 
         /// <summary>
@@ -360,25 +365,7 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetSendAirContents(ItemStack stack = null)
-        {
-            SetInventorySlotContents(255, stack);
-            _OnSlotSetted(255, StackAir);
-        }
-
-        /// <summary>
-        /// Отправить изменение размера слота игроку
-        /// </summary>
-        private void _SendSetSlotPlayer(int slotId)
-        {
-            if (slotId < 100)
-            {
-                _OnSlotSetted(slotId, GetStackInSlot(slotId));
-            }
-            else if (slotId != 255)
-            {
-                _OnSlotStorageChanged(slotId);
-            }
-        }
+            => SetInventorySlotContents(255, stack);
 
         #endregion
 
@@ -405,11 +392,11 @@ namespace Mvk2.Entity.Inventory
             => SlotSetted?.Invoke(this, new SlotEventArgs(slotId, stack));
 
         /// <summary>
-        /// Событие слот хранилища изменён
+        /// Событие слот хранилища (TileEntity) изменён
         /// </summary>
         public event SlotEventHandler SlotStorageChanged;
         /// <summary>
-        /// Событие слот хранилища изменён
+        /// Событие слот хранилища (TileEntity) изменён
         /// </summary>
         private void _OnSlotStorageChanged(int slotId)
             => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId));
