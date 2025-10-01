@@ -354,8 +354,7 @@ namespace Vge.Entity
         /// <param name="itemStack">Стак предмета</param>
         /// <param name="inFrontOf">Флаг перед собой</param>
         /// <param name="longAway">Далеко бросить от себя</param>
-        public virtual void DropItem(WorldServer worldServer, 
-            ItemStack itemStack, bool inFrontOf, bool longAway) { }
+        public virtual void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway) { }
 
         #endregion
     }

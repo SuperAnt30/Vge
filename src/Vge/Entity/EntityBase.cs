@@ -30,6 +30,7 @@ namespace Vge.Entity
         /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
         public ushort IndexEntity { get; protected set; }
+        
 
         /// <summary>
         /// Сущность мертва, не активна
@@ -144,6 +145,11 @@ namespace Vge.Entity
         /// </summary>
         private bool _physicSleepDebug;
 
+        /// <summary>
+        /// Объект сетевого мира, существует только у сущностей на сервере
+        /// </summary>
+        protected WorldServer _world;
+
         #region Init
 
         /// <summary>
@@ -196,14 +202,15 @@ namespace Vge.Entity
         /// <summary>
         /// Инициализация для сервера
         /// </summary>
-        public void InitServer(ushort index, CollisionBase collision)
+        public void InitServer(ushort index, WorldServer worldServer)
         {
             IndexEntity = index;
             Render = new EntityRenderBase();
             _InitMetaData();
             _InitSize();
-            _InitPhysics(collision);
+            _InitPhysics(worldServer.Collision);
             _CreateInventory();
+            _world = worldServer;
         }
 
         /// <summary>
@@ -550,6 +557,12 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual string GetName() => "";
+
+        /// <summary>
+        /// Объект сетевого мира, существует только у сущностей на сервере
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual WorldServer GetWorld() => _world;
 
         /// <summary>
         /// Вызывается в момент спавна на клиенте

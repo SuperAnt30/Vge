@@ -96,12 +96,12 @@ namespace Vge.Entity
         /// Создать сущность для сервера по индексу из таблицы сервера.
         /// Регистрацию индексов сущностей можно заполнить в GameModClient.InitAfterStartGame() 
         /// </summary>
-        public EntityBase CreateEntityServer(ushort index, CollisionBase collision)
+        public EntityBase CreateEntityServer(ushort index, WorldServer worldServer)
         {
             if (index < Count)
             {
                 EntityBase entity = Activator.CreateInstance(_entitiesObjects[index].EntityType) as EntityBase;
-                entity.InitServer(index, collision);
+                entity.InitServer(index, worldServer);
                 return entity;
             }
             throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));

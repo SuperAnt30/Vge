@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mvk2.Entity.List;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Item;
@@ -23,10 +24,14 @@ namespace Mvk2.Entity.Inventory
         /// Количество ячеек для предметов рюкзака
         /// </summary>
         private readonly byte _backpackCount = 25;
+        /// <summary>
+        /// Игрок сервера
+        /// </summary>
+        private readonly PlayerServerMvk _playerServer;
 
-        public InventoryPlayer()
+        public InventoryPlayer(PlayerServerMvk playerServer)
             // Первый слот одеждый это ячейка левой руки
-            : base(8, 11) { }
+            : base(8, 11) => _playerServer = playerServer;
 
         /// <summary>
         /// Инициализация общего количества
@@ -220,7 +225,25 @@ namespace Mvk2.Entity.Inventory
         {
             if (StackAir != null)
             {
+                _playerServer?.DropItem(StackAir, true, false);
                 _SetSendAirContents();
+            }
+        }
+
+        /// <summary>
+        /// Дропнуть предметы с рюкзака начиная с from
+        /// </summary>
+        private void _DropItemBackpack(int from)
+        {
+            ItemStack stack;
+            for (int i = from; i < _allCount; i++)
+            {
+                stack = _items[i];
+                if (stack != null)
+                {
+                    _playerServer?.DropItem(stack, true, false);
+                    _SetSendSlotContents(i);
+                }
             }
         }
 
@@ -327,7 +350,7 @@ namespace Mvk2.Entity.Inventory
                 if (slotIn > _mainCount && slotIn < _mainCount + _clothCount)
                 {
                     // Тут при смене одежды
-                    CheckingClothes();
+                    CheckingClothes(_playerServer != null);
                     //Console.WriteLine((_isClient ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
                 }
             }
@@ -343,7 +366,7 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Проверка одетого
         /// </summary>
-        public void CheckingClothes()
+        public void CheckingClothes(bool isServer)
         {
             // Проверка лимита рюкзака, и прочей брони
             int count = _mainCount + _clothCount;
@@ -359,9 +382,10 @@ namespace Mvk2.Entity.Inventory
             }
             if (LimitBackpack != limitBackpack)
             {
-                if (LimitBackpack < limitBackpack)
+                if (isServer && LimitBackpack > limitBackpack)
                 {
-                    // Надо выкинуть часть предметов
+                    // Надо выкинуть часть предметов только на сервере
+                    _DropItemBackpack(count + limitBackpack);
                 }
                 if (limitBackpack > _backpackCount)
                 {
@@ -381,7 +405,7 @@ namespace Mvk2.Entity.Inventory
         {
             base.SetAll(stacks);
             // Тут поподаем при загрузке на клиент
-            CheckingClothes();
+            CheckingClothes(false);
         }
 
         #region Event
@@ -416,6 +440,8 @@ namespace Mvk2.Entity.Inventory
         private void _OnSlotStorageChanged(int slotId)
             => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId));
 
+
+        // TODO:: 2025-10-01 удалить
         /// <summary>
         /// Событие изменён слот
         /// </summary>

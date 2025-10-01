@@ -33,29 +33,29 @@ namespace Vge.Command
             }
 
             string param = commandParams[0].ToLower();
-            WorldServer world = player.World;
-            int speed = world.Settings.Calendar.GetSpeedDay();
+            WorldServer worldServer = player.GetWorld();
+            int speed = worldServer.Settings.Calendar.GetSpeedDay();
             if (speed == 0)
             {
                 // Нет дней
                 return ChatStyle.Red + L.S("CommandsTimeNotDayWorld");
             }
 
-            uint totalWorldTick = world.Settings.Calendar.TickCounter;
+            uint totalWorldTick = worldServer.Settings.Calendar.TickCounter;
             uint timeDay = (uint)(totalWorldTick % speed);
             if (param.Equals("day") || param.Equals("d"))
             {
                 float f = speed * (7f / 24f); // на 7 утра целимся
-                world.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
-                world.Tracker.SendToAllMessage(ChatStyle.Yellow + L.S("CommandsTimeDay"));
+                worldServer.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
+                worldServer.Tracker.SendToAllMessage(ChatStyle.Yellow + L.S("CommandsTimeDay"));
                 return "";
             }
 
             if (param.Equals("night") || param.Equals("n"))
             {
                 float f = speed * (19f / 24f); // на 19 часов вечера целимся
-                world.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
-                world.Tracker.SendToAllMessage(ChatStyle.Aqua + L.S("CommandsTimeNight"));
+                worldServer.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
+                worldServer.Tracker.SendToAllMessage(ChatStyle.Aqua + L.S("CommandsTimeNight"));
                 return "";
             }
 

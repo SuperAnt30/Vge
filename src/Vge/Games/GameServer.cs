@@ -355,7 +355,7 @@ namespace Vge.Games
                 // Тут должен знать его Ник, и место спавна
                 // Отправляем количество шагов на загрузку
 
-                WorldServer world = Players.PlayerOwner.World;
+                WorldServer worldServer = Players.PlayerOwner.GetWorld();
                 int cpx = Players.PlayerOwner.ChunkPositionX;
                 int cpy = Players.PlayerOwner.ChunkPositionZ;
                 int radius = Players.PlayerOwner.ActiveRadius + FragmentManager.AddOverviewChunkServer;
@@ -366,13 +366,13 @@ namespace Vge.Games
                 {
                     for (int y = -radius; y <= radius; y++)
                     {
-                        world.ChunkPrServ.InitialLoadingChunk(cpx + x, cpy + y);
+                        worldServer.ChunkPrServ.InitialLoadingChunk(cpx + x, cpy + y);
                         ResponsePacketOwner(new PacketS02LoadingGame(PacketS02LoadingGame.EnumStatus.Step));
                     }
                 }
-                if (Ce.IsDebugDrawChunks && world.IdWorld == 0)
+                if (Ce.IsDebugDrawChunks && worldServer.IdWorld == 0)
                 {
-                    OnTagDebug(Debug.Key.ChunkReady.ToString(), world.ChunkPr.GetListDebug());
+                    OnTagDebug(Debug.Key.ChunkReady.ToString(), worldServer.ChunkPr.GetListDebug());
                 }
                 // Загрузка закончена, последний штрих передаём id игрока и его uuid
                 Players.JoinGameOwner();

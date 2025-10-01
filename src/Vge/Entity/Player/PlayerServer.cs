@@ -51,7 +51,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Активный радиус обзора для сервера, нужен для спавна и тиков блоков
         /// </summary>
-        public byte ActiveRadius => World.Settings.ActiveRadius;
+        public byte ActiveRadius => GetWorld().Settings.ActiveRadius;
         /// <summary>
         /// Является ли якорь игроком
         /// </summary>
@@ -116,10 +116,6 @@ namespace Vge.Entity.Player
         /// Основной сервер
         /// </summary>
         protected readonly GameServer _server;
-        /// <summary>
-        /// Активный мир сервера
-        /// </summary>
-        private WorldServer _world;
 
         /// <summary>
         /// Имя пути к папке игрока
@@ -198,7 +194,7 @@ namespace Vge.Entity.Player
             TimesExisted += _server.DeltaTime;
 
             // Синхронизация времени с клиентом
-            uint tick = World.Settings.Calendar.TickCounter;
+            uint tick = GetWorld().Settings.Calendar.TickCounter;
             if (tick % 600 == 0)
             {
                 // Раз в 30 секунд обновляем тик с клиентом
@@ -209,7 +205,7 @@ namespace Vge.Entity.Player
             if (IsPositionChange() || IsChangeOverview())
             {
                 //server.Filer.StartSection("Fragment" + OverviewChunk);
-                World.Fragment.UpdateMountedMovingAnchor(this);
+                GetWorld().Fragment.UpdateMountedMovingAnchor(this);
                 //server.Filer.EndSection();
                 PosPrevX = PosX;
                 PosPrevY = PosY;
@@ -229,7 +225,7 @@ namespace Vge.Entity.Player
             }
 
             // Обновления предметов которые могут видеть игроки, что в руке, броня
-            Inventory.UpdateServer(this, World);
+            Inventory.UpdateServer(this, GetWorld());
 
             _UpdatePlayer();
         }
@@ -252,7 +248,7 @@ namespace Vge.Entity.Player
                 x = Conv.IndexToChunkX(index);
                 y = Conv.IndexToChunkY(index);
 
-                chunk = World.GetChunk(x, y);
+                chunk = GetWorld().GetChunk(x, y);
                 // NULL по сути не должен быть!!!
                 if (chunk != null && chunk.IsSendChunk)
                 {
@@ -364,12 +360,12 @@ namespace Vge.Entity.Player
         {
             // Временно!
             // Уничтожение блока
-            WorldServer world = World;
-            BlockState blockState = world.GetBlockState(packet.GetBlockPos());
+            WorldServer worldServer = GetWorld();
+            BlockState blockState = worldServer.GetBlockState(packet.GetBlockPos());
             if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
             {
                 BlockBase block = blockState.GetBlock();
-                world.SetBlockToAir(packet.GetBlockPos(), world.IsRemote ? 14 : 31);
+                worldServer.SetBlockToAir(packet.GetBlockPos(), worldServer.IsRemote ? 14 : 31);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }
             else
@@ -380,14 +376,13 @@ namespace Vge.Entity.Player
                     int id = Ce.Entities.IndexItem;
                     if (id > 0)
                     {
-                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, world.Collision);
+                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, worldServer);
                         if (entity is EntityItem entityItem)
                         {
                             entityItem.InitRun(this, 0);
                             entityItem.SetEntityItemStack(itemStack);
                         }
-                        //entity.SetEntityId(_server.LastEntityId());
-                        world.SpawnEntityInWorld(entity);
+                        worldServer.SpawnEntityInWorld(entity);
                     }
                 }
                 /*
@@ -450,15 +445,15 @@ namespace Vge.Entity.Player
             // Определяем на какую сторону смотрит игрок
             Pole pole = PoleConvert.FromAngle(RotationYaw);
 
-            WorldServer world = World;
+            WorldServer worldServer = GetWorld();
             BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
             BlockBase block = blockState.GetBlock();
 
             BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
             // TODO::ВРЕМЕННО!!!
-            blockState = block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, pole, packet.Facing);
+            blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
-            world.SetBlockState(blockPos, blockState, world.IsRemote ? 14 : 31);
+            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
         }
 
         /// <summary>
@@ -484,7 +479,7 @@ namespace Vge.Entity.Player
         /// Пакет: анимации игрока
         /// </summary>
         public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
-            => World.Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+            => GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
 
         /// <summary>
         /// Пакет: кликов по окну и контролам
@@ -537,9 +532,9 @@ namespace Vge.Entity.Player
             // Id игрока
             SendPacket(new PacketS03JoinGame(Id, UUID));
             // Информацию о мире в каком игрок находиться
-            SendPacket(new PacketS07RespawnInWorld(IdWorld, World.Settings));
+            SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Время на сервере
-            SendPacket(new PacketS04TickUpdate(World.Settings.Calendar.TickCounter));
+            SendPacket(new PacketS04TickUpdate(GetWorld().Settings.Calendar.TickCounter));
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // Передаём весь инвентарь
@@ -549,7 +544,7 @@ namespace Vge.Entity.Player
 
 
             // Вносим в менеджер фрагментов игрока
-            World.Fragment.AddAnchor(this);
+            GetWorld().Fragment.AddAnchor(this);
 
             // Установленный перемещенный якорь
             MountedMovedAnchor();
@@ -563,7 +558,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public void LeftGame()
         {
-            World.Fragment.RemoveAnchor(this);
+            GetWorld().Fragment.RemoveAnchor(this);
             // Сохраняем
             WriteToFile();
         }
@@ -573,22 +568,16 @@ namespace Vge.Entity.Player
         #region World
 
         /// <summary>
-        /// Мир в котором находится игрок
+        /// Объект сетевого мира, существует только у сущностей на сервере
         /// </summary>
-        public WorldServer World
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override WorldServer GetWorld()
         {
-            get
+            if (_world == null)
             {
-                if (_world == null)
-                {
-                    _world = _server.Worlds.GetWorld(IdWorld);
-                }
-                return _world;
+                _world = _server.Worlds.GetWorld(IdWorld);
             }
-            private set
-            {
-                _world = value;
-            }
+            return _world;
         }
 
         /// <summary>
@@ -596,14 +585,14 @@ namespace Vge.Entity.Player
         /// </summary>
         public void ChangeWorld(byte newIdWorld)
         {
-            World.RemovePlayerInWorldForNextWorld(this);
+            GetWorld().RemovePlayerInWorldForNextWorld(this);
             // Смена id мира
             IdWorld = newIdWorld;
-            World = _server.Worlds.GetWorld(IdWorld);
-            SendPacket(new PacketS07RespawnInWorld(IdWorld, World.Settings));
+            _world = _server.Worlds.GetWorld(IdWorld);
+            SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Вносим в менеджер фрагментов игрока
             IsDead = false;
-            World.PlayerForNextWorld(this);
+            GetWorld().PlayerForNextWorld(this);
             // Установленный перемещенный якорь
             MountedMovedAnchor();
         }

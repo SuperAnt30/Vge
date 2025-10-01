@@ -32,15 +32,15 @@ namespace Mvk2.Entity.List
             Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
             Inventory.SetStackInSlot(3, new ItemStack(Ce.Items.ItemObjects[6]));
             Inventory.SetStackInSlot(4, new ItemStack(Ce.Items.ItemObjects[7]));
-            Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
+         //   Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
             Inventory.SetStackInSlot(6, new ItemStack(Ce.Items.ItemObjects[3], 3));
             Inventory.SetStackInSlot(7, new ItemStack(Ce.Items.ItemObjects[5]));
 
             Inventory.SetStackInSlot(8, new ItemStack(Ce.Items.ItemObjects[0]));
-            Inventory.SetStackInSlot(9, new ItemStack(Ce.Items.ItemObjects[4]));
+            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[4]));
 
             // При запуске на сервере
-            InvPlayer.CheckingClothes();
+            InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = InvPlayer = new InventoryPlayer();
+            Inventory = InvPlayer = new InventoryPlayer(this);
             InvPlayer.SlotSetted += _InventoryPlayer_SlotSetted;
             InvPlayer.SlotStorageChanged += _InventoryPlayer_SlotStorageChanged;
         }
@@ -78,10 +78,8 @@ namespace Mvk2.Entity.List
             MarkPlayerActive();
             EnumActionClickWindow action = (EnumActionClickWindow)packet.Action;
 
-            if ((action == EnumActionClickWindow.Close || action == EnumActionClickWindow.ThrowOutAir)
-                && InvPlayer.StackAir != null)
+            if (action == EnumActionClickWindow.Close || action == EnumActionClickWindow.ThrowOutAir)
             {
-                DropItem(World, InvPlayer.StackAir, true, false);
                 InvPlayer.ThrowOutAir();
             }
 
@@ -107,16 +105,19 @@ namespace Mvk2.Entity.List
         /// <param name="itemStack">Стак предмета</param>
         /// <param name="inFrontOf">Флаг перед собой</param>
         /// <param name="longAway">Далеко бросить от себя</param>
-        public override void DropItem(WorldServer worldServer, 
-            ItemStack itemStack, bool inFrontOf, bool longAway)
+        public override void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway)
         {
-            ushort id = Ce.Entities.IndexItem;
-            EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer.Collision);
-            if (entity is EntityItem entityItem)
+            WorldServer worldServer = GetWorld();
+            if (worldServer != null)
             {
-                entityItem.SetEntityItemStack(itemStack);
+                ushort id = Ce.Entities.IndexItem;
+                EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer);
+                if (entity is EntityItem entityItem)
+                {
+                    entityItem.SetEntityItemStack(itemStack);
+                }
+                worldServer.EntityDropsEntityInWorld(this, entity, inFrontOf, longAway);
             }
-            worldServer.EntityDropsEntityInWorld(this, entity, inFrontOf, longAway);
         }
 
         #endregion

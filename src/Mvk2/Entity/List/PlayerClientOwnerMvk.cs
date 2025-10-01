@@ -25,7 +25,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = InvPlayer = new InventoryPlayer();
+            Inventory = InvPlayer = new InventoryPlayer(null);
             Inventory.OutsideChanged += Inventory_OutsideChanged;
             InvPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
         }
