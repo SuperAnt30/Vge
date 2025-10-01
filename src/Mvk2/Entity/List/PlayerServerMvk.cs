@@ -61,13 +61,16 @@ namespace Mvk2.Entity.List
         {
             // SendToAllPlayersUseTileEntity Mvk 1
         }
-            //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+        //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
 
         /// <summary>
         /// Событие изменён слот
         /// </summary>
         private void _InventoryPlayer_SlotSetted(object sender, SlotEventArgs e)
-            => SendPacket(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
+        {
+            // CheckKnowledge(stack);
+            SendPacket(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
+        }
 
         /// <summary>
         /// Пакет: кликов по окну и контролам

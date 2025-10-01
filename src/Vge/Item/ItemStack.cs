@@ -74,6 +74,12 @@ namespace Vge.Item
         }
 
         /// <summary>
+        /// Количество сделать нуль
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Zero() => Amount = 0;
+
+        /// <summary>
         /// Проверка и замена стака если мы берём в воздух блокировка для положить в инвентарь и или ящик
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,6 +91,36 @@ namespace Vge.Item
             }
             return this;
         }
+
+        #region Is
+
+        /// <summary>
+        /// Возвращает true, когда повреждаемый элемент поврежден
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsItemDamaged() => IsItemStackDamageable() && ItemDamage > 0;
+
+        /// <summary>
+        /// true, если этот стек предметов можно повредить
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsItemStackDamageable() => Item.MaxDamage > 0;
+
+        /// <summary>
+        /// Возвращает true, если стак может содержать 2 или более единиц элемента.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsStackable() 
+            => Item.MaxStackSize > 1 && (!IsItemStackDamageable() || !IsItemDamaged());
+
+        /// <summary>
+        /// Сравнить предмет (стак без учёта количества)
+        /// </summary>
+        public bool IsItemEqual(ItemStack other) => other != null 
+            && Item.IndexItem == other.Item.IndexItem && ItemDamage == other.ItemDamage;
+
+        #endregion
+
 
         /// <summary>
         /// Записать стак в буффер пакета

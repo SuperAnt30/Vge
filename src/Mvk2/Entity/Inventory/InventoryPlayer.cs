@@ -28,10 +28,25 @@ namespace Mvk2.Entity.Inventory
         /// Игрок сервера
         /// </summary>
         private readonly PlayerServerMvk _playerServer;
+        /// <summary>
+        /// Управление контейнером для передачи пачками
+        /// </summary>
+        private readonly ConteinerManagement _conteiner;
 
         public InventoryPlayer(PlayerServerMvk playerServer)
             // Первый слот одеждый это ячейка левой руки
-            : base(8, 11) => _playerServer = playerServer;
+            : base(8, 11)
+        {
+            _playerServer = playerServer;
+            if (playerServer != null)
+            {
+                _conteiner = new ConteinerManagement();
+                // Перенос стака шифтом только на сервере фиксация
+                _conteiner.SendSetSlot += (sender, e) => _OnSlotSetted(e);
+                _conteiner.SendCountSlotsBackpack += (sender, e) 
+                    => _DamageCaregory(e.SlotId, e.Amount);
+            }
+        }
 
         /// <summary>
         /// Инициализация общего количества
@@ -85,19 +100,23 @@ namespace Mvk2.Entity.Inventory
             else
             {
                 // Имеется что-то в ячейке
-                /*if (isShift)
+                if (isShift)
                 {
-                    // Если держим шифт, то задача перебрасывать предмет с инвентаря в свободную ячейку склада или наоборот
+                    // Если держим шифт, то задача перебрасывать предмет с инвентаря
+                    // в свободную ячейку склада или наоборот
+
                     if (slotIn < 100)
                     {
                         // Кликнули на инвентарь
-                        if (((EntityPlayerServer)Player).IsOpenInventory)
+                      //  if (((EntityPlayerServer)Player).IsOpenInventory)
                         {
                             // Тут клики через шифт по инвентарю
-                            if (slotIn < COUNT_CURRENT)
+                            if (slotIn < _mainCount)
                             {
                                 // Кликнули на инвентарь быстрого доступа
-                                if (!conteiner.AddItemStackToInventory(mainBackpack, CheckSlotToAir(stackSlot), LimitBackpack, COUNT_CURRENT))
+                                _conteiner.IdDamageCategory = 1;
+                                if (!_conteiner.AddItemStackToInventory(_items, _mainCount + _clothCount, 
+                                    _CheckSlotToAir(stackSlot), LimitBackpack))
                                 {
                                     _SetSendSlotContents(slotIn, stackSlot);
                                 }
@@ -109,7 +128,9 @@ namespace Mvk2.Entity.Inventory
                             else
                             {
                                 // Кликнули на рюкзак
-                                if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                                _conteiner.IdDamageCategory = 2;
+                                _conteiner.IdDamageSlotIgnor = _currentIndex;
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
                                 {
                                     _SetSendSlotContents(slotIn, stackSlot);
                                 }
@@ -117,9 +138,11 @@ namespace Mvk2.Entity.Inventory
                                 {
                                     _SetSendSlotContents(slotIn);
                                 }
+                                _conteiner.IdDamageSlotIgnor = 255;
                             }
+                            _conteiner.IdDamageCategory = 0;
                         }
-                        else
+                        /*else
                         {
                             TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
                             if (tileEntity != null)
@@ -133,14 +156,16 @@ namespace Mvk2.Entity.Inventory
                                     _SetSendSlotContents(slotIn);
                                 }
                             }
-                        }
+                        }*/
                     }
                     else
                     {
                         if (_CanPutItemStack(slotIn, stackSlot))
                         {
-                            // Кликнули на склад
-                            if (!conteiner.AddItemStackToInventory(mainInventory, stackSlot))
+                            // Кликнули в хранилище
+                            _conteiner.IdDamageCategory = 2;
+                            _conteiner.IdDamageSlotIgnor = _currentIndex;
+                            if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
                             {
                                 _SetSendSlotContents(slotIn, stackSlot);
                             }
@@ -148,10 +173,12 @@ namespace Mvk2.Entity.Inventory
                             {
                                 _SetSendSlotContents(slotIn);
                             }
+                            _conteiner.IdDamageCategory = 0;
+                            _conteiner.IdDamageSlotIgnor = 255;
                         }
                     }
                 }
-                else*/
+                else
                 {
                     if (stackAir == null)
                     {
@@ -214,7 +241,6 @@ namespace Mvk2.Entity.Inventory
                     }
                 }
             }
-            return;
         }
 
         /// <summary>
@@ -344,14 +370,30 @@ namespace Mvk2.Entity.Inventory
                 }
                 else if (slotIn >= _mainCount && slotIn - _mainCount < _clothCount)
                 {
-                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // 1-11 одежда
-                }
-
-                if (slotIn > _mainCount && slotIn < _mainCount + _clothCount)
-                {
                     // Тут при смене одежды
-                    CheckingClothes(_playerServer != null);
-                    //Console.WriteLine((_isClient ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
+                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // 1-11 одежда
+                    if (slotIn != _mainCount) // если равно, это Левая рука
+                    {
+                        CheckingClothes(_playerServer != null);
+                        Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
+                    }
+                }
+                else if (slotIn >= _mainCount + _clothCount)
+                {
+                    // Рюкзак
+                    if (stack != null && _playerServer != null)
+                    {
+                        _DamageCaregory(1, 1);
+                    }
+                }
+                else if (slotIn < _mainCount)
+                {
+                    // Быстрый доступ (правая рука) 
+                    // !!! Сюда не поподаем в выбранную руку !!!, так задумано
+                    if (stack != null && _playerServer != null)
+                    {
+                        _DamageCaregory(2, 1);
+                    }
                 }
             }
             //else // TODO:: 2025-09-22 добавить склад, рюкзак.
@@ -408,6 +450,20 @@ namespace Mvk2.Entity.Inventory
             CheckingClothes(false);
         }
 
+        /// <summary>
+        /// Надламываем предмет одежды, к примеру рюкзак если прилетел предмет stack в слот рюкзака
+        /// </summary>
+        private void _DamageCaregory(int category, int amount)
+        {
+            Console.WriteLine("Damage [" + category + "] " + amount);
+            //if (clothInventory[ID_SLOT_BACKPACK] != null)
+            //{
+            //    // Урон рюкзаку
+            //    clothInventory[ID_SLOT_BACKPACK].DamageItemCloth(Player.World, amount, ID_SLOT_BACKPACK, Player);
+            //    OnChanged(IdSlotBackpackAll);
+            //}
+        }
+
         #region Event
 
         /// <summary>
@@ -429,6 +485,11 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private void _OnSlotSetted(int slotId, ItemStack stack)
             => SlotSetted?.Invoke(this, new SlotEventArgs(slotId, stack));
+        /// <summary>
+        /// Событие слот задан
+        /// </summary>
+        private void _OnSlotSetted(SlotEventArgs e)
+            => SlotSetted?.Invoke(this, e);
 
         /// <summary>
         /// Событие слот хранилища (TileEntity) изменён

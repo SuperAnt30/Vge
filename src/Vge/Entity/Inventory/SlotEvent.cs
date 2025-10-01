@@ -13,6 +13,10 @@ namespace Vge.Entity.Inventory
         /// Объект одной ячейки
         /// </summary>
         public readonly ItemStack Stack;
+        /// <summary>
+        /// Количество предметов добавляется к стаку, если оно равно как в стаке, значит целиком
+        /// </summary>
+        public readonly int Amount;
 
         public SlotEventArgs(int slot) => SlotId = slot;
 
@@ -20,6 +24,19 @@ namespace Vge.Entity.Inventory
         {
             SlotId = slot;
             Stack = stack;
+        }
+
+        public SlotEventArgs(int slot, int amount)
+        {
+            SlotId = slot;
+            Amount = amount;
+        }
+
+        public SlotEventArgs(int slot, ItemStack stack, int amount)
+        {
+            SlotId = slot;
+            Stack = stack;
+            Amount = amount;
         }
     }
 }
