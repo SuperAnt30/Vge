@@ -70,6 +70,8 @@ namespace Mvk2.Games
                 case Keys.T: case Keys.Oemtilde: _windowMvk.LScreenMvk.Chat(); break;
                 // скрин инвентаря
                 case Keys.E: _windowMvk.LScreenMvk.Inventory(); break;
+                // скрин хранилища
+                case Keys.R: _windowMvk.LScreenMvk.StorageDebug(); break;
             }
         }
 

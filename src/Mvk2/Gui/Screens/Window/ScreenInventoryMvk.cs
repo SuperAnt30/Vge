@@ -56,8 +56,8 @@ namespace Mvk2.Gui.Screens
             {
                 slot = new ControlSlot(window, (byte)i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
-                slot.ClickLeft += Slot_ClickLeft;
-                slot.ClickRight += Slot_ClickRight;
+                slot.ClickLeft += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, false);
+                slot.ClickRight += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, true);
                 _slot[i] = slot;
             }
             _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
@@ -105,15 +105,9 @@ namespace Mvk2.Gui.Screens
                 if (e.SlotId < _slot.Length)
                 {
                     _slot[e.SlotId].SetStack(e.Stack);
-               }
+                }
             }
         }
-
-        private void Slot_ClickRight(object sender, System.EventArgs e)
-            => _SendPacket(((ControlSlot)sender).SlotId, true);
-
-        private void Slot_ClickLeft(object sender, System.EventArgs e)
-            => _SendPacket(((ControlSlot)sender).SlotId, false);
 
         private void _SendPacket(byte slotId, bool isRight)
         {

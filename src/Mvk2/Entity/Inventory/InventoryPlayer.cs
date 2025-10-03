@@ -375,7 +375,7 @@ namespace Mvk2.Entity.Inventory
                     if (slotIn != _mainCount) // если равно, это Левая рука
                     {
                         CheckingClothes(_playerServer != null);
-                        Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
+                       // Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
                     }
                 }
                 else if (slotIn >= _mainCount + _clothCount)
@@ -455,7 +455,7 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private void _DamageCaregory(int category, int amount)
         {
-            Console.WriteLine("Damage [" + category + "] " + amount);
+           // Console.WriteLine("Damage [" + category + "] " + amount);
             //if (clothInventory[ID_SLOT_BACKPACK] != null)
             //{
             //    // Урон рюкзаку

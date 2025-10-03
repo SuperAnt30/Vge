@@ -19,6 +19,11 @@ namespace Mvk2.Renderer
         /// Текстура Inventory
         /// </summary>
         public uint Inventory;
+        /// <summary>
+        /// Текстура контейнера хранилища Storage
+        /// </summary>
+        public uint ConteinerStorage;
+        
     }
 
 
@@ -46,7 +51,11 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Текстура Inventory
         /// </summary>
-        Inventory
+        Inventory,
+        /// <summary>
+        /// Текстура контейнера хранилища Storage
+        /// </summary>
+        ConteinerStorage
     }
 
 }
