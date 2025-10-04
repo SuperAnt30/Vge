@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Packets;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Inventory;
@@ -89,12 +90,13 @@ namespace Mvk2.Entity.List
             switch (action)
             {
                 case EnumActionClickWindow.OpenInventory:
+                    InvPlayer.ServerOpenInventory();
                     break;
                 case EnumActionClickWindow.Close:
-                   // entityPlayer.OnActionBlockWindowsClose();
+                    Console.WriteLine("Close");
+                    InvPlayer.ServerCloseInventory();
                     break;
                 case EnumActionClickWindow.ClickSlot:
-                    // Клик по слоту
                     InvPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
                     break;
             }

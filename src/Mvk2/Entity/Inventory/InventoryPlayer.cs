@@ -32,6 +32,10 @@ namespace Mvk2.Entity.Inventory
         /// Управление контейнером для передачи пачками
         /// </summary>
         private readonly ConteinerManagement _conteiner;
+        /// <summary>
+        /// Открыто ли окно инвентаря, для сервера
+        /// </summary>
+        private bool _isOpenInventory;
 
         public InventoryPlayer(PlayerServerMvk playerServer)
             // Первый слот одеждый это ячейка левой руки
@@ -56,6 +60,16 @@ namespace Mvk2.Entity.Inventory
             => _allCount = (byte)(_mainCount + _clothCount + _backpackCount);
 
         #region Server
+
+        /// <summary>
+        /// Открыли инвентарь, для сервера
+        /// </summary>
+        public void ServerOpenInventory() => _isOpenInventory = true;
+
+        /// <summary>
+        /// Закрыли инвентарь, для сервера
+        /// </summary>
+        public void ServerCloseInventory() => _isOpenInventory = false;
 
         /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
@@ -104,11 +118,10 @@ namespace Mvk2.Entity.Inventory
                 {
                     // Если держим шифт, то задача перебрасывать предмет с инвентаря
                     // в свободную ячейку склада или наоборот
-
                     if (slotIn < 100)
                     {
                         // Кликнули на инвентарь
-                      //  if (((EntityPlayerServer)Player).IsOpenInventory)
+                        if (_isOpenInventory)
                         {
                             // Тут клики через шифт по инвентарю
                             if (slotIn < _mainCount)
@@ -142,21 +155,22 @@ namespace Mvk2.Entity.Inventory
                             }
                             _conteiner.IdDamageCategory = 0;
                         }
-                        /*else
+                        else
                         {
-                            TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
-                            if (tileEntity != null)
-                            {
-                                if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
-                                {
-                                    _SetSendSlotContents(slotIn, stackSlot);
-                                }
-                                else
-                                {
-                                    _SetSendSlotContents(slotIn);
-                                }
-                            }
-                        }*/
+                            return;
+                            //TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
+                            //if (tileEntity != null)
+                            //{
+                            //    if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
+                            //    {
+                            //        _SetSendSlotContents(slotIn, stackSlot);
+                            //    }
+                            //    else
+                            //    {
+                            //        _SetSendSlotContents(slotIn);
+                            //    }
+                            //}
+                        }
                     }
                     else
                     {
