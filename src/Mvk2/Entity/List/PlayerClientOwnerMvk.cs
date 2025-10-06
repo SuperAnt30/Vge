@@ -56,7 +56,7 @@ namespace Mvk2.Entity.List
             else
             {
                 // Пришёл стак для склада
-                _game.ModClient.Screen.AcceptNetworkPackage(packet);
+                _game.ModClient.Screen?.AcceptNetworkPackage(packet);
             }
         }
 

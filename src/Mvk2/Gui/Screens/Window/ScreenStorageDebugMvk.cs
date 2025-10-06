@@ -4,6 +4,7 @@ using Vge.Entity.Inventory;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.TileEntity;
 using WinGL.Actions;
 
 namespace Mvk2.Gui.Screens
@@ -15,7 +16,7 @@ namespace Mvk2.Gui.Screens
     {
         public ScreenStorageDebugMvk(WindowMvk window) : base(window, 512, 354)
         {
-            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.Open));
+            _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenBoxDebug));
         }
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Mvk2.Gui.Screens
             }
 
             // Ящик
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < TileEntityBase.Count; i++)
             {
                 _SetSlot(i + 34, new ControlSlot(_windowMvk, (byte)(i + 100), null));
                 _slot[i + 34].SetEnable(false);
@@ -82,7 +83,7 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Количество слотов
         /// </summary>
-        protected override int _GetSlotCount() => 9 + 25 + 10;
+        protected override int _GetSlotCount() => 9 + 25 + TileEntityBase.Count;
 
         /// <summary>
         /// Название заголовка
@@ -102,7 +103,7 @@ namespace Mvk2.Gui.Screens
             else if (packet is PacketS30WindowItems packetS30)
             {
                 // Загрузить все слоты в ящик
-                for (int i = 34; i < 44; i++)
+                for (int i = 34; i < 34 + TileEntityBase.Count; i++)
                 {
                     _slot[i].SetStack(packetS30.Stacks[i - 34]);
                     _slot[i].SetEnable(true);
@@ -119,7 +120,6 @@ namespace Mvk2.Gui.Screens
             PosX = (Width - WidthWindow) / 2;
             PosY = (Height - HeightWindow) / 2;
             
-            base.OnResized();
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
 
@@ -144,7 +144,9 @@ namespace Mvk2.Gui.Screens
 
                 // Ящик
                 _slot[i + 34].SetPosition(PosX + 6, PosY + 45 + i * 50);
-                _slot[i + 39].SetPosition(PosX + 56, PosY + 45 + i * 50);
+                //_slot[i + 39].SetPosition(PosX + 56, PosY + 45 + i * 50);
+                //_slot[i + 44].SetPosition(PosX + 106, PosY + 45 + i * 50);
+                //_slot[i + 49].SetPosition(PosX + 156, PosY + 45 + i * 50);
             }
         }
 

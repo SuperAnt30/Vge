@@ -3,7 +3,6 @@ using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Server;
-using Vge.World;
 
 namespace Vge.TileEntity
 {
@@ -12,7 +11,12 @@ namespace Vge.TileEntity
     /// </summary>
     public class TileEntityBase
     {
-        private ItemStack[] _stacks = new ItemStack[10];
+        /// <summary>
+        /// Количество слотов
+        /// </summary>
+        public const int Count = 5;
+
+        private ItemStack[] _stacks = new ItemStack[Count];
 
         /// <summary>
         /// Управление контейнером для передачи пачками
@@ -60,7 +64,7 @@ namespace Vge.TileEntity
         /// Добавляет стак предметов в инвентарь, возвращает false, если это невозможно.
         /// </summary>
         public virtual bool AddItemStackToInventory(ItemStack stack) 
-            => CanPutItemStack(stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, 10);
+            => CanPutItemStack(stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, Count);
 
         /// <summary>
         /// Проверяем можно ли установить данный стак в определённой ячейке склада

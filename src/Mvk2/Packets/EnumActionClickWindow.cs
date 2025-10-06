@@ -6,9 +6,9 @@
     public enum EnumActionClickWindow : byte
     {
         /// <summary>
-        /// Открыто окно
+        /// Открыто окно отладочного ящика
         /// </summary>
-        Open = 0,
+        OpenBoxDebug = 0,
         /// <summary>
         /// Закрыть окно
         /// </summary>

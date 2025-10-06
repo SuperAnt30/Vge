@@ -89,7 +89,7 @@ namespace Mvk2.Entity.List
 
             switch (action)
             {
-                case EnumActionClickWindow.Open:
+                case EnumActionClickWindow.OpenBoxDebug:
                     Ce.TileEntityDebug.OpenWindow(this);
                     break;
                 case EnumActionClickWindow.OpenInventory:

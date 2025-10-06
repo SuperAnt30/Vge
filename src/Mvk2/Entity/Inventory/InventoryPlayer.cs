@@ -185,19 +185,38 @@ namespace Mvk2.Entity.Inventory
                     {
                         if (_CanPutItemStack(slotIn, stackSlot))
                         {
-                            // Кликнули в хранилище
-                            _conteiner.IdDamageCategory = 2;
-                            _conteiner.IdDamageSlotIgnor = _currentIndex;
-                            if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
-                            {
-                                _SetSendSlotContents(slotIn, stackSlot);
-                            }
-                            else
-                            {
-                                _SetSendSlotContents(slotIn);
-                            }
-                            _conteiner.IdDamageCategory = 0;
-                            _conteiner.IdDamageSlotIgnor = 255;
+                           // if (_isOpenInventory)
+                            //{
+                                // Кликнули из рюкзака
+                                _conteiner.IdDamageCategory = 2;
+                                _conteiner.IdDamageSlotIgnor = _currentIndex;
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                                {
+                                    _SetSendSlotContents(slotIn, stackSlot);
+                                }
+                                else
+                                {
+                                    _SetSendSlotContents(slotIn);
+                                }
+                                _conteiner.IdDamageCategory = 0;
+                                _conteiner.IdDamageSlotIgnor = 255;
+                            //}
+                            //else
+                            //{
+                            //    // Кликнули из хранилища
+                            //    _conteiner.IdDamageCategory = 2;
+                            //    _conteiner.IdDamageSlotIgnor = _currentIndex;
+                            //    if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                            //    {
+                            //        _SetSendSlotContents(slotIn, stackSlot);
+                            //    }
+                            //    else
+                            //    {
+                            //        _SetSendSlotContents(slotIn);
+                            //    }
+                            //    _conteiner.IdDamageCategory = 0;
+                            //    _conteiner.IdDamageSlotIgnor = 255;
+                            //}
                         }
                     }
                 }
