@@ -419,7 +419,7 @@ namespace Vge.Network
             }
             else
             {
-              //  ClientMain.Screen.AcceptNetworkPackage(packet);
+                Game.ModClient.Screen.AcceptNetworkPackage(packet);
             }
         }
 

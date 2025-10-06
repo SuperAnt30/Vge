@@ -56,7 +56,7 @@ namespace Mvk2.Entity.List
         }
 
         /// <summary>
-        /// Событие слот хранилища изменён
+        /// TODO::2025-10-06 Событие слот хранилища изменён, обновляем всем кто сейчас смотрит содержимое
         /// </summary>
         private void _InventoryPlayer_SlotStorageChanged(object sender, SlotEventArgs e)
         {
@@ -89,11 +89,13 @@ namespace Mvk2.Entity.List
 
             switch (action)
             {
+                case EnumActionClickWindow.Open:
+                    Ce.TileEntityDebug.OpenWindow(this);
+                    break;
                 case EnumActionClickWindow.OpenInventory:
                     InvPlayer.ServerOpenInventory();
                     break;
                 case EnumActionClickWindow.Close:
-                    Console.WriteLine("Close");
                     InvPlayer.ServerCloseInventory();
                     break;
                 case EnumActionClickWindow.ClickSlot:

@@ -38,5 +38,8 @@ namespace Vge.Entity.Inventory
             Stack = stack;
             Amount = amount;
         }
+
+        public override string ToString() => SlotId.ToString() + " " 
+            + (Stack == null ? "Null" : Stack.ToString()) + " " + Amount.ToString();
     }
 }

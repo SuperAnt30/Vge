@@ -157,7 +157,16 @@ namespace Mvk2.Entity.Inventory
                         }
                         else
                         {
-                            return;
+                            if (!Ce.TileEntityDebug.AddItemStackToInventory(_CheckSlotToAir(stackSlot)))
+                            {
+                                _SetSendSlotContents(slotIn, stackSlot);
+                            }
+                            else
+                            {
+                                _SetSendSlotContents(slotIn);
+                            }
+
+                            //return;
                             //TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
                             //if (tileEntity != null)
                             //{
@@ -332,10 +341,10 @@ namespace Mvk2.Entity.Inventory
                 byte key = GetSlotClothKey(slotIn);
                 return key == 0 || (stack != null && stack.Item.CheckSlotClothKey(key));
             }
-            return true;
+            //return true;
             //}
 
-            //return tileEntityCache.CanPutItemStack(stack);
+            return Ce.TileEntityDebug.CanPutItemStack(stack);
         }
 
         /// <summary>
@@ -347,6 +356,7 @@ namespace Mvk2.Entity.Inventory
             if (slotIn > 99)
             {
                 // слот склада
+                return Ce.TileEntityDebug.GetStackInSlot(slotIn - 100);
                 //if (Player is EntityPlayerServer entityPlayerServer)
                 //{
                 //    tileEntityCache = entityPlayerServer.GetTileEntityAction();
@@ -355,7 +365,7 @@ namespace Mvk2.Entity.Inventory
                 //        return tileEntityCache.GetStackInSlot(slotIn - 100);
                 //    }
                 //}
-                return null;
+                //return null;
             }
             // слот у игрока
             return GetStackInSlot(slotIn);
@@ -373,7 +383,7 @@ namespace Mvk2.Entity.Inventory
                 StackAir = stack;
                 _OnSlotSetted(slotIn, stack);
             }
-            else if(slotIn < _allCount)
+            else if (slotIn < _allCount)
             {
                 _items[slotIn] = stack;
                 _OnSlotSetted(slotIn, stack);
@@ -410,13 +420,23 @@ namespace Mvk2.Entity.Inventory
                     }
                 }
             }
-            //else // TODO:: 2025-09-22 добавить склад, рюкзак.
-            //{
-            //   // base.SetInventorySlotContents(slotIn, stack);
-            //    _OnSlotSetted(slotIn, stack);
-            //}
-
-            
+            else
+            {
+                // TODO:: 2025-09-22 добавить склад, рюкзак.
+                // Склад
+                //Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
+                Ce.TileEntityDebug.SetStackInSlot(slotIn - 100, stack);
+                _OnSlotSetted(slotIn, stack);
+                //if (Player is EntityPlayerServer entityPlayerServer)
+                //{
+                //    // Слот активного блока
+                //    TileEntityBase tileEntity = entityPlayerServer.GetTileEntityAction();
+                //    if (tileEntity != null)
+                //    {
+                //        tileEntity.SetStackInSlot(slotIn - 100, stack);
+                //    }
+                //}
+            }
         }
 
         /// <summary>

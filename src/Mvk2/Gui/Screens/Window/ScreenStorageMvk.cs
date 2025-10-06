@@ -3,6 +3,7 @@ using Mvk2.Games;
 using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Mvk2.Renderer;
+using System;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
@@ -47,17 +48,26 @@ namespace Mvk2.Gui.Screens
 
             _icon = new ControlIcon(_windowMvk, null);
 
+            _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
+            _player.InvPlayer.SlotSetted += _InvPlayer_SlotSetted;
+
+            _Init();
+        }
+
+        /// <summary>
+        /// Инициализация слотов
+        /// </summary>
+        protected virtual void _Init()
+        {
             ControlSlot slot;
             for (int i = 0; i < _slot.Length; i++)
             {
-                slot = new ControlSlot(window, (byte)i,
+                slot = new ControlSlot(_windowMvk, (byte)i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
                 slot.ClickLeft += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, false);
                 slot.ClickRight += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, true);
                 _slot[i] = slot;
             }
-            _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
-            _player.InvPlayer.SlotSetted += _InvPlayer_SlotSetted;
         }
 
         /// <summary>
@@ -75,6 +85,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         private void _InvPlayer_SlotSetted(object sender, SlotEventArgs e)
         {
+            Console.WriteLine("SlotSetted " + e.ToString());
             if (e.SlotId == 255)
             {
                 _stakAir = e.Stack;
@@ -82,17 +93,28 @@ namespace Mvk2.Gui.Screens
             }
             else
             {
-                if (e.SlotId < _slot.Length)
-                {
-                    _slot[e.SlotId].SetStack(e.Stack);
-                }
+                _InvPlayerSlotSetted(e);
+            }
+        }
+
+        /// <summary>
+        /// Изменён слот, не воздух
+        /// </summary>
+        protected virtual void _InvPlayerSlotSetted(SlotEventArgs e)
+        {
+            if (e.SlotId < _slot.Length)
+            {
+                _slot[e.SlotId].SetStack(e.Stack);
             }
         }
 
         protected void _SendPacket(byte slotId, bool isRight)
         {
+            Console.WriteLine("Click " + slotId + " " + (isRight ? "Rifgt" : ""));
             // Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
-            if (_player.Inventory.GetStackInSlot(slotId) != null || _stakAir != null)
+            if (_player.Inventory.GetStackInSlot(slotId) != null // Проверка инвентарая наличие
+                || _stakAir != null // Ввоздухе есть что-то, в любом случае кликаем
+                || slotId > 99) // Склад
             {
                 _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
                     (byte)EnumActionClickWindow.ClickSlot,
@@ -186,6 +208,7 @@ namespace Mvk2.Gui.Screens
         {
             base.Dispose();
             _OnFinishing();
+            _player.InvPlayer.SlotSetted -= _InvPlayer_SlotSetted;
         }
     }
 }

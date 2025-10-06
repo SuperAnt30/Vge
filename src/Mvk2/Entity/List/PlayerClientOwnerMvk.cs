@@ -51,11 +51,12 @@ namespace Mvk2.Entity.List
             //    {
             //        ClientMain.Player.ItemInWorldManagerDestroyAbout();
             //    }
+
             }
             else
             {
                 // Пришёл стак для склада
-            //    ClientMain.Screen.AcceptNetworkPackage(packet);
+                _game.ModClient.Screen.AcceptNetworkPackage(packet);
             }
         }
 

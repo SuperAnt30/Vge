@@ -129,5 +129,11 @@ namespace Mvk2.Gui.Screens
 
             _toolTip.Draw();
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _player.InvPlayer.LimitBackpackChanged -= _InvPlayer_LimitBackpackChanged;
+        }
     }
 }

@@ -35,6 +35,14 @@ namespace Vge.Entity.Inventory
         public bool FlagCreativeMode;
 
         /// <summary>
+        /// Свещение слота для отправки
+        /// </summary>
+        private readonly byte _biasSlot = 0;
+
+
+        public ConteinerManagement(byte biasSlot = 0)=> _biasSlot = biasSlot;
+
+        /// <summary>
         /// Добавляет стек предметов в инвентарь, возвращает false, если это невозможно. С проверкой на креатив
         /// </summary>
         /// <param name="stacks">Массив инвентаря или хранилища, с чем работаем</param>
@@ -54,7 +62,7 @@ namespace Vge.Entity.Inventory
                     {
                         stacks[slot] = stack.Copy();
                         stack.Zero();
-                        _OnSendSetSlot(slot, stacks[slot], stacks[slot].Amount);
+                        _OnSendSetSlot(slot + _biasSlot, stacks[slot], stacks[slot].Amount);
                         if (IdDamageCategory != 0)
                         {
                             // Одно изменение в стаке рюкзака
@@ -158,7 +166,7 @@ namespace Vge.Entity.Inventory
                 {
                     amount -= amount2;
                     stacks[slot].AddAmount((byte)amount2);
-                    _OnSendSetSlot(slot, stacks[slot], amount2);
+                    _OnSendSetSlot(slot + _biasSlot, stacks[slot], amount2);
                     if (IdDamageCategory == 0
                         || (IdDamageCategory != 0 && IdDamageSlotIgnor != slot))
                     {

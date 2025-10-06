@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Vge.Gui.Controls;
+using Vge.Network;
 using WinGL.Actions;
 
 namespace Vge.Gui.Screens
@@ -241,5 +242,10 @@ namespace Vge.Gui.Screens
         }
 
         #endregion
+
+        /// <summary>
+        /// Получить сетевой пакет
+        /// </summary>
+        public virtual void AcceptNetworkPackage(IPacket packet) { }
     }
 }

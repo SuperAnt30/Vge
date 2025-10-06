@@ -1,5 +1,6 @@
 ﻿using Vge.Entity.Player;
 using Vge.Gui.Huds;
+using Vge.Gui.Screens;
 using Vge.Network.Packets.Server;
 using Vge.World;
 using WinGL.Actions;
@@ -23,6 +24,11 @@ namespace Vge.Games
         public GameModClient(WindowMain window) => _window = window;
 
         public void Init(GameBase game) => Game = game;
+
+        /// <summary>
+        /// Объект экрана
+        /// </summary>
+        public ScreenBase Screen => _window.Screen;
 
         /// <summary>
         /// Инициализация после старта игры, когда уже все блоки и сущности загружены

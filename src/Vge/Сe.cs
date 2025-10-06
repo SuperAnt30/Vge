@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Vge.Entity;
 using Vge.Item;
+using Vge.TileEntity;
 using Vge.World.Block;
 using WinGL.Util;
 
@@ -52,6 +53,11 @@ public sealed class Ce
     /// Различные массивы предметов
     /// </summary>
     public static ItemArrays Items;
+    /// <summary>
+    /// Отладочный тайл энтети для конейнера
+    /// </summary>
+    public static TileEntityBase TileEntityDebug;
+
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
     /// </summary>

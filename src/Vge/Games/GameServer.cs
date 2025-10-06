@@ -135,7 +135,9 @@ namespace Vge.Games
             _packets = new ProcessServerPackets(this);
             Players = new PlayerManager(this);
             Worlds = worlds;
-            
+
+            // Для отладки
+            Ce.TileEntityDebug = new TileEntity.TileEntityBase(this);
             _frequencyMs = Stopwatch.Frequency / 1000;
             _stopwatchTps.Start();
         }
