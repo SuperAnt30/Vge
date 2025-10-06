@@ -33,8 +33,8 @@ namespace Mvk2.Gui
         {
             _renderMvk = renderMvk;
             gl = game.GetOpenGL();
-            _meshInventoryBg = new MeshGuiColor(game.GetOpenGL());
-            _meshInventory = new MeshGuiColor(game.GetOpenGL());
+            _meshInventoryBg = new MeshGuiColor(gl);
+            _meshInventory = new MeshGuiColor(gl);
 
             if (_game.Player.Inventory is InventoryPlayer inventoryPlayer)
             {
@@ -158,6 +158,7 @@ namespace Mvk2.Gui
             base.Draw(timeIndex);
 
             _game.Render.DepthOff();
+            _renderMvk.ShaderBindGuiColor();
             _renderMvk.BindTextureHud();
             _meshInventoryBg.Draw();
             _meshInventory.Draw();
