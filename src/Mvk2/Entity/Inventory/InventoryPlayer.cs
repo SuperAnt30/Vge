@@ -185,8 +185,8 @@ namespace Mvk2.Entity.Inventory
                     {
                         if (_CanPutItemStack(slotIn, stackSlot))
                         {
-                           // if (_isOpenInventory)
-                            //{
+                            if (_isOpenInventory)
+                            {
                                 // Кликнули из рюкзака
                                 _conteiner.IdDamageCategory = 2;
                                 _conteiner.IdDamageSlotIgnor = _currentIndex;
@@ -200,23 +200,33 @@ namespace Mvk2.Entity.Inventory
                                 }
                                 _conteiner.IdDamageCategory = 0;
                                 _conteiner.IdDamageSlotIgnor = 255;
-                            //}
-                            //else
-                            //{
-                            //    // Кликнули из хранилища
-                            //    _conteiner.IdDamageCategory = 2;
-                            //    _conteiner.IdDamageSlotIgnor = _currentIndex;
-                            //    if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
-                            //    {
-                            //        _SetSendSlotContents(slotIn, stackSlot);
-                            //    }
-                            //    else
-                            //    {
-                            //        _SetSendSlotContents(slotIn);
-                            //    }
-                            //    _conteiner.IdDamageCategory = 0;
-                            //    _conteiner.IdDamageSlotIgnor = 255;
-                            //}
+                            }
+                            else
+                            {
+                                // Кликнули из хранилища
+                                _conteiner.IdDamageCategory = 2;
+                                _conteiner.IdDamageSlotIgnor = _currentIndex;
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                                {
+                                    _conteiner.IdDamageCategory = 1;
+                                    _conteiner.IdDamageSlotIgnor = 255;
+                                    if (!_conteiner.AddItemStackToInventory(_items, _mainCount + _clothCount,
+                                        _CheckSlotToAir(stackSlot), LimitBackpack))
+                                    {
+                                        _SetSendSlotContents(slotIn, stackSlot);
+                                    }
+                                    else
+                                    {
+                                        _SetSendSlotContents(slotIn);
+                                    }
+                                }
+                                else
+                                {
+                                    _SetSendSlotContents(slotIn);
+                                }
+                                _conteiner.IdDamageCategory = 0;
+                                _conteiner.IdDamageSlotIgnor = 255;
+                            }
                         }
                     }
                 }
@@ -326,7 +336,7 @@ namespace Mvk2.Entity.Inventory
             if (slotIn != 255 && slotIn > 99)
             {
                 // Изменения ячейки хранилища в TileEntity
-                _OnSlotStorageChanged(slotIn);
+                _OnSlotStorageChanged(slotIn, stack);
             }
         }
 
@@ -508,7 +518,7 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private void _DamageCaregory(int category, int amount)
         {
-           // Console.WriteLine("Damage [" + category + "] " + amount);
+            Console.WriteLine("Damage [" + category + "] " + amount);
             //if (clothInventory[ID_SLOT_BACKPACK] != null)
             //{
             //    // Урон рюкзаку
@@ -551,8 +561,8 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Событие слот хранилища (TileEntity) изменён
         /// </summary>
-        private void _OnSlotStorageChanged(int slotId)
-            => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId));
+        private void _OnSlotStorageChanged(int slotId, ItemStack stack)
+            => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId, stack));
 
 
         // TODO:: 2025-10-01 удалить

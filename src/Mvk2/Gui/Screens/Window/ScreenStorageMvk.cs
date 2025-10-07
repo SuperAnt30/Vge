@@ -4,6 +4,7 @@ using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Mvk2.Renderer;
 using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
@@ -59,25 +60,34 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected virtual void _Init()
         {
-            ControlSlot slot;
-            for (int i = 0; i < _slot.Length; i++)
-            {
-                slot = new ControlSlot(_windowMvk, (byte)i,
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
-                slot.ClickLeft += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, false);
-                slot.ClickRight += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, true);
-                _slot[i] = slot;
-            }
+            //ControlSlot slot;
+            //for (int i = 0; i < _slot.Length; i++)
+            //{
+            //    slot = new ControlSlot(_windowMvk, (byte)i, 
+            //        _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
+            //    slot.ClickLeft += (sender, e) => _SendPacket((ControlSlot)sender, false);
+            //    slot.ClickRight += (sender, e) => _SendPacket((ControlSlot)sender, true);
+            //    _slot[i] = slot;
+            //}
+        }
+
+        protected void _SetSlot(int index, ControlSlot slot)
+        {
+            slot.ClickLeft += (sender, e) => _SendPacket((ControlSlot)sender, false);
+            slot.ClickRight += (sender, e) => _SendPacket((ControlSlot)sender, true);
+            _slot[index] = slot;
         }
 
         /// <summary>
         /// Количество слотов
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual int _GetSlotCount() => 0;
 
         /// <summary>
         /// Название заголовка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual string _GetTitle() => "Storage";
 
         /// <summary>
@@ -108,7 +118,11 @@ namespace Mvk2.Gui.Screens
             }
         }
 
-        protected void _SendPacket(byte slotId, bool isRight)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SendPacket(ControlSlot controlSlot, bool isRight)
+            => _SendPacket(controlSlot.SlotId, isRight);
+
+        private void _SendPacket(byte slotId, bool isRight)
         {
             Console.WriteLine("Click " + slotId + " " + (isRight ? "Rifgt" : ""));
             // Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
@@ -201,8 +215,9 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Происходит перед закрытием окна
         /// </summary>
-        protected virtual void _OnFinishing() => _windowMvk.Game.TrancivePacket(
-            new PacketC0EClickWindow((byte)EnumActionClickWindow.Close));
+        protected virtual void _OnFinishing()
+            // ?. - неужна для защиты, если сервер дисконект, и выкинули из игры
+            => _windowMvk.Game?.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.Close));
         
         public override void Dispose()
         {

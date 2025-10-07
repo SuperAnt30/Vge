@@ -60,6 +60,8 @@ namespace Mvk2.Entity.List
         /// </summary>
         private void _InventoryPlayer_SlotStorageChanged(object sender, SlotEventArgs e)
         {
+            //Console.WriteLine("PS " + e.ToString());
+            _server.Players.SendToAll(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
             // SendToAllPlayersUseTileEntity Mvk 1
         }
         //=> GetWorld().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));

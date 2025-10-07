@@ -1,4 +1,6 @@
-﻿namespace Vge.Network.Packets.Client
+﻿using Vge.Entity.Inventory;
+
+namespace Vge.Network.Packets.Client
 {
     /// <summary>
     /// Пакет кликов по окну и контролам

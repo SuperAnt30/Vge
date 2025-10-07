@@ -34,7 +34,7 @@ namespace Mvk2.Gui.Screens
             // Рюкзак
             for (int i = 0; i < 25; i++)
             {
-                _SetSlot(i + 9, new ControlSlot(_windowMvk, (byte)(i + 19),
+                _SetSlot(i + 9, new ControlSlot(_windowMvk, (byte)(i + 19), 
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 19)));
                 if (i >= _player.InvPlayer.LimitBackpack)
                 {
@@ -49,13 +49,6 @@ namespace Mvk2.Gui.Screens
                 _slot[i + 34].SetEnable(false);
                 //_windowMvk.Game.Player.Inventory.GetStackInSlot(i + 100)));
             }
-        }
-
-        private void _SetSlot(int index, ControlSlot slot)
-        {
-            slot.ClickLeft += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, false);
-            slot.ClickRight += (sender, e) => _SendPacket(((ControlSlot)sender).SlotId, true);
-            _slot[index] = slot;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Mvk2.Packets;
+﻿using Mvk2.Gui.Controls;
+using Mvk2.Packets;
 using System;
 using Vge.Entity.Render;
 using Vge.Network.Packets.Client;
@@ -18,6 +19,37 @@ namespace Mvk2.Gui.Screens
 
             _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenInventory));
             _UpBackpackEnabled();
+        }
+
+        /// <summary>
+        /// Инициализация слотов
+        /// </summary>
+        protected override void _Init()
+        {
+            // Быстрый выбор плюс правая рука
+            for (int i = 0; i < 9; i++)
+            {
+                _SetSlot(i, new ControlSlot(_windowMvk, (byte)i, 
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
+            }
+
+            // Одежда
+            for (int i = 0; i < 10; i++)
+            {
+                _SetSlot(i + 9, new ControlSlot(_windowMvk, (byte)(i + 9), 
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 9)));
+            }
+
+            // Рюкзак
+            for (int i = 0; i < 25; i++)
+            {
+                _SetSlot(i + 19, new ControlSlot(_windowMvk, (byte)(i + 19), 
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 19)));
+                if (i >= _player.InvPlayer.LimitBackpack)
+                {
+                    _slot[i + 19].SetEnable(false);
+                }
+            }
         }
 
         /// <summary>
