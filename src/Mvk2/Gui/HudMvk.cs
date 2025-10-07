@@ -36,7 +36,7 @@ namespace Mvk2.Gui
             _meshInventoryBg = new MeshGuiColor(gl);
             _meshInventory = new MeshGuiColor(gl);
 
-            if (_game.Player.Inventory is InventoryPlayer inventoryPlayer)
+            if (_game.Player.Inventory is InventoryPlayerMvk inventoryPlayer)
             {
                 // Смена ячейки правой руки
                 inventoryPlayer.CurrentIndexChanged += InventoryPlayer_CurrentIndexChanged;

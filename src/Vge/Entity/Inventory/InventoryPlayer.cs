@@ -1,10 +1,9 @@
-﻿using Mvk2.Entity.List;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
-using Vge.Entity.Inventory;
+using Vge.Entity.Player;
 using Vge.Item;
 
-namespace Mvk2.Entity.Inventory
+namespace Vge.Entity.Inventory
 {
     /// <summary>
     /// Инвентарь игрока
@@ -23,11 +22,11 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Количество ячеек для предметов рюкзака
         /// </summary>
-        private readonly byte _backpackCount = 25;
+        private readonly byte _backpackCount;
         /// <summary>
         /// Игрок сервера
         /// </summary>
-        private readonly PlayerServerMvk _playerServer;
+        private readonly PlayerServer _playerServer;
         /// <summary>
         /// Управление контейнером для передачи пачками
         /// </summary>
@@ -37,10 +36,11 @@ namespace Mvk2.Entity.Inventory
         /// </summary>
         private bool _isOpenInventory;
 
-        public InventoryPlayer(PlayerServerMvk playerServer)
+        public InventoryPlayer(PlayerServer playerServer, byte mainCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
-            : base(8, 11)
+            : base(mainCount, clothCount, (byte)(mainCount + clothCount + backpackCount))
         {
+            _backpackCount = backpackCount;
             _playerServer = playerServer;
             if (playerServer != null)
             {
@@ -51,13 +51,6 @@ namespace Mvk2.Entity.Inventory
                     => _DamageCaregory(e.SlotId, e.Amount);
             }
         }
-
-        /// <summary>
-        /// Инициализация общего количества
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _InitAllCount()
-            => _allCount = (byte)(_mainCount + _clothCount + _backpackCount);
 
         #region Server
 

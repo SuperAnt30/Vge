@@ -15,7 +15,7 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Объект инвенторя игрока
         /// </summary>
-        public InventoryPlayer InvPlayer { get; private set; }
+        public InventoryPlayerMvk InvPlayer { get; private set; }
 
         public PlayerClientOwnerMvk(GameBase game) : base(game) { }
 
@@ -25,7 +25,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = InvPlayer = new InventoryPlayer(null);
+            Inventory = InvPlayer = new InventoryPlayerMvk(null);
             Inventory.OutsideChanged += Inventory_OutsideChanged;
             InvPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
         }

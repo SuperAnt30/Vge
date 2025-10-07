@@ -23,7 +23,7 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Объект инвенторя игрока
         /// </summary>
-        public InventoryPlayer InvPlayer { get; private set; }
+        public InventoryPlayerMvk InvPlayer { get; private set; }
 
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
@@ -50,7 +50,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = InvPlayer = new InventoryPlayer(this);
+            Inventory = InvPlayer = new InventoryPlayerMvk(this);
             InvPlayer.SlotSetted += _InventoryPlayer_SlotSetted;
             InvPlayer.SlotStorageChanged += _InventoryPlayer_SlotStorageChanged;
         }
