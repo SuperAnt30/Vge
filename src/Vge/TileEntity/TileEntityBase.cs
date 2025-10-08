@@ -9,7 +9,7 @@ namespace Vge.TileEntity
     /// <summary>
     /// Базовый класс 
     /// </summary>
-    public class TileEntityBase
+    public class TileEntityBase : ITileEntityInventory
     {
         /// <summary>
         /// Количество слотов
@@ -23,19 +23,21 @@ namespace Vge.TileEntity
         /// </summary>
         private readonly ConteinerManagement _conteiner = new ConteinerManagement(100);
 
-        private GameServer _gameServer;
+        private GameServer _server;
 
-        public TileEntityBase(GameServer gameServer)
+        public TileEntityBase(GameServer server)
         {
-            _gameServer = gameServer;
+            _server = server;
             _conteiner.SendSetSlot += _Conteiner_SendSetSlot;
         }
 
-
+        /// <summary>
+        /// Тут поподаем когда через Shift заносятся стаки
+        /// </summary>
         private void _Conteiner_SendSetSlot(object sender, SlotEventArgs e)
         {
             // ВРЕМЕННО!!!!
-            _gameServer.Players.SendToAll(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
+            _server.Players.SendToAll(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace Vge.TileEntity
         /// Задать стак в конкретном слоте
         /// </summary>
         /// <param name="isModify">Отметить что было изменение, для перезаписи на сервере в файл сохранения</param>
-        public virtual void SetStackInSlot(int slotIn, ItemStack stack, bool isModify = true)
+        public virtual void SetStackInSlot(int slotIn, ItemStack stack)
         {
             _stacks[slotIn] = stack;
         }
@@ -64,12 +66,12 @@ namespace Vge.TileEntity
         /// Добавляет стак предметов в инвентарь, возвращает false, если это невозможно.
         /// </summary>
         public virtual bool AddItemStackToInventory(ItemStack stack) 
-            => CanPutItemStack(stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, Count);
+            => CanPutItemStack(0, stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, Count);
 
         /// <summary>
         /// Проверяем можно ли установить данный стак в определённой ячейке склада
         /// </summary>
-        public virtual bool CanPutItemStack(ItemStack stack) => stack != null;
+        public virtual bool CanPutItemStack(int slotIn, ItemStack stack) => stack != null;
 
         /// <summary>
         /// Заспавнить предметы при разрушении блока

@@ -55,7 +55,7 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Количество слотов
         /// </summary>
-        protected override int _GetSlotCount() => 19 + 25;
+        protected override int _GetSlotCount() => 9 + 10 + 25;
         /// <summary>
         /// Название заголовка
         /// </summary>

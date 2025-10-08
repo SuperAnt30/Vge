@@ -47,7 +47,6 @@ namespace Mvk2.Gui.Screens
             {
                 _SetSlot(i + 34, new ControlSlot(_windowMvk, (byte)(i + 100), null));
                 _slot[i + 34].SetEnable(false);
-                //_windowMvk.Game.Player.Inventory.GetStackInSlot(i + 100)));
             }
         }
 

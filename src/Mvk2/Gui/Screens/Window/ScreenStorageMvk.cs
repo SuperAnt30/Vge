@@ -3,7 +3,6 @@ using Mvk2.Games;
 using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Mvk2.Renderer;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Gui.Controls;
@@ -95,7 +94,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         private void _InvPlayer_SlotSetted(object sender, SlotEventArgs e)
         {
-            Console.WriteLine("SlotSetted " + e.ToString());
+            // Console.WriteLine("SlotSetted " + e.ToString());
             if (e.SlotId == 255)
             {
                 _stakAir = e.Stack;
@@ -118,24 +117,30 @@ namespace Mvk2.Gui.Screens
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void _SendPacket(ControlSlot controlSlot, bool isRight)
-            => _SendPacket(controlSlot.SlotId, isRight);
-
-        private void _SendPacket(byte slotId, bool isRight)
         {
-            Console.WriteLine("Click " + slotId + " " + (isRight ? "Rifgt" : ""));
-            // Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
-            if (_player.Inventory.GetStackInSlot(slotId) != null // Проверка инвентарая наличие
-                || _stakAir != null // Ввоздухе есть что-то, в любом случае кликаем
-                || slotId > 99) // Склад
+            // Console.WriteLine("Click " + slotId + " " + (isRight ? "Rifgt" : ""));
+            if (_CheckClick(controlSlot.SlotId))
             {
-                _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow(
-                    (byte)EnumActionClickWindow.ClickSlot,
-                    _windowMvk.Game.Key.KeyShift,
-                    isRight,
-                    slotId));
+                _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.ClickSlot,
+                    _windowMvk.Game.Key.KeyShift, isRight, controlSlot.SlotId));
             }
+        }
+
+        /// <summary>
+        /// Нужна проверка, ненадо отправлять в пустую ячейку если в воздухе нет предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckClick(byte slotId)
+        {
+            if (_stakAir != null) return true;
+            if (slotId < 100)
+            {
+                // инвентарь
+                return _player.Inventory.GetStackInSlot(slotId) != null;
+            }
+            // склад
+            return true;
         }
 
         protected override void _InitTitle()

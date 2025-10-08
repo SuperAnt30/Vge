@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
+using Vge.TileEntity;
 
 namespace Vge.Entity.Inventory
 {
@@ -31,10 +32,11 @@ namespace Vge.Entity.Inventory
         /// Управление контейнером для передачи пачками
         /// </summary>
         private readonly ConteinerManagement _conteiner;
+
         /// <summary>
-        /// Открыто ли окно инвентаря, для сервера
+        /// Активный тайл инвентаря (склад), если null, то работаем с инвентарём игрока. Только для сервера
         /// </summary>
-        private bool _isOpenInventory;
+        private ITileEntityInventory _tileEntity;
 
         public InventoryPlayer(PlayerServer playerServer, byte mainCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
@@ -57,12 +59,16 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Открыли инвентарь, для сервера
         /// </summary>
-        public void ServerOpenInventory() => _isOpenInventory = true;
+        public void ServerOpenInventory(ITileEntityInventory tileEntity)
+        { 
+            _tileEntity = tileEntity;
+            _tileEntity.OpenWindow(_playerServer);
+        }
 
         /// <summary>
         /// Закрыли инвентарь, для сервера
         /// </summary>
-        public void ServerCloseInventory() => _isOpenInventory = false;
+        public void ServerCloseInventory() => _tileEntity = null;
 
         /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
@@ -114,7 +120,7 @@ namespace Vge.Entity.Inventory
                     if (slotIn < 100)
                     {
                         // Кликнули на инвентарь
-                        if (_isOpenInventory)
+                        if (_tileEntity == null)
                         {
                             // Тут клики через шифт по инвентарю
                             if (slotIn < _mainCount)
@@ -150,7 +156,7 @@ namespace Vge.Entity.Inventory
                         }
                         else
                         {
-                            if (!Ce.TileEntityDebug.AddItemStackToInventory(_CheckSlotToAir(stackSlot)))
+                            if (!_tileEntity.AddItemStackToInventory(_CheckSlotToAir(stackSlot)))
                             {
                                 _SetSendSlotContents(slotIn, stackSlot);
                             }
@@ -158,27 +164,13 @@ namespace Vge.Entity.Inventory
                             {
                                 _SetSendSlotContents(slotIn);
                             }
-
-                            //return;
-                            //TileEntityBase tileEntity = ((EntityPlayerServer)Player).GetTileEntityAction();
-                            //if (tileEntity != null)
-                            //{
-                            //    if (!tileEntity.AddItemStackToInventory(CheckSlotToAir(stackSlot)))
-                            //    {
-                            //        _SetSendSlotContents(slotIn, stackSlot);
-                            //    }
-                            //    else
-                            //    {
-                            //        _SetSendSlotContents(slotIn);
-                            //    }
-                            //}
                         }
                     }
                     else
                     {
                         if (_CanPutItemStack(slotIn, stackSlot))
                         {
-                            if (_isOpenInventory)
+                            if (_tileEntity == null)
                             {
                                 // Кликнули из рюкзака
                                 _conteiner.IdDamageCategory = 2;
@@ -348,25 +340,22 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ItemStack _CheckSlotToAir(ItemStack stack) => stack.CheckToAir();
 
-        #endregion
-
         /// <summary>
         /// Проверяем можно ли установить данный стак в определённой ячейке склада
         /// </summary>
         private bool _CanPutItemStack(int slotIn, ItemStack stack)
         {
-            //if (tileEntityCache == null)
-            //{
-            if (slotIn < 100)// && slotIn >= _allCount)
+            if (slotIn < 100)
             {
                 // Для одежды свои правила
                 byte key = GetSlotClothKey(slotIn);
                 return key == 0 || (stack != null && stack.Item.CheckSlotClothKey(key));
             }
-            //return true;
-            //}
-
-            return Ce.TileEntityDebug.CanPutItemStack(stack);
+            else if (_tileEntity != null)
+            {
+                return _tileEntity.CanPutItemStack(slotIn - 100, stack);
+            }
+            return false;
         }
 
         /// <summary>
@@ -374,24 +363,20 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private ItemStack _GetStackInSlotAndStorage(int slotIn)
         {
-            //tileEntityCache = null;
             if (slotIn > 99)
             {
                 // слот склада
-                return Ce.TileEntityDebug.GetStackInSlot(slotIn - 100);
-                //if (Player is EntityPlayerServer entityPlayerServer)
-                //{
-                //    tileEntityCache = entityPlayerServer.GetTileEntityAction();
-                //    if (tileEntityCache != null)
-                //    {
-                //        return tileEntityCache.GetStackInSlot(slotIn - 100);
-                //    }
-                //}
-                //return null;
+                if (_tileEntity != null)
+                {
+                    return _tileEntity.GetStackInSlot(slotIn - 100);
+                }
+                return null;
             }
             // слот у игрока
             return GetStackInSlot(slotIn);
         }
+
+        #endregion
 
         /// <summary>
         /// Устанавливает данный стак предметов в указанный слот в инвентаре
@@ -421,7 +406,6 @@ namespace Vge.Entity.Inventory
                     if (slotIn != _mainCount) // если равно, это Левая рука
                     {
                         CheckingClothes(_playerServer != null);
-                       // Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
                     }
                 }
                 else if (slotIn >= _mainCount + _clothCount)
@@ -442,22 +426,11 @@ namespace Vge.Entity.Inventory
                     }
                 }
             }
-            else
+            else if (_tileEntity != null) // только сервер
             {
-                // TODO:: 2025-09-22 добавить склад, рюкзак.
                 // Склад
-                //Console.WriteLine((_playerServer == null ? "C " : "S ") + slotIn + " " + (stack == null ? "" : stack.ToString()));
-                Ce.TileEntityDebug.SetStackInSlot(slotIn - 100, stack);
-                _OnSlotSetted(slotIn, stack);
-                //if (Player is EntityPlayerServer entityPlayerServer)
-                //{
-                //    // Слот активного блока
-                //    TileEntityBase tileEntity = entityPlayerServer.GetTileEntityAction();
-                //    if (tileEntity != null)
-                //    {
-                //        tileEntity.SetStackInSlot(slotIn - 100, stack);
-                //    }
-                //}
+                _tileEntity.SetStackInSlot(slotIn - 100, stack);
+                //_OnSlotSetted(slotIn, stack); Это не надо, так-как склад рассылается всем кто его видит в другом месте
             }
         }
 
