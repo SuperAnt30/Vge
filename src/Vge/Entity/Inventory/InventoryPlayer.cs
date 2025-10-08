@@ -36,7 +36,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Активный тайл инвентаря (склад), если null, то работаем с инвентарём игрока. Только для сервера
         /// </summary>
-        private ITileEntityInventory _tileEntity;
+        private ITileEntity _tileEntity;
 
         public InventoryPlayer(PlayerServer playerServer, byte mainCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
@@ -57,9 +57,15 @@ namespace Vge.Entity.Inventory
         #region Server
 
         /// <summary>
+        /// Получить активный тайл, если нет вернёт null
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override ITileEntity GetTileEntity() => _tileEntity;
+
+        /// <summary>
         /// Открыли инвентарь, для сервера
         /// </summary>
-        public void ServerOpenInventory(ITileEntityInventory tileEntity)
+        public void ServerOpenInventory(ITileEntity tileEntity)
         { 
             _tileEntity = tileEntity;
             _tileEntity.OpenWindow(_playerServer);

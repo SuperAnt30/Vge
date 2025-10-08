@@ -12,6 +12,7 @@ using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.TileEntity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -180,6 +181,12 @@ namespace Vge.Entity.Player
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
         }
+
+        /// <summary>
+        /// Задать импульс
+        /// </summary>
+        public override void SetPhysicsImpulse(float x, float y, float z)
+            => SendPacket(new PacketS08PlayerPosLook(x, y, z));
 
         #endregion
 
@@ -794,12 +801,6 @@ namespace Vge.Entity.Player
         }
 
         #endregion
-
-        /// <summary>
-        /// Задать импульс
-        /// </summary>
-        public override void SetPhysicsImpulse(float x, float y, float z)
-            => SendPacket(new PacketS08PlayerPosLook(x, y, z));
 
         /// <summary>
         /// Получить время в милисекундах с сервера

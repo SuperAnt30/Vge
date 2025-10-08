@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Item;
 using Vge.NBT;
+using Vge.TileEntity;
 using Vge.World;
 
 namespace Vge.Entity.Inventory
@@ -144,6 +145,12 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void ServerHeldItemChange() { }
+
+        /// <summary>
+        /// Получить активный тайл, если нет вернёт null
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ITileEntity GetTileEntity() => null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _Clear() { }

@@ -6,6 +6,7 @@ using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
+using Vge.TileEntity;
 using Vge.Util;
 
 namespace Vge.Management
@@ -167,7 +168,7 @@ namespace Vge.Management
 
         #endregion
 
-        #region All
+        #region Send & All
 
         /// <summary>
         /// Удалить всех игроков при остановки сервера
@@ -186,6 +187,29 @@ namespace Vge.Management
                 PlayerRemove(PlayerOwner, Sr.StopServer);
             }
             _UpdateRemovingPlayers();
+        }
+
+        /// <summary>
+        /// Отправить всем игрокам пакет, которые используют этот TileEntity
+        /// </summary>
+        public void SendToAllUseTileEntity(ITileEntity tileEntity, IPacket packet)
+        {
+            if (tileEntity != null)
+            {
+                // Основной игрок
+                if (tileEntity.CheckEquals(PlayerOwner.Inventory.GetTileEntity()))
+                {
+                    Server.ResponsePacketOwner(packet);
+                }
+                // Сетевые игроки
+                foreach (PlayerServer player in _players)
+                {
+                    if (tileEntity.CheckEquals(player.Inventory.GetTileEntity()))
+                    {
+                        player.SendPacket(packet);
+                    }
+                }
+            }
         }
 
         /// <summary>

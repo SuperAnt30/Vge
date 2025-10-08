@@ -56,13 +56,11 @@ namespace Mvk2.Entity.List
         }
 
         /// <summary>
-        /// TODO::2025-10-06 Событие слот хранилища изменён, обновляем всем кто сейчас смотрит содержимое
+        /// Событие слот хранилища изменён, обновляем всем кто сейчас смотрит содержимое
         /// </summary>
         private void _InventoryPlayer_SlotStorageChanged(object sender, SlotEventArgs e)
-        {
-            _server.Players.SendToAll(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
-            // SendToAllPlayersUseTileEntity Mvk 1
-        }
+            => _server.Players.SendToAllUseTileEntity(Inventory.GetTileEntity(), 
+                new PacketS2FSetSlot((short)e.SlotId, e.Stack));
 
         /// <summary>
         /// Событие изменён слот
@@ -96,13 +94,14 @@ namespace Mvk2.Entity.List
                     break;
                 case EnumActionClickWindow.Close:
                     InvPlayer.ServerCloseInventory();
+                    //_server.Players.PlayerTileClose(this);
                     break;
                 case EnumActionClickWindow.ClickSlot:
                     InvPlayer.ClickInventoryOnServer(packet.Number, packet.IsRight, packet.IsShift);
                     break;
             }
         }
-
+        
         #region Drop
 
         /// <summary>

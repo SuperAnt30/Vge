@@ -6,7 +6,7 @@ namespace Vge.TileEntity
     /// <summary>
     /// Интерфейс тайл энтети для инвентаря
     /// </summary>
-    public interface ITileEntityInventory
+    public interface ITileEntity
     {
         /// <summary>
         /// Открыли окно, вызывается объектом PlayerServer
@@ -32,6 +32,11 @@ namespace Vge.TileEntity
         /// Проверяем можно ли установить данный стак в определённой ячейке склада
         /// </summary>
         bool CanPutItemStack(int slotIn, ItemStack stack);
+
+        /// <summary>
+        /// Проверить равенства тайла
+        /// </summary>
+        bool CheckEquals(ITileEntity tileEntity);
 
     }
 }
