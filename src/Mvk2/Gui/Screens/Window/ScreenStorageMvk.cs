@@ -1,4 +1,5 @@
-﻿using Mvk2.Entity.List;
+﻿using Mvk2.Entity.Inventory;
+using Mvk2.Entity.List;
 using Mvk2.Games;
 using Mvk2.Gui.Controls;
 using Mvk2.Packets;
@@ -33,6 +34,24 @@ namespace Mvk2.Gui.Screens
         /// Иконка для предмета в воздухе
         /// </summary>
         protected readonly ControlIcon _icon;
+
+        /// <summary>
+        /// Количество ячеек карманов, не меньше 2 (_requiredPocket)
+        /// </summary>
+        protected readonly byte _pocketCount;
+        /// <summary>
+        /// Количество ячеек одежды, первый слот это предмет левой руки 
+        /// </summary>
+        protected readonly byte _clothCount;
+        /// <summary>
+        /// Количество ячеек рюкзака
+        /// </summary>
+        protected readonly byte _backpackCount;
+        /// <summary>
+        /// Количество ячеек инвентаря, т.е. карман + рюкзак + правая рука
+        /// </summary>
+        protected readonly byte _inventoryCount;
+
         /// <summary>
         /// Стак который используется в перемещении из слотов, образно он в указателе мыши
         /// </summary>
@@ -40,6 +59,11 @@ namespace Mvk2.Gui.Screens
 
         public ScreenStorageMvk(WindowMvk window, int width, int height) : base(window, width, height)
         {
+            _pocketCount = InventoryPlayerMvk.PocketCount;
+            _clothCount = InventoryPlayerMvk.ClothCount;
+            _backpackCount = InventoryPlayerMvk.BackpackCount;
+            _inventoryCount = (byte)(_pocketCount + _backpackCount + 1);
+
             _windowMvk = window;
             _render = _windowMvk.GetRender();
             _toolTip = new ToolTipMvk(window);
@@ -55,21 +79,46 @@ namespace Mvk2.Gui.Screens
         }
 
         /// <summary>
-        /// Инициализация слотов
+        /// Инициализация слотов. base._Init() Вызываем только для карманов и рюкзака
         /// </summary>
         protected virtual void _Init()
         {
-            //ControlSlot slot;
-            //for (int i = 0; i < _slot.Length; i++)
-            //{
-            //    slot = new ControlSlot(_windowMvk, (byte)i, 
-            //        _windowMvk.Game.Player.Inventory.GetStackInSlot(i));
-            //    slot.ClickLeft += (sender, e) => _SendPacket((ControlSlot)sender, false);
-            //    slot.ClickRight += (sender, e) => _SendPacket((ControlSlot)sender, true);
-            //    _slot[i] = slot;
-            //}
+            // Данная инициализация, для карманов и рюкзака, для другий можно просто перенаследовать
+
+            // Карманы
+            for (byte i = 0; i < _pocketCount; i++)
+            {
+                _SetSlot(i, new ControlSlot(_windowMvk, i,
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
+                if (i >= _player.InvPlayer.LimitPocket)
+                {
+                    _slot[i].SetEnable(false);
+                }
+            }
+
+            // Правая рука
+            _SetSlot(_pocketCount, new ControlSlot(_windowMvk, _pocketCount,
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(_pocketCount)));
+
+            // Рюкзак
+            int from = _pocketCount + 1; // плюс правая рука
+            int count = from + _backpackCount;
+            int bias = _clothCount - 1; // без правой руки
+            for (int i = from; i < count; i++)
+            {
+                _SetSlot(i, new ControlSlot(_windowMvk, (byte)(i + bias),
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + bias)));
+                if (i - from >= _player.InvPlayer.LimitBackpack)
+                {
+                    _slot[i].SetEnable(false);
+                }
+            }
         }
 
+        /// <summary>
+        /// Задать слот в конкретную ячейку массива, и присвоить им отклики событий
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void _SetSlot(int index, ControlSlot slot)
         {
             slot.ClickLeft += (sender, e) => _SendPacket((ControlSlot)sender, false);
@@ -94,7 +143,6 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         private void _InvPlayer_SlotSetted(object sender, SlotEventArgs e)
         {
-            // Console.WriteLine("SlotSetted " + e.ToString());
             if (e.SlotId == 255)
             {
                 _stakAir = e.Stack;
@@ -107,19 +155,30 @@ namespace Mvk2.Gui.Screens
         }
 
         /// <summary>
-        /// Изменён слот, не воздух
+        /// Изменён слот, не воздух. Наследовать не надо если работа со складом
         /// </summary>
         protected virtual void _InvPlayerSlotSetted(SlotEventArgs e)
         {
-            if (e.SlotId < _slot.Length)
+            if (e.SlotId <= _pocketCount)
             {
+                // Карманы плюс правая рука
                 _slot[e.SlotId].SetStack(e.Stack);
+            }
+            else if (e.SlotId >= (_pocketCount + _clothCount)
+                && e.SlotId < (_pocketCount + _clothCount + _backpackCount))
+            {
+                // Рюкзак
+                _slot[e.SlotId - _pocketCount - 2].SetStack(e.Stack);
+            }
+            else if (e.SlotId >= 100)
+            {
+                // Ящик
+                _slot[e.SlotId - 100 + _inventoryCount].SetStack(e.Stack);
             }
         }
 
         protected void _SendPacket(ControlSlot controlSlot, bool isRight)
         {
-            // Console.WriteLine("Click " + slotId + " " + (isRight ? "Rifgt" : ""));
             if (_CheckClick(controlSlot.SlotId))
             {
                 _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.ClickSlot,
@@ -169,35 +228,16 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
+            base.OnResized();
+
             // Расположение окна
             PosX = (Width - WidthWindow) / 2;
             PosY = (Height - HeightWindow) / 2;
             //PosY = 10;
             //PosX = 10;
             
-            base.OnResized();
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
-
-            for (int i = 0; i < 8; i++)
-            {
-                _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
-            }
-            _slot[8].SetPosition(PosX + 6, PosY + 300);
-
-            for (int i = 0; i < 5; i++)
-            {
-                // Одежда
-                _slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
-                _slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
-
-                // Рюкзак
-                _slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 45);
-                _slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 95);
-                _slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 145);
-                _slot[i + 34].SetPosition(PosX + 256 + i * 50, PosY + 195);
-                _slot[i + 39].SetPosition(PosX + 256 + i * 50, PosY + 245);
-            }
         }
 
         /// <summary>

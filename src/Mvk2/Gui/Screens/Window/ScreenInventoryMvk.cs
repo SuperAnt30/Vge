@@ -1,6 +1,8 @@
 ﻿using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using System;
+using System.Runtime.CompilerServices;
+using Vge.Entity.Inventory;
 using Vge.Entity.Render;
 using Vge.Network.Packets.Client;
 using WinGL.Actions;
@@ -23,46 +25,29 @@ namespace Mvk2.Gui.Screens
             _UpBackpackEnabled();
         }
 
-        
-
         /// <summary>
         /// Инициализация слотов
         /// </summary>
         protected override void _Init()
         {
-            // Быстрый выбор плюс правая рука
-            for (int i = 0; i < 9; i++)
+            int count = _GetSlotCount();
+
+            for (byte i = 0; i < count; i++)
             {
-                _SetSlot(i, new ControlSlot(_windowMvk, (byte)i, 
+                _SetSlot(i, new ControlSlot(_windowMvk, i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
-            }
-
-            // Одежда
-            for (int i = 0; i < 10; i++)
-            {
-                _SetSlot(i + 9, new ControlSlot(_windowMvk, (byte)(i + 9), 
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 9)));
-            }
-
-            // Рюкзак
-            for (int i = 0; i < 25; i++)
-            {
-                _SetSlot(i + 19, new ControlSlot(_windowMvk, (byte)(i + 19), 
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 19)));
-                if (i >= _player.InvPlayer.LimitBackpack)
-                {
-                    _slot[i + 19].SetEnable(false);
-                }
             }
         }
 
         /// <summary>
         /// Количество слотов
         /// </summary>
-        protected override int _GetSlotCount() => 9 + 10 + 25;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override int _GetSlotCount() => _pocketCount + _clothCount + _backpackCount;
         /// <summary>
         /// Название заголовка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override string _GetTitle() => L.T("Inventory");
 
         /// <summary>
@@ -71,7 +56,7 @@ namespace Mvk2.Gui.Screens
         private void _UpPocketEnabled()
         {
             int chek = _player.InvPlayer.LimitPocket;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < _pocketCount; i++)
             {
                 bool b = _slot[i].Enabled;
                 if (b != chek > i)
@@ -86,8 +71,10 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         private void _UpBackpackEnabled()
         {
-            int chek = _player.InvPlayer.LimitBackpack + 19;
-            for (int i = 19; i < 44; i++)
+            int from = _pocketCount + _clothCount;
+            int count = _GetSlotCount();
+            int chek = _player.InvPlayer.LimitBackpack + from;
+            for (int i = from; i < count; i++)
             {
                 bool b = _slot[i].Enabled;
                 if (b != chek > i)
@@ -110,39 +97,64 @@ namespace Mvk2.Gui.Screens
             => _UpBackpackEnabled();
 
         /// <summary>
+        /// Изменён слот, не воздух
+        /// </summary>
+        protected override void _InvPlayerSlotSetted(SlotEventArgs e)
+        {
+            if (e.SlotId < _slot.Length)
+            {
+                _slot[e.SlotId].SetStack(e.Stack);
+            }
+        }
+
+        /// <summary>
         /// Изменён размер окна
         /// </summary>
         protected override void OnResized()
         {
-            // Расположение окна
-            PosX = (Width - WidthWindow) / 2;
-            PosY = (Height - HeightWindow) / 2;
-            //PosY = 10;
-            //PosX = 10;
-            
             base.OnResized();
-            _labelTitle.SetPosition(PosX + 16, PosY + 10);
-            _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
 
-            for (int i = 0; i < 8; i++)
+            // Карманы
+            for (int i = 0; i < _pocketCount; i++)
             {
                 _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
             }
-            _slot[8].SetPosition(PosX + 6, PosY + 300);
 
+            // Правая рука
+            _slot[_pocketCount].SetPosition(PosX + 6, PosY + 300);
+
+            // Одежда
+            int from = _pocketCount + 1;
+            for (int i = 0; i < 4; i++)
+            {
+                
+                _slot[i + from].SetPosition(PosX + 6, PosY + 36 + i * 50);
+                _slot[i + from + 4].SetPosition(PosX + 176, PosY + 36 + i * 50);
+            }
+
+            // Рюкзак
+            from = _pocketCount + _clothCount;
             for (int i = 0; i < 5; i++)
             {
-                // Одежда
-                _slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
-                _slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
-
-                // Рюкзак
-                _slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 45);
-                _slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 95);
-                _slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 145);
-                _slot[i + 34].SetPosition(PosX + 256 + i * 50, PosY + 195);
-                _slot[i + 39].SetPosition(PosX + 256 + i * 50, PosY + 245);
+                
+                _slot[i + from].SetPosition(PosX + 256 + i * 50, PosY + 45);
+                _slot[i + from + 5].SetPosition(PosX + 256 + i * 50, PosY + 95);
+                _slot[i + from + 10].SetPosition(PosX + 256 + i * 50, PosY + 145);
             }
+
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    // Одежда
+            //    _slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
+            //    _slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
+
+            //    // Рюкзак
+            //    _slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 45);
+            //    _slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 95);
+            //    _slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 145);
+            //    _slot[i + 34].SetPosition(PosX + 256 + i * 50, PosY + 195);
+            //    _slot[i + 39].SetPosition(PosX + 256 + i * 50, PosY + 245);
+            //}
         }
 
         public override void OnKeyDown(Keys keys)

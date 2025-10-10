@@ -1,6 +1,5 @@
 ﻿using Mvk2.Gui.Controls;
 using Mvk2.Packets;
-using Vge.Entity.Inventory;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -24,66 +23,20 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected override void _Init()
         {
-            // Быстрый выбор
-            for (int i = 0; i < 8; i++)
-            {
-                _SetSlot(i, new ControlSlot(_windowMvk, (byte)i, 
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
-                if (i >= _player.InvPlayer.LimitPocket)
-                {
-                    _slot[i].SetEnable(false);
-                }
-            }
-
-            // Правая рука
-            _SetSlot(8, new ControlSlot(_windowMvk, 8,
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(8)));
-
-            // Рюкзак
-            for (int i = 0; i < 25; i++)
-            {
-                _SetSlot(i + 9, new ControlSlot(_windowMvk, (byte)(i + 19), 
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + 19)));
-                if (i >= _player.InvPlayer.LimitBackpack)
-                {
-                    _slot[i + 9].SetEnable(false);
-                }
-            }
+            base._Init();
 
             // Ящик
             for (int i = 0; i < TileEntityBase.Count; i++)
             {
-                _SetSlot(i + 34, new ControlSlot(_windowMvk, (byte)(i + 100), null));
-                _slot[i + 34].SetEnable(false);
-            }
-        }
-
-        /// <summary>
-        /// Изменён слот, не воздух
-        /// </summary>
-        protected override void _InvPlayerSlotSetted(SlotEventArgs e)
-        {
-            if (e.SlotId < 9)
-            {
-                // Быстрый выбор плюс правая рука
-                _slot[e.SlotId].SetStack(e.Stack);
-            }
-            else if (e.SlotId >= 19 && e.SlotId < 44)
-            {
-                // Рюкзак
-                _slot[e.SlotId - 10].SetStack(e.Stack);
-            }
-            else if (e.SlotId >= 100)
-            {
-                // Ящик
-                _slot[e.SlotId - 100 + 34].SetStack(e.Stack);
+                _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, (byte)(i + 100), null));
+                _slot[i + _inventoryCount].SetEnable(false);
             }
         }
 
         /// <summary>
         /// Количество слотов
         /// </summary>
-        protected override int _GetSlotCount() => 9 + 25 + TileEntityBase.Count;
+        protected override int _GetSlotCount() => _inventoryCount + TileEntityBase.Count;
 
         /// <summary>
         /// Название заголовка
@@ -98,14 +51,14 @@ namespace Mvk2.Gui.Screens
             if (packet is PacketS2FSetSlot packetS2F)
             {
                 // Изменился один слот
-                _slot[packetS2F.SlotId - 100 + 34].SetStack(packetS2F.Stack);
+                _slot[packetS2F.SlotId - 100 + _inventoryCount].SetStack(packetS2F.Stack);
             }
             else if (packet is PacketS30WindowItems packetS30)
             {
                 // Загрузить все слоты в ящик
-                for (int i = 34; i < 34 + TileEntityBase.Count; i++)
+                for (int i = _inventoryCount; i < _inventoryCount + TileEntityBase.Count; i++)
                 {
-                    _slot[i].SetStack(packetS30.Stacks[i - 34]);
+                    _slot[i].SetStack(packetS30.Stacks[i - _inventoryCount]);
                     _slot[i].SetEnable(true);
                 }
             }
@@ -116,38 +69,47 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            // Расположение окна
-            PosX = (Width - WidthWindow) / 2;
-            PosY = (Height - HeightWindow) / 2;
-            
-            _labelTitle.SetPosition(PosX + 16, PosY + 10);
-            _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
+            base.OnResized();
 
-            for (int i = 0; i < 8; i++)
+            // Карманы
+            for (int i = 0; i < _pocketCount; i++)
             {
                 _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
             }
-            _slot[8].SetPosition(PosX + 6, PosY + 300);
+            // Правая рука
+            _slot[_pocketCount].SetPosition(PosX + 6, PosY + 300);
+
+            // Рюкзак
+            int from = _pocketCount + 1;
+            for (int i = 0; i < 5; i++)
+            {
+
+                _slot[i + from].SetPosition(PosX + 256 + i * 50, PosY + 45);
+                _slot[i + from + 5].SetPosition(PosX + 256 + i * 50, PosY + 95);
+                _slot[i + from + 10].SetPosition(PosX + 256 + i * 50, PosY + 145);
+            }
 
             for (int i = 0; i < 5; i++)
             {
-                // Одежда
-                //_slot[i + 9].SetPosition(PosX + 6, PosY + 36 + i * 50);
-                //_slot[i + 14].SetPosition(PosX + 176, PosY + 36 + i * 50);
-
-                // Рюкзак
-                _slot[i + 9].SetPosition(PosX + 256 + i * 50, PosY + 45);
-                _slot[i + 14].SetPosition(PosX + 256 + i * 50, PosY + 95);
-                _slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 145);
-                _slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 195);
-                _slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 245);
-
                 // Ящик
-                _slot[i + 34].SetPosition(PosX + 6, PosY + 45 + i * 50);
-                //_slot[i + 39].SetPosition(PosX + 56, PosY + 45 + i * 50);
-                //_slot[i + 44].SetPosition(PosX + 106, PosY + 45 + i * 50);
-                //_slot[i + 49].SetPosition(PosX + 156, PosY + 45 + i * 50);
+               _slot[i + _inventoryCount].SetPosition(PosX + 6, PosY + 45 + i * 50);
             }
+
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    // Рюкзак
+            //    //_slot[i + 9].SetPosition(PosX + 256 + i * 50, PosY + 45);
+            //    //_slot[i + 14].SetPosition(PosX + 256 + i * 50, PosY + 95);
+            //    //_slot[i + 19].SetPosition(PosX + 256 + i * 50, PosY + 145);
+            //    //_slot[i + 24].SetPosition(PosX + 256 + i * 50, PosY + 195);
+            //    //_slot[i + 29].SetPosition(PosX + 256 + i * 50, PosY + 245);
+
+            //    // Ящик
+            //  // _slot[i + 34].SetPosition(PosX + 6, PosY + 45 + i * 50);
+            //    //_slot[i + 39].SetPosition(PosX + 56, PosY + 45 + i * 50);
+            //    //_slot[i + 44].SetPosition(PosX + 106, PosY + 45 + i * 50);
+            //    //_slot[i + 49].SetPosition(PosX + 156, PosY + 45 + i * 50);
+            //}
         }
 
         public override void OnKeyDown(Keys keys)
@@ -174,10 +136,5 @@ namespace Mvk2.Gui.Screens
             base.Draw(timeIndex);
             _toolTip.Draw();
         }
-
-        //public override void Dispose()
-        //{
-        //    base.Dispose();
-        //}
     }
 }
