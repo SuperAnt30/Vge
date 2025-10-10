@@ -74,6 +74,7 @@ namespace Vge.Entity.Inventory
             if (_currentIndex < LimitPocket - 1) _currentIndex++;
             else _currentIndex = 0;
             _OnCurrentIndexChanged();
+            _OnOutsideChanged(1); // 0 - правая рука
         }
 
         /// <summary>
@@ -85,6 +86,7 @@ namespace Vge.Entity.Inventory
             if (_currentIndex > 0) _currentIndex--;
             else _currentIndex = (byte)(LimitPocket - 1);
             _OnCurrentIndexChanged();
+            _OnOutsideChanged(1); // 0 - правая рука
         }
 
         #region Server
@@ -454,11 +456,16 @@ namespace Vge.Entity.Inventory
                 else if (slotIn >= _mainCount && slotIn - _mainCount < _clothCount)
                 {
                     // Тут при смене одежды
-                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // 1-11 одежда
-                    if (slotIn != _mainCount) // если равно, это Левая рука
+                    int flag = 1 << (slotIn - _mainCount + 1);
+                    if (slotIn != _mainCount) // если равно _mainCount, это Левая рука
                     {
-                        CheckingClothes(_playerServer != null);
+                        if (CheckingClothes(_playerServer != null))
+                        {
+                            // Тут если изменился лимит кармана и выбранный предмет правой руки изменился
+                            flag += 1; // 0 - правая рука
+                        }
                     }
+                    _OnOutsideChanged(flag); // 1-11 одежда
                 }
                 else if (slotIn >= _mainCount + _clothCount)
                 {
@@ -487,15 +494,16 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Проверка одетого
+        /// Проверка одетого, вернёт true если изменился лимит кармана и смещён выбранный предмет правой руки
         /// </summary>
-        public void CheckingClothes(bool isServer)
+        public bool CheckingClothes(bool isServer)
         {
             // Проверка лимита рюкзака, и прочей брони
             int count = _mainCount + _clothCount;
             ItemStack stack;
             int limitPocket = _requiredPocket;
             int limitBackpack = 0;
+            bool right = false;
             for (int i = _mainCount; i < count; i++)
             {
                 stack = _items[i];
@@ -523,17 +531,13 @@ namespace Vge.Entity.Inventory
                 }
                 LimitPocket = (byte)limitPocket;
                 _OnLimitPocketChanged();
-                if (!isServer)
+                if (!isServer) // Только на клиенте
                 {
-                    Console.WriteLine(_currentIndex + "  Lim " + LimitPocket);
                     if (_currentIndex >= LimitPocket)
                     {
                         _currentIndex = (byte)(LimitPocket - 1);
                         _OnCurrentIndexChanged();
-                //  //  if (isServer)
-                //    {
-                //        _OnOutsideChanged(1);
-                //    }
+                        right = true;
                     }
                 }
             }
@@ -551,6 +555,8 @@ namespace Vge.Entity.Inventory
                 LimitBackpack = (byte)limitBackpack;
                 _OnLimitBackpackChanged();
             }
+
+            return right;
         }
 
         /// <summary>

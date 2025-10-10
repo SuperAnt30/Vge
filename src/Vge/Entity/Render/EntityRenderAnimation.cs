@@ -588,6 +588,7 @@ namespace Vge.Entity.Render
                             // Предмет в руках
                             _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
                                 .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
+
                             if (i == 0)
                             {
                                 AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
