@@ -48,9 +48,9 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private ITileEntity _tileEntity;
 
-        public InventoryPlayer(PlayerServer playerServer, byte mainCount, byte clothCount, byte backpackCount)
+        public InventoryPlayer(PlayerServer playerServer, byte pocketCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
-            : base(mainCount, clothCount, (byte)(mainCount + clothCount + backpackCount))
+            : base(pocketCount, clothCount, (byte)(pocketCount + clothCount + backpackCount))
         {
             _backpackCount = backpackCount;
             _playerServer = playerServer;
@@ -120,7 +120,7 @@ namespace Vge.Entity.Inventory
             // Проверка склада
             if (slotIn > 99) return true;
             // Проверка по размеру кармана
-            if (slotIn < _mainCount) return LimitPocket > slotIn;
+            if (slotIn < _pocketCount) return LimitPocket > slotIn;
             // Проверка по размеру рюкзака
             return slotIn < _allCount - _backpackCount + LimitBackpack;
         }
@@ -177,11 +177,11 @@ namespace Vge.Entity.Inventory
                         if (_tileEntity == null)
                         {
                             // Тут клики через шифт по инвентарю
-                            if (slotIn < _mainCount)
+                            if (slotIn < _pocketCount)
                             {
                                 // Кликнули на инвентарь быстрого доступа
                                 _conteiner.IdDamageCategory = 1;
-                                if (!_conteiner.AddItemStackToInventory(_items, _mainCount + _clothCount, 
+                                if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount, 
                                     _CheckSlotToAir(stackSlot), LimitBackpack))
                                 {
                                     _SetSendSlotContents(slotIn, stackSlot);
@@ -229,7 +229,7 @@ namespace Vge.Entity.Inventory
                                 // Кликнули из рюкзака
                                 _conteiner.IdDamageCategory = 2;
                                 _conteiner.IdDamageSlotIgnor = _currentIndex;
-                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _pocketCount))
                                 {
                                     _SetSendSlotContents(slotIn, stackSlot);
                                 }
@@ -249,7 +249,7 @@ namespace Vge.Entity.Inventory
                                 {
                                     _conteiner.IdDamageCategory = 1;
                                     _conteiner.IdDamageSlotIgnor = 255;
-                                    if (!_conteiner.AddItemStackToInventory(_items, _mainCount + _clothCount,
+                                    if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount,
                                         _CheckSlotToAir(stackSlot), LimitBackpack))
                                     {
                                         _SetSendSlotContents(slotIn, stackSlot);
@@ -453,11 +453,11 @@ namespace Vge.Entity.Inventory
                 {
                     _OnOutsideChanged(1); // 0 - правая рука
                 }
-                else if (slotIn >= _mainCount && slotIn - _mainCount < _clothCount)
+                else if (slotIn >= _pocketCount && slotIn - _pocketCount < _clothCount)
                 {
                     // Тут при смене одежды
-                    int flag = 1 << (slotIn - _mainCount + 1);
-                    if (slotIn != _mainCount) // если равно _mainCount, это Левая рука
+                    int flag = 1 << (slotIn - _pocketCount + 1);
+                    if (slotIn != _pocketCount) // если равно _pocketCount, это Левая рука
                     {
                         if (CheckingClothes(_playerServer != null))
                         {
@@ -467,7 +467,7 @@ namespace Vge.Entity.Inventory
                     }
                     _OnOutsideChanged(flag); // 1-11 одежда
                 }
-                else if (slotIn >= _mainCount + _clothCount)
+                else if (slotIn >= _pocketCount + _clothCount)
                 {
                     // Рюкзак
                     if (stack != null && _playerServer != null)
@@ -475,7 +475,7 @@ namespace Vge.Entity.Inventory
                         _DamageCaregory(1, 1);
                     }
                 }
-                else if (slotIn < _mainCount)
+                else if (slotIn < _pocketCount)
                 {
                     // Быстрый доступ (правая рука) 
                     // !!! Сюда не поподаем в выбранную руку !!!, так задумано
@@ -499,12 +499,12 @@ namespace Vge.Entity.Inventory
         public bool CheckingClothes(bool isServer)
         {
             // Проверка лимита рюкзака, и прочей брони
-            int count = _mainCount + _clothCount;
+            int count = _pocketCount + _clothCount;
             ItemStack stack;
             int limitPocket = _requiredPocket;
             int limitBackpack = 0;
             bool right = false;
-            for (int i = _mainCount; i < count; i++)
+            for (int i = _pocketCount; i < count; i++)
             {
                 stack = _items[i];
                 if (stack != null && stack.Item is ItemCloth itemCloth)
@@ -520,14 +520,14 @@ namespace Vge.Entity.Inventory
                     
                 }
             }
-            if (limitPocket > _mainCount) limitPocket = _mainCount;
+            if (limitPocket > _pocketCount) limitPocket = _pocketCount;
 
             if (LimitPocket != limitPocket)
             {
                 if (isServer && LimitPocket > limitPocket)
                 {
                     // Надо выкинуть часть предметов только на сервере
-                    _DropItems(limitPocket, _mainCount);
+                    _DropItems(limitPocket, _pocketCount);
                 }
                 LimitPocket = (byte)limitPocket;
                 _OnLimitPocketChanged();

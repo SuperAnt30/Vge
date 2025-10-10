@@ -12,9 +12,9 @@ namespace Vge.Entity.Inventory
     public class InventoryList : InventoryBase
     {
         /// <summary>
-        /// Количество ячеек для предметов быстрого доступа (правая рука)
+        /// Количество ячеек для предметов быстрого доступа он же карман (правая рука)
         /// </summary>
-        protected readonly byte _mainCount;
+        protected readonly byte _pocketCount;
 
         /// <summary>
         /// Количество ячеек для одежды.
@@ -34,7 +34,7 @@ namespace Vge.Entity.Inventory
 
         /// <summary>
         /// Массив предметов инвентаря
-        /// Вначале идут mainCount, потом clothCount
+        /// Вначале идут pocketCount, потом clothCount
         /// </summary>
         protected readonly ItemStack[] _items;
 
@@ -50,13 +50,13 @@ namespace Vge.Entity.Inventory
 
         /// <param name="isLimitationSlot">Установить ограничение по ячейкам одежды, порядковая нумерация от 1-N,
         /// равенства ItemBase._slotClothIndex  </param>
-        public InventoryList(byte mainCount, byte clothCount, byte allCount, bool isLimitationSlot = true) // 1 - 11 сетевой игрок
+        public InventoryList(byte pocketCount, byte clothCount, byte allCount, bool isLimitationSlot = true) // 1 - 11 сетевой игрок
         {
-            _mainCount = mainCount;
+            _pocketCount = pocketCount;
             _clothCount = clothCount;
             _allCount = allCount;
             OutsideCount = _clothCount;
-            if (_mainCount > 0) OutsideCount++;
+            if (_pocketCount > 0) OutsideCount++;
 
             _items = new ItemStack[_allCount];
             _slotClothKeys = new byte[_clothCount];
@@ -86,8 +86,8 @@ namespace Vge.Entity.Inventory
                         // Слот менялся
                         worldServer.Tracker.SendToAllTrackingEntity(entity, 
                             new PacketS10EntityEquipment(entity.Id, i,
-                            _mainCount > 0
-                                ? _items[i == 0 ? _currentIndex : _mainCount + i - 1] 
+                            _pocketCount > 0
+                                ? _items[i == 0 ? _currentIndex : _pocketCount + i - 1] 
                                 : _items[i]));
                     }
                 }
@@ -109,7 +109,7 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool SetCurrentIndex(byte slotIn)
         {
-            if (slotIn < _mainCount && slotIn >= 0 && slotIn != _currentIndex)
+            if (slotIn < _pocketCount && slotIn >= 0 && slotIn != _currentIndex)
             {
                 _currentIndex = slotIn;
                 _OnCurrentIndexChanged();
@@ -123,7 +123,7 @@ namespace Vge.Entity.Inventory
         /// Получить текущий стак правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ItemStack GetCurrentItem() => _mainCount > 0 ? _items[_currentIndex] : null;
+        public override ItemStack GetCurrentItem() => _pocketCount > 0 ? _items[_currentIndex] : null;
 
         /// <summary>
         /// Задать в текущий стак правой руки
@@ -131,7 +131,7 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetCurrentItem(ItemStack stack)
         {
-            if (_mainCount > 0)
+            if (_pocketCount > 0)
             {
                 //CheckKnowledge(stack);
                 _items[_currentIndex] = stack;
@@ -166,18 +166,18 @@ namespace Vge.Entity.Inventory
             {
                 _items[slotIn] = stack;
                 // События для визуализации внешности
-                if (_mainCount > 0)
+                if (_pocketCount > 0)
                 {
                     // Имеется предмет в правой руке 0, 1-N одежда
                     if (slotIn == _currentIndex)
                     {
                         _OnOutsideChanged(1); // 0 - правая рука
                     }
-                    else if (slotIn >= _mainCount
+                    else if (slotIn >= _pocketCount
                         && slotIn <= _clothCount) // Равно это на один больше, так-как один предмет в левой руке
                     {
                         // одежда с минусом правой руки
-                        _OnOutsideChanged(1 << (slotIn - _mainCount + 1));
+                        _OnOutsideChanged(1 << (slotIn - _pocketCount + 1));
                     }
                 }
                 else
@@ -194,7 +194,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override ItemStack GetOutside(int slotIn)
-            => _items[_mainCount > 0 ? slotIn == 0 ? _currentIndex : _mainCount + slotIn - 1 : slotIn];
+            => _items[_pocketCount > 0 ? slotIn == 0 ? _currentIndex : _pocketCount + slotIn - 1 : slotIn];
 
         /// <summary>
         /// Получить список стаков для внешности (что в руках и одежда)
@@ -204,23 +204,23 @@ namespace Vge.Entity.Inventory
         public override ItemStack[] GetOutside()
         {
             ItemStack[] stacks;
-            if (_mainCount > 0)
+            if (_pocketCount > 0)
             {
                 stacks = new ItemStack[_clothCount + 1];
                 stacks[0] = GetCurrentItem();
-                Array.Copy(_items, _mainCount, stacks, 1, _clothCount);
+                Array.Copy(_items, _pocketCount, stacks, 1, _clothCount);
             }
             else
             {
                 stacks = new ItemStack[_clothCount];
-                Array.Copy(_items, _mainCount, stacks, 0, _clothCount);
+                Array.Copy(_items, _pocketCount, stacks, 0, _clothCount);
             }
             return stacks;
         }
 
         /// <summary>
         /// Задать список стаков для внешности (что в руках и одежда)
-        /// У данного персонажа должно быть _mainCount=0 || _mainCount=1 и _allCount == stacks.Length
+        /// У данного персонажа должно быть _pocketCount=0 || _pocketCount=1 и _allCount == stacks.Length
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetOutside(ItemStack[] stacks)
@@ -241,8 +241,8 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override byte GetSlotClothKey(int slotIn) 
-            => (_clothCount > 0 && slotIn >= _mainCount && slotIn < _mainCount + _clothCount)
-            ? _slotClothKeys[slotIn - _mainCount] : (byte)0;
+            => (_clothCount > 0 && slotIn >= _pocketCount && slotIn < _pocketCount + _clothCount)
+            ? _slotClothKeys[slotIn - _pocketCount] : (byte)0;
 
         /// <summary>
         /// Получить ключи слота внешности, для ограничения установки предмета.
@@ -250,38 +250,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override byte GetOutsideSlotKey(int slotIn)
-            => _mainCount > 0 && slotIn != 0 ? _slotClothKeys[slotIn - 1] : (byte)0;
-
-        /*
-        /// <summary>
-        /// Получить стак одежды
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ItemStack GetClothInventory(int slotIn)
-            => (_clothCount > 0 && slotIn < _clothCount) 
-            ? _items[_mainCount + slotIn] : null;
-
-        /// <summary>
-        /// Задать стак одежды
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SetClothInventory(int slotIn, ItemStack stack)
-        {
-            if (_clothCount > 0 && slotIn < _clothCount)
-            {
-                _items[_mainCount + slotIn] = stack;
-                _OnSlotChanged(slotIn);
-                if (_mainCount > 0)
-                {
-                    _OnOutsideChanged(1 << (slotIn - _mainCount + 1)); // одежда с минусом правой руки
-                }
-                else
-                {
-                    _OnOutsideChanged(1 << slotIn); // одежда
-                }
-            }
-        }
-        */
+            => _pocketCount > 0 && slotIn != 0 ? _slotClothKeys[slotIn - 1] : (byte)0;
 
         /// <summary>
         /// Получить полный список всего инвентаря

@@ -112,20 +112,6 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual byte GetOutsideSlotKey(int slotIn) => 0;
 
-        /*
-        /// <summary>
-        /// Получить стак одежды
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual ItemStack GetClothInventory(int slotIn) => null;
-
-        /// <summary>
-        /// Задать стак одежды
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void SetClothInventory(int slotIn, ItemStack stack) { }
-        */
-
         /// <summary>
         /// Получить полный список всего инвентаря
         /// Mvk было GetMainAndCloth
