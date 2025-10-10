@@ -120,28 +120,6 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Сместить слот правой руки в большую сторону
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SlotMore()
-        {
-            if (_currentIndex < _mainCount - 1) _currentIndex++;
-            else _currentIndex = 0;
-            _OnCurrentIndexChanged();
-        }
-
-        /// <summary>
-        /// Сместить слот правой руки в меньшую сторону
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SlotLess()
-        {
-            if (_currentIndex > 0) _currentIndex--;
-            else _currentIndex = (byte)(_mainCount - 1);
-            _OnCurrentIndexChanged();
-        }
-
-        /// <summary>
         /// Получить текущий стак правой руки
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

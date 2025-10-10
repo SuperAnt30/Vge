@@ -24,12 +24,20 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected override void _Init()
         {
-            // Быстрый выбор плюс правая рука
-            for (int i = 0; i < 9; i++)
+            // Быстрый выбор
+            for (int i = 0; i < 8; i++)
             {
                 _SetSlot(i, new ControlSlot(_windowMvk, (byte)i, 
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
+                if (i >= _player.InvPlayer.LimitPocket)
+                {
+                    _slot[i].SetEnable(false);
+                }
             }
+
+            // Правая рука
+            _SetSlot(8, new ControlSlot(_windowMvk, 8,
+                    _windowMvk.Game.Player.Inventory.GetStackInSlot(8)));
 
             // Рюкзак
             for (int i = 0; i < 25; i++)

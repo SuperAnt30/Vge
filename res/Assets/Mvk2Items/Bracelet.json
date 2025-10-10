@@ -1,5 +1,6 @@
 {
     MaxStackSize: 1,
+    CellsPocket: 3,
     SlotClothIndex: [4, 5, 1],
     Sprite: "Items/Bracelet",
     SpriteGui: "Items/Bracelet",

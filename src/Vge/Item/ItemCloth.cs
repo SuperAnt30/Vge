@@ -10,9 +10,14 @@ namespace Vge.Item
     public class ItemCloth : ItemBase
     {
         /// <summary>
+        /// Ячейки кармана
+        /// </summary>
+        public byte CellsPocket { get; protected set; }
+        /// <summary>
         /// Ячейки рюкзака
         /// </summary>
         public byte CellsBackpack { get; protected set; }
+        
         /// <summary>
         /// Имя на что надеть на тело, указываем на какую часть тело может одеваться предмет
         /// </summary>
@@ -77,6 +82,11 @@ namespace Vge.Item
                 if (state.IsKey(Cti.CellsBackpack))
                 {
                     CellsBackpack = (byte)state.GetInt(Cti.CellsBackpack);
+                }
+
+                if (state.IsKey(Cti.CellsPocket))
+                {
+                    CellsPocket = (byte)state.GetInt(Cti.CellsPocket);
                 }
             }
         }

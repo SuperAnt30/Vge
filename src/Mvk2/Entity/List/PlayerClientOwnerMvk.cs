@@ -26,11 +26,11 @@ namespace Mvk2.Entity.List
         protected override void _CreateInventory()
         {
             Inventory = InvPlayer = new InventoryPlayerMvk(null);
-            Inventory.OutsideChanged += Inventory_OutsideChanged;
-            InvPlayer.CurrentIndexChanged += Inventory_OutsideChanged;
+            Inventory.OutsideChanged += _Inventory_OutsideChanged;
+            InvPlayer.CurrentIndexChanged += _Inventory_OutsideChanged;
         }
 
-        private void Inventory_OutsideChanged(object sender, EventArgs e)
+        private void _Inventory_OutsideChanged(object sender, EventArgs e)
             => Render.OutsideItemChanged();
 
         #region Packet

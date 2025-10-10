@@ -15,11 +15,15 @@ namespace Mvk2.Gui.Screens
     {
         public ScreenInventoryMvk(WindowMvk window) : base(window, 512, 354)
         {
+            _player.InvPlayer.LimitPocketChanged += _InvPlayer_LimitPocketChanged;
             _player.InvPlayer.LimitBackpackChanged += _InvPlayer_LimitBackpackChanged;
 
             _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenInventory));
+            _UpPocketEnabled();
             _UpBackpackEnabled();
         }
+
+        
 
         /// <summary>
         /// Инициализация слотов
@@ -62,6 +66,22 @@ namespace Mvk2.Gui.Screens
         protected override string _GetTitle() => L.T("Inventory");
 
         /// <summary>
+        /// Обновить слоты карманов
+        /// </summary>
+        private void _UpPocketEnabled()
+        {
+            int chek = _player.InvPlayer.LimitPocket;
+            for (int i = 0; i < 8; i++)
+            {
+                bool b = _slot[i].Enabled;
+                if (b != chek > i)
+                {
+                    _slot[i].SetEnable(!b);
+                }
+            }
+        }
+
+        /// <summary>
         /// Обновить слоты рюкзака
         /// </summary>
         private void _UpBackpackEnabled()
@@ -76,6 +96,12 @@ namespace Mvk2.Gui.Screens
                 }
             }
         }
+
+        /// <summary>
+        /// Событие изменён лимит кармана
+        /// </summary>
+        private void _InvPlayer_LimitPocketChanged(object sender, EventArgs e)
+            => _UpPocketEnabled();
 
         /// <summary>
         /// Событие изменён лимит рюкзака
@@ -165,6 +191,7 @@ namespace Mvk2.Gui.Screens
         public override void Dispose()
         {
             base.Dispose();
+            _player.InvPlayer.LimitPocketChanged -= _InvPlayer_LimitPocketChanged;
             _player.InvPlayer.LimitBackpackChanged -= _InvPlayer_LimitBackpackChanged;
         }
     }

@@ -43,6 +43,10 @@
         public const string ViewHold = "ViewHold";
 
         /// <summary>
+        /// Ячейки кармана, количество дополнительных ячеек. (int)
+        /// </summary>
+        public const string CellsPocket = "CellsPocket";
+        /// <summary>
         /// Ячейки рюкзака, количество дополнительных ячеек. (int)
         /// </summary>
         public const string CellsBackpack = "CellsBackpack";

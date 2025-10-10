@@ -17,9 +17,19 @@ namespace Vge.Entity.Inventory
         public ItemStack StackAir { get; private set; }
 
         /// <summary>
+        /// Лимит ячеек кармана
+        /// </summary>
+        public byte LimitPocket { get; private set; }
+        /// <summary>
         /// Лимит ячеек рюкзака
         /// </summary>
         public byte LimitBackpack { get; private set; } = 0;
+
+        /// <summary>
+        /// Обязательные карманы, образно рука и за пояс
+        /// </summary>
+        private readonly byte _requiredPocket = 2;
+
         /// <summary>
         /// Количество ячеек для предметов рюкзака
         /// </summary>
@@ -44,6 +54,7 @@ namespace Vge.Entity.Inventory
         {
             _backpackCount = backpackCount;
             _playerServer = playerServer;
+            LimitPocket = _requiredPocket;
             if (playerServer != null)
             {
                 _conteiner = new ConteinerManagement();
@@ -52,6 +63,28 @@ namespace Vge.Entity.Inventory
                 _conteiner.SendCountSlotsBackpack += (sender, e) 
                     => _DamageCaregory(e.SlotId, e.Amount);
             }
+        }
+
+        /// <summary>
+        /// Сместить слот правой руки в большую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SlotMore()
+        {
+            if (_currentIndex < LimitPocket - 1) _currentIndex++;
+            else _currentIndex = 0;
+            _OnCurrentIndexChanged();
+        }
+
+        /// <summary>
+        /// Сместить слот правой руки в меньшую сторону
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SlotLess()
+        {
+            if (_currentIndex > 0) _currentIndex--;
+            else _currentIndex = (byte)(LimitPocket - 1);
+            _OnCurrentIndexChanged();
         }
 
         #region Server
@@ -77,6 +110,20 @@ namespace Vge.Entity.Inventory
         public void ServerCloseInventory() => _tileEntity = null;
 
         /// <summary>
+        /// Проверка по лимитам
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckSlotLimit(int slotIn)
+        {
+            // Проверка склада
+            if (slotIn > 99) return true;
+            // Проверка по размеру кармана
+            if (slotIn < _mainCount) return LimitPocket > slotIn;
+            // Проверка по размеру рюкзака
+            return slotIn < _allCount - _backpackCount + LimitBackpack;
+        }
+
+        /// <summary>
         /// Клик по указанному слоту в инвентаре на сервере!
         /// isRight указывает флаг правый ли клик мыши
         /// 0-99 слот персонажа, а именно (slot 0-7 инвентарь, 8-11 броня),
@@ -96,8 +143,7 @@ namespace Vge.Entity.Inventory
                     // В воздухе имеется, укладываем в пустой слот
                     if (_CanPutItemStack(slotIn, stackAir))
                     {
-                        if (slotIn >= 100 // Проверка в ячейку хранилища
-                            || slotIn < _allCount - _backpackCount + LimitBackpack) // Проверка по размеру рюкзака
+                        if (_CheckSlotLimit(slotIn)) // Проверка по размеру рюкзака
                         {
                             // Если в воздухе есть так будем укладывать в ячейку
                             if (isRight && stackAir.Amount > 1)
@@ -148,7 +194,7 @@ namespace Vge.Entity.Inventory
                                 // Кликнули на рюкзак
                                 _conteiner.IdDamageCategory = 2;
                                 _conteiner.IdDamageSlotIgnor = _currentIndex;
-                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket))
                                 {
                                     _SetSendSlotContents(slotIn, stackSlot);
                                 }
@@ -197,7 +243,7 @@ namespace Vge.Entity.Inventory
                                 // Кликнули из хранилища
                                 _conteiner.IdDamageCategory = 2;
                                 _conteiner.IdDamageSlotIgnor = _currentIndex;
-                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, _mainCount))
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket))
                                 {
                                     _conteiner.IdDamageCategory = 1;
                                     _conteiner.IdDamageSlotIgnor = 255;
@@ -300,12 +346,12 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Дропнуть предметы с рюкзака начиная с from
+        /// Дропнуть предметы с from по count - 1
         /// </summary>
-        private void _DropItemBackpack(int from)
+        private void _DropItems(int from, int count)
         {
             ItemStack stack;
-            for (int i = from; i < _allCount; i++)
+            for (int i = from; i < count; i++)
             {
                 stack = _items[i];
                 if (stack != null)
@@ -448,26 +494,60 @@ namespace Vge.Entity.Inventory
             // Проверка лимита рюкзака, и прочей брони
             int count = _mainCount + _clothCount;
             ItemStack stack;
+            int limitPocket = _requiredPocket;
             int limitBackpack = 0;
             for (int i = _mainCount; i < count; i++)
             {
                 stack = _items[i];
-                if (stack != null && stack.Item is ItemCloth itemCloth && itemCloth.CellsBackpack != 0)
+                if (stack != null && stack.Item is ItemCloth itemCloth)
                 {
-                    limitBackpack += itemCloth.CellsBackpack;
+                    if (itemCloth.CellsPocket != 0)
+                    {
+                        limitPocket += itemCloth.CellsPocket;
+                    }
+                    if (itemCloth.CellsBackpack != 0) 
+                    {
+                        limitBackpack += itemCloth.CellsBackpack;
+                    }
+                    
                 }
             }
+            if (limitPocket > _mainCount) limitPocket = _mainCount;
+
+            if (LimitPocket != limitPocket)
+            {
+                if (isServer && LimitPocket > limitPocket)
+                {
+                    // Надо выкинуть часть предметов только на сервере
+                    _DropItems(limitPocket, _mainCount);
+                }
+                LimitPocket = (byte)limitPocket;
+                _OnLimitPocketChanged();
+                if (!isServer)
+                {
+                    Console.WriteLine(_currentIndex + "  Lim " + LimitPocket);
+                    if (_currentIndex >= LimitPocket)
+                    {
+                        _currentIndex = (byte)(LimitPocket - 1);
+                        _OnCurrentIndexChanged();
+                //  //  if (isServer)
+                //    {
+                //        _OnOutsideChanged(1);
+                //    }
+                    }
+                }
+            }
+
+            if (limitBackpack > _backpackCount) limitBackpack = _backpackCount;
+
             if (LimitBackpack != limitBackpack)
             {
                 if (isServer && LimitBackpack > limitBackpack)
                 {
                     // Надо выкинуть часть предметов только на сервере
-                    _DropItemBackpack(count + limitBackpack);
+                    _DropItems(count + limitBackpack, _allCount);
                 }
-                if (limitBackpack > _backpackCount)
-                {
-                    limitBackpack = _backpackCount;
-                }
+               
                 LimitBackpack = (byte)limitBackpack;
                 _OnLimitBackpackChanged();
             }
@@ -500,6 +580,16 @@ namespace Vge.Entity.Inventory
         }
 
         #region Event
+
+        /// <summary>
+        /// Событие изменён лимит карманов
+        /// </summary>
+        public event EventHandler LimitPocketChanged;
+        /// <summary>
+        /// Событие изменён лимит карманов
+        /// </summary>
+        private void _OnLimitPocketChanged()
+            => LimitPocketChanged?.Invoke(this, new EventArgs());
 
         /// <summary>
         /// Событие изменён лимит рюкзака
