@@ -4,13 +4,16 @@ using Mvk2.Games;
 using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Mvk2.Renderer;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
+using Vge.Entity.Render;
 using Vge.Gui.Controls;
 using Vge.Gui.Screens;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Renderer.Font;
+using WinGL.Util;
 
 namespace Mvk2.Gui.Screens
 {
@@ -62,7 +65,7 @@ namespace Mvk2.Gui.Screens
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
             _backpackCount = InventoryPlayerMvk.BackpackCount;
-            _inventoryCount = (byte)(_pocketCount + _backpackCount + 1);
+            _inventoryCount = (byte)(_pocketCount + _clothCount + _backpackCount);
 
             _windowMvk = window;
             _render = _windowMvk.GetRender();
@@ -74,43 +77,58 @@ namespace Mvk2.Gui.Screens
 
             _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
             _player.InvPlayer.SlotSetted += _InvPlayer_SlotSetted;
+            _player.InvPlayer.LimitPocketChanged += _InvPlayer_LimitPocketChanged;
+            _player.InvPlayer.LimitBackpackChanged += _InvPlayer_LimitBackpackChanged;
 
             _Init();
+
+            _UpPocketEnabled();
+            _UpBackpackEnabled();
         }
 
         /// <summary>
-        /// Инициализация слотов. base._Init() Вызываем только для карманов и рюкзака
+        /// Инициализация слотов, инвентарь.
         /// </summary>
         protected virtual void _Init()
         {
             // Данная инициализация, для карманов и рюкзака, для другий можно просто перенаследовать
-
-            // Карманы
-            for (byte i = 0; i < _pocketCount; i++)
+            for (byte i = 0; i < _inventoryCount; i++)
             {
                 _SetSlot(i, new ControlSlot(_windowMvk, i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
-                if (i >= _player.InvPlayer.LimitPocket)
+            }
+        }
+
+        /// <summary>
+        /// Обновить слоты карманов
+        /// </summary>
+        private void _UpPocketEnabled()
+        {
+            int chek = _player.InvPlayer.LimitPocket;
+            for (int i = 0; i < _pocketCount; i++)
+            {
+                bool b = _slot[i].Enabled;
+                if (b != chek > i)
                 {
-                    _slot[i].SetEnable(false);
+                    _slot[i].SetEnable(!b);
                 }
             }
+        }
 
-            // Правая рука
-            _SetSlot(_pocketCount, new ControlSlot(_windowMvk, _pocketCount,
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(_pocketCount)));
-
-            // Рюкзак
-            int from = _pocketCount + 1; // плюс правая рука
-            int count = from + _backpackCount;
-            int bias = _clothCount - 1; // без правой руки
+        /// <summary>
+        /// Обновить слоты рюкзака
+        /// </summary>
+        private void _UpBackpackEnabled()
+        {
+            int from = _pocketCount + _clothCount;
+            int count = _inventoryCount;
+            int chek = _player.InvPlayer.LimitBackpack + from;
             for (int i = from; i < count; i++)
             {
-                _SetSlot(i, new ControlSlot(_windowMvk, (byte)(i + bias),
-                    _windowMvk.Game.Player.Inventory.GetStackInSlot(i + bias)));
-                if (i - from >= _player.InvPlayer.LimitBackpack)
+                bool b = _slot[i].Enabled;
+                if (b != chek > i)
                 {
-                    _slot[i].SetEnable(false);
+                    _slot[i].SetEnable(!b);
                 }
             }
         }
@@ -130,13 +148,27 @@ namespace Mvk2.Gui.Screens
         /// Количество слотов
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual int _GetSlotCount() => 0;
+        protected virtual int _GetSlotCount() => _inventoryCount;
 
         /// <summary>
         /// Название заголовка
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual string _GetTitle() => "Storage";
+
+        /// <summary>
+        /// Событие изменён лимит кармана
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _InvPlayer_LimitPocketChanged(object sender, EventArgs e)
+            => _UpPocketEnabled();
+
+        /// <summary>
+        /// Событие изменён лимит рюкзака
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _InvPlayer_LimitBackpackChanged(object sender, EventArgs e)
+            => _UpBackpackEnabled();
 
         /// <summary>
         /// Изменился слот игрока
@@ -159,16 +191,10 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected virtual void _InvPlayerSlotSetted(SlotEventArgs e)
         {
-            if (e.SlotId <= _pocketCount)
+            if (e.SlotId < _inventoryCount)
             {
-                // Карманы плюс правая рука
+                // Инвентарь
                 _slot[e.SlotId].SetStack(e.Stack);
-            }
-            else if (e.SlotId >= (_pocketCount + _clothCount)
-                && e.SlotId < (_pocketCount + _clothCount + _backpackCount))
-            {
-                // Рюкзак
-                _slot[e.SlotId - _pocketCount - 2].SetStack(e.Stack);
             }
             else if (e.SlotId >= 100)
             {
@@ -238,11 +264,75 @@ namespace Mvk2.Gui.Screens
             
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
+
+            // Карманы
+            for (int i = 0; i < _pocketCount; i++)
+            {
+                _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
+            }
+
+            // Правая рука
+            _slot[_pocketCount].SetPosition(PosX + 6, PosY + 300);
+
+            // Одежда
+            int from = _pocketCount + 1;
+            for (int i = 0; i < 4; i++)
+            {
+
+                _slot[i + from].SetPosition(PosX + 6, PosY + 36 + i * 50);
+                _slot[i + from + 4].SetPosition(PosX + 176, PosY + 36 + i * 50);
+            }
+
+            // Рюкзак
+            from = _pocketCount + _clothCount;
+            for (int i = 0; i < 5; i++)
+            {
+
+                _slot[i + from].SetPosition(PosX + 256 + i * 50, PosY + 45);
+                _slot[i + from + 5].SetPosition(PosX + 256 + i * 50, PosY + 95);
+                _slot[i + from + 10].SetPosition(PosX + 256 + i * 50, PosY + 145);
+            }
+        }
+
+        /// <summary>
+        /// Метод для прорисовки кадра
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public override void Draw(float timeIndex)
+        {
+            base.Draw(timeIndex);
+            _toolTip.Draw();
+        }
+
+        /// <summary>
+        /// Дополнительная прорисовка не контролов
+        /// </summary>
+        protected override void _DrawAdd()
+        {
+            base._DrawAdd();
+            // Прорисовки игрока
+            if (window.Game.Player.Render is EntityRenderAnimation renderAnimation)
+            {
+                int y = (PosY + 80) * si;
+                int x = (PosX + 115) * si;
+
+                float pitch = y > window.MouseY ? (1f - window.MouseY / (float)y)
+                    : -(window.MouseY - y) / (float)(Gi.Height - y);
+                float yaw = x > window.MouseX ? (1f - window.MouseX / (float)x)
+                    : -(window.MouseX - x) / (float)(Gi.Width - x);
+
+                window.Game.Render.DepthOn();
+                renderAnimation.DrawGui((PosX + 115) * si, (PosY + 190) * si,
+                    Glm.Sin(yaw), Glm.Sin(pitch), 36 * si);
+                window.Game.Render.DepthOff();
+                window.Render.ShaderBindGuiColor();
+            }
         }
 
         /// <summary>
         /// Клик за пределами окна
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _OnClickOutsideWindow() => _ThrowTheSlot();
 
         /// <summary>
@@ -269,6 +359,8 @@ namespace Mvk2.Gui.Screens
             base.Dispose();
             _OnFinishing();
             _player.InvPlayer.SlotSetted -= _InvPlayer_SlotSetted;
+            _player.InvPlayer.LimitPocketChanged -= _InvPlayer_LimitPocketChanged;
+            _player.InvPlayer.LimitBackpackChanged -= _InvPlayer_LimitBackpackChanged;
         }
     }
 }

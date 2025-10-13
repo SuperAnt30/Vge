@@ -20,7 +20,8 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = new InventoryList(1, 11, 12);
+            // Inventory = new InventoryList(1, 11, 12);
+            Inventory = new InventoryList(1, 9, 10);
             Inventory.OutsideChanged += Inventory_OutsideChanged;
         }
 
