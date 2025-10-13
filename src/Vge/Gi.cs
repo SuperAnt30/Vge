@@ -72,7 +72,11 @@ public sealed class Gi
     /// </summary>
     public static void UpdateSizeInterface()
     {
-        Si = (Options.SizeInterface > 1 && Height < 960) ? 1 : Options.SizeInterface;
+        // Si = (Options.SizeInterface > 1 && Height < 960) ? 1 : Options.SizeInterface;
+        // TODO::2025-10-13 автоматический SizeInterface
+        if (Height < 960) Si = 1;
+        else if (Height < 1920) Si = 2;
+        else Si = 4;
     }
 
     /// <summary>
@@ -174,5 +178,5 @@ public sealed class Gi
     /// Обновить ортогональную проекцию
     /// </summary>
     public static void UpOrtho()
-        => Glm.Ortho(0, Width, Height, 0, 200, -200).ConvArray(Ortho);
+        => Glm.Ortho(0, Width, Height, 0, 100 * Si, -100 * Si).ConvArray(Ortho);
 }

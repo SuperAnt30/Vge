@@ -380,8 +380,8 @@ namespace Vge
             base.OnResized(width, height);
             Gi.Width = width;
             Gi.Height = height;
-            Gi.UpOrtho();
             UpdateSizeInterface();
+            Gi.UpOrtho();
             if (Screen != null) 
             {
                 Screen.Resized();
