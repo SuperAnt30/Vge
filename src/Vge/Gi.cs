@@ -72,11 +72,23 @@ public sealed class Gi
     /// </summary>
     public static void UpdateSizeInterface()
     {
+        Si = Options.SizeInterface;
         // Si = (Options.SizeInterface > 1 && Height < 960) ? 1 : Options.SizeInterface;
-        // TODO::2025-10-13 автоматический SizeInterface
-        if (Height < 960) Si = 1;
-        else if (Height < 1920) Si = 2;
-        else Si = 4;
+
+        // Автоматический SizeInterface
+        if (Si == 2)
+        {
+            // Крупный стиль
+            if (Height < 960) Si = 1;
+            else if (Height < 1920) Si = 2;
+            else Si = 4;
+        }
+        else
+        {
+            // Мелкий стиль
+            if (Height < 1920) Si = 1;
+            else Si = 2;
+        }
     }
 
     /// <summary>
