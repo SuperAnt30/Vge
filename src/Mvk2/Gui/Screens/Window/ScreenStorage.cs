@@ -60,7 +60,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorage(WindowMvk window, int width, int height) : base(window, 456, 420)
+        public ScreenStorage(WindowMvk window) : base(window, 512f, 456, 420)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
@@ -324,6 +324,7 @@ namespace Mvk2.Gui.Screens
                 window.Game.Render.DepthOff();
                 window.Render.ShaderBindGuiColor();
             }
+            //window.Render.BindTextureWidgets();
         }
 
         /// <summary>

@@ -48,7 +48,7 @@ namespace Vge.Gui.Screens
         private int _scrollPos = 0;
         private string _historyBuffer = "";
 
-        public ScreenChat(WindowMain window, int width, int height) : base(window, width, height)
+        public ScreenChat(WindowMain window, int width, int height) : base(window, 512f, width, height)
         {
             FontBase font = window.Render.FontMain;
             _labelMessages = new Label(window, 

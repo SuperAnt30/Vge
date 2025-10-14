@@ -46,7 +46,7 @@ namespace Mvk2.Gui.Controls
         public ControlIcon(WindowMvk window, ItemStack stack) : base(window)
         {
             _render = window.GetRender();
-            SetSize(38, 38).SetText("");
+            SetSize(36, 36).SetText("");
             Stack = stack;
             _meshTxt = new MeshGuiColor(gl);
             _font = window.GetRender().FontSmall;
@@ -68,8 +68,8 @@ namespace Mvk2.Gui.Controls
         /// </summary>
         public override void OnMouseMove(int x, int y)
         {
-            _mouseX = x - 25 * si;
-            _mouseY = y - 25 * si;
+            _mouseX = x - 18 * si;
+            _mouseY = y - 18 * si;
         }
 
         #endregion
@@ -78,8 +78,8 @@ namespace Mvk2.Gui.Controls
 
         public override void Rendering()
         {
-            _posItemX = (PosX + 19) * si;
-            _posItemY = (PosY + 19) * si;
+            _posItemX = (PosX + 18) * si;
+            _posItemY = (PosY + 18) * si;
 
             // Ренедер текста
             if (Stack != null && Stack.Amount != 1)
@@ -89,7 +89,7 @@ namespace Mvk2.Gui.Controls
                 // Указываем опции
                 _font.SetFontFX(EnumFontFX.Outline);
                 // Готовим рендер текста
-                _font.RenderString((PosX + 7) * si, (PosY + 36) * si, Stack.Amount.ToString());
+                _font.RenderString((PosX + 3) * si, (PosY + 26) * si, Stack.Amount.ToString());
                 // Имеется Outline значит рендерим FX
                 _font.RenderFX();
                 // Вносим сетку

@@ -67,22 +67,22 @@ namespace Mvk2.Gui.Controls
             {
                 if (Enter)
                 {
-                    v1 = .1953125f;
-                    v2 = .29296875f;
+                    v1 = .140625f;
+                    v2 = .2109375f;
                 }
                 else
                 {
-                    v1 = .09765625f;
-                    v2 = .1953125f;
+                    v1 = .0703125f;
+                    v2 = .140625f;
                 }
             }
             else
             {
-                v2 = .09765625f;
+                v2 = .0703125f;
                 v1 = 0;
             }
             _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
-                    v1, .90234375f, v2, 1));
+                    v1, .9296875f, v2, 1));
 
             base.Rendering();
         }
@@ -94,7 +94,8 @@ namespace Mvk2.Gui.Controls
         public override void Draw(float timeIndex)
         {
             // Рисуем фон кнопки
-            _render.BindTextureHud();
+            // _render.BindTextureHud();
+            _render.BindTextureWidgets();
             _meshBg.Draw();
             
             base.Draw(timeIndex);

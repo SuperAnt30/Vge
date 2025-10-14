@@ -34,11 +34,16 @@ namespace Vge.Gui.Screens
         /// Сетка фона
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
+        /// <summary>
+        /// Размер текстуры фона, квадрат в пикселах
+        /// </summary>
+        protected readonly float _sizeBg;
 
-        protected ScreenWindow(WindowMain window, int width, int height) : base(window)
+        protected ScreenWindow(WindowMain window, float sizeBg, int width, int height) : base(window)
         {
             WidthWindow = width;
             HeightWindow = height;
+            _sizeBg = sizeBg;
             _meshBg = new MeshGuiColor(gl);
 
             _InitTitle();
@@ -95,6 +100,10 @@ namespace Vge.Gui.Screens
             {
                 _Close();
             }
+            else
+            {
+                base.OnKeyDown(keys);
+            }
         }
 
         /// <summary>
@@ -108,10 +117,9 @@ namespace Vge.Gui.Screens
 
         protected override void _RenderingAdd()
         {
-            // TODO::2025-10-14 HeightWindow / (float)WidthWindow
             _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si,
                 (PosX + WidthWindow) * si, (PosY + HeightWindow) * si,
-                0, 0, 1, .69140625f)); // HeightWindow / (float)WidthWindow));
+                0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg));
             _isRenderAdd = false;
         }
 

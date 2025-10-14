@@ -10,7 +10,7 @@ namespace Mvk2.Gui.Screens
     /// </summary>
     public class ScreenInventory : ScreenStorage
     {
-        public ScreenInventory(WindowMvk window) : base(window, 512, 354)
+        public ScreenInventory(WindowMvk window) : base(window)
             => _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenInventory));
 
         /// <summary>
