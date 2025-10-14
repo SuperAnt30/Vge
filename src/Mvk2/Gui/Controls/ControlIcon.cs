@@ -46,7 +46,7 @@ namespace Mvk2.Gui.Controls
         public ControlIcon(WindowMvk window, ItemStack stack) : base(window)
         {
             _render = window.GetRender();
-            SetSize(50, 50).SetText("");
+            SetSize(38, 38).SetText("");
             Stack = stack;
             _meshTxt = new MeshGuiColor(gl);
             _font = window.GetRender().FontSmall;
@@ -78,8 +78,8 @@ namespace Mvk2.Gui.Controls
 
         public override void Rendering()
         {
-            _posItemX = (PosX + 25) * si;
-            _posItemY = (PosY + 25) * si;
+            _posItemX = (PosX + 19) * si;
+            _posItemY = (PosY + 19) * si;
 
             // Ренедер текста
             if (Stack != null && Stack.Amount != 1)

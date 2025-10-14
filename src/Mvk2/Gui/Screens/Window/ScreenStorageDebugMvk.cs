@@ -72,10 +72,15 @@ namespace Mvk2.Gui.Screens
         {
             base.OnResized();
 
-            // Ящик
-            for (int i = 0; i < 5; i++)
+            // Ящик на 48 слот
+            int i = 0;
+            for (int y = 0; y < 4; y++)
             {
-                _slot[i + _inventoryCount].SetPosition(PosX + 256 + i * 50, PosY + 245);
+                for (int x = 0; x < 12; x++)
+                {
+                    _slot[i + _inventoryCount].SetPosition(PosX + 12 + x * 36, PosY + 28 + y * 36);
+                    i++;
+                }
             }
         }
 

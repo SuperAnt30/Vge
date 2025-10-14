@@ -34,14 +34,14 @@ namespace Mvk2.Entity.List
             //Inventory.SetStackInSlot(3, new ItemStack(Ce.Items.ItemObjects[6]));
             //Inventory.SetStackInSlot(4, new ItemStack(Ce.Items.ItemObjects[7]));
          //   Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
-            Inventory.SetStackInSlot(6, new ItemStack(Ce.Items.ItemObjects[3], 3));
-            Inventory.SetStackInSlot(7, new ItemStack(Ce.Items.ItemObjects[5]));
+            Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[3], 3));
+            Inventory.SetStackInSlot(13, new ItemStack(Ce.Items.ItemObjects[5]));
 
-            Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[6]));
-            Inventory.SetStackInSlot(11, new ItemStack(Ce.Items.ItemObjects[7]));
+            Inventory.SetStackInSlot(18, new ItemStack(Ce.Items.ItemObjects[6]));
+            Inventory.SetStackInSlot(17, new ItemStack(Ce.Items.ItemObjects[7]));
 
-            Inventory.SetStackInSlot(8, new ItemStack(Ce.Items.ItemObjects[0]));
-            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[4]));
+            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[0]));
+            Inventory.SetStackInSlot(20, new ItemStack(Ce.Items.ItemObjects[4]));
 
             // При запуске на сервере
             InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака

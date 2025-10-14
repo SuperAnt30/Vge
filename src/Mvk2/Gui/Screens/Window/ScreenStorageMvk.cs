@@ -60,7 +60,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorageMvk(WindowMvk window, int width, int height) : base(window, width, height)
+        public ScreenStorageMvk(WindowMvk window, int width, int height) : base(window, 456, 420)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
@@ -233,7 +233,7 @@ namespace Mvk2.Gui.Screens
             FontBase font = window.Render.FontMain;
             _labelTitle = new Label(window, font, 250, 50, _GetTitle());
             _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-            _buttonCancel = new Button(window, font, 50, "X");
+            _buttonCancel = new Button(window, font, 30, "X", 28);
         }
 
         /// <summary>
@@ -258,39 +258,36 @@ namespace Mvk2.Gui.Screens
 
             // Расположение окна
             PosX = (Width - WidthWindow) / 2;
-            PosY = (Height - HeightWindow) / 2;
-            //PosY = 10;
-            //PosX = 10;
+            int h = Height - HeightWindow;
+            PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
             
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
 
+            int i;
             // Карманы
-            for (int i = 0; i < _pocketCount; i++)
+            for (i = 0; i < _pocketCount; i++)
             {
-                _slot[i].SetPosition(PosX + 106 + i * 50, PosY + 300);
+                _slot[i].SetPosition(PosX + 12 + i * 36, PosY + 372);
             }
 
-            // Правая рука
-            _slot[_pocketCount].SetPosition(PosX + 6, PosY + 300);
-
             // Одежда
-            int from = _pocketCount + 1;
-            for (int i = 0; i < 4; i++)
+            for (i = 0; i < 5; i++)
             {
-
-                _slot[i + from].SetPosition(PosX + 6, PosY + 36 + i * 50);
-                _slot[i + from + 4].SetPosition(PosX + 176, PosY + 36 + i * 50);
+                _slot[i + _pocketCount].SetPosition(PosX + 12, PosY + 188 + i * 36);
+                _slot[i + _pocketCount + 5].SetPosition(PosX + 152, PosY + 188 + i * 36);
             }
 
             // Рюкзак
-            from = _pocketCount + _clothCount;
-            for (int i = 0; i < 5; i++)
+            int from = _pocketCount + _clothCount;
+            i = 0;
+            for (int y = 0; y < 5; y++)
             {
-
-                _slot[i + from].SetPosition(PosX + 256 + i * 50, PosY + 45);
-                _slot[i + from + 5].SetPosition(PosX + 256 + i * 50, PosY + 95);
-                _slot[i + from + 10].SetPosition(PosX + 256 + i * 50, PosY + 145);
+                for (int x = 0; x < 7; x++)
+                {
+                    _slot[i + from].SetPosition(PosX + 192 + x * 36, PosY + 188 + y * 36);
+                    i++;
+                }
             }
         }
 
@@ -313,8 +310,8 @@ namespace Mvk2.Gui.Screens
             // Прорисовки игрока
             if (window.Game.Player.Render is EntityRenderAnimation renderAnimation)
             {
-                int y = (PosY + 80) * si;
-                int x = (PosX + 115) * si;
+                int y = (PosY + 240) * si;
+                int x = (PosX + 102) * si;
 
                 float pitch = y > window.MouseY ? (1f - window.MouseY / (float)y)
                     : -(window.MouseY - y) / (float)(Gi.Height - y);
@@ -322,7 +319,7 @@ namespace Mvk2.Gui.Screens
                     : -(window.MouseX - x) / (float)(Gi.Width - x);
 
                 window.Game.Render.DepthOn();
-                renderAnimation.DrawGui((PosX + 115) * si, (PosY + 190) * si,
+                renderAnimation.DrawGui((PosX + 102) * si, (PosY + 350) * si,
                     Glm.Sin(yaw), Glm.Sin(pitch), 36 * si);
                 window.Game.Render.DepthOff();
                 window.Render.ShaderBindGuiColor();

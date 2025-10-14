@@ -15,6 +15,11 @@ namespace Vge.Item
         /// Размер спрайта предмета в инвентаре, pix
         /// </summary>
         public static int SizeSprite = 16;
+        /// <summary>
+        /// Размер фигуры предмета в инвентаре, pix
+        /// </summary>
+        public static int SizeShape = 15;
+        
 
         /// <summary>
         /// Таблица предметов для регистрации
@@ -131,12 +136,12 @@ namespace Vge.Item
                 else if (state.IsKey(Cti.ShapeGui))
                 {
                     // Фигура предмета
-                    itemObject.Buffer.InitShapeGui(alias, state, _GetShape(state.GetString(Cti.ShapeGui)), SizeSprite);
+                    itemObject.Buffer.InitShapeGui(alias, state, _GetShape(state.GetString(Cti.ShapeGui)), SizeShape);
                 }
                 else if (state.IsKey(Cti.ShapeBlockGui))
                 {
                     // Фигура блока
-                    itemObject.Buffer.InitShapeGui(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlockGui)), SizeSprite);
+                    itemObject.Buffer.InitShapeGui(alias, state, BlocksReg.GetShape(state.GetString(Cti.ShapeBlockGui)), SizeShape);
                 }
                 else
                 {

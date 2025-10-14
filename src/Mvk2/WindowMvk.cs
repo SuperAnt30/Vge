@@ -211,6 +211,7 @@ namespace Mvk2
         protected override void _InitializationItems()
         {
             ItemsReg.SizeSprite = 32;
+            ItemsReg.SizeShape = 30;
             base._InitializationItems();
             ItemsRegMvk.Initialization();
         }

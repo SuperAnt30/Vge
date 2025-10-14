@@ -15,7 +15,7 @@ namespace Vge.TileEntity
         /// <summary>
         /// Количество слотов
         /// </summary>
-        public const int Count = 5;
+        public const int Count = 48;
 
         private ItemStack[] _stacks = new ItemStack[Count];
 

@@ -13,8 +13,8 @@ namespace Vge.Gui.Controls
         /// </summary>
         private readonly MeshGuiColor meshBg;
 
-        public Button(WindowMain window, FontBase font, int width, string text)
-            : base(window, font, width, 40, text)
+        public Button(WindowMain window, FontBase font, int width, string text, int height = 40)
+            : base(window, font, width, height, text)
         {
             meshBg = new MeshGuiColor(gl);
         }
