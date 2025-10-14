@@ -8,9 +8,9 @@ namespace Mvk2.Gui.Screens
     /// <summary>
     /// Окно инвентаря для игры Малювеки 2
     /// </summary>
-    public class ScreenInventoryMvk : ScreenStorageMvk
+    public class ScreenInventory : ScreenStorage
     {
-        public ScreenInventoryMvk(WindowMvk window) : base(window, 512, 354)
+        public ScreenInventory(WindowMvk window) : base(window, 512, 354)
             => _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenInventory));
 
         /// <summary>

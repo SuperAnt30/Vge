@@ -108,9 +108,10 @@ namespace Vge.Gui.Screens
 
         protected override void _RenderingAdd()
         {
+            // TODO::2025-10-14 HeightWindow / (float)WidthWindow
             _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si,
                 (PosX + WidthWindow) * si, (PosY + HeightWindow) * si,
-                0, 0, 1, HeightWindow / (float)WidthWindow));
+                0, 0, 1, .69140625f)); // HeightWindow / (float)WidthWindow));
             _isRenderAdd = false;
         }
 

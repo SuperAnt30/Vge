@@ -48,11 +48,11 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Создать скрин инвентаря
         /// </summary>
-        public void Inventory() => window.ScreenCreate(new ScreenInventoryMvk(_windowMvk));
+        public void Inventory() => window.ScreenCreate(new ScreenInventory(_windowMvk));
 
         /// <summary>
         /// Создать скрин хранилища отладки
         /// </summary>
-        public void StorageDebug() => window.ScreenCreate(new ScreenStorageDebugMvk(_windowMvk));
+        public void StorageDebug() => window.ScreenCreate(new ScreenStorageHole(_windowMvk));
     }
 }

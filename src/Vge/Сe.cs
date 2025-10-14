@@ -54,9 +54,9 @@ public sealed class Ce
     /// </summary>
     public static ItemArrays Items;
     /// <summary>
-    /// Отладочный тайл энтети для конейнера
+    /// Тайл энтети для дыры хранения, больше как отладочный, чем игровой
     /// </summary>
-    public static TileEntityBase TileEntityDebug;
+    public static TileEntityHole TileHole;
 
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп

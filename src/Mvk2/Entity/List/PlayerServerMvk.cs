@@ -91,7 +91,7 @@ namespace Mvk2.Entity.List
             switch (action)
             {
                 case EnumActionClickWindow.OpenBoxDebug:
-                    InvPlayer.ServerOpenInventory(Ce.TileEntityDebug);
+                    InvPlayer.ServerOpenInventory(Ce.TileHole);
                     break;
                 case EnumActionClickWindow.OpenInventory:
                     break;

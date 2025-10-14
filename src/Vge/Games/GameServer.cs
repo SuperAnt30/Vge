@@ -137,7 +137,7 @@ namespace Vge.Games
             Worlds = worlds;
 
             // Для отладки
-            Ce.TileEntityDebug = new TileEntity.TileEntityBase(this);
+            Ce.TileHole = new TileEntity.TileEntityHole(this, 48);
             _frequencyMs = Stopwatch.Frequency / 1000;
             _stopwatchTps.Start();
         }

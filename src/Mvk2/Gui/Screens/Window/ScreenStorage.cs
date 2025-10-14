@@ -18,9 +18,9 @@ using WinGL.Util;
 namespace Mvk2.Gui.Screens
 {
     /// <summary>
-    /// Окно хранилища для игры Малювеки 2
+    /// Окно хранилища
     /// </summary>
-    public abstract class ScreenStorageMvk : ScreenWindow
+    public abstract class ScreenStorage : ScreenWindow
     {
         protected readonly WindowMvk _windowMvk;
 
@@ -60,7 +60,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorageMvk(WindowMvk window, int width, int height) : base(window, 456, 420)
+        public ScreenStorage(WindowMvk window, int width, int height) : base(window, 456, 420)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;

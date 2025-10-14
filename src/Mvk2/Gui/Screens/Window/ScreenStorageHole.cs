@@ -10,11 +10,11 @@ using WinGL.Actions;
 namespace Mvk2.Gui.Screens
 {
     /// <summary>
-    /// Окно инвентаря для игры Малювеки 2
+    /// Окно дыры хранения для игры Малювеки 2
     /// </summary>
-    public class ScreenStorageDebugMvk : ScreenStorageMvk
+    public class ScreenStorageHole : ScreenStorage
     {
-        public ScreenStorageDebugMvk(WindowMvk window) : base(window, 512, 354)
+        public ScreenStorageHole(WindowMvk window) : base(window, 512, 354)
             => _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenBoxDebug));
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Mvk2.Gui.Screens
             base._Init();
 
             // Ящик
-            for (int i = 0; i < TileEntityBase.Count; i++)
+            for (int i = 0; i < TileEntityHole.Count; i++)
             {
                 _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, (byte)(i + 100), null));
                 _slot[i + _inventoryCount].SetEnable(false);
@@ -36,13 +36,13 @@ namespace Mvk2.Gui.Screens
         /// Название заголовка
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override string _GetTitle() => L.T("Debug");
+        protected override string _GetTitle() => L.T("Hole");
 
         /// <summary>
         /// Количество слотов
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override int _GetSlotCount() => _inventoryCount + TileEntityBase.Count;
+        protected override int _GetSlotCount() => _inventoryCount + TileEntityHole.Count;
 
         /// <summary>
         /// Получить сетевой пакет
@@ -57,7 +57,7 @@ namespace Mvk2.Gui.Screens
             else if (packet is PacketS30WindowItems packetS30)
             {
                 // Загрузить все слоты в ящик
-                for (int i = _inventoryCount; i < _inventoryCount + TileEntityBase.Count; i++)
+                for (int i = _inventoryCount; i < _inventoryCount + TileEntityHole.Count; i++)
                 {
                     _slot[i].SetStack(packetS30.Stacks[i - _inventoryCount]);
                     _slot[i].SetEnable(true);

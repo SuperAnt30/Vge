@@ -8,14 +8,14 @@ using Vge.Network.Packets.Server;
 namespace Vge.TileEntity
 {
     /// <summary>
-    /// Базовый класс 
+    /// Тайл дыры хранения
     /// </summary>
-    public class TileEntityBase : ITileEntity
+    public class TileEntityHole : ITileEntity
     {
         /// <summary>
         /// Количество слотов
         /// </summary>
-        public const int Count = 48;
+        public static int Count = 5;
 
         private ItemStack[] _stacks = new ItemStack[Count];
 
@@ -26,8 +26,10 @@ namespace Vge.TileEntity
 
         private GameServer _server;
 
-        public TileEntityBase(GameServer server)
+        public TileEntityHole(GameServer server, int count)
         {
+            Count = count;
+            _stacks = new ItemStack[Count];
             _server = server;
             _conteiner.SendSetSlot += _Conteiner_SendSetSlot;
         }
@@ -56,7 +58,7 @@ namespace Vge.TileEntity
         public bool CheckEquals(ITileEntity tileEntity)
         {
             if (tileEntity == null) return false;
-            return tileEntity.GetType() == typeof(TileEntityBase);
+            return tileEntity.GetType() == typeof(TileEntityHole);
         }
 
         #region ItemStack
