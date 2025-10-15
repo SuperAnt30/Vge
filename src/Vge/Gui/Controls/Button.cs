@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer;
 using Vge.Renderer.Font;
+using WinGL.Actions;
 
 namespace Vge.Gui.Controls
 {
@@ -9,14 +10,19 @@ namespace Vge.Gui.Controls
     public class Button : Label
     {
         /// <summary>
+        /// Нажали ли на кнопку
+        /// </summary>
+        private bool _click;
+
+        /// <summary>
         /// Сетка фона
         /// </summary>
-        private readonly MeshGuiColor meshBg;
+        private readonly MeshGuiColor _meshBg;
 
         public Button(WindowMain window, FontBase font, int width, string text, int height = 40)
             : base(window, font, width, height, text)
         {
-            meshBg = new MeshGuiColor(gl);
+            _meshBg = new MeshGuiColor(gl);
         }
 
         #region Draw
@@ -28,18 +34,10 @@ namespace Vge.Gui.Controls
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected override void RenderInside(RenderMain render, int x, int y)
         {
-            //Stopwatch stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
-            //for (int i = 0; i < 1000; i++)
-            //{
-                base.RenderInside(render, x, y);
-                float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
-                meshBg.Reload(_RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
-            //}
-            //stopwatch.Stop();
-            //string s = stopwatch.ElapsedMilliseconds.ToString();
-            return;
+            base.RenderInside(render, x, y);
+            float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
+            if (_click) v1 = 0; // Временно!
+            _meshBg.Reload(_RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
         }
 
         /// <summary>
@@ -50,25 +48,49 @@ namespace Vge.Gui.Controls
         {
             // Рисуем фон кнопки
             window.Render.BindTextureWidgets();
-            meshBg.Draw();
+            _meshBg.Draw();
             // Рисуем текст кнопки
             base.Draw(timeIndex);
         }
 
         #endregion
 
+        #region OnMouse
+
+        /// <summary>
+        /// Отпустили клавишу мышки
+        /// </summary>
+        public override void OnMouseUp(MouseButton button, int x, int y)
+        {
+            if (_click)
+            {
+                if (button == MouseButton.Left)
+                {
+                    OnMouseMove(x, y);
+                    if (Enter)
+                    {
+                        base.OnClick();
+                    }
+                }
+                _click = false;
+                IsRender = true;
+            }
+        }
+
+        #endregion
+
         protected override void OnClick()
         {
+            _click = true;
+            IsRender = true;
             // Звук клика
             window.SoundClick(.3f);
-            base.OnClick();
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            if (meshBg != null) meshBg.Dispose();
+            _meshBg?.Dispose();
         }
-
     }
 }
