@@ -1,10 +1,8 @@
-﻿using Mvk2.Renderer;
-using Vge.Gui.Controls;
-using Vge.Item;
+﻿using Vge.Item;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 
-namespace Mvk2.Gui.Controls
+namespace Vge.Gui.Controls
 {
     /// <summary>
     /// Контрол оконка предмета, нужна для визуализации восле мышки и на контроле
@@ -15,8 +13,6 @@ namespace Mvk2.Gui.Controls
         /// Стак
         /// </summary>
         public ItemStack Stack { get; protected set; }
-
-        protected readonly RenderMvk _render;
 
         /// <summary>
         /// Сетка текста
@@ -43,13 +39,12 @@ namespace Mvk2.Gui.Controls
         private float _mouseX;
         private float _mouseY;
 
-        public ControlIcon(WindowMvk window, ItemStack stack) : base(window)
+        public ControlIcon(WindowMain window, FontBase font, ItemStack stack) : base(window)
         {
-            _render = window.GetRender();
             SetSize(36, 36).SetText("");
             Stack = stack;
             _meshTxt = new MeshGuiColor(gl);
-            _font = window.GetRender().FontSmall;
+            _font = font;
         }
 
         /// <summary>
@@ -115,18 +110,19 @@ namespace Mvk2.Gui.Controls
             {
                 // Всё 2d закончено, рисуем 3д элементы в Gui
                 // Заносим в шейдор
-                _render.ShsEntity.BindUniformBeginGui();
+                window.Render.ShsEntity.BindUniformBeginGui();
                 window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem)
                     .MeshDraw(_posItemX + _mouseX, _posItemY + _mouseY);
                 
                 if (_isText)
                 {
                     // Рисуем текст
-                    _render.ShaderBindGuiColor(_mouseX, _mouseY);
+                    window.Render.ShaderBindGuiColor(_mouseX, _mouseY);
                     _font.BindTexture();
                     _meshTxt.Draw();
                 }
-                _render.ShaderBindGuiColor(0, 0);
+
+                window.Render.ShaderBindGuiColor(0, 0);
             }
         }
 

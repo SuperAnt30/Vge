@@ -1,6 +1,6 @@
-﻿using Mvk2.Gui.Controls;
-using Mvk2.Packets;
+﻿using Mvk2.Packets;
 using System.Runtime.CompilerServices;
+using Vge.Gui.Controls;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -27,7 +27,7 @@ namespace Mvk2.Gui.Screens
             // Ящик
             for (int i = 0; i < TileEntityHole.Count; i++)
             {
-                _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, (byte)(i + 100), null));
+                _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, _render.FontSmall, (byte)(i + 100), null));
                 _slot[i + _inventoryCount].SetEnable(false);
             }
         }

@@ -1,7 +1,6 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Entity.List;
 using Mvk2.Games;
-using Mvk2.Gui.Controls;
 using Mvk2.Packets;
 using Mvk2.Renderer;
 using System;
@@ -73,7 +72,7 @@ namespace Mvk2.Gui.Screens
 
             _slot = new ControlSlot[_GetSlotCount()];
 
-            _icon = new ControlIcon(_windowMvk, null);
+            _icon = new ControlIcon(_windowMvk, _render.FontSmall, null);
 
             _player = ((GameModClientMvk)_windowMvk.Game.ModClient).Player;
             _player.InvPlayer.SlotSetted += _InvPlayer_SlotSetted;
@@ -94,7 +93,7 @@ namespace Mvk2.Gui.Screens
             // Данная инициализация, для карманов и рюкзака, для другий можно просто перенаследовать
             for (byte i = 0; i < _inventoryCount; i++)
             {
-                _SetSlot(i, new ControlSlot(_windowMvk, i,
+                _SetSlot(i, new ControlSlot(_windowMvk, _render.FontSmall, i,
                     _windowMvk.Game.Player.Inventory.GetStackInSlot(i)));
             }
         }

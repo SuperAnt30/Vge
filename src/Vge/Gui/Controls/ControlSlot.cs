@@ -2,9 +2,10 @@
 using Vge.Item;
 using Vge.Realms;
 using Vge.Renderer;
+using Vge.Renderer.Font;
 using WinGL.Actions;
 
-namespace Mvk2.Gui.Controls
+namespace Vge.Gui.Controls
 {
     /// <summary>
     /// Контрол слота предмета
@@ -21,7 +22,8 @@ namespace Mvk2.Gui.Controls
         /// </summary>
         private readonly MeshGuiColor _meshBg;
 
-        public ControlSlot(WindowMvk window, byte slotId, ItemStack stack) : base(window, stack)
+        public ControlSlot(WindowMain window, FontBase font, byte slotId,  ItemStack stack) 
+            : base(window, font, stack)
         {
             SlotId = slotId;
             Stack = stack;
@@ -94,8 +96,7 @@ namespace Mvk2.Gui.Controls
         public override void Draw(float timeIndex)
         {
             // Рисуем фон кнопки
-            // _render.BindTextureHud();
-            _render.BindTextureWidgets();
+            window.Render.BindTextureWidgets();
             _meshBg.Draw();
             
             base.Draw(timeIndex);
