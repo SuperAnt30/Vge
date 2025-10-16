@@ -126,7 +126,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public void UpCursor(int x = int.MaxValue)
         {
-            int x0 = x / si - PosX;
+            int x0 = x / _si - PosX;
             int w1 = _marginLeft;
             string text = _GetTextDraw();
             int count = text.Length;
@@ -334,7 +334,7 @@ namespace Vge.Gui.Controls
 
         public override void Rendering()
         {
-            RenderInside(window.Render, PosX * si, PosY * si);
+            RenderInside(window.Render, PosX * _si, PosY * _si);
             IsRender = false;
         }
 
@@ -350,7 +350,7 @@ namespace Vge.Gui.Controls
         {
             // Определяем цвет текста
             Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
-            int biasY = (Height * si - _font.GetVert()) / 2;
+            int biasY = (Height * _si - _font.GetVert()) / 2;
 
             // Чистим буфер
             _font.Clear();
@@ -370,7 +370,7 @@ namespace Vge.Gui.Controls
                 lenght = 0;
             }
             // Готовим рендер текста
-            _font.RenderString(x + _marginLeft * si, y + biasY, text);
+            _font.RenderString(x + _marginLeft * _si, y + biasY, text);
 
             // Имеется Outline значит рендерим FX
             _font.RenderFX();
@@ -386,7 +386,7 @@ namespace Vge.Gui.Controls
                 if (_isVisibleCursor)
                 {
                     // Если нужен курсор, то рендерим сетку
-                    int w = (PosX + _font.WidthString(text.Substring(0, lenght)) + _marginLeft) * si;
+                    int w = (PosX + _font.WidthString(text.Substring(0, lenght)) + _marginLeft) * _si;
                     // Чистим буфер
                     _font.Clear();
                     // Указываем опции

@@ -53,11 +53,11 @@
         /// <summary>
         /// Размер интерфеса
         /// </summary>
-        protected int si = 1;
+        protected int _si = 1;
 
         protected WidgetBase(WindowMain window) : base(window)
         {
-            si = Gi.Si;
+            _si = Gi.Si;
         }
 
         /// <summary>
@@ -65,9 +65,9 @@
         /// </summary>
         public virtual void OnResized()
         {
-            if (si != Gi.Si)
+            if (_si != Gi.Si)
             {
-                si = Gi.Si;
+                _si = Gi.Si;
                 IsRender = true;
             }
         }
@@ -77,8 +77,8 @@
         /// <summary>
         /// В облости ли мышь курсора
         /// </summary>
-        private bool IsRectangleMouse(int x, int y) => Enabled && x >= PosX * si && y >= PosY * si
-                && x < (PosX + Width) * si && y < (PosY + Height) * si;
+        private bool _IsRectangleMouse(int x, int y) => Visible && Enabled && x >= PosX * _si && y >= PosY * _si
+                && x < (PosX + Width) * _si && y < (PosY + Height) * _si;
 
         /// <summary>
         /// Перемещение мышки
@@ -90,7 +90,7 @@
         /// </summary>
         protected void _CanEnter(int x, int y)
         {
-            bool b = IsRectangleMouse(x, y);
+            bool b = _IsRectangleMouse(x, y);
             if (Enter != b)
             {
                 Enter = b;
@@ -174,9 +174,9 @@
             float u1, float v1, float vk, 
             float r, float g, float b, float a = 1f)
         {
-            int w = width * si / 2;
+            int w = width * _si / 2;
             float wf = width / 1024f;
-            float h = height * si;
+            float h = height * _si;
 
             float y2 = y1 + h;
             float v2 = v1 + vk;

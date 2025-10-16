@@ -63,8 +63,8 @@ namespace Vge.Gui.Controls
         /// </summary>
         public override void OnMouseMove(int x, int y)
         {
-            _mouseX = x - 18 * si;
-            _mouseY = y - 18 * si;
+            _mouseX = x - 18 * _si;
+            _mouseY = y - 18 * _si;
         }
 
         #endregion
@@ -73,8 +73,8 @@ namespace Vge.Gui.Controls
 
         public override void Rendering()
         {
-            _posItemX = (PosX + 18) * si;
-            _posItemY = (PosY + 18) * si;
+            _posItemX = (PosX + 18) * _si;
+            _posItemY = (PosY + 18) * _si;
 
             // Ренедер текста
             if (Stack != null && Stack.Amount != 1)
@@ -84,7 +84,7 @@ namespace Vge.Gui.Controls
                 // Указываем опции
                 _font.SetFontFX(EnumFontFX.Outline);
                 // Готовим рендер текста
-                _font.RenderString((PosX + 3) * si, (PosY + 26) * si, Stack.Amount.ToString());
+                _font.RenderString((PosX + 3) * _si, (PosY + 26) * _si, Stack.Amount.ToString());
                 // Имеется Outline значит рендерим FX
                 _font.RenderFX();
                 // Вносим сетку

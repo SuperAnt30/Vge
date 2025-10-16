@@ -32,9 +32,9 @@ namespace Vge.Gui.Controls
         /// </summary>
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
-        protected override void RenderInside(RenderMain render, int x, int y)
+        protected override void _RenderInside(RenderMain render, int x, int y)
         {
-            base.RenderInside(render, x, y);
+            base._RenderInside(render, x, y);
             float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
             if (_click) v1 = 0; // Временно!
             _meshBg.Reload(_RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
@@ -69,7 +69,7 @@ namespace Vge.Gui.Controls
                     OnMouseMove(x, y);
                     if (Enter)
                     {
-                        base.OnClick();
+                        base._OnClick();
                     }
                 }
                 _click = false;
@@ -79,7 +79,7 @@ namespace Vge.Gui.Controls
 
         #endregion
 
-        protected override void OnClick()
+        protected override void _OnClick()
         {
             _click = true;
             IsRender = true;

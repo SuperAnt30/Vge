@@ -37,12 +37,12 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Сетка фона
         /// </summary>
-        private readonly MeshGuiColor meshBg;
+        private readonly MeshGuiColor _meshBg;
 
         public CheckBox(WindowMain window, FontBase font, int width, string text)
             : base(window, font, width, 40, text)
         {
-            meshBg = new MeshGuiColor(gl);
+            _meshBg = new MeshGuiColor(gl);
             SetTextAlight(EnumAlight.Left, EnumAlightVert.Middle);
         }
 
@@ -63,19 +63,19 @@ namespace Vge.Gui.Controls
         /// </summary>
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
-        protected override void RenderInside(RenderMain render, int x, int y)
+        protected override void _RenderInside(RenderMain render, int x, int y)
         {
             // Рендер текста со смещением
             int w = Width;
             SetSize(Width - Prefix, Height);
-            base.RenderInside(render, x + Prefix * si, y);
+            base._RenderInside(render, x + Prefix * _si, y);
             SetSize(w, Height);
 
             // Рендер Значка
             float u1 = Enabled ? Enter ? vk + vk : vk : 0f;
             if (Checked) u1 += HorStepCheck;
 
-            meshBg.Reload(RenderFigure.Rectangle(x, y, x + BoxWidth * si, y + Height * si,
+            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + BoxWidth * _si, y + Height * _si,
                 u1, Ver1, u1 + vk, Ver2));
         }
 
@@ -87,25 +87,25 @@ namespace Vge.Gui.Controls
         {
             // Рисуем фон кнопки
             window.Render.BindTextureWidgets();
-            meshBg.Draw();
+            _meshBg.Draw();
             // Рисуем текст кнопки
             base.Draw(timeIndex);
         }
 
         #endregion
 
-        protected override void OnClick()
+        protected override void _OnClick()
         {
             // Звук клика
             window.SoundClick(.3f);
             SetChecked(!Checked);
-            base.OnClick();
+            base._OnClick();
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            if (meshBg != null) meshBg.Dispose();
+            if (_meshBg != null) _meshBg.Dispose();
         }
     }
 }

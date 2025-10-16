@@ -259,7 +259,7 @@ namespace Mvk2.Gui.Screens
             PosX = (Width - WidthWindow) / 2;
             int h = Height - HeightWindow;
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
-            
+
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
 

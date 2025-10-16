@@ -51,27 +51,27 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Параметры для текстовки
         /// </summary>
-        private readonly Dictionary<int, string> items = new Dictionary<int, string>();
+        private readonly Dictionary<int, string> _items = new Dictionary<int, string>();
 
         /// <summary>
         /// Зажата ли левая клавиша мыши
         /// </summary>
-        private bool isLeftDown = false;
+        private bool _isLeftDown = false;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
-        private readonly MeshGuiColor meshBg;
+        private readonly MeshGuiColor _meshBg;
         /// <summary>
         /// Сетка кнопки
         /// </summary>
-        private readonly MeshGuiColor meshBt;
+        private readonly MeshGuiColor _meshBt;
 
         public Slider(WindowMain window, FontBase font, int width, int min, int max, int step, string text)
             : base(window, font, width, 40, text)
         {
-            meshBg = new MeshGuiColor(gl);
-            meshBt = new MeshGuiColor(gl);
+            _meshBg = new MeshGuiColor(gl);
+            _meshBt = new MeshGuiColor(gl);
             Min = min;
             Max = max;
             Step = step;
@@ -94,7 +94,7 @@ namespace Vge.Gui.Controls
         /// <param name="text">текст при значении</param>
         public Slider AddParam(int value, string text)
         {
-            items.Add(value, text);
+            _items.Add(value, text);
             return this;
         }
 
@@ -105,26 +105,26 @@ namespace Vge.Gui.Controls
         /// </summary>
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
-        protected override void RenderInside(RenderMain render, int x, int y)
+        protected override void _RenderInside(RenderMain render, int x, int y)
         {
-            string textParam = items.ContainsKey(Value) ? items[Value] : "";
+            string textParam = _items.ContainsKey(Value) ? _items[Value] : "";
             string text = textParam == "" ? (Text + " " + Value) : textParam;
              
             // Рендер текста
-            RenderInside(render, x, y, text);
+            _RenderInside(render, x, y, text);
 
             float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
 
             // Рендер фона
-            meshBg.Reload(_RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
+            _meshBg.Reload(_RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
 
-            v1 = Hor1 + (Enabled ? isLeftDown ? Hor + Hor : Hor : 0f);
+            v1 = Hor1 + (Enabled ? _isLeftDown ? Hor + Hor : Hor : 0f);
 
             // Рендер кнопки
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
-            int px = (int)((Width - SliderWidth) * index) * si;
-            meshBt.Reload(RenderFigure.Rectangle(x + px, y, x + px + SliderWidth * si, y + Height * si,
+            int px = (int)((Width - SliderWidth) * index) * _si;
+            _meshBt.Reload(RenderFigure.Rectangle(x + px, y, x + px + SliderWidth * _si, y + Height * _si,
                 v1, Ver1, v1 + Hor, Ver2));
         }
 
@@ -136,11 +136,11 @@ namespace Vge.Gui.Controls
         {
             // Рисуем фон кнопки
             window.Render.BindTextureWidgets();
-            meshBg.Draw();
+            _meshBg.Draw();
             if (Enter)
             {
                 // Рисуем кнопку
-                meshBt.Draw();
+                _meshBt.Draw();
                 // Рисуем текст кнопки
                 base.Draw(timeIndex);
             }
@@ -150,7 +150,7 @@ namespace Vge.Gui.Controls
                 base.Draw(timeIndex);
                 // Рисуем кнопку
                 window.Render.BindTextureWidgets();
-                meshBt.Draw();
+                _meshBt.Draw();
             }
         }
 
@@ -168,7 +168,7 @@ namespace Vge.Gui.Controls
                 OnMouseMove(x, y);
                 if (Enter)
                 {
-                    isLeftDown = true;
+                    _isLeftDown = true;
                     CheckMouse(x);
                 }
             }
@@ -178,9 +178,9 @@ namespace Vge.Gui.Controls
         /// </summary>
         public override void OnMouseUp(MouseButton button, int x, int y)
         {
-            if (button == MouseButton.Left && isLeftDown)
+            if (button == MouseButton.Left && _isLeftDown)
             {
-                isLeftDown = false;
+                _isLeftDown = false;
                 OnMouseMove(x, y);
                 CheckMouse(x);
             }
@@ -192,7 +192,7 @@ namespace Vge.Gui.Controls
         public override void OnMouseMove(int x, int y)
         {
             base.OnMouseMove(x, y);
-            if (isLeftDown) CheckMouse(x);
+            if (_isLeftDown) CheckMouse(x);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Vge.Gui.Controls
         /// <param name="x">координата мыши по X</param>
         private void CheckMouse(int x)
         {
-            float xm = (x / si - PosX - 4) / (float)(Width - 8);
+            float xm = (x / _si - PosX - 4) / (float)(Width - 8);
             if (xm < 0) xm = 0;
             if (xm > 1) xm = 1;
 
@@ -216,8 +216,8 @@ namespace Vge.Gui.Controls
         public override void Dispose()
         {
             base.Dispose();
-            if (meshBg != null) meshBg.Dispose();
-            if (meshBt != null) meshBt.Dispose();
+            if (_meshBg != null) _meshBg.Dispose();
+            if (_meshBt != null) _meshBt.Dispose();
         }
     }
 }

@@ -93,7 +93,6 @@ namespace Vge.Gui.Screens
             }
         }
 
-
         public override void OnKeyDown(Keys keys)
         {
             if (keys == Keys.Escape)

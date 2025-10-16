@@ -83,7 +83,7 @@ namespace Vge.Gui.Controls
                 v2 = .0703125f;
                 v1 = 0;
             }
-            _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
+            _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si, (PosX + Width) * _si, (PosY + Height) * _si,
                     v1, .9296875f, v2, 1));
 
             base.Rendering();

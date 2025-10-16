@@ -27,14 +27,14 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Может ли быть несколько строк 
         /// </summary>
-        protected bool multiline = false;
+        protected bool _multiline = false;
         /// <summary>
         /// Ограничение по высоте, если включено, текст за рамку не выйдет
         /// </summary>
-        protected bool limitationHeight = false;
+        protected bool _limitationHeight = false;
 
-        private readonly MeshGuiColor meshTxt;
-        private readonly MeshGuiLine meshLine;
+        private readonly MeshGuiColor _meshTxt;
+        private readonly MeshGuiLine _meshLine;
         
 
         /// <summary>
@@ -48,11 +48,11 @@ namespace Vge.Gui.Controls
         /// <param name="isLine">Нужен ли контур, для отладки</param>
         public Label(WindowMain window, FontBase font, bool isLine = false) : base(window)
         {
-            this.Font = font;
-            meshTxt = new MeshGuiColor(gl);
+            Font = font;
+            _meshTxt = new MeshGuiColor(gl);
             if (isLine)
             {
-                meshLine = new MeshGuiLine(gl);
+                _meshLine = new MeshGuiLine(gl);
             }
         }
         /// <summary>
@@ -85,7 +85,7 @@ namespace Vge.Gui.Controls
                 OnMouseMove(x, y);
                 if (Enter)
                 {
-                    OnClick();
+                    _OnClick();
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace Vge.Gui.Controls
 
         public override void Rendering()
         {
-            RenderInside(window.Render, PosX * si, PosY * si);
+            _RenderInside(window.Render, PosX * _si, PosY * _si);
             IsRender = false;
         }
 
@@ -105,10 +105,10 @@ namespace Vge.Gui.Controls
         /// </summary>
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
-        protected virtual void RenderInside(RenderMain render, int x, int y)
-            => RenderInside(render, x, y, Text);
+        protected virtual void _RenderInside(RenderMain render, int x, int y)
+            => _RenderInside(render, x, y, Text);
 
-        protected void RenderInside(RenderMain render, int x, int y, string text)
+        protected void _RenderInside(RenderMain render, int x, int y, string text)
         {
             // Определяем цвет текста
             Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
@@ -120,24 +120,24 @@ namespace Vge.Gui.Controls
             int biasX = 0;
             int biasY = 0;
 
-            if (multiline)
+            if (_multiline)
             {
                 // Обрезка текста согласно ширины
                 text = Font.TransferWidth(text, Width);
                 // Определяем смещение
-                if (TextAlight == EnumAlight.Left & !limitationHeight)
+                if (TextAlight == EnumAlight.Left & !_limitationHeight)
                 {
                     // Определяем смещение BiasY
                     if (TextAlightVert == EnumAlightVert.Middle)
                     {
-                        biasY = (Height * si - (Font.Transfer.GetStringsCount() * Font.GetVertStep())) / 2;
+                        biasY = (Height * _si - (Font.Transfer.GetStringsCount() * Font.GetVertStep())) / 2;
                     }
                     else if (TextAlightVert == EnumAlightVert.Bottom)
                     {
-                        biasY = Height * si - (Font.Transfer.GetStringsCount() * Font.GetVertStep());
+                        biasY = Height * _si - (Font.Transfer.GetStringsCount() * Font.GetVertStep());
                     }
                     // Готовим рендер текста
-                    Font.RenderText(x + biasX, y + si + biasY, text);
+                    Font.RenderText(x + biasX, y + _si + biasY, text);
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace Vge.Gui.Controls
                     // Кажду строку отдельно перепроверять по смещению
                     string[] vs = Font.Transfer.GetStrings();
                     int count = vs.Length;
-                    if (limitationHeight)
+                    if (_limitationHeight)
                     {
                         // Если есть ограничение по высоте, надо отрезать часть строк
                         int max = (Height - Font.GetVert()) / Font.GetVertStep() + 1;
@@ -158,11 +158,11 @@ namespace Vge.Gui.Controls
                     }
                     if (TextAlightVert == EnumAlightVert.Middle)
                     {
-                        biasY = (Height * si - (count * Font.GetVertStep())) / 2;
+                        biasY = (Height * _si - (count * Font.GetVertStep())) / 2;
                     }
                     else if (TextAlightVert == EnumAlightVert.Bottom)
                     {
-                        biasY = Height * si - (count * Font.GetVertStep());
+                        biasY = Height * _si - (count * Font.GetVertStep());
                     }
                     int center = TextAlight == EnumAlight.Center ? 2 : 1;
                     bool left = TextAlight == EnumAlight.Left;
@@ -170,7 +170,7 @@ namespace Vge.Gui.Controls
                     for (int i = 0; i < count; i++)
                     {
                         s = vs[i];
-                        biasX = left ? 0 : (Width - Font.WidthString(s)) * si / center;
+                        biasX = left ? 0 : (Width - Font.WidthString(s)) * _si / center;
                         // Готовим рендер текста
                         Font.RenderString(x + biasX, y + biasY, s);
                         y += Font.GetVertStep();
@@ -184,20 +184,20 @@ namespace Vge.Gui.Controls
                 // Определяем смещение BiasX
                 if (TextAlight == EnumAlight.Center)
                 {
-                    biasX = (Width - Font.WidthString(text)) / 2 * si;
+                    biasX = (Width - Font.WidthString(text)) / 2 * _si;
                 }
                 else if (TextAlight == EnumAlight.Right)
                 {
-                    biasX = (Width - Font.WidthString(text)) * si;
+                    biasX = (Width - Font.WidthString(text)) * _si;
                 }
                 // Определяем смещение BiasY
                 if (TextAlightVert == EnumAlightVert.Middle)
                 {
-                    biasY = (Height * si - Font.GetVert()) / 2;
+                    biasY = (Height * _si - Font.GetVert()) / 2;
                 }
                 else if (TextAlightVert == EnumAlightVert.Bottom)
                 {
-                    biasY = Height * si - Font.GetVert();
+                    biasY = Height * _si - Font.GetVert();
                 }
                 // Готовим рендер текста
                 Font.StyleReset();
@@ -207,12 +207,12 @@ namespace Vge.Gui.Controls
             // Имеется Outline значит рендерим FX
             Font.RenderFX();
             // Вносим сетку
-            Font.Reload(meshTxt);
+            Font.Reload(_meshTxt);
 
             // Если нужен контур, то рендерим сетку
-            if (meshLine != null)
+            if (_meshLine != null)
             {
-                meshLine.Reload(RenderFigure.RectangleLine(PosX * si, PosY * si, (PosX + Width) * si, (PosY + Height) * si,
+                _meshLine.Reload(RenderFigure.RectangleLine(PosX * _si, PosY * _si, (PosX + Width) * _si, (PosY + Height) * _si,
                     0, 0, 0, .5f));
             }
         }
@@ -224,16 +224,16 @@ namespace Vge.Gui.Controls
         public override void Draw(float timeIndex)
         {
             // Рисуем контур если имеется
-            if (meshLine != null)
+            if (_meshLine != null)
             {
                 // И заменить шейдёр
                 window.Render.ShaderBindGuiLine();
-                meshLine.Draw();
+                _meshLine.Draw();
                 window.Render.ShaderBindGuiColor();
             }
             // Рисуем текст
             Font.BindTexture();
-            meshTxt.Draw();
+            _meshTxt.Draw();
         }
 
         #endregion
@@ -245,7 +245,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public Label SetFont(FontBase font)
         {
-            this.Font = font;
+            Font = font;
             IsRender = true;
             return this;
         }
@@ -266,7 +266,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public Label Multiline()
         {
-            multiline = true;
+            _multiline = true;
             return this;
         }
 
@@ -275,7 +275,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public Label LimitationHeight()
         {
-            limitationHeight = true;
+            _limitationHeight = true;
             return this;
         }
 
@@ -283,8 +283,8 @@ namespace Vge.Gui.Controls
 
         public override void Dispose()
         {
-            if (meshLine != null) meshLine.Dispose();
-            if (meshTxt != null) meshTxt.Dispose();
+            if (_meshLine != null) _meshLine.Dispose();
+            if (_meshTxt != null) _meshTxt.Dispose();
         }
 
         #region Event
@@ -296,7 +296,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Событие клика по кнопке
         /// </summary>
-        protected virtual void OnClick() => Click?.Invoke(this, new EventArgs());
+        protected virtual void _OnClick() => Click?.Invoke(this, new EventArgs());
 
         #endregion
     }
