@@ -21,5 +21,8 @@ namespace WinGL.Win32.User32
         public int Top;
         public int Right;
         public int Bottom;
+
+        public override string ToString()
+            => Left + " " + Right + " " + Top + " " + Bottom; 
     }
 }

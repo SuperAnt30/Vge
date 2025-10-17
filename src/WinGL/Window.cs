@@ -655,6 +655,10 @@ namespace WinGL
                     // param = Conv.IntPtrToUint(lParam);
                     OnResized(param & 0xFFFF, param >> 16);
                     return IntPtr.Zero;
+                //case WinUser.WM_SIZING:
+                //    RectStruct rect = System.Runtime.InteropServices.Marshal.PtrToStructure<RectStruct>(lParam);
+                //    Console.WriteLine(rect.ToString());
+                //    return IntPtr.Zero;
                 // Перемещение окна
                 case WinUser.WM_MOVE:
                     if (lParam.ToInt64() == 2197848832)
