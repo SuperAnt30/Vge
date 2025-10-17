@@ -1,4 +1,5 @@
 ﻿using Vge.Gui.Controls;
+using Vge.Realms;
 using Vge.Renderer.Font;
 
 namespace Vge.Gui.Screens
@@ -8,22 +9,23 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenMainMenu : ScreenBase
     {
-        protected readonly Button buttonSingle;
-        protected readonly Button buttonMultiplayer;
-        protected readonly Button buttonOptions;
-        protected readonly Button buttonExit;
+        protected readonly Button128 buttonSingle;
+        protected readonly Button128 buttonMultiplayer;
+        protected readonly Button128 buttonOptions;
+        protected readonly Button128 buttonExit;
 
         public ScreenMainMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonSingle = new Button(window, font, 300, L.T("Single"));
+            buttonSingle = new Button128(window, font, ChatStyle.Bolb + L.T("Single"));
             buttonSingle.Click += ButtonSingle_Click;
-            buttonMultiplayer = new Button(window, font, 300, L.T("Multiplayer"));
+            buttonMultiplayer = new Button128(window, font, ChatStyle.Bolb + L.T("Multiplayer"));
             buttonMultiplayer.Click += ButtonMultiplayer_Click;
-            buttonOptions = new Button(window, font, 300, L.T("Options"));
+            buttonOptions = new Button128(window, font, ChatStyle.Bolb + L.T("Options"));
             buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button(window, font, 300, L.T("Exit"));
+            buttonExit = new Button128(window, font, ChatStyle.Bolb + L.T("Exit"));
             buttonExit.Click += ButtonExit_Click;
+            buttonExit.SetEnable(false);
         }
 
         #region Clicks
@@ -59,12 +61,12 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            int w = Width / 2;
+            int w = Width / 2 - 64;
             int h = Height / 2;
-            buttonSingle.SetPosition(w - buttonSingle.Width / 2, h - 40);
-            buttonMultiplayer.SetPosition(w - buttonMultiplayer.Width / 2, h + 4);
-            buttonOptions.SetPosition(w - buttonOptions.Width / 2, h + 48);
-            buttonExit.SetPosition(w - buttonExit.Width / 2, h + 92);
+            buttonSingle.SetPosition(w, h);
+            buttonMultiplayer.SetPosition(w, h + 32);
+            buttonOptions.SetPosition(w, h + 64);
+            buttonExit.SetPosition(w, h + 96);
         }
 
         public override void Draw(float timeIndex)

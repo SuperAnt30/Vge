@@ -78,7 +78,7 @@ namespace Mvk2.Gui.Screens
             {
                 for (int x = 0; x < 12; x++)
                 {
-                    _slot[i + _inventoryCount].SetPosition(PosX + 11 + x * 36, PosY + 32 + y * 36);
+                    _slot[i + _inventoryCount].SetPosition(PosX + 12 + x * 36, PosY + 27 + y * 36);
                     i++;
                 }
             }

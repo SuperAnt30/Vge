@@ -12,12 +12,12 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Нажали ли на кнопку
         /// </summary>
-        private bool _click;
+        protected bool _click;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
-        private readonly MeshGuiColor _meshBg;
+        protected readonly MeshGuiColor _meshBg;
 
         public Button(WindowMain window, FontBase font, int width, string text, int height = 40)
             : base(window, font, width, height, text)
@@ -37,7 +37,7 @@ namespace Vge.Gui.Controls
             base._RenderInside(render, x, y);
             float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
             if (_click) v1 = 0; // Временно!
-            _meshBg.Reload(_RectangleTwo(x, y, 0, v1, vk, 1, 1, 1));
+            _meshBg.Reload(_RectangleTwo(x, y, 0, v1 + .5f, vk, 1, 1, 1));
         }
 
         /// <summary>

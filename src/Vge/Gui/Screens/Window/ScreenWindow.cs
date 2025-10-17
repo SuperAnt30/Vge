@@ -48,6 +48,7 @@ namespace Vge.Gui.Screens
 
             _InitTitle();
             _buttonCancel.Click += ButtonCancel_Click;
+            _buttonCancel.SetVisible(false);
         }
 
         protected virtual void _InitTitle() { }

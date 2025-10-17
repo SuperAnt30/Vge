@@ -19,11 +19,11 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Вертикаль к текстуре 200 / 512
         /// </summary>
-        private const float Ver1 = .390625f;
+        private const float Ver1 = .390625f + .5f;
         /// <summary>
         /// Вертикаль к текстуре 240 / 512
         /// </summary>
-        private const float Ver2 = .46875f;
+        private const float Ver2 = .46875f + .5f;
         /// <summary>
         /// Смещение при Checked 120 / 512
         /// </summary>

@@ -79,14 +79,14 @@ public sealed class Gi
         if (Si == 2)
         {
             // Крупный стиль
-            if (Height < 960) Si = 1;
-            else if (Height < 1920) Si = 2;
+            if (Height < 830) Si = 1; // 960
+            else if (Height < 1660) Si = 2; // 1920
             else Si = 4;
         }
         else
         {
             // Мелкий стиль
-            if (Height < 1920) Si = 1;
+            if (Height < 1660) Si = 1;
             else Si = 2;
         }
     }
@@ -94,15 +94,15 @@ public sealed class Gi
     /// <summary>
     /// Цвет текста
     /// </summary>
-    public readonly static Vector3 ColorText = new Vector3(.8f);
+    public readonly static Vector3 ColorText = new Vector3(0); //Vector3(.8f);
     /// <summary>
     /// Цвет текста где наведена мышка
     /// </summary>
-    public readonly static Vector3 ColorTextEnter = new Vector3(.9f, .9f, .5f);
+    public readonly static Vector3 ColorTextEnter = new Vector3(0);//Vector3(.9f, .9f, .5f);
     /// <summary>
     /// Цвет неактивного текста
     /// </summary>
-    public readonly static Vector3 ColorTextInactive = new Vector3(.5f);
+    public readonly static Vector3 ColorTextInactive = new Vector3(.588f, .51f, .459f);//Vector3(.5f);
 
     /// <summary>
     /// Перечень 16-ти цветов Красного как в майне

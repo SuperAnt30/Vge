@@ -379,7 +379,7 @@ namespace Vge.Gui.Controls
 
             // Сетка фона
             float v1 = Enabled ? Enter ? _vk * 4 : _vk * 3 : 0f;
-            _meshBg.Reload(_RectangleTwo(x, y, 0, v1, _vk, 1, 1, 1));
+            _meshBg.Reload(_RectangleTwo(x, y, 0, v1 + .5f, _vk, 1, 1, 1));
 
             try
             {

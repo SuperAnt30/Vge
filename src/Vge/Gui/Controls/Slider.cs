@@ -18,11 +18,11 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Вертикаль к текстуре 200 / 512
         /// </summary>
-        private const float Ver1 = .390625f;
+        private const float Ver1 = .390625f + .5f;
         /// <summary>
         /// Вертикаль к текстуре 240 / 512
         /// </summary>
-        private const float Ver2 = .46875f;
+        private const float Ver2 = .46875f + .5f;
         /// <summary>
         /// Для смещения горизонтали 240 / 512
         /// </summary>
@@ -116,7 +116,7 @@ namespace Vge.Gui.Controls
             float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
 
             // Рендер фона
-            _meshBg.Reload(_RectangleTwo(x, y, 0, 0, vk, 1, 1, 1));
+            _meshBg.Reload(_RectangleTwo(x, y, 0, .5f, vk, 1, 1, 1));
 
             v1 = Hor1 + (Enabled ? _isLeftDown ? Hor + Hor : Hor : 0f);
 

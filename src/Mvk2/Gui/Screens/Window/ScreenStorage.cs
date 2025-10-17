@@ -59,7 +59,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorage(WindowMvk window) : base(window, 512f, 456, 420)
+        public ScreenStorage(WindowMvk window) : base(window, 512f, 460, 415)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
@@ -230,7 +230,7 @@ namespace Mvk2.Gui.Screens
         protected override void _InitTitle()
         {
             FontBase font = window.Render.FontMain;
-            _labelTitle = new Label(window, font, 250, 50, _GetTitle());
+            _labelTitle = new Label(window, font, 250, 28, _GetTitle());
             _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
             _buttonCancel = new Button(window, font, 30, "X", 28);
         }
@@ -260,21 +260,21 @@ namespace Mvk2.Gui.Screens
             int h = Height - HeightWindow;
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
-            _labelTitle.SetPosition(PosX + 16, PosY + 10);
+            _labelTitle.SetPosition(PosX + 14, PosY + 9);
             _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
 
             int i;
             // Карманы
             for (i = 0; i < _pocketCount; i++)
             {
-                _slot[i].SetPosition(PosX + 12 + i * 36, PosY + 372);
+                _slot[i].SetPosition(PosX + 12 + i * 36, PosY + 365);
             }
 
             // Одежда
             for (i = 0; i < 5; i++)
             {
-                _slot[i + _pocketCount].SetPosition(PosX + 12, PosY + 188 + i * 36);
-                _slot[i + _pocketCount + 5].SetPosition(PosX + 152, PosY + 188 + i * 36);
+                _slot[i + _pocketCount].SetPosition(PosX + 12, PosY + 181 + i * 36);
+                _slot[i + _pocketCount + 5].SetPosition(PosX + 152, PosY + 181 + i * 36);
             }
 
             // Рюкзак
@@ -284,7 +284,7 @@ namespace Mvk2.Gui.Screens
             {
                 for (int x = 0; x < 7; x++)
                 {
-                    _slot[i + from].SetPosition(PosX + 192 + x * 36, PosY + 188 + y * 36);
+                    _slot[i + from].SetPosition(PosX + 192 + x * 36, PosY + 181 + y * 36);
                     i++;
                 }
             }

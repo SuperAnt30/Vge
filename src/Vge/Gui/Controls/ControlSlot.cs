@@ -69,19 +69,19 @@ namespace Vge.Gui.Controls
             {
                 if (Enter)
                 {
-                    v1 = .140625f;
-                    v2 = .2109375f;
+                    v1 = .9296875f;
+                    v2 = 1f;
                 }
                 else
                 {
-                    v1 = .0703125f;
-                    v2 = .140625f;
+                    v1 = .859375f;
+                    v2 = .9296875f;
                 }
             }
             else
             {
-                v2 = .0703125f;
-                v1 = 0;
+                v2 = .859375f;
+                v1 = .7890625f;
             }
             _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si, (PosX + Width) * _si, (PosY + Height) * _si,
                     v1, .9296875f, v2, 1));

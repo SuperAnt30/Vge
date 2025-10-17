@@ -115,7 +115,7 @@ namespace Vge.Gui.Controls
             // Чистим буфер
             Font.Clear();
             // Указываем опции
-            Font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+            Font.SetColor(color).SetFontFX(EnumFontFX.None);
 
             int biasX = 0;
             int biasY = 0;

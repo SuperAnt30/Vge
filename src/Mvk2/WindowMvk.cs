@@ -36,6 +36,10 @@ namespace Mvk2
         public WindowMvk() : base()
         {
             Title = "Малювекi 2 - debug";
+            // Ширина наружного окна, HD+
+          //  _width = 1600;
+            // Высота наружного окна, HD+
+            //_height = 900;
         }
 
         protected override void Initialized()
