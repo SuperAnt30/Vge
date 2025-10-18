@@ -17,7 +17,7 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Размер интерфеса
         /// </summary>
-        protected int si = 1;
+        protected int _si = 1;
 
         /// <summary>
         /// Нужен ли дополнительный рендер
@@ -29,7 +29,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected ToolTip _toolTip;
 
-        public ScreenBase(WindowMain window) : base(window) => si = Gi.Si;
+        public ScreenBase(WindowMain window) : base(window) => _si = Gi.Si;
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
@@ -55,8 +55,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public void Resized()
         {
-            si = Gi.Si;
-            OnResizing();
+            _si = Gi.Si;
             foreach (WidgetBase control in controls)
             {
                 control.OnResized();
@@ -65,12 +64,7 @@ namespace Vge.Gui.Screens
         }
 
         /// <summary>
-        /// Изменение размер окна, до контролов вызывается
-        /// </summary>
-        protected virtual void OnResizing() { }
-
-        /// <summary>
-        /// Изменён размер окна, после контролов вызывается
+        /// Изменён размер окна
         /// </summary>
         protected virtual void OnResized() { }
 
@@ -133,11 +127,11 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Получить ширину, с перерасчётом для инерфейса
         /// </summary>
-        public int Width => Gi.Width / si;
+        public int Width => Gi.Width / _si;
         /// <summary>
         /// Получить высоту, с перерасчётом для инерфейса
         /// </summary>
-        public int Height => Gi.Height / si;
+        public int Height => Gi.Height / _si;
 
         public override void Dispose()
         {

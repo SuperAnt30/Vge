@@ -71,8 +71,8 @@ namespace Vge.Gui.Screens
         /// Курсор за пределами окна
         /// </summary>
         protected virtual bool _IsOutsideWindow(int x, int y)
-            => x < PosX * si || x > (PosX + WidthWindow) * si
-            || y < PosY * si || y > (PosY + HeightWindow) * si;
+            => x < PosX * _si || x > (PosX + WidthWindow) * _si
+            || y < PosY * _si || y > (PosY + HeightWindow) * _si;
 
         /// <summary>
         /// Клик за пределами окна
@@ -117,8 +117,8 @@ namespace Vge.Gui.Screens
 
         protected override void _RenderingAdd()
         {
-            _meshBg.Reload(RenderFigure.Rectangle(PosX * si, PosY * si,
-                (PosX + WidthWindow) * si, (PosY + HeightWindow) * si,
+            _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si,
+                (PosX + WidthWindow) * _si, (PosY + HeightWindow) * _si,
                 0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg));
             _isRenderAdd = false;
         }

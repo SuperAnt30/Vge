@@ -54,18 +54,6 @@ namespace Vge.Gui.Screens
             AddControls(buttonExit);
         }
 
-        int _siCache;
-
-        /// <summary>
-        /// Изменение размер окна, до контролов вызывается
-        /// </summary>
-        protected override void OnResizing()
-        {
-            _siCache = si;
-           // si += si;
-           // Gi.Si = si;
-        }
-
         /// <summary>
         /// Изменён размер окна
         /// </summary>
@@ -77,15 +65,12 @@ namespace Vge.Gui.Screens
             buttonMultiplayer.SetPosition(w, h + 32);
             buttonOptions.SetPosition(w, h + 64);
             buttonExit.SetPosition(w, h + 96);
-          //  Gi.Si = si = _siCache;
         }
 
         public override void Draw(float timeIndex)
         {
             gl.ClearColor(.5f, .3f, .02f, 1f);
-           // Gi.Si += si;
             base.Draw(timeIndex);
-          //  Gi.Si = si;
         }
     }
 }
