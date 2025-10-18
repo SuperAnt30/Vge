@@ -22,9 +22,9 @@ namespace Vge.Gui.Screens
         private int slot = -1;
 
         protected readonly Label label;
-        protected readonly Button buttonMenu;
+        protected readonly Button64 buttonMenu;
         protected readonly Button[] buttonSlots = new Button[countSlot];
-        protected readonly Button[] buttonSlotsDel = new Button[countSlot];
+        protected readonly ButtonRemove[] buttonSlotsDel = new ButtonRemove[countSlot];
 
         public ScreenSingle(WindowMain window) : base(window)
         {
@@ -32,13 +32,13 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             label = new Label(window, font, Gi.Width, 0, L.T("Singleplayer"));
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
-            buttonMenu = new Button(window, font, 200, L.T("Menu"));
+            buttonMenu = new Button64(window, font, L.T("Menu"));
             buttonMenu.Click += Button_Click;
 
             for (int i = 0; i < countSlot; i++)
             {
                 buttonSlots[i] = new Button(window, font, 356, "");
-                buttonSlotsDel[i] = new Button(window, font, 40, "X");
+                buttonSlotsDel[i] = new ButtonRemove(window);
                 buttonSlots[i].Tag = i; // Номер слота
                 buttonSlots[i].Click += ButtonSlots_Click;
                 buttonSlotsDel[i].Tag = i; // Номер слота
@@ -50,7 +50,7 @@ namespace Vge.Gui.Screens
         private void SlotInit(int slot)
         {
             buttonSlots[slot].SetText(listSingle.NameWorlds[slot]);
-            buttonSlotsDel[slot].SetEnable(!listSingle.EmptyWorlds[slot]);
+            buttonSlotsDel[slot].SetVisible(!listSingle.EmptyWorlds[slot]);
         }
 
         private void Button_Click(object sender, EventArgs e)
@@ -126,7 +126,7 @@ namespace Vge.Gui.Screens
 
         private void ButtonSlotsDel_Click(object sender, EventArgs e)
         {
-            slot = (int)((Button)sender).Tag;
+            slot = (int)((ButtonRemove)sender).Tag;
             window.LScreen.YesNo(this, string.Format(L.T("GameDelete {0}"), slot + 1));
         }
 

@@ -5,12 +5,12 @@ using Vge.Renderer.Font;
 namespace Vge.Gui.Controls
 {
     /// <summary>
-    /// Контрол фиксированной кнопки, 128 на 24
+    /// Контрол фиксированной кнопки, 64 на 24
     /// </summary>
-    public class Button128 : Button
+    public class Button64 : Button
     {
-        public Button128(WindowMain window, FontBase font, string text)
-            : base(window, font, 128, ChatStyle.Bolb + text + ChatStyle.Reset, 24) { }
+        public Button64(WindowMain window, FontBase font, string text)
+            : base(window, font, 64, ChatStyle.Bolb + text + ChatStyle.Reset, 24) { }
 
         #region Draw
 
@@ -22,9 +22,9 @@ namespace Vge.Gui.Controls
         protected override void _RenderInside(RenderMain render, int x, int y)
         {
             _RenderInside(render, x, _click ? y + _si : y, Text);
-            float u1 = Enabled ? _click ? .75f : (Enter ? .5f : .25f) : 0f;
+            float u1 = Enabled ? _click ? .375f : (Enter ? .25f : .125f) : 0f;
             _meshBg.Reload(RenderFigure.Rectangle(x, y, x + Width * _si, y + Height * _si,
-                u1, 0, u1 + .25f, .046875f));
+                u1, .046875f, u1 + .125f, .09375f));
         }
 
         /// <summary>

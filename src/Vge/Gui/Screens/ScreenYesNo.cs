@@ -12,8 +12,8 @@ namespace Vge.Gui.Screens
     {
         private readonly ScreenBase parent;
         protected readonly Label label;
-        protected readonly Button buttonYes;
-        protected readonly Button buttonNo;
+        protected readonly Button64 buttonYes;
+        protected readonly Button64 buttonNo;
 
         public ScreenYesNo(WindowMain window, ScreenBase parent, string text) : base(window)
         {
@@ -22,9 +22,9 @@ namespace Vge.Gui.Screens
             label = new Label(window, font, Gi.Width - 100, 0, text);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
-            buttonYes = new Button(window, font, 200, L.T("Yes"));
+            buttonYes = new Button64(window, font, L.T("Yes"));
             buttonYes.Click += ButtonYes_Click;
-            buttonNo = new Button(window, font, 200, L.T("No"));
+            buttonNo = new Button64(window, font, L.T("No"));
             buttonNo.Click += ButtonNo_Click;
         }
 

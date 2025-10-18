@@ -33,10 +33,10 @@ namespace Vge.Gui.Screens
         protected readonly CheckBox checkBoxVSinc;
         protected readonly CheckBox checkBoxFullScreen;
         protected readonly CheckBox checkBoxQualitatively;
-        protected readonly Button buttonNet;
+        protected readonly Button64 buttonNet;
 
-        protected readonly Button buttonDone;
-        protected readonly Button buttonCancel;
+        protected readonly Button64 buttonDone;
+        protected readonly Button64 buttonCancel;
 
         public ScreenOptions(WindowMain window, ScreenBase parent, bool inGame) : base(window)
         {
@@ -49,9 +49,9 @@ namespace Vge.Gui.Screens
 
             label = new Label(window, font, ChatStyle.Bolb + L.T("Options"));
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
-            buttonDone = new Button(window, font, 300, L.T("Done"));
+            buttonDone = new Button64(window, font, L.T("Done"));
             buttonDone.Click += ButtonDone_Click;
-            buttonCancel = new Button(window, font, 300, L.T("Cancel"));
+            buttonCancel = new Button64(window, font, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
 
             textBoxNikame = new TextBox(window, font, 300, Options.Nickname, TextBox.EnumRestrictions.Name, 16);
@@ -86,12 +86,12 @@ namespace Vge.Gui.Screens
             if (isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
                 && gameLocal.IsRunNet())
             {
-                buttonNet = new Button(window, font, 300, L.T("NetOn"));
+                buttonNet = new Button64(window, font, L.T("NetOn"));
                 buttonNet.SetEnable(false);
             }
             else
             {
-                buttonNet = new Button(window, font, 300, L.T("Net"));
+                buttonNet = new Button64(window, font, L.T("Net"));
             }
             buttonNet.Click += ButtonNet_Click;
 

@@ -232,7 +232,7 @@ namespace Mvk2.Gui.Screens
             FontBase font = window.Render.FontMain;
             _labelTitle = new Label(window, font, 250, 28, _GetTitle());
             _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-            _buttonCancel = new Button(window, font, 30, "X", 28);
+            _buttonClose = new ButtonClose(window);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Mvk2.Gui.Screens
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
             _labelTitle.SetPosition(PosX + 14, PosY + 9);
-            _buttonCancel.SetPosition(PosX + WidthWindow - 50, PosY);
+            _buttonClose.SetPosition(PosX + WidthWindow - 50, PosY);
 
             int i;
             // Карманы

@@ -16,8 +16,8 @@ namespace Vge.Gui.Screens
         protected readonly Label labelToken;
         protected readonly TextBox textBoxAddress;
         protected readonly TextBox textBoxToken;
-        protected readonly Button buttonConnect;
-        protected readonly Button buttonMenu;
+        protected readonly Button128 buttonConnect;
+        protected readonly Button128 buttonMenu;
 
         public ScreenMultiplayer(WindowMain window) : base(window)
         {
@@ -36,9 +36,9 @@ namespace Vge.Gui.Screens
             textBoxAddress = new TextBox(window, font, 200, Options.IpAddress, 
                 TextBox.EnumRestrictions.IpPort, 15);
            
-            buttonConnect = new Button(window, font, 200, L.T("Connect"));
+            buttonConnect = new Button128(window, font, L.T("Connect"));
             buttonConnect.Click += ButtonConnect_Click;
-            buttonMenu = new Button(window, font, 200, L.T("Menu"));
+            buttonMenu = new Button128(window, font, L.T("Menu"));
             buttonMenu.Click += ButtonMenu_Click;
         }
 

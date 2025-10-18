@@ -56,6 +56,7 @@ namespace Vge.Gui.Screens
         public void Resized()
         {
             si = Gi.Si;
+            OnResizing();
             foreach (WidgetBase control in controls)
             {
                 control.OnResized();
@@ -64,7 +65,12 @@ namespace Vge.Gui.Screens
         }
 
         /// <summary>
-        /// Изменён размер окна
+        /// Изменение размер окна, до контролов вызывается
+        /// </summary>
+        protected virtual void OnResizing() { }
+
+        /// <summary>
+        /// Изменён размер окна, после контролов вызывается
         /// </summary>
         protected virtual void OnResized() { }
 

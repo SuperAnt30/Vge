@@ -1,5 +1,4 @@
 ﻿using Vge.Gui.Controls;
-using Vge.Realms;
 using Vge.Renderer.Font;
 
 namespace Vge.Gui.Screens
@@ -17,15 +16,14 @@ namespace Vge.Gui.Screens
         public ScreenMainMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonSingle = new Button128(window, font, ChatStyle.Bolb + L.T("Single"));
+            buttonSingle = new Button128(window, font, L.T("Single"));
             buttonSingle.Click += ButtonSingle_Click;
-            buttonMultiplayer = new Button128(window, font, ChatStyle.Bolb + L.T("Multiplayer"));
+            buttonMultiplayer = new Button128(window, font, L.T("Multiplayer"));
             buttonMultiplayer.Click += ButtonMultiplayer_Click;
-            buttonOptions = new Button128(window, font, ChatStyle.Bolb + L.T("Options"));
+            buttonOptions = new Button128(window, font, L.T("Options"));
             buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button128(window, font, ChatStyle.Bolb + L.T("Exit"));
+            buttonExit = new Button128(window, font, L.T("Exit"));
             buttonExit.Click += ButtonExit_Click;
-            buttonExit.SetEnable(false);
         }
 
         #region Clicks
@@ -56,6 +54,18 @@ namespace Vge.Gui.Screens
             AddControls(buttonExit);
         }
 
+        int _siCache;
+
+        /// <summary>
+        /// Изменение размер окна, до контролов вызывается
+        /// </summary>
+        protected override void OnResizing()
+        {
+            _siCache = si;
+           // si += si;
+           // Gi.Si = si;
+        }
+
         /// <summary>
         /// Изменён размер окна
         /// </summary>
@@ -67,12 +77,15 @@ namespace Vge.Gui.Screens
             buttonMultiplayer.SetPosition(w, h + 32);
             buttonOptions.SetPosition(w, h + 64);
             buttonExit.SetPosition(w, h + 96);
+          //  Gi.Si = si = _siCache;
         }
 
         public override void Draw(float timeIndex)
         {
             gl.ClearColor(.5f, .3f, .02f, 1f);
+           // Gi.Si += si;
             base.Draw(timeIndex);
+          //  Gi.Si = si;
         }
     }
 }

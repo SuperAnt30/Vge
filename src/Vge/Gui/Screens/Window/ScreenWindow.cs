@@ -28,7 +28,7 @@ namespace Vge.Gui.Screens
         public int PosY { get; protected set; }
 
         protected Label _labelTitle;
-        protected Button _buttonCancel;
+        protected ButtonClose _buttonClose;
 
         /// <summary>
         /// Сетка фона
@@ -47,8 +47,8 @@ namespace Vge.Gui.Screens
             _meshBg = new MeshGuiColor(gl);
 
             _InitTitle();
-            _buttonCancel.Click += ButtonCancel_Click;
-            _buttonCancel.SetVisible(false);
+            _buttonClose.Click += ButtonCancel_Click;
+            //_buttonCancel.SetVisible(false);
         }
 
         protected virtual void _InitTitle() { }
@@ -64,7 +64,7 @@ namespace Vge.Gui.Screens
         {
             base.OnInitialize();
             AddControls(_labelTitle);
-            AddControls(_buttonCancel);
+            AddControls(_buttonClose);
         }
 
         /// <summary>

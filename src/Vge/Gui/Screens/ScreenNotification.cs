@@ -11,7 +11,7 @@ namespace Vge.Gui.Screens
     public class ScreenNotification : ScreenBase
     {
         protected readonly Label label;
-        protected readonly Button button;
+        protected readonly Button64 button;
 
         public ScreenNotification(WindowMain window, string notification) : base(window)
         {
@@ -19,7 +19,7 @@ namespace Vge.Gui.Screens
             label = new Label(window, font, Gi.Width - 100, 0, notification);
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
             label.Click += Label_Click;
-            button = new Button(window, font, 200, L.T("Menu"));
+            button = new Button64(window, font, L.T("Menu"));
             button.Click += Button_Click;
         }
 

@@ -9,18 +9,18 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenInGameMenu : ScreenBase
     {
-        protected readonly Button buttonBack;
-        protected readonly Button buttonOptions;
-        protected readonly Button buttonExit;
+        protected readonly Button128 buttonBack;
+        protected readonly Button128 buttonOptions;
+        protected readonly Button128 buttonExit;
 
         public ScreenInGameMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonBack = new Button(window, font, 300, L.T("BackGame"));
+            buttonBack = new Button128(window, font, L.T("BackGame"));
             buttonBack.Click += ButtonBack_Click;
-            buttonOptions = new Button(window, font, 300, L.T("Options"));
+            buttonOptions = new Button128(window, font, L.T("Options"));
             buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button(window, font, 300, L.T("ExitGame"));
+            buttonExit = new Button128(window, font, L.T("ExitGame"));
             buttonExit.Click += ButtonExit_Click;
         }
 
