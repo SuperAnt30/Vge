@@ -1,4 +1,5 @@
-﻿using Vge.Renderer;
+﻿using Vge.Realms;
+using Vge.Renderer;
 using Vge.Renderer.Font;
 using WinGL.Actions;
 
@@ -7,20 +8,20 @@ namespace Vge.Gui.Controls
     /// <summary>
     /// Контрол кнопки
     /// </summary>
-    public class Button : Label
+    public abstract class Button : Label
     {
         /// <summary>
         /// Нажали ли на кнопку
         /// </summary>
-        protected bool _click;
+        protected bool _isLeftDown;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
 
-        public Button(WindowMain window, FontBase font, int width, string text, int height = 40)
-            : base(window, font, width, height, text)
+        public Button(WindowMain window, FontBase font, int width, string text, int height)
+            : base(window, font, width, height, ChatStyle.Bolb + text + ChatStyle.Reset)
         {
             _meshBg = new MeshGuiColor(gl);
         }
@@ -33,12 +34,7 @@ namespace Vge.Gui.Controls
         /// <param name="x">Позиция X с учётом интерфейса</param>
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected override void _RenderInside(RenderMain render, int x, int y)
-        {
-            base._RenderInside(render, x, y);
-            float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
-            if (_click) v1 = 0; // Временно!
-            _meshBg.Reload(_RectangleTwo(x, y, 0, v1 + .5f, vk, 1, 1, 1));
-        }
+            => base._RenderInside(render, x, y);
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -62,7 +58,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public override void OnMouseUp(MouseButton button, int x, int y)
         {
-            if (_click)
+            if (_isLeftDown)
             {
                 if (button == MouseButton.Left)
                 {
@@ -72,7 +68,7 @@ namespace Vge.Gui.Controls
                         base._OnClick();
                     }
                 }
-                _click = false;
+                _isLeftDown = false;
                 IsRender = true;
             }
         }
@@ -81,7 +77,7 @@ namespace Vge.Gui.Controls
 
         protected override void _OnClick()
         {
-            _click = true;
+            _isLeftDown = true;
             IsRender = true;
             // Звук клика
             window.SoundClick(.3f);

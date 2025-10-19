@@ -33,10 +33,10 @@ namespace Vge.Gui.Screens
         protected readonly CheckBox checkBoxVSinc;
         protected readonly CheckBox checkBoxFullScreen;
         protected readonly CheckBox checkBoxQualitatively;
-        protected readonly Button64 buttonNet;
+        protected readonly Button buttonNet;
 
-        protected readonly Button64 buttonDone;
-        protected readonly Button64 buttonCancel;
+        protected readonly Button buttonDone;
+        protected readonly Button buttonCancel;
 
         public ScreenOptions(WindowMain window, ScreenBase parent, bool inGame) : base(window)
         {
@@ -49,9 +49,9 @@ namespace Vge.Gui.Screens
 
             label = new Label(window, font, ChatStyle.Bolb + L.T("Options"));
             label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
-            buttonDone = new Button64(window, font, L.T("Done"));
+            buttonDone = new ButtonThin(window, font, 128, L.T("Done"));
             buttonDone.Click += ButtonDone_Click;
-            buttonCancel = new Button64(window, font, L.T("Cancel"));
+            buttonCancel = new ButtonThin(window, font, 128, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
 
             textBoxNikame = new TextBox(window, font, 300, Options.Nickname, TextBox.EnumRestrictions.Name, 16);
@@ -66,6 +66,7 @@ namespace Vge.Gui.Screens
             sliderMusicVolume = new Slider(window, font, 300, 0, 100, 1, L.T("MusicVolume"));
             sliderMusicVolume.SetValue(Options.MusicVolume)
                 .AddParam(0, L.T("MusicVolumeOff")).AddParam(100, L.T("MusicVolumeMax"));
+            sliderMusicVolume.SetEnable(false);
 
             sliderMouseSensitivity = new Slider(window, font, 300, 0, 100, 1, L.T("MouseSensitivity"));
             sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
@@ -82,16 +83,17 @@ namespace Vge.Gui.Screens
             checkBoxFullScreen.SetChecked(Options.FullScreen);
             checkBoxQualitatively = new CheckBox(window, font, 300, L.T("Qualitatively"));
             checkBoxQualitatively.SetChecked(Options.Qualitatively);
+            checkBoxQualitatively.SetEnable(false);
 
             if (isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
                 && gameLocal.IsRunNet())
             {
-                buttonNet = new Button64(window, font, L.T("NetOn"));
+                buttonNet = new ButtonThin(window, font, 128, L.T("NetOn"));
                 buttonNet.SetEnable(false);
             }
             else
             {
-                buttonNet = new Button64(window, font, L.T("Net"));
+                buttonNet = new ButtonThin(window, font, 128, L.T("Net"));
             }
             buttonNet.Click += ButtonNet_Click;
 

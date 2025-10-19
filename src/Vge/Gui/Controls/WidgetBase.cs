@@ -203,6 +203,38 @@
         /// <summary>
         /// Двойной прямоугольник, в ширину по полам
         /// </summary>
+        protected float[] _RectangleTwo(int x1, float y1,
+            float u1, float v1, float uk, float vk, float height)
+        {
+            int w = Width * _si / 2;
+            float wf = w / (512f * _si);
+            float h = height * _si;
+
+            float y2 = y1 + h;
+            float v2 = v1 + vk;
+            float x2 = x1 + w;
+            float x3 = x2 + w;
+            float u2 = u1 + wf;
+            float u4 = u1 + uk;
+            float u3 = u4 - wf;
+
+            return new float[]
+            {
+                x1, y1, u1, v1, 1, 1, 1, 1,
+                x1, y2, u1, v2, 1, 1, 1, 1,
+                x2, y2, u2, v2, 1, 1, 1, 1,
+                x2, y1, u2, v1, 1, 1, 1, 1,
+
+                x2, y1, u3, v1, 1, 1, 1, 1,
+                x2, y2, u3, v2, 1, 1, 1, 1,
+                x3, y2, u4, v2, 1, 1, 1, 1,
+                x3, y1, u4, v1, 1, 1, 1, 1
+            };
+        }
+
+        /// <summary>
+        /// Двойной прямоугольник, в ширину по полам
+        /// </summary>
         protected float[] _RectangleTwo(int x1, float y1, 
             float u1, float v1, float vk, 
             float r, float g, float b, float a = 1f)

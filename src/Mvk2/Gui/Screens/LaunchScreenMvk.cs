@@ -31,6 +31,14 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         public override void Splash() => window.ScreenCreate(new ScreenSplashMvk(_windowMvk));
         /// <summary>
+        /// Создать скрин главного меню
+        /// </summary>
+        public override void MainMenu() => window.ScreenCreate(new ScreenMainMenuMvk(_windowMvk));
+        /// <summary>
+        /// Создать скрин меню во время игры
+        /// </summary>
+        public override void InGameMenu() => window.ScreenCreate(new ScreenInGameMenuMvk(_windowMvk));
+        /// <summary>
         /// Создать скрин выбора одиночной игры
         /// </summary>
         public override void Single() => window.ScreenCreate(new ScreenSingleMvk(_windowMvk));

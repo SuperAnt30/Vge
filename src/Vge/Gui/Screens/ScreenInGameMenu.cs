@@ -9,19 +9,19 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenInGameMenu : ScreenBase
     {
-        protected readonly Button128 buttonBack;
-        protected readonly Button128 buttonOptions;
-        protected readonly Button128 buttonExit;
+        protected readonly ButtonWide _buttonBack;
+        protected readonly ButtonWide _buttonOptions;
+        protected readonly ButtonWide _buttonExit;
 
         public ScreenInGameMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonBack = new Button128(window, font, L.T("BackGame"));
-            buttonBack.Click += ButtonBack_Click;
-            buttonOptions = new Button128(window, font, L.T("Options"));
-            buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button128(window, font, L.T("ExitGame"));
-            buttonExit.Click += ButtonExit_Click;
+            _buttonBack = new ButtonWide(window, font, 340, L.T("BackGame"));
+            _buttonBack.Click += ButtonBack_Click;
+            _buttonOptions = new ButtonWide(window, font, 340, L.T("Options"));
+            _buttonOptions.Click += ButtonOptions_Click;
+            _buttonExit = new ButtonWide(window, font, 340, L.T("ExitGame"));
+            _buttonExit.Click += ButtonExit_Click;
         }
 
         #region Clicks
@@ -64,9 +64,9 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            AddControls(buttonBack);
-            AddControls(buttonOptions);
-            AddControls(buttonExit);
+            AddControls(_buttonBack);
+            AddControls(_buttonOptions);
+            AddControls(_buttonExit);
         }
 
         /// <summary>
@@ -76,15 +76,9 @@ namespace Vge.Gui.Screens
         {
             int w = Width / 2;
             int h = Height / 2;
-            buttonBack.SetPosition(w - buttonBack.Width / 2, h - 40);
-            buttonOptions.SetPosition(w - buttonOptions.Width / 2, h + 4);
-            buttonExit.SetPosition(w - buttonExit.Width / 2, h + 92);
+            _buttonBack.SetPosition(w - _buttonBack.Width / 2, h - 64);
+            _buttonOptions.SetPosition(w - _buttonOptions.Width / 2, h);
+            _buttonExit.SetPosition(w - _buttonExit.Width / 2, h + 92);
         }
-
-        //public override void Draw(float timeIndex)
-        //{
-        //    gl.ClearColor(.5f, .3f, .02f, 1f);
-        //    base.Draw(timeIndex);
-        //}
     }
 }

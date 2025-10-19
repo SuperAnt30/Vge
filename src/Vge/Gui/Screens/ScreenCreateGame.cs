@@ -14,8 +14,8 @@ namespace Vge.Gui.Screens
         protected readonly Label label;
         protected readonly Label labelSeed;
         protected readonly TextBox textBoxSeed;
-        protected readonly Button64 buttonCreate;
-        protected readonly Button64 buttonCancel;
+        protected readonly ButtonThin buttonCreate;
+        protected readonly ButtonThin buttonCancel;
 
         public ScreenCreateGame(WindowMain window, int slot) : base(window)
         {
@@ -27,9 +27,9 @@ namespace Vge.Gui.Screens
             labelSeed = new Label(window, font, 300, 40, L.T("Seed"));
             textBoxSeed = new TextBox(window, font, 300, "", TextBox.EnumRestrictions.Number);
 
-            buttonCreate = new Button64(window, font, L.T("Create"));
+            buttonCreate = new ButtonThin(window, font, 64, L.T("Create"));
             buttonCreate.Click += ButtonCreate_Click;
-            buttonCancel = new Button64(window, font, L.T("Cancel"));
+            buttonCancel = new ButtonThin(window, font, 64, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
         }
 

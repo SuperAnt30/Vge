@@ -12,14 +12,14 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Нажали ли на кнопку
         /// </summary>
-        protected bool _click;
+        protected bool _isLeftDown;
 
         /// <summary>
         /// Сетка фона
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
 
-        public ButtonIcon(WindowMain window, int width, int height = 40)
+        public ButtonIcon(WindowMain window, int width, int height)
             : base(window)
         {
             SetSize(width, height);
@@ -66,7 +66,7 @@ namespace Vge.Gui.Controls
                 OnMouseMove(x, y);
                 if (Enter)
                 {
-                    _click = true;
+                    _isLeftDown = true;
                     IsRender = true;
                     // Звук клика
                     window.SoundClick(.3f);
@@ -79,7 +79,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         public override void OnMouseUp(MouseButton button, int x, int y)
         {
-            if (_click)
+            if (_isLeftDown)
             {
                 if (button == MouseButton.Left)
                 {
@@ -89,7 +89,7 @@ namespace Vge.Gui.Controls
                         _OnClick();
                     }
                 }
-                _click = false;
+                _isLeftDown = false;
                 IsRender = true;
             }
         }

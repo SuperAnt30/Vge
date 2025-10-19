@@ -205,7 +205,7 @@ namespace Vge.Gui.Controls
             }
 
             // Имеется Outline значит рендерим FX
-            Font.RenderFX();
+            //Font.RenderFX();
             // Вносим сетку
             Font.Reload(_meshTxt);
 
@@ -283,8 +283,8 @@ namespace Vge.Gui.Controls
 
         public override void Dispose()
         {
-            if (_meshLine != null) _meshLine.Dispose();
-            if (_meshTxt != null) _meshTxt.Dispose();
+            _meshLine?.Dispose();
+            _meshTxt?.Dispose();
         }
 
         #region Event

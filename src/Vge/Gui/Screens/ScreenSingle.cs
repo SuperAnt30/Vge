@@ -22,7 +22,7 @@ namespace Vge.Gui.Screens
         private int slot = -1;
 
         protected readonly Label label;
-        protected readonly Button64 buttonMenu;
+        protected readonly Button buttonMenu;
         protected readonly Button[] buttonSlots = new Button[countSlot];
         protected readonly ButtonRemove[] buttonSlotsDel = new ButtonRemove[countSlot];
 
@@ -32,12 +32,12 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             label = new Label(window, font, Gi.Width, 0, L.T("Singleplayer"));
             label.Multiline().SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
-            buttonMenu = new Button64(window, font, L.T("Menu"));
+            buttonMenu = new ButtonThin(window, font, 128, L.T("Menu"));
             buttonMenu.Click += Button_Click;
 
             for (int i = 0; i < countSlot; i++)
             {
-                buttonSlots[i] = new Button(window, font, 356, "");
+                buttonSlots[i] = new ButtonThin(window, font, 356, "");
                 buttonSlotsDel[i] = new ButtonRemove(window);
                 buttonSlots[i].Tag = i; // Номер слота
                 buttonSlots[i].Click += ButtonSlots_Click;
@@ -50,7 +50,7 @@ namespace Vge.Gui.Screens
         private void SlotInit(int slot)
         {
             buttonSlots[slot].SetText(listSingle.NameWorlds[slot]);
-            buttonSlotsDel[slot].SetVisible(!listSingle.EmptyWorlds[slot]);
+            buttonSlotsDel[slot].SetEnable(!listSingle.EmptyWorlds[slot]);
         }
 
         private void Button_Click(object sender, EventArgs e)

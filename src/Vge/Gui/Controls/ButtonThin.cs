@@ -1,14 +1,15 @@
 ﻿using Vge.Renderer;
+using Vge.Renderer.Font;
 
 namespace Vge.Gui.Controls
 {
     /// <summary>
-    /// Контрол фиксированной кнопки Удаления, 24 на 24
+    /// Контрол тонкой кнопки
     /// </summary>
-    public class ButtonRemove : ButtonIcon
+    public class ButtonThin : Button
     {
-        public ButtonRemove(WindowMain window)
-            : base(window, 24, 24) { }
+        public ButtonThin(WindowMain window, FontBase font, int width, string text)
+            : base(window, font, width, text, 24) { }
 
         #region Draw
 
@@ -19,10 +20,9 @@ namespace Vge.Gui.Controls
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected override void _RenderInside(RenderMain render, int x, int y)
         {
-            float v1 = Enabled ? _isLeftDown ? .5625f : (Enter ? .5f : .4375f) : .375f;
-
-            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + 32 * _si, y + 32 * _si,
-                .5f, v1, .5625f, v1 + .0625f));
+            base._RenderInside(render, x, _isLeftDown ? y + _si : y);
+            float u1 = Enabled ? _isLeftDown ? .1875f : (Enter ? .125f : .0625f) : 0f;
+            _meshBg.Reload(_RectangleTwo(x, y, 0, u1, .5f, .0625f, 32));
         }
 
         #endregion

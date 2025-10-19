@@ -8,22 +8,22 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenMainMenu : ScreenBase
     {
-        protected readonly Button128 buttonSingle;
-        protected readonly Button128 buttonMultiplayer;
-        protected readonly Button128 buttonOptions;
-        protected readonly Button128 buttonExit;
+        protected readonly ButtonWide _buttonSingle;
+        protected readonly ButtonWide _buttonMultiplayer;
+        protected readonly ButtonWide _buttonOptions;
+        protected readonly ButtonWide _buttonExit;
 
         public ScreenMainMenu(WindowMain window) : base(window)
         {
             FontBase font = window.Render.FontMain;
-            buttonSingle = new Button128(window, font, L.T("Single"));
-            buttonSingle.Click += ButtonSingle_Click;
-            buttonMultiplayer = new Button128(window, font, L.T("Multiplayer"));
-            buttonMultiplayer.Click += ButtonMultiplayer_Click;
-            buttonOptions = new Button128(window, font, L.T("Options"));
-            buttonOptions.Click += ButtonOptions_Click;
-            buttonExit = new Button128(window, font, L.T("Exit"));
-            buttonExit.Click += ButtonExit_Click;
+            _buttonSingle = new ButtonWide(window, font, 340, L.T("Single"));
+            _buttonSingle.Click += ButtonSingle_Click;
+            _buttonMultiplayer = new ButtonWide(window, font, 340, L.T("Multiplayer"));
+            _buttonMultiplayer.Click += ButtonMultiplayer_Click;
+            _buttonOptions = new ButtonWide(window, font, 340, L.T("Options"));
+            _buttonOptions.Click += ButtonOptions_Click;
+            _buttonExit = new ButtonWide(window, font, 340, L.T("Exit"));
+            _buttonExit.Click += ButtonExit_Click;
         }
 
         #region Clicks
@@ -48,10 +48,10 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            AddControls(buttonSingle);
-            AddControls(buttonMultiplayer);
-            AddControls(buttonOptions);
-            AddControls(buttonExit);
+            AddControls(_buttonSingle);
+            AddControls(_buttonMultiplayer);
+            AddControls(_buttonOptions);
+            AddControls(_buttonExit);
         }
 
         /// <summary>
@@ -59,12 +59,12 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            int w = Width / 2 - 64;
+            int w = Width / 2 - _buttonSingle.Width / 2;
             int h = Height / 2;
-            buttonSingle.SetPosition(w, h);
-            buttonMultiplayer.SetPosition(w, h + 32);
-            buttonOptions.SetPosition(w, h + 64);
-            buttonExit.SetPosition(w, h + 96);
+            _buttonSingle.SetPosition(w, h - 64);
+            _buttonMultiplayer.SetPosition(w, h);
+            _buttonOptions.SetPosition(w, h + 64);
+            _buttonExit.SetPosition(w, h + 128);
         }
 
         public override void Draw(float timeIndex)

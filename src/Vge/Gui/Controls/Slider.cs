@@ -14,23 +14,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Ширина ползунка
         /// </summary>
-        private const int SliderWidth = 16;
-        /// <summary>
-        /// Вертикаль к текстуре 200 / 512
-        /// </summary>
-        private const float Ver1 = .390625f + .5f;
-        /// <summary>
-        /// Вертикаль к текстуре 240 / 512
-        /// </summary>
-        private const float Ver2 = .46875f + .5f;
-        /// <summary>
-        /// Для смещения горизонтали 240 / 512
-        /// </summary>
-        private const float Hor1 = .46875f;
-        /// <summary>
-        /// Для смещения горизонтали 16 / 512
-        /// </summary>
-        private const float Hor = .03125f;
+        private const int SliderWidth = 32;
 
         /// <summary>
         /// Значение
@@ -56,7 +40,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Зажата ли левая клавиша мыши
         /// </summary>
-        private bool _isLeftDown = false;
+        private bool _isLeftDown;
 
         /// <summary>
         /// Сетка фона
@@ -75,6 +59,7 @@ namespace Vge.Gui.Controls
             Min = min;
             Max = max;
             Step = step;
+            SetTextAlight(EnumAlight.Center, EnumAlightVert.Top);
         }
 
         /// <summary>
@@ -113,19 +98,17 @@ namespace Vge.Gui.Controls
             // Рендер текста
             _RenderInside(render, x, y, text);
 
-            float v1 = Enabled ? Enter ? vk + vk : vk : 0f;
-
             // Рендер фона
-            _meshBg.Reload(_RectangleTwo(x, y, 0, .5f, vk, 1, 1, 1));
-
-            v1 = Hor1 + (Enabled ? _isLeftDown ? Hor + Hor : Hor : 0f);
+            float v1 = Enabled ? _isLeftDown ? .53125f : (Enter ? .5f : .46875f) : .4375224f;
+            _meshBg.Reload(_RectangleTwo(x, y + 12 * _si, 0, v1, .5f, .03125f, 16));
 
             // Рендер кнопки
+            float u1 = Enabled ? _isLeftDown ? .75f : (Enter ? .6875f : .625f) : .5625f;
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
             int px = (int)((Width - SliderWidth) * index) * _si;
-            _meshBt.Reload(RenderFigure.Rectangle(x + px, y, x + px + SliderWidth * _si, y + Height * _si,
-                v1, Ver1, v1 + Hor, Ver2));
+            _meshBt.Reload(RenderFigure.Rectangle(x + px, y + 8 * _si, x + px + 32 * _si, y + 40 * _si,
+                .125f, u1, .1875f, u1 + .0625f));
         }
 
         /// <summary>
@@ -134,24 +117,13 @@ namespace Vge.Gui.Controls
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
+            // Рисуем текст кнопки
+            base.Draw(timeIndex);
             // Рисуем фон кнопки
             window.Render.BindTextureWidgets();
             _meshBg.Draw();
-            if (Enter)
-            {
-                // Рисуем кнопку
-                _meshBt.Draw();
-                // Рисуем текст кнопки
-                base.Draw(timeIndex);
-            }
-            else
-            {
-                // Рисуем текст кнопки
-                base.Draw(timeIndex);
-                // Рисуем кнопку
-                window.Render.BindTextureWidgets();
-                _meshBt.Draw();
-            }
+            // Рисуем кнопку
+            _meshBt.Draw();
         }
 
         #endregion
@@ -216,8 +188,8 @@ namespace Vge.Gui.Controls
         public override void Dispose()
         {
             base.Dispose();
-            if (_meshBg != null) _meshBg.Dispose();
-            if (_meshBt != null) _meshBt.Dispose();
+            _meshBg?.Dispose();
+            _meshBt?.Dispose();
         }
     }
 }

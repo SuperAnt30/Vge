@@ -19,9 +19,10 @@ namespace Vge.Gui.Controls
         /// <param name="y">Позиция Y с учётом интерфейса</param>
         protected override void _RenderInside(RenderMain render, int x, int y)
         {
-            float u1 = _click ? .69921875f : Enter ? .669921875f : .640625f;
-            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + Width * _si, y + Height * _si,
-                u1, .046875f, u1 + .029296875f, .072265625f));
+            float v1 = Enabled ? _isLeftDown ? .5625f : (Enter ? .5f : .4375f) : .375f;
+
+            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + 32 * _si, y + 32 * _si,
+                .5625f, v1, .625f, v1 + .0625f));
         }
 
         #endregion

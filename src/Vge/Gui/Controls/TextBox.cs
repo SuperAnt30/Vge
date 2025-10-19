@@ -14,7 +14,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Смещение от начала рамки до текста
         /// </summary>
-        private const int _marginLeft = 12;
+        private const int _marginLeft = 8;
 
         /// <summary>
         /// Сетка фона
@@ -28,10 +28,6 @@ namespace Vge.Gui.Controls
         /// Сетка курсора
         /// </summary>
         private readonly MeshGuiColor _meshCursor;
-        /// <summary>
-        /// Коэфициент смещения вертикали для текстуры
-        /// </summary>
-        private readonly float _vk;
         /// <summary>
         /// Ограничения набор символов 
         /// </summary>
@@ -75,9 +71,8 @@ namespace Vge.Gui.Controls
             _meshBg = new MeshGuiColor(gl);
             _meshTxt = new MeshGuiColor(gl);
             _meshCursor = new MeshGuiColor(gl);
-            _vk = .078125f; // 40 / 512f;
             SetText(_GetConvertCheck(text));
-            SetSize(width, 40);
+            SetSize(width, 24);
         }
 
         /// <summary>
@@ -126,11 +121,12 @@ namespace Vge.Gui.Controls
         /// </summary>
         public void UpCursor(int x = int.MaxValue)
         {
-            int x0 = x / _si - PosX;
-            int w1 = _marginLeft;
+            int x0 = x / _si - PosX - _marginLeft;
+            int w1;
             string text = _GetTextDraw();
             int count = text.Length;
             _stepCursor = count;
+
             for (int i = 1; i <= count; i++)
             {
                 w1 = _font.WidthString(text.Substring(0, i));
@@ -355,7 +351,7 @@ namespace Vge.Gui.Controls
             // Чистим буфер
             _font.Clear();
             // Указываем опции
-            _font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+            _font.SetColor(color).SetFontFX(EnumFontFX.None);
 
             // Обрезка текста согласно ширины
             string text = _GetTextDraw();
@@ -373,13 +369,13 @@ namespace Vge.Gui.Controls
             _font.RenderString(x + _marginLeft * _si, y + biasY, text);
 
             // Имеется Outline значит рендерим FX
-            _font.RenderFX();
+            //_font.RenderFX();
             // Вносим сетку
             _font.Reload(_meshTxt);
 
             // Сетка фона
-            float v1 = Enabled ? Enter ? _vk * 4 : _vk * 3 : 0f;
-            _meshBg.Reload(_RectangleTwo(x, y, 0, v1 + .5f, _vk, 1, 1, 1));
+            float v1 = Enabled ? Enter ? .375f : .3125f : .25f;
+            _meshBg.Reload(_RectangleTwo(x, y, 0, v1, .5f, .0625f, 32));
 
             try
             {
@@ -390,7 +386,7 @@ namespace Vge.Gui.Controls
                     // Чистим буфер
                     _font.Clear();
                     // Указываем опции
-                    _font.SetColor(color).SetFontFX(EnumFontFX.Outline);
+                    _font.SetColor(color).SetFontFX(EnumFontFX.None);
                     // Готовим рендер текста
                     _font.RenderString(w, y + biasY, _stepCursor == Text.Length ? "_" : "|");
                     // Имеется Outline значит рендерим FX

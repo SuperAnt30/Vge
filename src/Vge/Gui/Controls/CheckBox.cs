@@ -9,25 +9,9 @@ namespace Vge.Gui.Controls
     public class CheckBox : Label
     {
         /// <summary>
-        /// Ширина Box
+        /// Смещение до текста, ширина калочки + шаг смещения
         /// </summary>
-        private const int BoxWidth = 40;
-        /// <summary>
-        /// Смещение до текста
-        /// </summary>
-        private const int Prefix = BoxWidth + 8;
-        /// <summary>
-        /// Вертикаль к текстуре 200 / 512
-        /// </summary>
-        private const float Ver1 = .390625f + .5f;
-        /// <summary>
-        /// Вертикаль к текстуре 240 / 512
-        /// </summary>
-        private const float Ver2 = .46875f + .5f;
-        /// <summary>
-        /// Смещение при Checked 120 / 512
-        /// </summary>
-        private const float HorStepCheck = .234375f;
+        private const int Prefix = 24 + 8;
 
         /// <summary>
         /// Значение
@@ -40,7 +24,7 @@ namespace Vge.Gui.Controls
         private readonly MeshGuiColor _meshBg;
 
         public CheckBox(WindowMain window, FontBase font, int width, string text)
-            : base(window, font, width, 40, text)
+            : base(window, font, width, 24, text)
         {
             _meshBg = new MeshGuiColor(gl);
             SetTextAlight(EnumAlight.Left, EnumAlightVert.Middle);
@@ -72,11 +56,12 @@ namespace Vge.Gui.Controls
             SetSize(w, Height);
 
             // Рендер Значка
-            float u1 = Enabled ? Enter ? vk + vk : vk : 0f;
-            if (Checked) u1 += HorStepCheck;
+            float u1 = Checked ? .0625f : 0;
+            float v1 = Enabled ? Enter ? .6875f : .625f : .5625f;
+            //float v1 = Enabled ? Enter ? .75f : .6875f : .625f;
 
-            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + BoxWidth * _si, y + Height * _si,
-                u1, Ver1, u1 + vk, Ver2));
+            _meshBg.Reload(RenderFigure.Rectangle(x, y, x + 32 * _si, y + 32 * _si,
+                u1, v1, u1 + .0625f, v1 + .0625f));
         }
 
         /// <summary>
@@ -105,7 +90,7 @@ namespace Vge.Gui.Controls
         public override void Dispose()
         {
             base.Dispose();
-            if (_meshBg != null) _meshBg.Dispose();
+            _meshBg?.Dispose();
         }
     }
 }
