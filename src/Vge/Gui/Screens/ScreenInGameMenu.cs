@@ -76,9 +76,9 @@ namespace Vge.Gui.Screens
         {
             int w = Width / 2;
             int h = Height / 2;
-            _buttonBack.SetPosition(w - _buttonBack.Width / 2, h - 64);
+            _buttonBack.SetPosition(w - _buttonBack.Width / 2, h - 56);
             _buttonOptions.SetPosition(w - _buttonOptions.Width / 2, h);
-            _buttonExit.SetPosition(w - _buttonExit.Width / 2, h + 92);
+            _buttonExit.SetPosition(w - _buttonExit.Width / 2, h + 72);
         }
     }
 }

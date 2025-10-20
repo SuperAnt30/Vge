@@ -14,7 +14,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Ширина ползунка
         /// </summary>
-        private const int SliderWidth = 32;
+        private const int SliderWidth = 16;
 
         /// <summary>
         /// Значение
@@ -100,14 +100,14 @@ namespace Vge.Gui.Controls
 
             // Рендер фона
             float v1 = Enabled ? _isLeftDown ? .53125f : (Enter ? .5f : .46875f) : .4375224f;
-            _meshBg.Reload(_RectangleTwo(x, y + 12 * _si, 0, v1, .5f, .03125f, 16));
+            _meshBg.Reload(_RectangleTwo(x, y + 15 * _si, 0, v1, .5f, .03125f, 16));
 
             // Рендер кнопки
             float u1 = Enabled ? _isLeftDown ? .75f : (Enter ? .6875f : .625f) : .5625f;
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
             int px = (int)((Width - SliderWidth) * index) * _si;
-            _meshBt.Reload(RenderFigure.Rectangle(x + px, y + 8 * _si, x + px + 32 * _si, y + 40 * _si,
+            _meshBt.Reload(RenderFigure.Rectangle(x + px, y + 10 * _si, x + px + 32 * _si, y + 42 * _si,
                 .125f, u1, .1875f, u1 + .0625f));
         }
 

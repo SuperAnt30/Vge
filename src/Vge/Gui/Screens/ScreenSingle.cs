@@ -103,12 +103,6 @@ namespace Vge.Gui.Screens
             buttonMenu.SetPosition(w2 - buttonMenu.Width / 2, h + (label.Height - 40) / 2);
         }
 
-        public override void Draw(float timeIndex)
-        {
-            gl.ClearColor(.5f, .3f, .02f, 1f);
-            base.Draw(timeIndex);
-        }
-
         private void ButtonSlots_Click(object sender, EventArgs e)
         {
             slot = (int)((Button)sender).Tag;
@@ -141,6 +135,12 @@ namespace Vge.Gui.Screens
                 listSingle.GameRemove(slot);
                 SlotInit(slot);
             }
+        }
+
+        public override void Draw(float timeIndex)
+        {
+            gl.ClearColor(.827f, .796f, .745f, 1f);
+            base.Draw(timeIndex);
         }
     }
 }

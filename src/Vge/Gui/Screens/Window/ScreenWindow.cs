@@ -39,15 +39,21 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected readonly float _sizeBg;
 
-        protected ScreenWindow(WindowMain window, float sizeBg, int width, int height) : base(window)
+        protected ScreenWindow(WindowMain window, float sizeBg, int width, int height, bool closeHide = false) : base(window)
         {
             WidthWindow = width;
             HeightWindow = height;
             _sizeBg = sizeBg;
             _meshBg = new MeshGuiColor(gl);
 
+            if (!closeHide)
+            {
+                _buttonClose = new ButtonClose(window);
+                _buttonClose.Click += ButtonCancel_Click;
+            }
+
             _InitTitle();
-            _buttonClose.Click += ButtonCancel_Click;
+            
             //_buttonCancel.SetVisible(false);
         }
 
@@ -64,7 +70,10 @@ namespace Vge.Gui.Screens
         {
             base.OnInitialize();
             AddControls(_labelTitle);
-            AddControls(_buttonClose);
+            if (_buttonClose != null)
+            {
+                AddControls(_buttonClose);
+            }
         }
 
         /// <summary>
@@ -112,6 +121,7 @@ namespace Vge.Gui.Screens
         protected override void OnResized()
         {
             base.OnResized();
+            _buttonClose?.SetPosition(PosX + WidthWindow - 23, PosY + 4);
             _isRenderAdd = true;
         }
 

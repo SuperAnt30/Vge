@@ -21,7 +21,6 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
             _labelTitle = new Label(window, font, 250, 50, L.T("Chat"));
             _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-            _buttonClose = new ButtonClose(window);
         }
 
         /// <summary>
@@ -33,7 +32,6 @@ namespace Vge.Gui.Screens
             PosY = Height - HeightWindow - 8;
             base.OnResized();
             _labelTitle.SetPosition(PosX + 16, PosY + 10);
-            _buttonClose.SetPosition(PosX + WidthWindow - 50, PosY);
         }
 
         /// <summary>

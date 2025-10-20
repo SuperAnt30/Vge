@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer;
 using Vge.Renderer.Font;
+using WinGL.Actions;
 
 namespace Vge.Gui.Controls
 {
@@ -11,7 +12,7 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Смещение до текста, ширина калочки + шаг смещения
         /// </summary>
-        private const int Prefix = 24 + 8;
+        private const int Prefix = 16 + 8;
 
         /// <summary>
         /// Значение
@@ -19,12 +20,17 @@ namespace Vge.Gui.Controls
         public bool Checked { get; private set; } = false;
 
         /// <summary>
+        /// Нажали ли на кнопку
+        /// </summary>
+        protected bool _isLeftDown;
+
+        /// <summary>
         /// Сетка фона
         /// </summary>
         private readonly MeshGuiColor _meshBg;
 
         public CheckBox(WindowMain window, FontBase font, int width, string text)
-            : base(window, font, width, 24, text)
+            : base(window, font, width, 16, text)
         {
             _meshBg = new MeshGuiColor(gl);
             SetTextAlight(EnumAlight.Left, EnumAlightVert.Middle);
@@ -57,8 +63,7 @@ namespace Vge.Gui.Controls
 
             // Рендер Значка
             float u1 = Checked ? .0625f : 0;
-            float v1 = Enabled ? Enter ? .6875f : .625f : .5625f;
-            //float v1 = Enabled ? Enter ? .75f : .6875f : .625f;
+            float v1 = Enabled ? _isLeftDown ? .75f : (Enter ? .6875f : .625f) : .5625f;
 
             _meshBg.Reload(RenderFigure.Rectangle(x, y, x + 32 * _si, y + 32 * _si,
                 u1, v1, u1 + .0625f, v1 + .0625f));
@@ -81,11 +86,36 @@ namespace Vge.Gui.Controls
 
         protected override void _OnClick()
         {
+            _isLeftDown = true;
+            IsRender = true;
             // Звук клика
             window.SoundClick(.3f);
-            SetChecked(!Checked);
-            base._OnClick();
         }
+
+        #region OnMouse
+
+        /// <summary>
+        /// Отпустили клавишу мышки
+        /// </summary>
+        public override void OnMouseUp(MouseButton button, int x, int y)
+        {
+            if (_isLeftDown)
+            {
+                if (button == MouseButton.Left)
+                {
+                    OnMouseMove(x, y);
+                    if (Enter)
+                    {
+                        SetChecked(!Checked);
+                        base._OnClick();
+                    }
+                }
+                _isLeftDown = false;
+                IsRender = true;
+            }
+        }
+
+        #endregion
 
         public override void Dispose()
         {

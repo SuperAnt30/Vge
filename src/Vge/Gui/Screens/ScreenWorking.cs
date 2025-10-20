@@ -86,7 +86,7 @@ namespace Vge.Gui.Screens
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            gl.ClearColor(.5f, .3f, .02f, 1f);
+            gl.ClearColor(.827f, .796f, .745f, 1f);
             gl.Enable(GL.GL_CULL_FACE);
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();

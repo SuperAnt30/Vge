@@ -115,7 +115,16 @@ namespace Vge.Gui.Controls
             // Чистим буфер
             Font.Clear();
             // Указываем опции
-            Font.SetColor(color).SetFontFX(EnumFontFX.None);
+            Font.SetColor(color);
+
+            if (Enabled)
+            {
+                Font.SetFontFX(EnumFontFX.None);
+            }
+            else
+            {
+                Font.SetFontFX(EnumFontFX.Shadow).SetColorShadow(new Vector3(1));
+            }
 
             int biasX = 0;
             int biasY = 0;
@@ -205,7 +214,10 @@ namespace Vge.Gui.Controls
             }
 
             // Имеется Outline значит рендерим FX
-            //Font.RenderFX();
+            if (!Enabled)
+            {
+                Font.RenderFX();
+            }
             // Вносим сетку
             Font.Reload(_meshTxt);
 

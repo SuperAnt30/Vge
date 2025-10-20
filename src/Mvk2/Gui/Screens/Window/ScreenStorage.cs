@@ -232,7 +232,6 @@ namespace Mvk2.Gui.Screens
             FontBase font = window.Render.FontMain;
             _labelTitle = new Label(window, font, 250, 28, _GetTitle());
             _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-            _buttonClose = new ButtonClose(window);
         }
 
         /// <summary>
@@ -253,15 +252,13 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            base.OnResized();
-
             // Расположение окна
             PosX = (Width - WidthWindow) / 2;
             int h = Height - HeightWindow;
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
+            base.OnResized();
             _labelTitle.SetPosition(PosX + 14, PosY + 9);
-            _buttonClose.SetPosition(PosX + WidthWindow - 50, PosY);
 
             int i;
             // Карманы

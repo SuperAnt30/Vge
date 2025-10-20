@@ -61,15 +61,16 @@ namespace Vge.Gui.Screens
         {
             int w = Width / 2 - _buttonSingle.Width / 2;
             int h = Height / 2;
-            _buttonSingle.SetPosition(w, h - 64);
+            _buttonSingle.SetPosition(w, h - 56);
             _buttonMultiplayer.SetPosition(w, h);
-            _buttonOptions.SetPosition(w, h + 64);
-            _buttonExit.SetPosition(w, h + 128);
+            _buttonOptions.SetPosition(w, h + 56);
+            _buttonExit.SetPosition(w, h + 112);
         }
 
         public override void Draw(float timeIndex)
         {
-            gl.ClearColor(.5f, .3f, .02f, 1f);
+            gl.ClearColor(.486f, .569f, .616f, 1f);
+            //gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

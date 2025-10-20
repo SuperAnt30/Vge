@@ -60,6 +60,14 @@ namespace Vge.Renderer.Font
         /// </summary>
         private Vector3 _colorText = Gi.ColorText;
         /// <summary>
+        /// Цвет тени, если -1, значит по умолчанию используем
+        /// </summary>
+        private Vector3 _colorTextShadow = new Vector3(0);
+        /// <summary>
+        /// Цвет тени, если false, значит по умолчанию используем
+        /// </summary>
+        private bool _isColorTextShadow = false;
+        /// <summary>
         /// Эффекты к шрифту
         /// </summary>
         private EnumFontFX _fontFX = EnumFontFX.None;
@@ -335,9 +343,18 @@ namespace Vge.Renderer.Font
             {
                 _buffer[i] = _buffer[i] + _si;
                 _buffer[i + 1] = _buffer[i + 1] + _si;
-                _buffer[i + 4] = _buffer[i + count + 4] / 4f;
-                _buffer[i + 5] = _buffer[i + count + 5] / 4f;
-                _buffer[i + 6] = _buffer[i + count + 6] / 4f;
+                if (_isColorTextShadow)
+                {
+                    _buffer[i + 4] = _colorTextShadow.X;
+                    _buffer[i + 5] = _colorTextShadow.Y;
+                    _buffer[i + 6] = _colorTextShadow.Z;
+                }
+                else
+                {
+                    _buffer[i + 4] = _buffer[i + count + 4] / 4f;
+                    _buffer[i + 5] = _buffer[i + count + 5] / 4f;
+                    _buffer[i + 6] = _buffer[i + count + 6] / 4f;
+                }
             }
         }
         /// <summary>
@@ -356,9 +373,18 @@ namespace Vge.Renderer.Font
             // Красим первый контур в затемнёный цвет
             for (int i = 0; i < count; i += 8)
             {
-                _buffer[i + 4] = _buffer[i + count4 + 4] / 4f;
-                _buffer[i + 5] = _buffer[i + count4 + 5] / 4f;
-                _buffer[i + 6] = _buffer[i + count4 + 6] / 4f;
+                if (_isColorTextShadow)
+                {
+                    _buffer[i + 4] = _colorTextShadow.X;
+                    _buffer[i + 5] = _colorTextShadow.Y;
+                    _buffer[i + 6] = _colorTextShadow.Z;
+                }
+                else
+                {
+                    _buffer[i + 4] = _buffer[i + count4 + 4] / 4f;
+                    _buffer[i + 5] = _buffer[i + count4 + 5] / 4f;
+                    _buffer[i + 6] = _buffer[i + count4 + 6] / 4f;
+                }
             }
             // Делаем ещё 3 копии контура
             _buffer.AddCopy(0, count, count);
@@ -553,6 +579,7 @@ namespace Vge.Renderer.Font
             if (isColorDefault)
             {
                 _colorText = Gi.ColorText;
+                _isColorTextShadow = false;
             }
         }
 
@@ -572,9 +599,18 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Задать цвет по умолчпнию, если не будет выбран стилем
         /// </summary>
-        public FontBase SetColor(Vector3 colorText)
+        public FontBase SetColor(Vector3 color)
         {
-            this._colorText = colorText;
+            _colorText = color;
+            return this;
+        }
+        /// <summary>
+        /// Задать цвет тени по умолчпнию, если не будет выбран стилем
+        /// </summary>
+        public FontBase SetColorShadow(Vector3 color)
+        {
+            _colorTextShadow = color;
+            _isColorTextShadow = true;
             return this;
         }
         /// <summary>
@@ -582,7 +618,7 @@ namespace Vge.Renderer.Font
         /// </summary>
         public FontBase SetFontFX(EnumFontFX fontFX)
         {
-            this._fontFX = fontFX;
+            _fontFX = fontFX;
             return this;
         }
 

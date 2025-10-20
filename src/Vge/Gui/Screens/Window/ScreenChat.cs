@@ -48,14 +48,15 @@ namespace Vge.Gui.Screens
         private int _scrollPos = 0;
         private string _historyBuffer = "";
 
-        public ScreenChat(WindowMain window, int width, int height) : base(window, 512f, width, height)
+        public ScreenChat(WindowMain window, int width, int height) : base(window, 512f, width, height, true)
         {
             FontBase font = window.Render.FontMain;
             _labelMessages = new Label(window, 
                 window.Game.Player.Chat.Font, "", true).SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
             _labelMessages.SetSize(Gi.WindowsChatWidthMessage, Gi.WindowsChatHeightMessage);
             _labelMessages.Multiline();
-            _textBoxMessage = new TextBox(window, window.Render.FontMain, WidthWindow, "", TextBox.EnumRestrictions.All, 255);
+            _textBoxMessage = new TextBox(window, window.Render.FontMain, WidthWindow - 64, "", 
+                TextBox.EnumRestrictions.All, 255);
             _textBoxMessage.FixFocus();
 
             _sentHistoryCursor = window.Game.Player.Chat.SentMessages.Count;
