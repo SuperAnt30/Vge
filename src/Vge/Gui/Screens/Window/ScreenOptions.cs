@@ -53,7 +53,7 @@ namespace Vge.Gui.Screens
             FontBase font = window.Render.FontMain;
 
             _labelSound = new Label(window, font, 400, 16, 
-                "-- " + ChatStyle.Bolb + L.T("Sound") + ChatStyle.Reset + " --------------------");
+                "-- " + ChatStyle.Bolb + L.T("Sound") + " --------------------");
             _labelSound.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
             _labelGraphics = new Label(window, font, 400, 16, 
                 "-- " + ChatStyle.Bolb + L.T("Graphics") + ChatStyle.Reset + " --------------------");

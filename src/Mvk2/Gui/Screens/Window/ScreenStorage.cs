@@ -11,7 +11,6 @@ using Vge.Gui.Controls;
 using Vge.Gui.Screens;
 using Vge.Item;
 using Vge.Network.Packets.Client;
-using Vge.Renderer.Font;
 using WinGL.Util;
 
 namespace Mvk2.Gui.Screens
