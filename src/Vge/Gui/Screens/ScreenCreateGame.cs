@@ -27,9 +27,9 @@ namespace Vge.Gui.Screens
             labelSeed = new Label(window, font, 300, 40, L.T("Seed"));
             textBoxSeed = new TextBox(window, font, 300, "", TextBox.EnumRestrictions.Number);
 
-            buttonCreate = new ButtonThin(window, font, 64, L.T("Create"));
+            buttonCreate = new ButtonThin(window, font, 128, L.T("Create"));
             buttonCreate.Click += ButtonCreate_Click;
-            buttonCancel = new ButtonThin(window, font, 64, L.T("Cancel"));
+            buttonCancel = new ButtonThin(window, font, 128, L.T("Cancel"));
             buttonCancel.Click += ButtonCancel_Click;
         }
 
@@ -82,7 +82,8 @@ namespace Vge.Gui.Screens
 
         public override void Draw(float timeIndex)
         {
-            gl.ClearColor(.827f, .796f, .745f, 1f);
+            gl.ClearColor(.486f, .569f, .616f, 1f);
+           // gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

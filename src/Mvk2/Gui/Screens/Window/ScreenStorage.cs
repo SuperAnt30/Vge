@@ -59,7 +59,7 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorage(WindowMvk window) : base(window, 512f, 460, 415)
+        public ScreenStorage(WindowMvk window) : base(window, 512f, 456, 416)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
@@ -150,12 +150,6 @@ namespace Mvk2.Gui.Screens
         protected virtual int _GetSlotCount() => _inventoryCount;
 
         /// <summary>
-        /// Название заголовка
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual string _GetTitle() => "Storage";
-
-        /// <summary>
         /// Событие изменён лимит кармана
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -227,13 +221,6 @@ namespace Mvk2.Gui.Screens
             return true;
         }
 
-        protected override void _InitTitle()
-        {
-            FontBase font = window.Render.FontMain;
-            _labelTitle = new Label(window, font, 250, 28, _GetTitle());
-            _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-        }
-
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
@@ -258,7 +245,7 @@ namespace Mvk2.Gui.Screens
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
             base.OnResized();
-            _labelTitle.SetPosition(PosX + 14, PosY + 9);
+            
 
             int i;
             // Карманы

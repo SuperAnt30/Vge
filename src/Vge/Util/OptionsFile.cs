@@ -81,7 +81,8 @@ namespace Vge.Util
                 case "FullScreen": Options.FullScreen = value == "1"; return true;
                 case "VSync": Options.VSync = value == "1"; return true;
                 case "SizeInterface": Options.SizeInterface = int.Parse(value); return true;
-                case "Qualitatively": Options.Qualitatively = value == "1"; return true;
+                case "AmbientOcclusion": Options.AmbientOcclusion = value == "1"; return true;
+                case "Shadow": Options.Shadow = value == "1"; return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "MusicVolume": Options.MusicVolume = int.Parse(value); return true;
@@ -103,7 +104,8 @@ namespace Vge.Util
             file.WriteLine("Token: " + Options.Token);
             file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
             file.WriteLine("\r\n# Graphics");
-            file.WriteLine("Qualitatively: " + (Options.Qualitatively ? "1" : "0"));
+            file.WriteLine("AmbientOcclusion: " + (Options.AmbientOcclusion ? "1" : "0"));
+            file.WriteLine("Shadow: " + (Options.Shadow ? "1" : "0"));
             file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));
             file.WriteLine("VSync: " + (Options.VSync ? "1" : "0"));
             file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());

@@ -114,9 +114,9 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Изменено качество графики
+        /// Изменено качество графики, тень
         /// </summary>
-        public void ModifyQualitatively()
+        public void ModifyShadow()
         {
             Shadow.ReloadInit();
             Render.ShsEntity.UpdateOptions();

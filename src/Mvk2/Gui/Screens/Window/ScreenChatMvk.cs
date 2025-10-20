@@ -1,6 +1,5 @@
 ﻿using Mvk2;
-using Vge.Gui.Controls;
-using Vge.Renderer.Font;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Gui.Screens
 {
@@ -16,27 +15,16 @@ namespace Vge.Gui.Screens
             _windowMvk = window;
         }
 
-        protected override void _InitTitle()
-        {
-            FontBase font = window.Render.FontMain;
-            _labelTitle = new Label(window, font, 250, 50, L.T("Chat"));
-            _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-        }
-
         /// <summary>
-        /// Изменён размер окна
+        /// Название заголовка
         /// </summary>
-        protected override void OnResized()
-        {
-            PosX = 8;
-            PosY = Height - HeightWindow - 8;
-            base.OnResized();
-            _labelTitle.SetPosition(PosX + 16, PosY + 10);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override string _GetTitle() => L.T("Chat");
 
         /// <summary>
         /// Запустить текстуру фона
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _BindTextureBg() => _windowMvk.GetRender().BindTextureChat();
     }
 }

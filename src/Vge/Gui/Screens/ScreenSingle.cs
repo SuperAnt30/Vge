@@ -1,6 +1,7 @@
 ﻿using System;
 using Vge.Games;
 using Vge.Gui.Controls;
+using Vge.Realms;
 using Vge.Renderer.Font;
 
 namespace Vge.Gui.Screens
@@ -49,8 +50,8 @@ namespace Vge.Gui.Screens
 
         private void SlotInit(int slot)
         {
-            buttonSlots[slot].SetText(listSingle.NameWorlds[slot]);
-            buttonSlotsDel[slot].SetEnable(!listSingle.EmptyWorlds[slot]);
+            buttonSlots[slot].SetText(ChatStyle.Bolb + listSingle.NameWorlds[slot] + ChatStyle.Reset);
+            buttonSlotsDel[slot].SetVisible(!listSingle.EmptyWorlds[slot]);
         }
 
         private void Button_Click(object sender, EventArgs e)
@@ -77,7 +78,7 @@ namespace Vge.Gui.Screens
         {
             int w2 = Width / 2;
 
-            int hf = 44 * countSlot;
+            int hf = 28 * countSlot;
             int hup = (Height - hf) / 2;
             int hupFix = 80;
             int h;
@@ -98,9 +99,9 @@ namespace Vge.Gui.Screens
             {
                 buttonSlots[i].SetPosition(w2 - 200, h);
                 buttonSlotsDel[i].SetPosition(w2 + 160, h);
-                h += 44;
+                h += 28;
             }
-            buttonMenu.SetPosition(w2 - buttonMenu.Width / 2, h + (label.Height - 40) / 2);
+            buttonMenu.SetPosition(w2 - buttonMenu.Width / 2, h + (label.Height - 24) / 2);
         }
 
         private void ButtonSlots_Click(object sender, EventArgs e)
@@ -139,7 +140,8 @@ namespace Vge.Gui.Screens
 
         public override void Draw(float timeIndex)
         {
-            gl.ClearColor(.827f, .796f, .745f, 1f);
+            gl.ClearColor(.486f, .569f, .616f, 1f);
+            //gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

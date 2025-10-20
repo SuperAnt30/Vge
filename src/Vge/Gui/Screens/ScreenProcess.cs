@@ -35,7 +35,8 @@ namespace Vge.Gui.Screens
         public override void Draw(float timeIndex)
         {
             //gl.ClearColor(.5f, .3f, .02f, 1f);
-            gl.ClearColor(.827f, .796f, .745f, 1f);
+            gl.ClearColor(.486f, .569f, .616f, 1f);
+            //gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

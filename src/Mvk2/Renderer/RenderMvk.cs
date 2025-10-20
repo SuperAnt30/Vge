@@ -51,6 +51,12 @@ namespace Mvk2.Renderer
         /// </summary>
         public void CreateTextureFontLarge(BufferedImage buffered)
             => FontLarge = new FontBase(buffered, 2, this);
+
+        /// <summary>
+        /// Запустить текстуру окна настроек
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureOptions() => Texture.BindTexture(_textureIndexMvk.Options);
         /// <summary>
         /// Запустить текстуру чата
         /// </summary>
@@ -89,6 +95,10 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.FontLarge.ToString()))
             {
                 FontLarge.CreateMesh(gl, Texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Options.ToString()))
+            {
+                _textureIndexMvk.Options = Texture.SetTexture(buffereds[EnumTextureMvk.Options.ToString()]);
             }
             if (buffereds.ContainsKey(EnumTextureMvk.Chat.ToString()))
             {

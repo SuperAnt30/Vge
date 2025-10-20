@@ -149,7 +149,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Инициализация AmbientOcclusion
         /// </summary>
-        public void InitAmbientOcclusion() => _ambientOcclusion = Options.Qualitatively;
+        public void InitAmbientOcclusion() => _ambientOcclusion = Options.AmbientOcclusion;
 
         #endregion
 

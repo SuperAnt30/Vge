@@ -110,6 +110,9 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
+            PosX = 8;
+            PosY = Height - HeightWindow - 8;
+
             base.OnResized();
             _textBoxMessage.SetPosition(PosX, PosY + 314);// Height - 48);
             _labelMessages.SetPosition(PosX + 8, PosY + 30);// Height - 324);

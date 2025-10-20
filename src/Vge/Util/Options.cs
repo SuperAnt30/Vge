@@ -78,9 +78,13 @@ namespace Vge.Util
         /// </summary>
         public static bool VSync = true;
         /// <summary>
-        /// Графика качественнее, красивее
+        /// Графика, эффект AmbientOcclusion
         /// </summary>
-        public static bool Qualitatively = true;
+        public static bool AmbientOcclusion = true;
+        /// <summary>
+        /// Графика, тень
+        /// </summary>
+        public static bool Shadow = true;
         /// <summary>
         /// Желаемый FPS
         /// </summary>

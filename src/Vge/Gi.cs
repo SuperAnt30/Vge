@@ -79,14 +79,14 @@ public sealed class Gi
         if (Si == 2)
         {
             // Крупный стиль
-            if (Height < 830) Si = 1; // 960
-            else if (Height < 1660) Si = 2; // 1920
+            if (Height < 832) Si = 1; // 960
+            else if (Height < 1664) Si = 2; // 1920
             else Si = 4;
         }
         else
         {
             // Мелкий стиль
-            if (Height < 1660) Si = 1;
+            if (Height < 1664) Si = 1;
             else Si = 2;
         }
     }

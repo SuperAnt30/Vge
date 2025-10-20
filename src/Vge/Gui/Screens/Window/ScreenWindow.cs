@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Gui.Controls;
+using Vge.Realms;
 using Vge.Renderer;
 using WinGL.Actions;
 
@@ -46,22 +48,40 @@ namespace Vge.Gui.Screens
             _sizeBg = sizeBg;
             _meshBg = new MeshGuiColor(gl);
 
+            _buttonClose = new ButtonClose(window);
             if (!closeHide)
             {
-                _buttonClose = new ButtonClose(window);
                 _buttonClose.Click += ButtonCancel_Click;
+            }
+            else
+            {
+                _buttonClose.SetVisible(false);
             }
 
             _InitTitle();
-            
-            //_buttonCancel.SetVisible(false);
         }
 
-        protected virtual void _InitTitle() { }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _InitTitle()
+        {
+            _labelTitle = new Label(window, window.Render.FontMain, 128, 16,
+                ChatStyle.Bolb + _GetTitle() + ChatStyle.Reset);
+            _labelTitle.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
+        }
+
+        /// <summary>
+        /// Название заголовка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual string _GetTitle() => "Малювекi";
 
         private void ButtonCancel_Click(object sender, EventArgs e) => _Close();
 
-        protected void _Close() => window.LScreen.Close();
+        /// <summary>
+        /// Закрытие скрина
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _Close() => window.LScreen.Close();
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
@@ -70,10 +90,7 @@ namespace Vge.Gui.Screens
         {
             base.OnInitialize();
             AddControls(_labelTitle);
-            if (_buttonClose != null)
-            {
-                AddControls(_buttonClose);
-            }
+            AddControls(_buttonClose);
         }
 
         /// <summary>
@@ -121,7 +138,8 @@ namespace Vge.Gui.Screens
         protected override void OnResized()
         {
             base.OnResized();
-            _buttonClose?.SetPosition(PosX + WidthWindow - 23, PosY + 4);
+            _buttonClose.SetPosition(PosX + WidthWindow - 20, PosY + 4);
+            _labelTitle.SetPosition(PosX + 14, PosY + 9);
             _isRenderAdd = true;
         }
 

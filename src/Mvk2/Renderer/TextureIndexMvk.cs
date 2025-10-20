@@ -8,6 +8,10 @@ namespace Mvk2.Renderer
     public class TextureIndexMvk : TextureIndex
     {
         /// <summary>
+        /// Текстура окна настроек
+        /// </summary>
+        public uint Options;
+        /// <summary>
         /// Текстура чат окна
         /// </summary>
         public uint Chat;
@@ -40,6 +44,10 @@ namespace Mvk2.Renderer
         /// Крупный шрифт (16 пиксель)
         /// </summary>
         FontLarge,
+        /// <summary>
+        /// Окно настроек
+        /// </summary>
+        Options,
         /// <summary>
         /// Чат окно
         /// </summary>

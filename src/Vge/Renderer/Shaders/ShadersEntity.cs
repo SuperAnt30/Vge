@@ -53,7 +53,7 @@ namespace Vge.Renderer.Shaders
             _shaderLow = new ShaderEntity(gl, nameLow);
             _shaderHigh = new ShaderEntity(gl, nameHigh);
             _shaderDepthMap = new ShaderEntity(gl, nameDepthMap);
-            _qualitatively = Options.Qualitatively;
+            _qualitatively = Options.Shadow;
         }
 
         public void Init()
@@ -108,7 +108,7 @@ namespace Vge.Renderer.Shaders
         /// Изменено качество
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateOptions() => _qualitatively = Options.Qualitatively;
+        public void UpdateOptions() => _qualitatively = Options.Shadow;
 
         #region Bind Uniform
 

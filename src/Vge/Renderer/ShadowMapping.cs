@@ -98,7 +98,7 @@ namespace Vge.Renderer
         /// </summary>
         public void ReloadInit()
         {
-            IsShadow = Options.Qualitatively;
+            IsShadow = Options.Shadow;
             Gi.BlockBrightness = IsShadow ? 0.3f : 0.15f;
             Gi.EntityBrightness = 0.3f;
         }

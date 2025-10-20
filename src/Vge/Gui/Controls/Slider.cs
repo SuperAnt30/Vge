@@ -52,7 +52,7 @@ namespace Vge.Gui.Controls
         private readonly MeshGuiColor _meshBt;
 
         public Slider(WindowMain window, FontBase font, int width, int min, int max, int step, string text)
-            : base(window, font, width, 40, text)
+            : base(window, font, width, 30, text)
         {
             _meshBg = new MeshGuiColor(gl);
             _meshBt = new MeshGuiColor(gl);

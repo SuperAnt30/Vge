@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Games;
 using Vge.Gui.Controls;
 using Vge.Realms;
@@ -10,96 +11,124 @@ namespace Vge.Gui.Screens
     /// <summary>
     /// Экран настроек
     /// </summary>
-    public class ScreenOptions : ScreenBase
+    public class ScreenOptions : ScreenWindow
     {
         private readonly ScreenBase parent;
         /// <summary>
         /// Опции во время игры
         /// </summary>
-        private readonly bool inGame;
+        private readonly bool _inGame;
         /// <summary>
         /// Локальная ли игра
         /// </summary>
-        private readonly bool isGameLocal;
+        private readonly bool _isGameLocal;
 
-        protected readonly Label label;
-        protected readonly TextBox textBoxNikame;
-        protected readonly Slider sliderFps;
-        protected readonly Slider sliderSoundVolume;
-        protected readonly Slider sliderMusicVolume;
-        protected readonly Slider sliderMouseSensitivity;
-        protected readonly Slider sliderOverviewChunk;
-        protected readonly CheckBox checkBoxBigInterface;
-        protected readonly CheckBox checkBoxVSinc;
-        protected readonly CheckBox checkBoxFullScreen;
-        protected readonly CheckBox checkBoxQualitatively;
-        protected readonly Button buttonNet;
+        protected readonly Label _labelSound;
+        protected readonly Label _labelGraphics;
+        protected readonly Label _labelNikname;
+        protected readonly TextBox _textBoxNikname;
+        protected readonly Slider _sliderFps;
+        protected readonly Slider _sliderSoundVolume;
+        protected readonly Slider _sliderMusicVolume;
+        protected readonly Slider _sliderMouseSensitivity;
+        protected readonly Slider _sliderOverviewChunk;
+        protected readonly CheckBox _checkBoxBigInterface;
+        protected readonly CheckBox _checkBoxVSinc;
+        protected readonly CheckBox _checkBoxFullScreen;
+        protected readonly CheckBox _checkBoxAmbientOcclusion;
+        protected readonly CheckBox _checkBoxShadow;
+        protected readonly Button _buttonNet;
 
-        protected readonly Button buttonDone;
-        protected readonly Button buttonCancel;
+        protected readonly Button _buttonDone;
+        protected readonly Button _buttonCancel;
 
-        public ScreenOptions(WindowMain window, ScreenBase parent, bool inGame) : base(window)
+        public ScreenOptions(WindowMain window, ScreenBase parent, bool inGame) 
+            : base(window, 512f, 512, 416, true)
         {
-            this.inGame = inGame;
+            _inGame = inGame;
             this.parent = parent;
 
-            isGameLocal = inGame && window.Game != null && window.Game.IsLoacl;
+            _isGameLocal = inGame && window.Game != null && window.Game.IsLoacl;
             
             FontBase font = window.Render.FontMain;
 
-            label = new Label(window, font, ChatStyle.Bolb + L.T("Options"));
-            label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Bottom);
-            buttonDone = new ButtonThin(window, font, 128, L.T("Done"));
-            buttonDone.Click += ButtonDone_Click;
-            buttonCancel = new ButtonThin(window, font, 128, L.T("Cancel"));
-            buttonCancel.Click += ButtonCancel_Click;
+            _labelSound = new Label(window, font, 400, 16, 
+                "-- " + ChatStyle.Bolb + L.T("Sound") + ChatStyle.Reset + " --------------------");
+            _labelSound.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
+            _labelGraphics = new Label(window, font, 400, 16, 
+                "-- " + ChatStyle.Bolb + L.T("Graphics") + ChatStyle.Reset + " --------------------");
+            _labelGraphics.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
 
-            textBoxNikame = new TextBox(window, font, 300, Options.Nickname, TextBox.EnumRestrictions.Name, 16);
-            textBoxNikame.SetEnable(!inGame);
+            _buttonDone = new ButtonThin(window, font, 128, L.T("Done"));
+            _buttonDone.Click += ButtonDone_Click;
+            _buttonCancel = new ButtonThin(window, font, 128, L.T("Cancel"));
+            _buttonCancel.Click += ButtonCancel_Click;
 
-            sliderFps = new Slider(window, font, 300, 10, 260, 10, L.T("Fps"));
-            sliderFps.SetValue(Options.Fps).AddParam(260, L.T("MaxFps"));
+            _labelNikname = new Label(window, font, 128, 24, L.T("Nikname"));
+            _labelNikname.SetTextAlight(EnumAlight.Left, EnumAlightVert.Middle);
+            _textBoxNikname = new TextBox(window, font, 128, Options.Nickname, TextBox.EnumRestrictions.Name, 16);
+            _textBoxNikname.SetEnable(!inGame);
 
-            sliderSoundVolume = new Slider(window, font, 300, 0, 100, 1, L.T("SoundVolume"));
-            sliderSoundVolume.SetValue(Options.SoundVolume)
+            _sliderFps = new Slider(window, font, 200, 10, 260, 10, L.T("Fps"));
+            _sliderFps.SetValue(Options.Fps).AddParam(260, L.T("MaxFps"));
+
+            _sliderSoundVolume = new Slider(window, font, 200, 0, 100, 1, L.T("SoundVolume"));
+            _sliderSoundVolume.SetValue(Options.SoundVolume)
                 .AddParam(0, L.T("SoundVolumeOff")).AddParam(100, L.T("SoundVolumeMax"));
-            sliderMusicVolume = new Slider(window, font, 300, 0, 100, 1, L.T("MusicVolume"));
-            sliderMusicVolume.SetValue(Options.MusicVolume)
+            _sliderMusicVolume = new Slider(window, font, 200, 0, 100, 1, L.T("MusicVolume"));
+            _sliderMusicVolume.SetValue(Options.MusicVolume)
                 .AddParam(0, L.T("MusicVolumeOff")).AddParam(100, L.T("MusicVolumeMax"));
-            sliderMusicVolume.SetEnable(false);
+            _sliderMusicVolume.SetEnable(false);
 
-            sliderMouseSensitivity = new Slider(window, font, 300, 0, 100, 1, L.T("MouseSensitivity"));
-            sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
+            _sliderMouseSensitivity = new Slider(window, font, 200, 0, 100, 1, L.T("MouseSensitivity"));
+            _sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
                 .AddParam(0, L.T("SensitivityMin")).AddParam(100, L.T("SensitivityMax"));
 
-            sliderOverviewChunk = new Slider(window, font, 300, 2, 64, 1, L.T("OverviewChunk"));
-            sliderOverviewChunk.SetValue(Options.OverviewChunk);
+            _sliderOverviewChunk = new Slider(window, font, 200, 2, 64, 1, L.T("OverviewChunk"));
+            _sliderOverviewChunk.SetValue(Options.OverviewChunk);
 
-            checkBoxBigInterface = new CheckBox(window, font, 300, L.T("BigInterface"));
-            checkBoxBigInterface.SetChecked(Options.SizeInterface != 1);
-            checkBoxVSinc = new CheckBox(window, font, 300, L.T("VSync"));
-            checkBoxVSinc.SetChecked(Options.VSync);
-            checkBoxFullScreen = new CheckBox(window, font, 300, L.T("FullScreenReset"));
-            checkBoxFullScreen.SetChecked(Options.FullScreen);
-            checkBoxQualitatively = new CheckBox(window, font, 300, L.T("Qualitatively"));
-            checkBoxQualitatively.SetChecked(Options.Qualitatively);
-            checkBoxQualitatively.SetEnable(false);
+            _checkBoxBigInterface = new CheckBox(window, font, 200, L.T("BigInterface"));
+            _checkBoxBigInterface.SetChecked(Options.SizeInterface != 1);
+            _checkBoxVSinc = new CheckBox(window, font, 200, L.T("VSync"));
+            _checkBoxVSinc.SetChecked(Options.VSync);
+            _checkBoxFullScreen = new CheckBox(window, font, 200, L.T("FullScreenReset"));
+            _checkBoxFullScreen.SetChecked(Options.FullScreen);
+            _checkBoxAmbientOcclusion = new CheckBox(window, font, 200, L.T("AmbientOcclusion"));
+            _checkBoxAmbientOcclusion.SetChecked(Options.AmbientOcclusion);
+            _checkBoxShadow = new CheckBox(window, font, 200, L.T("Shadow"));
+            _checkBoxShadow.SetChecked(Options.Shadow);
 
-            if (isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
+            if (_isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
                 && gameLocal.IsRunNet())
             {
-                buttonNet = new ButtonThin(window, font, 128, L.T("NetOn"));
-                buttonNet.SetEnable(false);
+                _buttonNet = new ButtonThin(window, font, 128, L.T("NetOn"));
+                _buttonNet.SetEnable(false);
             }
             else
             {
-                buttonNet = new ButtonThin(window, font, 128, L.T("Net"));
+                _buttonNet = new ButtonThin(window, font, 128, L.T("Net"));
             }
-            buttonNet.Click += ButtonNet_Click;
+            _buttonNet.Click += ButtonNet_Click;
 
-            if (!isGameLocal) buttonNet.SetVisible(false);
-           // if (inGame) checkBoxFullScreen.SetVisible(false);
+            if (!_isGameLocal) _buttonNet.SetVisible(false);
         }
+
+        /// <summary>
+        /// Название заголовка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override string _GetTitle() => L.T("Options");
+
+        /// <summary>
+        /// Закрытие скрина
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _Close() => window.LScreen.Parent(parent, EnumScreenParent.None);
+
+        /// <summary>
+        /// Клик за пределами окна
+        /// </summary>
+        protected override void _OnClickOutsideWindow() { }
 
         #region Clicks
 
@@ -108,7 +137,7 @@ namespace Vge.Gui.Screens
             if (window.Game != null && window.Game is GameLocal gameLocal)
             {
                 gameLocal.OpenNet(32021);
-                buttonNet.SetText(L.T("NetOn")).SetEnable(false);
+                _buttonNet.SetText(L.T("NetOn")).SetEnable(false);
             }
         }
 
@@ -119,8 +148,7 @@ namespace Vge.Gui.Screens
             window.LScreen.Parent(parent, EnumScreenParent.Yes);
         }
 
-        private void ButtonCancel_Click(object sender, EventArgs e)
-            => window.LScreen.Parent(parent, EnumScreenParent.None);
+        private void ButtonCancel_Click(object sender, EventArgs e) => _Close();
 
         #endregion
 
@@ -129,29 +157,31 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected virtual void SaveOptions()
         {
-            bool isFullScreen = Options.FullScreen != checkBoxFullScreen.Checked;
-            int si = checkBoxBigInterface.Checked ? 2 : 1;
+            bool isFullScreen = Options.FullScreen != _checkBoxFullScreen.Checked;
+            int si = _checkBoxBigInterface.Checked ? 2 : 1;
             bool isSizeInterface = Options.SizeInterface != si;
-            bool isOverviewChunk = Options.OverviewChunk != sliderOverviewChunk.Value;
-            bool isQualitatively = Options.Qualitatively != checkBoxQualitatively.Checked;
-            if (Options.VSync != checkBoxVSinc.Checked)
+            bool isOverviewChunk = Options.OverviewChunk != _sliderOverviewChunk.Value;
+            bool isAmbientOcclusion = Options.AmbientOcclusion != _checkBoxAmbientOcclusion.Checked;
+            bool isShadow = Options.Shadow != _checkBoxShadow.Checked;
+            if (Options.VSync != _checkBoxVSinc.Checked)
             {
-                window.SetVSync(checkBoxVSinc.Checked);
+                window.SetVSync(_checkBoxVSinc.Checked);
             }
-            if (inGame && Options.Fps != sliderFps.Value)
+            if (_inGame && Options.Fps != _sliderFps.Value)
             {
-                window.SetWishFrame(sliderFps.Value);
+                window.SetWishFrame(_sliderFps.Value);
             }
-            Options.Fps = sliderFps.Value;
-            Options.SoundVolume = sliderSoundVolume.Value;
-            Options.MusicVolume = sliderMusicVolume.Value;
-            Options.MouseSensitivity = sliderMouseSensitivity.Value;
+            Options.Fps = _sliderFps.Value;
+            Options.SoundVolume = _sliderSoundVolume.Value;
+            Options.MusicVolume = _sliderMusicVolume.Value;
+            Options.MouseSensitivity = _sliderMouseSensitivity.Value;
             Options.SizeInterface = si;
-            Options.VSync = checkBoxVSinc.Checked;
-            Options.FullScreen = checkBoxFullScreen.Checked;
-            Options.Nickname = textBoxNikame.Text;
-            Options.OverviewChunk = (byte)sliderOverviewChunk.Value;
-            Options.Qualitatively = checkBoxQualitatively.Checked;
+            Options.VSync = _checkBoxVSinc.Checked;
+            Options.FullScreen = _checkBoxFullScreen.Checked;
+            Options.Nickname = _textBoxNikname.Text;
+            Options.OverviewChunk = (byte)_sliderOverviewChunk.Value;
+            Options.AmbientOcclusion = _checkBoxAmbientOcclusion.Checked;
+            Options.Shadow = _checkBoxShadow.Checked;
             window.OptionsSave();
             if (isFullScreen)
             {
@@ -168,7 +198,7 @@ namespace Vge.Gui.Screens
                     window.Game.Player.SetOverviewChunk(Options.OverviewChunk, false);
                 }
             }
-            if (isQualitatively)
+            if (isAmbientOcclusion)
             {
                 Gi.BlockRendFull.InitAmbientOcclusion();
                 Gi.BlockAlphaRendFull.InitAmbientOcclusion();
@@ -177,10 +207,12 @@ namespace Vge.Gui.Screens
                 if (window.Game != null)
                 {
                     window.Game.Player.RerenderAllChunks();
-                    window.Game.WorldRender.ModifyQualitatively();
                 }
             }
-
+            if (isShadow && window.Game != null)
+            {
+                window.Game.WorldRender.ModifyShadow();
+            }
         }
 
         /// <summary>
@@ -189,23 +221,27 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            AddControls(label);
-            AddControls(buttonDone);
-            AddControls(buttonCancel);
+            AddControls(_labelSound);
+            AddControls(_labelGraphics);
 
-            AddControls(textBoxNikame);
-            AddControls(sliderFps);
-            AddControls(sliderSoundVolume);
-            AddControls(sliderMusicVolume);
-            AddControls(sliderMouseSensitivity);
-            AddControls(sliderOverviewChunk);
+            AddControls(_buttonDone);
+            AddControls(_buttonCancel);
 
-            AddControls(checkBoxBigInterface);
-            AddControls(checkBoxVSinc);
-            AddControls(checkBoxQualitatively);
+            AddControls(_labelNikname);
+            AddControls(_textBoxNikname);
+            AddControls(_sliderFps);
+            AddControls(_sliderSoundVolume);
+            AddControls(_sliderMusicVolume);
+            AddControls(_sliderMouseSensitivity);
+            AddControls(_sliderOverviewChunk);
 
-            AddControls(buttonNet);
-            AddControls(checkBoxFullScreen);
+            AddControls(_checkBoxBigInterface);
+            AddControls(_checkBoxVSinc);
+            AddControls(_checkBoxAmbientOcclusion);
+            AddControls(_checkBoxShadow);
+
+            AddControls(_buttonNet);
+            AddControls(_checkBoxFullScreen);
         }
 
         /// <summary>
@@ -213,39 +249,42 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected override void OnResized()
         {
-            int w = Width / 2;
-            int h = Height / 2;
-            label.SetSize(Width - 100, label.Height).SetPosition(50, h - label.Height - 220);
+            // Расположение окна
+            PosX = (Width - WidthWindow) / 2;
+            PosY = (Height - HeightWindow) / 2;
+            base.OnResized();
 
-            textBoxNikame.SetPosition(w - textBoxNikame.Width / 2, h - 200);
-            sliderSoundVolume.SetPosition(w - sliderSoundVolume.Width - 2, h - 156);
-            sliderMusicVolume.SetPosition(w + 2, h - 156);//112
-            sliderMouseSensitivity.SetPosition(w - sliderMouseSensitivity.Width - 2, h - 112);
-            sliderOverviewChunk.SetPosition(w + 2, h - 112);
-            sliderFps.SetPosition(w - sliderFps.Width - 2, h - 68);
-            checkBoxFullScreen.SetPosition(w + 2, h - 68);
-            checkBoxBigInterface.SetPosition(w - checkBoxBigInterface.Width - 2, h - 24);
-            checkBoxVSinc.SetPosition(w + 2, h - 24);
-            checkBoxQualitatively.SetPosition(w - checkBoxQualitatively.Width, h + 20);
+            _labelNikname.SetPosition(PosX + 274, PosY + 32);
+            _textBoxNikname.SetPosition(PosX + 348, PosY + 32);
+            _sliderMouseSensitivity.SetPosition(PosX + 36, PosY + 62);
+            _sliderOverviewChunk.SetPosition(PosX + 274, PosY + 62);
 
-            //-24
-            // +20
-            //+64 +108
+            // --Sound
+            _labelSound.SetPosition(PosX + 24, PosY + 120);
+            _sliderSoundVolume.SetPosition(PosX + 36, PosY + 140);
+            _sliderMusicVolume.SetPosition(PosX + 274, PosY + 140);
 
+            // --Graphics 
+            _labelGraphics.SetPosition(PosX + 24, PosY + 200);
+            _sliderFps.SetPosition(PosX + 36, PosY + 220);
+            _checkBoxVSinc.SetPosition(PosX + 274, PosY + 232);
+            _checkBoxFullScreen.SetPosition(PosX + 274, PosY + 262);
+            _checkBoxBigInterface.SetPosition(PosX + 274, PosY + 292);
+            
+            _checkBoxAmbientOcclusion.SetPosition(PosX + 36, PosY + 262);
+            _checkBoxShadow.SetPosition(PosX + 36, PosY + 292);
 
+            _buttonNet.SetPosition(PosX + 192, PosY + 332);
 
-            buttonNet.SetPosition(w - buttonNet.Width / 2, h + 108);
-
-            buttonDone.SetPosition(w - buttonDone.Width - 2, h + 180);
-            buttonCancel.SetPosition(w + 2, h + 180);
+            _buttonDone.SetPosition(PosX + 122, PosY + 372);
+            _buttonCancel.SetPosition(PosX + 262, PosY + 372);
         }
 
         public override void Draw(float timeIndex)
         {
-            if (!inGame)
+            if (!_inGame)
             {
-                //gl.ClearColor(.486f, .569f, .616f, 1f);
-                gl.ClearColor(.827f, .796f, .745f, 1f);
+                gl.ClearColor(.486f, .569f, .616f, 1f);
             }
             base.Draw(timeIndex);
         }
