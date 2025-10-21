@@ -20,20 +20,20 @@ namespace Vge.Gui.Screens
         protected readonly Button _buttonConnect;
         protected readonly Button _buttonMenu;
 
-        public ScreenMultiplayer(WindowMain window) : base(window, 512f, 512, 416, true)
+        public ScreenMultiplayer(WindowMain window) : base(window, 512f, 320, 200, true)
         {
             FontBase font = window.Render.FontMain;
-            _labelNikname = new Label(window, font, 300, 24, 
+            _labelNikname = new Label(window, font, 320, 24, 
                 L.T("Nikname") + " " + ChatStyle.Bolb + Options.Nickname);
             _labelNikname.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
-            _labelToken = new Label(window, font, 130, 24, L.T("Token"));
+            _labelToken = new Label(window, font, 128, 24, L.T("Token"));
             _labelToken.SetTextAlight(EnumAlight.Right, EnumAlightVert.Middle);
-            _labelAddress = new Label(window, font, 130, 24, L.T("IpAddress"));
+            _labelAddress = new Label(window, font, 128, 24, L.T("IpAddress"));
             _labelAddress.SetTextAlight(EnumAlight.Right, EnumAlightVert.Middle);
 
-            _textBoxToken = new TextBox(window, font, 200, Options.Token,
+            _textBoxToken = new TextBox(window, font, 128, Options.Token,
                TextBox.EnumRestrictions.Name);
-            _textBoxAddress = new TextBox(window, font, 200, Options.IpAddress, 
+            _textBoxAddress = new TextBox(window, font, 128, Options.IpAddress, 
                 TextBox.EnumRestrictions.IpPort, 15);
            
             _buttonConnect = new ButtonThin(window, font, 128, L.T("Connect"));
@@ -93,13 +93,13 @@ namespace Vge.Gui.Screens
             PosY = (Height - HeightWindow) / 2;
             base.OnResized();
 
-            _labelNikname.SetPosition(PosX + 100, PosY + 80);
-            _labelToken.SetPosition(PosX + 52, PosY + 130);
-            _textBoxToken.SetPosition(PosX + 188, PosY + 130);
-            _labelAddress.SetPosition(PosX + 52, PosY + 180);
-            _textBoxAddress.SetPosition(PosX + 188, PosY + 180);
-            _buttonConnect.SetPosition(PosX + 122, PosY + 372);
-            _buttonMenu.SetPosition(PosX + 262, PosY + 372);
+            _labelNikname.SetPosition(PosX, PosY + 30);
+            _labelToken.SetPosition(PosX + 26, PosY + 66);
+            _textBoxToken.SetPosition(PosX + 166, PosY + 66);
+            _labelAddress.SetPosition(PosX + 26, PosY + 96);
+            _textBoxAddress.SetPosition(PosX + 166, PosY + 96);
+            _buttonConnect.SetPosition(PosX + 26, PosY + 156);
+            _buttonMenu.SetPosition(PosX + 166, PosY + 156);
         }
 
         public override void Draw(float timeIndex)

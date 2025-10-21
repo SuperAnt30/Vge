@@ -16,6 +16,6 @@ namespace Mvk2.Gui.Screens
         /// Запустить текстуру фона
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _BindTextureBg() => _renderMvk.BindTextureOptions();
+        protected override void _BindTextureBg() => _renderMvk.BindTextureWindowBig();
     }
 }

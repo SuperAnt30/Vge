@@ -53,10 +53,15 @@ namespace Mvk2.Renderer
             => FontLarge = new FontBase(buffered, 2, this);
 
         /// <summary>
-        /// Запустить текстуру окна настроек
+        /// Запустить Текстура большого окна 512х416
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindTextureOptions() => Texture.BindTexture(_textureIndexMvk.Options);
+        public void BindTextureWindowBig() => Texture.BindTexture(_textureIndexMvk.WindowBig);
+        /// <summary>
+        /// Запустить Текстура малого окна 320х200
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureWindowSmall() => Texture.BindTexture(_textureIndexMvk.WindowSmall);
         /// <summary>
         /// Запустить текстуру чата
         /// </summary>
@@ -96,9 +101,13 @@ namespace Mvk2.Renderer
             {
                 FontLarge.CreateMesh(gl, Texture.SetTexture(buffereds[EnumTextureMvk.FontLarge.ToString()]));
             }
-            if (buffereds.ContainsKey(EnumTextureMvk.Options.ToString()))
+            if (buffereds.ContainsKey(EnumTextureMvk.WindowBig.ToString()))
             {
-                _textureIndexMvk.Options = Texture.SetTexture(buffereds[EnumTextureMvk.Options.ToString()]);
+                _textureIndexMvk.WindowBig = Texture.SetTexture(buffereds[EnumTextureMvk.WindowBig.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.WindowSmall.ToString()))
+            {
+                _textureIndexMvk.WindowSmall = Texture.SetTexture(buffereds[EnumTextureMvk.WindowSmall.ToString()]);
             }
             if (buffereds.ContainsKey(EnumTextureMvk.Chat.ToString()))
             {

@@ -8,9 +8,13 @@ namespace Mvk2.Renderer
     public class TextureIndexMvk : TextureIndex
     {
         /// <summary>
-        /// Текстура окна настроек
+        /// Текстура большого окна 512х416
         /// </summary>
-        public uint Options;
+        public uint WindowBig;
+        /// <summary>
+        /// Текстура малого окна 320х200
+        /// </summary>
+        public uint WindowSmall;
         /// <summary>
         /// Текстура чат окна
         /// </summary>
@@ -45,9 +49,13 @@ namespace Mvk2.Renderer
         /// </summary>
         FontLarge,
         /// <summary>
-        /// Окно настроек
+        /// Большое окно 512х416
         /// </summary>
-        Options,
+        WindowBig,
+        /// <summary>
+        /// Малое окно 320х200
+        /// </summary>
+        WindowSmall,
         /// <summary>
         /// Чат окно
         /// </summary>
