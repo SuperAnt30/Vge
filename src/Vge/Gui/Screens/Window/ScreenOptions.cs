@@ -25,6 +25,8 @@ namespace Vge.Gui.Screens
 
         protected readonly Label _labelSound;
         protected readonly Label _labelGraphics;
+        protected readonly LineHorizontal _lineSound;
+        protected readonly LineHorizontal _lineGraphics;
         protected readonly Label _labelNikname;
         protected readonly TextBox _textBoxNikname;
         protected readonly Slider _sliderFps;
@@ -52,12 +54,12 @@ namespace Vge.Gui.Screens
             
             FontBase font = window.Render.FontMain;
 
-            _labelSound = new Label(window, font, 400, 16, 
-                "-- " + ChatStyle.Bolb + L.T("Sound") + " --------------------");
+            _labelSound = new Label(window, font, 400, 16, ChatStyle.Bolb + L.T("Sound"));
             _labelSound.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
-            _labelGraphics = new Label(window, font, 400, 16, 
-                "-- " + ChatStyle.Bolb + L.T("Graphics") + ChatStyle.Reset + " --------------------");
+            _labelGraphics = new Label(window, font, 400, 16, ChatStyle.Bolb + L.T("Graphics"));
             _labelGraphics.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
+            _lineSound = new LineHorizontal(window, 396);
+            _lineGraphics = new LineHorizontal(window, 396);
 
             _buttonDone = new ButtonThin(window, font, 128, L.T("Done"));
             _buttonDone.Click += ButtonDone_Click;
@@ -221,6 +223,8 @@ namespace Vge.Gui.Screens
         protected override void OnInitialize()
         {
             base.OnInitialize();
+            AddControls(_lineSound);
+            AddControls(_lineGraphics);
             AddControls(_labelSound);
             AddControls(_labelGraphics);
 
@@ -260,12 +264,14 @@ namespace Vge.Gui.Screens
             _sliderOverviewChunk.SetPosition(PosX + 274, PosY + 62);
 
             // --Sound
-            _labelSound.SetPosition(PosX + 24, PosY + 120);
+            _lineSound.SetPosition(PosX + 80, PosY + 120);
+            _labelSound.SetPosition(PosX + 14, PosY + 115);
             _sliderSoundVolume.SetPosition(PosX + 36, PosY + 140);
             _sliderMusicVolume.SetPosition(PosX + 274, PosY + 140);
 
             // --Graphics 
-            _labelGraphics.SetPosition(PosX + 24, PosY + 200);
+            _lineGraphics.SetPosition(PosX + 80, PosY + 200);
+            _labelGraphics.SetPosition(PosX + 14, PosY + 195);
             _sliderFps.SetPosition(PosX + 36, PosY + 220);
             _checkBoxVSinc.SetPosition(PosX + 274, PosY + 232);
             _checkBoxFullScreen.SetPosition(PosX + 274, PosY + 262);

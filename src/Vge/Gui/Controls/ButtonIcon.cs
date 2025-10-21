@@ -19,8 +19,7 @@ namespace Vge.Gui.Controls
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
 
-        public ButtonIcon(WindowMain window, int width, int height)
-            : base(window)
+        public ButtonIcon(WindowMain window, int width, int height) : base(window)
         {
             SetSize(width, height);
             _meshBg = new MeshGuiColor(gl);
