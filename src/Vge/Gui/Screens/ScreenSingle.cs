@@ -122,7 +122,7 @@ namespace Vge.Gui.Screens
         private void ButtonSlotsDel_Click(object sender, EventArgs e)
         {
             slot = (int)((ButtonRemove)sender).Tag;
-            window.LScreen.YesNo(this, string.Format(L.T("GameDelete {0}"), slot + 1));
+            window.LScreen.YesNo(this, string.Format(L.T("GameDeleteSlot{0}"), slot + 1));
         }
 
         /// <summary>
@@ -141,7 +141,6 @@ namespace Vge.Gui.Screens
         public override void Draw(float timeIndex)
         {
             gl.ClearColor(.486f, .569f, .616f, 1f);
-            //gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

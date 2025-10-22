@@ -55,6 +55,13 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         public override void Options(ScreenBase parent, bool inGame) 
             => window.ScreenCreate(new ScreenOptionsMvk(_windowMvk, parent, inGame), false);
+        /// <summary>
+        /// Создать скрин сообщения YesNo
+        /// </summary>
+        public override void YesNo(ScreenBase parent, string text)
+            => window.ScreenCreate(new ScreenYesNoMvk(_windowMvk, parent, text), false);
+
+        
 
         /// <summary>
         /// Создать скрин чата
