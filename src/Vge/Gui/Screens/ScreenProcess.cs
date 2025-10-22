@@ -1,4 +1,5 @@
 ﻿using Vge.Gui.Controls;
+using Vge.Realms;
 
 namespace Vge.Gui.Screens
 {
@@ -7,36 +8,35 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenProcess : ScreenBase
     {
-        protected readonly Label label;
+        protected readonly Label _label;
 
         public ScreenProcess(WindowMain window, string text) : base(window)
         {
-            label = new Label(window, window.Render.FontMain, text);
-            label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
+            _label = new Label(window, window.Render.FontMain, 320, Height,
+                ChatStyle.Bolb + text + ChatStyle.Reset);
+            _label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
         }
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
-            AddControls(label);
+            base._OnInitialize();
+            _AddControls(_label);
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
-            label.SetSize(Width, Height);
+            _label.SetPosition(Width / 2 - 160, 0);
         }
 
         public override void Draw(float timeIndex)
         {
-            //gl.ClearColor(.5f, .3f, .02f, 1f);
             gl.ClearColor(.486f, .569f, .616f, 1f);
-            //gl.ClearColor(.827f, .796f, .745f, 1f);
             base.Draw(timeIndex);
         }
     }

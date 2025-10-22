@@ -174,6 +174,7 @@ namespace Vge.Games
                 }
                 else if (packet.Status == PacketS02LoadingGame.EnumStatus.Step)
                 {
+                    //Thread.Sleep(50);
                     screen.ServerStep();
                 }
                 else if (packet.Status == PacketS02LoadingGame.EnumStatus.ServerGo)

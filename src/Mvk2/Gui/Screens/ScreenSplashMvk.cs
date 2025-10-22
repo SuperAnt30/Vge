@@ -9,32 +9,33 @@ namespace Mvk2.Gui.Screens
     /// </summary>
     public class ScreenSplashMvk : ScreenSplash
     {
-        private readonly MeshGuiColor meshLogo;
+        private readonly MeshGuiColor _meshLogo;
         
         public ScreenSplashMvk(WindowMvk window) : base(window)
         {
-            meshLogo = new MeshGuiColor(window.GetOpenGL());
+            _meshLogo = new MeshGuiColor(window.GetOpenGL());
         }
 
         /// <summary>
         /// Объвление объекта загрузки
         /// </summary>
-        protected override void LoadingCreate() => loading = new LoadingMvk((WindowMvk)window);
+        protected override void _LoadingCreate() => _loading = new LoadingMvk((WindowMvk)window);
 
         /// <summary>
         /// Начальный рендер
         /// </summary>
-        protected override void RenderBegin()
+        protected override void _RenderBegin()
         {
             int w = Gi.Width / 2;
-            int h = (Gi.Height - 608 * _si) / 2;
-            int wh = 512 * _si;
-            meshLogo.Reload(RenderFigure.Rectangle(w - wh, h, w + wh, h + wh, 0, 0, 1, 1));
+            int h = (Gi.Height - 480 * _si) / 2;
+            int w2 = 256 * _si;
+            int h2 = 384 * _si;
+            _meshLogo.Reload(RenderFigure.Rectangle(w - w2, h, w + w2, h + h2, 0, 0, 1, .75f));
         }
 
         /// <summary>
         /// Логотип
         /// </summary>
-        protected override void DrawLogo() => meshLogo.Draw();
+        protected override void _DrawLogo() => _meshLogo.Draw();
     }
 }

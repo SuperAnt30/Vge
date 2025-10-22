@@ -1,6 +1,7 @@
-﻿using Vge.Renderer;
+﻿using Vge.Gui.Controls;
+using Vge.Realms;
+using Vge.Renderer;
 using Vge.Util;
-using WinGL.OpenGL;
 
 namespace Vge.Gui.Screens
 {
@@ -9,32 +10,47 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenWorking : ScreenBase
     {
+        protected readonly Label _label;
+
         /// <summary>
         /// Шагов выполнено и прорисованно
         /// </summary>
-        protected int countDraw = 0;
+        protected int _countDraw = 0;
 
-        private readonly MeshGuiColor meshProcess;
-        private readonly ListFlout list = new ListFlout();
-        private int max = -1;
+        private readonly MeshGuiColor _meshProcess;
+        private readonly ListFlout _list = new ListFlout();
+        private int _max = -1;
 
         /// <summary>
         /// Шагов выполнено
         /// </summary>
-        private int countStep = 0;
+        private int _countStep = 0;
 
-        public ScreenWorking(WindowMain window) : base(window)
+        public ScreenWorking(WindowMain window, string text) : base(window)
         {
-            meshProcess = new MeshGuiColor(window.GetOpenGL());
+            _label = new Label(window, window.Render.FontMain, 320, 64,
+                ChatStyle.Bolb + text + ChatStyle.Reset);
+            _label.SetTextAlight(EnumAlight.Center, EnumAlightVert.Middle);
+
+            _meshProcess = new MeshGuiColor(window.GetOpenGL());
+        }
+
+        /// <summary>
+        /// Запускается при создании объекта и при смене режима FullScreen
+        /// </summary>
+        protected override void _OnInitialize()
+        {
+            base._OnInitialize();
+            _AddControls(_label);
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
-            RenderBegin();
-            RenderStep();
+            _RenderBegin();
+            _RenderStep();
         }
 
         /// <summary>
@@ -43,42 +59,51 @@ namespace Vge.Gui.Screens
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
-            if (countStep != countDraw)
+            if (_countStep != _countDraw)
             {
-                countDraw = countStep;
+                _countDraw = _countStep;
                 // Тут рендер ползунка
-                RenderStep();
+                _RenderStep();
             }
         }
 
         /// <summary>
         /// Начальный рендер
         /// </summary>
-        protected virtual void RenderBegin() { }
+        protected virtual void _RenderBegin()
+        {
+            _label.SetPosition(Width / 2 - 160, Height / 2);
+        }
 
         /// <summary>
         /// Рендер загрузчика шага
         /// </summary>
-        protected virtual void RenderStep()
+        protected virtual void _RenderStep()
         {
             int w = Gi.Width / 2;
-            int h = (Gi.Height - 608) / 2 + 512;
-            list.Clear();
-            list.AddRange(RenderFigure.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
-            list.AddRange(RenderFigure.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
-            if (max > 0)
+            int h = (Gi.Height - 608 * _si) / 2 + 512 * _si;
+            _list.Clear();
+            int w2 = 308 * _si;
+            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 40 * _si, w + w2, h, .314f, .384f, .427f));
+            w2 = 304 * _si;
+            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 36 * _si, w + w2, h - 4 * _si, 1, 1, 1));
+
+            if (_max > 0)
             {
-                int wcl = countDraw * 600 / max;
-                list.AddRange(RenderFigure.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
+                int wcl = _countDraw * 600 / _max;
+                w2 = 300 * _si;
+                _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl, h - 8 * _si, .314f, .384f, .427f));
             }
 
-            meshProcess.Reload(list.GetBufferAll(), list.Count);
+            _meshProcess.Reload(_list.GetBufferAll(), _list.Count);
         }
 
-        /// <summary>
-        /// Логотип
-        /// </summary>
-        protected virtual void DrawLogo() { }
+        protected override void _DrawAdd()
+        {
+            window.Render.ShaderBindGuiColor();
+            window.Render.FontMain.BindTexture();
+            _meshProcess.Draw();
+        }
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -87,19 +112,13 @@ namespace Vge.Gui.Screens
         public override void Draw(float timeIndex)
         {
             gl.ClearColor(.486f, .569f, .616f, 1f);
-            //gl.ClearColor(.827f, .796f, .745f, 1f);
-            gl.Enable(GL.GL_CULL_FACE);
-            window.Render.ShaderBindGuiColor();
-            window.Render.BindTextureSplash();
-            DrawLogo();
-            window.Render.FontMain.BindTexture();
-            meshProcess.Draw();
+            base.Draw(timeIndex);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            meshProcess.Dispose();
+            _meshProcess?.Dispose();
         }
 
         #region Server
@@ -107,12 +126,12 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Начало загрузки, получаем количество шагов
         /// </summary>
-        public void ServerBegin(int count) => max = count;
+        public void ServerBegin(int count) => _max = count;
 
         /// <summary>
         /// Шаг загрузки
         /// </summary>
-        public void ServerStep() => countStep++;
+        public void ServerStep() => _countStep++;
 
         #endregion
     }

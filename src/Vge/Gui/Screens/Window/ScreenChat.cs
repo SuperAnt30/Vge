@@ -93,14 +93,14 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
-            AddControls(_textBoxMessage);
-            AddControls(_labelMessages);
+            base._OnInitialize();
+            _AddControls(_textBoxMessage);
+            _AddControls(_labelMessages);
             for (int i = 0; i < _labelplayer.Length; i++)
             {
-                AddControls(_labelplayer[i]);
+                _AddControls(_labelplayer[i]);
             }
             _UpMessages();
         }
@@ -108,12 +108,12 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
             PosX = 8;
             PosY = Height - HeightWindow - 8;
 
-            base.OnResized();
+            base._OnResized();
             _textBoxMessage.SetPosition(PosX, PosY + 314);// Height - 48);
             _labelMessages.SetPosition(PosX + 8, PosY + 30);// Height - 324);
 

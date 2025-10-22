@@ -82,7 +82,7 @@ namespace Vge.Audio
             {
                 foreach (AudioSample audio in items)
                 {
-                    audio.Clear();
+                    audio?.Clear();
                 }
             }
         }

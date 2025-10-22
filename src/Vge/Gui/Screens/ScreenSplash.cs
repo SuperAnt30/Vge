@@ -13,54 +13,52 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Шагов выполнено и прорисованно
         /// </summary>
-        protected int countDraw = 0;
+        protected int _countDraw = 0;
 
-        private readonly MeshGuiColor meshProcess;
-        private readonly ListFlout list = new ListFlout();
-        private readonly int max;
+        private readonly MeshGuiColor _meshProcess;
+        private readonly ListFlout _list = new ListFlout();
+        private readonly int _max;
 
         /// <summary>
         /// Объект загрузчика
         /// </summary>
-        protected Loading loading;
+        protected Loading _loading;
         /// <summary>
         /// Шагов выполнено
         /// </summary>
-        private int countStep = 0;
+        private int _countStep = 0;
         /// <summary>
         /// Был ли финиш
         /// </summary>
-        private bool isFinish = false;
+        private bool _isFinish = false;
 
         public ScreenSplash(WindowMain window) : base(window)
         {
-            LoadingCreate();
-            max = loading.GetMaxCountSteps();
-            loading.Step += Loading_Step;
-            loading.Finish += Loading_Finish;
-            loading.Starting();
-            meshProcess = new MeshGuiColor(window.GetOpenGL());
+            _LoadingCreate();
+            _max = _loading.GetMaxCountSteps();
+            _loading.Step += _Loading_Step;
+            _loading.Finish += _Loading_Finish;
+            _loading.Starting();
+            _meshProcess = new MeshGuiColor(window.GetOpenGL());
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
-            RenderBegin();
-            RenderStep();
+            _RenderBegin();
+            _RenderStep();
         }
 
         /// <summary>
         /// Объвление объекта загрузки
         /// </summary>
-        protected virtual void LoadingCreate() => loading = new Loading(window);
+        protected virtual void _LoadingCreate() => _loading = new Loading(window);
 
-        private void Loading_Finish(object sender, EventArgs e)
-            => isFinish = true;
+        private void _Loading_Finish(object sender, EventArgs e) => _isFinish = true;
 
-        private void Loading_Step(object sender, EventArgs e)
-            => countStep++;
+        private void _Loading_Step(object sender, EventArgs e) => _countStep++;
 
         /// <summary>
         /// Игровой такт
@@ -68,21 +66,21 @@ namespace Vge.Gui.Screens
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
-            if (isFinish)
+            if (_isFinish)
             {
-                window.Render.AtFinishLoading(loading.Buffereds);
-                loading.Buffereds.Clear();
+                window.Render.AtFinishLoading(_loading.Buffereds);
+                _loading.Buffereds.Clear();
                 window.Render.DeleteTextureSplash();
                 window.Readed();
                 window.LScreen.MainMenu();
             }
             else
             {
-                if (countStep != countDraw)
+                if (_countStep != _countDraw)
                 {
-                    countDraw = countStep;
+                    _countDraw = _countStep;
                     // Тут рендер ползунка
-                    RenderStep();
+                    _RenderStep();
                 }
             }
         }
@@ -90,28 +88,31 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Начальный рендер
         /// </summary>
-        protected virtual void RenderBegin() { }
+        protected virtual void _RenderBegin() { }
 
         /// <summary>
         /// Рендер загрузчика шага
         /// </summary>
-        protected virtual void RenderStep()
+        protected virtual void _RenderStep()
         {
             int w = Gi.Width / 2;
-            int h = (Gi.Height - 608) / 2 + 512;
-            list.Clear();
-            list.AddRange(RenderFigure.Rectangle(w - 308, h - 40, w + 308, h, .13f, .44f, .91f));
-            list.AddRange(RenderFigure.Rectangle(w - 304, h - 36, w + 304, h - 4, 1, 1, 1));
-            int wcl = countDraw * 600 / max;
-            list.AddRange(RenderFigure.Rectangle(w - 300, h - 32, w - 300 + wcl, h - 8, .13f, .44f, .91f));
+            int h = (Gi.Height - 608 * _si) / 2 + 512 * _si;
+            _list.Clear();
+            int w2 = 308 * _si;
+            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 40 * _si, w + w2, h, .13f, .44f, .91f));
+            w2 = 304 * _si;
+            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 36 * _si, w + w2, h - 4 * _si, 1, 1, 1));
+            int wcl = _countDraw * 600 * _si / _max;
+            w2 = 300 * _si;
+            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl, h - 8 * _si, .13f, .44f, .91f));
 
-            meshProcess.Reload(list.GetBufferAll(), list.Count);
+            _meshProcess.Reload(_list.GetBufferAll(), _list.Count);
         }
 
         /// <summary>
         /// Логотип
         /// </summary>
-        protected virtual void DrawLogo() { }
+        protected virtual void _DrawLogo() { }
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -122,14 +123,14 @@ namespace Vge.Gui.Screens
             gl.ClearColor(1, 1, 1, 1);
             window.Render.ShaderBindGuiColor();
             window.Render.BindTextureSplash();
-            DrawLogo();
-            meshProcess.Draw();
+            _DrawLogo();
+            _meshProcess.Draw();
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            meshProcess.Dispose();
+            _meshProcess.Dispose();
         }
     }
 }

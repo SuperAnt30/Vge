@@ -223,27 +223,27 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
+            base._OnInitialize();
             for (int i = 0; i < _slot.Length; i++)
             {
-                AddControls(_slot[i]);
+                _AddControls(_slot[i]);
             }
-            AddControls(_icon);
+            _AddControls(_icon);
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
             // Расположение окна
             PosX = (Width - WidthWindow) / 2;
             int h = Height - HeightWindow;
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
-            base.OnResized();
+            base._OnResized();
             
 
             int i;

@@ -86,11 +86,11 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
-            AddControls(_labelTitle);
-            AddControls(_buttonClose);
+            base._OnInitialize();
+            _AddControls(_labelTitle);
+            _AddControls(_buttonClose);
         }
 
         /// <summary>
@@ -135,9 +135,9 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
-            base.OnResized();
+            base._OnResized();
             _buttonClose.SetPosition(PosX + WidthWindow - 20, PosY + 4);
             _labelTitle.SetPosition(PosX + 14, PosY + 9);
             _isRenderAdd = true;

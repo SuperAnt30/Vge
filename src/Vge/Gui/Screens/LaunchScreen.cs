@@ -68,7 +68,7 @@
         /// <summary>
         /// Создание скрина выполнение работы
         /// </summary>
-        public virtual void Working() => window.ScreenCreate(new ScreenWorking(window));
+        public virtual void Working(string text) => window.ScreenCreate(new ScreenWorking(window, text));
         /// <summary>
         /// Создание скрина многопользовательской игры
         /// </summary>

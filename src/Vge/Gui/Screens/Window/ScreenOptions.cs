@@ -220,43 +220,43 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
-            AddControls(_lineSound);
-            AddControls(_lineGraphics);
-            AddControls(_labelSound);
-            AddControls(_labelGraphics);
+            base._OnInitialize();
+            _AddControls(_lineSound);
+            _AddControls(_lineGraphics);
+            _AddControls(_labelSound);
+            _AddControls(_labelGraphics);
 
-            AddControls(_buttonDone);
-            AddControls(_buttonCancel);
+            _AddControls(_buttonDone);
+            _AddControls(_buttonCancel);
 
-            AddControls(_labelNikname);
-            AddControls(_textBoxNikname);
-            AddControls(_sliderFps);
-            AddControls(_sliderSoundVolume);
-            AddControls(_sliderMusicVolume);
-            AddControls(_sliderMouseSensitivity);
-            AddControls(_sliderOverviewChunk);
+            _AddControls(_labelNikname);
+            _AddControls(_textBoxNikname);
+            _AddControls(_sliderFps);
+            _AddControls(_sliderSoundVolume);
+            _AddControls(_sliderMusicVolume);
+            _AddControls(_sliderMouseSensitivity);
+            _AddControls(_sliderOverviewChunk);
 
-            AddControls(_checkBoxBigInterface);
-            AddControls(_checkBoxVSinc);
-            AddControls(_checkBoxAmbientOcclusion);
-            AddControls(_checkBoxShadow);
+            _AddControls(_checkBoxBigInterface);
+            _AddControls(_checkBoxVSinc);
+            _AddControls(_checkBoxAmbientOcclusion);
+            _AddControls(_checkBoxShadow);
 
-            AddControls(_buttonNet);
-            AddControls(_checkBoxFullScreen);
+            _AddControls(_buttonNet);
+            _AddControls(_checkBoxFullScreen);
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
             // Расположение окна
             PosX = (Width - WidthWindow) / 2;
             PosY = (Height - HeightWindow) / 2;
-            base.OnResized();
+            base._OnResized();
 
             _labelNikname.SetPosition(PosX + 274, PosY + 32);
             _textBoxNikname.SetPosition(PosX + 348, PosY + 32);

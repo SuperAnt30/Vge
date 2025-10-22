@@ -169,8 +169,8 @@ namespace Mvk2
             base.UpdateSizeInterface();
             if (_renderMvk != null)
             {
-                _renderMvk.FontLarge.UpdateSizeInterface();
-                _renderMvk.FontSmall.UpdateSizeInterface();
+                _renderMvk.FontLarge?.UpdateSizeInterface();
+                _renderMvk.FontSmall?.UpdateSizeInterface();
             }
         }
 

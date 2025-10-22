@@ -13,7 +13,7 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Колекция всех контролов
         /// </summary>
-        private readonly List<WidgetBase> controls = new List<WidgetBase>();
+        private readonly List<WidgetBase> _controls = new List<WidgetBase>();
         /// <summary>
         /// Размер интерфеса
         /// </summary>
@@ -36,14 +36,14 @@ namespace Vge.Gui.Screens
         /// </summary>
         public void Initialize()
         {
-            OnInitialize();
+            _OnInitialize();
             Resized();
         }
 
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected virtual void OnInitialize() { }
+        protected virtual void _OnInitialize() { }
 
         /// <summary>
         /// Запуск от родителя
@@ -56,19 +56,19 @@ namespace Vge.Gui.Screens
         public void Resized()
         {
             _si = Gi.Si;
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 control.OnResized();
             }
-            OnResized();
+            _OnResized();
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected virtual void OnResized() { }
+        protected virtual void _OnResized() { }
 
-        public void AddControls(WidgetBase control) => controls.Add(control);
+        protected void _AddControls(WidgetBase control) => _controls.Add(control);
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -84,7 +84,7 @@ namespace Vge.Gui.Screens
             }
             _DrawAdd();
 
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible)
                 {
@@ -116,7 +116,7 @@ namespace Vge.Gui.Screens
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled) control.OnTick(deltaTime);
             }
@@ -136,7 +136,7 @@ namespace Vge.Gui.Screens
         public override void Dispose()
         {
             base.Dispose();
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 control.Dispose();
             }
@@ -152,7 +152,7 @@ namespace Vge.Gui.Screens
         {
             bool tt = _toolTip != null;
             bool ttCheck = false;
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled)
                 {
@@ -176,7 +176,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnMouseDown(MouseButton button, int x, int y)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled) control.OnMouseDown(button, x, y);
             }
@@ -187,7 +187,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnMouseUp(MouseButton button, int x, int y)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled) control.OnMouseUp(button, x, y);
             }
@@ -198,7 +198,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnMouseWheel(int delta, int x, int y)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled) control.OnMouseWheel(delta, x, y);
             }
@@ -213,7 +213,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnKeyDown(Keys keys)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled && control.Focus) control.OnKeyDown(keys);
             }
@@ -224,7 +224,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnKeyUp(Keys keys)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled && control.Focus) control.OnKeyUp(keys);
             }
@@ -235,7 +235,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         public override void OnKeyPress(char key)
         {
-            foreach (WidgetBase control in controls)
+            foreach (WidgetBase control in _controls)
             {
                 if (control.Visible && control.Enabled && control.Focus) control.OnKeyPress(key);
             }

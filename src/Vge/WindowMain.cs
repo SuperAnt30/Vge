@@ -577,7 +577,7 @@ namespace Vge
             if (Game == null)
             {
                 _InitializationBlocksAtlasEntities();
-                LScreen.Working();
+                LScreen.Working(L.T("LoadingTheWorld"));
                 GameLocal gameLocal = new GameLocal(this, gameSettings, _CreateAllWorlds(),
                     _CreateGameModClient());
                 Game = gameLocal;

@@ -68,9 +68,9 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
-            base.OnResized();
+            base._OnResized();
 
             // Ящик на 48 слот
             int i = 0;

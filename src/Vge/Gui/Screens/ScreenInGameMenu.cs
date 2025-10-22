@@ -61,18 +61,18 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Запускается при создании объекта и при смене режима FullScreen
         /// </summary>
-        protected override void OnInitialize()
+        protected override void _OnInitialize()
         {
-            base.OnInitialize();
-            AddControls(_buttonBack);
-            AddControls(_buttonOptions);
-            AddControls(_buttonExit);
+            base._OnInitialize();
+            _AddControls(_buttonBack);
+            _AddControls(_buttonOptions);
+            _AddControls(_buttonExit);
         }
 
         /// <summary>
         /// Изменён размер окна
         /// </summary>
-        protected override void OnResized()
+        protected override void _OnResized()
         {
             int w = Width / 2;
             int h = Height / 2;
