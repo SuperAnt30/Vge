@@ -20,6 +20,7 @@ namespace Vge.Gui.Screens
         public ScreenCreateGame(WindowMain window, int slot) : base(window, 512f, 320, 200, true)
         {
             _slot = slot;
+            _InitTitle(); // Обновить заголовок
             FontBase font = window.Render.FontMain;
 
             _labelSeed = new Label(window, font, 128, 24, L.T("Seed"));
@@ -36,7 +37,7 @@ namespace Vge.Gui.Screens
         /// Название заголовка
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override string _GetTitle() => L.T("SingleCreate{0}", _slot);
+        protected override string _GetTitle() => L.T("SingleCreateSlot{0}", _slot + 1);
 
         /// <summary>
         /// Закрытие скрина
