@@ -2,17 +2,6 @@
 
 namespace Mvk2.Gui.Screens
 {
-    /**
-     * 
-     * В Игре наследуются от ScreenWindow:
-     *  |
-     *  +-ScreenChatMvk * (Окно чата) =Chat
-     *  |
-     *  +-
-     *  |
-     *  +-ScreenInventoryMvk -
-     */
-
     /// <summary>
     /// Запуск экранов для Малювек
     /// </summary>
@@ -55,6 +44,11 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         public override void Options(ScreenBase parent, bool inGame) 
             => window.ScreenCreate(new ScreenOptionsMvk(_windowMvk, parent, inGame), false);
+        /// <summary>
+        /// Создать скрин оповещения, после которого выйдем в меню
+        /// </summary>
+        public override void Notification(string notification)
+            => window.ScreenCreate(new ScreenNotificationMvk(_windowMvk, notification));
         /// <summary>
         /// Создать скрин сообщения YesNo
         /// </summary>

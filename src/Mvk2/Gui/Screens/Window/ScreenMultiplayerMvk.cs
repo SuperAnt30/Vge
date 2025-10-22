@@ -4,6 +4,9 @@ using Vge.Gui.Screens;
 
 namespace Mvk2.Gui.Screens
 {
+    /// <summary>
+    /// Экран многопользовательской игры
+    /// </summary>
     public class ScreenMultiplayerMvk : ScreenMultiplayer
     {
         private readonly RenderMvk _renderMvk;

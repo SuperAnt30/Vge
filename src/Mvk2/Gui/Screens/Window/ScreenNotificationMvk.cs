@@ -5,15 +5,14 @@ using Vge.Gui.Screens;
 namespace Mvk2.Gui.Screens
 {
     /// <summary>
-    /// Экран условия, где надо принять решения и вернутся в предыдущий экран
+    /// Экран оповещения, ошибки
     /// </summary>
-    public class ScreenYesNoMvk : ScreenYesNo
+    public class ScreenNotificationMvk : ScreenNotification
     {
         private readonly RenderMvk _renderMvk;
 
-        public ScreenYesNoMvk(WindowMvk window, ScreenBase parent, string text) 
-            : base(window, parent, text)
-            => _renderMvk = window.GetRender();
+        public ScreenNotificationMvk(WindowMvk window, string notification) 
+            : base(window, notification) => _renderMvk = window.GetRender();
 
         /// <summary>
         /// Запустить текстуру фона

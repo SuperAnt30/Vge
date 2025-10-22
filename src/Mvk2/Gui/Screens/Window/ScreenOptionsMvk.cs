@@ -4,6 +4,9 @@ using Vge.Gui.Screens;
 
 namespace Mvk2.Gui.Screens
 {
+    /// <summary>
+    /// Экран настроек
+    /// </summary>
     public class ScreenOptionsMvk : ScreenOptions
     {
         private readonly RenderMvk _renderMvk;
