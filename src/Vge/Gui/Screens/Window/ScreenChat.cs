@@ -16,7 +16,7 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Максимальное количество строк в чате
         /// </summary>
-        protected int _countMaxLine = 16;
+        protected int _countMaxLine = 22;
 
         /// <summary>
         /// Флаг дублирования клавиши с WM_KEYDOWN и WM_CHAR
@@ -26,11 +26,11 @@ namespace Vge.Gui.Screens
         /// <summary>
         /// Строка списка сообщений
         /// </summary>
-        private Label _labelMessages;
+        private readonly Label _labelMessages;
         /// <summary>
         /// Массив игроков
         /// </summary>
-        private Label[] _labelplayer;
+        private readonly Label[] _labelplayer;
 
         /// <summary>
         /// Контрол написания текста
@@ -48,14 +48,15 @@ namespace Vge.Gui.Screens
         private int _scrollPos = 0;
         private string _historyBuffer = "";
 
-        public ScreenChat(WindowMain window, int width, int height) : base(window, 512f, width, height, true)
+        public ScreenChat(WindowMain window) : base(window, 512f, 512, 416)
         {
+            _transparency = .75f;
             FontBase font = window.Render.FontMain;
             _labelMessages = new Label(window, 
-                window.Game.Player.Chat.Font, "", true).SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
+                window.Game.Player.Chat.Font).SetTextAlight(EnumAlight.Left, EnumAlightVert.Bottom);
             _labelMessages.SetSize(Gi.WindowsChatWidthMessage, Gi.WindowsChatHeightMessage);
-            _labelMessages.Multiline();
-            _textBoxMessage = new TextBox(window, window.Render.FontMain, WidthWindow - 64, "", 
+            _labelMessages.Multiline().ColorChat();
+            _textBoxMessage = new TextBox(window, window.Render.FontMain, 490, "", 
                 TextBox.EnumRestrictions.All, 255);
             _textBoxMessage.FixFocus();
 
@@ -112,10 +113,10 @@ namespace Vge.Gui.Screens
         {
             PosX = 8;
             PosY = Height - HeightWindow - 8;
-
             base._OnResized();
-            _textBoxMessage.SetPosition(PosX, PosY + 314);// Height - 48);
-            _labelMessages.SetPosition(PosX + 8, PosY + 30);// Height - 324);
+
+            _textBoxMessage.SetPosition(PosX + 11, PosY + 377);
+            _labelMessages.SetPosition(PosX + 20, PosY + 34);
 
             // Список игроков в игре
             int w2 = Width - 172;
@@ -191,7 +192,7 @@ namespace Vge.Gui.Screens
         public override void Dispose()
         {
             base.Dispose();
-            window.Game.Hud.ChatOff();
+            window.Game?.Hud.ChatOff();
         }
 
         /// <summary>

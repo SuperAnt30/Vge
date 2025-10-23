@@ -93,7 +93,7 @@ namespace Vge.Gui.Huds
                         line[i] = font.Transfer.NumberLines;
                     }
                     // Рисуем
-                    font.Clear();
+                    font.Clear(true, true);
                     int number = 0;
                     for (int i = count; i >= 0; i--)
                     {

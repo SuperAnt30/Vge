@@ -26,11 +26,11 @@ public sealed class Gi
     /// <summary>
     /// Ширина текстового окна чата
     /// </summary>
-    public static int WindowsChatWidthMessage = 496;
+    public static int WindowsChatWidthMessage = 472;
     /// <summary>
     /// Высота текстового окна чата
     /// </summary>
-    public static int WindowsChatHeightMessage = 270;
+    public static int WindowsChatHeightMessage = 333;
 
     #region ActiveTexture
 
@@ -92,15 +92,19 @@ public sealed class Gi
     }
 
     /// <summary>
-    /// Цвет текста
+    /// Цвет текста для чата
+    /// </summary>
+    public readonly static Vector3 ColorTextChat = new Vector3(.8f);
+    /// <summary>
+    /// Цвет текста для GUI
     /// </summary>
     public readonly static Vector3 ColorText = new Vector3(0); //Vector3(.8f);
     /// <summary>
-    /// Цвет текста где наведена мышка
+    /// Цвет текста для GUI где наведена мышка
     /// </summary>
     public readonly static Vector3 ColorTextEnter = new Vector3(0);//Vector3(.9f, .9f, .5f);
     /// <summary>
-    /// Цвет неактивного текста
+    /// Цвет неактивного текста для GUI
     /// </summary>
     public readonly static Vector3 ColorTextInactive = new Vector3(.588f, .51f, .459f);//Vector3(.5f);
 

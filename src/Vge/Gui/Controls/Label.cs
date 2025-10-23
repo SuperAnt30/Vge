@@ -36,11 +36,10 @@ namespace Vge.Gui.Controls
         private readonly MeshGuiColor _meshTxt;
         private readonly MeshGuiLine _meshLine;
         
-
         /// <summary>
-        /// Коэфициент смещения вертикали для текстуры
+        /// Цвет для чата
         /// </summary>
-        protected readonly float vk = .078125f; // 40 / 512f;
+        private bool _isChat;
 
         /// <summary>
         /// Текстовая метка, на которую можно нажать
@@ -110,12 +109,15 @@ namespace Vge.Gui.Controls
 
         protected void _RenderInside(RenderMain render, int x, int y, string text)
         {
-            // Определяем цвет текста
-            Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
             // Чистим буфер
-            Font.Clear();
-            // Указываем опции
-            Font.SetColor(color);
+            Font.Clear(true, _isChat);
+            if (!_isChat)
+            {
+                // Определяем цвет текста
+                Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
+                // Указываем опции
+                Font.SetColor(color);
+            }
 
             if (Enabled)
             {
@@ -251,6 +253,15 @@ namespace Vge.Gui.Controls
         #endregion
 
         #region Set...
+
+        /// <summary>
+        /// Указываем цвет как для чата
+        /// </summary>
+        public Label ColorChat()
+        {
+            _isChat = true;
+            return this;
+        }
 
         /// <summary>
         /// Заменить шрифт

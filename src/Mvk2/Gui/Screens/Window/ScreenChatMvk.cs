@@ -1,4 +1,5 @@
 ﻿using Mvk2;
+using Mvk2.Renderer;
 using System.Runtime.CompilerServices;
 
 namespace Vge.Gui.Screens
@@ -8,12 +9,10 @@ namespace Vge.Gui.Screens
     /// </summary>
     public class ScreenChatMvk : ScreenChat
     {
-        private readonly WindowMvk _windowMvk;
+        private readonly RenderMvk _renderMvk;
 
-        public ScreenChatMvk(WindowMvk window) : base(window, 512, 354)
-        {
-            _windowMvk = window;
-        }
+        public ScreenChatMvk(WindowMvk window) : base(window)
+            => _renderMvk = window.GetRender();
 
         /// <summary>
         /// Название заголовка
@@ -25,6 +24,6 @@ namespace Vge.Gui.Screens
         /// Запустить текстуру фона
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _BindTextureBg() => _windowMvk.GetRender().BindTextureChat();
+        protected override void _BindTextureBg() => _renderMvk.BindTextureChat();
     }
 }

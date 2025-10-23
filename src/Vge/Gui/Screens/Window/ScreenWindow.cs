@@ -41,6 +41,11 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected readonly float _sizeBg;
 
+        /// <summary>
+        /// Прозрачность, 0 прозрачный, 1 не прозрачный
+        /// </summary>
+        protected float _transparency = 1f;
+
         protected ScreenWindow(WindowMain window, float sizeBg, int width, int height, bool closeHide = false) : base(window)
         {
             WidthWindow = width;
@@ -147,7 +152,8 @@ namespace Vge.Gui.Screens
         {
             _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si,
                 (PosX + WidthWindow) * _si, (PosY + HeightWindow) * _si,
-                0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg));
+                0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg, 
+                1, 1, 1, _transparency));
             _isRenderAdd = false;
         }
 

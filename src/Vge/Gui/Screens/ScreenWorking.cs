@@ -92,7 +92,7 @@ namespace Vge.Gui.Screens
             {
                 int wcl = _countDraw * 600 / _max;
                 w2 = 300 * _si;
-                _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl, h - 8 * _si, .314f, .384f, .427f));
+                _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl * _si, h - 8 * _si, .314f, .384f, .427f));
             }
 
             _meshProcess.Reload(_list.GetBufferAll(), _list.Count);

@@ -346,7 +346,7 @@ namespace Vge.Gui.Controls
         {
             // Определяем цвет текста
             Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
-            int biasY = (Height * _si - _font.GetVert()) / 2 + _si * 2;
+            int biasY = (Height * _si - _font.GetVert()) / 2 + _si;
 
             // Чистим буфер
             _font.Clear();

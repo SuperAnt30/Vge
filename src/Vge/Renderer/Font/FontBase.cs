@@ -321,18 +321,18 @@ namespace Vge.Renderer.Font
         {
             if (_fontFX == EnumFontFX.Outline)
             {
-                BufferOutline();
+                _BufferOutline();
             }
             else if (_fontFX == EnumFontFX.Shadow)
             {
-                BufferShadow();
+                _BufferShadow();
             }
         }
-
+        
         /// <summary>
         /// Корректируем буфер с тенью
         /// </summary>
-        private void BufferShadow()
+        private void _BufferShadow()
         {
             // Текст готов, пробую сделать фон на основании текущего буффера
             int count = _buffer.Count;
@@ -360,7 +360,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Корректируем буфер с контуром
         /// </summary>
-        private void BufferOutline()
+        private void _BufferOutline()
         {
             // Текст готов, пробую сделать фон на основании текущего буффера
             int count = _buffer.Count;
@@ -572,13 +572,13 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Очистить буфер сетки и прочие настройки
         /// </summary>
-        public void Clear(bool isColorDefault = true)
+        public void Clear(bool isColorDefault = true, bool isChat = false)
         {
             _buffer.Clear();
             _style.Reset();
             if (isColorDefault)
             {
-                _colorText = Gi.ColorText;
+                _colorText = isChat ? Gi.ColorTextChat : Gi.ColorText;
                 _isColorTextShadow = false;
             }
         }
