@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mvk2.Entity.Inventory;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
@@ -20,8 +21,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            // Inventory = new InventoryList(1, 11, 12);
-            Inventory = new InventoryList(1, 9, 10);
+            Inventory = new InventoryList(1, InventoryPlayerMvk.ClothCount, 1 + InventoryPlayerMvk.ClothCount);
             Inventory.OutsideChanged += Inventory_OutsideChanged;
         }
 
