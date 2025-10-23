@@ -72,7 +72,7 @@ namespace Vge.Renderer.Font
                 foreach (string symbol in symbols)
                 {
                     int ws = _font.WidthString(symbol) * _si;
-                    if (w + wspase + ws > _inWidth)
+                    if (w + ws > _inWidth)
                     {
                         if (w > OutWidth) OutWidth = w;
                         NumberLines++;
