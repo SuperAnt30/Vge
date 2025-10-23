@@ -114,18 +114,23 @@ namespace Vge.Gui.Controls
             if (!_isChat)
             {
                 // Определяем цвет текста
-                Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorText : Gi.ColorTextInactive;
+                Vector3 color = Enabled ? Enter ? Gi.ColorTextEnter : Gi.ColorTextBlack : Gi.ColorTextInactive;
                 // Указываем опции
                 Font.SetColor(color);
-            }
 
-            if (Enabled)
-            {
-                Font.SetFontFX(EnumFontFX.None);
+                if (Enabled)
+                {
+                    Font.SetFontFX(EnumFontFX.None);
+                }
+                else
+                {
+                    Font.SetFontFX(EnumFontFX.Shadow).SetColorShadow(new Vector3(1));
+                }
             }
             else
             {
-                Font.SetFontFX(EnumFontFX.Shadow).SetColorShadow(new Vector3(1));
+                Font.SetColorShadow(Gi.ColorTextBlack);
+                Font.SetFontFX(EnumFontFX.Outline);
             }
 
             int biasX = 0;
@@ -216,7 +221,7 @@ namespace Vge.Gui.Controls
             }
 
             // Имеется Outline значит рендерим FX
-            if (!Enabled)
+            if (!Enabled || _isChat)
             {
                 Font.RenderFX();
             }

@@ -100,13 +100,14 @@ namespace Vge.Gui
         protected virtual void _Rendering()
         {
             // Чистим буфер
-            _font.Clear();
+            _font.Clear(true, true);
+            _font.SetColorShadow(Gi.ColorTextBlack);
             // Указываем опции
-            _font.SetFontFX(EnumFontFX.None);
+            _font.SetFontFX(EnumFontFX.Outline);
             // Готовим рендер текста
             _sizeText = _font.RenderText(0, 0, _text);
             // Имеется Outline значит рендерим FX
-            //_font.RenderFX();
+            _font.RenderFX();
             // Вносим сетку
             _font.Reload(_meshTxt);
         }

@@ -58,7 +58,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Цвет по умолчанию
         /// </summary>
-        private Vector3 _colorText = Gi.ColorText;
+        private Vector3 _colorText = Gi.ColorTextBlack;
         /// <summary>
         /// Цвет тени, если -1, значит по умолчанию используем
         /// </summary>
@@ -572,13 +572,13 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Очистить буфер сетки и прочие настройки
         /// </summary>
-        public void Clear(bool isColorDefault = true, bool isChat = false)
+        public void Clear(bool isColorDefault = true, bool isWhite = false)
         {
             _buffer.Clear();
             _style.Reset();
             if (isColorDefault)
             {
-                _colorText = isChat ? Gi.ColorTextChat : Gi.ColorText;
+                _colorText = isWhite ? Gi.ColorTextWhite : Gi.ColorTextBlack;
                 _isColorTextShadow = false;
             }
         }

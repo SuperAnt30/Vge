@@ -80,7 +80,8 @@ namespace Vge.Gui.Controls
             if (Stack != null && Stack.Amount != 1)
             {
                 // Чистим буфер
-                _font.Clear();
+                _font.Clear(true, true);
+                _font.SetColorShadow(Gi.ColorTextBlack);
                 // Указываем опции
                 _font.SetFontFX(EnumFontFX.Outline);
                 // Готовим рендер текста

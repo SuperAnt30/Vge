@@ -94,11 +94,11 @@ public sealed class Gi
     /// <summary>
     /// Цвет текста для чата
     /// </summary>
-    public readonly static Vector3 ColorTextChat = new Vector3(.8f);
+    public readonly static Vector3 ColorTextWhite = new Vector3(.9f);
     /// <summary>
     /// Цвет текста для GUI
     /// </summary>
-    public readonly static Vector3 ColorText = new Vector3(0); //Vector3(.8f);
+    public readonly static Vector3 ColorTextBlack = new Vector3(0); //Vector3(.8f);
     /// <summary>
     /// Цвет текста для GUI где наведена мышка
     /// </summary>
