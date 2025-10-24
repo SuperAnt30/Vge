@@ -27,7 +27,7 @@ namespace Mvk2.Gui.Screens
             // Ящик
             for (int i = 0; i < TileEntityHole.Count; i++)
             {
-                _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, _render.FontSmall, (byte)(i + 100), null));
+                _SetSlot(i + _inventoryCount, new ControlSlot(_windowMvk, _render.FontMain, (byte)(i + 100), null));
                 _slot[i + _inventoryCount].SetEnable(false);
             }
         }

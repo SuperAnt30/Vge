@@ -1,4 +1,5 @@
 ﻿using Vge.Item;
+using Vge.Realms;
 using Vge.Renderer;
 using Vge.Renderer.Font;
 
@@ -85,7 +86,7 @@ namespace Vge.Gui.Controls
                 // Указываем опции
                 _font.SetFontFX(EnumFontFX.Outline);
                 // Готовим рендер текста
-                _font.RenderString((PosX + 3) * _si, (PosY + 26) * _si, Stack.Amount.ToString());
+                _font.RenderString((PosX + 3) * _si, (PosY + 23) * _si, ChatStyle.Bolb + Stack.Amount.ToString());
                 // Имеется Outline значит рендерим FX
                 _font.RenderFX();
                 // Вносим сетку

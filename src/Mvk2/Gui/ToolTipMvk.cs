@@ -22,7 +22,7 @@ namespace Mvk2.Gui
         private int _biasY;
 
         public ToolTipMvk(WindowMvk window) 
-            : base(window, window.GetRender().FontSmall, 25, 25)
+            : base(window, window.GetRender().FontMain, 25, 25)
         {
             _windowMvk = window;
             _render = _windowMvk.GetRender();
