@@ -1,9 +1,6 @@
 ﻿using Mvk2;
-using System.Collections.Generic;
+using Mvk2.Gui;
 using Vge.Item;
-using Vge.Realms;
-using Vge.Renderer;
-using Vge.Renderer.Font;
 
 namespace Vge.Gui
 {
@@ -17,25 +14,9 @@ namespace Vge.Gui
         /// </summary>
         protected readonly WindowMvk _windowMvk;
         /// <summary>
-        /// Сетка текста
+        /// Рендер слотов
         /// </summary>
-        private readonly MeshGuiColor _meshTxt;
-        /// <summary>
-        /// Сетка уровня урона
-        /// </summary>
-        private readonly MeshGuiColor _meshDamage;
-        /// <summary>
-        /// Объект шрифта
-        /// </summary>
-        private readonly FontBase _font;
-        /// <summary>
-        /// Имеется ли текст
-        /// </summary>
-        private bool _isText;
-        /// <summary>
-        /// Имеется ли урон в предметах
-        /// </summary>
-        private bool _isDamage;
+        private readonly RenderSlots _renderSlots;
 
         /// <summary>
         /// Расположение предмета по Х для рисунка предмета
@@ -50,9 +31,7 @@ namespace Vge.Gui
             : base(window, stack)
         {
             _windowMvk = window;
-            _font = _windowMvk.Render.FontMain;
-            _meshTxt = new MeshGuiColor(_window.GetOpenGL());
-            _meshDamage = new MeshGuiColor(_window.GetOpenGL());
+            _renderSlots = new RenderSlots(_windowMvk.GetRender());
         }
 
         #region Draw
@@ -62,60 +41,26 @@ namespace Vge.Gui
             _posItemX = 18 * _si;
             _posItemY = 18 * _si;
 
+            _renderSlots.Clear();
 
             if (Stack != null)
             {
                 // Ренедер текста
                 if (Stack.Amount != 1)
                 {
-                    // Чистим буфер
-                    _font.Clear(true, true);
-                    _font.SetColorShadow(Gi.ColorTextBlack);
-                    // Указываем опции
-                    _font.SetFontFX(EnumFontFX.Outline);
-                    // Готовим рендер текста
-                    _font.RenderString(3 * _si, 3 * _si, ChatStyle.Bolb + Stack.Amount.ToString());
-                    // Имеется Outline значит рендерим FX
-                    _font.RenderFX();
-                    // Вносим сетку
-                    _font.Reload(_meshTxt);
-                    _isText = true;
-                }
-                else
-                {
-                    _isText = false;
+                    _renderSlots.BeforeRenderText();
+                    _renderSlots.TextRender(Stack);
                 }
 
                 // Ренедер урона
-                //if (Stack.Amount != 1)
-                if (Stack.Item.MaxDamage != 0)
-                {
-                    int line = Stack.ItemDamage * 30 / Stack.Item.MaxDamage;
-                    //int line = Stack.Amount * 30 / Stack.Item.MaxStackSize;
-                    if (line > 30) line = 30;
-
-                    List<float> list = new List<float>(RenderFigure.Rectangle(
-                        2 * _si, 30 * _si, 34 * _si, 34 * _si, .16f, .16f, .16f));
-
-                    list.AddRange(RenderFigure.Rectangle(
-                        3 * _si, 31 * _si, (3 + line) * _si, 33 * _si,
-                        line > 15 ? (30 - line) / 15f : 1,
-                        line < 15 ? line / 15f : 1,
-                        .16f));
-
-                    _meshDamage.Reload(list.ToArray());
-                    _isDamage = true;
-                }
-                else
-                {
-                    _isDamage = false;
-                }
+                _renderSlots.DamageRender(Stack, 0, 0);
             }
             else
             {
-                _isDamage = false;
-                _isText = false;
+                _renderSlots.Clear();
             }
+
+            _renderSlots.AfterRender();
         }
 
         /// <summary>
@@ -132,14 +77,7 @@ namespace Vge.Gui
                 _window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem)
                     .MeshDraw(_posItemX + PosX, _posItemY + PosY);
 
-                if (_isText || _isDamage)
-                {
-                    // Рисуем текст
-                    _window.Render.ShaderBindGuiColor(PosX, PosY);
-                    _font.BindTexture();
-                    if (_isDamage) _meshDamage.Draw();
-                    if (_isText) _meshTxt.Draw();
-                }
+                _renderSlots.Draw(PosX, PosY);
 
                 _window.Render.ShaderBindGuiColor(0, 0);
             }
@@ -147,10 +85,6 @@ namespace Vge.Gui
 
         #endregion
 
-        public override void Dispose()
-        {
-            _meshDamage?.Dispose();
-            _meshTxt?.Dispose();
-        }
+        public override void Dispose() => _renderSlots.Dispose();
     }
 }

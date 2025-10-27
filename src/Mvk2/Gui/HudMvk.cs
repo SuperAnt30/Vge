@@ -3,9 +3,7 @@ using Mvk2.Renderer;
 using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Item;
-using Vge.Realms;
 using Vge.Renderer;
-using Vge.Renderer.Font;
 using Vge.Util;
 using WinGL.OpenGL;
 
@@ -31,17 +29,9 @@ namespace Mvk2.Gui
         /// </summary>
         private readonly MeshGuiColor _meshInventorySelect;
         /// <summary>
-        /// Сетка текста инвентаря
+        /// Рендер слотов
         /// </summary>
-        private readonly MeshGuiColor _meshInventoryTxt;
-        /// <summary>
-        /// Сетка уровня урона
-        /// </summary>
-        private readonly MeshGuiColor _meshInventoryDamage;
-        /// <summary>
-        /// Объект шрифта
-        /// </summary>
-        public readonly FontBase _font;
+        private readonly RenderSlots _renderSlots;
         /// <summary>
         /// Список буфера для построения сеток
         /// </summary>
@@ -53,14 +43,6 @@ namespace Mvk2.Gui
         private readonly GL gl;
 
         /// <summary>
-        /// Имеется ли подписи в инвенторе
-        /// </summary>
-        private bool _isInventoryText;
-        /// <summary>
-        /// Имеется ли урон в предметах
-        /// </summary>
-        private bool _isInventoryDamage;
-        /// <summary>
         /// Колличество корманов 
         /// </summary>
         private byte _limitPocket;
@@ -71,10 +53,9 @@ namespace Mvk2.Gui
             gl = game.GetOpenGL();
             _meshInventoryBg = new MeshGuiColor(gl);
             _meshInventorySelect = new MeshGuiColor(gl);
-            _meshInventoryTxt = new MeshGuiColor(gl);
-            _meshInventoryDamage = new MeshGuiColor(gl);
+            _renderSlots = new RenderSlots(renderMvk);
 
-            _font = _renderMvk.FontMain;
+            //_font = _renderMvk.FontMain;
             _limitPocket = InventoryPlayerMvk.PocketCount;
 
             _inventoryPlayer = _game.Player.Inventory as InventoryPlayerMvk;
@@ -144,15 +125,8 @@ namespace Mvk2.Gui
         /// </summary>
         protected virtual void _RenderInventory()
         {
-            // Чистим буфер
-            _font.Clear(true, true);
-            _font.SetColorShadow(Gi.ColorTextBlack);
-            // Указываем опции
-            _font.SetFontFX(EnumFontFX.Outline);
-
-            _isInventoryText = false;
-            _isInventoryDamage = false;
-            _listBuffer.Clear();
+            // Перед рендером
+            _renderSlots.BeforeRender();
 
             int x = Gi.Width / 2 / Gi.Si - 222;
             int y = Gi.Height / Gi.Si - 53;
@@ -167,18 +141,8 @@ namespace Mvk2.Gui
                 itemStack = _inventoryPlayer.GetStackInSlot(i);
                 _RenderItemStack(itemStack, x + 6 + i * 36, y);
             }
-
-            if (_isInventoryDamage)
-            {
-                _meshInventoryDamage.Reload(_listBuffer.GetBufferAll(), _listBuffer.Count);
-            }
-            if (_isInventoryText)
-            {
-                // Имеется Outline значит рендерим FX
-                _font.RenderFX();
-                // Вносим сетку
-                _font.Reload(_meshInventoryTxt);
-            }
+            // После рендера
+            _renderSlots.AfterRender();
         }
 
         /// <summary>
@@ -188,31 +152,8 @@ namespace Mvk2.Gui
         {
             if (itemStack != null)
             {
-                if (itemStack.Amount != 1)
-                {
-                    // Готовим рендер текста
-                    _font.RenderString((x + 3) * Gi.Si, (y + 3) * Gi.Si, ChatStyle.Bolb + itemStack.Amount.ToString());
-                    _isInventoryText = true;
-                }
-                if (itemStack.Item.MaxDamage != 0)
-                //if (itemStack.Amount != 1)
-                {
-                    // Ренедер урона
-                    int line = itemStack.ItemDamage * 30 / itemStack.Item.MaxDamage;
-                    //int line = itemStack.Amount * 30 / itemStack.Item.MaxStackSize;
-                    if (line > 30) line = 30;
-
-                    _listBuffer.AddRange(RenderFigure.Rectangle(
-                        (x + 2) * Gi.Si, (y + 30) * Gi.Si, (x + 34) * Gi.Si, (y + 34) * Gi.Si, .16f, .16f, .16f));
-
-                    _listBuffer.AddRange(RenderFigure.Rectangle(
-                        (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 3 + line) * Gi.Si, (y + 33) * Gi.Si,
-                        line > 15 ? (30 - line) / 15f : 1,
-                        line < 15 ? line / 15f : 1,
-                        .16f));
-
-                    _isInventoryDamage = true;
-                }
+                _renderSlots.TextRenderCheck(itemStack, x, y);
+                _renderSlots.DamageRender(itemStack, x, y);
             }
         }
 
@@ -261,14 +202,7 @@ namespace Mvk2.Gui
 
             _game.Render.DepthOff();
 
-            // Текст
-            if (_isInventoryText || _isInventoryDamage)
-            {
-                _renderMvk.ShaderBindGuiColor(0, 0);
-                _font.BindTexture();
-                if (_isInventoryDamage) _meshInventoryDamage.Draw();
-                if (_isInventoryText) _meshInventoryTxt.Draw();
-            }
+            _renderSlots.Draw(0, 0);
 
             // Выбранный
             int index = _game.Player.Inventory.GetCurrentIndex();
@@ -284,8 +218,7 @@ namespace Mvk2.Gui
             base.Dispose();
             _meshInventoryBg?.Dispose();
             _meshInventorySelect?.Dispose();
-            _meshInventoryTxt?.Dispose();
-            _meshInventoryDamage?.Dispose();
+            _renderSlots.Dispose();
         }
     }
 }
