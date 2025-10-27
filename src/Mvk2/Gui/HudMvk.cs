@@ -1,14 +1,12 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Renderer;
-using System;
-using System.Collections.Generic;
-using Vge.Entity.Inventory;
 using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Item;
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Mvk2.Gui
@@ -20,7 +18,7 @@ namespace Mvk2.Gui
     {
         private readonly RenderMvk _renderMvk;
         /// <summary>
-        /// Инвентарь
+        /// Инвентарь игрока малювек 2
         /// </summary>
         private readonly InventoryPlayerMvk _inventoryPlayer;
 
@@ -29,17 +27,25 @@ namespace Mvk2.Gui
         /// </summary>
         private readonly MeshGuiColor _meshInventoryBg;
         /// <summary>
-        /// Сетка выбранного инвентаря и предметов
+        /// Сетка выбранного слота
         /// </summary>
         private readonly MeshGuiColor _meshInventorySelect;
         /// <summary>
-        /// Сетка текста
+        /// Сетка текста инвентаря
         /// </summary>
-        private readonly MeshGuiColor _meshTxt;
+        private readonly MeshGuiColor _meshInventoryTxt;
+        /// <summary>
+        /// Сетка уровня урона
+        /// </summary>
+        private readonly MeshGuiColor _meshInventoryDamage;
         /// <summary>
         /// Объект шрифта
         /// </summary>
         public readonly FontBase _font;
+        /// <summary>
+        /// Список буфера для построения сеток
+        /// </summary>
+        private readonly ListFlout _listBuffer = new ListFlout();
 
         /// <summary>
         /// Объект OpenGL для элемента управления
@@ -47,9 +53,17 @@ namespace Mvk2.Gui
         private readonly GL gl;
 
         /// <summary>
-        /// Имеется ли подписи
+        /// Имеется ли подписи в инвенторе
         /// </summary>
-        private bool _isText;
+        private bool _isInventoryText;
+        /// <summary>
+        /// Имеется ли урон в предметах
+        /// </summary>
+        private bool _isInventoryDamage;
+        /// <summary>
+        /// Колличество корманов 
+        /// </summary>
+        private byte _limitPocket;
 
         public HudMvk(GameBase game, RenderMvk renderMvk) : base(game)
         {
@@ -57,34 +71,20 @@ namespace Mvk2.Gui
             gl = game.GetOpenGL();
             _meshInventoryBg = new MeshGuiColor(gl);
             _meshInventorySelect = new MeshGuiColor(gl);
-            _meshTxt = new MeshGuiColor(gl);
+            _meshInventoryTxt = new MeshGuiColor(gl);
+            _meshInventoryDamage = new MeshGuiColor(gl);
 
             _font = _renderMvk.FontMain;
+            _limitPocket = InventoryPlayerMvk.PocketCount;
 
             _inventoryPlayer = _game.Player.Inventory as InventoryPlayerMvk;
 
-            // Смена ячейки правой руки
-            _inventoryPlayer.LimitPocketChanged += InventoryPlayer_LimitPocketChanged;
-            _inventoryPlayer.SlotSetted += InventoryPlayer_SlotSetted;
-            _inventoryPlayer.OutsideChanged += InventoryPlayer_OutsideChanged;
-
-            _RenderInventoryBg();
-        }
-
-        private void InventoryPlayer_OutsideChanged(object sender, EventArgs e)
-        {
-            _RenderInventory();
-        }
-
-        private void InventoryPlayer_SlotSetted(object sender, SlotEventArgs e)
-        { 
-            _RenderInventory();
-        }
-
-        private void InventoryPlayer_LimitPocketChanged(object sender, EventArgs e)
-        {
-            // Тут смена БГ где будет смена фона
-            _RenderInventoryBg();
+            // Изменён лимит карманов
+            _inventoryPlayer.LimitPocketChanged += (sender, e) => _RenderInventoryBg();
+            // Слота задан
+            _inventoryPlayer.SlotSetted += (sender, e) => _RenderInventory();
+            // Изменён предмет внешности
+            _inventoryPlayer.OutsideChanged += (sender, e) => _RenderInventory();
         }
 
         /// <summary>
@@ -97,145 +97,126 @@ namespace Mvk2.Gui
             _RenderInventory();
         }
 
+        #region Render
+
         /// <summary>
         /// Рендер фона инвенторя
         /// </summary>
         protected virtual void _RenderInventoryBg()
         {
+            _limitPocket = _inventoryPlayer.LimitPocket;
             int wc = Gi.Width / 2;
             int w = 222 * Gi.Si;
             int h = 50 * Gi.Si;
             int x = wc - w;
             int y = Gi.Height - h - 8 * Gi.Si;
 
-            List<float> buffer = new List<float>();
+            _listBuffer.Clear();
 
             // Элементы правой руки
-            buffer.AddRange(RenderFigure.Rectangle(x, y, wc + w, y + h,
+            _listBuffer.AddRange(RenderFigure.Rectangle(x, y, wc + w, y + h,
                 0, 0, .8671875f, .09765625f));
 
             // Блокировка слотов
-            for (int i = _inventoryPlayer.LimitPocket; i < InventoryPlayerMvk.PocketCount; i++)
+            for (int i = _limitPocket; i < InventoryPlayerMvk.PocketCount; i++)
             {
                 // 36 * 50
                 int x2 = x + (i * 36 + 6) * Gi.Si;
-                buffer.AddRange(RenderFigure.Rectangle(x2, y, x2 + 36 * Gi.Si, y + h,
+                _listBuffer.AddRange(RenderFigure.Rectangle(x2, y, x2 + 36 * Gi.Si, y + h,
                     .25f, .125f, .3203125f, .22265625f));
             }
 
             // Левая рука 48 * 50
-            buffer.AddRange(RenderFigure.Rectangle(x - 56 * Gi.Si, y, x - 8 * Gi.Si, y + h,
+            _listBuffer.AddRange(RenderFigure.Rectangle(x - 56 * Gi.Si, y, x - 8 * Gi.Si, y + h,
                 0, .125f, .09375f, .22265625f));
 
-            _meshInventoryBg.Reload(buffer.ToArray());
-            //_meshInventoryBg.Reload(RenderFigure.Rectangle(x, y, wc + w, y + h, 
-            //    0, 0, .8671875f, .09765625f));
+            // Заполняем сетку фона
+            _meshInventoryBg.Reload(_listBuffer.GetBufferAll(), _listBuffer.Count);
 
+            // Сетка выбранного слота правой руки
             x += Gi.Si;
             _meshInventorySelect.Reload(RenderFigure.Rectangle(x, y, x + 46 * Gi.Si, y + 47 * Gi.Si,
                 .125f, .125f, .21484375f, .216796875f));
-
-            return;
-
-            //List<float> buffer = new List<float>();
-            
-            //int size = 50 * Gi.Si;
-            //int w = size * -4;
-            //int h = Gi.Height - size - 8 * Gi.Si;
-
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    int w0 = wc + w + i * size;
-
-            //    // Фон
-            //    buffer.AddRange(RenderFigure.Rectangle(w0, h, w0 + size, h + size,
-            //        .29296875f, .90234375f, 0.390625f, 1));
-
-            //    /*
-            //    if (ClientMain.Player.InventPlayer.CurrentItem == i)
-            //    {
-            //        // Выбранный
-            //        //GLRender.Rectangle(w0, h, w0 + size, h + size, 0.1953125f, .46875f, 0.390625f, .6640625f);
-            //        GLRender.Rectangle(w0 - 2, h - 2, w0 + 52, h + 52, 0.1953125f, .46875f, 0.40625f, .6796875f);
-            //    }
-            //    /*
-            //    // Прорисовка предмета в стаке если есть
-            //    ItemStack itemStack = ClientMain.Player.InventPlayer.GetStackInSlot(i);
-            //    if (itemStack != null)
-            //    {
-            //        int w1 = w0 + size / 2;
-            //        int h1 = h + size / 2;
-            //        if (itemStack.Item.EItem == EnumItem.Block && itemStack.Item is ItemBlock itemBlock)
-            //        {
-            //            // Прорисовка блока
-            //            ClientMain.World.WorldRender.GetBlockGui(itemBlock.Block.EBlock).Render(w1, h1, scale);
-            //        }
-            //        else
-            //        {
-            //            // Прорисовка предмета
-            //            ClientMain.World.WorldRender.GetItemGui(itemStack.Item.EItem).Render(w1, h1);
-            //        }
-            //        if (itemStack.Amount > 1)
-            //        {
-            //            GLWindow.Texture.BindTexture(Assets.ConvertFontToTexture(fontSize));
-            //            string str = itemStack.Amount.ToString();
-            //            int ws = FontRenderer.WidthString(str, fontSize);
-            //            FontRenderer.RenderString(w1 + 20 - ws, h1 + 9, str, fontSize, new vec3(1), 1, true, 0, 1);
-            //        }
-            //        if (itemStack.ItemDamage > 0)
-            //        {
-            //            int line = itemStack.ItemDamage * 36 / itemStack.Item.MaxDamage;
-            //            GLRender.Texture2DDisable();
-            //            GLRender.Rectangle(w0 + 6, h + 40, w0 + 44, h + 44, new vec4(.16f, .16f, .16f, 1));
-            //            GLRender.Rectangle(w0 + 7, h + 41, w0 + 43 - line, h + 43, new vec4((new vec3(line / 36f, (36 - line) / 36f, 0)).normalize(), 1));
-            //            GLRender.Texture2DEnable();
-            //        }
-            //    }
-            //    */
-            //}
-            //_meshInventoryBg.Reload(buffer.ToArray());
         }
 
         /// <summary>
-        /// Рендер выбранного инвенторя 
+        /// Рендер текст и урон инвенторя
         /// </summary>
         protected virtual void _RenderInventory()
         {
-            int wc = Gi.Width / 2;
-            int size = 36 * Gi.Si;
-            int x = wc - 222 * Gi.Si;
-            int y = Gi.Height - 58 * Gi.Si;
             // Чистим буфер
             _font.Clear(true, true);
             _font.SetColorShadow(Gi.ColorTextBlack);
             // Указываем опции
             _font.SetFontFX(EnumFontFX.Outline);
 
-            x += 9 * Gi.Si;
-            y += 28 * Gi.Si;
-            _isText = false;
-            for (int i = 0; i < _inventoryPlayer.LimitPocket; i++)
+            _isInventoryText = false;
+            _isInventoryDamage = false;
+            _listBuffer.Clear();
+
+            int x = Gi.Width / 2 / Gi.Si - 222;
+            int y = Gi.Height / Gi.Si - 53;
+
+            // Левая рука
+            ItemStack itemStack = _inventoryPlayer.GetStackInSlot(InventoryPlayerMvk.PocketCount);
+            _RenderItemStack(itemStack, x - 50, y);
+
+            // Список правой руки
+            for (int i = 0; i < _limitPocket; i++)
             {
-                ItemStack itemStack = _inventoryPlayer.GetStackInSlot(i);
-                if (itemStack != null)
-                {
-                    if (itemStack != null && itemStack.Amount != 1)
-                    {
-                        // Готовим рендер текста
-                        _font.RenderString(x + i * size, y, ChatStyle.Bolb + itemStack.Amount.ToString());
-                        _isText = true;
-                    }
-                }
+                itemStack = _inventoryPlayer.GetStackInSlot(i);
+                _RenderItemStack(itemStack, x + 6 + i * 36, y);
             }
 
-            if (_isText)
+            if (_isInventoryDamage)
+            {
+                _meshInventoryDamage.Reload(_listBuffer.GetBufferAll(), _listBuffer.Count);
+            }
+            if (_isInventoryText)
             {
                 // Имеется Outline значит рендерим FX
                 _font.RenderFX();
                 // Вносим сетку
-                _font.Reload(_meshTxt);
+                _font.Reload(_meshInventoryTxt);
             }
         }
+
+        /// <summary>
+        /// Рендер одной ячейки слота, текста количества и полоску урона
+        /// </summary>
+        private void _RenderItemStack(ItemStack itemStack, int x, int y)
+        {
+            if (itemStack != null)
+            {
+                if (itemStack.Amount != 1)
+                {
+                    // Готовим рендер текста
+                    _font.RenderString((x + 3) * Gi.Si, (y + 3) * Gi.Si, ChatStyle.Bolb + itemStack.Amount.ToString());
+                    _isInventoryText = true;
+                }
+                if (itemStack.Item.MaxDamage != 0)
+                //if (itemStack.Amount != 1)
+                {
+                    // Ренедер урона
+                    int line = itemStack.ItemDamage * 30 / itemStack.Item.MaxDamage;
+                    //int line = itemStack.Amount * 30 / itemStack.Item.MaxStackSize;
+                    if (line > 30) line = 30;
+
+                    _listBuffer.AddRange(RenderFigure.Rectangle(
+                        (x + 2) * Gi.Si, (y + 30) * Gi.Si, (x + 34) * Gi.Si, (y + 34) * Gi.Si, .16f, .16f, .16f));
+
+                    _listBuffer.AddRange(RenderFigure.Rectangle(
+                        (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 3 + line) * Gi.Si, (y + 33) * Gi.Si,
+                        line > 15 ? (30 - line) / 15f : 1,
+                        line < 15 ? line / 15f : 1,
+                        .16f));
+
+                    _isInventoryDamage = true;
+                }
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Метод для прорисовки кадра
@@ -262,7 +243,7 @@ namespace Mvk2.Gui
             int y = Gi.Height - 58 * Gi.Si + 23 * Gi.Si;
             ItemStack itemStack;
             // Перечень правой руки
-            for (int i = 0; i < _inventoryPlayer.LimitPocket; i++)
+            for (int i = 0; i < _limitPocket; i++)
             {
                 // Прорисовка предмета в стаке если есть
                 itemStack = _inventoryPlayer.GetStackInSlot(i);
@@ -281,11 +262,12 @@ namespace Mvk2.Gui
             _game.Render.DepthOff();
 
             // Текст
-            if (_isText)
+            if (_isInventoryText || _isInventoryDamage)
             {
                 _renderMvk.ShaderBindGuiColor(0, 0);
                 _font.BindTexture();
-                _meshTxt.Draw();
+                if (_isInventoryDamage) _meshInventoryDamage.Draw();
+                if (_isInventoryText) _meshInventoryTxt.Draw();
             }
 
             // Выбранный
@@ -302,7 +284,8 @@ namespace Mvk2.Gui
             base.Dispose();
             _meshInventoryBg?.Dispose();
             _meshInventorySelect?.Dispose();
-            _meshTxt?.Dispose();
+            _meshInventoryTxt?.Dispose();
+            _meshInventoryDamage?.Dispose();
         }
     }
 }

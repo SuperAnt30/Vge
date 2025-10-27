@@ -1,5 +1,6 @@
 {
     MaxStackSize: 1,
+    MaxDamage: 500,
     SlotClothIndex: 1,
     Width: 0.5625,
     Height: 0.1875,

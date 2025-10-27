@@ -40,7 +40,7 @@ namespace Mvk2.Entity.List
             Inventory.SetStackInSlot(18, new ItemStack(Ce.Items.ItemObjects[6]));
             Inventory.SetStackInSlot(17, new ItemStack(Ce.Items.ItemObjects[7]));
 
-            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[0]));
+            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[0], 1, 200));
             Inventory.SetStackInSlot(20, new ItemStack(Ce.Items.ItemObjects[4]));
 
             // При запуске на сервере
