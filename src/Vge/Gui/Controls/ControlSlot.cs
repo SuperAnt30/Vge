@@ -1,8 +1,5 @@
 ﻿using System;
 using Vge.Item;
-using Vge.Realms;
-using Vge.Renderer;
-using Vge.Renderer.Font;
 using WinGL.Actions;
 
 namespace Vge.Gui.Controls
@@ -10,7 +7,7 @@ namespace Vge.Gui.Controls
     /// <summary>
     /// Контрол слота предмета
     /// </summary>
-    public class ControlSlot : ControlIcon
+    public class ControlSlot : WidgetBase
     {
         /// <summary>
         /// Номер слота
@@ -18,16 +15,47 @@ namespace Vge.Gui.Controls
         public byte SlotId { get; private set; }
 
         /// <summary>
-        /// Сетка фона
+        /// Объект рендера
         /// </summary>
-        private readonly MeshGuiColor _meshBg;
+        private readonly RenderSlot _renderSlot;
 
-        public ControlSlot(WindowMain window, FontBase font, byte slotId,  ItemStack stack) 
-            : base(window, font, stack)
+        public ControlSlot(WindowMain window, RenderSlot renderSlot, byte slotId) 
+            : base(window)
         {
+            SetSize(36, 36).SetText("");
+            _renderSlot = renderSlot;
             SlotId = slotId;
-            Stack = stack;
-            _meshBg = new MeshGuiColor(gl);
+        }
+
+        /// <summary>
+        /// Стак
+        /// </summary>
+        public ItemStack Stack => _renderSlot.Stack;
+
+        /// <summary>
+        /// Задать новый или изменённый стак
+        /// </summary>
+        public void SetStack(ItemStack stack)
+        {
+            _renderSlot.Stack = stack;
+            IsRender = true;
+        }
+
+        /// <summary>
+        /// Задать позицию контрола
+        /// </summary>
+        public override WidgetBase SetPosition(int x, int y)
+        {
+            _renderSlot.PosX = x * _si;
+            _renderSlot.PosY = y * _si;
+            base.SetPosition(x, y);
+            return this;
+        }
+
+        public override void OnResized()
+        {
+            base.OnResized();
+            _renderSlot.OnResized();
         }
 
         #region OnMouse
@@ -60,32 +88,7 @@ namespace Vge.Gui.Controls
 
         public override void Rendering()
         {
-            // 0
-            // .09765625f;
-            // .1953125f
-            // .29296875f
-            float v1, v2;
-            if (Enabled)
-            {
-                if (Enter)
-                {
-                    v1 = .9296875f;
-                    v2 = 1f;
-                }
-                else
-                {
-                    v1 = .859375f;
-                    v2 = .9296875f;
-                }
-            }
-            else
-            {
-                v2 = .859375f;
-                v1 = .7890625f;
-            }
-            _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si, (PosX + Width) * _si, (PosY + Height) * _si,
-                    v1, .9296875f, v2, 1));
-
+            _renderSlot.Rendering();
             base.Rendering();
         }
 
@@ -93,34 +96,11 @@ namespace Vge.Gui.Controls
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public override void Draw(float timeIndex)
-        {
-            // Рисуем фон кнопки
-            window.Render.BindTextureWidgets();
-            _meshBg.Draw();
-            
-            base.Draw(timeIndex);
-        }
+        public override void Draw(float timeIndex) => _renderSlot.Draw();
 
         #endregion
 
-        /// <summary>
-        /// Вернуть подсказку у контрола
-        /// </summary>
-        public override string GetToolTip()
-        {
-            if (Stack != null)
-            {
-                return "Testing" + ChatStyle.Blue + "Stak\r\n" + ChatStyle.Reset + ChatStyle.Bolb + Stack.ToString();
-            }
-            return "";
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            _meshBg?.Dispose();
-        }
+        public override void Dispose() => _renderSlot.Dispose();
 
         #region Event
 

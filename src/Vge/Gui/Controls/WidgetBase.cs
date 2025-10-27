@@ -109,7 +109,7 @@
         /// <summary>
         /// Задать позицию контрола
         /// </summary>
-        public WidgetBase SetPosition(int x, int y)
+        public virtual WidgetBase SetPosition(int x, int y)
         {
             PosX = x;
             PosY = y;
