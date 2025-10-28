@@ -1,4 +1,5 @@
-﻿using Vge.Gui;
+﻿using Mvk2.Item;
+using Vge.Gui;
 using Vge.Gui.Controls;
 using Vge.Item;
 using Vge.Realms;
@@ -15,36 +16,79 @@ namespace Mvk2.Gui.Controls
         /// Сетка фона
         /// </summary>
         private readonly MeshGuiColor _meshBg;
+        /// <summary>
+        /// Слот относится ли к одежде
+        /// </summary>
+        private readonly EnumCloth _cloth;
 
-        public ControlSlotMvk(WindowMvk window, ItemStack stack, byte slotId) 
+        public ControlSlotMvk(WindowMvk window, ItemStack stack, byte slotId, EnumCloth cloth = EnumCloth.None) 
             : base(window, new RenderSlotMvk(window, stack), slotId)
         {
             _meshBg = new MeshGuiColor(gl);
+            _cloth = cloth;
         }
 
         public override void Rendering()
         {
-            float v1, v2;
+            bool bg = true;
+            float v1 = 0;
+            float v2 = 0;
             if (Enabled)
             {
-                if (Enter)
+                if (Enter) v2 = .0703125f;
+                else bg = false;
+            }
+            else
+            {
+                v1 = .0703125f;
+                v2 = .140625f;
+            }
+
+            if (_cloth != EnumCloth.None && Stack == null)
+            {
+                // Слот одежды (с маркером фона)
+                float v3 = 1 - ((int)_cloth - 1) * .0625f;
+
+                if (bg)
                 {
-                    v1 = .9296875f;
-                    v2 = 1f;
+                    RenderSlots.ListBuffer.Clear();
+                    
+                    // Маркер 32*32
+                    RenderSlots.ListBuffer.AddRange(RenderFigure.Rectangle((PosX + 2) * _si, (PosY + 2) * _si,
+                        (PosX + 34) * _si, (PosY + 34) * _si,
+                        v3 - .0625f, .9375f, v3, 1));
+
+                    // Выделенный слот
+                    RenderSlots.ListBuffer.AddRange(RenderFigure.Rectangle(PosX * _si, PosY * _si,
+                        (PosX + Width) * _si, (PosY + Height) * _si,
+                        v1, .9296875f, v2, 1));
+
+                    _meshBg.Reload(RenderSlots.ListBuffer.GetBufferAll(), RenderSlots.ListBuffer.Count);
                 }
                 else
                 {
-                    v1 = .859375f;
-                    v2 = .9296875f;
+                    // Маркер 32*32
+                    _meshBg.Reload(RenderFigure.Rectangle((PosX + 2) * _si, (PosY + 2) * _si,
+                        (PosX + 34) * _si, (PosY + 34) * _si,
+                        v3 - .0625f, .9375f, v3, 1));
                 }
             }
             else
             {
-                v2 = .859375f;
-                v1 = .7890625f;
+                // Обычный слот
+                if (bg)
+                {
+                    // Фон слота
+                    _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si, 
+                        (PosX + Width) * _si, (PosY + Height) * _si,
+                        v1, .9296875f, v2, 1));
+                }
+                else
+                {
+                    // Нет фона
+                    _meshBg.Reload(new float[] { });
+                }
             }
-            _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si, (PosX + Width) * _si, (PosY + Height) * _si,
-                    v1, .9296875f, v2, 1));
 
             base.Rendering();
         }

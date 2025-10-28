@@ -2,6 +2,7 @@
 using Mvk2.Entity.List;
 using Mvk2.Games;
 using Mvk2.Gui.Controls;
+using Mvk2.Item;
 using Mvk2.Packets;
 using Mvk2.Renderer;
 using System;
@@ -91,10 +92,20 @@ namespace Mvk2.Gui.Screens
         /// </summary>
         protected virtual void _Init()
         {
+            byte from = (byte)(_pocketCount + _clothCount);
             // Данная инициализация, для карманов и рюкзака, для другий можно просто перенаследовать
             for (byte i = 0; i < _inventoryCount; i++)
             {
-                _SetSlot(i, new ControlSlotMvk(_windowMvk, _windowMvk.Game.Player.Inventory.GetStackInSlot(i), i));
+                if (i >= _pocketCount && i < from)
+                {
+                    // Одежда
+                    _SetSlot(i, new ControlSlotMvk(_windowMvk, _windowMvk.Game.Player.Inventory.GetStackInSlot(i),
+                        i, (EnumCloth)(i - _pocketCount)));
+                }
+                else
+                {
+                    _SetSlot(i, new ControlSlotMvk(_windowMvk, _windowMvk.Game.Player.Inventory.GetStackInSlot(i), i));
+                }
             }
         }
 

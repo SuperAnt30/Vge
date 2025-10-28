@@ -30,7 +30,7 @@ namespace Mvk2.Gui
         /// <summary>
         /// Список буфера для построения сеток
         /// </summary>
-        private static readonly ListFlout _listBuffer = new ListFlout();
+        public static readonly ListFlout ListBuffer = new ListFlout();
 
         /// <summary>
         /// Имеется ли текст
@@ -74,7 +74,7 @@ namespace Mvk2.Gui
         public void BeforeRenderDamage()
         {
             _isDamage = false;
-            _listBuffer.Clear();
+            ListBuffer.Clear();
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Mvk2.Gui
             }
             if (_isDamage)
             {
-                _meshDamage.Reload(_listBuffer.GetBufferAll(), _listBuffer.Count);
+                _meshDamage.Reload(ListBuffer.GetBufferAll(), ListBuffer.Count);
             }
         }
 
@@ -137,10 +137,10 @@ namespace Mvk2.Gui
                 //int line = itemStack.Amount * 30 / itemStack.Item.MaxStackSize;
                 if (line > 30) line = 30;
 
-                _listBuffer.AddRange(RenderFigure.Rectangle(
+                ListBuffer.AddRange(RenderFigure.Rectangle(
                     (x + 2) * Gi.Si, (y + 30) * Gi.Si, (x + 34) * Gi.Si, (y + 34) * Gi.Si, .16f, .16f, .16f));
 
-                _listBuffer.AddRange(RenderFigure.Rectangle(
+                ListBuffer.AddRange(RenderFigure.Rectangle(
                     (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 3 + line) * Gi.Si, (y + 33) * Gi.Si,
                     line > 15 ? (30 - line) / 15f : 1,
                     line < 15 ? line / 15f : 1,

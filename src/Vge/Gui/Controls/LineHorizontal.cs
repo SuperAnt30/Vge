@@ -34,7 +34,7 @@ namespace Vge.Gui.Controls
         protected virtual void _RenderInside(RenderMain render, int x, int y)
         {
             _meshBg.Reload(RenderFigure.Rectangle(x, y, x + Width * _si, y + Height * _si,
-                0, .99609375f, .5f, 1f));
+                0, .8125f, .5f, .81640625f));
         }
 
         /// <summary>
