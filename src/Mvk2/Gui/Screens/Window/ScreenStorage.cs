@@ -55,18 +55,23 @@ namespace Mvk2.Gui.Screens
         /// Количество ячеек инвентаря, т.е. карман + рюкзак + правая рука
         /// </summary>
         protected readonly byte _inventoryCount;
-
+        /// <summary>
+        /// Смещение слотов основного инвентаря, к низу
+        /// </summary>
+        protected int _biasY;
         /// <summary>
         /// Стак который используется в перемещении из слотов, образно он в указателе мыши
         /// </summary>
         protected ItemStack _stakAir;
 
-        public ScreenStorage(WindowMvk window) : base(window, 512f, 456, 416)
+        public ScreenStorage(WindowMvk window, int height = 416) : base(window, 512f, 456, height, false, true)
         {
             _pocketCount = InventoryPlayerMvk.PocketCount;
             _clothCount = InventoryPlayerMvk.ClothCount;
             _backpackCount = InventoryPlayerMvk.BackpackCount;
             _inventoryCount = (byte)(_pocketCount + _clothCount + _backpackCount);
+
+            _biasY = 181; // 27 если к верху
 
             _windowMvk = window;
             _render = _windowMvk.GetRender();
@@ -100,7 +105,7 @@ namespace Mvk2.Gui.Screens
                 {
                     // Одежда
                     _SetSlot(i, new ControlSlotMvk(_windowMvk, _windowMvk.Game.Player.Inventory.GetStackInSlot(i),
-                        i, (EnumCloth)(i - _pocketCount)));
+                        i, (EnumCloth)(i - _pocketCount + 1)));
                 }
                 else
                 {
@@ -256,30 +261,39 @@ namespace Mvk2.Gui.Screens
             PosY = h > 160 ? h / 2 : (h > 80 ? h - 80 : 0); // Условие, чтоб снизу всегда было видно 80
 
             base._OnResized();
-            
 
             int i;
+            int y = PosY + _biasY + 184;
+            int x = PosX + 12;
             // Карманы
             for (i = 0; i < _pocketCount; i++)
             {
-                _slot[i].SetPosition(PosX + 12 + i * 36, PosY + 365);
+                _slot[i].SetPosition(x + i * 36, y);
             }
 
             // Одежда
-            for (i = 0; i < 5; i++)
-            {
-                _slot[i + _pocketCount].SetPosition(PosX + 12, PosY + 181 + i * 36);
-                _slot[i + _pocketCount + 5].SetPosition(PosX + 152, PosY + 181 + i * 36);
-            }
+            y = PosY + _biasY;
+            _slot[_pocketCount + 1].SetPosition(x, y);
+            _slot[_pocketCount + 3].SetPosition(x, y + 36);
+            _slot[_pocketCount + 6].SetPosition(x, y + 72);
+            _slot[_pocketCount + 7].SetPosition(x, y + 108);
+            _slot[_pocketCount + 9].SetPosition(x, y + 144);
+
+            x = PosX + 152;
+            _slot[_pocketCount + 2].SetPosition(x, y);
+            _slot[_pocketCount + 4].SetPosition(x, y + 36);
+            _slot[_pocketCount + 5].SetPosition(x, y + 72);
+            _slot[_pocketCount + 8].SetPosition(x, y + 108);
+            _slot[_pocketCount].SetPosition(x, y + 144);
 
             // Рюкзак
             int from = _pocketCount + _clothCount;
             i = 0;
-            for (int y = 0; y < 5; y++)
+            for (y = 0; y < 5; y++)
             {
-                for (int x = 0; x < 7; x++)
+                for (x = 0; x < 7; x++)
                 {
-                    _slot[i + from].SetPosition(PosX + 192 + x * 36, PosY + 181 + y * 36);
+                    _slot[i + from].SetPosition(PosX + 192 + x * 36, PosY + _biasY + y * 36);
                     i++;
                 }
             }
@@ -313,7 +327,7 @@ namespace Mvk2.Gui.Screens
                     : -(window.MouseX - x) / (float)(Gi.Width - x);
 
                 window.Game.Render.DepthOn();
-                renderAnimation.DrawGui((PosX + 102) * _si, (PosY + 350) * _si,
+                renderAnimation.DrawGui((PosX + 102) * _si, (PosY + _biasY + 169) * _si,
                     Glm.Sin(yaw), Glm.Sin(pitch), 36 * _si);
                 window.Game.Render.DepthOff();
                 window.Render.ShaderBindGuiColor();

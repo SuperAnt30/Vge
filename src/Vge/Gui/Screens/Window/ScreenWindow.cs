@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Gui.Controls;
 using Vge.Realms;
@@ -33,6 +34,10 @@ namespace Vge.Gui.Screens
         protected ButtonClose _buttonClose;
 
         /// <summary>
+        /// Сетка фона затемнения
+        /// </summary>
+        protected readonly MeshGuiColor _meshBgDarken;
+        /// <summary>
         /// Сетка фона
         /// </summary>
         protected readonly MeshGuiColor _meshBg;
@@ -46,12 +51,17 @@ namespace Vge.Gui.Screens
         /// </summary>
         protected float _transparency = 1f;
 
-        protected ScreenWindow(WindowMain window, float sizeBg, int width, int height, bool closeHide = false) : base(window)
+        protected ScreenWindow(WindowMain window, float sizeBg, int width, int height, 
+            bool closeHide, bool darken = false) : base(window)
         {
             WidthWindow = width;
             HeightWindow = height;
             _sizeBg = sizeBg;
             _meshBg = new MeshGuiColor(gl);
+            if (darken)
+            {
+                _meshBgDarken = new MeshGuiColor(gl);
+            }
 
             _buttonClose = new ButtonClose(window);
             if (!closeHide)
@@ -150,15 +160,22 @@ namespace Vge.Gui.Screens
 
         protected override void _RenderingAdd()
         {
+            _meshBgDarken?.Reload(RenderFigure.RectangleSolid(0, 0, Gi.Width, Gi.Height, .4f, .4f, .4f, .5f));
+
             _meshBg.Reload(RenderFigure.Rectangle(PosX * _si, PosY * _si,
                 (PosX + WidthWindow) * _si, (PosY + HeightWindow) * _si,
-                0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg, 
+                0, 0, WidthWindow / _sizeBg, HeightWindow / _sizeBg,
                 1, 1, 1, _transparency));
             _isRenderAdd = false;
         }
 
         protected override void _DrawAdd()
         {
+            if (_meshBgDarken != null)
+            {
+                window.Render.FontMain.BindTexture();
+                _meshBgDarken.Draw();
+            }
             _BindTextureBg();
             _meshBg.Draw();
         }
@@ -172,6 +189,7 @@ namespace Vge.Gui.Screens
         {
             base.Dispose();
             _meshBg?.Dispose();
+            _meshBgDarken?.Dispose();
         }
     }
 }

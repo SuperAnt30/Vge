@@ -47,7 +47,7 @@ namespace Mvk2.Gui.Controls
             if (_cloth != EnumCloth.None && Stack == null)
             {
                 // Слот одежды (с маркером фона)
-                float v3 = 1 - ((int)_cloth - 1) * .0625f;
+                float v3 = .375f + (int)_cloth * .0625f;
 
                 if (bg)
                 {

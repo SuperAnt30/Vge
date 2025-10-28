@@ -66,7 +66,9 @@ namespace Vge.Entity.Inventory
                 {
                     _slotClothKeys[b - 1] = b;
                 }
+                // Ноль нельзя, так-как ноль можно в слот укладывать всё
             }
+            return;
         }
 
         #region UpdateServer

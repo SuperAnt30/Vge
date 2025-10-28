@@ -11,15 +11,15 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Количество ячеек карманов, не меньше 2 (_requiredPocket)
         /// </summary>
-        public const byte PocketCount = 12;// 6; // 8
+        public const byte PocketCount = 12;
         /// <summary>
         /// Количество ячеек одежды, первый слот это предмет левой руки 
         /// </summary>
-        public const byte ClothCount = 10;//9; // 11
+        public const byte ClothCount = 10;
         /// <summary>
         /// Количество ячеек рюкзака
         /// </summary>
-        public const byte BackpackCount = 35;//15; // 25
+        public const byte BackpackCount = 35;
 
         public InventoryPlayerMvk(PlayerServerMvk playerServer)
             // Первый слот одеждый это ячейка левой руки

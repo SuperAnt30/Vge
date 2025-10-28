@@ -1,42 +1,53 @@
 ﻿namespace Mvk2.Item
 {
     /// <summary>
-    /// Тип одежды
+    /// Тип слота для Одежды (маркеры)
     /// </summary>
     public enum EnumCloth
     {
+        /// <summary>
+        /// Отсутствует
+        /// </summary>
         None = 0,
         /// <summary>
-        /// Талисман, шея
+        /// Левая рука, всегда 0
         /// </summary>
-        Mascot = 1,
+        HandLeft = 1,
         /// <summary>
         /// Шапка
         /// </summary>
         Cap = 2,
         /// <summary>
-        /// Рюкзак
+        /// Талисман, шея
         /// </summary>
-        Backpack = 3,
+        Mascot = 3,
         /// <summary>
         /// Куртка
         /// </summary>
         Jacket = 4,
         /// <summary>
+        /// Рюкзак
+        /// </summary>
+        Backpack = 5,
+        /// <summary>
         /// Браслет левый
         /// </summary>
-        BraceletLeft = 5,
+        BraceletLeft = 6,
         /// <summary>
         /// Браслет правый
         /// </summary>
-        BraceletRight = 6,
-        /// <summary>
-        /// Обувь
-        /// </summary>
-        Shoes = 7,
+        BraceletRight = 7,
         /// <summary>
         /// Штаны
         /// </summary>
-        Trousers = 8
+        Trousers = 8,
+        /// <summary>
+        /// Пояс
+        /// </summary>
+        Belt = 9,
+        /// <summary>
+        /// Обувь
+        /// </summary>
+        Shoes = 10
     }
 }

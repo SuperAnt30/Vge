@@ -1,6 +1,5 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Packets;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Inventory;
@@ -28,20 +27,21 @@ namespace Mvk2.Entity.List
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
+            // Карманы
             Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
             Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
-            //Inventory.SetStackInSlot(3, new ItemStack(Ce.Items.ItemObjects[6]));
-            //Inventory.SetStackInSlot(4, new ItemStack(Ce.Items.ItemObjects[7]));
-         //   Inventory.SetStackInSlot(5, new ItemStack(Ce.Items.ItemObjects[4]));
-            Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[3], 3));
+            // Левая рука
+            Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[0], 1, 200));
+
+            // Одежда
             Inventory.SetStackInSlot(13, new ItemStack(Ce.Items.ItemObjects[5]));
-
-            Inventory.SetStackInSlot(18, new ItemStack(Ce.Items.ItemObjects[6]));
             Inventory.SetStackInSlot(17, new ItemStack(Ce.Items.ItemObjects[7]));
+            Inventory.SetStackInSlot(18, new ItemStack(Ce.Items.ItemObjects[6]));
+            Inventory.SetStackInSlot(19, new ItemStack(Ce.Items.ItemObjects[4]));
 
-            Inventory.SetStackInSlot(14, new ItemStack(Ce.Items.ItemObjects[0], 1, 200));
-            Inventory.SetStackInSlot(20, new ItemStack(Ce.Items.ItemObjects[4]));
+            // Рюкзак
+            Inventory.SetStackInSlot(22, new ItemStack(Ce.Items.ItemObjects[3], 3));
 
             // При запуске на сервере
             InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака
