@@ -133,6 +133,12 @@ namespace Vge.Entity.Inventory
         public virtual void ServerHeldItemChange() { }
 
         /// <summary>
+        /// Добавляет стек предметов в инвентарь, возвращает false, если это невозможно.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool AddItemStackToInventory(ItemStack itemStack) => false;
+
+        /// <summary>
         /// Получить активный тайл, если нет вернёт null
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

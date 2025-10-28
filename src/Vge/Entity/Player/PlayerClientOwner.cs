@@ -292,6 +292,8 @@ namespace Vge.Entity.Player
                 RotationFramePitch = RotationPrevPitch = RotationPitch;
                 RotationYawBiasInput = RotationPitchBiasInput = 0;
             }
+            // Задать анимацию
+            Render.SetMovingFlags(Movement.Flags);
         }
 
         #endregion
@@ -339,7 +341,12 @@ namespace Vge.Entity.Player
         public void ItemUse()
         {
             TestHandAction = true;
-            if (MovingObject.IsBlock())
+            if (MovingObject.IsEntity())
+            {
+                _game.TrancivePacket(new PacketC03UseEntity(MovingObject.Entity.Id,
+                    PacketC03UseEntity.EnumAction.Interact));
+            }
+            else if (MovingObject.IsBlock())
             {
                 _game.TrancivePacket(new PacketC08PlayerBlockPlacement(MovingObject.BlockPosition,
                     MovingObject.Side, MovingObject.Facing));

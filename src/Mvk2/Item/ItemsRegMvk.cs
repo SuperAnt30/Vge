@@ -9,6 +9,8 @@ namespace Mvk2.Item
     {
         public static void Initialization()
         {
+            // В ядре нет регистрации обязательный предметов, только тут
+
             ItemsReg.RegisterItemClass("AxeIron", new ItemBase());
             ItemsReg.RegisterItemClass("FlowerClover", new ItemBase());
             ItemsReg.RegisterItemClass("Cobblestone", new ItemBase());

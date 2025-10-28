@@ -349,11 +349,18 @@ namespace Vge.Entity
         #region Drop
 
         /// <summary>
+        /// Добавляет стек предметов в инвентарь, если это невозможно заспавнит предмет рядом
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void AddItemStackToInventory(ItemStack itemStack) { }
+
+        /// <summary>
         /// Дропнуть предмет от сущности. Server
         /// </summary>
         /// <param name="itemStack">Стак предмета</param>
         /// <param name="inFrontOf">Флаг перед собой</param>
         /// <param name="longAway">Далеко бросить от себя</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway) { }
 
         #endregion

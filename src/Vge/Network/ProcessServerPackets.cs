@@ -185,6 +185,10 @@ namespace Vge.Network
                     {
                         entity.AwakenPhysicSleep();
                     }
+                    else if (packet.Action == PacketC03UseEntity.EnumAction.Interact)
+                    {
+                        entity.OnInteract(playerServer);
+                    }
                 }
             }
         }

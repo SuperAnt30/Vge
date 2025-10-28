@@ -31,6 +31,7 @@ namespace Mvk2.Entity.List
             Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
             Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
+
             // Левая рука
             Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[0], 1, 200));
 
@@ -104,30 +105,5 @@ namespace Mvk2.Entity.List
                     break;
             }
         }
-        
-        #region Drop
-
-        /// <summary>
-        /// Дропнуть предмет от сущности. Server
-        /// </summary>
-        /// <param name="itemStack">Стак предмета</param>
-        /// <param name="inFrontOf">Флаг перед собой</param>
-        /// <param name="longAway">Далеко бросить от себя</param>
-        public override void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway)
-        {
-            WorldServer worldServer = GetWorld();
-            if (worldServer != null)
-            {
-                ushort id = Ce.Entities.IndexItem;
-                EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer);
-                if (entity is EntityItem entityItem)
-                {
-                    entityItem.SetEntityItemStack(itemStack);
-                }
-                worldServer.EntityDropsEntityInWorld(this, entity, inFrontOf, longAway);
-            }
-        }
-
-        #endregion
     }
 }

@@ -62,7 +62,7 @@
 
         /// <summary>
         /// Массив индексов ячеек одежды инвентаря, куда можно устанавливать этот предмет. ([byte]) или [byte]
-        /// Индексы должны со
+        /// Индексы должны совпадать с EnumCloth
         /// </summary>
         public const string SlotClothIndex = "SlotClothIndex";
         /// <summary>

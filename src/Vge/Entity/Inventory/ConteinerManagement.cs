@@ -51,6 +51,12 @@ namespace Vge.Entity.Inventory
         public bool AddItemStackToInventory(ItemStack[] stacks, int sourceIndex, 
             ItemStack stack, int length)
         {
+            if (length == 0)
+            {
+                // Тут если рюкзака нет
+                return false;
+            }
+
             if (stack != null && stack.Amount != 0 && stack.Item != null)
             {
                 if (length == -1) length = stacks.Length;

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
+using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -254,6 +255,16 @@ namespace Vge.World
                     if (chunk != null)
                     {
                         chunk.RemoveEntity(entity);
+                    }
+                    // Для пробуждения сущностей сверху
+                    if (entity.Size is ISizeEntityBox size)
+                    {
+                        Collision.EntityBoundingBoxesFromSector(size.GetBoundingBox().Up(.2f), entity.Id);
+                        int count = Collision.ListEntity.Count;
+                        for (int i = 0; i < count; i++)
+                        {
+                            Collision.ListEntity[i].AwakenPhysicSleep();
+                        }
                     }
                     // Для отладки
                     _FlagDebugChunkProviderServer();

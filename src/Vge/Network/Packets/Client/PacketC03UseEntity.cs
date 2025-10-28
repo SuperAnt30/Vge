@@ -7,6 +7,9 @@
     {
         public byte Id => 0x03;
 
+        /// <summary>
+        /// Id сущности с которой взаимодействуем
+        /// </summary>
         public int Index { get; private set; }
         public EnumAction Action { get; private set; }
         public float X { get; private set; }

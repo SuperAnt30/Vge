@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System;
+using Vge.Util;
 using Vge.World;
 
 namespace Vge.Entity.Physics
@@ -29,35 +30,40 @@ namespace Vge.Entity.Physics
             // Защита от падения с края блока если сидишь и являешься игроком
             if (Entity.OnGround && Movement.Sneak)
             {
-                float x = MotionX;
-                float z = MotionZ;
+                // Если снизу до перемещения был блок, проверяем, если нет, значит стояли на сущности скорее всего
+                bool isBlock = Collision.IsStaticBoundingBoxes(boundingBox.Offset(0, -.2f, 0));
+                if (isBlock)
+                {
+                    float x = MotionX;
+                    float z = MotionZ;
 
-                while (x != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -1, 0)))
-                {
-                    if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
-                    else if (x > 0f) x -= _stepAmfs;
-                    else x += _stepAmfs;
-                }
-                while (z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(0, -1, z)))
-                {
-                    if (z < _stepAmfs && z >= -_stepAmfs) z = 0f;
-                    else if (z > 0f) z -= _stepAmfs;
-                    else z += _stepAmfs;
-                }
-                while (x != 0 && z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -1, z)))
-                {
-                    if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
-                    else if (x > 0f) x -= _stepAmfs;
-                    else x += _stepAmfs;
-                    if (z < _stepAmfs && z >= -_stepAmfs) z = 0f;
-                    else if (z > 0f) z -= _stepAmfs;
-                    else z += _stepAmfs;
-                }
+                    while (x != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -.2f, 0)))
+                    {
+                        if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
+                        else if (x > 0f) x -= _stepAmfs;
+                        else x += _stepAmfs;
+                    }
+                    while (z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(0, -.2f, z)))
+                    {
+                        if (z < _stepAmfs && z >= -_stepAmfs) z = 0f;
+                        else if (z > 0f) z -= _stepAmfs;
+                        else z += _stepAmfs;
+                    }
+                    while (x != 0 && z != 0 && !Collision.IsStaticBoundingBoxes(boundingBox.Offset(x, -.2f, z)))
+                    {
+                        if (x < _stepAmfs && x >= -_stepAmfs) x = 0f;
+                        else if (x > 0f) x -= _stepAmfs;
+                        else x += _stepAmfs;
+                        if (z < _stepAmfs && z >= -_stepAmfs) z = 0f;
+                        else if (z > 0f) z -= _stepAmfs;
+                        else z += _stepAmfs;
+                    }
 
-                if (MotionX != x || MotionZ != z)
-                {
-                    MotionX = x;
-                    MotionZ = z;
+                    if (MotionX != x || MotionZ != z)
+                    {
+                        MotionX = x;
+                        MotionZ = z;
+                    }
                 }
             }
         }

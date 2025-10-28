@@ -92,6 +92,33 @@ namespace Vge.Entity.Inventory
         #region Server
 
         /// <summary>
+        /// Добавляет стек предметов в инвентарь, возвращает false, если это невозможно.
+        /// </summary>
+        public override bool AddItemStackToInventory(ItemStack itemStack)
+        {
+            ItemStack stackSlot = itemStack?.Copy();
+
+            // Сразу в карманы пробуем
+            _conteiner.IdDamageCategory = 2;
+            _conteiner.IdDamageSlotIgnor = _currentIndex;
+            if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket)) // * в карман
+            {
+                // Если не залезло всё, суём в рюкзак
+                _conteiner.IdDamageCategory = 1;
+                _conteiner.IdDamageSlotIgnor = 255;
+                if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount, // * в рюкзак
+                    stackSlot, LimitBackpack))
+                {
+                    // Что-то осталось
+                    itemStack.SetAmount(stackSlot.Amount);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Получить активный тайл, если нет вернёт null
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,12 +272,12 @@ namespace Vge.Entity.Inventory
                                 // Кликнули из хранилища
                                 _conteiner.IdDamageCategory = 2;
                                 _conteiner.IdDamageSlotIgnor = _currentIndex;
-                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket))
+                                if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket)) // в карман
                                 {
                                     _conteiner.IdDamageCategory = 1;
                                     _conteiner.IdDamageSlotIgnor = 255;
-                                    if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount,
-                                        _CheckSlotToAir(stackSlot), LimitBackpack))
+                                    if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount, // в рюкзак
+                                        stackSlot, LimitBackpack))
                                     {
                                         _SetSendSlotContents(slotIn, stackSlot);
                                     }

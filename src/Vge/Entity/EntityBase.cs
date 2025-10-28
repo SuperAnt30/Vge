@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Physics;
+using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Renderer.World.Entity;
@@ -23,7 +24,7 @@ namespace Vge.Entity
     public abstract class EntityBase : IDisposable//<TSize> where TSize : ISizeEntity
     {
         /// <summary>
-        /// Уникальный порядковый номер игрока в базе
+        /// Уникальный порядковый номер сущности в базе
         /// </summary>
         public int Id { get; protected set; }
         /// <summary>
@@ -393,13 +394,7 @@ namespace Vge.Entity
         /// Пробудить физику
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AwakenPhysicSleep()
-        {
-            if (Physics != null)
-            {
-                Physics.AwakenPhysics();
-            }
-        }
+        public void AwakenPhysicSleep() => Physics?.AwakenPhysics();
 
         /// <summary>
         /// Пробудить физику выбранной сущности.
@@ -582,13 +577,20 @@ namespace Vge.Entity
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void UpdateClient(WorldClient world, float deltaTime) { }
 
         /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void OnImpact(WorldBase world, MovingObjectPosition moving) { }
 
+        /// <summary>
+        /// Данный игрок взаимодействует с этой сущностью, т.е. нажал ПКМ
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void OnInteract(PlayerServer player) { }
 
         #region Get
 

@@ -12,7 +12,6 @@ using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
-using Vge.TileEntity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -797,6 +796,46 @@ namespace Vge.Entity.Player
             if (isClient && _clientChunks.Contains(ChunkPosManagedX, ChunkPosManagedZ))
             {
                 _clientChunksSort.Add(Conv.ChunkXyToIndex(ChunkPosManagedX, ChunkPosManagedZ));
+            }
+        }
+
+        #endregion
+
+        #region Drop
+
+        /// <summary>
+        /// Добавляет стек предметов в инвентарь, если это невозможно заспавнит предмет рядом
+        /// </summary>
+        public override void AddItemStackToInventory(ItemStack itemStack)
+        {
+            if (itemStack != null)
+            {
+                if (!Inventory.AddItemStackToInventory(itemStack))
+                {
+                    // Дропаем предмет
+                    DropItem(itemStack, true, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Дропнуть предмет от сущности. Server
+        /// </summary>
+        /// <param name="itemStack">Стак предмета</param>
+        /// <param name="inFrontOf">Флаг перед собой</param>
+        /// <param name="longAway">Далеко бросить от себя</param>
+        public override void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway)
+        {
+            WorldServer worldServer = GetWorld();
+            if (worldServer != null)
+            {
+                ushort id = Ce.Entities.IndexItem;
+                EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer);
+                if (entity is EntityItem entityItem)
+                {
+                    entityItem.SetEntityItemStack(itemStack);
+                }
+                worldServer.EntityDropsEntityInWorld(this, entity, inFrontOf, longAway);
             }
         }
 

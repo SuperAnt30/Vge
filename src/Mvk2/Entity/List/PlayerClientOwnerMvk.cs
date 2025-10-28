@@ -42,6 +42,7 @@ namespace Mvk2.Entity.List
             {
                 // Пришёл стак для инвентаря
                 InvPlayer.SetInventorySlotContents(slotId, packet.Stack);
+                //Console.WriteLine(slotId + " " + packet.Stack?.ToString());
 
             //    if (slot == ClientMain.Player.InventPlayer.CurrentItem)
             //    {

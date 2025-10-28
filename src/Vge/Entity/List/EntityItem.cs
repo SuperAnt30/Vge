@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.MetaData;
 using Vge.Entity.Physics;
+using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Item;
@@ -230,9 +231,22 @@ namespace Vge.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEntityItemStack(ItemStack itemStack)
         {
-            if (!MetaData.UpdateObject(0, itemStack))
+            if (!MetaData.UpdateObject(0, itemStack?.Copy()))
             {
                 MetaData.SetObjectWatched(0);
+            }
+        }
+
+        /// <summary>
+        /// Данный игрок взаимодействует с этой сущностью, т.е. нажал ПКМ
+        /// </summary>
+        public override void OnInteract(PlayerServer player)
+        {
+            // Надо забрать этот предмет, и диспавнить его
+            if (!IsDead)
+            {
+                SetDead();
+                player.AddItemStackToInventory(GetEntityItemStack());
             }
         }
     }
