@@ -27,10 +27,6 @@ namespace Vge.Entity.Model
         /// </summary>
         public const string NameHoldItemTwo = "HoldItemTwo";
         /// <summary>
-        /// Название куба открытых глаз 
-        /// </summary>
-        public const string NameCubeEyeOpen = "eyeOpen";
-        /// <summary>
         /// Название куба закрытых глаз
         /// </summary>
         public const string NameCubeEyeClose = "eyeClose";
@@ -38,10 +34,6 @@ namespace Vge.Entity.Model
         /// Название куба открыт рот 
         /// </summary>
         public const string NameCubeMouthOpen = "mouthOpen";
-        /// <summary>
-        /// Название куба закрыт рот
-        /// </summary>
-        public const string NameCubeMouthClose = "mouthClose";
         /// <summary>
         /// Название куба улыбка
         /// </summary>
