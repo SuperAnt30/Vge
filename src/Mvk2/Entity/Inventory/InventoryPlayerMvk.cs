@@ -1,4 +1,5 @@
 ﻿using Mvk2.Entity.List;
+using Mvk2.Item;
 using Vge.Entity.Inventory;
 
 namespace Mvk2.Entity.Inventory
@@ -23,6 +24,11 @@ namespace Mvk2.Entity.Inventory
 
         public InventoryPlayerMvk(PlayerServerMvk playerServer)
             // Первый слот одеждый это ячейка левой руки
-            : base(playerServer, PocketCount, ClothCount, BackpackCount) { }
+            : base(playerServer, PocketCount, ClothCount, BackpackCount)
+        {
+            // Левая рука находится всегда в первом слоте массива одежды
+            // Это присвоение 0 надо для того чтоб любой предмет можно было брать в эту руку
+            _slotClothKeys[0] = 0; // (int)EnumCloth.HandLeft - 1
+        }
     }
 }
