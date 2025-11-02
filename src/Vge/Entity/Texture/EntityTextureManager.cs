@@ -49,21 +49,25 @@ namespace Vge.Entity.Texture
             _Init();
 
             int index = _GetIndexDivide();
-            if (index == -1) return;
 
             _FlagBegin();
             DepthSmall = DepthBig = 0;
 
+            GroupTexture group;
             // Собираем группу Small
-            GroupTexture group = _groups[index];
-            WidthSmall = group.Width;
-            HeightSmall = group.Height;
-            _SetDepthTextures(group, false);
-
-            group.Flag = true;
-            for (int i = 0; i < group.ArrayCan.Count; i++)
+            if (index != -1)
             {
-                _ModifyTextures(_groups[group.ArrayCan[i]], WidthSmall, HeightSmall, false);
+                // Если одна группа, то используем только Big
+                group = _groups[index];
+                WidthSmall = group.Width;
+                HeightSmall = group.Height;
+                _SetDepthTextures(group, false);
+
+                group.Flag = true;
+                for (int i = 0; i < group.ArrayCan.Count; i++)
+                {
+                    _ModifyTextures(_groups[group.ArrayCan[i]], WidthSmall, HeightSmall, false);
+                }
             }
             // Собираем группу Big
             int maxId = _groups.Length - 1;
@@ -155,6 +159,7 @@ namespace Vge.Entity.Texture
         {
             // На один меньше, так-как последнее значение это максималка, 2 группы обязательно!
             int count = _groups.Length - 1;
+
 #if DEBUG
             // Получить весь размер, без увеличения, т.е. текущий
             int allSize = _AllSize();

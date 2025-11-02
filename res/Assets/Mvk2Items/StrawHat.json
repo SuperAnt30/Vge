@@ -1,7 +1,7 @@
 {
     MaxStackSize: 1,
     CellsBackpack: 1,
-    SlotClothIndex: 2,
+    SlotClothIndex: [2, 1],
     Sprite: "Items/StrawHat",
     SpriteGui: "Items/StrawHat",
     PutOnBody: "Cap",
