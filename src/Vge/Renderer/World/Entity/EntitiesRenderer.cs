@@ -95,11 +95,12 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         public void GameStarting()
         {
-            _idTextureSmall = Render.Texture.CreateTexture2dArray(
-                EntitiesReg.TextureManager.WidthSmall,
-                EntitiesReg.TextureManager.HeightSmall,
-                EntitiesReg.TextureManager.DepthSmall, 
-                (uint)Gi.ActiveTextureSamplerSmall);
+            _idTextureSmall = EntitiesReg.TextureManager.DepthSmall != 0 ?
+                Render.Texture.CreateTexture2dArray(
+                    EntitiesReg.TextureManager.WidthSmall,
+                    EntitiesReg.TextureManager.HeightSmall,
+                    EntitiesReg.TextureManager.DepthSmall,
+                    (uint)Gi.ActiveTextureSamplerSmall) : 0;
 
             _idTextureBig = Render.Texture.CreateTexture2dArray(
                 EntitiesReg.TextureManager.WidthBig,
