@@ -6,5 +6,5 @@
     Weight: 50,
     Rebound: 0,
     Hold: "HoldTwo",
-    ViewGui: { Rotate:[210, 45, 22], Offset:[0, 10, 0] Scale: 0.675 }
+    ViewGui: { Rotate:[-20, 45, 0], Offset:[0, -3, 0] Scale: 0.675 }
 }

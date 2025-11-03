@@ -4,8 +4,10 @@
     SlotClothIndex: 1,
     Width: 0.5625,
     Height: 0.1875,
-    Shape: "Axe"
-    SpriteGui: "Items/Axe"
-    View: { Rotate:[-45, 0, -90], Offset:[-9, 1, 9] }
-    ViewHold: { Offset:[0, -5, 0] }
+    Shape: "Axe",
+    #ShapeGui: "Axe",
+    SpriteGui: "Items/Axe",
+    View: { Rotate:[0, 45, -90], Offset:[-3, 1, 3] },
+    #ViewGui: { Rotate:[-90, -45, -90], Offset:[-6, -5, 0], Scale: 0.75 },
+    ViewHold: { Offset:[0, 4, 0] }
 }
