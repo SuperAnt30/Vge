@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using Vge.Item;
 using Vge.Json;
 using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.World.Block
 {

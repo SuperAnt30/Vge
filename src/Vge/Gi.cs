@@ -194,5 +194,5 @@ public sealed class Gi
     /// Обновить ортогональную проекцию
     /// </summary>
     public static void UpOrtho()
-        => Glm.Ortho(0, Width, Height, 0, 100 * Si, -100 * Si).ConvArray(Ortho);
+        => Glm.Ortho(0, Width, Height, 0, -100 * Si, 100 * Si).ConvArray(Ortho);
 }

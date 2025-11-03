@@ -90,6 +90,9 @@ namespace Vge.World.Block
                 }
                 else
                 {
+                    Offset[1] -= 8f;
+                    IsOffset = Offset[0] != 0 || Offset[1] != 0 || Offset[2] != 0;
+
                     IsRotation = view.IsKey(Ctb.Rotate);
                     if (IsRotation)
                     {

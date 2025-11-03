@@ -415,11 +415,15 @@ namespace Vge.Entity.Render
                 _resourcesEntity.GetIsAnimation(), GetEyeMouth());
 
             Entities.ShsEntity.UniformData(_bufferBonesTransforms);
+
+            Entities.Render.DepthOn();
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
 
             // Если имеются слои, рисуем сетку слоёв
             _entityLayerRender?.MeshDraw();
+
+            Entities.Render.DepthOff();
         }
 
         /// <summary>

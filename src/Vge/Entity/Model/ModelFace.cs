@@ -104,7 +104,7 @@ namespace Vge.Entity.Model
                 // Вращение если имеется
                 if (modelCube.RotationX != 0 || modelCube.RotationY != 0 || modelCube.RotationZ != 0)
                 {
-                    _Rotate(modelCube.RotationY, modelCube.RotationX, modelCube.RotationZ,
+                    _Rotate(modelCube.RotationX, modelCube.RotationY, modelCube.RotationZ,
                         modelCube.OriginX / 16f, modelCube.OriginY / 16f, modelCube.OriginZ / 16f);
                 }
 
@@ -143,7 +143,7 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Применить вращение в градусах по центру блока
         /// </summary>
-        private void _Rotate(float yaw, float pitch, float roll,
+        private void _Rotate(float rotationX, float rotationY, float rotationZ,
             float originX, float originY, float originZ)
         {
             Vector3 vec;
@@ -153,10 +153,11 @@ namespace Vge.Entity.Model
                 vec.X -= originX;
                 vec.Y -= originY;
                 vec.Z -= originZ;
-                // Так правильно по Blockbench
-                if (pitch != 0) vec = Glm.Rotate(vec, Glm.Radians(pitch), new Vector3(1, 0, 0));
-                if (yaw != 0) vec = Glm.Rotate(vec, Glm.Radians(yaw), new Vector3(0, 1, 0));
-                if (roll != 0) vec = Glm.Rotate(vec, Glm.Radians(roll), new Vector3(0, 0, 1));
+                // Так правильно по Blockbench для сущностей
+                if (rotationX != 0) vec = Glm.Rotate(vec, Glm.Radians(rotationX), new Vector3(1, 0, 0));
+                if (rotationY != 0) vec = Glm.Rotate(vec, Glm.Radians(rotationY), new Vector3(0, 1, 0));
+                if (rotationZ != 0) vec = Glm.Rotate(vec, Glm.Radians(rotationZ), new Vector3(0, 0, 1));
+
                 Vertex[i].X = Mth.Round(vec.X + originX, 3);
                 Vertex[i].Y = Mth.Round(vec.Y + originY, 3);
                 Vertex[i].Z = Mth.Round(vec.Z + originZ, 3);

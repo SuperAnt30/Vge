@@ -249,7 +249,7 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Задать вращение в градусах по центру блока
+        /// Задать вращение в градусах по заданному центру
         /// </summary>
         public QuadSide SetRotate(float xR, float yR, float zR, float xO, float yO, float zO)
         {
@@ -260,7 +260,7 @@ namespace Vge.World.Block
                 vec.X -= xO;
                 vec.Y -= yO;
                 vec.Z -= zO;
-                // Так правильно по Blockbench
+                // Так правильно по Blockbench для предметов и блоков
                 if (xR != 0) vec = Glm.Rotate(vec, Glm.Radians(xR), new Vector3(1, 0, 0));
                 if (yR != 0) vec = Glm.Rotate(vec, Glm.Radians(yR), new Vector3(0, 1, 0));
                 if (zR != 0) vec = Glm.Rotate(vec, Glm.Radians(zR), new Vector3(0, 0, 1));
@@ -268,6 +268,29 @@ namespace Vge.World.Block
                 Vertex[i].X = Mth.Round(vec.X + xO, 3);
                 Vertex[i].Y = Mth.Round(vec.Y + yO, 3);
                 Vertex[i].Z = Mth.Round(vec.Z + zO, 3);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Задать вращение в градусах полной модели в конце с учётом масштаба
+        /// </summary>
+        public QuadSide SetRotateAdd(float xR, float yR, float zR, float scale)
+        {
+            Vector3 vec;
+            scale *= .5f;
+            for (int i = 0; i < 4; i++)
+            {
+                vec = Vertex[i].ToPosition();
+                vec.Y -= scale;
+                // Так правильно по Blockbench для предметов в рамке или руке
+                if (zR != 0) vec = Glm.Rotate(vec, Glm.Radians(zR), new Vector3(0, 0, 1));
+                if (yR != 0) vec = Glm.Rotate(vec, Glm.Radians(yR), new Vector3(0, 1, 0));
+                if (xR != 0) vec = Glm.Rotate(vec, Glm.Radians(xR), new Vector3(1, 0, 0));
+
+                Vertex[i].X = Mth.Round(vec.X, 3);
+                Vertex[i].Y = Mth.Round(vec.Y + scale, 3);
+                Vertex[i].Z = Mth.Round(vec.Z, 3);
             }
             return this;
         }

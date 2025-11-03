@@ -28,7 +28,7 @@ namespace Mvk2.Entity.Inventory
         {
             // Левая рука находится всегда в первом слоте массива одежды
             // Это присвоение 0 надо для того чтоб любой предмет можно было брать в эту руку
-            _slotClothKeys[0] = 0; // (int)EnumCloth.HandLeft - 1
+            //_slotClothKeys[0] = 0; // (int)EnumCloth.HandLeft - 1
         }
     }
 }

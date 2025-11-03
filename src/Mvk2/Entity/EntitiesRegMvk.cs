@@ -11,7 +11,8 @@ namespace Mvk2.Entity
         public static void Initialization()
         {
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");
-            EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityThrowableSmall));
+            //EntitiesReg.RegisterEntityClass("Robinson", typeof(EntityThrowable));
+            //EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityThrowableSmall));
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson");
             //ModelEntitiesReg.RegisterModelEntityClass("Skeleton");
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson2");

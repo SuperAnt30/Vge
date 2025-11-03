@@ -41,10 +41,6 @@ namespace Vge.Renderer.Shaders
         /// Графика качественнее, красивее
         /// </summary>
         private bool _qualitatively;
-        /// <summary>
-        /// Объёмный предмет
-        /// </summary>
-        private bool _flagItemVolume;
 
         public ShadersEntity(GL gl, string nameGui, string nameLow, string nameHigh, string nameDepthMap)
         {
@@ -202,8 +198,6 @@ namespace Vge.Renderer.Shaders
             _shaderGui.Bind();
             _shaderGui.SetUniformMatrix4("view", Gi.Ortho);
             _shaderGui.SetUniform1("brightness", Gi.EntityBrightness);
-            _shaderGui.SetUniform3("lightDir", .9f, -.9f, 0);
-            _shaderGui.SetUniform1("scale", (float)Gi.Si);
             _shaderGui.SetUniform1("depth", -1f); // Нужен когда хотим сущность продемонстрировать
             UniformVolumeGui(true);
         }
@@ -221,17 +215,15 @@ namespace Vge.Renderer.Shaders
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UniformVolumeGui(bool volume = false)
         {
-            if (_flagItemVolume != volume)
+            if (volume)
             {
-                if (volume)
-                {
-                    _shaderGui.SetUniform3("lightDir", -0.707106769f, -0.707106769f, 0); // -1, -1, 0 нормализован
-                }
-                else
-                {
-                    _shaderGui.SetUniform3("lightDir", 0, 0, -1);
-                }
-                _flagItemVolume = volume;
+                _shaderGui.SetUniform3("lightDir", -.700140059f, -.140028015f, -.700140059f); // -5, -1, -5 нормализован
+                _shaderGui.SetUniform1("scale", -(float)Gi.Si);
+            }
+            else
+            {
+                _shaderGui.SetUniform3("lightDir", 0, 0, -1);
+                _shaderGui.SetUniform1("scale", (float)Gi.Si);
             }
         }
 
@@ -244,7 +236,7 @@ namespace Vge.Renderer.Shaders
             _shderAction.Bind();
             _shderAction.SetUniformMatrix4("view", Gi.Ortho);
             _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
-            _shderAction.SetUniform3("lightDir", -0.707106769f, 0.707106769f, 0);
+            _shderAction.SetUniform3("lightDir", -.700140059f, -.140028015f, -.700140059f); // -5, -1, -5 нормализован
             _shderAction.SetUniform2("scale", scale, -scale);
             _shderAction.SetUniform3("pos", x, y, 0);
             _shderAction.SetUniform1("depth", depth);

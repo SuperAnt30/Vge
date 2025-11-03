@@ -82,15 +82,12 @@ namespace Vge.Entity
             if (FlagRender)
             {
                 RegisterLayerShapeEntityClass("Base");
-                RegisterLayerShapeEntityClass("BaseOld");
+                //RegisterLayerShapeEntityClass("BaseOld");
             }
 
             // Регистрация обязательных сущностей
             RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
             RegisterEntityClass("Item", typeof(EntityItem), true);
-            // Отладочный
-            RegisterEntityClass("Robinson", typeof(EntityThrowable));
-            //RegisterModelEntityClass("Chicken2");
         }
 
         /// <summary>
