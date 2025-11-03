@@ -118,7 +118,7 @@ namespace Vge.Renderer.Shaders
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
             _shderAction.Bind();
             _shderAction.SetUniformMatrix4("view", Gi.MatrixView);
-            _shderAction.SetUniform2("scale", 1f, 1f);
+            _shderAction.SetUniform1("scale", 1f);
             _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
             _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);
             if (_qualitatively)
@@ -237,7 +237,7 @@ namespace Vge.Renderer.Shaders
             _shderAction.SetUniformMatrix4("view", Gi.Ortho);
             _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
             _shderAction.SetUniform3("lightDir", -.700140059f, -.140028015f, -.700140059f); // -5, -1, -5 нормализован
-            _shderAction.SetUniform2("scale", scale, -scale);
+            _shderAction.SetUniform1("scale", -scale);
             _shderAction.SetUniform3("pos", x, y, 0);
             _shderAction.SetUniform1("depth", depth);
             _shderAction.SetUniform1("anim", anim);

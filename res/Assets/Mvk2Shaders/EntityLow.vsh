@@ -20,7 +20,7 @@ uniform vec3 lightDir;
 uniform float brightness;
 
 uniform vec3 pos;
-uniform vec2 scale;
+uniform float scale;
 uniform vec2 light;
 uniform float depth;
 uniform float anim;
@@ -71,7 +71,7 @@ void main()
 	else
 	{
 	  // Матрица модели, расположения в мире
-      mat4 modelMatrix = mat4(scale.y, 0, 0, 0, 0, scale.y, 0, 0, 0, 0, scale.x, 0, pos.x, pos.y, pos.z, 1);
+      mat4 modelMatrix = mat4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, pos.x, pos.y, pos.z, 1);
       a_normal = vec3(mat4(elementTransforms[jointId]) * vec4(v_normal, 1.0));
       gl_Position = view * modelMatrix * mat4(elementTransforms[jointId]) * vec4(v_position, 1.0);
 	}

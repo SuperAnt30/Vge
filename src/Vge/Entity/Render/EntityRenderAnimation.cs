@@ -384,7 +384,7 @@ namespace Vge.Entity.Render
 
             Entities.ShsEntity.UniformData(_bufferBonesTransforms);
             // Рисуем основную сетку сущности
-            _entityRender.MeshDraw();
+            _entityRender?.MeshDraw();
 
             // Если имеются слои, рисуем сетку слоёв
             _entityLayerRender?.MeshDraw();
