@@ -204,7 +204,7 @@ namespace Mvk2
         protected override void _InitializationBlocks()
         {
             // Затать количество спрайтов в длинну и ширину и размер спрайта
-            Ce.SetSpriteAtlasSize(64, 32);
+            Ce.SetSpriteAtlasSize(64, 16);
             base._InitializationBlocks();
             BlocksRegMvk.Initialization();
         }
@@ -214,7 +214,9 @@ namespace Mvk2
         /// </summary>
         protected override void _InitializationItems()
         {
-            ItemsReg.SizeSprite = 32;
+            // Так-как у нас спрайты в 2 раза больше блока (32 вместо 16), то фигуру надо указать в увеличенном от блока.
+            // А размер спрайта (SizeSprite) не менять, оставить 16, он в атласе занимает 2*2=4 спрайта.
+            ItemsReg.SizeShape = 32; 
             base._InitializationItems();
             ItemsRegMvk.Initialization();
         }
