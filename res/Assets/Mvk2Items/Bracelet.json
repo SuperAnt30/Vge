@@ -1,9 +1,0 @@
-{
-    MaxStackSize: 1,
-    CellsPocket: 3,
-    SlotClothIndex: [6, 7, 1],
-    Sprite: "Items/Bracelet",
-    SpriteGui: "Items/Bracelet",
-    PutOnBody: "Bracelet",
-    NameLayer: ["BraceletL1", "BraceletR1"]
-}

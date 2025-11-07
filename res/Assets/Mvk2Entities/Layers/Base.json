@@ -8,18 +8,6 @@
             Texture: "Base2"
         },
         {
-            Group: "Bracelet",
-            Name: "BraceletL1",
-            Folder: ["L-BraceletL1",],
-            Texture: "Base"
-        },
-        {
-            Group: "Bracelet",
-            Name: "BraceletR1",
-            Folder: ["L-BraceletR1"],
-            Texture: "Base"
-        },
-        {
             Group: "Trousers",
             Name: "Jeans",
             Folder: ["L-TrousersB1", "L-TrousersH1", "L-TrousersR1", "L-TrousersL1", "L-TrousersSR1", "L-TrousersSL1"],
@@ -29,7 +17,22 @@
             Group: "Cap",
             Name: "StrawHat",
             Folder: ["L-Cap1"],
+            Texture: "Cap"
+        },
+        {
+            Group: "Jacket",
+            Name: "CamouflageJacket",
+            Folder: ["L-JacketB1", "L-JacketFLC", "L-JacketALC", "L-JacketFRC", "L-JacketARC"],
+            Texture: "Base"
+        },
+        {
+            Group: "Belt",
+            Name: "TacticalBelt",
+            Folder: ["L-BeltT"],
             Texture: "Base"
         }
+        
+        
+        
     ]
 }
