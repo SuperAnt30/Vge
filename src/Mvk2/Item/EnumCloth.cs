@@ -32,11 +32,11 @@
         /// <summary>
         /// Браслет левый
         /// </summary>
-        BraceletLeft = 6,
+        BraceletLeft = 6,// null
         /// <summary>
         /// Браслет правый
         /// </summary>
-        BraceletRight = 7,
+        BraceletRight = 7, // null
         /// <summary>
         /// Штаны
         /// </summary>

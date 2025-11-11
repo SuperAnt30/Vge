@@ -136,8 +136,6 @@ namespace Vge.Games
             Players = new PlayerManager(this);
             Worlds = worlds;
 
-            // Для отладки
-            Ce.TileHole = new TileEntity.TileEntityHole(this, 48);
             _frequencyMs = Stopwatch.Frequency / 1000;
             _stopwatchTps.Start();
         }
@@ -149,6 +147,7 @@ namespace Vge.Games
         {
             bool flag = Settings.Init(this);
             Worlds.Init(this);
+            ModServer.InitTwo();
             return flag;
         }
 

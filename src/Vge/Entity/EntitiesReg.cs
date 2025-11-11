@@ -82,7 +82,7 @@ namespace Vge.Entity
             if (FlagRender)
             {
                 RegisterLayerShapeEntityClass("Base");
-                //RegisterLayerShapeEntityClass("BaseOld");
+               // RegisterLayerShapeEntityClass("BaseLayer2");
             }
 
             // Регистрация обязательных сущностей

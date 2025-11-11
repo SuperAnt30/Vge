@@ -1,16 +1,13 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Packets;
 using System.Runtime.CompilerServices;
-using Vge.Entity;
 using Vge.Entity.Inventory;
-using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
-using Vge.World;
 
 namespace Mvk2.Entity.List
 {
@@ -27,6 +24,8 @@ namespace Mvk2.Entity.List
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
+           // Ce.TileHole;
+
             // Карманы
             Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
@@ -43,6 +42,7 @@ namespace Mvk2.Entity.List
 
             // Рюкзак
             Inventory.SetStackInSlot(22, new ItemStack(Ce.Items.ItemObjects[3], 3));
+            Inventory.SetStackInSlot(23, new ItemStack(Ce.Items.ItemObjects[8]));
 
             // При запуске на сервере
             InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака

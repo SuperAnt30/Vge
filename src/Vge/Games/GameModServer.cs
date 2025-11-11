@@ -15,7 +15,15 @@ namespace Vge.Games
 
         public GameModServer() { }
 
-        public void Init(GameServer server) => Server = server;
+        /// <summary>
+        /// Инициализация при создании сервера, в начале.
+        /// </summary>
+        public virtual void Init(GameServer server) => Server = server;
+
+        /// <summary>
+        /// Вторая инициализация когда готовы предметы и блоки и сущности
+        /// </summary>
+        public virtual void InitTwo() { }
 
         /// <summary>
         /// Инициализация прямо перед циклом сервера

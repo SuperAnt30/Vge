@@ -30,7 +30,7 @@
         /// </summary>
         public const string Scale = "Scale";
         /// <summary>
-        /// Индекс текстуры. (int)
+        /// Индекс текстуры, порядковый номер из модели, начинается с 0, слои не всчёт. (int)
         /// </summary>
         public const string TextureId = "TextureId";
         /// <summary>
