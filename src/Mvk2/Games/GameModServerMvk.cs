@@ -1,4 +1,5 @@
 ﻿using Mvk2.Entity.List;
+using Mvk2.Item;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
@@ -28,8 +29,8 @@ namespace Mvk2.Games
             // Для отладки
             Ce.TileHole = new TileEntityHole(Server, 48);
 
-            Ce.TileHole.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
-            Ce.TileHole.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[8]));
+            Ce.TileHole.SetStackInSlot(0, new ItemStack(ItemsRegMvk.AxeIron, 1, 315));
+            Ce.TileHole.SetStackInSlot(1, new ItemStack(ItemsRegMvk.Tie));
         }
     }
 }

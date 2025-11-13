@@ -16,11 +16,11 @@
         /// <summary>
         /// Шапка
         /// </summary>
-        Cap = 2,
+        Hat = 2,
         /// <summary>
-        /// Талисман, шея
+        /// Шея
         /// </summary>
-        Mascot = 3,
+        Neck = 3,
         /// <summary>
         /// Куртка
         /// </summary>
@@ -30,24 +30,16 @@
         /// </summary>
         Backpack = 5,
         /// <summary>
-        /// Браслет левый
-        /// </summary>
-        BraceletLeft = 6,// null
-        /// <summary>
-        /// Браслет правый
-        /// </summary>
-        BraceletRight = 7, // null
-        /// <summary>
         /// Штаны
         /// </summary>
-        Trousers = 8,
+        Pants = 6,
         /// <summary>
         /// Пояс
         /// </summary>
-        Belt = 9,
+        Belt = 7,
         /// <summary>
         /// Обувь
         /// </summary>
-        Shoes = 10
+        Shoes = 8
     }
 }

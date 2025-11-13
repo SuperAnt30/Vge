@@ -1,23 +1,23 @@
 {
-    Model: "PlayerBE",
+    Model: "Humanoid",
     Layers: [
         {
-            Group: "Bracelet",
-            Name: "BraceletL2",
-            Folder: ["L-BraceletL1",],
-            Texture: "Base2"
-        },
-        {
-            Group: "Trousers",
+            Group: "Pants",
             Name: "Jeans",
-            Folder: ["L-TrousersB1", "L-TrousersH1", "L-TrousersR1", "L-TrousersL1", "L-TrousersSR1", "L-TrousersSL1"],
+            Folder: ["L-PantsB1", "L-PantsH1", "L-PantsR1", "L-PantsL1", "L-PantsSR1", "L-PantsSL1"],
             Texture: "Base"
         },
         {
-            Group: "Cap",
+            Group: "Neck",
+            Name: "Tie",
+            Folder: ["L-Neck1"],
+            Texture: "Base"
+        },
+        {
+            Group: "Hat",
             Name: "StrawHat",
-            Folder: ["L-Cap1"],
-            Texture: "Cap"
+            Folder: ["L-Hat", "L-Hat1"],
+            Texture: "Base"
         },
         {
             Group: "Jacket",

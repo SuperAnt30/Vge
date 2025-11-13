@@ -1,7 +1,7 @@
 {
     MaxStackSize: 1,
     CellsPocket: 3,
-    SlotClothIndex: [9, 1],
+    SlotClothIndex: [7, 1],
     Sprite: "Items/TacticalBelt",
     SpriteGui: "Items/TacticalBelt",
     PutOnBody: "Belt",

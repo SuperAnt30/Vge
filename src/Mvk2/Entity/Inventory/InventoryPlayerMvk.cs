@@ -16,7 +16,7 @@ namespace Mvk2.Entity.Inventory
         /// <summary>
         /// Количество ячеек одежды, первый слот это предмет левой руки 
         /// </summary>
-        public const byte ClothCount = 10;
+        public const byte ClothCount = 8;
         /// <summary>
         /// Количество ячеек рюкзака
         /// </summary>

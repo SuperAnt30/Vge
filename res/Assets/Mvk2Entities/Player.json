@@ -4,7 +4,7 @@
     #Scale: 0.976,
     #Model: "Robinson",
     #Model: "Player",
-    Model: "PlayerBE",
+    Model: "Humanoid",
     TextureId: 1,
     OnlyMove: true,
     BlinkEye: 70,

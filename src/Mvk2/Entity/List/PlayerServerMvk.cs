@@ -1,4 +1,5 @@
 ﻿using Mvk2.Entity.Inventory;
+using Mvk2.Item;
 using Mvk2.Packets;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
@@ -27,22 +28,22 @@ namespace Mvk2.Entity.List
            // Ce.TileHole;
 
             // Карманы
-            Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
-            Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
-            Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
+            //Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
+            //Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
+            //Inventory.SetStackInSlot(2, new ItemStack(Ce.Items.ItemObjects[2], 16));
 
             // Левая рука
-            Inventory.SetStackInSlot(12, new ItemStack(Ce.Items.ItemObjects[0], 1, 200));
+            Inventory.SetStackInSlot(12, new ItemStack(ItemsRegMvk.AxeIron, 1, 200));
 
             // Одежда
-            Inventory.SetStackInSlot(13, new ItemStack(Ce.Items.ItemObjects[5]));
-            Inventory.SetStackInSlot(17, new ItemStack(Ce.Items.ItemObjects[7]));
-            Inventory.SetStackInSlot(18, new ItemStack(Ce.Items.ItemObjects[6]));
-            Inventory.SetStackInSlot(19, new ItemStack(Ce.Items.ItemObjects[4]));
+            Inventory.SetStackInSlot(13, new ItemStack(ItemsRegMvk.StrawHat));
+            Inventory.SetStackInSlot(20, new ItemStack(ItemsRegMvk.TacticalBelt));
+            Inventory.SetStackInSlot(15, new ItemStack(ItemsRegMvk.CamouflageJacket));
+            Inventory.SetStackInSlot(19, new ItemStack(ItemsRegMvk.Jeans));
 
             // Рюкзак
-            Inventory.SetStackInSlot(22, new ItemStack(Ce.Items.ItemObjects[3], 3));
-            Inventory.SetStackInSlot(23, new ItemStack(Ce.Items.ItemObjects[8]));
+            //Inventory.SetStackInSlot(22, new ItemStack(Ce.Items.ItemObjects[3], 3));
+            //Inventory.SetStackInSlot(23, new ItemStack(Ce.Items.ItemObjects[8]));
 
             // При запуске на сервере
             InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака

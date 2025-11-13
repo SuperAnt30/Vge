@@ -275,16 +275,16 @@ namespace Mvk2.Gui.Screens
             y = PosY + _biasY;
             _slot[_pocketCount + 1].SetPosition(x, y);
             _slot[_pocketCount + 3].SetPosition(x, y + 36);
-            _slot[_pocketCount + 6].SetPosition(x, y + 72);
+            _slot[_pocketCount + 5].SetPosition(x, y + 72);
             _slot[_pocketCount + 7].SetPosition(x, y + 108);
-            _slot[_pocketCount + 9].SetPosition(x, y + 144);
+           // _slot[_pocketCount + 9].SetPosition(x, y + 144);
 
             x = PosX + 152;
             _slot[_pocketCount + 2].SetPosition(x, y);
             _slot[_pocketCount + 4].SetPosition(x, y + 36);
-            _slot[_pocketCount + 5].SetPosition(x, y + 72);
-            _slot[_pocketCount + 8].SetPosition(x, y + 108);
-            _slot[_pocketCount].SetPosition(x, y + 144);
+            _slot[_pocketCount + 6].SetPosition(x, y + 72);
+        //    _slot[_pocketCount + 8].SetPosition(x, y + 108);
+            _slot[_pocketCount].SetPosition(x, y + 108);
 
             // Рюкзак
             int from = _pocketCount + _clothCount;
