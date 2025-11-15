@@ -276,7 +276,6 @@ namespace Vge.Renderer.World
                 // Сущности
                 
                 Entities.DrawDepthMap(timeIndex);
-                gl.Enable(GL.GL_CULL_FACE);
                 // Облака
                 //_DrawClouds(timeIndex);
 

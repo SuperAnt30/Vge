@@ -160,7 +160,6 @@ namespace Vge.Renderer.World.Entity
             ShsEntity.BindUniformBegin();
 
             // Сущности
-            gl.Disable(GL.GL_CULL_FACE);
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -181,7 +180,6 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Предметы
-            gl.Enable(GL.GL_CULL_FACE);
             ShsEntity.BindUniformItems();
             for (int i = 0; i < count; i++)
             {
@@ -246,7 +244,6 @@ namespace Vge.Renderer.World.Entity
             // Параметрв шейдоров
             ShsEntity.BindUniformBeginDepthMap();
             // Сущности
-            gl.Disable(GL.GL_CULL_FACE);
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -265,7 +262,6 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Предметы
-            gl.Enable(GL.GL_CULL_FACE);
             ShsEntity.BindUniformItems();
             for (int i = 0; i < count; i++)
             {

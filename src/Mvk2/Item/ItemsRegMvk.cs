@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.IO;
 using Vge.Item;
 
 namespace Mvk2.Item
@@ -13,11 +14,36 @@ namespace Mvk2.Item
         public static ItemBase FlowerClover { get; private set; }
         public static ItemBase Cobblestone { get; private set; }
         public static ItemBase Brol { get; private set; }
-        public static ItemBase Jeans { get; private set; }
-        public static ItemBase StrawHat { get; private set; }
-        public static ItemBase CamouflageJacket { get; private set; }
-        public static ItemBase TacticalBelt { get; private set; }
-        public static ItemBase Tie { get; private set; }
+        
+        public static ItemCloth StrawHat { get; private set; }
+        public static ItemCloth CamouflageJacket { get; private set; }
+        
+        public static ItemCloth Tie { get; private set; }
+
+        /// <summary>
+        /// Фирменная рубашка
+        /// </summary>
+        public static ItemCloth ShirtBranded { get; private set; }
+        /// <summary>
+        /// Фирменные ботинки
+        /// </summary>
+        public static ItemCloth BootsBranded { get; private set; }
+        /// <summary>
+        /// Фирменный рюкзак
+        /// </summary>
+        public static ItemCloth BackpackBranded { get; private set; }
+        /// <summary>
+        /// Джинсовые брюки
+        /// </summary>
+        public static ItemCloth PantsJeans { get; private set; }
+        /// <summary>
+        /// Фирменный ремень
+        /// </summary>
+        public static ItemCloth BeltBranded { get; private set; }
+        /// <summary>
+        /// Кепка тёмная
+        /// </summary>
+        public static ItemCloth CapDark { get; private set; }
 
         public static void Initialization()
         {
@@ -95,12 +121,18 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBase());
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBase());
             ItemsReg.RegisterItemClass("Brol", Brol = new ItemBase());
-            ItemsReg.RegisterItemClass("Jeans", Jeans = new ItemCloth());
-            ItemsReg.RegisterItemClass("StrawHat", StrawHat = new ItemCloth());
-            ItemsReg.RegisterItemClass("CamouflageJacket", CamouflageJacket = new ItemCloth());
-            ItemsReg.RegisterItemClass("TacticalBelt", TacticalBelt = new ItemCloth());
-            ItemsReg.RegisterItemClass("Tie", Tie = new ItemCloth());
+
             
+            StrawHat = ItemsReg.RegisterItemClothClass("StrawHat");
+            CamouflageJacket = ItemsReg.RegisterItemClothClass("CamouflageJacket");
+
+            PantsJeans = ItemsReg.RegisterItemClothClass("PantsJeans");
+            ShirtBranded = ItemsReg.RegisterItemClothClass("ShirtBranded");
+            BootsBranded = ItemsReg.RegisterItemClothClass("BootsBranded");
+            BackpackBranded = ItemsReg.RegisterItemClothClass("BackpackBranded");
+            BeltBranded = ItemsReg.RegisterItemClothClass("BeltBranded");
+            Tie = ItemsReg.RegisterItemClothClass("Tie");
+            CapDark = ItemsReg.RegisterItemClothClass("CapDark");
         }
     }
 }

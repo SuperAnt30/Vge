@@ -31,6 +31,14 @@ namespace Mvk2.Games
 
             Ce.TileHole.SetStackInSlot(0, new ItemStack(ItemsRegMvk.AxeIron, 1, 315));
             Ce.TileHole.SetStackInSlot(1, new ItemStack(ItemsRegMvk.Tie));
+            Ce.TileHole.SetStackInSlot(2, new ItemStack(ItemsRegMvk.ShirtBranded));
+            Ce.TileHole.SetStackInSlot(3, new ItemStack(ItemsRegMvk.BootsBranded));
+            Ce.TileHole.SetStackInSlot(4, new ItemStack(ItemsRegMvk.BackpackBranded));
+            Ce.TileHole.SetStackInSlot(5, new ItemStack(ItemsRegMvk.CapDark));
+            
+
+            Ce.TileHole.SetStackInSlot(17, new ItemStack(ItemsRegMvk.Cobblestone, 7));
+            Ce.TileHole.SetStackInSlot(18, new ItemStack(ItemsRegMvk.Brol, 2));
         }
     }
 }

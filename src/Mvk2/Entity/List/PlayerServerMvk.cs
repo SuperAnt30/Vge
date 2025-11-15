@@ -36,10 +36,13 @@ namespace Mvk2.Entity.List
             Inventory.SetStackInSlot(12, new ItemStack(ItemsRegMvk.AxeIron, 1, 200));
 
             // Одежда
-            Inventory.SetStackInSlot(13, new ItemStack(ItemsRegMvk.StrawHat));
-            Inventory.SetStackInSlot(20, new ItemStack(ItemsRegMvk.TacticalBelt));
-            Inventory.SetStackInSlot(15, new ItemStack(ItemsRegMvk.CamouflageJacket));
-            Inventory.SetStackInSlot(19, new ItemStack(ItemsRegMvk.Jeans));
+            Inventory.SetStackInSlot(13, new ItemStack(ItemsRegMvk.CapDark));
+            Inventory.SetStackInSlot(14, new ItemStack(ItemsRegMvk.Tie));
+            Inventory.SetStackInSlot(15, new ItemStack(ItemsRegMvk.ShirtBranded));
+            Inventory.SetStackInSlot(16, new ItemStack(ItemsRegMvk.BackpackBranded));
+            Inventory.SetStackInSlot(17, new ItemStack(ItemsRegMvk.PantsJeans));
+            Inventory.SetStackInSlot(18, new ItemStack(ItemsRegMvk.BeltBranded));
+            Inventory.SetStackInSlot(19, new ItemStack(ItemsRegMvk.BootsBranded));
 
             // Рюкзак
             //Inventory.SetStackInSlot(22, new ItemStack(Ce.Items.ItemObjects[3], 3));

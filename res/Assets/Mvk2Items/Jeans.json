@@ -1,9 +1,0 @@
-{
-    MaxStackSize: 1,
-    CellsBackpack: 4,
-    SlotClothIndex:  [6, 1],
-    Sprite: "Items/Jeans",
-    SpriteGui: "Items/Jeans",
-    PutOnBody: "Pants",
-    NameLayer: "Jeans"
-}

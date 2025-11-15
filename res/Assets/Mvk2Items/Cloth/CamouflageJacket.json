@@ -2,8 +2,8 @@
     MaxStackSize: 1,
     CellsPocket: 4,
     SlotClothIndex: [4, 1],
-    Sprite: "Items/CamouflageJacket",
-    SpriteGui: "Items/CamouflageJacket",
+    Sprite: "Items/Cloth/CamouflageJacket",
+    SpriteGui: "Items/Cloth/CamouflageJacket",
     PutOnBody: "Jacket",
     NameLayer: "CamouflageJacket"
 }

@@ -2,16 +2,46 @@
     Model: "Humanoid",
     Layers: [
         {
-            Group: "Pants",
-            Name: "Jeans",
-            Folder: ["L-PantsB1", "L-PantsH1", "L-PantsR1", "L-PantsL1", "L-PantsSR1", "L-PantsSL1"],
-            Texture: "Base"
+            Group: "Jacket",
+            Name: "ShirtBranded",
+            Folder: ["L-JacketB1", "L-JacketFLC", "L-JacketALC", "L-JacketFRC", "L-JacketARC"],
+            Texture: "PlayerTop"
+        },
+        {
+            Group: "Shoes",
+            Name: "BootsBranded",
+            Folder: ["L-ShoesSL1", "L-ShoesFL1", "L-ShoesSR1", "L-ShoesFR1"],
+            Texture: "PlayerTop"
+        },
+        {
+            Group: "Backpack",
+            Name: "BackpackBranded",
+            Folder: ["L-Backpack1"],
+            Texture: "PlayerTop"
         },
         {
             Group: "Neck",
             Name: "Tie",
             Folder: ["L-Neck1"],
-            Texture: "Base"
+            Texture: "PlayerTop"
+        },
+        {
+            Group: "Pants",
+            Name: "PantsJeans",
+            Folder: ["L-PantsB1", "L-PantsH1", "L-PantsR1", "L-PantsL1", "L-PantsSR1", "L-PantsSL1"],
+            Texture: "PlayerTop"
+        },
+        {
+            Group: "Belt",
+            Name: "BeltBranded",
+            Folder: ["L-BeltT"],
+            Texture: "PlayerTop"
+        },
+        {
+            Group: "Hat",
+            Name: "CapDark",
+            Folder: ["L-Hat", "L-Hat3"],
+            Texture: "PlayerTop"
         },
         {
             Group: "Hat",
@@ -23,12 +53,6 @@
             Group: "Jacket",
             Name: "CamouflageJacket",
             Folder: ["L-JacketB1", "L-JacketFLC", "L-JacketALC", "L-JacketFRC", "L-JacketARC"],
-            Texture: "Base"
-        },
-        {
-            Group: "Belt",
-            Name: "TacticalBelt",
-            Folder: ["L-BeltT"],
             Texture: "Base"
         }
         

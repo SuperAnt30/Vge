@@ -326,10 +326,8 @@ namespace Mvk2.Gui.Screens
                 float yaw = x > window.MouseX ? (1f - window.MouseX / (float)x)
                     : -(window.MouseX - x) / (float)(Gi.Width - x);
 
-                window.Game.Render.DepthOn();
                 renderAnimation.DrawGui((PosX + 102) * _si, (PosY + _biasY + 169) * _si,
-                    Glm.Sin(yaw), Glm.Sin(pitch), 36 * _si);
-                window.Game.Render.DepthOff();
+                    Glm.Sin(yaw), Glm.Sin(pitch), 32 * _si); // 36
                 window.Render.ShaderBindGuiColor();
             }
             //window.Render.BindTextureWidgets();

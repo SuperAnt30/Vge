@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Block;
@@ -89,11 +90,21 @@ namespace Vge.Item
         }
 
         /// <summary>
+        /// Зарегистрировать предмет одежды
+        /// </summary>
+        public static ItemCloth RegisterItemClothClass(string alias)
+        {
+            ItemCloth itemCloth = new ItemCloth();
+            RegisterItemClass(alias, itemCloth, "Cloth" + Path.DirectorySeparatorChar);
+            return itemCloth;
+        }
+
+        /// <summary>
         /// Зарегистрировать предмет
         /// </summary>
-        public static void RegisterItemClass(string alias, ItemBase itemObject)
+        public static void RegisterItemClass(string alias, ItemBase itemObject, string path = "")
         {
-            JsonRead jsonRead = new JsonRead(Options.PathItems + alias + ".json");
+            JsonRead jsonRead = new JsonRead(Options.PathItems + path + alias + ".json");
 
             if (jsonRead.IsThereFile)
             {

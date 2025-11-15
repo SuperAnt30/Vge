@@ -1,0 +1,9 @@
+{
+    MaxStackSize: 1,
+    CellsPocket: 2,
+    SlotClothIndex: [7, 1],
+    Sprite: "Items/Cloth/BeltBranded",
+    SpriteGui: "Items/Cloth/BeltBranded",
+    PutOnBody: "Belt",
+    NameLayer: "BeltBranded"
+}

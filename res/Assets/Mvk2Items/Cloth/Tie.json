@@ -1,8 +1,8 @@
 {
     MaxStackSize: 1,
     SlotClothIndex:  [3, 1],
-    Sprite: "Items/Tie",
-    SpriteGui: "Items/Tie",
+    Sprite: "Items/Cloth/Tie",
+    SpriteGui: "Items/Cloth/Tie",
     PutOnBody: "Neck",
     NameLayer: "Tie"
 }

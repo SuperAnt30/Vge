@@ -1,0 +1,8 @@
+{
+    MaxStackSize: 1,
+    SlotClothIndex: [2, 1],
+    Sprite: "Items/Cloth/CapDark",
+    SpriteGui: "Items/Cloth/CapDark",
+    PutOnBody: "Hat",
+    NameLayer: "CapDark"
+}

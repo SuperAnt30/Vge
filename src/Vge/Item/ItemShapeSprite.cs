@@ -40,11 +40,12 @@ namespace Vge.Item
             QuadSide[] quads = new QuadSide[2];
             int min = -8;
             int max = 8;
-            if (_res.CountWidth > 1)
-            {
-                min *= _res.CountWidth;
-                max *= _res.CountWidth;
-            }
+            // Закоменченно из-за разности предмета спрайта 32 к блокам и моделям 16. Ибо в 2 раза больше был. 15.11.2025
+            //if (_res.CountWidth > 1)
+            //{
+            //    min *= _res.CountWidth;
+            //    max *= _res.CountWidth;
+            //}
             quads[0] = new QuadSide();
             quads[0].SetSide(Pole.Up, false, min, 0, min, max, 2, max).SetTexture(_res.Index, 
                 0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight);

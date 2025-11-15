@@ -73,13 +73,9 @@ namespace Vge.Gui
             {
                 // Заносим в шейдор
                 _window.Render.ShsEntity.BindUniformBeginGui();
-                // Всё 2d закончено, рисуем 3д элементы в Gui
-                _window.Render.DepthOn();
 
                 _window.Game.WorldRender.Entities.GetItemGuiRender(Stack.Item.IndexItem)
                     .MeshDraw(_posItemX + PosX, _posItemY + PosY);
-
-                _window.Render.DepthOff();
 
                 _renderSlots.Draw(PosX, PosY);
 
