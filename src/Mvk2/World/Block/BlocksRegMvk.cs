@@ -8,24 +8,48 @@ namespace Mvk2.World.Block
     /// </summary>
     public sealed class BlocksRegMvk
     {
+        public static BlockLiquid Water { get; private set; }
+        public static BlockLiquid Lava { get; private set; }
+
+        /// <summary>
+        /// Камень
+        /// </summary>
+        public static BlockBase Stone { get; private set; }
+        /// <summary>
+        /// Булыжника
+        /// </summary>
+        public static BlockBase Cobblestone { get; private set; }
+        public static BlockBase Limestone { get; private set; }
+        public static BlockBase Granite { get; private set; }
+        public static BlockBase Glass { get; private set; }
+        public static BlockAlpha GlassRed { get; private set; }
+        public static BlockAlpha GlassGreen { get; private set; }
+        public static BlockAlpha GlassBlue { get; private set; }
+        public static BlockAlpha GlassPurple { get; private set; }
+        public static BlockBase FlowerClover { get; private set; }
+        
+        public static BlockBase Brol { get; private set; }
+
         public static void Initialization()
         {
-            BlocksReg.RegisterBlockClass("Stone", new BlockBase());
-            BlocksReg.RegisterBlockClass("Cobblestone", new BlockBase());
-            BlocksReg.RegisterBlockClass("Limestone", new BlockBase());
-            BlocksReg.RegisterBlockClass("Granite", new BlockBase());
-            BlocksReg.RegisterBlockClass("Glass", new BlockBase());
-            BlocksReg.RegisterBlockClass("GlassRed", new BlockAlpha());
-            BlocksReg.RegisterBlockClass("GlassGreen", new BlockAlpha());
-            BlocksReg.RegisterBlockClass("GlassBlue", new BlockAlpha());
-            BlocksReg.RegisterBlockClass("GlassPurple", new BlockAlpha());
-            
-            BlocksReg.RegisterBlockClass("FlowerClover", new BlockBase()); // 195
-            BlocksReg.RegisterBlockClass("Water", new BlockLiquid(true));
-            BlocksReg.RegisterBlockClass("Lava", new BlockLiquid(false));
-            BlocksReg.RegisterBlockClass("Brol", new BlockBase());
-            
+            // Отладочный
+            BlocksReg.RegisterBlockClass("Debug", new BlockDebug());
 
+            Stone = BlocksReg.RegisterBlockClass("Stone");
+            Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
+            Limestone = BlocksReg.RegisterBlockClass("Limestone");
+            Granite = BlocksReg.RegisterBlockClass("Granite");
+            Glass = BlocksReg.RegisterBlockClass("Glass");
+            GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
+            GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen");
+            GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue");
+            GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple");
+
+            FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover"); // 195
+            Water = BlocksReg.RegisterBlockClassLiquid("Water", true);
+            Lava = BlocksReg.RegisterBlockClassLiquid("Lava", false);
+            Brol = BlocksReg.RegisterBlockClass("Brol");
+            
             //for (int i = 0; i < 500; i++)
             //{
             //    BlocksReg.RegisterBlockClass("Clay" + i, new BlockUniSolid(70));

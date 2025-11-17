@@ -501,17 +501,6 @@ namespace Vge.World.Chunk
             return blockStateOld;
         }
 
-        /// <summary>
-        /// Ставим блок в своём чанке, xz 0-15, y 0-max
-        /// Временно, для отладки. 2024-12-03
-        /// </summary>
-        public void SetBlockStateD(int x, int y, int z, BlockState blockState)
-        {
-            int index = (y & 15) << 8 | z << 4 | x;
-            ChunkStorage storage = StorageArrays[y >> 4];
-            storage.SetData(index, blockState.Id, blockState.Met);
-        }
-
         #endregion
 
         #region Entity

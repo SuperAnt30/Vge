@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Block;
@@ -92,6 +93,7 @@ namespace Vge.Item
         /// <summary>
         /// Зарегистрировать предмет одежды
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ItemCloth RegisterItemClothClass(string alias)
         {
             ItemCloth itemCloth = new ItemCloth();

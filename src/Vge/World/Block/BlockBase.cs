@@ -192,7 +192,7 @@ namespace Vge.World.Block
                 // Фигура
                 _ShapeDefinition(state, shapes);
             } 
-            else if (BlocksReg.Air == alias)
+            else if (BlocksReg.AliasAir == alias)
             {
                 // Если блок воздуха
             }

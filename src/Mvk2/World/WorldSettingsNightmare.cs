@@ -16,7 +16,7 @@ namespace Mvk2.World
             ActiveRadius = 3;
             NumberChunkSections = 16;
             Calendar = new СalendarNone();
-            ChunkGenerate = new ChunkProviderGenerateDebug();
+            ChunkGenerate = new ChunkProviderGenerateDebug(NumberChunkSections);
         }
     }
 }

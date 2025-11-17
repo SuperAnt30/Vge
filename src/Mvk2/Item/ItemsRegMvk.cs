@@ -7,17 +7,11 @@ namespace Mvk2.Item
     /// </summary>
     public sealed class ItemsRegMvk
     {
-
-        public static ItemBase AxeIron { get; private set; }
-        public static ItemBase FlowerClover { get; private set; }
-        public static ItemBase Cobblestone { get; private set; }
-        public static ItemBase Brol { get; private set; }
-        
-        public static ItemCloth StrawHat { get; private set; }
-        public static ItemCloth CamouflageJacket { get; private set; }
-        
+        #region Одежда
+        /// <summary>
+        /// Галстук
+        /// </summary>
         public static ItemCloth Tie { get; private set; }
-
         /// <summary>
         /// Фирменная рубашка
         /// </summary>
@@ -42,6 +36,19 @@ namespace Mvk2.Item
         /// Кепка тёмная
         /// </summary>
         public static ItemCloth CapDark { get; private set; }
+
+        #endregion
+
+
+        public static ItemBase AxeIron { get; private set; }
+        public static ItemBase FlowerClover { get; private set; }
+        public static ItemBase Cobblestone { get; private set; }
+        public static ItemBase Brol { get; private set; }
+        
+        public static ItemCloth StrawHat { get; private set; }
+        public static ItemCloth CamouflageJacket { get; private set; }
+        
+        
 
         public static void Initialization()
         {

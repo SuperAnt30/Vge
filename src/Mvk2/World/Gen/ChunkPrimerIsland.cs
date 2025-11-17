@@ -1,4 +1,6 @@
 ﻿using Mvk2.World.Biome;
+using System;
+using System.Runtime.CompilerServices;
 using Vge.Util;
 using WinGL.Util;
 
@@ -18,6 +20,7 @@ namespace Mvk2.World.Gen
         /// 32768 = 16 * 16 * 128
         /// </summary>
         public readonly ushort[] Id;
+        public readonly uint[] Met;
         /// <summary>
         /// Массив для списка блоков с освещённости
         /// </summary>
@@ -42,7 +45,16 @@ namespace Mvk2.World.Gen
         {
             _count = 4096 * numberChunkSections;
             Id = new ushort[_count];
+            Met = new uint[_count];
             ArrayLightBlocks = new ArrayFast<Vector3i>(_count);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockState(int x, int y, int z, ushort id, uint met = 0)
+        {
+            int index = y << 8 | z << 4 | x;
+            Id[index] = id;
+            if (met != 0) Met[index] = met;
         }
 
         /// <summary>
@@ -50,7 +62,8 @@ namespace Mvk2.World.Gen
         /// </summary>
         public void Clear()
         {
-            for (int i = 0; i < _count; i++) Id[i] = 0;
+            Array.Clear(Id, 0, _count);
+            Array.Clear(Met, 0, _count);
             for (int i = 0; i < 256; i++)
             {
                 Biome[i] = EnumBiomeIsland.Plain;
