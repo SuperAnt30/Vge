@@ -1,4 +1,5 @@
-﻿using Vge.World;
+﻿using Mvk2.World.Gen;
+using Vge.World;
 using Vge.World.Сalendar;
 
 namespace Mvk2.World
@@ -15,6 +16,7 @@ namespace Mvk2.World
             NumberChunkSections = 8;
             //Calendar = new Сalendar32(36000); // 24000 при 20 тиках = 20 мин. При 30 тиках = 36000
             Calendar = new Сalendar32(36000);
+            ChunkGenerate = new ChunkProviderGenerateIsland(NumberChunkSections);
         }
     }
 }

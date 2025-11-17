@@ -59,6 +59,9 @@ internal sealed class Srl
     internal const string EntityAlreadyBeingTracked = "Сущность [{0}] уже отслеживается!.";
     internal const string DetectingObjectTrackingError = "Обнаружение ошибки отслеживания объекта: {0}";
     internal const string UnacceptablePortableItem = "{0} {1} пытался установить недопустимый переносимый предмет";
+    internal const string CouldNotReadChunkInRegion = "Не удалось прочесть чанк[{2}] в регионе[{3}] {0}\r\n{1}";
+
+    
 
     #endregion
 

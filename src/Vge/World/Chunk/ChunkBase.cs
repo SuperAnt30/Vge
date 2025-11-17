@@ -7,6 +7,7 @@ using Vge.Entity;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Light;
+using WinGL.Util;
 
 namespace Vge.World.Chunk
 {
@@ -160,292 +161,27 @@ namespace Vge.World.Chunk
         #region Кольца 1-4
 
         /// <summary>
-        /// #1 1*1 Загрузка или генерация
+        /// Готова начальная генерация или загрузка, приступаем к следующему этапу Populate
         /// </summary>
-        public void LoadingOrGen()
+        public void ChunkPresent()
         {
-            if (!IsChunkPresent)
+            IsChunkPresent = true;
+
+            if (!World.IsRemote && World is WorldServer worldServer)
             {
-                // Пробуем загрузить с файла
-                //World.Filer.StartSection("Gen " + CurrentChunkX + "," + CurrentChunkY);
-                //int h = NumberSections == 8 ? 63 : 95;
-                int h = NumberSections == 8 ? 47 : 95;
-                // Временно льём тест
-
-                ushort Stone, Cobblestone, Limestone, Granite, Glass, GlassRed, GlassGreen, 
-                    GlassBlue, GlassPurple, FlowerClover, Water, Lava, Brol;
-                Stone = Cobblestone = Limestone = Granite = Glass = GlassRed = GlassGreen = 
-                    GlassBlue = GlassPurple = FlowerClover = Water = Lava = Brol = 0;
-
-
-                for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
+                int x, y;
+                ChunkBase chunk;
+                for (x = -1; x <= 1; x++)
                 {
-                    switch(Ce.Blocks.BlockAlias[i])
+                    for (y = -1; y <= 1; y++)
                     {
-                        case "Stone": Stone = i; break;
-                        case "Cobblestone": Cobblestone = i; break;
-                        case "Limestone": Limestone = i; break;
-                        case "Granite": Granite = i; break;
-                        case "Glass": Glass = i; break;
-                        case "GlassRed": GlassRed = i; break;
-                        case "GlassGreen": GlassGreen = i; break;
-                        case "GlassBlue": GlassBlue = i; break;
-                        case "GlassPurple": GlassPurple = i; break;
-                        case "FlowerClover": FlowerClover = i; break;
-                        case "Water": Water = i; break;
-                        case "Lava": Lava = i; break;
-                        case "Brol": Brol = i; break;
-                    }
-                }
-                //Water = Lava;
-                //GlassRed = GlassGreen = GlassBlue = GlassPurple = Glass;
-
-                for (int x = 0; x < 16; x++)
-                {
-                    for (int z = 0; z < 16; z++)
-                    {
-                        for (int y = 0; y < h; y++)
+                        chunk = worldServer.ChunkPrServ.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
+                        if (chunk != null && chunk.IsChunkPresent)
                         {
-                            SetBlockStateD(x, y, z, new BlockState(Stone));
+                            chunk._Populate(worldServer.ChunkPrServ);
                         }
                     }
                 }
-
-                if (X == 0 && Y == 0)
-                {
-                    for (int y = h - 16; y < h - 4; y++)
-                    {
-                        SetBlockStateD(0, y, 0, new BlockState(0));
-                        SetBlockStateD(1, y, 0, new BlockState(0));
-                    }
-                    for (int y = h + 16; y < h + 20; y++)
-                    {
-                        SetBlockStateD(15, y, 0, new BlockState(Water));
-                    }
-                }
-                if (X == 0 && Y == -1)
-                {
-                    for (int y = h - 16; y < h - 4; y++)
-                    {
-                        SetBlockStateD(1, y, 15, new BlockState(Water));
-                    }
-                }
-                if (X == 0 && Y == 0)
-                {
-                    for (int y = h - 16; y < h - 4; y++)
-                    {
-                        SetBlockStateD(1, y, 1, new BlockState(Water));
-                    }
-                }
-
-                for (int x = 2; x < 8; x++)
-                {
-                    for (int z = 0; z < 16; z++)
-                    {
-                        //for (int y = h - 42; y < h; y++)
-                        for (int y = h - 2; y < h; y++)
-                        {
-                            //SetBlockState(x, y, z, new BlockState(GlassBlue));
-                            SetBlockStateD(x, y, z, new BlockState(0));
-                           // SetBlockStateD(x, y, z, new BlockState(Water));
-                        }
-
-                        
-                    }
-                }
-                for (int x = 2; x < 8; x++)
-                {
-                    for (int z = 0; z < 16; z++)
-                    {
-                        SetBlockStateD(x, h - 3, z, new BlockState(Water));
-                    }
-                }
-
-                for (int x = 9; x < 16; x++)
-                {
-                    for (int z = 0; z < 16; z++)
-                    {
-                        for (int y = h - 12; y < h - 2; y++)
-                        {
-                            SetBlockStateD(x, y, z, new BlockState(0));
-                        }
-                    }
-                }
-
-                if (X > -2 && X < 2 && Y > -2 && Y < 2)
-                {
-
-                    SetBlockStateD(5, h, 5, new BlockState(GlassRed));
-                    SetBlockStateD(5, h - 1, 4, new BlockState(GlassRed));
-                    SetBlockStateD(5, h - 2, 3, new BlockState(GlassRed));
-
-                    SetBlockStateD(4, h, 7, new BlockState(Water));
-
-                    SetBlockStateD(1, h + 2, 0, new BlockState(Water));
-                    SetBlockStateD(1, h + 1, 0, new BlockState(Water, 13));
-                    SetBlockStateD(1, h, 0, new BlockState(Water, 11));
-                    SetBlockStateD(2, h, 0, new BlockState(Water, 9));
-
-                    SetBlockStateD(8, h - 1, 15, new BlockState(Water));
-                    SetBlockStateD(8, h - 1, 0, new BlockState(Water));
-                    for (int x = 0; x < 7; x++)
-                    {
-                        SetBlockStateD(x + 9, h - 1, 15, new BlockState(Water, (byte)(13 - x * 2)));
-                        if (x < 6) SetBlockStateD(x + 9, h - 1, 0, new BlockState(Water, (byte)(13 - x * 2)));
-
-                        if (x < 6) SetBlockStateD(x + 8, h - 1, 14, new BlockState(Lava, (byte)(13 - x * 3)));
-                    }
-                    SetBlockStateD(14, h - 1, 1, new BlockState(Water, 1));
-                    SetBlockStateD(13, h - 1, 14, new BlockState(Water, 2));
-                    SetBlockStateD(13, h - 1, 13, new BlockState(Water, 1));
-
-                    SetBlockStateD(7, h - 1, 14, new BlockState(Lava));
-                    SetBlockStateD(7, h, 15, new BlockState(Lava));
-                    SetBlockStateD(7, h + 1, 15, new BlockState(Lava));
-                    SetBlockStateD(6, h + 16, 5, new BlockState(Lava));
-
-                    for (int x = 1; x < 8; x++)
-                    {
-                        for (int z = 6; z < 11; z++)
-                        {
-                            SetBlockStateD(x, h, z, new BlockState(Granite));
-                            //SetBlockState(x, h - 1, z, new BlockState(Lava));
-                            SetBlockStateD(x, h + 9, z, new BlockState(Limestone));
-                        }
-                    }
-
-                    //SetBlockStateD(4, h + 1, 8, new BlockState(Brol));
-                    //Light.SetLightBlock(4, h + 1, 8);
-
-                    //for (int x = 0; x < 8; x++)
-                    //{
-                    //    for (int z = 2; z < 11; z++)
-                    //    {
-                    //      //  SetBlockStateD(x, h + 6, z, new BlockState(Limestone));
-                    //        SetBlockStateD(x, h + 16, z, new BlockState(Lava));
-                    //        SetBlockStateD(x, h + 17, z, new BlockState(Lava));
-                    //        SetBlockStateD(x, h + 18, z, new BlockState(Lava));
-                    //        SetBlockStateD(x, h + 19, z, new BlockState(Lava));
-                    //    }
-                    //}
-
-
-                    for (int y = h; y < h + 32; y++)
-                    {
-                        SetBlockStateD(7, y, 5, new BlockState(Cobblestone));
-                        if (y > h + 16)
-                        {
-                            SetBlockStateD(6, y, 5, new BlockState(Water));
-                        }
-
-                    }
-
-                    SetBlockStateD(0, h, 0, new BlockState(Cobblestone));
-                    SetBlockStateD(0, h + 1, 0, new BlockState(Cobblestone));
-                    SetBlockStateD(0, h + 2, 0, new BlockState(Cobblestone));
-
-                    SetBlockStateD(10, h, 10, new BlockState(FlowerClover));
-                    SetBlockStateD(12, h, 12, new BlockState(FlowerClover));
-                    SetBlockStateD(15, h, 10, new BlockState(FlowerClover));
-                    SetBlockStateD(15, h, 12, new BlockState(FlowerClover));
-                    SetBlockStateD(0, h, 15, new BlockState(FlowerClover));
-                    SetBlockStateD(1, h, 15, new BlockState(FlowerClover));
-
-
-
-
-
-                    SetBlockStateD(15, h, 15, new BlockState(Limestone));
-                    SetBlockStateD(15, h + 1, 15, new BlockState(Limestone));
-
-                    SetBlockStateD(8, h, 5, new BlockState(Cobblestone));
-                    SetBlockStateD(8, h, 6, new BlockState(Granite));
-                    SetBlockStateD(8, h + 3, 7, new BlockState(Cobblestone));
-                    SetBlockStateD(8, h + 4, 7, new BlockState(Limestone));
-
-
-                    for (int y = h + 5; y < h + 10; y++)
-                    {
-                        SetBlockStateD(8, y, 3, new BlockState(Granite));
-
-                        SetBlockStateD(11, y, 5, new BlockState(Glass));
-                        SetBlockStateD(8, y, 5, new BlockState(GlassRed));
-                        SetBlockStateD(9, y, 12, new BlockState(GlassGreen));
-                        SetBlockStateD(10, y, 13, new BlockState(GlassBlue));
-                        SetBlockStateD(11, y, 15, new BlockState(GlassPurple));
-                    }
-
-                    SetBlockStateD(12, h + 5, 5, new BlockState(GlassRed));
-                    SetBlockStateD(12, h + 6, 5, new BlockState(GlassGreen));
-
-                    SetBlockStateD(11, h - 1, 4, new BlockState(1));
-                    SetBlockStateD(11, h - 1, 3, new BlockState(1));
-                    SetBlockStateD(12, h - 1, 4, new BlockState(1));
-                    SetBlockStateD(12, h - 1, 3, new BlockState(1));
-                    SetBlockStateD(11, h - 2, 4, new BlockState(0));
-                    SetBlockStateD(11, h - 2, 3, new BlockState(0));
-                    SetBlockStateD(12, h - 2, 4, new BlockState(0));
-                    SetBlockStateD(12, h - 2, 3, new BlockState(0));
-
-                    SetBlockStateD(13, h, 8, new BlockState(1));
-                    SetBlockStateD(12, h, 7, new BlockState(1, 1));
-                    SetBlockStateD(11, h, 7, new BlockState(1, 2));
-                    SetBlockStateD(11, h, 6, new BlockState(1, 3));
-                    SetBlockStateD(12, h, 6, new BlockState(1, 3));
-                    SetBlockStateD(10, h, 6, new BlockState(Granite));
-
-
-                    SetBlockStateD(12, h + 1, 9, new BlockState(1));
-                    SetBlockStateD(12, h + 2, 9, new BlockState(1, 0));
-                    SetBlockStateD(12, h + 3, 9, new BlockState(1, 1));
-                    SetBlockStateD(12, h + 4, 9, new BlockState(1, 1));
-                    SetBlockStateD(12, h + 5, 9, new BlockState(1, 1));
-                    SetBlockStateD(12, h + 6, 9, new BlockState(1, 2));
-                    SetBlockStateD(12, h + 7, 9, new BlockState(1, 2));
-                    SetBlockStateD(12, h + 8, 9, new BlockState(1, 2));
-                    SetBlockStateD(12, h + 9, 9, new BlockState(1, 3));
-                    SetBlockStateD(12, h + 10, 9, new BlockState(1, 3));
-                    SetBlockStateD(12, h + 11, 9, new BlockState(1, 3));
-                    SetBlockStateD(12, h, 9, new BlockState(1));
-                    SetBlockStateD(11, h, 9, new BlockState(1));
-                    SetBlockStateD(11, h, 10, new BlockState(1));
-                    SetBlockStateD(12, h, 10, new BlockState(1));
-
-                }
-                //if (X > 4 || X < -4) return;
-                //if (Y > 4 || Y < -4) return;
-
-                //if (Y > 5 || Y < -5) return;
-                //if (Y > 3 || Y < -5) return;
-
-
-                // Debug.Burden(.6f);
-
-                //World.Filer.EndSectionLog(); // 0.3 мс
-                //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
-                //Light.SetLightBlocks(chunkPrimer.arrayLightBlocks.ToArray());
-                Light.GenerateHeightMap(); // 0.02 мс
-                //InitHeightMapGen();
-                //World.Filer.EndSectionLog();
-                IsChunkPresent = true;
-
-                if (!World.IsRemote && World is WorldServer worldServer)
-                {
-                    int x, y;
-                    ChunkBase chunk;
-                    for (x = -1; x <= 1; x++)
-                    {
-                        for (y = -1; y <= 1; y++)
-                        {
-                            chunk = worldServer.ChunkPrServ.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                            if (chunk != null && chunk.IsChunkPresent)
-                            {
-                                chunk._Populate(worldServer.ChunkPrServ);
-                            }
-                        }
-                    }
-                }
-                
             }
         }
 
@@ -471,10 +207,10 @@ namespace Vge.World.Chunk
                     }
                 }
 
-                
-                // Пробуем загрузить с файла
+
+                // Populate
                 //World.Filer.StartSection("Pop " + CurrentChunkX + "," + CurrentChunkY);
-                Debug.Burden(1.5f);
+                provider.ChunkGenerate.Populate(this);
                 //World.Filer.EndSectionLog();
                 IsPopulated = true;
                 for (x = -1; x <= 1; x++)
@@ -1030,5 +766,15 @@ namespace Vge.World.Chunk
         public void Modified() => _isModified = true;
 
         public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
+
+        /// <summary>
+        /// Получить вектор позиции чанка
+        /// </summary>
+        public Vector2i ToPosition() => new Vector2i(CurrentChunkX, CurrentChunkY);
+
+        /// <summary>
+        /// Получить вектор позиции региона
+        /// </summary>
+        public Vector2i ToRegion() => new Vector2i(CurrentChunkX >> 5, CurrentChunkY >> 5);
     }
 }

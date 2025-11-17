@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Util
 {
@@ -43,6 +44,7 @@ namespace Vge.Util
         /// <summary>
         /// Добавить значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
         {
             try
@@ -68,11 +70,13 @@ namespace Vge.Util
         /// <summary>
         /// Получить целый буфер
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] GetBufferAll() => _buffer;
 
         /// <summary>
         /// Удалить последнее значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveLast()
         {
             if (Count > 0) Count--;
@@ -81,11 +85,13 @@ namespace Vge.Util
         /// <summary>
         /// Вернуть последнее значение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetLast() => _buffer[Count - 1];
 
         /// <summary>
         /// Очистить
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear() => Count = 0;
 
         public override string ToString() => Count.ToString();

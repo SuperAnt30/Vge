@@ -1,4 +1,5 @@
-﻿using Vge.World;
+﻿using Mvk2.World.Gen;
+using Vge.World;
 using Vge.World.Сalendar;
 
 namespace Mvk2.World
@@ -15,6 +16,7 @@ namespace Mvk2.World
             ActiveRadius = 3;
             NumberChunkSections = 16;
             Calendar = new СalendarNone();
+            ChunkGenerate = new ChunkProviderGenerateDebug();
         }
     }
 }

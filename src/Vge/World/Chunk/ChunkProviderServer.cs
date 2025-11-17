@@ -1,4 +1,8 @@
-﻿using Vge.Util;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Vge.Util;
+using Vge.World.Gen;
+using WinGL.Util;
 
 namespace Vge.World.Chunk
 {
@@ -11,6 +15,11 @@ namespace Vge.World.Chunk
         /// Размер партии закачки чанков
         /// </summary>
         public byte LoadingBatchSize { get; private set; } = Ce.StartDesiredBatchSize;
+
+        /// <summary>
+        /// Объект для генерации чанков
+        /// </summary>
+        public readonly IChunkProviderGenerate ChunkGenerate;
         /// <summary>
         /// Ждать обработчик
         /// </summary>
@@ -47,6 +56,7 @@ namespace Vge.World.Chunk
         {
             _worldServer = world;
             Settings.SetHeightChunks(world.Settings.NumberChunkSections);
+            ChunkGenerate = world.Settings.ChunkGenerate;
             Wait = new WaitHandler("Chunk" + world.IdWorld);
             Wait.DoInFlow += (sender, e) => _LoadQueuedChunks();
             Wait.Run();
@@ -59,7 +69,7 @@ namespace Vge.World.Chunk
         {
             ChunkBase chunk = new ChunkBase(_worldServer, Settings, x, y);
             _chunkMapping.Add(chunk);
-            chunk.LoadingOrGen();
+            _LoadOrGen(chunk);
         }
 
         /// <summary>
@@ -107,7 +117,7 @@ namespace Vge.World.Chunk
                 for (i = 0; i < count; i++)
                 {
                     chunk = _loadingChunks[i];
-                    chunk.LoadingOrGen();
+                    _LoadOrGen(chunk);
                 }
 
                 _counterLBS += count;
@@ -118,6 +128,38 @@ namespace Vge.World.Chunk
                     count, LoadingBatchSize, Ce.MaxDesiredBatchSize, Ce.MaxBatchChunksTime);
 
                 //_worldServer.Server.Log.Log("Lbs: " + LoadingBatchSize + " t:" + time);
+            }
+        }
+
+        /// <summary>
+        /// Загружаем, если нет чанка то генерируем
+        /// </summary>
+        /// <param name="chunk">Объект чанка не null</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _LoadOrGen(ChunkBase chunk)
+        {
+            if (!chunk.IsChunkPresent)
+            {
+                // Пробуем загрузить с файла
+                try
+                {
+                    //Stopwatch stopwatch = new Stopwatch();
+                    //stopwatch.Start();
+                    //chunk.LoadFileChunk(worldServer);
+                    // if (chunk.IsChunkLoaded) world.Log.Log("ChunkLoad[{1}]: {0:0.00} ms", stopwatch.ElapsedTicks / (float)MvkStatic.TimerFrequency, chunk.Position);
+                }
+                catch (Exception ex)
+                {
+                    _worldServer.SetLog(Srl.CouldNotReadChunkInRegion,
+                        ex.Message, ex.StackTrace, chunk.ToPosition(), chunk.ToRegion());
+                }
+                if (!chunk.IsChunkPresent)
+                {
+                    // Начинаем генерацию
+                    ChunkGenerate.GenerateChunk(chunk);
+                }
+                // Готова начальная генерация или загрузка
+                chunk.ChunkPresent();
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Vge.Network.Packets.Server;
+using Vge.World.Gen;
 using Vge.World.Сalendar;
 
 namespace Vge.World
@@ -28,6 +29,10 @@ namespace Vge.World
         /// Календарь
         /// </summary>
         public IСalendar Calendar { get; protected set; }
+        /// <summary>
+        /// Объект для генерации чанков
+        /// </summary>
+        public IChunkProviderGenerate ChunkGenerate { get; protected set; }
 
         /// <summary>
         /// Пакет Возраждение в мире

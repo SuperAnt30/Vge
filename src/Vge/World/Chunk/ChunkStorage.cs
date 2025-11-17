@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Block;
 
@@ -64,6 +65,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Пустой, все блоки воздуха
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEmptyData() => CountBlock == 0;
 
         /// <summary>
@@ -84,6 +86,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Очистить без света
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearNotLight()
         {
             Data = null;
@@ -185,7 +188,7 @@ namespace Vge.World.Chunk
                 }
                 else
                 {
-                    Data[index] = (ushort)(id & 0xFFF | met << 12);
+                    Data[index] = (ushort)(id & 0xFFF | (ushort)(met << 12));
                     Metadata.Remove(key);
                 }
             }
@@ -217,6 +220,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Имеются ли блоки которым нужен случайный тик
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetNeedsRandomTick() => _countTickBlock > 0;
 
         /// <summary>
