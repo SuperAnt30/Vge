@@ -50,7 +50,7 @@ public sealed class Gi
     {
         if (--ZoomDrawOrto < 0)
         {
-            ZoomDrawOrto = 5;
+            ZoomDrawOrto = 6;
         }
         IsDrawOrto = ZoomDrawOrto > 0;
     }
