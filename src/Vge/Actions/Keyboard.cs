@@ -67,7 +67,7 @@ namespace Vge.Actions
                     case Keys.ShiftKey: _game.Player.KeySneak(true); break;
                     case Keys.ControlKey: _game.Player.KeySprinting(true); break;
                     case Keys.Tab: _game.MouseFirstPersonView(false); break;
-                    case Keys.F5: _game.Player.ViewCameraNext(); break;
+                    
                 }
 
                 if (keys == Keys.PageUp)

@@ -32,6 +32,31 @@ public sealed class Gi
     /// </summary>
     public static int WindowsChatHeightMessage = 333;
 
+    #region Для отладки ортоганальная камера мира
+
+    /// <summary>
+    /// Демонстрируем ли мы прорисовку ортоганальной камеры
+    /// </summary>
+    public static bool IsDrawOrto { get; private set; }
+    /// <summary>
+    /// Увеличение ортоганальной камеры
+    /// </summary>
+    public static int ZoomDrawOrto { get; private set; }
+
+    /// <summary>
+    /// Клик изменения отладочной ортоганальной камеры
+    /// </summary>
+    public static void DebugOrtoNext()
+    {
+        if (--ZoomDrawOrto < 0)
+        {
+            ZoomDrawOrto = 5;
+        }
+        IsDrawOrto = ZoomDrawOrto > 0;
+    }
+
+    #endregion
+
     #region ActiveTexture
 
     /// <summary>

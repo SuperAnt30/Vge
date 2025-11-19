@@ -35,10 +35,23 @@ namespace Mvk2.World.Gen
         /// </summary>
         private readonly ChunkPrimerIsland _chunkPrimer;
 
+        /// <summary>
+        /// Объект генерации слоёв биомов
+        /// </summary>
+        //private readonly GenLayer _genLayerBiome;
+        /// <summary>
+        /// Объект генерации слоёв высот от биомов
+        /// </summary>
+        //private readonly GenLayer _genLayerHeight;
+
         public ChunkProviderGenerateIsland(byte numberChunkSections)
         {
             NumberChunkSections = numberChunkSections;
             _chunkPrimer = new ChunkPrimerIsland(numberChunkSections);
+
+            //GenLayer[] gens = GenLayer.BeginLayerBiome(Seed);
+            //_genLayerBiome = gens[0];
+            //_genLayerHeight = gens[1];
         }
 
         public void InitLoading(GameServer server, WorldServer worldServer)
@@ -64,6 +77,8 @@ namespace Mvk2.World.Gen
 
             int x, y, z;
             int count = 0;
+
+            // Низ бедрок
             for (x = 0; x < 16; x++)
             {
                 for (z = 0; z < 16; z++)
@@ -76,7 +91,9 @@ namespace Mvk2.World.Gen
                 }
             }
 
-            
+            //int[] arHeight = _genLayerHeight.GetInts(xbc, zbc, 16, 16);
+            //int[] arBiome = _genLayerBiome.GetInts(xbc, zbc, 16, 16);
+
             //int h = chunk.NumberSections == 8 ? 47 : 95;
             //// Временно льём тест
 

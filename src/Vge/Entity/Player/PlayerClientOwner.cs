@@ -128,6 +128,10 @@ namespace Vge.Entity.Player
         /// Выбранная ячейка
         /// </summary>
         private byte _currentPlayerItem = 0;
+        /// <summary>
+        /// Обновить матрицы камеры
+        /// </summary>
+        private bool _updateCamera = true;
 
         public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
@@ -367,6 +371,16 @@ namespace Vge.Entity.Player
         #region FrustumCulling Camera
 
         /// <summary>
+        /// Клик изменения отладочной ортоганальной камеры
+        /// </summary>
+        public void DebugOrtoNext()
+        {
+            Gi.DebugOrtoNext();
+            ViewCamera = Gi.IsDrawOrto ? EnumViewCamera.Back : EnumViewCamera.Eye;
+            _updateCamera = true;
+        }
+
+        /// <summary>
         /// Следующий вид камеры
         /// </summary>
         public void ViewCameraNext()
@@ -376,6 +390,7 @@ namespace Vge.Entity.Player
             value++;
             if (value > count) value = 0;
             ViewCamera = (EnumViewCamera)value;
+            _updateCamera = true;
         }
 
         /// <summary>
@@ -429,8 +444,19 @@ namespace Vge.Entity.Player
             //    pos -= up * .1f;
             //}
             // Матрица Projection
-            Mat4 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
+            Mat4 matrix;
+            if (Gi.IsDrawOrto)
+            {
+                int ort = Gi.ZoomDrawOrto * Gi.ZoomDrawOrto;
+                int width = Gi.Width / ort;
+                int height = Gi.Height / ort;
+                matrix = Glm.Ortho(-width, width, -height, height, -500, 500);
+            }
+            else
+            {
+                matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
                    0.01f, OverviewChunk * 22f);
+            }
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(Gi.MatrixView);
@@ -566,18 +592,16 @@ namespace Vge.Entity.Player
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void UpdateFrame(float timeIndex)
         {
-            // Обновить камеру
-            bool updateCamera = false;
             // Меняем положения глаз, смена позы
             if (Eye.UpdateFrame(timeIndex))
             {
                 _eyeFrame = Eye.ValueFrame;
-                updateCamera = true;
+                _updateCamera = true;
             }
             // Меняем угол обзора, как правило при изменении скорости
             if (Fov.UpdateFrame(timeIndex))
             {
-                updateCamera = true;
+                _updateCamera = true;
             }
 
             if (PosX != PosFrameX || PosY != PosFrameY || PosZ != PosFrameZ
@@ -612,13 +636,14 @@ namespace Vge.Entity.Player
                     }
                     RotationFramePitch = RotationPrevPitch + (RotationPitch - RotationPrevPitch) * timeIndex;
                 }
-                updateCamera = true;
+                _updateCamera = true;
             }
 
-            if (updateCamera)
+            if (_updateCamera)
             {
                 // Обновить камеру
                 _CameraHasBeenChanged();
+                _updateCamera = false;
             }
         }
 
@@ -862,12 +887,14 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Задать выбранной сущности импульс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _SetEntityPhysicsImpulse(int id, float x, float y, float z)
             => _game.TrancivePacket(new PacketC03UseEntity(id, x, y, z));
 
         /// <summary>
         /// Задать выбранной сущности импульс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _SetAwakenPhysicSleep(int id)
             => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
 
@@ -927,6 +954,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Пакет получения сообщения с сервера
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PacketMessage(PacketS3AMessage packet)
         {
             Chat.AddMessage(packet.Message, Gi.WindowsChatWidthMessage,  Gi.Si);
@@ -974,6 +1002,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Получить время в милисекундах
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override long _Time() => _game.Time();
 
         public override string ToString()

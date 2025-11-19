@@ -72,6 +72,10 @@ namespace Mvk2.Games
                 case Keys.E: _windowMvk.LScreenMvk.Inventory(); break;
                 // скрин хранилища
                 case Keys.R: _windowMvk.LScreenMvk.StorageDebug(); break;
+                case Keys.F5: Player.ViewCameraNext(); break;
+                // DrawOrto
+                case Keys.F7: Player.DebugOrtoNext(); break;
+                    
             }
         }
 

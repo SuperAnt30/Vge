@@ -45,7 +45,7 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly DoubleList<ChunkRender> _renderAlphaQueues = new DoubleList<ChunkRender>();
         /// <summary>
-        /// Метод чанков для прорисовки
+        /// Массив чанков для прорисовки
         /// </summary>
         private readonly ArrayFast<ChunkRender> _arrayChunkRender;
         /// <summary>
@@ -234,10 +234,6 @@ namespace Vge.Renderer.World
         /// </summary>
         public void Update()
         {
-            // Биндим чанки вокселей и готовим массив чанков
-            // В игровом такте, для подсчёта чтоб максимально можно было нагрузить CPU
-            _BindChunkVoxel();
-
             //Render.LightMap.Update(_game.World.Settings.HasNoSky, Glm.Cos(_game.TickCounter * .01f), .24f );
             //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
             if (_game.World.Settings != null)
@@ -259,6 +255,10 @@ namespace Vge.Renderer.World
         {
             // Обновить кадр основного игрока, камера и прочее
             _game.Player.UpdateFrame(timeIndex);
+
+            // Биндим чанки вокселей и готовим массив чанков
+            // В игровом такте нельзя, так-как кадр чаще, при резком вращении, видны фантомы не загруженных чанков 18.11.2025
+            _BindChunkVoxel();
 
             Entities.UpdateMatrix(timeIndex);
 
