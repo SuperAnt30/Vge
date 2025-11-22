@@ -2,5 +2,6 @@
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
     Translucent: true,
+    LightValue: 8,
     Liquid: "Lava"
 }

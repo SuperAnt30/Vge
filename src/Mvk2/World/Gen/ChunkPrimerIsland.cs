@@ -22,9 +22,10 @@ namespace Mvk2.World.Gen
         public readonly ushort[] Id;
         public readonly uint[] Met;
         /// <summary>
-        /// Массив для списка блоков с освещённости
+        /// Массив блоков которые светятся
+        /// Координаты в битах 0000 0000 0000 000y  yyyy yyyy zzzz xxxx
         /// </summary>
-        public readonly ArrayFast<Vector3i> ArrayLightBlocks;
+        public readonly ArrayFast<uint> ArrayLightBlocks;
         /// <summary>
         /// Биомы
         /// x << 4 | z;
@@ -46,7 +47,7 @@ namespace Mvk2.World.Gen
             _count = 4096 * numberChunkSections;
             Id = new ushort[_count];
             Met = new uint[_count];
-            ArrayLightBlocks = new ArrayFast<Vector3i>(_count);
+            ArrayLightBlocks = new ArrayFast<uint>(_count);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

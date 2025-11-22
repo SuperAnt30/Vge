@@ -32,7 +32,7 @@ namespace Vge.World.Light
         /// </summary>
         private readonly WorldLight _worldLight;
         /// <summary>
-        /// Список блоков которые светятся
+        /// Массив блоков которые светятся
         /// Координаты в битах 0000 0000 0000 000y  yyyy yyyy zzzz xxxx
         /// </summary>
         private List<uint> _lightBlocks = new List<uint>();
