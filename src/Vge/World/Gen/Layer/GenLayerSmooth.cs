@@ -15,17 +15,18 @@
             int ph = height + 2;
             int[] arParent = _parent.GetInts(px, pz, pw, ph);
             int[] ar = new int[width * height];
-            int x, z;
-
+            int x, z, zpw;
+            int c01, c21, c10, c12, c11;
             for (z = 0; z < height; z++)
             {
+                zpw = (z + 1) * pw;
                 for (x = 0; x < width; x++)
                 {
-                    int c01 = arParent[x + 0 + (z + 1) * pw];
-                    int c21 = arParent[x + 2 + (z + 1) * pw];
-                    int c10 = arParent[x + 1 + (z + 0) * pw];
-                    int c12 = arParent[x + 1 + (z + 2) * pw];
-                    int c11 = arParent[x + 1 + (z + 1) * pw];
+                    c01 = arParent[x + zpw];
+                    c21 = arParent[x + 2 + zpw];
+                    c10 = arParent[x + 1 + z * pw];
+                    c12 = arParent[x + 1 + (z + 2) * pw];
+                    c11 = arParent[x + 1 + zpw];
 
                     if (c01 == c21 && c10 == c12)
                     {

@@ -21,9 +21,9 @@ namespace Mvk2
             //game.World.
             long seed = 4;
             // 0 - biome
-            _FileArea(seed, 0, game);
+            //_FileArea(seed, 0, game);
             // 1 - height
-            //_FileArea(seed, world, 1);
+            _FileArea(seed, 1, game);
         }
 
 
@@ -35,8 +35,9 @@ namespace Mvk2
             float timerFrequency = Stopwatch.Frequency / 1000;
             int width, height;
             width = height = 4096;
+            //width = height = 1024;
             //width = height = 8192;
-            int zoom = 8;
+            int zoom = 1;
             GenLayer[] genLayer = GenLayerIsland.BeginLayerBiome(seed);
 
             Bitmap bitmap = new Bitmap(width / zoom, height / zoom);

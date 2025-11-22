@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Gen.Layer
+﻿using System.Runtime.CompilerServices;
+
+namespace Vge.World.Gen.Layer
 {
     /// <summary>
     /// Абстрактный класс слоёв
@@ -82,6 +84,7 @@
         /// <summary>
         /// Возвращает псевдослучайное число LCG из [0, x). Аргументы: целое х
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int _NextInt(int x)
         {
             int random = (int)((_chunkSeed >> 24) % x);
@@ -95,6 +98,7 @@
         /// <summary>
         /// Возвращает псевдослучайное число LCG из [0, 1]
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool _NextBool() => _NextInt(2) == 1;
     }
 }

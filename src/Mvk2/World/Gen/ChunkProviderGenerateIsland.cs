@@ -96,14 +96,23 @@ namespace Mvk2.World.Gen
             int[] arHeight = _genLayerHeight.GetInts(xbc, zbc, 16, 16);
             int[] arBiome = _genLayerBiome.GetInts(xbc, zbc, 16, 16);
 
-            int h;
+            int h, b;
             for (x = 0; x < 16; x++)
             {
                 for (z = 0; z < 16; z++)
                 {
                     idx = z << 4 | x;
-                    h = arBiome[idx];
-                    _chunkPrimer.SetBlockState(x, 3, z, (ushort)(h + 1));
+                    h = arHeight[idx];
+                    if (h > 2)
+                    {
+                        for (y = 3; y < h; y++)
+                        {
+                            _chunkPrimer.SetBlockState(x, y, z, 4);
+                        }
+                        b = arBiome[idx];
+                        _chunkPrimer.SetBlockState(x, h, z, (ushort)(b + 1));
+                    }
+                    //_chunkPrimer.SetBlockState(x, 3, z, (ushort)(h + 1));
                 }
             }
 

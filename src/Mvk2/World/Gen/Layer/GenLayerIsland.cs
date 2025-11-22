@@ -122,33 +122,31 @@ namespace Mvk2.World.Gen.Layer
             layerBiome = new GenLayerSmooth(2, layerBiome);
             // EndBiome
 
-            //// Height
-            //layerHeight = new GenLayerBiomeHeight(layerBiomeOne);
-            //layerHeight = new GenLayerHeightAddBegin(2, layerHeight);
-            //layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(21, layerHeight));
-            //// Объект по добавлении высот (неровности вверх)
-            //layerHeight = new GenLayerHeightAddUp(2, layerHeight);
-            //layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(24, layerHeight));
-            //// добавлении высот (ущелены в море и не большие неровности)
-            //layerHeight = new GenLayerHeightAddSea(100, layerHeight);
-            //layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(15, new GenLayerSmooth(15, layerHeight)));
-            //// Добавляем на гора, болоте и лесу неровности
-            //layerHeight = new GenLayerHeightAddBiome(200, layerHeight, layerBiomeParam1, true);
-            //layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(25, layerHeight));
-            //// Добавляем на гора, болоте неровности, чтоб более острее
-            //layerHeight = new GenLayerHeightAddBiome(300, layerHeight, layerBiomeParam2, false);
-            //layerHeight = new GenLayerSmooth(7, layerHeight);
-            //layerHeight = new GenLayerSmooth(17, layerHeight);
-            //layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(23, layerHeight));
-            //layerHeight = new GenLayerSmooth(2, layerHeight);
-            //// EndHeight
+            // Height
+            layerHeight = new GenLayerBiomeHeight(layerBiomeOne);
+            layerHeight = new GenLayerHeightAddBegin(2, layerHeight);
+            layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(21, layerHeight));
+            // Объект по добавлении высот (неровности вверх)
+            layerHeight = new GenLayerHeightAddUp(2, layerHeight);
+            layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(24, layerHeight));
+            // добавлении высот (ущелены в море и не большие неровности)
+            layerHeight = new GenLayerHeightAddSea(100, layerHeight);
+            layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(15, new GenLayerSmooth(15, layerHeight)));
+            // Добавляем на гора, болоте и лесу неровности
+            layerHeight = new GenLayerHeightAddBiome(200, layerHeight, layerBiomeParam1, true);
+            layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(25, layerHeight));
+            // Добавляем на гора, болоте неровности, чтоб более острее
+            layerHeight = new GenLayerHeightAddBiome(300, layerHeight, layerBiomeParam2, false);
+            layerHeight = new GenLayerSmooth(7, layerHeight);
+            layerHeight = new GenLayerSmooth(17, layerHeight);
+            layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(23, layerHeight));
+            layerHeight = new GenLayerSmooth(2, layerHeight);
+            // EndHeight
 
-            //layerBiome.InitWorldGenSeed(worldSeed);
-            //layerHeight.InitWorldGenSeed(worldSeed);
+            layerBiome.InitWorldGenSeed(worldSeed);
+            layerHeight.InitWorldGenSeed(worldSeed);
 
-            //return new GenLayer[] { layerBiome, layerHeight };
-            return new GenLayer[] { layerBiome, layerBiomeOne };
-            
+            return new GenLayer[] { layerBiome, layerHeight };
         }
     }
 }
