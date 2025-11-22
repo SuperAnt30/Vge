@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mvk2.World.Biome;
+using System;
 using Vge.Util;
 using Vge.World.Gen.Layer;
 
@@ -96,28 +97,30 @@ namespace Mvk2.World.Gen.Layer
             // Река и пляж
             layerBiomeOne = new GenLayerShore(new GenLayerRiver(layerBiomeOne));
 
-            //int idRiver = (int)EnumBiome.River;
-            //int idSea = (int)EnumBiome.Sea;
-            //// Biome
-            //layerBiome = new GenLayerZoomRandom(21, layerBiomeOne);
-            //// Расширяем биом реки, для бесконечного источника воды
-            //layerBiome = new GenLayerExpand(layerBiome, idRiver);
-            //layerBiome = new GenLayerExpand(layerBiome, idSea);
-            //layerBiome = new GenLayerZoomRandom(24, layerBiome);
-            //// Расширяем биом реки, для бесконечного источника воды
-            //layerBiome = new GenLayerExpand(layerBiome, idRiver);
-            //layerBiome = new GenLayerExpand(layerBiome, idSea);
-            //layerBiome = layerBiomeParam1 = new GenLayerZoomRandom(15, new GenLayerSmooth(15, layerBiome));
-            //layerBiome = new GenLayerZoomRandom(25, layerBiome);
-            //layerBiome = new GenLayerSmooth(7, layerBiome);
-            //// Расширяем биом реки, для бесконечного источника воды
-            //layerBiome = new GenLayerExpand(layerBiome, idRiver);
-            //layerBiome = layerBiomeParam2 = new GenLayerSmooth(17, layerBiome);
-            //// Расширяем биом реки, для бесконечного источника воды
-            //layerBiome = new GenLayerExpand(layerBiome, idRiver);
-            //layerBiome = new GenLayerZoomRandom(23, layerBiome);
-            //layerBiome = new GenLayerSmooth(2, layerBiome);
-            //// EndBiome
+            int idRiver = (int)EnumBiomeIsland.River;
+            int idSea = (int)EnumBiomeIsland.Sea;
+
+            // Biome
+            layerBiome = new GenLayerZoomRandom(21, layerBiomeOne);
+            // Расширяем биом реки, для бесконечного источника воды
+            layerBiome = new GenLayerExpand(layerBiome, idRiver);
+            layerBiome = new GenLayerExpand(layerBiome, idSea);
+            layerBiome = new GenLayerZoomRandom(24, layerBiome);
+            // Расширяем биом реки, для бесконечного источника воды
+            layerBiome = new GenLayerExpand(layerBiome, idRiver);
+            layerBiome = new GenLayerExpand(layerBiome, idSea);
+            layerBiome = new GenLayerSmooth(15, layerBiome);
+            layerBiome = layerBiomeParam1 = new GenLayerZoomRandom(15, layerBiome);
+            layerBiome = new GenLayerZoomRandom(25, layerBiome);
+            layerBiome = new GenLayerSmooth(7, layerBiome);
+            // Расширяем биом реки, для бесконечного источника воды
+            layerBiome = new GenLayerExpand(layerBiome, idRiver);
+            layerBiome = layerBiomeParam2 = new GenLayerSmooth(17, layerBiome);
+            // Расширяем биом реки, для бесконечного источника воды
+            layerBiome = new GenLayerExpand(layerBiome, idRiver);
+            layerBiome = new GenLayerZoomRandom(23, layerBiome);
+            layerBiome = new GenLayerSmooth(2, layerBiome);
+            // EndBiome
 
             //// Height
             //layerHeight = new GenLayerBiomeHeight(layerBiomeOne);
@@ -144,7 +147,7 @@ namespace Mvk2.World.Gen.Layer
             //layerHeight.InitWorldGenSeed(worldSeed);
 
             //return new GenLayer[] { layerBiome, layerHeight };
-            return new GenLayer[] { layerBiomeOne, layerBiomeOne };
+            return new GenLayer[] { layerBiome, layerBiomeOne };
             
         }
     }

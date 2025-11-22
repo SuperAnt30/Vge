@@ -102,7 +102,7 @@ namespace Mvk2.World.Gen
                 for (z = 0; z < 16; z++)
                 {
                     idx = z << 4 | x;
-                    h = arHeight[idx];
+                    h = arBiome[idx];
                     _chunkPrimer.SetBlockState(x, 3, z, (ushort)(h + 1));
                 }
             }

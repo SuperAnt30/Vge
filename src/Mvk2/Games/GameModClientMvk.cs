@@ -73,6 +73,8 @@ namespace Mvk2.Games
                 // скрин хранилища
                 case Keys.R: _windowMvk.LScreenMvk.StorageDebug(); break;
                 case Keys.F5: Player.ViewCameraNext(); break;
+                // Скрин
+                case Keys.F6: DebugMvk.ScreenFileBiomeArea(Game); break;
                 // DrawOrto
                 case Keys.F7: Player.DebugOrtoNext(); break;
                     
