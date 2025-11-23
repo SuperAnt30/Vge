@@ -30,7 +30,7 @@ namespace Vge.World
         /// </summary>
         public IСalendar Calendar { get; protected set; }
         /// <summary>
-        /// Объект для генерации чанков
+        /// Объект для генерации чанков, только для серверной части
         /// </summary>
         public IChunkProviderGenerate ChunkGenerate { get; protected set; }
 

@@ -82,9 +82,6 @@ namespace Vge.World
                 Wait.DoInFlow += (sender, e) => Update();
                 Wait.Run();
             }
-
-            // Инициализировать при загрузке мира
-            ChunkPrServ.ChunkGenerate.InitLoading(server, this);
         }
 
         /// <summary>

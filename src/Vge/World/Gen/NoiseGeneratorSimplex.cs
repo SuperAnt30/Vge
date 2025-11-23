@@ -167,23 +167,23 @@ namespace Vge.World.Gen
             int x, z, xi, xa, zi, za, p1, p2, p3, p4;
             float xd, zd, xr, zr, ler1, ler2, ler3, f1, f2, f3;
 
-            for (x = 0; x < xSize; x++)
+            for (z = 0; z < zSize; z++)
             {
-                xd = xOffset + x * xScale + _xCoord;
-                xi = (int)xd;
-                if (xd < xi) xi--;
-                xa = xi & 255;
-                xd -= xi;
-                xr = xd * xd * xd * (xd * (xd * 6.0f - 15.0f) + 10.0f);
+                zd = zOffset + z * zScale + _zCoord;
+                zi = (int)zd;
+                if (zd < zi) zi--;
+                za = zi & 255;
+                zd -= zi;
+                zr = zd * zd * zd * (zd * (zd * 6.0f - 15.0f) + 10.0f);
 
-                for (z = 0; z < zSize; z++)
+                for (x = 0; x < xSize; x++)
                 {
-                    zd = zOffset + z * zScale + _zCoord;
-                    zi = (int)zd;
-                    if (zd < zi) zi--;
-                    za = zi & 255;
-                    zd -= zi;
-                    zr = zd * zd * zd * (zd * (zd * 6.0f - 15.0f) + 10.0f);
+                    xd = xOffset + x * xScale + _xCoord;
+                    xi = (int)xd;
+                    if (xd < xi) xi--;
+                    xa = xi & 255;
+                    xd -= xi;
+                    xr = xd * xd * xd * (xd * (xd * 6.0f - 15.0f) + 10.0f);
                     p1 = _permutations[xa] + 0;
                     p2 = _permutations[p1] + za;
                     p3 = _permutations[xa + 1] + 0;

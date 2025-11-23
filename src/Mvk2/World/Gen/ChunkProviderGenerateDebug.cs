@@ -25,11 +25,6 @@ namespace Mvk2.World.Gen
             _chunkPrimer = new ChunkPrimerIsland(numberChunkSections);
         }
 
-        public void InitLoading(GameServer server, WorldServer worldServer)
-        {
-            //throw new NotImplementedException();
-        }
-
         public void GenerateChunk(ChunkBase chunk)
         {
             _chunkPrimer.Clear();

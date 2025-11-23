@@ -32,7 +32,7 @@ namespace Mvk2.World
             //Server.ModServer.InitAfterStartGame();
             _InitAfterStartGame();
 
-            _worldServers[0] = new WorldServer(server, 0, new WorldSettingsIsland());
+            _worldServers[0] = new WorldServer(server, 0, new WorldSettingsIsland(server.Settings.Seed));
             _worldServers[1] = new WorldServer(server, 1, new WorldSettingsNightmare());
         }
 

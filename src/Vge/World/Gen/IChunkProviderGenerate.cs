@@ -9,11 +9,6 @@ namespace Vge.World.Gen
     public interface IChunkProviderGenerate
     {
         /// <summary>
-        /// Инициализировать при загрузке мира
-        /// </summary>
-        void InitLoading(GameServer server, WorldServer worldServer);
-
-        /// <summary>
         /// Генерация чанка
         /// </summary>
         void GenerateChunk(ChunkBase chunk);
