@@ -1,6 +1,7 @@
 ﻿using Mvk2.World.Biome;
 using Mvk2.World.Block;
 using Mvk2.World.Gen.Layer;
+using System;
 using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
@@ -28,11 +29,6 @@ namespace Mvk2.World.Gen
         public readonly long Seed;
 
         /// <summary>
-        /// Шум для дополнительных областей, для корректировки рельефа
-        /// </summary>
-        public readonly float[] AreaNoise = new float[256];
-
-        /// <summary>
         /// Количество блокуоыв в высоту
         /// </summary>
         private readonly int _countHeightBlock;
@@ -51,25 +47,43 @@ namespace Mvk2.World.Gen
         /// </summary>
         private readonly GenLayer _genLayerHeight;
 
+        #region Шум
+
         /// <summary>
-        /// Шум нижнего слоя
+        /// Шум нижнего слоя, берок
         /// </summary>
         private readonly NoiseGeneratorPerlin _noiseDown;
-        // Шум речных пещер, из двух частей
-        private readonly NoiseGeneratorPerlin _noiseCave1;
-        private readonly NoiseGeneratorPerlin _noiseCaveHeight1;
-        private readonly NoiseGeneratorPerlin _noiseCave3;
-        private readonly NoiseGeneratorPerlin _noiseCaveHeight3;
-
-        private readonly float[] _caveRiversNoise = new float[256];
-        private readonly float[] _caveHeightNoise = new float[256];
-        private readonly float[] _caveNoise3 = new float[256];
-        private readonly float[] _caveHeightNoise3 = new float[256];
+        /// <summary>
+        /// Массив шума нижнего слоя, берок
+        /// </summary>
+        private readonly float[] _downNoise = new float[256];
 
         /// <summary>
-        /// Шум облостей
+        /// Шум для дополнительных областей, для корректировки рельефа
         /// </summary>
         private readonly NoiseGeneratorPerlin _noiseArea;
+        /// <summary>
+        /// Массив, шума для дополнительных областей, для корректировки рельефа
+        /// </summary>
+        public readonly float[] AreaNoise = new float[256];
+
+        /// <summary>
+        /// Шумы речных пещер, из двух частей
+        /// </summary>
+        private readonly NoiseGeneratorPerlin _noiseCave1;
+        private readonly NoiseGeneratorPerlin _noiseCaveHeight1;
+        private readonly NoiseGeneratorPerlin _noiseCave2;
+        private readonly NoiseGeneratorPerlin _noiseCaveHeight2;
+
+        /// <summary>
+        /// Массив шумов речных пещер, из двух частей
+        /// </summary>
+        private readonly float[] _caveRiversNoise = new float[256];
+        private readonly float[] _caveHeightNoise = new float[256];
+        private readonly float[] _caveRiversNoise2 = new float[256];
+        private readonly float[] _caveHeightNoise2 = new float[256];
+
+        #endregion
 
         public ChunkProviderGenerateIsland(byte numberChunkSections, long seed)
         {
@@ -84,93 +98,88 @@ namespace Mvk2.World.Gen
             _genLayerHeight = gens[1];
 
             _noiseDown = new NoiseGeneratorPerlin(new Rand(Seed), 1);
+            _noiseArea = new NoiseGeneratorPerlin(new Rand(Seed + 2), 4);
             _noiseCave1 = new NoiseGeneratorPerlin(new Rand(Seed + 7), 4);
             _noiseCaveHeight1 = new NoiseGeneratorPerlin(new Rand(Seed + 5), 4);
-            _noiseCave3 = new NoiseGeneratorPerlin(new Rand(Seed + 12), 4);
-            _noiseCaveHeight3 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
-            
-            _noiseArea = new NoiseGeneratorPerlin(new Rand(Seed + 2), 4);
+            _noiseCave2 = new NoiseGeneratorPerlin(new Rand(Seed + 12), 4);
+            _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
         }
-
-        private readonly float[] downNoise = new float[256];
 
         public void GenerateChunk(ChunkBase chunk)
         {
-            _chunkPrimer.Clear();
-
-            int xbc = chunk.CurrentChunkX << 4;
-            int zbc = chunk.CurrentChunkY << 4;
-
-            float scale = 1.0f;
-
-            _noiseDown.GenerateNoise2d(downNoise, xbc, zbc, 16, 16, scale, scale);
-
-            // доп шумы
-            _noiseArea.GenerateNoise2d(AreaNoise, xbc, zbc, 16, 16, .4f, .4f);
-            //  шумы речных пещер
-            _noiseCave1.GenerateNoise2d(_caveRiversNoise, xbc, zbc, 16, 16, .05f, .05f);
-            _noiseCaveHeight1.GenerateNoise2d(_caveHeightNoise, xbc, zbc, 16, 16, .025f, .025f);
-            _noiseCave3.GenerateNoise2d(_caveNoise3, xbc, zbc, 16, 16, .05f, .05f);
-            _noiseCaveHeight3.GenerateNoise2d(_caveHeightNoise3, xbc, zbc, 16, 16, .025f, .025f);
-
-            EnumBiomeIsland enumBiome = EnumBiomeIsland.Plain;
-            BiomeIsland biome = new BiomeIsland(this);
-            int idBiome, level;
-            int x, y, z, idx;
-            float dn;
-
-            int[] arHeight = _genLayerHeight.GetInts(xbc, zbc, 16, 16);
-            int[] arBiome = _genLayerBiome.GetInts(xbc, zbc, 16, 16);
-            
-            for (x = 0; x < 16; x++)
+            try
             {
-                for (z = 0; z < 16; z++)
+                //chunk.World.Filer.StartSection("GenerateChunk");
+
+                int xbc = chunk.CurrentChunkX << 4;
+                int zbc = chunk.CurrentChunkY << 4;
+
+                _chunkPrimer.Clear();
+
+                // Шум для бедрока
+                _noiseDown.GenerateNoise2d(_downNoise, xbc, zbc, 16, 16, 1, 1);
+                // Доп шумы
+                _noiseArea.GenerateNoise2d(AreaNoise, xbc, zbc, 16, 16, .4f, .4f);
+                // Шумы речных пещер
+                _noiseCave1.GenerateNoise2d(_caveRiversNoise, xbc, zbc, 16, 16, .05f, .05f);
+                _noiseCaveHeight1.GenerateNoise2d(_caveHeightNoise, xbc, zbc, 16, 16, .025f, .025f);
+                _noiseCave2.GenerateNoise2d(_caveRiversNoise2, xbc, zbc, 16, 16, .05f, .05f);
+                _noiseCaveHeight2.GenerateNoise2d(_caveHeightNoise2, xbc, zbc, 16, 16, .025f, .025f);
+
+                EnumBiomeIsland enumBiome;
+                BiomeIsland biome = new BiomeIsland(this);
+                byte idBiome;
+                int xz, level;
+                float dn;
+
+                int[] arHeight = _genLayerHeight.GetInts(xbc, zbc, 16, 16);
+                int[] arBiome = _genLayerBiome.GetInts(xbc, zbc, 16, 16);
+
+                for (xz = 0; xz < 256; xz++)
                 {
-                    idx = z << 4 | x;
-                    dn = downNoise[idx];
                     // Низ бедрок
-                    _chunkPrimer.SetBlockState(x, 0, z, 2);
-                    _chunkPrimer.SetBlockState(x, 1, z, (ushort)(dn < .1 ? 2 : 3));
-                    _chunkPrimer.SetBlockState(x, 2, z, (ushort)(dn < -.1 ? 2 : 3));
+                    dn = _downNoise[xz];
+                    _chunkPrimer.SetBlockState(xz, 0, 2);
+                    _chunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
+                    _chunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
 
-                    idBiome = arBiome[idx];
+                    // Биомы
+                    idBiome = (byte)arBiome[xz];
+                    enumBiome = (EnumBiomeIsland)idBiome;
+                    chunk.Biome[xz] = idBiome;
+                    _chunkPrimer.Biome[xz] = enumBiome;
                     biome.Init(_chunkPrimer, xbc, zbc);
-                    level = biome.Column(x, z, arHeight[idx]);
+                    level = biome.Column(xz, arHeight[xz]);
 
-                    //if (level > 2)
-                    //{
-                    //    for (y = 3; y < level; y++)
-                    //    {
-                    //        _chunkPrimer.SetBlockState(x, y, z, 4);
-                    //    }
-                    //    _chunkPrimer.SetBlockState(x, level, z, (ushort)(idBiome + 1));
-                    //}
                     // Пещенры 2д ввиде рек
-                    // if ((enumBiome == EnumBiome.Mountains || enumBiome == EnumBiome.MountainsDesert && level > 58))
+                    if (enumBiome == EnumBiomeIsland.Mountains
+                        || (enumBiome == EnumBiomeIsland.MountainsDesert && level > 58))
                     {
                         // В горах и пустыных горах могут быть пещеры
-                        _ColumnCave2d(_caveRiversNoise[idx] / 8f, _caveHeightNoise[idx] / 8f, x, z, enumBiome,
-                        .12f, .28f, 12.5f, 6f, 80f, 56); //  5f, 64f, 72);
+                        _ColumnCave2d(_caveRiversNoise[xz] / 8f, _caveHeightNoise[xz] / 8f, xz, enumBiome,
+                        .12f, .28f, 12.5f, 6f, 80f, 56);
                     }
-                  //  if (enumBiome == EnumBiome.Mountains)
+                    if (enumBiome == EnumBiomeIsland.Mountains)
                     {
                         // В горах внизу может быть лава
-                        _ColumnCave2d(_caveNoise3[idx] / 8f, _caveHeightNoise3[idx] / 8f, x, z, enumBiome,
-                           .10f, .30f, 10f, 18f, 12f, 18); // 12f, 12f, 16);
+                        _ColumnCave2d(_caveRiversNoise2[xz] / 8f, _caveHeightNoise2[xz] / 8f, xz, enumBiome,
+                            .10f, .30f, 10f, 18f, 12f, 18);
                     }
-                    //_chunkPrimer.SetBlockState(x, 3, z, (ushort)(h + 1));
                 }
+
+                _ExportChuck(chunk);
+
+                //chunk.World.Filer.EndSectionLog(); // 0.3 мс
+                //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
+                chunk.Light.SetLightBlocks(_chunkPrimer.ArrayLightBlocks.ToArray());
+                chunk.Light.GenerateHeightMap(); // 0.02 мс
+                chunk.InitHeightMapGen();
+                //World.Filer.EndSectionLog();
             }
-
-            _ExportChuck(chunk);
-
-            //World.Filer.EndSectionLog(); // 0.3 мс
-            //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
-            //Light.SetLightBlocks(chunkPrimer.arrayLightBlocks.ToArray());
-            chunk.Light.SetLightBlocks(_chunkPrimer.ArrayLightBlocks.ToArray());
-            chunk.Light.GenerateHeightMap(); // 0.02 мс
-            //InitHeightMapGen();
-            //World.Filer.EndSectionLog();
+            catch (Exception ex)
+            {
+                Logger.Crash(ex, "GenerateChunk xc:{0} yc:{1}", chunk.CurrentChunkX, chunk.CurrentChunkY);
+            }
         }
 
         public void Populate(ChunkBase chunk)
@@ -220,7 +229,7 @@ namespace Mvk2.World.Gen
         /// </summary>
         /// <param name="cr">шум реки</param>
         /// <param name="ch">шум высоты</param>
-        /// <param name="x">координата столбца X</param>
+        /// <param name="xz">z << 4 | x</param>
         /// <param name="z">координата столбца Z</param>
         /// <param name="enumBiome">биом столбца</param>
         /// <param name="min">минимальный коэф для ширины реки</param>
@@ -229,14 +238,14 @@ namespace Mvk2.World.Gen
         /// <param name="heightCave">Высота пещеры</param>
         /// <param name="heightLevel">Уровень амплитуды пещер по миру</param>
         /// <param name="level">Центр амплитуды Y</param>
-        private void _ColumnCave2d(float cr, float ch, int x, int z, EnumBiomeIsland enumBiome,
+        private void _ColumnCave2d(float cr, float ch, int xz, EnumBiomeIsland enumBiome,
             float min, float max, float size, float heightCave, float heightLevel, int level)
         {
             // Пещенры 2д ввиде рек
             if ((cr >= min && cr <= max) || (cr <= -min && cr >= -max))
             {
                 float h = (enumBiome == EnumBiomeIsland.River || enumBiome == EnumBiomeIsland.Sea || enumBiome == EnumBiomeIsland.Swamp)
-                    ? _chunkPrimer.HeightMap[x << 4 | z] : _countHeightBlock;
+                    ? _chunkPrimer.HeightMap[xz] : _countHeightBlock;
                 h -= 4;
                 if (h > BiomeIsland.HeightWater) h = _countHeightBlock;
 
@@ -275,10 +284,10 @@ namespace Mvk2.World.Gen
 
                         if (y < 12)
                         {
-                            _chunkPrimer.SetBlockState(x, y, z, BlocksRegMvk.Lava.IndexBlock); // лава
-                            _chunkPrimer.ArrayLightBlocks.Add((uint)(y << 8 | z << 4 | x));
+                            _chunkPrimer.SetBlockState(xz, y, BlocksRegMvk.Lava.IndexBlock); // лава
+                            _chunkPrimer.ArrayLightBlocks.Add((uint)(y << 8 | xz));
                         }
-                        else _chunkPrimer.SetBlockState(x, y, z, 0); // воздух
+                        else _chunkPrimer.SetBlockState(xz, y, 0); // воздух
                     }
                 }
             }

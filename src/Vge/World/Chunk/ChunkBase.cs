@@ -79,6 +79,15 @@ namespace Vge.World.Chunk
         public readonly ChunkLight Light;
 
         /// <summary>
+        /// Биомы в индексах
+        /// z << 4 | x;
+        /// </summary>
+        public readonly byte[] Biome = new byte[256];
+        /// <summary>
+        /// Карта высот по чанку, рельефа при генерации z << 4 | x
+        /// </summary>
+        public readonly byte[] HeightMapGen = new byte[256];
+        /// <summary>
         /// Список сущностей в каждом псевдочанке
         /// </summary>
         public readonly MapEntity<EntityBase>[] ListEntitiesSection;
@@ -148,7 +157,15 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Задать совокупное количество тактов, которые якоря провели в этом чанке 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetInhabitedTime(uint takt) => InhabitedTakt = takt;
+
+        /// <summary>
+        /// Сгенерировать копию высот для популяции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void InitHeightMapGen()
+            => Buffer.BlockCopy(Light.HeightMap, 0, HeightMapGen, 0, 256);
 
         /// <summary>
         /// Выгрузили чанк
@@ -362,6 +379,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockState GetBlockState(int x, int y, int z)
         {
             if (x >> 4 == 0 && z >> 4 == 0) return GetBlockStateNotCheck(x, y, z);
@@ -752,6 +770,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Пометка что чанк надо будет перезаписать
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Modified() => _isModified = true;
 
         public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
@@ -759,11 +778,13 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить вектор позиции чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2i ToPosition() => new Vector2i(CurrentChunkX, CurrentChunkY);
 
         /// <summary>
         /// Получить вектор позиции региона
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2i ToRegion() => new Vector2i(CurrentChunkX >> 5, CurrentChunkY >> 5);
     }
 }

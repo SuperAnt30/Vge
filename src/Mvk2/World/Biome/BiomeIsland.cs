@@ -98,10 +98,10 @@ namespace Mvk2.World.Biome
         {
             Provider = chunkProvider;
             _rand = Provider.Rnd;
-            _blockIdStone = _blockIdBiomDebug = _blockIdUp = _blockIdBody = BlocksRegMvk.Stone.IndexBlock;
+            _blockIdStone = BlocksRegMvk.Stone.IndexBlock;
             _blockIdWater = BlocksRegMvk.Water.IndexBlock;
-            _blockIdUp = _blockIdBody = BlocksRegMvk.Granite.IndexBlock;
-            //_blockIdUp = _blockIdBody = BlocksRegMvk.Glass.IndexBlock;
+            _blockIdBiomDebug = _blockIdUp = BlocksRegMvk.Granite.IndexBlock;
+            _blockIdBody = BlocksRegMvk.Granite.IndexBlock;
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void InitDecorator()
         {
-            //Decorator = isRobinson ? new BiomeDecoratorRobinson(Provider.World) : new BiomeDecorator(Provider.World);
+            //Decorator = new BiomeDecoratorRobinson(Provider.World);
             //Decorator.Init();
         }
 
@@ -152,14 +152,13 @@ namespace Mvk2.World.Biome
         /// <summary>
         /// Возращаем сгенерированный столбец и возвращает фактическую высоту, без воды
         /// </summary>
-        /// <param name="x">X 0..15</param>
-        /// <param name="z">Z 0..15</param>
+        /// <param name="xz">z << 4 | x</param>
         /// <param name="height">Высота в блоках, средняя рекомендуемая</param>
-        public int Column(int x, int z, int height)
+        public int Column(int xz, int height)
         {
             int yh = height;
             if (yh < 2) yh = 2;
-            int result = _chunkPrimer.HeightMap[x << 4 | z] = yh;
+            int result = _chunkPrimer.HeightMap[xz] = yh;
             int y = 0;
 
             try
@@ -167,25 +166,25 @@ namespace Mvk2.World.Biome
                 if (_isBlockBody)
                 {
                     // Определяем высоту тела по шуму (3 - 6)
-                    int bodyHeight = (int)(Provider.AreaNoise[x << 4 | z] / 4f + 5f);
+                    int bodyHeight = (int)(Provider.AreaNoise[xz] / 4f + 5f);
 
                     int yb = yh - bodyHeight;
                     if (yb < 2) yb = 2;
 
                     // заполняем камнем
-                    for (y = 3; y < yb; y++) _chunkPrimer.SetBlockState(x, y, z, _blockIdStone);
+                    for (y = 3; y < yb; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
                     // заполняем тело
-                    _Body(yb, yh, x, z);
+                    _Body(yb, yh, xz);
                 }
                 else
                 {
                     // заполняем камнем
-                    for (y = 3; y <= yh; y++) _chunkPrimer.SetBlockState(x, y, z, _blockIdStone);
+                    for (y = 3; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Crash(ex, "Biome.Column yh:{0} y:{1} x:{2} z:{3}", yh, y, x, z);
+                Logger.Crash(ex, "Biome.Column yh:{0} y:{1} xz:{2}", yh, y, xz);
             }
             if (yh < HeightWater)
             {
@@ -194,7 +193,7 @@ namespace Mvk2.World.Biome
                 for (y = yh; y < _heightWaterPlus; y++)
                 {
                     // заполняем водой
-                    _chunkPrimer.SetBlockState(x, y, z, _blockIdWater);
+                    _chunkPrimer.SetBlockState(xz, y, _blockIdWater);
                 }
             }
             return result;
@@ -204,10 +203,10 @@ namespace Mvk2.World.Biome
         /// Заполняем тело
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual void _Body(int yb, int yh, int x, int z)
+        protected virtual void _Body(int yb, int yh, int xz)
         {
-            for (int y = yb; y < yh; y++) _chunkPrimer.SetBlockState(x, y, z, _blockIdBody);
-            _chunkPrimer.SetBlockState(x, yh, z, yh < HeightWater ? _blockIdBody : _blockIdUp);
+            for (int y = yb; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdBody);
+            _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdBody : _blockIdUp);
         }
     }
 }

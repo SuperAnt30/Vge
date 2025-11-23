@@ -15,7 +15,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Данные блока
         /// 12 bit Id блока и 4 bit параметр блока
-        /// x << 12 | z << 8 | y;
+        /// y << 8 | z << 4 | x;
         /// 65536 = 16 * 16 * 256
         /// 32768 = 16 * 16 * 128
         /// </summary>
@@ -28,12 +28,12 @@ namespace Mvk2.World.Gen
         public readonly ArrayFast<uint> ArrayLightBlocks;
         /// <summary>
         /// Биомы
-        /// x << 4 | z;
+        /// z << 4 | x;
         /// </summary>
         public readonly EnumBiomeIsland[] Biome = new EnumBiomeIsland[256];
         /// <summary>
         /// Карта высот
-        /// x << 4 | z;
+        /// z << 4 | x;
         /// </summary>
         public readonly int[] HeightMap = new int[256];
 
@@ -48,6 +48,14 @@ namespace Mvk2.World.Gen
             Id = new ushort[_count];
             Met = new uint[_count];
             ArrayLightBlocks = new ArrayFast<uint>(_count);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockState(int xz, int y, ushort id, uint met = 0)
+        {
+            int index = y << 8 | xz;
+            Id[index] = id;
+            if (met != 0) Met[index] = met;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
