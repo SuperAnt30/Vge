@@ -9,9 +9,9 @@ namespace Vge.World.Gen
     public interface IChunkProviderGenerate
     {
         /// <summary>
-        /// Генерация чанка
+        /// Генерация рельефа чанка, соседние чанки не требуются
         /// </summary>
-        void GenerateChunk(ChunkBase chunk);
+        void Relief(ChunkBase chunk);
 
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)

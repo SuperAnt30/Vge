@@ -25,7 +25,10 @@ namespace Mvk2.World.Gen
             _chunkPrimer = new ChunkPrimerIsland(numberChunkSections);
         }
 
-        public void GenerateChunk(ChunkBase chunk)
+        /// <summary>
+        /// Генерация рельефа чанка, соседние чанки не требуются
+        /// </summary>
+        public void Relief(ChunkBase chunk)
         {
             _chunkPrimer.Clear();
 
@@ -308,6 +311,9 @@ namespace Mvk2.World.Gen
             //World.Filer.EndSectionLog();
         }
 
+        /// <summary>
+        /// Декорация чанков, требуются соседние чанки (3*3)
+        /// </summary>
         public void Populate(ChunkBase chunk)
         {
             Debug.Burden(1.5f);

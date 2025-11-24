@@ -105,7 +105,10 @@ namespace Mvk2.World.Gen
             _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
         }
 
-        public void GenerateChunk(ChunkBase chunk)
+        /// <summary>
+        /// Генерация рельефа чанка, соседние чанки не требуются
+        /// </summary>
+        public void Relief(ChunkBase chunk)
         {
             try
             {
@@ -182,6 +185,9 @@ namespace Mvk2.World.Gen
             }
         }
 
+        /// <summary>
+        /// Декорация чанков, требуются соседние чанки (3*3)
+        /// </summary>
         public void Populate(ChunkBase chunk)
         {
            // Debug.Burden(1.5f);

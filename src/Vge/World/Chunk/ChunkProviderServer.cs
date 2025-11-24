@@ -155,8 +155,8 @@ namespace Vge.World.Chunk
                 }
                 if (!chunk.IsChunkPresent)
                 {
-                    // Начинаем генерацию
-                    ChunkGenerate.GenerateChunk(chunk);
+                    // Начинаем генерацию рельефа
+                    ChunkGenerate.Relief(chunk);
                 }
                 // Готова начальная генерация или загрузка
                 chunk.ChunkPresent();
