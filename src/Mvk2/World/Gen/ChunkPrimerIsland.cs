@@ -22,6 +22,11 @@ namespace Mvk2.World.Gen
         public readonly ushort[] Id;
         public readonly uint[] Met;
         /// <summary>
+        /// Массив флагов, 
+        /// 1 = меняем если не воздух
+        /// </summary>
+        public readonly byte[] Flag;
+        /// <summary>
         /// Массив блоков которые светятся
         /// Координаты в битах 0000 0000 0000 000y  yyyy yyyy zzzz xxxx
         /// </summary>
@@ -47,6 +52,7 @@ namespace Mvk2.World.Gen
             _count = 4096 * numberChunkSections;
             Id = new ushort[_count];
             Met = new uint[_count];
+            Flag = new byte[_count];
             ArrayLightBlocks = new ArrayFast<uint>(_count);
         }
 
@@ -56,6 +62,14 @@ namespace Mvk2.World.Gen
             int index = y << 8 | xz;
             Id[index] = id;
             if (met != 0) Met[index] = met;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockStateFlag(int xz, int y, ushort id, byte flag)
+        {
+            int index = y << 8 | xz;
+            Id[index] = id;
+            Flag[index] = flag;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,6 +87,7 @@ namespace Mvk2.World.Gen
         {
             Array.Clear(Id, 0, _count);
             Array.Clear(Met, 0, _count);
+            Array.Clear(Flag, 0, _count);
             for (int i = 0; i < 256; i++)
             {
                 Biome[i] = EnumBiomeIsland.Plain;

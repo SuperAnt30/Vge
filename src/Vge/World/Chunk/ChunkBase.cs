@@ -86,7 +86,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Карта высот по чанку, рельефа при генерации z << 4 | x
         /// </summary>
-        public readonly byte[] HeightMapGen = new byte[256];
+        public readonly ushort[] HeightMapGen = new ushort[256];
         /// <summary>
         /// Список сущностей в каждом псевдочанке
         /// </summary>
@@ -115,7 +115,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Было ли декорация чанка #2 3*3
         /// </summary>
-        public bool IsPopulated { get; private set; }
+        public bool IsDecorated { get; private set; }
         /// <summary>
         /// Было ли карта высот с небесным освещением #3 5*5
         /// </summary>
@@ -165,7 +165,7 @@ namespace Vge.World.Chunk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void InitHeightMapGen()
-            => Buffer.BlockCopy(Light.HeightMap, 0, HeightMapGen, 0, 256);
+            => Buffer.BlockCopy(Light.HeightMap, 0, HeightMapGen, 0, 512);
 
         /// <summary>
         /// Выгрузили чанк
@@ -195,7 +195,7 @@ namespace Vge.World.Chunk
                         chunk = worldServer.ChunkPrServ.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
                         if (chunk != null && chunk.IsChunkPresent)
                         {
-                            chunk._Populate(worldServer.ChunkPrServ);
+                            chunk._Decoration(worldServer.ChunkPrServ);
                         }
                     }
                 }
@@ -203,11 +203,11 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
-        /// #2 3*3 Заполнение чанка населённостью
+        /// #2 3*3 Заполнение чанка декорацией
         /// </summary>
-        private void _Populate(ChunkProviderServer provider)
+        private void _Decoration(ChunkProviderServer provider)
         {
-            if (!IsPopulated)
+            if (!IsDecorated)
             {
                 int x, y;
                 // Если его в чанке нет проверяем чтоб у всех чанков близлежащих была генерация
@@ -224,18 +224,17 @@ namespace Vge.World.Chunk
                     }
                 }
 
-
-                // Populate
-                //World.Filer.StartSection("Pop " + CurrentChunkX + "," + CurrentChunkY);
-                provider.ChunkGenerate.Populate(this);
+                // Decoration
+                //World.Filer.StartSection("GenDec " + CurrentChunkX + "," + CurrentChunkY);
+                provider.ChunkGenerate.Decoration(provider, this);
                 //World.Filer.EndSectionLog();
-                IsPopulated = true;
+                IsDecorated = true;
                 for (x = -1; x <= 1; x++)
                 {
                     for (y = -1; y <= 1; y++)
                     {
                         chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk != null && chunk.IsPopulated)
+                        if (/*chunk != null && */chunk.IsDecorated)
                         {
                             chunk._HeightMapSky(provider);
                         }
@@ -258,7 +257,7 @@ namespace Vge.World.Chunk
                     for (y = -1; y <= 1; y++)
                     {
                         chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk == null || !chunk.IsPopulated)
+                        if (chunk == null || !chunk.IsDecorated)
                         {
                             return;
                         }
@@ -283,7 +282,7 @@ namespace Vge.World.Chunk
                     for (y = -1; y <= 1; y++)
                     {
                         chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk != null && chunk.IsHeightMapSky)
+                        if (/*chunk != null && */chunk.IsHeightMapSky)
                         {
                             chunk._SideLightSky(provider);
                         }
@@ -324,7 +323,7 @@ namespace Vge.World.Chunk
                     for (y = -1; y <= 1; y++)
                     {
                         chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk != null && chunk.IsSideLightSky)
+                        if (/*chunk != null && */chunk.IsSideLightSky)
                         {
                             chunk._SendChunk(provider);
                         }
@@ -406,13 +405,20 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255 без проверки и без света
         /// </summary>
-        public BlockState GetBlockStateNotCheckLight(int x, int y, int z)
+        public BlockState GetBlockStateNotCheckLight(int xz, int y)
         {
             ChunkStorage chunkStorage = StorageArrays[y >> 4];
             return chunkStorage.CountBlock != 0
-                ? chunkStorage.GetBlockStateNotLight(x, y & 15, z)
+                ? chunkStorage.GetBlockStateNotLight(xz, y & 15)
                 : new BlockState();
         }
+
+        /// <summary>
+        /// Получить блок данных, XZ 0..15, Y 0..255 без проверки и без света
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockState GetBlockStateNotCheckLight(int x, int y, int z)
+            => GetBlockStateNotCheckLight(z << 4 | x, y);
 
         /// <summary>
         /// Задать новые данные блока, с перерасчётом освещения если надо и прочего, возвращает прошлые данные блока

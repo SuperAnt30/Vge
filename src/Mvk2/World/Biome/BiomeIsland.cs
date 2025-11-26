@@ -1,8 +1,12 @@
 ﻿using Mvk2.World.Block;
 using Mvk2.World.Gen;
+using Mvk2.World.Gen.Feature;
 using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
+using Vge.World.Block;
+using Vge.World.Chunk;
+using Vge.World.Gen;
 
 namespace Mvk2.World.Biome
 {
@@ -57,10 +61,6 @@ namespace Mvk2.World.Biome
         protected const int _heightCenterCave = 32;
 
         public readonly ChunkProviderGenerateIsland Provider;
-        /// <summary>
-        /// Декорация
-        /// </summary>
-       // public BiomeDecorator Decorator { get; private set; }
 
         protected ChunkPrimerIsland _chunkPrimer;
         protected int _xbc;
@@ -93,15 +93,35 @@ namespace Mvk2.World.Biome
         /// </summary>
         protected bool _isBlockBody = true;
 
+        protected readonly IFeatureGeneratorColumn[] _featureColumns;
+        protected readonly IFeatureGeneratorArea[] _featureAreas;
+        protected readonly IFeatureGeneratorColumn[] _featureColumnsAfter;
+
         protected BiomeIsland() { }
         public BiomeIsland(ChunkProviderGenerateIsland chunkProvider)
         {
             Provider = chunkProvider;
+            _chunkPrimer = chunkProvider.ChunkPrimer;
             _rand = Provider.Rnd;
             _blockIdStone = BlocksRegMvk.Stone.IndexBlock;
             _blockIdWater = BlocksRegMvk.Water.IndexBlock;
             _blockIdBiomDebug = _blockIdUp = BlocksRegMvk.Granite.IndexBlock;
             _blockIdBody = BlocksRegMvk.Granite.IndexBlock;
+
+            _featureColumns = new IFeatureGeneratorColumn[]
+            { 
+                //new FeatureCactus(_chunkPrimer)
+            };
+
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+                new FeaturePancake(_chunkPrimer)
+            };
+
+            _featureColumnsAfter = new IFeatureGeneratorColumn[]
+            {
+                new FeatureCactus(_chunkPrimer)
+            };
         }
 
         /// <summary>
@@ -115,9 +135,8 @@ namespace Mvk2.World.Biome
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Init(ChunkPrimerIsland chunk, int xbc, int zbc)
+        public void Init(int xbc, int zbc)
         {
-            _chunkPrimer = chunk;
             _xbc = xbc;
             _zbc = zbc;
         }
@@ -154,7 +173,7 @@ namespace Mvk2.World.Biome
         /// </summary>
         /// <param name="xz">z << 4 | x</param>
         /// <param name="height">Высота в блоках, средняя рекомендуемая</param>
-        public int Column(int xz, int height)
+        public int ReliefColumn(int xz, int height)
         {
             int yh = height;
             if (yh < 2) yh = 2;
@@ -197,6 +216,77 @@ namespace Mvk2.World.Biome
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Декорация в текущем чанке, не выходя за пределы
+        /// </summary>
+        /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
+        public void DecorationsColumn(ChunkBase chunkSpawn) => _DecorationsColumn(_featureColumns, chunkSpawn);
+
+        /// <summary>
+        /// Декорация в текущем чанке, не выходя за пределы после Area
+        /// </summary>
+        /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
+        public void DecorationsColumnAfter(ChunkBase chunkSpawn) => _DecorationsColumn(_featureColumnsAfter, chunkSpawn);
+
+        /// <summary>
+        /// Декорация в текущем чанке, не выходя за пределы
+        /// </summary>
+        /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
+        private void _DecorationsColumn(IFeatureGeneratorColumn[] featureColumns, ChunkBase chunkSpawn)
+        {
+            int xbc = chunkSpawn.CurrentChunkX << 4;
+            int zbc = chunkSpawn.CurrentChunkY << 4;
+            Rand rand = Provider.Rnd;
+            _UpSeed(rand, xbc, zbc, Provider.Seed);
+
+            // ... тут перечень декор блоков из списка биомов
+            foreach (IFeatureGeneratorColumn feature in featureColumns)
+            {
+                feature.DecorationsColumn(chunkSpawn, rand);
+            }
+            // Цветы
+            //for (int i = 0; i < 0; i++)
+            //{
+            //    _feature.DecorationsColumn(chunkSpawn, rand);
+            //}
+        }
+
+        /// <summary>
+        /// Декорация областей которые могу выйти за 1 чанк
+        /// </summary>
+        /// <param name="chunk">Чанк в который вносим данные</param>
+        /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
+        public void DecorationsArea(ChunkBase chunk, ChunkBase chunkSpawn)
+        {
+            int xbc = chunkSpawn.CurrentChunkX << 4;
+            int zbc = chunkSpawn.CurrentChunkY << 4;
+            int biasX = chunk.X - chunkSpawn.X;
+            int biasZ = chunk.Y - chunkSpawn.Y;
+            Rand rand = Provider.Rnd;
+            _UpSeed(rand, xbc, zbc, Provider.Seed);
+
+            // ... тут перечень декор блоков из списка биомов
+            foreach (IFeatureGeneratorArea feature in _featureAreas)
+            {
+                feature.DecorationsArea(chunkSpawn, rand, biasX, biasZ);
+            }
+
+            // Цветы
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    _featureArea.DecorationsArea(chunkSpawn, rand, biasX, biasZ);
+            //}
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _UpSeed(Rand rand, int xbc, int zbc, long seed)
+        {
+            rand.SetSeed(seed);
+            int realX = xbc * rand.Next();
+            int realZ = zbc * rand.Next();
+            rand.SetSeed(realX ^ realZ ^ seed);
         }
 
         /// <summary>

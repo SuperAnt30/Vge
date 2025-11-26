@@ -123,9 +123,9 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить блок данных, XYZ 0..15 без света
         /// </summary>
-        public BlockState GetBlockStateNotLight(int x, int y, int z)
+        public BlockState GetBlockStateNotLight(int xz, int y)
         {
-            ushort index = (ushort)(y << 8 | z << 4 | x);
+            ushort index = (ushort)(y << 8 | xz);
             try
             {
                 ushort value = Data[index];

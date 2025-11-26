@@ -207,6 +207,37 @@ public sealed class Ce
     //};
 
     /// <summary>
+    /// Область в один блок c центром, 9 блоков по приоритету генерации чанков xz, для DecorationsArea
+    /// </summary>
+    public readonly static Vector2i[][] AreaOne9priority = new Vector2i[][]
+        {
+            new Vector2i[]
+            {
+                new Vector2i(0, 0), new Vector2i(-1, 0), new Vector2i(1, 0),
+                new Vector2i(0, -1), new Vector2i(0, 1), new Vector2i(-1, -1),
+                new Vector2i(1, -1), new Vector2i(-1, 1), new Vector2i(1, 1)
+            },
+            new Vector2i[]
+            {
+                new Vector2i(-1, 0), new Vector2i(1, 0), new Vector2i(0, 0),
+                new Vector2i(-1, -1), new Vector2i(1, -1), new Vector2i(-1, 1),
+                new Vector2i(1, 1), new Vector2i(0, -1), new Vector2i(0, 1)
+            },
+            new Vector2i[]
+            {
+                new Vector2i(0, -1), new Vector2i(0, 1), new Vector2i(-1, -1),
+                new Vector2i(1, -1), new Vector2i(-1, 1), new Vector2i(1, 1),
+                new Vector2i(0, 0), new Vector2i(-1, 0), new Vector2i(1, 0)
+            },
+            new Vector2i[]
+            {
+                new Vector2i(-1, -1), new Vector2i(1, -1), new Vector2i(-1, 1),
+                new Vector2i(1, 1), new Vector2i(0, -1), new Vector2i(0, 1),
+                new Vector2i(-1, 0), new Vector2i(1, 0), new Vector2i(0, 0)
+            }
+        };
+
+    /// <summary>
     /// Получить индекс по вектору в один блок без центра, 8 блоков
     /// </summary>
     public static int GetAreaOne8(int x, int y)

@@ -314,7 +314,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        public void Populate(ChunkBase chunk)
+        public void Decoration(ChunkProviderServer provider, ChunkBase chunk)
         {
             Debug.Burden(1.5f);
         }

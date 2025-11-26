@@ -1,5 +1,4 @@
-﻿using Vge.Games;
-using Vge.World.Chunk;
+﻿using Vge.World.Chunk;
 
 namespace Vge.World.Gen
 {
@@ -16,6 +15,6 @@ namespace Vge.World.Gen
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        void Populate(ChunkBase chunk);
+        void Decoration(ChunkProviderServer provider, ChunkBase chunk);
     }
 }

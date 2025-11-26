@@ -6,6 +6,7 @@ using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using Vge.World.Gen.Layer;
+using WinGL.Util;
 
 namespace Mvk2.World.Gen
 {
@@ -36,7 +37,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Чанк для заполнения данных
         /// </summary>
-        private readonly ChunkPrimerIsland _chunkPrimer;
+        public readonly ChunkPrimerIsland ChunkPrimer;
 
         /// <summary>
         /// Объект генерации слоёв биомов
@@ -85,13 +86,15 @@ namespace Mvk2.World.Gen
 
         #endregion
 
+        private readonly BiomeIsland[] _biomes;
+
         public ChunkProviderGenerateIsland(byte numberChunkSections, long seed)
         {
             Seed = seed;
             Rnd = new Rand(Seed);
             NumberChunkSections = numberChunkSections;
             _countHeightBlock = numberChunkSections * 16 - 1;
-            _chunkPrimer = new ChunkPrimerIsland(NumberChunkSections);
+            ChunkPrimer = new ChunkPrimerIsland(NumberChunkSections);
 
             GenLayer[] gens = GenLayerIsland.BeginLayerBiome(Seed);
             _genLayerBiome = gens[0];
@@ -103,6 +106,11 @@ namespace Mvk2.World.Gen
             _noiseCaveHeight1 = new NoiseGeneratorPerlin(new Rand(Seed + 5), 4);
             _noiseCave2 = new NoiseGeneratorPerlin(new Rand(Seed + 12), 4);
             _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
+
+            _biomes = new BiomeIsland[]
+            {
+                new BiomeIsland(this)
+            };
         }
 
         /// <summary>
@@ -112,12 +120,12 @@ namespace Mvk2.World.Gen
         {
             try
             {
-                //chunk.World.Filer.StartSection("GenerateChunk");
+                //chunk.World.Filer.StartSection("ReliefChunk");
 
                 int xbc = chunk.CurrentChunkX << 4;
                 int zbc = chunk.CurrentChunkY << 4;
 
-                _chunkPrimer.Clear();
+                ChunkPrimer.Clear();
 
                 // Шум для бедрока
                 _noiseDown.GenerateNoise2d(_downNoise, xbc, zbc, 16, 16, 1, 1);
@@ -130,7 +138,7 @@ namespace Mvk2.World.Gen
                 _noiseCaveHeight2.GenerateNoise2d(_caveHeightNoise2, xbc, zbc, 16, 16, .025f, .025f);
 
                 EnumBiomeIsland enumBiome;
-                BiomeIsland biome = new BiomeIsland(this);
+                BiomeIsland biome = _biomes[0];
                 byte idBiome;
                 int xz, level;
                 float dn;
@@ -142,17 +150,17 @@ namespace Mvk2.World.Gen
                 {
                     // Низ бедрок
                     dn = _downNoise[xz];
-                    _chunkPrimer.SetBlockState(xz, 0, 2);
-                    _chunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
-                    _chunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
+                    ChunkPrimer.SetBlockState(xz, 0, 2);
+                    ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
+                    ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
 
                     // Биомы
                     idBiome = (byte)arBiome[xz];
                     enumBiome = (EnumBiomeIsland)idBiome;
                     chunk.Biome[xz] = idBiome;
-                    _chunkPrimer.Biome[xz] = enumBiome;
-                    biome.Init(_chunkPrimer, xbc, zbc);
-                    level = biome.Column(xz, arHeight[xz]);
+                    ChunkPrimer.Biome[xz] = enumBiome;
+                    biome.Init(xbc, zbc);
+                    level = biome.ReliefColumn(xz, arHeight[xz]);
 
                     // Пещенры 2д ввиде рек
                     if (enumBiome == EnumBiomeIsland.Mountains
@@ -174,7 +182,7 @@ namespace Mvk2.World.Gen
 
                 //chunk.World.Filer.EndSectionLog(); // 0.3 мс
                 //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
-                chunk.Light.SetLightBlocks(_chunkPrimer.ArrayLightBlocks.ToArray());
+                chunk.Light.SetLightBlocks(ChunkPrimer.ArrayLightBlocks.ToArray());
                 chunk.Light.GenerateHeightMap(); // 0.02 мс
                 chunk.InitHeightMapGen();
                 //World.Filer.EndSectionLog();
@@ -188,9 +196,32 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        public void Populate(ChunkBase chunk)
+        public void Decoration(ChunkProviderServer provider, ChunkBase chunk)
         {
-           // Debug.Burden(1.5f);
+          //  chunk.World.Filer.StartSection("DecorationChunk");
+            // Debug.Burden(1.5f);
+            ChunkPrimer.Clear();
+
+            BiomeIsland biome = _biomes[0]; //_biomes[chunk.Biome[136]];
+            biome.DecorationsColumn(chunk);
+            ChunkBase chunkSpawn;
+
+            int i;
+            Vector2i[] array = Ce.AreaOne9priority[(chunk.CurrentChunkX % 2 == 0 ? 0 : 1) 
+                + (chunk.CurrentChunkY % 2 == 0 ? 0 : 2)];
+            // Декорация областей которые могу выйти за 1 чанк
+            for (i = 0; i < 9; i++)
+            {
+                //chunk.ToPositionBias(array[i])
+                chunkSpawn = provider.GetChunkPlus(chunk.CurrentChunkX + array[i].X, chunk.CurrentChunkY + array[i].Y);
+                //biome = _biomes[chunkSpawn.Biome[136]];
+                biome.DecorationsArea(chunk, chunkSpawn);
+            }
+
+            biome.DecorationsColumnAfter(chunk);
+            //biome.Decorator.GenDecorations(World, this, chunk);
+            _ExportChuck(chunk);
+           // chunk.World.Filer.EndSectionLog(); // 1.5
         }
 
         /// <summary>
@@ -199,7 +230,7 @@ namespace Mvk2.World.Gen
         private void _ExportChuck(ChunkBase chunk)
         {
             ChunkStorage chunkStorage;
-            int x, y, z, yc, ycb, y0;
+            int x, y, z, yc, ycb, y0, y8, yz;
             ushort id;
             int index, indexY, indexYZ;
             for (yc = 0; yc < NumberChunkSections; yc++)
@@ -212,16 +243,28 @@ namespace Mvk2.World.Gen
                     if (y0 <= chunk.Settings.NumberMaxBlock)
                     {
                         indexY = y0 << 8;
+                        y8 = y << 8;
                         for (z = 0; z < 16; z++)
                         {
                             indexYZ = indexY | z << 4;
+                            yz = y8 | z << 4;
                             for (x = 0; x < 16; x++)
                             {
                                 index = indexYZ | x;
-                                id = _chunkPrimer.Id[index];
+                                id = ChunkPrimer.Id[index];
                                 if (id != 0)
                                 {
-                                    chunkStorage.SetData(y << 8 | z << 4 | x, id, _chunkPrimer.Met[index]);
+                                    if (ChunkPrimer.Flag[index] == 1)
+                                    {
+                                        if (chunkStorage.CountBlock > 0 && chunkStorage.Data[yz | x] != 0)
+                                        {
+                                            chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                    }
                                 }
                             }
                         }
@@ -251,7 +294,7 @@ namespace Mvk2.World.Gen
             if ((cr >= min && cr <= max) || (cr <= -min && cr >= -max))
             {
                 float h = (enumBiome == EnumBiomeIsland.River || enumBiome == EnumBiomeIsland.Sea || enumBiome == EnumBiomeIsland.Swamp)
-                    ? _chunkPrimer.HeightMap[xz] : _countHeightBlock;
+                    ? ChunkPrimer.HeightMap[xz] : _countHeightBlock;
                 h -= 4;
                 if (h > BiomeIsland.HeightWater) h = _countHeightBlock;
 
@@ -290,10 +333,10 @@ namespace Mvk2.World.Gen
 
                         if (y < 12)
                         {
-                            _chunkPrimer.SetBlockState(xz, y, BlocksRegMvk.Lava.IndexBlock); // лава
-                            _chunkPrimer.ArrayLightBlocks.Add((uint)(y << 8 | xz));
+                            ChunkPrimer.SetBlockState(xz, y, BlocksRegMvk.Lava.IndexBlock); // лава
+                            ChunkPrimer.ArrayLightBlocks.Add((uint)(y << 8 | xz));
                         }
-                        else _chunkPrimer.SetBlockState(xz, y, 0); // воздух
+                        else ChunkPrimer.SetBlockState(xz, y, 0); // воздух
                     }
                 }
             }
