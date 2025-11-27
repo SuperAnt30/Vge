@@ -4,9 +4,9 @@ using Mvk2.World.Gen.Feature;
 using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
-using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
+using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Biome
 {
@@ -108,19 +108,29 @@ namespace Mvk2.World.Biome
             _blockIdBiomDebug = _blockIdUp = BlocksRegMvk.Granite.IndexBlock;
             _blockIdBody = BlocksRegMvk.Granite.IndexBlock;
 
+            // Сначало надо те которые меняют блоки камня (блинчики, руда), они ставят флаг, если их использовать после, будет пустота
+            // Потом используем те, которые добавляют, трава, деревья и прочее
+
             _featureColumns = new IFeatureGeneratorColumn[]
             { 
-                //new FeatureCactus(_chunkPrimer)
+                //new FeatureCactus(_chunkPrimer, 20)
             };
 
             _featureAreas = new IFeatureGeneratorArea[]
             {
-                new FeaturePancake(_chunkPrimer)
+                new FeaturePancake(_chunkPrimer, 1, 1, BlocksRegMvk.Stone.IndexBlock, 6, 8),
+                //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Glass.IndexBlock, 12, 15),
+                //new FeaturePancake(_chunkPrimer, 0, 5, 0, 8, 15),
+                //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Lava.IndexBlock, 1, 5),
+                
+                //new FeatureMinable(_chunkPrimer, 0, 3, BlocksRegMvk.Brol.IndexBlock, 33),
+                new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Glass.IndexBlock, 55, 35, 96),
+                //new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Cobblestone.IndexBlock, 12)
             };
 
             _featureColumnsAfter = new IFeatureGeneratorColumn[]
             {
-                new FeatureCactus(_chunkPrimer)
+                new FeatureCactus(_chunkPrimer, 5)
             };
         }
 

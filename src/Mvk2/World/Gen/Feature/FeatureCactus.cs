@@ -10,15 +10,23 @@ namespace Mvk2.World.Gen.Feature
     {
         protected ChunkPrimerIsland _chunkPrimer;
 
-        public FeatureCactus(ChunkPrimerIsland chunkPrimer) => _chunkPrimer = chunkPrimer;
+        /// <summary>
+        /// Вероятность одной
+        /// </summary>
+        private int _probabilityOne;
+
+        public FeatureCactus(ChunkPrimerIsland chunkPrimer, int probabilityOne)
+        {
+            _chunkPrimer = chunkPrimer;
+            _probabilityOne = probabilityOne;
+        }
 
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк
         /// </summary>
         public void DecorationsColumn(ChunkBase chunkSpawn, Rand rand)
         {
-            int count = rand.Next(5) + 1;
-            for (int i = 0; i < count; i++)
+            if (rand.Next(_probabilityOne) == 0)
             {
                 int xz = rand.Next(16) << 4 | rand.Next(16);
                 int cloum = rand.Next(4) + 3;

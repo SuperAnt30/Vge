@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
-using WinGL.Util;
+using Vge.World.Gen;
 
 namespace Mvk2.World.Gen
 {
@@ -10,7 +10,7 @@ namespace Mvk2.World.Gen
     /// Подготовительный чанк, для генерации мира остров
     /// x << 12 | z << 8 | y;
     /// </summary>
-    public class ChunkPrimerIsland
+    public class ChunkPrimerIsland : IChunkPrimer
     {
         /// <summary>
         /// Данные блока

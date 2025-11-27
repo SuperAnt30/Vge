@@ -87,6 +87,10 @@ namespace Mvk2.World.Gen
         #endregion
 
         private readonly BiomeIsland[] _biomes;
+        /// <summary>
+        /// ID блока воды
+        /// </summary>
+        private readonly ushort _blockIdWater;
 
         public ChunkProviderGenerateIsland(byte numberChunkSections, long seed)
         {
@@ -106,6 +110,8 @@ namespace Mvk2.World.Gen
             _noiseCaveHeight1 = new NoiseGeneratorPerlin(new Rand(Seed + 5), 4);
             _noiseCave2 = new NoiseGeneratorPerlin(new Rand(Seed + 12), 4);
             _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
+
+            _blockIdWater = BlocksRegMvk.Water.IndexBlock;
 
             _biomes = new BiomeIsland[]
             {
@@ -231,7 +237,7 @@ namespace Mvk2.World.Gen
         {
             ChunkStorage chunkStorage;
             int x, y, z, yc, ycb, y0, y8, yz;
-            ushort id;
+            ushort id, idOld;
             int index, indexY, indexYZ;
             for (yc = 0; yc < NumberChunkSections; yc++)
             {
@@ -256,9 +262,13 @@ namespace Mvk2.World.Gen
                                 {
                                     if (ChunkPrimer.Flag[index] == 1)
                                     {
-                                        if (chunkStorage.CountBlock > 0 && chunkStorage.Data[yz | x] != 0)
+                                        if (chunkStorage.CountBlock > 0)
                                         {
-                                            chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                            idOld = chunkStorage.Data[yz | x];
+                                            if (idOld != 0 && idOld != _blockIdWater)
+                                            {
+                                                chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                            }
                                         }
                                     }
                                     else
