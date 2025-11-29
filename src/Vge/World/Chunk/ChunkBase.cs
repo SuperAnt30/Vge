@@ -756,11 +756,7 @@ namespace Vge.World.Chunk
                 // биом
                 if (biom)
                 {
-                    for (i = 0; i < 256; i++)
-                    {
-                        count++;
-                        // biome[i] = (EnumBiome)buffer[count++];
-                    }
+                    _bigStreamOut.Read(Biome, 0, 256);
                 }
             }
             IsChunkPresent = true;

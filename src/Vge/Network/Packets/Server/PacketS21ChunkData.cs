@@ -106,11 +106,8 @@ namespace Vge.Network.Packets.Server
             }
             if (biom)
             {
-                // добавляем данные биома
-                for (i = 0; i < 256; i++)
-                {
-                    _bufferWrite.Add(0);
-                }
+                // Добавляем данные биома
+                _bufferWrite.AddRange(chunk.Biome);
             }
         }
 
