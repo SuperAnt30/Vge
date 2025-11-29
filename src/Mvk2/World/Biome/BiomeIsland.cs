@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
-using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Biome
 {
@@ -68,6 +67,13 @@ namespace Mvk2.World.Biome
 
         protected readonly Rand _rand;
 
+        protected readonly ushort _blockIdBedrock = BlocksRegMvk.Bedrock.IndexBlock;
+        protected readonly ushort _blockIdLimestone = BlocksRegMvk.Limestone.IndexBlock;
+        protected readonly ushort _blockIdClay = BlocksRegMvk.Clay.IndexBlock;
+        protected readonly ushort _blockIdSand = BlocksRegMvk.Sand.IndexBlock;
+        protected readonly ushort _blockIdLoam = BlocksRegMvk.Loam.IndexBlock;
+        protected readonly ushort _blockIdHumus = BlocksRegMvk.Humus.IndexBlock;
+
         /// <summary>
         /// Блок для отладки визуализации биома
         /// </summary>
@@ -93,16 +99,17 @@ namespace Mvk2.World.Biome
         /// </summary>
         protected bool _isBlockBody = true;
 
-        protected readonly IFeatureGeneratorColumn[] _featureColumns;
-        protected readonly IFeatureGeneratorArea[] _featureAreas;
-        protected readonly IFeatureGeneratorColumn[] _featureColumnsAfter;
+        protected IFeatureGeneratorColumn[] _featureColumns;
+        protected IFeatureGeneratorArea[] _featureAreas;
+        protected IFeatureGeneratorColumn[] _featureColumnsAfter;
 
-        protected BiomeIsland() { }
+        //protected BiomeIsland() { }
         public BiomeIsland(ChunkProviderGenerateIsland chunkProvider)
         {
             Provider = chunkProvider;
             _chunkPrimer = chunkProvider.ChunkPrimer;
             _rand = Provider.Rnd;
+
             _blockIdStone = BlocksRegMvk.Stone.IndexBlock;
             _blockIdWater = BlocksRegMvk.Water.IndexBlock;
             _blockIdBiomDebug = _blockIdUp = BlocksRegMvk.Granite.IndexBlock;
@@ -118,13 +125,13 @@ namespace Mvk2.World.Biome
 
             _featureAreas = new IFeatureGeneratorArea[]
             {
-                new FeaturePancake(_chunkPrimer, 1, 1, BlocksRegMvk.Stone.IndexBlock, 6, 8),
+               // new FeaturePancake(_chunkPrimer, 1, 1, BlocksRegMvk.Stone.IndexBlock, 6, 8),
                 //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Glass.IndexBlock, 12, 15),
                 //new FeaturePancake(_chunkPrimer, 0, 5, 0, 8, 15),
                 //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Lava.IndexBlock, 1, 5),
                 
                 //new FeatureMinable(_chunkPrimer, 0, 3, BlocksRegMvk.Brol.IndexBlock, 33),
-                new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Glass.IndexBlock, 55, 35, 96),
+              //  new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Glass.IndexBlock, 55, 35, 96),
                 //new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Cobblestone.IndexBlock, 12)
             };
 
@@ -183,7 +190,7 @@ namespace Mvk2.World.Biome
         /// </summary>
         /// <param name="xz">z << 4 | x</param>
         /// <param name="height">Высота в блоках, средняя рекомендуемая</param>
-        public int ReliefColumn(int xz, int height)
+        public virtual int ReliefColumn(int xz, int height)
         {
             int yh = height;
             if (yh < 2) yh = 2;

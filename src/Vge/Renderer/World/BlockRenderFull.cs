@@ -547,18 +547,21 @@ namespace Vge.Renderer.World
                 x0 = x + vec.X;
                 y0 = y + vec.Y;
                 z0 = z + vec.Z;
-                chunkStorage = _GetChunkStorage(x0, y0, z0);
-                if (chunkStorage != null)
+                if (y0 > 0 && y0 <= _numberBlocksY)
                 {
-                    lightSide = chunkStorage.Light[(y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15)];
-                    if (light == -1) light = lightSide;
-                    else if (lightSide != light)
+                    chunkStorage = _GetChunkStorage(x0, y0, z0);
+                    if (chunkStorage != null)
                     {
-                        s1 = light >> 4;
-                        s2 = light & 0x0F;
-                        s3 = lightSide >> 4;
-                        s4 = lightSide & 0x0F;
-                        light = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
+                        lightSide = chunkStorage.Light[(y0 & 15) << 8 | (z0 & 15) << 4 | (x0 & 15)];
+                        if (light == -1) light = lightSide;
+                        else if (lightSide != light)
+                        {
+                            s1 = light >> 4;
+                            s2 = light & 0x0F;
+                            s3 = lightSide >> 4;
+                            s4 = lightSide & 0x0F;
+                            light = (s1 > s3 ? s1 : s3) << 4 | (s2 > s4 ? s2 : s4) & 0xF;
+                        }
                     }
                 }
             }

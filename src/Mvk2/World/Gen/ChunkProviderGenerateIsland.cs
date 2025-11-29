@@ -2,6 +2,7 @@
 using Mvk2.World.Block;
 using Mvk2.World.Gen.Layer;
 using System;
+using Vge;
 using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
@@ -57,7 +58,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Массив шума нижнего слоя, берок
         /// </summary>
-        private readonly float[] _downNoise = new float[256];
+        public readonly float[] DownNoise = new float[256];
 
         /// <summary>
         /// Шум для дополнительных областей, для корректировки рельефа
@@ -79,10 +80,15 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Массив шумов речных пещер, из двух частей
         /// </summary>
-        private readonly float[] _caveRiversNoise = new float[256];
-        private readonly float[] _caveHeightNoise = new float[256];
-        private readonly float[] _caveRiversNoise2 = new float[256];
-        private readonly float[] _caveHeightNoise2 = new float[256];
+        public readonly float[] CaveRiversNoise = new float[256];
+        public readonly float[] CaveHeightNoise = new float[256];
+        public readonly float[] CaveRiversNoise2 = new float[256];
+        public readonly float[] CaveHeightNoise2 = new float[256];
+
+        public readonly float[] SandDownNoise = new float[256];
+        public readonly float[] LoamDownNoise = new float[256];
+        public readonly float[] SandUpNoise = new float[256];
+        public readonly float[] LoamUpNoise = new float[256];
 
         #endregion
 
@@ -115,9 +121,13 @@ namespace Mvk2.World.Gen
 
             _biomes = new BiomeIsland[]
             {
-                new BiomeIsland(this)
+                new BiomeIsland(this),
+                new BiomePlane(this),
             };
         }
+
+        private int iMin = int.MaxValue;
+        private int iMax = int.MinValue;
 
         /// <summary>
         /// Генерация рельефа чанка, соседние чанки не требуются
@@ -126,7 +136,7 @@ namespace Mvk2.World.Gen
         {
             try
             {
-                //chunk.World.Filer.StartSection("ReliefChunk");
+                chunk.World.Filer.StartSection("ReliefChunk");
 
                 int xbc = chunk.CurrentChunkX << 4;
                 int zbc = chunk.CurrentChunkY << 4;
@@ -134,14 +144,19 @@ namespace Mvk2.World.Gen
                 ChunkPrimer.Clear();
 
                 // Шум для бедрока
-                _noiseDown.GenerateNoise2d(_downNoise, xbc, zbc, 16, 16, 1, 1);
+                _noiseDown.GenerateNoise2d(DownNoise, xbc, zbc, 16, 16, 1, 1);
                 // Доп шумы
                 _noiseArea.GenerateNoise2d(AreaNoise, xbc, zbc, 16, 16, .4f, .4f);
                 // Шумы речных пещер
-                _noiseCave1.GenerateNoise2d(_caveRiversNoise, xbc, zbc, 16, 16, .05f, .05f);
-                _noiseCaveHeight1.GenerateNoise2d(_caveHeightNoise, xbc, zbc, 16, 16, .025f, .025f);
-                _noiseCave2.GenerateNoise2d(_caveRiversNoise2, xbc, zbc, 16, 16, .05f, .05f);
-                _noiseCaveHeight2.GenerateNoise2d(_caveHeightNoise2, xbc, zbc, 16, 16, .025f, .025f);
+                _noiseCave1.GenerateNoise2d(CaveRiversNoise, xbc, zbc, 16, 16, .05f, .05f);
+                _noiseCaveHeight1.GenerateNoise2d(CaveHeightNoise, xbc, zbc, 16, 16, .025f, .025f);
+                _noiseCave2.GenerateNoise2d(CaveRiversNoise2, xbc, zbc, 16, 16, .05f, .05f);
+                _noiseCaveHeight2.GenerateNoise2d(CaveHeightNoise2, xbc, zbc, 16, 16, .025f, .025f);
+
+                _noiseArea.GenerateNoise2d(LoamDownNoise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCave1.GenerateNoise2d(SandDownNoise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCaveHeight1.GenerateNoise2d(LoamUpNoise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCave2.GenerateNoise2d(SandUpNoise, xbc, zbc, 16, 16, .1f, .1f);
 
                 EnumBiomeIsland enumBiome;
                 BiomeIsland biome = _biomes[0];
@@ -155,38 +170,52 @@ namespace Mvk2.World.Gen
                 for (xz = 0; xz < 256; xz++)
                 {
                     // Низ бедрок
-                    dn = _downNoise[xz];
-                    ChunkPrimer.SetBlockState(xz, 0, 2);
-                    ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
-                    ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
+                    //  dn = DownNoise[xz];
+                    //ChunkPrimer.SetBlockState(xz, 0, 2);
+                    ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
 
-                    // Биомы
-                    idBiome = (byte)arBiome[xz];
-                    enumBiome = (EnumBiomeIsland)idBiome;
-                    chunk.Biome[xz] = idBiome;
-                    ChunkPrimer.Biome[xz] = enumBiome;
-                    biome.Init(xbc, zbc);
-                    level = biome.ReliefColumn(xz, arHeight[xz]);
+                    // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
+                    if (chunk.CurrentChunkX != 0 && chunk.CurrentChunkX != 1)
+                    {
+                      //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
+                     //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
 
-                    // Пещенры 2д ввиде рек
-                    if (enumBiome == EnumBiomeIsland.Mountains
-                        || (enumBiome == EnumBiomeIsland.MountainsDesert && level > 58))
-                    {
-                        // В горах и пустыных горах могут быть пещеры
-                        _ColumnCave2d(_caveRiversNoise[xz] / 8f, _caveHeightNoise[xz] / 8f, xz, enumBiome,
-                        .12f, .28f, 12.5f, 6f, 80f, 56);
-                    }
-                    if (enumBiome == EnumBiomeIsland.Mountains)
-                    {
-                        // В горах внизу может быть лава
-                        _ColumnCave2d(_caveRiversNoise2[xz] / 8f, _caveHeightNoise2[xz] / 8f, xz, enumBiome,
-                            .10f, .30f, 10f, 18f, 12f, 18);
+                        // Биомы
+                        idBiome = (byte)arBiome[xz];
+                        enumBiome = (EnumBiomeIsland)idBiome;
+                        chunk.Biome[xz] = idBiome;
+                        ChunkPrimer.Biome[xz] = enumBiome;
+                        biome = _biomes[enumBiome == EnumBiomeIsland.Plain ? 1 : 0];
+                        biome.Init(xbc, zbc);
+                        level = biome.ReliefColumn(xz, arHeight[xz]);
+
+                        //int levelDebug = (int)(LoamUpNoise[xz] * 1f) + 44; // ~ 0 .. 3
+                        //if (levelDebug < iMin) iMin = levelDebug;
+                        //if (levelDebug > iMax) iMax = levelDebug;
+                        //Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
+
+                        /*
+                        // Пещенры 2д ввиде рек
+                        if (enumBiome == EnumBiomeIsland.Mountains
+                            || (enumBiome == EnumBiomeIsland.MountainsDesert && level > 58))
+                        {
+                            // В горах и пустыных горах могут быть пещеры
+                            _ColumnCave2d(CaveRiversNoise[xz] / 8f, CaveHeightNoise[xz] / 8f, xz, enumBiome,
+                            .12f, .28f, 12.5f, 6f, 80f, 56);
+                        }
+                        if (enumBiome == EnumBiomeIsland.Mountains)
+                        {
+                            // В горах внизу может быть лава
+                            _ColumnCave2d(CaveRiversNoise2[xz] / 8f, CaveHeightNoise2[xz] / 8f, xz, enumBiome,
+                                .10f, .30f, 10f, 18f, 12f, 18);
+                        }
+                        */
                     }
                 }
 
                 _ExportChuck(chunk);
 
-                //chunk.World.Filer.EndSectionLog(); // 0.3 мс
+                chunk.World.Filer.EndSectionLog(); // 0.3 мс
                 //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
                 chunk.Light.SetLightBlocks(ChunkPrimer.ArrayLightBlocks.ToArray());
                 chunk.Light.GenerateHeightMap(); // 0.02 мс

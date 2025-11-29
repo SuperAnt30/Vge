@@ -54,7 +54,7 @@ namespace Vge.World.Gen.Feature
                     for (z = z0 - size; z <= z0 + size; ++z)
                     {
                         z1 = z - z0;
-                        if (x1 * x1 + z1 * z1 <= check)
+                        if (x1 * x1 + z1 * z1 <= check && ymin > 3)
                         {
                             for (y = ymin; y <= ymax; ++y)
                             {

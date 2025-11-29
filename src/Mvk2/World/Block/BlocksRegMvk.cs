@@ -10,6 +10,34 @@ namespace Mvk2.World.Block
     {
         public static BlockLiquid Water { get; private set; }
         public static BlockLiquid Lava { get; private set; }
+        
+        /// <summary>
+        /// Коренная порода
+        /// </summary>
+        public static BlockBase Bedrock { get; private set; }
+        /// <summary>
+        /// Известняк
+        /// </summary>
+        public static BlockBase Limestone { get; private set; }
+        /// <summary>
+        /// Глина
+        /// </summary>
+        public static BlockBase Clay { get; private set; }
+        /// <summary>
+        /// Песок
+        /// </summary>
+        public static BlockBase Sand { get; private set; }
+        /// <summary>
+        /// Суглинок
+        /// </summary>
+        public static BlockBase Loam { get; private set; }
+        /// <summary>
+        /// Чернозём
+        /// </summary>
+        public static BlockBase Humus { get; private set; }
+        
+
+
 
         /// <summary>
         /// Камень
@@ -19,7 +47,7 @@ namespace Mvk2.World.Block
         /// Булыжника
         /// </summary>
         public static BlockBase Cobblestone { get; private set; }
-        public static BlockBase Limestone { get; private set; }
+        
         public static BlockBase Granite { get; private set; }
         public static BlockBase Glass { get; private set; }
         public static BlockAlpha GlassRed { get; private set; }
@@ -35,9 +63,15 @@ namespace Mvk2.World.Block
             // Отладочный
             BlocksReg.RegisterBlockClass("Debug", new BlockDebug());
 
+            Bedrock = BlocksReg.RegisterBlockClass("Bedrock");
+            Limestone = BlocksReg.RegisterBlockClass("Limestone");
+            Clay = BlocksReg.RegisterBlockClass("Clay");
+            Sand = BlocksReg.RegisterBlockClass("Sand");
+            Loam = BlocksReg.RegisterBlockClass("Loam");
+            Humus = BlocksReg.RegisterBlockClass("Humus");
+
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
-            Limestone = BlocksReg.RegisterBlockClass("Limestone");
             Granite = BlocksReg.RegisterBlockClass("Granite");
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
