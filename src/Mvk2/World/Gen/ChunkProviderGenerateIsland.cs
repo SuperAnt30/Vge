@@ -238,6 +238,7 @@ namespace Mvk2.World.Gen
             ChunkPrimer.Clear();
 
             BiomeIsland biome = _biomes[0]; //_biomes[chunk.Biome[136]];
+            biome = _biomes[chunk.Biome[136] == 2 ? 1 : 0];
             biome.DecorationsColumn(chunk);
             ChunkBase chunkSpawn;
 

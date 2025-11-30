@@ -35,8 +35,10 @@ namespace Mvk2.World.Block
         /// Чернозём
         /// </summary>
         public static BlockBase Humus { get; private set; }
-        
-
+        /// <summary>
+        /// Дёрн
+        /// </summary>
+        public static BlockBase Turf { get; private set; }
 
 
         /// <summary>
@@ -69,6 +71,7 @@ namespace Mvk2.World.Block
             Sand = BlocksReg.RegisterBlockClass("Sand");
             Loam = BlocksReg.RegisterBlockClass("Loam");
             Humus = BlocksReg.RegisterBlockClass("Humus");
+            Turf = BlocksReg.RegisterBlockClass("Turf");
 
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");

@@ -1,9 +1,11 @@
-﻿using Mvk2.World.Gen;
+﻿using Mvk2.World.Block;
+using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
 using System;
 using Vge;
 using Vge.Util;
 using Vge.World.Gen;
+using Vge.World.Gen.Feature;
 using WinGL.Util;
 
 namespace Mvk2.World.Biome
@@ -14,6 +16,18 @@ namespace Mvk2.World.Biome
         public BiomePlane(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider)
         {
+
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+                //new FeaturePancake(_chunkPrimer, 1, 1, BlocksRegMvk.Stone.IndexBlock, 6, 8),
+                //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Glass.IndexBlock, 12, 15),
+                //new FeaturePancake(_chunkPrimer, 0, 5, 0, 8, 15),
+                //new FeaturePancake(_chunkPrimer, 0, 3, BlocksRegMvk.Lava.IndexBlock, 1, 5),
+                
+                new FeatureMinable(_chunkPrimer, 1, 5, BlocksRegMvk.Stone.IndexBlock, 15, 24, 52),
+              //  new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Glass.IndexBlock, 55, 35, 96),
+                //new FeatureMinable(_chunkPrimer, 1, 1, BlocksRegMvk.Cobblestone.IndexBlock, 12)
+            };
 
             _featureColumnsAfter = new IFeatureGeneratorColumn[]
             {
@@ -83,7 +97,7 @@ namespace Mvk2.World.Biome
                     // Суглинок
                     for (y = level4; y < level6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
                     // может дёрн
-                    if (level6 == yh) _chunkPrimer.SetBlockState(xz, y, Block.BlocksRegMvk.Brol.IndexBlock);
+                    if (level6 == yh) _chunkPrimer.SetBlockState(xz, y, _blockIdTurf);
                 }
 
                 if (level5 > level6)
@@ -99,7 +113,7 @@ namespace Mvk2.World.Biome
                 if (yh > level)
                 {
                     for (y = level; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdHumus);
-                    _chunkPrimer.SetBlockState(xz, yh, _blockIdUp);
+                    _chunkPrimer.SetBlockState(xz, yh, _blockIdTurf);
                 }
 
                 //int bodyHeight = (int)(level2);
