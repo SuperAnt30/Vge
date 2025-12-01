@@ -838,7 +838,7 @@ namespace Vge.Entity.Player
                 {
                     ChunkBase chunk = _game.World.GetChunk(MovingObject.BlockPosition.GetPositionChunk());
                     Vector3i pos = MovingObject.BlockPosition.GetPositionInChunk();
-                    string s1 = Debug.ToBlockInfo(chunk, pos);
+                    string s1 = _ToBlockInfo(chunk, pos);
                     string strUp = "";
                     if (MovingObject.BlockPosition.Y < chunk.Settings.NumberBlocks)
                     {
@@ -847,7 +847,7 @@ namespace Vge.Entity.Player
                             "BlkUp:{0} {1} L:{2}",
                             blockPosUp,
                             _game.World.GetBlockState(blockPosUp).ToInfo(),
-                            Debug.ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
+                            _ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
                         );
                     }
                     Debug.BlockFocus = string.Format(
@@ -881,6 +881,12 @@ namespace Vge.Entity.Player
                 }
             }
         }
+
+        /// <summary>
+        /// Для определения параметров блока чанк и локальные координаты блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual string _ToBlockInfo(ChunkBase chunk, Vector3i pos) => "";
 
         #endregion
 

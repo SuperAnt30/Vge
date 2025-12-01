@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets.Server;
+using Vge.World.Chunk;
+using WinGL.Util;
 
 namespace Mvk2.Entity.List
 {
@@ -28,6 +30,13 @@ namespace Mvk2.Entity.List
             Inventory = InvPlayer = new InventoryPlayerMvk(null);
             Inventory.OutsideChanged += (sender, e) => Render.OutsideItemChanged();
         }
+
+        /// <summary>
+        /// Для определения параметров блока чанк и локальные координаты блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override string _ToBlockInfo(ChunkBase chunk, Vector3i pos) 
+            => DebugMvk.ToBlockInfo(chunk, pos);
 
         #region Packet
 

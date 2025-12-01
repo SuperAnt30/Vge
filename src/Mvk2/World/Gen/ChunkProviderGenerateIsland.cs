@@ -122,7 +122,17 @@ namespace Mvk2.World.Gen
             _biomes = new BiomeIsland[]
             {
                 new BiomeIsland(this),
+                new BiomeIsland(this),
                 new BiomePlane(this),
+                new BiomeIsland(this),
+                new BiomeBeach(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this),
+                new BiomeIsland(this)
             };
         }
 
@@ -159,7 +169,7 @@ namespace Mvk2.World.Gen
                 _noiseCave2.GenerateNoise2d(SandUpNoise, xbc, zbc, 16, 16, .1f, .1f);
 
                 EnumBiomeIsland enumBiome;
-                BiomeIsland biome = _biomes[0];
+                BiomeIsland biome;
                 byte idBiome;
                 int xz, level;
                 float dn;
@@ -175,7 +185,8 @@ namespace Mvk2.World.Gen
                     ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
 
                     // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
-                    if (chunk.CurrentChunkX != 0 && chunk.CurrentChunkX != 1)
+                    if (chunk.CurrentChunkX != 0 && chunk.CurrentChunkX != 1
+                        && chunk.CurrentChunkX != -4 && chunk.CurrentChunkX != -3)
                     {
                       //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
                      //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
@@ -185,14 +196,15 @@ namespace Mvk2.World.Gen
                         enumBiome = (EnumBiomeIsland)idBiome;
                         chunk.Biome[xz] = idBiome;
                         ChunkPrimer.Biome[xz] = enumBiome;
-                        biome = _biomes[enumBiome == EnumBiomeIsland.Plain ? 1 : 0];
+                        biome = _biomes[idBiome];
                         biome.Init(xbc, zbc);
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
-                        //int levelDebug = (int)(LoamUpNoise[xz] * 1f) + 44; // ~ 0 .. 3
-                        //if (levelDebug < iMin) iMin = levelDebug;
-                        //if (levelDebug > iMax) iMax = levelDebug;
-                        //Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
+                        //Provider.DownNoise[xz] * 5f) +1
+                        int levelDebug = (int)(DownNoise[xz] * 5f) + 1; // ~ 0 .. 3
+                        if (levelDebug < iMin) iMin = levelDebug;
+                        if (levelDebug > iMax) iMax = levelDebug;
+                        Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
 
                         /*
                         // Пещенры 2д ввиде рек
@@ -237,8 +249,7 @@ namespace Mvk2.World.Gen
             // Debug.Burden(1.5f);
             ChunkPrimer.Clear();
 
-            BiomeIsland biome = _biomes[0]; //_biomes[chunk.Biome[136]];
-            biome = _biomes[chunk.Biome[136] == 2 ? 1 : 0];
+            BiomeIsland biome = _biomes[chunk.Biome[136]];
             biome.DecorationsColumn(chunk);
             ChunkBase chunkSpawn;
 

@@ -1,7 +1,7 @@
 {
     #Parent: "_CubeAll",
     Texture: { 
-        Turf: "Blocks/Turf",
+        Dirt: "Blocks/Humus",
         Top: "Blocks/GrassTop",
         Side: "Blocks/GrassSide"
     },
@@ -9,12 +9,12 @@
         {   From: [ -8, 0, -8 ],
             To: [ 8, 16, 8 ],
             Faces: [
-                { Texture:"Turf", Side:"Down"},
+                { Texture:"Dirt", Side:"Down"},
                 { Texture:"Top", Side:"Up", TypeColor:1},
-                { Texture:"Turf", Side:"North"},
-                { Texture:"Turf", Side:"East"},
-                { Texture:"Turf", Side:"South"},
-                { Texture:"Turf", Side:"West"}
+                { Texture:"Dirt", Side:"North"},
+                { Texture:"Dirt", Side:"East"},
+                { Texture:"Dirt", Side:"South"},
+                { Texture:"Dirt", Side:"West"}
             ]
         },
         {   From: [ -8, 0, -8 ],

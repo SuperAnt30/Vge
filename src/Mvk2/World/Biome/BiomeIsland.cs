@@ -74,6 +74,9 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdLoam = BlocksRegMvk.Loam.IndexBlock;
         protected readonly ushort _blockIdHumus = BlocksRegMvk.Humus.IndexBlock;
         protected readonly ushort _blockIdTurf = BlocksRegMvk.Turf.IndexBlock;
+        protected readonly ushort _blockIdTurfLoam = BlocksRegMvk.TurfLoam.IndexBlock;
+        protected readonly ushort _blockIdGravel = BlocksRegMvk.Gravel.IndexBlock;
+        
 
         /// <summary>
         /// Блок для отладки визуализации биома

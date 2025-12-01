@@ -1,0 +1,8 @@
+{
+    Parent: "Turf",
+    Texture: { 
+        Dirt: "Blocks/Loam",
+        Top: "Blocks/GrassTop",
+        Side: "Blocks/GrassSide"
+    }
+}

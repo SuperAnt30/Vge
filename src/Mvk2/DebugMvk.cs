@@ -3,7 +3,9 @@ using Mvk2.World.Gen.Layer;
 using System.Diagnostics;
 using System.Drawing;
 using Vge.Games;
+using Vge.World.Chunk;
 using Vge.World.Gen.Layer;
+using WinGL.Util;
 
 namespace Mvk2
 {
@@ -176,6 +178,19 @@ namespace Mvk2
                 case EnumBiomeIsland.MountainsDesert: return Color.Brown; // Горы в пустыне
             }
             return Color.Black;
+        }
+
+        /// <summary>
+        /// Для определения параметров блока чанк и локальные координаты блока
+        /// </summary>
+        public static string ToBlockInfo(ChunkBase chunk, Vector3i pos)
+        {
+            if (pos.Y > chunk.Settings.NumberBlocks) return "";
+            ChunkStorage storage = chunk.StorageArrays[pos.Y >> 4];
+            int index = (pos.Y & 15) << 8 | pos.Z << 4 | pos.X;
+            return string.Format("[{2}] b{0} s{1} {3}",
+                storage.Light[index] >> 4, storage.Light[index] & 15, pos,
+                    "Biom: " + (EnumBiomeIsland)chunk.Biome[pos.Z << 4 | pos.X]);
         }
     }
 }

@@ -10,10 +10,10 @@ using WinGL.Util;
 
 namespace Mvk2.World.Biome
 {
-    public class BiomePlane : BiomeIsland
+    public class BiomeBeach : BiomeIsland
     {
 
-        public BiomePlane(ChunkProviderGenerateIsland chunkProvider)
+        public BiomeBeach(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider)
         {
             _featureAreas = new IFeatureGeneratorArea[]
@@ -30,7 +30,7 @@ namespace Mvk2.World.Biome
 
             _featureColumnsAfter = new IFeatureGeneratorColumn[]
             {
-                new FeatureCactus(_chunkPrimer, 5)
+               // new FeatureCactus(_chunkPrimer, 5)
             };
         }
 
@@ -50,6 +50,8 @@ namespace Mvk2.World.Biome
 
             try
             {
+               
+
                 // Бедрок
                 int level1 = (int)(Provider.CaveRiversNoise[xz] / 5f) + 2; // ~ 0 .. 3
                 if (level1 > 0)
@@ -64,10 +66,10 @@ namespace Mvk2.World.Biome
                    for (y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
                 }
 
-                // Низ песка
+                // Низ гравия
                 int level3 = (int)(Provider.SandDownNoise[xz] * 1.25f) + 36 + biasWater; // ~ 27 .. 45
                 if (level3 > yh) level3 = yh;
-                // Низ суглинка
+                // Низ песка
                 int level4 = (int)(Provider.LoamDownNoise[xz] * 1.25f) + 36 + biasWater; // ~ 27 .. 45
                 if (level4 > yh) level4 = yh;
 
@@ -94,26 +96,36 @@ namespace Mvk2.World.Biome
                 if (level6 > level4)
                 {
                     // Суглинок
-                    for (y = level4; y < level6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
-                    // Может дёрн
-                    if (level6 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
+                    if (level6 == yh)
+                    {
+                        // Делаем сверху песок
+
+                        // Доп шум для перехода песка
+                        int level0 = (int)(Provider.DownNoise[xz] * 5f) + 1; // ~ 0 .. 2
+                        int l6 = level6 - level0;
+                        for (y = level4; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+                        for (y = l6; y <= level6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+                    }
+                    else
+                    {
+                        for (y = level4; y < level6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+                    }
                 }
 
                 if (level5 > level6)
                 {
-                    // Местами прослойки песка между вверхном и суглинком
-                    for (y = level6; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
-                    // Сверху песок
-                    if (level5 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
+                    // Местами прослойки гравия между вверхном и суглинком
+                    for (y = level6; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
+                    // Сверху гравия
+                    if (level5 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdClay);
                     level = level5;
                 }
                 else level = level6;
 
                 if (yh > level)
                 {
-                    // Чернозём
-                    for (y = level; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdHumus);
-                    _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurf);
+                    // Гравий
+                    for (y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
                 }
 
                 if (yh < HeightWater)

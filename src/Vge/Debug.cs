@@ -324,18 +324,5 @@ namespace Vge
                 f *= d + i;
             }
         }
-
-        /// <summary>
-        /// Для определения параметров блока чанк и локальные координаты блока
-        /// </summary>
-        public static string ToBlockInfo(ChunkBase chunk, Vector3i pos)
-        {
-            if (pos.Y > chunk.Settings.NumberBlocks) return "";
-            ChunkStorage storage = chunk.StorageArrays[pos.Y >> 4];
-            int index = (pos.Y & 15) << 8 | pos.Z << 4 | pos.X;
-            return string.Format("[{2}] b{0} s{1} {3}",
-                storage.Light[index] >> 4, storage.Light[index] & 15, pos,
-                    "BiomId:" + chunk.Biome[pos.X << 4 | pos.Z]);
-        }
     }
 }

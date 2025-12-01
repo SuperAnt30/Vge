@@ -39,7 +39,14 @@ namespace Mvk2.World.Block
         /// Дёрн
         /// </summary>
         public static BlockBase Turf { get; private set; }
-
+        /// <summary>
+        /// Дёрн на суглинке
+        /// </summary>
+        public static BlockBase TurfLoam { get; private set; }
+        /// <summary>
+        /// Гравий
+        /// </summary>
+        public static BlockBase Gravel { get; private set; }
 
         /// <summary>
         /// Камень
@@ -72,6 +79,8 @@ namespace Mvk2.World.Block
             Loam = BlocksReg.RegisterBlockClass("Loam");
             Humus = BlocksReg.RegisterBlockClass("Humus");
             Turf = BlocksReg.RegisterBlockClass("Turf");
+            TurfLoam = BlocksReg.RegisterBlockClass("TurfLoam");
+            Gravel = BlocksReg.RegisterBlockClass("Gravel");
 
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
