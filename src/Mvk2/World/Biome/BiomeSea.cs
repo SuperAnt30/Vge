@@ -3,18 +3,30 @@ using System.Runtime.CompilerServices;
 
 namespace Mvk2.World.Biome
 {
-    public class BiomeBeach : BiomeIsland
+    public class BiomeSea : BiomeIsland
     {
-        public BiomeBeach(ChunkProviderGenerateIsland chunkProvider)
+        public BiomeSea(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider) { }
 
         /// <summary>
-        /// Получить значение второго уровня для Ландшафта
+        /// Генерация столба от 0 до 1 уровня
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override int _GetLevel2(int xz)
-            => (int)(Provider.SandDownNoise[xz] * 1.25f) + 36 // ~ 27 .. 45
-                        + _biasWater - _noise;
+        protected override void _GenLevel0_1(int xz, int yh, int level0, int level1)
+        {
+            int y;
+            if (level1 == yh)
+            {
+                // Доп шум для перехода гравия
+                int l1 = level1 - _noise - 1;
+                for (y = level0; y < l1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+                for (y = l1; y <= level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+            }
+            else
+            {
+                for (y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            }
+        }
 
         /// <summary>
         /// Генерация столба от 3 до 5 уровня
@@ -42,10 +54,9 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel5_4(int xz, int yh, int level5, int level4)
         {
-            // Местами прослойки глины между вверхном и суглинком
-            for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
-            // Сверху глина
-            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdClay);
+            for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+            // Сверху гравий
+            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdGravel);
         }
 
         /// <summary>

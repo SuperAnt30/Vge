@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
+using WinGL.Util;
 
 namespace Mvk2.World.Biome
 {
@@ -107,6 +108,15 @@ namespace Mvk2.World.Biome
         protected IFeatureGeneratorArea[] _featureAreas;
         protected IFeatureGeneratorColumn[] _featureColumnsAfter;
 
+        /// <summary>
+        /// Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
+        /// </summary>
+        protected int _noise;
+        /// <summary>
+        /// Смещение от уровня моря
+        /// </summary>
+        protected int _biasWater;
+
         //protected BiomeIsland() { }
         public BiomeIsland(ChunkProviderGenerateIsland chunkProvider)
         {
@@ -119,6 +129,11 @@ namespace Mvk2.World.Biome
             _blockIdBiomDebug = _blockIdUp = BlocksRegMvk.Granite.IndexBlock;
             _blockIdBody = BlocksRegMvk.Granite.IndexBlock;
 
+            _InitFeature();
+        }
+
+        protected virtual void _InitFeature()
+        {
             // Сначало надо те которые меняют блоки камня (блинчики, руда), они ставят флаг, если их использовать после, будет пустота
             // Потом используем те, которые добавляют, трава, деревья и прочее
 
@@ -189,6 +204,8 @@ namespace Mvk2.World.Biome
         protected virtual int GetLevelHeight(int x, int z, float height, float river)
             => HeightWater + (int)(height * _heightHill);
 
+        #region Relief
+
         /// <summary>
         /// Возращаем сгенерированный столбец и возвращает фактическую высоту, без воды
         /// </summary>
@@ -196,48 +213,198 @@ namespace Mvk2.World.Biome
         /// <param name="height">Высота в блоках, средняя рекомендуемая</param>
         public virtual int ReliefColumn(int xz, int height)
         {
-            int yh = height;
-            if (yh < 2) yh = 2;
-            int result = _chunkPrimer.HeightMap[xz] = yh;
-            int y = 0;
+            // Текущая рабочая высота
+            int yh = -1;
+            int y = -1;
+            // Уровень без моря
+            int result = -1;
 
             try
             {
-                if (_isBlockBody)
+                // Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
+                _noise = (int)(Provider.DownNoise[xz] * 5f);
+                // Смещение от уровня моря
+                _biasWater = yh - HeightWater;
+            
+                // Бедрок
+                int level0 = (int)(Provider.CaveRiversNoise[xz] / 5f) + 3; // ~ 2 .. 4
+                if (level0 < 1) level0 = 1;
+                level0 += _noise;
+                // Определяем высоты
+                result = yh = height < level0 ? level0 : height;
+                // Смещение от уровня моря
+                _biasWater = yh - HeightWater;
+                // Столб бедрока
+                for (y = 0; y < level0; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdBedrock);
+
+                if (yh > 56 + level0)
                 {
-                    // Определяем высоту тела по шуму (3 - 6)
-                    int bodyHeight = (int)(Provider.AreaNoise[xz] / 4f + 5f);
+                    // Гранит в холмах и горах
+                    int ig = yh - 56 - level0;
+                    float fg = ig / (float)yh;
+                    fg = fg * 1.4f;
+                    fg += 1;
+                    int level1g = (int)(ig * fg) + level0;
 
-                    int yb = yh - bodyHeight;
-                    if (yb < 2) yb = 2;
-
-                    // заполняем камнем
-                    for (y = 3; y < yb; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-                    // заполняем тело
-                    _Body(yb, yh, xz);
+                    // Столб гранити
+                    for (y = level0; y < level1g; y++) _chunkPrimer.SetBlockState(xz, y, BlocksRegMvk.Granite.IndexBlock);
+                    level0 = level1g;
                 }
-                else
+
+                // Известняк
+                int level1 = (int)(Provider.CaveRiversNoise[xz] * 1.5f) + 28 // ~ 18 .. 38
+                    + Mth.Abs(_biasWater) + _noise;
+                if (level1 > yh) level1 = yh;
+                if (level1 < level0) level1 = level0;
+
+                _GenLevel0_1(xz, yh, level0, level1);
+
+                if (level1 < yh)
                 {
-                    // заполняем камнем
-                    for (y = 3; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
+                    // Продолжаем
+
+                    // Низ песка
+                    int level2 = _GetLevel2(xz);
+                    if (level2 > yh) level2 = yh;
+                    // Низ суглинка
+                    int level3 = (int)(Provider.LoamDownNoise[xz] * 1.25f) + 36 // ~ 27 .. 45
+                        + _biasWater - _noise; 
+                    if (level3 > yh) level3 = yh;
+
+                    // Глина
+                    int level = Mth.Min(level2, level3);
+                    if (level > level1) _GenLevel1_2(xz, yh, level1, level);
+                    else level2 = level1;
+
+                    if (level3 > level2) _GenLevel2_3(xz, yh, level2, level3);
+                    else if (level3 < level1) level3 = level1;
+
+                    if (level3 < yh && level2 < yh)
+                    {
+                        // Продолжаем
+
+                        // Вверх песка
+                        int level4 = (int)Provider.SandUpNoise[xz] + 42 // ~ 34 .. 51
+                            + _biasWater;
+                        if (level4 > yh) level4 = yh;
+                        // Вверх суглинка
+                        int level5 = (int)Provider.LoamUpNoise[xz] + 48 // ~ 40 .. 57
+                            + _biasWater;
+                        if (level5 > yh) level5 = yh;
+
+                        if (level5 > level3) _GenLevel3_5(xz, yh, level3, level5);
+                        else level5 = level3;
+
+                        if (level4 > level5) 
+                        {
+                            _GenLevel5_4(xz, yh, level5, level4);
+                            level = level4;
+                        }
+                        else level = level5;
+
+                        if (yh > level) _GenLevelUp(xz, yh, level);
+                    }
+                }
+
+                if (yh < HeightWater)
+                {
+                    yh++;
+                    // Меньше уровня воды, заливаем водой
+                    for (y = yh; y < _heightWaterPlus; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdWater);
+                    //yh = HeightWater;
                 }
             }
             catch (Exception ex)
             {
                 Logger.Crash(ex, "Biome.Column yh:{0} y:{1} xz:{2}", yh, y, xz);
             }
-            if (yh < HeightWater)
-            {
-                // меньше уровня воды
-                yh++;
-                for (y = yh; y < _heightWaterPlus; y++)
-                {
-                    // заполняем водой
-                    _chunkPrimer.SetBlockState(xz, y, _blockIdWater);
-                }
-            }
+
+            _chunkPrimer.HeightMap[xz] = yh;
             return result;
         }
+
+        /// <summary>
+        /// Получить значение второго уровня для Ландшафта
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual int _GetLevel2(int xz)
+            => (int)(Provider.SandDownNoise[xz] * 1.25f) + 32 // ~ 23 .. 41
+                        + _biasWater - _noise;
+
+        /// <summary>
+        /// Генерация столба от 0 до 1 уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel0_1(int xz, int yh, int level0, int level1)
+        {
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+        }
+
+        /// <summary>
+        /// Генерация столба от 1 до 2 уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel1_2(int xz, int yh, int level1, int level2)
+        {
+            // Глина
+            for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
+        }
+
+        /// <summary>
+        /// Генерация столба от 2 до 3 уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel2_3(int xz, int yh, int level2, int level3)
+        {
+            // Местами прослойки песка между глиной и суглинком
+            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+        }
+
+        /// <summary>
+        /// Генерация столба от 3 до 5 уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel3_5(int xz, int yh, int level3, int level5)
+        {
+            // Суглинок
+            for (int y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+            // Может дёрн
+            if (level5 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
+        }
+
+        /// <summary>
+        /// Генерация столба от 5 до 4 уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel5_4(int xz, int yh, int level5, int level4)
+        {
+            // Местами прослойки песка между вверхном и суглинком
+            for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+            // Сверху песок
+            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
+        }
+
+        /// <summary>
+        /// Генерация столба верхнего уровня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevelUp(int xz, int yh, int level)
+        {
+            if (level > 44 && level < 53)
+            {
+                // Чернозём
+                for (int y = level; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdHumus);
+                _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurf);
+            }
+            else
+            {
+                // Суглинок
+                for (int y = level; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+                _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Декорация в текущем чанке, не выходя за пределы

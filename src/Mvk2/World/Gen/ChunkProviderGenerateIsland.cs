@@ -121,7 +121,7 @@ namespace Mvk2.World.Gen
 
             _biomes = new BiomeIsland[]
             {
-                new BiomeIsland(this),
+                new BiomeSea(this),
                 new BiomeIsland(this),
                 new BiomePlane(this),
                 new BiomeIsland(this),
@@ -131,7 +131,7 @@ namespace Mvk2.World.Gen
                 new BiomeIsland(this),
                 new BiomeIsland(this),
                 new BiomeIsland(this),
-                new BiomeIsland(this),
+                new BiomeMountains(this),
                 new BiomeIsland(this)
             };
         }
@@ -186,7 +186,8 @@ namespace Mvk2.World.Gen
 
                     // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
                     if (chunk.CurrentChunkX != 0 && chunk.CurrentChunkX != 1
-                        && chunk.CurrentChunkX != -4 && chunk.CurrentChunkX != -3)
+                        && chunk.CurrentChunkX != -4 && chunk.CurrentChunkX != -3
+                        && chunk.CurrentChunkX != -8 && chunk.CurrentChunkX != -7)
                     {
                       //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
                      //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
@@ -201,7 +202,7 @@ namespace Mvk2.World.Gen
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
                         //Provider.DownNoise[xz] * 5f) +1
-                        int levelDebug = (int)(DownNoise[xz] * 5f) + 1; // ~ 0 .. 3
+                        int levelDebug = (int)(DownNoise[xz] * 5f) + 2; // ~ 0 .. 3
                         if (levelDebug < iMin) iMin = levelDebug;
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
