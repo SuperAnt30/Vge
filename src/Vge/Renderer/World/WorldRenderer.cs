@@ -483,17 +483,24 @@ namespace Vge.Renderer.World
         private void _DrawVoxelAlpha()
         {
             //gl.DepthMask(0); // Нельзя, так-как пробивает не прозрачный блок
-            gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
-            gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
+            //gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
+            //gl.PolygonOffset(0.5f, 10f);// -3f, -3f);
 
             Render.ShsBlocks.Bind();
 
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
 
+            bool flag = true;
             // Пробегаем по всем чанкам которые видим FrustumCulling
             for (int i = count; i >= 0; i--)
             {
+                if (flag && i < 9)
+                {
+                    flag = false;
+                    gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
+                    gl.PolygonOffset(0.5f, 10f);
+                }
                 chunkRender = _arrayChunkRender[i];
                 // Прорисовка альфа блоков псевдо чанка
                 if (chunkRender.NotNullMeshAlpha)

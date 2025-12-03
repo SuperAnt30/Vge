@@ -122,7 +122,7 @@ namespace Mvk2.World.Gen
             _biomes = new BiomeIsland[]
             {
                 new BiomeSea(this),
-                new BiomeIsland(this),
+                new BiomeRiver(this),
                 new BiomePlane(this),
                 new BiomeIsland(this),
                 new BiomeBeach(this),
@@ -130,7 +130,7 @@ namespace Mvk2.World.Gen
                 new BiomeIsland(this),
                 new BiomeIsland(this),
                 new BiomeIsland(this),
-                new BiomeIsland(this),
+                new BiomeSwamp(this),
                 new BiomeMountains(this),
                 new BiomeIsland(this)
             };
@@ -202,7 +202,7 @@ namespace Mvk2.World.Gen
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
                         //Provider.DownNoise[xz] * 5f) +1
-                        int levelDebug = (int)(DownNoise[xz] * 5f) + 2; // ~ 0 .. 3
+                        int levelDebug = (int)(CaveRiversNoise[xz] * .5f); // ~ 0 .. 3
                         if (levelDebug < iMin) iMin = levelDebug;
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);

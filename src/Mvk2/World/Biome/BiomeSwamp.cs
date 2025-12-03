@@ -3,21 +3,16 @@ using System.Runtime.CompilerServices;
 
 namespace Mvk2.World.Biome
 {
-    public class BiomeBeach : BiomeIsland
+    public class BiomeSwamp : BiomeIsland
     {
-        public BiomeBeach(ChunkProviderGenerateIsland chunkProvider)
+        public BiomeSwamp(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider) { }
 
         /// <summary>
-        /// Генерация столба от 2 до 3 уровня
+        /// Получить смещение первого уровня от уровня моря
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _GenLevel2_3(int xz, int yh, int level2, int level3)
-        {
-            // Местами прослойки песка между глиной и суглинком
-            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
-            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
-        }
+        protected override int _GetLevel1BiasWater() => _biasWater;
 
         /// <summary>
         /// Генерация столба от 3 до 5 уровня
@@ -28,10 +23,11 @@ namespace Mvk2.World.Biome
             int y;
             if (level5 == yh)
             {
-                // Доп шум для перехода песка
+                // Доп шум для перехода на черносём
                 int l6 = level5 - _noise - 1;
                 for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
-                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+                for (y = l6; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdHumus);
+                if (level5 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdHumus : _blockIdTurf);
             }
             else
             {
@@ -57,8 +53,8 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelUp(int xz, int yh, int level)
         {
-            // Гравий
-            for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+            // Глина
+            for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
         }
     }
 }

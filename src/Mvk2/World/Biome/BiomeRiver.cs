@@ -3,10 +3,16 @@ using System.Runtime.CompilerServices;
 
 namespace Mvk2.World.Biome
 {
-    public class BiomeBeach : BiomeIsland
+    public class BiomeRiver : BiomeIsland
     {
-        public BiomeBeach(ChunkProviderGenerateIsland chunkProvider)
+        public BiomeRiver(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider) { }
+
+        /// <summary>
+        /// Получить смещение первого уровня от уровня моря
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override int _GetLevel1BiasWater() => _biasWater;
 
         /// <summary>
         /// Генерация столба от 2 до 3 уровня
@@ -22,22 +28,22 @@ namespace Mvk2.World.Biome
         /// <summary>
         /// Генерация столба от 3 до 5 уровня
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _GenLevel3_5(int xz, int yh, int level3, int level5)
-        {
-            int y;
-            if (level5 == yh)
-            {
-                // Доп шум для перехода песка
-                int l6 = level5 - _noise - 1;
-                for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
-                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
-            }
-            else
-            {
-                for (y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
-            }
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //protected override void _GenLevel3_5(int xz, int yh, int level3, int level5)
+        //{
+        //    int y;
+        //    if (level5 == yh)
+        //    {
+        //        // Доп шум для перехода песка
+        //        int l6 = level5 - _noise - 1;
+        //        for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+        //        for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+        //    }
+        //    else
+        //    {
+        //        for (y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+        //    }
+        //}
 
         /// <summary>
         /// Генерация столба от 5 до 4 уровня
@@ -57,8 +63,20 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelUp(int xz, int yh, int level)
         {
-            // Гравий
-            for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+            int y;
+            if (yh < 50)
+            {
+                // Песок
+                for (y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+            }
+            else
+            {
+                
+                int y2 = 50 - _noise;
+                for (y = level; y < y2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+                for (y = y2; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+                _chunkPrimer.SetBlockState(xz, yh, _blockIdTurfLoam);
+            }
         }
     }
 }

@@ -252,8 +252,9 @@ namespace Mvk2.World.Biome
                 }
 
                 // Известняк
-                int level1 = (int)(Provider.CaveRiversNoise[xz] * 1.5f) + 28 // ~ 18 .. 38
-                    + Mth.Abs(_biasWater) + _noise;
+                int level1 = (int)(Provider.CaveRiversNoise[xz] * .75f) + 36 // ~ 31 .. 41
+                    + _GetLevel1BiasWater() + _noise;
+                //level1 = 40 + _biasWater;
                 if (level1 > yh) level1 = yh;
                 if (level1 < level0) level1 = level0;
 
@@ -264,16 +265,16 @@ namespace Mvk2.World.Biome
                     // Продолжаем
 
                     // Низ песка
-                    int level2 = _GetLevel2(xz);
+                    int level2 = (int)Provider.SandDownNoise[xz] + 41 // ~ 34 .. 48
+                        + _biasWater - _noise;
                     if (level2 > yh) level2 = yh;
                     // Низ суглинка
-                    int level3 = (int)(Provider.LoamDownNoise[xz] * 1.25f) + 36 // ~ 27 .. 45
+                    int level3 = (int)Provider.LoamDownNoise[xz] + 42 // ~ 35 .. 49
                         + _biasWater - _noise; 
                     if (level3 > yh) level3 = yh;
 
                     // Глина
-                    int level = Mth.Min(level2, level3);
-                    if (level > level1) _GenLevel1_2(xz, yh, level1, level);
+                    if (level2 > level1) _GenLevel1_2(xz, yh, level1, level2);
                     else level2 = level1;
 
                     if (level3 > level2) _GenLevel2_3(xz, yh, level2, level3);
@@ -284,11 +285,11 @@ namespace Mvk2.World.Biome
                         // Продолжаем
 
                         // Вверх песка
-                        int level4 = (int)Provider.SandUpNoise[xz] + 42 // ~ 34 .. 51
+                        int level4 = (int)Provider.SandUpNoise[xz] + 42 // ~ 35 .. 49
                             + _biasWater;
                         if (level4 > yh) level4 = yh;
                         // Вверх суглинка
-                        int level5 = (int)Provider.LoamUpNoise[xz] + 48 // ~ 40 .. 57
+                        int level5 = (int)Provider.LoamUpNoise[xz] + 48 // ~ 41 .. 55
                             + _biasWater;
                         if (level5 > yh) level5 = yh;
 
@@ -298,11 +299,9 @@ namespace Mvk2.World.Biome
                         if (level4 > level5) 
                         {
                             _GenLevel5_4(xz, yh, level5, level4);
-                            level = level4;
+                            if (yh > level4) _GenLevelUp(xz, yh, level4);
                         }
-                        else level = level5;
-
-                        if (yh > level) _GenLevelUp(xz, yh, level);
+                        else if (yh > level5) _GenLevelUp(xz, yh, level5);
                     }
                 }
 
@@ -324,12 +323,10 @@ namespace Mvk2.World.Biome
         }
 
         /// <summary>
-        /// Получить значение второго уровня для Ландшафта
+        /// Получить смещение первого уровня от уровня моря
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual int _GetLevel2(int xz)
-            => (int)(Provider.SandDownNoise[xz] * 1.25f) + 32 // ~ 23 .. 41
-                        + _biasWater - _noise;
+        protected virtual int _GetLevel1BiasWater() => Mth.Abs(_biasWater);
 
         /// <summary>
         /// Генерация столба от 0 до 1 уровня
@@ -338,6 +335,7 @@ namespace Mvk2.World.Biome
         protected virtual void _GenLevel0_1(int xz, int yh, int level0, int level1)
         {
             for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
         }
 
         /// <summary>
@@ -348,6 +346,7 @@ namespace Mvk2.World.Biome
         {
             // Глина
             for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
+            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdClay : _blockIdTurfLoam);
         }
 
         /// <summary>
@@ -358,6 +357,7 @@ namespace Mvk2.World.Biome
         {
             // Местами прослойки песка между глиной и суглинком
             for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdSand : _blockIdTurfLoam);
         }
 
         /// <summary>
@@ -381,7 +381,8 @@ namespace Mvk2.World.Biome
             // Местами прослойки песка между вверхном и суглинком
             for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
             // Сверху песок
-            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
+            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdSand : _blockIdTurfLoam);
+            //_chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
         }
 
         /// <summary>

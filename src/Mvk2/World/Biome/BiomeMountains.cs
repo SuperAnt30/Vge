@@ -15,6 +15,7 @@ namespace Mvk2.World.Biome
         protected override void _GenLevel1_2(int xz, int yh, int level1, int level2)
         {
             for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
         }
 
         /// <summary>
@@ -23,8 +24,8 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel2_3(int xz, int yh, int level2, int level3)
         {
-            // Местами прослойки
             for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
         }
 
         /// <summary>
@@ -65,9 +66,6 @@ namespace Mvk2.World.Biome
             {
                 for (y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
             }
-
-            //for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-            //if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
         }
 
         /// <summary>
@@ -76,9 +74,5 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelUp(int xz, int yh, int level)
             => _GenLevel(xz, yh, level, yh);
-        //{
-        //    // Камень
-        //    for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-        //}
     }
 }
