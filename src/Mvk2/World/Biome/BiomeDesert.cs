@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Mvk2.World.Biome
 {
-    public class BiomeSea : BiomeIsland
+    public class BiomeDesert : BiomeIsland
     {
-        public BiomeSea(ChunkProviderGenerateIsland chunkProvider)
+        public BiomeDesert(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider) { }
 
         /// <summary>
@@ -14,18 +14,8 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel0_1(int xz, int yh, int level0, int level1)
         {
-            int y;
-            if (level1 == yh)
-            {
-                // Доп шум для перехода гравия
-                int l1 = level1 - _noise - 1;
-                for (y = level0; y < l1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
-                for (y = l1; y <= level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
-            }
-            else
-            {
-                for (y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
-            }
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
         }
 
         /// <summary>
@@ -34,8 +24,9 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel1_2(int xz, int yh, int level1, int level2)
         {
-            for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
-            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
+            // Глина
+            for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
+            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
         }
 
         /// <summary>
@@ -44,8 +35,9 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel2_3(int xz, int yh, int level2, int level3)
         {
-            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
+            // Местами прослойки песка между глиной и суглинком
+            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
         }
 
         /// <summary>
@@ -59,12 +51,12 @@ namespace Mvk2.World.Biome
             {
                 // Доп шум для перехода песка
                 int l6 = level5 - _noise - 1;
-                for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
+                for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
+                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
             }
             else
             {
-                for (y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+                for (y = level3; y < level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
             }
         }
 
@@ -74,9 +66,10 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel5_4(int xz, int yh, int level5, int level4)
         {
-            for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
-            // Сверху гравий
-            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdGravel);
+            // Местами прослойки глины между вверхном и суглинком
+            for (int y = level5; y < level4; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
+            // Сверху глина
+            if (level4 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdClay);
         }
 
         /// <summary>
@@ -85,8 +78,7 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelUp(int xz, int yh, int level)
         {
-            // Гравий
-            for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGravel);
+            for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
         }
     }
 }

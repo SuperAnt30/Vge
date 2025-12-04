@@ -124,11 +124,11 @@ namespace Mvk2.World.Gen
                 new BiomeSea(this),
                 new BiomeRiver(this),
                 new BiomePlane(this),
-                new BiomeIsland(this),
+                new BiomeDesert(this),
                 new BiomeBeach(this),
-                new BiomeIsland(this),
-                new BiomeIsland(this),
-                new BiomeIsland(this),
+                new BiomeMixedForest(this),
+                new BiomeConiferousForest(this),
+                new BiomeBirchForest(this),
                 new BiomeIsland(this),
                 new BiomeSwamp(this),
                 new BiomeMountains(this),
@@ -182,15 +182,17 @@ namespace Mvk2.World.Gen
                     // Низ бедрок
                     //  dn = DownNoise[xz];
                     //ChunkPrimer.SetBlockState(xz, 0, 2);
-                    ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
+
 
                     // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
-                    if (chunk.CurrentChunkX != 0 && chunk.CurrentChunkX != 1
-                        && chunk.CurrentChunkX != -4 && chunk.CurrentChunkX != -3
-                        && chunk.CurrentChunkX != -8 && chunk.CurrentChunkX != -7)
+                    //if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
+                    //    && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
+                    //    && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
+                    //if (chunk.CurrentChunkY == 1 && chunk.CurrentChunkX == -17)
                     {
-                      //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
-                     //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
+                        ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
+                        //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
+                        //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
 
                         // Биомы
                         idBiome = (byte)arBiome[xz];

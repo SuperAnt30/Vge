@@ -23,9 +23,9 @@ namespace Mvk2
             //game.World.
             long seed = 4;
             // 0 - biome
-            //_FileArea(seed, 0, game);
+            _FileArea(seed, 0, game);
             // 1 - height
-            _FileArea(seed, 1, game);
+            //_FileArea(seed, 1, game);
         }
 
 
