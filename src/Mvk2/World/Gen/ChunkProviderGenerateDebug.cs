@@ -59,8 +59,14 @@ namespace Mvk2.World.Gen
                     {
                         _chunkPrimer.SetBlockState(x, y, z, Stone);
                     }
-                    _chunkPrimer.SetBlockState(x, h - 1, z, Turf);
-                    
+                    if (chunk.X > -2 && chunk.X < 2 && chunk.Y > -2 && chunk.Y < 2)
+                    {
+                        _chunkPrimer.SetBlockState(x, h - 1, z, Turf);
+                    }
+                    else
+                    {
+                        _chunkPrimer.SetBlockState(x, h - 1, z, Stone);
+                    }
                 }
             }
 

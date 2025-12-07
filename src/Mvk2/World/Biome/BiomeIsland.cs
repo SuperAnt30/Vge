@@ -228,8 +228,9 @@ namespace Mvk2.World.Biome
             
                 // Бедрок
                 int level0 = (int)(Provider.CaveRiversNoise[xz] / 5f) + 3; // ~ 2 .. 4
-                if (level0 < 1) level0 = 1;
                 level0 += _noise;
+                if (level0 < 1) level0 = 1;
+                
                 // Определяем высоты
                 result = yh = height < level0 ? level0 : height;
                 // Смещение от уровня моря
@@ -258,6 +259,7 @@ namespace Mvk2.World.Biome
                 if (level1 > yh) level1 = yh;
                 if (level1 < level0) level1 = level0;
 
+                //level1 = level0;
                 _GenLevel0_1(xz, yh, level0, level1);
 
                 if (level1 < yh)
@@ -268,10 +270,12 @@ namespace Mvk2.World.Biome
                     int level2 = (int)Provider.Level2Noise[xz] + 41 // ~ 34 .. 48
                         + _biasWater - _noise;
                     if (level2 > yh) level2 = yh;
+                    if (level2 < level1) level2 = level1;
                     // Низ суглинка
                     int level3 = (int)Provider.Level3Noise[xz] + 42 // ~ 35 .. 49
                         + _biasWater - _noise; 
                     if (level3 > yh) level3 = yh;
+                    if (level3 < level1) level3 = level1;
 
                     // Глина
                     if (level3 > level2)
