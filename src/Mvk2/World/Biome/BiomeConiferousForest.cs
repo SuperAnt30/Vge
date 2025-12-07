@@ -1,5 +1,7 @@
 ﻿using Mvk2.World.Gen;
 using System.Runtime.CompilerServices;
+using Vge.World.Gen;
+using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Biome
 {
@@ -9,7 +11,14 @@ namespace Mvk2.World.Biome
     public class BiomeConiferousForest : BiomeIsland
     {
         public BiomeConiferousForest(ChunkProviderGenerateIsland chunkProvider)
-            : base(chunkProvider) { }
+            : base(chunkProvider)
+        {
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+                new FeatureMinable(_chunkPrimer, 10, _blockIdStone, 33, 6), // Валун ок
+                new FeatureValun(_chunkPrimer, 20, _blockIdStone, 4, 1, 2, 1, 0)
+            };
+        }
 
         /// <summary>
         /// Генерация столба от 5 до 4 уровня

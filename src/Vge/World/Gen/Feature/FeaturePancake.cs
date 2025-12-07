@@ -58,7 +58,7 @@ namespace Vge.World.Gen.Feature
                         {
                             for (y = ymin; y <= ymax; ++y)
                             {
-                                _SetBlockReplace(x, y, z, _blockId);
+                                _SetBlockReplace(x, y, z, _blockId, 1);
                             }
                         }
                     }

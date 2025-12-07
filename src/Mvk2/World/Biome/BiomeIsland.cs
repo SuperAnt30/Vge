@@ -156,7 +156,7 @@ namespace Mvk2.World.Biome
 
             _featureColumnsAfter = new IFeatureGeneratorColumn[]
             {
-                new FeatureCactus(_chunkPrimer, 5)
+               // new FeatureCactus(_chunkPrimer, 5)
             };
         }
 
@@ -265,11 +265,11 @@ namespace Mvk2.World.Biome
                     // Продолжаем
 
                     // Низ песка
-                    int level2 = (int)Provider.SandDownNoise[xz] + 41 // ~ 34 .. 48
+                    int level2 = (int)Provider.Level2Noise[xz] + 41 // ~ 34 .. 48
                         + _biasWater - _noise;
                     if (level2 > yh) level2 = yh;
                     // Низ суглинка
-                    int level3 = (int)Provider.LoamDownNoise[xz] + 42 // ~ 35 .. 49
+                    int level3 = (int)Provider.Level3Noise[xz] + 42 // ~ 35 .. 49
                         + _biasWater - _noise; 
                     if (level3 > yh) level3 = yh;
 
@@ -285,11 +285,11 @@ namespace Mvk2.World.Biome
                         // Продолжаем
 
                         // Вверх песка
-                        int level4 = (int)Provider.SandUpNoise[xz] + 42 // ~ 35 .. 49
+                        int level4 = (int)Provider.Level4Noise[xz] + 42 // ~ 35 .. 49
                             + _biasWater;
                         if (level4 > yh) level4 = yh;
                         // Вверх суглинка
-                        int level5 = (int)Provider.LoamUpNoise[xz] + 48 // ~ 41 .. 55
+                        int level5 = (int)Provider.Level5Noise[xz] + 48 // ~ 41 .. 55
                             + _biasWater;
                         if (level5 > yh) level5 = yh;
 

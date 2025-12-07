@@ -85,10 +85,10 @@ namespace Mvk2.World.Gen
         public readonly float[] CaveRiversNoise2 = new float[256];
         public readonly float[] CaveHeightNoise2 = new float[256];
 
-        public readonly float[] SandDownNoise = new float[256];
-        public readonly float[] LoamDownNoise = new float[256];
-        public readonly float[] SandUpNoise = new float[256];
-        public readonly float[] LoamUpNoise = new float[256];
+        public readonly float[] Level2Noise = new float[256];
+        public readonly float[] Level3Noise = new float[256];
+        public readonly float[] Level4Noise = new float[256];
+        public readonly float[] Level5Noise = new float[256];
 
         #endregion
 
@@ -146,7 +146,7 @@ namespace Mvk2.World.Gen
         {
             try
             {
-                chunk.World.Filer.StartSection("ReliefChunk");
+               // chunk.World.Filer.StartSection("ReliefChunk");
 
                 int xbc = chunk.CurrentChunkX << 4;
                 int zbc = chunk.CurrentChunkY << 4;
@@ -162,35 +162,29 @@ namespace Mvk2.World.Gen
                 _noiseCaveHeight1.GenerateNoise2d(CaveHeightNoise, xbc, zbc, 16, 16, .025f, .025f);
                 _noiseCave2.GenerateNoise2d(CaveRiversNoise2, xbc, zbc, 16, 16, .05f, .05f);
                 _noiseCaveHeight2.GenerateNoise2d(CaveHeightNoise2, xbc, zbc, 16, 16, .025f, .025f);
-
-                _noiseArea.GenerateNoise2d(LoamDownNoise, xbc, zbc, 16, 16, .1f, .1f);
-                _noiseCave1.GenerateNoise2d(SandDownNoise, xbc, zbc, 16, 16, .1f, .1f);
-                _noiseCaveHeight1.GenerateNoise2d(LoamUpNoise, xbc, zbc, 16, 16, .1f, .1f);
-                _noiseCave2.GenerateNoise2d(SandUpNoise, xbc, zbc, 16, 16, .1f, .1f);
+                // Шумф для рельефа
+                _noiseArea.GenerateNoise2d(Level3Noise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCave1.GenerateNoise2d(Level2Noise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCaveHeight1.GenerateNoise2d(Level5Noise, xbc, zbc, 16, 16, .1f, .1f);
+                _noiseCave2.GenerateNoise2d(Level4Noise, xbc, zbc, 16, 16, .1f, .1f);
 
                 EnumBiomeIsland enumBiome;
                 BiomeIsland biome;
                 byte idBiome;
                 int xz, level;
-                float dn;
 
                 int[] arHeight = _genLayerHeight.GetInts(xbc, zbc, 16, 16);
                 int[] arBiome = _genLayerBiome.GetInts(xbc, zbc, 16, 16);
 
                 for (xz = 0; xz < 256; xz++)
                 {
-                    // Низ бедрок
-                    //  dn = DownNoise[xz];
-                    //ChunkPrimer.SetBlockState(xz, 0, 2);
-
-
                     // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
-                    //if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
-                    //    && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
-                    //    && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
+                    if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
+                        && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
+                        && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
                     //if (chunk.CurrentChunkY == 1 && chunk.CurrentChunkX == -17)
                     {
-                        ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
+                        //ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
                         //  ChunkPrimer.SetBlockState(xz, 1, (ushort)(dn < .1 ? 2 : 3));
                         //   ChunkPrimer.SetBlockState(xz, 2, (ushort)(dn < -.1 ? 2 : 3));
 
@@ -209,7 +203,7 @@ namespace Mvk2.World.Gen
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
 
-                        /*
+                        
                         // Пещенры 2д ввиде рек
                         if (enumBiome == EnumBiomeIsland.Mountains
                             || (enumBiome == EnumBiomeIsland.MountainsDesert && level > 58))
@@ -224,13 +218,13 @@ namespace Mvk2.World.Gen
                             _ColumnCave2d(CaveRiversNoise2[xz] / 8f, CaveHeightNoise2[xz] / 8f, xz, enumBiome,
                                 .10f, .30f, 10f, 18f, 12f, 18);
                         }
-                        */
+                        
                     }
                 }
 
                 _ExportChuck(chunk);
 
-                chunk.World.Filer.EndSectionLog(); // 0.3 мс
+               //chunk.World.Filer.EndSectionLog(); // 0.3 мс
                 //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
                 chunk.Light.SetLightBlocks(ChunkPrimer.ArrayLightBlocks.ToArray());
                 chunk.Light.GenerateHeightMap(); // 0.02 мс
@@ -264,7 +258,7 @@ namespace Mvk2.World.Gen
             {
                 //chunk.ToPositionBias(array[i])
                 chunkSpawn = provider.GetChunkPlus(chunk.CurrentChunkX + array[i].X, chunk.CurrentChunkY + array[i].Y);
-                //biome = _biomes[chunkSpawn.Biome[136]];
+                biome = _biomes[chunkSpawn.Biome[136]];
                 biome.DecorationsArea(chunk, chunkSpawn);
             }
 

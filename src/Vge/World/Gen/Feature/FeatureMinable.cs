@@ -21,12 +21,40 @@ namespace Vge.World.Gen.Feature
         /// Диапазон по Y
         /// </summary>
         private readonly byte _rangeY;
+        /// <summary>
+        /// Можно ли в воздухе ставить
+        /// </summary>
+        private readonly bool _isAir;
+        /// <summary>
+        /// Флаг для установки в воздухе
+        /// </summary>
+        private readonly byte _flagAir;
 
-        public FeatureMinable(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
+        public FeatureMinable(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom,
+            ushort blockId, byte count, byte rangeY) : this(chunkPrimer, minRandom, maxRandom, blockId,
+                count, 255, rangeY) { }
+
+        public FeatureMinable(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom,
             ushort blockId, byte count, byte minY, byte maxY) : base(chunkPrimer, minRandom, maxRandom, blockId)
         {
             _minY = minY;
-            _rangeY = (byte)(maxY - minY);
+            _isAir = _minY == 255;
+            _flagAir = (byte)(_isAir ? 0 : 1);
+            _rangeY = _isAir ? maxY : (byte)(maxY - minY);
+            _count = count;
+        }
+
+        public FeatureMinable(IChunkPrimer chunkPrimer, byte probabilityOne,
+            ushort blockId, byte count, byte rangeY) : this(chunkPrimer, probabilityOne, blockId,
+                count, 255, rangeY) { }
+
+        public FeatureMinable(IChunkPrimer chunkPrimer, byte probabilityOne, 
+            ushort blockId, byte count, byte minY, byte maxY) : base(chunkPrimer, probabilityOne, blockId)
+        {
+            _minY = minY;
+            _isAir = _minY == 255;
+            _flagAir = (byte)(_isAir ? 0 : 1);
+            _rangeY = _isAir ? maxY : (byte)(maxY - minY);
             _count = count;
         }
 
@@ -36,8 +64,10 @@ namespace Vge.World.Gen.Feature
         protected override void _DecorationAreaOctave(ChunkBase chunkSpawn, Rand rand)
         {
             int x0 = rand.Next(16);
-            int y0 = rand.Next(_rangeY) + _minY;
             int z0 = rand.Next(16);
+            int y0 = _isAir
+                ? chunkSpawn.HeightMapGen[z0 << 4 | x0] - _rangeY
+                : (_rangeY != 0 ? rand.Next(_rangeY) + _minY : _minY);
 
             float k, x3, y3, z3, c, h, v, xk, yk, zk;
             int x4, y4, z4, x5, y5, z5, i, x, y, z;
@@ -81,7 +111,7 @@ namespace Vge.World.Gen.Feature
                                     zk = (z + .5f - z3) / (h / 2f);
                                     if (xk * xk + yk * yk + zk * zk < 1f && y > 3)
                                     {
-                                        _SetBlockReplace(x, y, z, _blockId);
+                                        _SetBlockReplace(x, y, z, _blockId, _flagAir);
                                     }
                                 }
                             }

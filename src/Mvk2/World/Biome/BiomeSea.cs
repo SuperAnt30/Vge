@@ -35,7 +35,7 @@ namespace Mvk2.World.Biome
         protected override void _GenLevel1_2(int xz, int yh, int level1, int level2)
         {
             for (int y = level1; y < level2; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
-            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
+            if (level2 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdLimestone);
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevel2_3(int xz, int yh, int level2, int level3)
         {
-            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdStone);
+            for (int y = level2; y < level3; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+            if (level3 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdLimestone);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Mvk2.World.Biome
             {
                 // Доп шум для перехода песка
                 int l6 = level5 - _noise - 1;
-                for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
-                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdStone);
+                for (y = level3; y < l6; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
+                for (y = l6; y <= level5; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
             }
             else
             {

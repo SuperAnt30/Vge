@@ -23,6 +23,10 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         private readonly byte _countRandom;
         /// <summary>
+        /// Вероятность одной
+        /// </summary>
+        private int _probabilityOne;
+        /// <summary>
         /// Смещение чанка по X, для определения чанка в какой сетим
         /// </summary>
         private int _biasX;
@@ -31,7 +35,15 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         private int _biasZ;
 
-        public FeatureArea(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
+        public FeatureArea(IChunkPrimer chunkPrimer, byte probabilityOne, 
+            ushort blockId)
+        {
+            _chunkPrimer = chunkPrimer;
+            _probabilityOne = probabilityOne;
+            _blockId = blockId;
+        }
+
+        public FeatureArea(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom,
             ushort blockId)
         {
             _chunkPrimer = chunkPrimer;
@@ -45,15 +57,27 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         public void DecorationsArea(ChunkBase chunkSpawn, Rand rand, int biasX, int biasZ)
         {
-            int countRandom = _countRandom > 0 ? (rand.Next(_countRandom) + _minRandom) : _minRandom;
-            if (countRandom > 0)
+            if (_probabilityOne > 0)
             {
-                _biasX = biasX;
-                _biasZ = biasZ;
-
-                for (int ir = 0; ir < countRandom; ir++)
+                if (rand.Next(_probabilityOne) == 0)
                 {
+                    _biasX = biasX;
+                    _biasZ = biasZ;
                     _DecorationAreaOctave(chunkSpawn, rand);
+                }
+            }
+            else
+            {
+                int countRandom = _countRandom > 0 ? (rand.Next(_countRandom) + _minRandom) : _minRandom;
+                if (countRandom > 0)
+                {
+                    _biasX = biasX;
+                    _biasZ = biasZ;
+
+                    for (int ir = 0; ir < countRandom; ir++)
+                    {
+                        _DecorationAreaOctave(chunkSpawn, rand);
+                    }
                 }
             }
         }
@@ -64,12 +88,12 @@ namespace Vge.World.Gen.Feature
         protected virtual void _DecorationAreaOctave(ChunkBase chunkSpawn, Rand rand) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _SetBlockReplace(int x, int y, int z, ushort id)
+        protected void _SetBlockReplace(int x, int y, int z, ushort id, byte flag)
         {
             if (_biasX == (x >> 4) && _biasZ == (z >> 4))
             {
                 int xz = (z & 15) << 4 | (x & 15);
-                _chunkPrimer.SetBlockStateFlag(xz, y, id, 1);
+                _chunkPrimer.SetBlockStateFlag(xz, y, id, flag);
             }
         }
     }
