@@ -2,7 +2,6 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Block.List;
-using Vge.World.Chunk;
 using WinGL.Util;
 
 namespace Vge.Renderer.World
@@ -175,7 +174,7 @@ namespace Vge.Renderer.World
                         h4 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
                     }
                     else h4 = 0;
-                    blockUV.BuildingLiquidOutsideWind(h1, h2, h3, h4);
+                    blockUV.BuildingLiquidOutsideWind(h3, h4, h1, h2);
                 }
                 else
                 {
@@ -239,8 +238,8 @@ namespace Vge.Renderer.World
                 blockUV.AnimationFrame = sideLiquidCache.AnimationFrame;
                 blockUV.AnimationPause = sideLiquidCache.AnimationPause;
 
-                float fs = Glm.Sin(_angleFlow) * .25f;
-                float fc = Glm.Cos(_angleFlow) * .25f;
+                float fs = Glm.Sin(_angleFlow) * -.25f;
+                float fc = Glm.Cos(_angleFlow) * -.25f;
                 float k = Ce.ShaderAnimOffset * 2f;
                 float fu = sideLiquidCache.U + Ce.ShaderAnimOffset;
                 float fv = sideLiquidCache.V + Ce.ShaderAnimOffset;
@@ -270,10 +269,10 @@ namespace Vge.Renderer.World
             // Вверх
             blockUV.Vertex = new Vertex3d[]
             {
-                new Vertex3d(PosChunkX, PosChunkY + h00, PosChunkZ, u1, v1),
-                new Vertex3d(PosChunkX, PosChunkY + h01, PosChunkZ + 1,u2, v2),
-                new Vertex3d(PosChunkX + 1, PosChunkY + h11, PosChunkZ + 1, u3, v3),
-                new Vertex3d(PosChunkX + 1, PosChunkY + h10, PosChunkZ, u4, v4)
+                new Vertex3d(PosChunkX + 1, PosChunkY + h11, PosChunkZ + 1, u1, v1),
+                new Vertex3d(PosChunkX + 1, PosChunkY + h10, PosChunkZ, u2, v2),
+                new Vertex3d(PosChunkX, PosChunkY + h00, PosChunkZ, u3, v3),
+                new Vertex3d(PosChunkX, PosChunkY + h01, PosChunkZ + 1, u4, v4)
             };
         }
 

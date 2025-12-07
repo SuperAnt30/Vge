@@ -48,16 +48,19 @@ namespace Mvk2.World.Gen
             ushort FlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
             ushort Water = BlocksRegMvk.Water.IndexBlock;
             ushort Lava = BlocksRegMvk.Lava.IndexBlock;
+            ushort Turf = BlocksRegMvk.Turf.IndexBlock;
             //ushort Brol = BlocksRegMvk.Brol.IndexBlock;
 
             for (x = 0; x < 16; x++)
             {
                 for (z = 0; z < 16; z++)
                 {
-                    for (y = 0; y < h; y++)
+                    for (y = 0; y < h - 1; y++)
                     {
                         _chunkPrimer.SetBlockState(x, y, z, Stone);
                     }
+                    _chunkPrimer.SetBlockState(x, h - 1, z, Turf);
+                    
                 }
             }
 
@@ -124,6 +127,21 @@ namespace Mvk2.World.Gen
 
             if (chunk.X > -2 && chunk.X < 2 && chunk.Y > -2 && chunk.Y < 2)
             {
+
+                // Biome
+                chunk.Biome[0 << 4 | 11] = 9;
+                chunk.Biome[0 << 4 | 12] = 9;
+                chunk.Biome[0 << 4 | 13] = 9;
+                chunk.Biome[1 << 4 | 11] = 9;
+                chunk.Biome[1 << 4 | 12] = 9;
+                chunk.Biome[1 << 4 | 13] = 9;
+                chunk.Biome[2 << 4 | 11] = 9;
+                chunk.Biome[2 << 4 | 12] = 9;
+                chunk.Biome[2 << 4 | 13] = 9;
+                chunk.Biome[3 << 4 | 11] = 9;
+                chunk.Biome[3 << 4 | 12] = 9;
+                chunk.Biome[3 << 4 | 13] = 9;
+
 
                 _chunkPrimer.SetBlockState(5, h, 5, GlassRed);
                 _chunkPrimer.SetBlockState(5, h - 1, 4, GlassRed);
