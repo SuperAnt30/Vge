@@ -64,7 +64,6 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly bool[] _isRenderingSection;
 
-
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
         {
@@ -496,9 +495,9 @@ namespace Vge.Renderer.World
         public Vector3 GetColorSideFromBiom(byte typeColor, int bx, int bz)
         {
             // Трава
-            if (typeColor == 1) return new Vector3(.56f, .73f, .35f);
+            if (typeColor == 1) return _worldClient.Game.ModClient.Colors.Grass(Biome[bz << 4 | bx]);
             // Вода
-            if (typeColor == 3) return new Vector3(.24f, .45f, .88f);
+            if (typeColor == 3) return _worldClient.Game.ModClient.Colors.Water(Biome[bz << 4 | bx]);
 
             return BlockRenderFull.ColorWhite;
         }

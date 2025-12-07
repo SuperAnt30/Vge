@@ -274,13 +274,19 @@ namespace Mvk2.World.Biome
                     if (level3 > yh) level3 = yh;
 
                     // Глина
-                    if (level2 > level1) _GenLevel1_2(xz, yh, level1, level2);
-                    else level2 = level1;
+                    if (level3 > level2)
+                    {
+                        if (level2 > level1) _GenLevel1_2(xz, yh, level1, level2);
+                        else level2 = level1;
+                        _GenLevel2_3(xz, yh, level2, level3);
+                    }
+                    else
+                    {
+                        if (level3 > level1) _GenLevel1_2(xz, yh, level1, level3);
+                        else level3 = level1;
+                    }
 
-                    if (level3 > level2) _GenLevel2_3(xz, yh, level2, level3);
-                    else if (level3 < level1) level3 = level1;
-
-                    if (level3 < yh && level2 < yh)
+                    if (level3 < yh)
                     {
                         // Продолжаем
 

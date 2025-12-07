@@ -1,6 +1,7 @@
 ﻿using Mvk2.Entity.List;
 using Mvk2.Gui;
 using Mvk2.World;
+using Mvk2.World.Biome;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Gui.Huds;
@@ -25,8 +26,12 @@ namespace Mvk2.Games
         /// </summary>
         public PlayerClientOwnerMvk Player { get; private set; }
 
-        public GameModClientMvk(WindowMvk window) : base(window) 
-            => _windowMvk = window;
+        public GameModClientMvk(WindowMvk window) : base(window)
+        {
+            _windowMvk = window;
+            Colors.CreateGrass(Biomes.ColorsGrass);
+            Colors.CreateWater(Biomes.ColorsWater);
+        }
 
         /// <summary>
         /// Создать настройки мира по id

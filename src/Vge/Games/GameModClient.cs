@@ -2,6 +2,7 @@
 using Vge.Gui.Huds;
 using Vge.Gui.Screens;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.World;
 using Vge.World;
 using WinGL.Actions;
 
@@ -16,6 +17,10 @@ namespace Vge.Games
         /// Основной клиент
         /// </summary>
         public GameBase Game { get; private set; }
+        /// <summary>
+        /// Цвета биомов
+        /// </summary>
+        public readonly ColorsBiom Colors = new ColorsBiom();
         /// <summary>
         /// Объект окна
         /// </summary>
