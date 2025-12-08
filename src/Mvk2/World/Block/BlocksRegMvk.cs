@@ -47,6 +47,15 @@ namespace Mvk2.World.Block
         /// Гравий
         /// </summary>
         public static BlockBase Gravel { get; private set; }
+        /// <summary>
+        /// Угольная руда
+        /// </summary>
+        public static BlockBase OreCoal { get; private set; }
+        /// <summary>
+        /// Железная руда
+        /// </summary>
+        public static BlockBase OreIron { get; private set; }
+
 
         /// <summary>
         /// Камень
@@ -81,6 +90,8 @@ namespace Mvk2.World.Block
             Turf = BlocksReg.RegisterBlockClass("Turf");
             TurfLoam = BlocksReg.RegisterBlockClass("TurfLoam");
             Gravel = BlocksReg.RegisterBlockClass("Gravel");
+            OreCoal = BlocksReg.RegisterBlockClass("OreCoal");
+            OreIron = BlocksReg.RegisterBlockClass("OreIron");
 
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");

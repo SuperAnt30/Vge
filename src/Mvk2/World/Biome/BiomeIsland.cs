@@ -3,6 +3,7 @@ using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Vge.Util;
 using Vge.World.Chunk;
 using Vge.World.Gen;
@@ -77,7 +78,8 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdTurf = BlocksRegMvk.Turf.IndexBlock;
         protected readonly ushort _blockIdTurfLoam = BlocksRegMvk.TurfLoam.IndexBlock;
         protected readonly ushort _blockIdGravel = BlocksRegMvk.Gravel.IndexBlock;
-        
+        protected readonly ushort _blockIdOreCoal = BlocksRegMvk.OreCoal.IndexBlock;
+        protected readonly ushort _blockIdOreIron = BlocksRegMvk.OreIron.IndexBlock;
 
         /// <summary>
         /// Блок для отладки визуализации биома
@@ -112,6 +114,10 @@ namespace Mvk2.World.Biome
         /// Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
         /// </summary>
         protected int _noise;
+        /// <summary>
+        /// Плавный шум для переходов слоёв в 7 блока (-3 .. 3)
+        /// </summary>
+        protected int _noise7;
         /// <summary>
         /// Смещение от уровня моря
         /// </summary>
@@ -221,6 +227,8 @@ namespace Mvk2.World.Biome
 
             try
             {
+                // Мелкий шум для переходов слоёв в 7 блока (-3 .. 3)
+                _noise7 = -(int)(Provider.AreaNoise[xz] * .4f);
                 // Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
                 _noise = (int)(Provider.DownNoise[xz] * 5f);
                 // Смещение от уровня моря
@@ -259,7 +267,6 @@ namespace Mvk2.World.Biome
                 if (level1 > yh) level1 = yh;
                 if (level1 < level0) level1 = level0;
 
-                //level1 = level0;
                 _GenLevel0_1(xz, yh, level0, level1);
 
                 if (level1 < yh)
@@ -277,6 +284,49 @@ namespace Mvk2.World.Biome
                     if (level3 > yh) level3 = yh;
                     if (level3 < level1) level3 = level1;
 
+                    // Вверх песка
+                    int level4 = (int)Provider.Level4Noise[xz] + 42 // ~ 35 .. 49
+                        + _biasWater;
+                    if (level4 > yh) level4 = yh;
+                    // Вверх суглинка
+                    int level5 = (int)Provider.Level5Noise[xz] + 48 // ~ 41 .. 55
+                        + _biasWater;
+                    if (level5 > yh) level5 = yh;
+
+                    if (level1 > 20)
+                    {
+                        // Для руд и прочего, должно быть выше 20
+                        // Этого мало, типа слой
+                        if (level4 + 2 >= level5 && level4 + 2 >= level3)
+                        {
+                            // Угольная жила
+                            int min = Mth.Min(level5 - level3, level4 + 2 - level5) + 1;
+                            if (_noise > 0) min *= 2;
+                            int level = level1 - _noise7 - 1 - _noise;
+                            min = level - min;
+                            if (min > level1) min = level1;
+                            level += _noise7 + 3;
+                            if (level > yh) level = yh;
+                            if (level > level1)
+                            {
+                                level1 = level;
+                                if (level2 < level1) level2 = level1;
+                                if (level3 < level1) level3 = level1;
+                            }
+                            _GenLevel1Little(xz, yh, min, level);
+                        }
+
+                        // Этого много, типа слой
+                        if (level4 < level5 && level4 > level3)
+                        {
+                            // Угольная жила
+                            int min = Mth.Min(level4 - level3, level5 - level4) * 2;
+                             //int level = level1 + _noise7 - 1;
+                            int level = level1 - _noise7 * 3 - 6 - _noise;
+                            _GenLevel1Many(xz, yh, level - min, level);
+                        }
+                    }
+
                     // Глина
                     if (level3 > level2)
                     {
@@ -293,16 +343,6 @@ namespace Mvk2.World.Biome
                     if (level3 < yh)
                     {
                         // Продолжаем
-
-                        // Вверх песка
-                        int level4 = (int)Provider.Level4Noise[xz] + 42 // ~ 35 .. 49
-                            + _biasWater;
-                        if (level4 > yh) level4 = yh;
-                        // Вверх суглинка
-                        int level5 = (int)Provider.Level5Noise[xz] + 48 // ~ 41 .. 55
-                            + _biasWater;
-                        if (level5 > yh) level5 = yh;
-
                         if (level5 > level3) _GenLevel3_5(xz, yh, level3, level5);
                         else level5 = level3;
 
@@ -346,6 +386,26 @@ namespace Mvk2.World.Biome
         {
             for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLimestone);
             if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
+        }
+
+        /// <summary>
+        /// Генерация столба от около 1 мало
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel1Little(int xz, int yh, int level0, int level1)
+        {
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdOreCoal);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdOreCoal);
+        }
+
+        /// <summary>
+        /// Генерация столба от около 1 много
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevel1Many(int xz, int yh, int level0, int level1)
+        {
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdSand);
         }
 
         /// <summary>

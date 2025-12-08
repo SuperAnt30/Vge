@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Gen;
+using System.Runtime.CompilerServices;
 using Vge.World.Gen;
 using Vge.World.Gen.Feature;
 
@@ -18,6 +19,16 @@ namespace Mvk2.World.Biome
                 new FeatureMinable(_chunkPrimer, 5, _blockIdWater, 33, 10), // Пресная вода
                 //new FeatureValun(_chunkPrimer, 1, 1, _blockIdStone, 4, 1, 2, 1, 0)
             };
+        }
+
+        /// <summary>
+        /// Генерация столба от около 1 много
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevel1Many(int xz, int yh, int level0, int level1)
+        {
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdOreCoal);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdOreCoal);
         }
     }
 }

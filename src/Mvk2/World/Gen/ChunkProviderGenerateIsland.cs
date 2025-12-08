@@ -198,7 +198,7 @@ namespace Mvk2.World.Gen
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
                         //Provider.DownNoise[xz] * 5f) +1
-                        int levelDebug = (int)(CaveRiversNoise[xz] * .5f); // ~ 0 .. 3
+                        int levelDebug = (int)(AreaNoise[xz] * .4f); // ~ 0 .. 3
                         if (levelDebug < iMin) iMin = levelDebug;
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);
@@ -224,7 +224,7 @@ namespace Mvk2.World.Gen
 
                 _ExportChuck(chunk);
 
-               //chunk.World.Filer.EndSectionLog(); // 0.3 мс
+              // chunk.World.Filer.EndSectionLog(); // 0.3 мс
                 //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
                 chunk.Light.SetLightBlocks(ChunkPrimer.ArrayLightBlocks.ToArray());
                 chunk.Light.GenerateHeightMap(); // 0.02 мс

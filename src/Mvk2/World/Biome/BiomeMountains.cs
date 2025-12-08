@@ -9,6 +9,16 @@ namespace Mvk2.World.Biome
             : base(chunkProvider) { }
 
         /// <summary>
+        /// Генерация столба от около 1 много
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevel1Many(int xz, int yh, int level0, int level1)
+        {
+            for (int y = level0; y < level1; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdOreIron);
+            if (level1 == yh) _chunkPrimer.SetBlockState(xz, yh, _blockIdOreIron);
+        }
+
+        /// <summary>
         /// Генерация столба от 1 до 2 уровня
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
