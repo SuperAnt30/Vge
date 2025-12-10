@@ -5,6 +5,10 @@
     /// </summary>
     public interface IChunkPrimer
     {
-        void SetBlockStateFlag(int xz, int y, ushort id, byte flag);
+        void SetBlockState(int xz, int y, ushort id, uint met = 0);
+
+        void SetBlockIdFlag(int xz, int y, ushort id, byte flag);
+
+        ushort GetBlockId(int xz, int y);
     }
 }

@@ -38,7 +38,7 @@ namespace Mvk2.World.Gen.Feature
                     {
                         for (int y2 = 0; y2 < cloum; y2++)
                         {
-                            _chunkPrimer.SetBlockStateFlag(xz, y + y2, BlocksRegMvk.Limestone.IndexBlock, 0);
+                            _chunkPrimer.SetBlockIdFlag(xz, y + y2, BlocksRegMvk.Limestone.IndexBlock, 0);
                         }
                     }
                 }

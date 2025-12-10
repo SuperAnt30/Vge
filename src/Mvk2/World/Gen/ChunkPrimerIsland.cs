@@ -65,7 +65,7 @@ namespace Mvk2.World.Gen
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockStateFlag(int xz, int y, ushort id, byte flag)
+        public void SetBlockIdFlag(int xz, int y, ushort id, byte flag)
         {
             int index = y << 8 | xz;
             Id[index] = id;
@@ -79,6 +79,9 @@ namespace Mvk2.World.Gen
             Id[index] = id;
             if (met != 0) Met[index] = met;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ushort GetBlockId(int xz, int y) => Id[y << 8 | xz];
 
         /// <summary>
         /// Очистить

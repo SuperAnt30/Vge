@@ -93,7 +93,7 @@ namespace Vge.World.Gen.Feature
             if (_biasX == (x >> 4) && _biasZ == (z >> 4))
             {
                 int xz = (z & 15) << 4 | (x & 15);
-                _chunkPrimer.SetBlockStateFlag(xz, y, id, flag);
+                _chunkPrimer.SetBlockIdFlag(xz, y, id, flag);
             }
         }
     }

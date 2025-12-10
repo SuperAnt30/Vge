@@ -80,6 +80,10 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdGravel = BlocksRegMvk.Gravel.IndexBlock;
         protected readonly ushort _blockIdOreCoal = BlocksRegMvk.OreCoal.IndexBlock;
         protected readonly ushort _blockIdOreIron = BlocksRegMvk.OreIron.IndexBlock;
+        protected readonly ushort _blockIdOreGold = BlocksRegMvk.OreGold.IndexBlock;
+        protected readonly ushort _blockIdOreSulfur = BlocksRegMvk.OreSulfur.IndexBlock;
+
+        
 
         /// <summary>
         /// Блок для отладки визуализации биома
@@ -319,7 +323,7 @@ namespace Mvk2.World.Biome
                         // Этого много, типа слой
                         if (level4 < level5 && level4 > level3)
                         {
-                            // Угольная жила
+                            // Вода / Железо жила
                             int min = Mth.Min(level4 - level3, level5 - level4) * 2;
                              //int level = level1 + _noise7 - 1;
                             int level = level1 - _noise7 * 3 - 6 - _noise;
@@ -481,19 +485,22 @@ namespace Mvk2.World.Biome
         /// Декорация в текущем чанке, не выходя за пределы
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        public void DecorationsColumn(ChunkBase chunkSpawn) => _DecorationsColumn(_featureColumns, chunkSpawn);
+        public void DecorationsColumn(ChunkBase chunkSpawn) 
+            => _DecorationsColumn(_featureColumns, chunkSpawn);
 
         /// <summary>
         /// Декорация в текущем чанке, не выходя за пределы после Area
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        public void DecorationsColumnAfter(ChunkBase chunkSpawn) => _DecorationsColumn(_featureColumnsAfter, chunkSpawn);
+        public void DecorationsColumnAfter(ChunkBase chunkSpawn) 
+            => _DecorationsColumn(_featureColumnsAfter, chunkSpawn);
 
         /// <summary>
         /// Декорация в текущем чанке, не выходя за пределы
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        private void _DecorationsColumn(IFeatureGeneratorColumn[] featureColumns, ChunkBase chunkSpawn)
+        private void _DecorationsColumn(IFeatureGeneratorColumn[] featureColumns, 
+            ChunkBase chunkSpawn)
         {
             int xbc = chunkSpawn.CurrentChunkX << 4;
             int zbc = chunkSpawn.CurrentChunkY << 4;

@@ -1,5 +1,7 @@
 ﻿using Mvk2.World.Gen;
 using System.Runtime.CompilerServices;
+using Vge.World.Gen;
+using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Biome
 {
@@ -7,6 +9,27 @@ namespace Mvk2.World.Biome
     {
         public BiomeMountains(ChunkProviderGenerateIsland chunkProvider)
             : base(chunkProvider) { }
+
+        protected override void _InitFeature()
+        {
+            // Сначало надо те которые меняют блоки камня (блинчики, руда), они ставят флаг, если их использовать после, будет пустота
+            // Потом используем те, которые добавляют, трава, деревья и прочее
+
+            _featureColumns = new IFeatureGeneratorColumn[]
+            {
+                new FeatureOreSprinkle(_chunkPrimer, 5, 2, 3, _blockIdOreSulfur, _blockIdLimestone),
+                new FeatureOreSprinkle(_chunkPrimer, 10, 20, 20, _blockIdOreGold, _blockIdLimestone)
+            };
+
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+
+            };
+
+            _featureColumnsAfter = new IFeatureGeneratorColumn[]
+            {
+            };
+        }
 
         /// <summary>
         /// Генерация столба от около 1 много

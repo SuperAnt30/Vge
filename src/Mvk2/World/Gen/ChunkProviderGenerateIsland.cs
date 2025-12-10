@@ -218,9 +218,14 @@ namespace Mvk2.World.Gen
                             _ColumnCave2d(CaveRiversNoise2[xz] / 8f, CaveHeightNoise2[xz] / 8f, xz, enumBiome,
                                 .10f, .30f, 10f, 18f, 12f, 18);
                         }
-                        
+
+                        chunk.HeightMapGen[xz] = (ushort)level;
+                        //biome.DecorationsColumn(chunk, level);
                     }
                 }
+
+                biome = _biomes[chunk.Biome[136]];
+                biome.DecorationsColumn(chunk);
 
                 _ExportChuck(chunk);
 
@@ -247,7 +252,7 @@ namespace Mvk2.World.Gen
             ChunkPrimer.Clear();
 
             BiomeIsland biome = _biomes[chunk.Biome[136]];
-            biome.DecorationsColumn(chunk);
+            //biome.DecorationsColumn(chunk);
             ChunkBase chunkSpawn;
 
             int i;
