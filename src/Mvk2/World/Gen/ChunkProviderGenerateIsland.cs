@@ -205,7 +205,7 @@ namespace Mvk2.World.Gen
 
                         
                         // Пещенры 2д ввиде рек
-                        if (enumBiome == EnumBiomeIsland.Mountains
+                        if (/*level > 58 || */enumBiome == EnumBiomeIsland.Mountains
                             || (enumBiome == EnumBiomeIsland.MountainsDesert && level > 58))
                         {
                             // В горах и пустыных горах могут быть пещеры

@@ -63,7 +63,22 @@ namespace Mvk2.World.Block
         /// Руда серы
         /// </summary>
         public static BlockBase OreSulfur { get; private set; }
-
+        /// <summary>
+        /// Руда алмаза
+        /// </summary>
+        public static BlockBase OreDiamond { get; private set; }
+        /// <summary>
+        /// Руда изумруда
+        /// </summary>
+        public static BlockBase OreEmerald { get; private set; }
+        /// <summary>
+        /// Руда рубина
+        /// </summary>
+        public static BlockBase OreRuby { get; private set; }
+        /// <summary>
+        /// Руда сапфира
+        /// </summary>
+        public static BlockBase OreSapphire { get; private set; }
 
         /// <summary>
         /// Камень
@@ -102,6 +117,10 @@ namespace Mvk2.World.Block
             OreIron = BlocksReg.RegisterBlockClass("OreIron");
             OreGold = BlocksReg.RegisterBlockClass("OreGold");
             OreSulfur = BlocksReg.RegisterBlockClass("OreSulfur");
+            OreDiamond = BlocksReg.RegisterBlockClass("OreDiamond");
+            OreEmerald = BlocksReg.RegisterBlockClass("OreEmerald");
+            OreRuby = BlocksReg.RegisterBlockClass("OreRuby");
+            OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire");
 
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");

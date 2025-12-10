@@ -17,8 +17,13 @@ namespace Mvk2.World.Biome
 
             _featureColumns = new IFeatureGeneratorColumn[]
             {
-                new FeatureOreSprinkle(_chunkPrimer, 5, 2, 3, _blockIdOreSulfur, _blockIdLimestone),
-                new FeatureOreSprinkle(_chunkPrimer, 10, 20, 20, _blockIdOreGold, _blockIdLimestone)
+                new FeatureOreSprinkleUp(_chunkPrimer, 1, 5, 1, 3, _blockIdOreSulfur, _blockIdLimestone),
+                new FeatureOreSprinkleUp(_chunkPrimer, 5, 4, 8, _blockIdOreGold, _blockIdLimestone),
+                new FeatureOreSprinkle(_chunkPrimer, 5, 5, 1, 3, _blockIdOreDiamond, _blockIdGranite, 10, 64),
+                new FeatureOreSprinkle(_chunkPrimer, 5, 5, 1, 3, _blockIdOreSapphire, _blockIdGranite, 10, 64),
+                new FeatureOreSprinkle(_chunkPrimer, 2, 5, 1, 2, _blockIdOreEmerald, _blockIdGranite, 10, 64),
+                new FeatureOreSprinkle(_chunkPrimer, 2, 5, 1, 2, _blockIdOreRuby, _blockIdGranite, 10, 64),
+                new FeatureOreSprinkle(_chunkPrimer, 1, 3, 2, 6, _blockIdOreGold, _blockIdLimestone, 30, 96),
             };
 
             _featureAreas = new IFeatureGeneratorArea[]

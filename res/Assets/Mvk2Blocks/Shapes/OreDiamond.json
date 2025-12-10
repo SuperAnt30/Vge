@@ -1,0 +1,4 @@
+{
+    Parent: "_CubeAll",
+    Texture: { All: "Blocks/OreDiamond" }
+}

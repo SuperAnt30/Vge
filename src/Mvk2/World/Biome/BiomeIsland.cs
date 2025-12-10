@@ -78,12 +78,17 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdTurf = BlocksRegMvk.Turf.IndexBlock;
         protected readonly ushort _blockIdTurfLoam = BlocksRegMvk.TurfLoam.IndexBlock;
         protected readonly ushort _blockIdGravel = BlocksRegMvk.Gravel.IndexBlock;
+        protected readonly ushort _blockIdGranite = BlocksRegMvk.Granite.IndexBlock;
         protected readonly ushort _blockIdOreCoal = BlocksRegMvk.OreCoal.IndexBlock;
         protected readonly ushort _blockIdOreIron = BlocksRegMvk.OreIron.IndexBlock;
         protected readonly ushort _blockIdOreGold = BlocksRegMvk.OreGold.IndexBlock;
         protected readonly ushort _blockIdOreSulfur = BlocksRegMvk.OreSulfur.IndexBlock;
+        protected readonly ushort _blockIdOreDiamond = BlocksRegMvk.OreDiamond.IndexBlock;
+        protected readonly ushort _blockIdOreEmerald = BlocksRegMvk.OreEmerald.IndexBlock;
+        protected readonly ushort _blockIdOreRuby = BlocksRegMvk.OreRuby.IndexBlock;
+        protected readonly ushort _blockIdOreSapphire = BlocksRegMvk.OreSapphire.IndexBlock;
 
-        
+
 
         /// <summary>
         /// Блок для отладки визуализации биома
@@ -260,7 +265,7 @@ namespace Mvk2.World.Biome
                     int level1g = (int)(ig * fg) + level0;
 
                     // Столб гранити
-                    for (y = level0; y < level1g; y++) _chunkPrimer.SetBlockState(xz, y, BlocksRegMvk.Granite.IndexBlock);
+                    for (y = level0; y < level1g; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdGranite);
                     level0 = level1g;
                 }
 

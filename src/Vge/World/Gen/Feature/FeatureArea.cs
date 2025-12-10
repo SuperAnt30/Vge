@@ -9,7 +9,7 @@ namespace Vge.World.Gen.Feature
     /// </summary>
     public abstract class FeatureArea : IFeatureGeneratorArea
     {
-        private IChunkPrimer _chunkPrimer;
+        private readonly IChunkPrimer _chunkPrimer;
         /// <summary>
         /// Какой блок ставим
         /// </summary>

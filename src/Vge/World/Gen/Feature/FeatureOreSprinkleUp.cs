@@ -5,9 +5,9 @@ using WinGL.Util;
 namespace Vge.World.Gen.Feature
 {
     /// <summary>
-    /// Генерация разброса руды на определённом уровне
+    /// Генерация разброса руды сверху
     /// </summary>
-    public class FeatureOreSprinkle : FeatureColumn
+    public class FeatureOreSprinkleUp : FeatureColumn
     {
         private readonly ushort _blockWhereId;
         /// <summary>
@@ -18,35 +18,23 @@ namespace Vge.World.Gen.Feature
         /// Толщина насыпи случайная, дополнительно к минимальной
         /// </summary>
         private readonly byte _depthRandom;
-        /// <summary>
-        /// Минимальный по уровню Y
-        /// </summary>
-        private readonly byte _minY;
-        /// <summary>
-        /// Диапазон по Y
-        /// </summary>
-        private readonly byte _rangeY;
 
-        public FeatureOreSprinkle(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
-           byte depthMin, byte depthRandom, ushort blockId, ushort blockWhereId, byte minY, byte maxY)
+        public FeatureOreSprinkleUp(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
+           byte depthMin, byte depthRandom, ushort blockId, ushort blockWhereId)
            : base(chunkPrimer, minRandom, maxRandom, blockId)
         {
             _depthMin = depthMin;
             _depthRandom = depthRandom;
             _blockWhereId = blockWhereId;
-            _minY = minY;
-            _rangeY = (byte)(maxY - minY);
         }
 
-        public FeatureOreSprinkle(IChunkPrimer chunkPrimer, byte probabilityOne, 
-            byte depthMin, byte depthRandom, ushort blockId, ushort blockWhereId, byte minY, byte maxY)
+        public FeatureOreSprinkleUp(IChunkPrimer chunkPrimer, byte probabilityOne, 
+            byte depthMin, byte depthRandom, ushort blockId, ushort blockWhereId)
             : base (chunkPrimer, probabilityOne, blockId)
         {
             _depthMin = depthMin;
             _depthRandom = depthRandom;
             _blockWhereId = blockWhereId;
-            _minY = minY;
-            _rangeY = (byte)(maxY - minY);
         }
 
         /// <summary>
@@ -57,14 +45,15 @@ namespace Vge.World.Gen.Feature
             int depth = _depthMin + rand.Next(_depthRandom);
             int z0 = rand.Next(14) + 1;
             int x0 = rand.Next(14) + 1;
-
-            int y = rand.Next(_rangeY) + _minY;
+            int xz = z0 << 4 | x0;
+                
+            int y = chunkSpawn.HeightMapGen[xz] - rand.Next(9) + 4;
             if (y > chunkSpawn.Settings.NumberMaxBlock)
             {
                 y = chunkSpawn.Settings.NumberMaxBlock;
             }
 
-            int i, xz, x, z, z1;
+            int i, x, z, z1;
             
             for (i = 0; i < depth; i++)
             {
