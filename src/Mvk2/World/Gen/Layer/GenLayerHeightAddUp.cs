@@ -1,4 +1,5 @@
-﻿using Vge.World.Gen.Layer;
+﻿using Mvk2.World.Biome;
+using Vge.World.Gen.Layer;
 using WinGL.Util;
 
 namespace Mvk2.World.Gen.Layer
@@ -6,25 +7,59 @@ namespace Mvk2.World.Gen.Layer
     /// <summary>
     /// Объект по добавлении высот (неровности вверх)
     /// </summary>
-    public class GenLayerHeightAddUp : GenLayerHeightAddParam
+    public class GenLayerHeightAddUp : GenLayer
     {
-        public GenLayerHeightAddUp(long baseSeed, GenLayer parent) : base(baseSeed, parent) { }
+        private readonly int _idDesert = (int)EnumBiomeIsland.Desert;
 
-        protected override int _GetParam(int param)
+        private readonly GenLayer _layerBiome;
+
+        public GenLayerHeightAddUp(long baseSeed, GenLayer parent, GenLayer layerBiome) : base(baseSeed)
         {
-            if (param < 45)
+            _parent = parent;
+            _layerBiome = layerBiome;
+        }
+
+        public override int[] GetInts(int areaX, int areaZ, int width, int height)
+        {
+            int[] arBiome = _layerBiome.GetInts(areaX, areaZ, width, height);
+            int[] arParent = _parent.GetInts(areaX, areaZ, width, height);
+            int count = width * height;
+            int[] ar = new int[count];
+            int x, z, idx, zw, c, b, r;
+
+            for (z = 0; z < height; z++)
             {
-                // Ниже воды 
-                int r = (45 - param) / 2;
-                if (r > 0) param += Mth.Min(_NextInt(r), _NextInt(r));
+                zw = z * width;
+                for (x = 0; x < width; x++)
+                {
+                    idx = x + zw;
+                    b = arBiome[idx];
+                    c = arParent[idx];
+                    InitChunkSeed(x + areaX, z + areaZ);
+                    if (c < 45)
+                    {
+                        // Ниже воды 
+                        r = (45 - c) / 2;
+                        if (r > 0) c += Mth.Min(_NextInt(r), _NextInt(r));
+                    }
+                    else if (c > 46)
+                    {
+                        // Выше воды
+                        if (b == _idDesert)
+                        {
+                            c = 50;
+                        }
+                        else
+                        {
+                            r = c - 45;
+                            if (r > 0) c += _NextInt(r);
+                        }
+                    }
+
+                    ar[idx] = c;
+                }
             }
-            else if (param > 46)
-            {
-                // Выше воды
-                int r = param - 45;
-                if (r > 0) param += _NextInt(r);
-            }
-            return param;
+            return ar;
         }
     }
 }

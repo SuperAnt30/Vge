@@ -88,14 +88,25 @@ namespace Mvk2.World.Block
         /// Булыжника
         /// </summary>
         public static BlockBase Cobblestone { get; private set; }
-        
+        /// <summary>
+        /// Блок травы
+        /// </summary>
+        public static BlockBase Grass { get; private set; }
+        /// <summary>
+        /// Цветок одуванчик
+        /// </summary>
+        public static BlockBase FlowerDandelion { get; private set; }
+        /// <summary>
+        /// Цветок клевер белый
+        /// </summary>
+        public static BlockBase FlowerClover { get; private set; }
+
         public static BlockBase Granite { get; private set; }
         public static BlockBase Glass { get; private set; }
         public static BlockAlpha GlassRed { get; private set; }
         public static BlockAlpha GlassGreen { get; private set; }
         public static BlockAlpha GlassBlue { get; private set; }
         public static BlockAlpha GlassPurple { get; private set; }
-        public static BlockBase FlowerClover { get; private set; }
         
         public static BlockBase Brol { get; private set; }
 
@@ -103,9 +114,10 @@ namespace Mvk2.World.Block
         {
             // Отладочный
             BlocksReg.RegisterBlockClass("Debug", new BlockDebug());
-
+            Water = BlocksReg.RegisterBlockClassLiquid("Water", true);
             Bedrock = BlocksReg.RegisterBlockClass("Bedrock");
             Limestone = BlocksReg.RegisterBlockClass("Limestone");
+            Granite = BlocksReg.RegisterBlockClass("Granite");
             Clay = BlocksReg.RegisterBlockClass("Clay");
             Sand = BlocksReg.RegisterBlockClass("Sand");
             Loam = BlocksReg.RegisterBlockClass("Loam");
@@ -122,17 +134,24 @@ namespace Mvk2.World.Block
             OreRuby = BlocksReg.RegisterBlockClass("OreRuby");
             OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire");
 
+            //Grass = BlocksReg.RegisterBlockClass("Grass");
+
+            BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass());
+
+            FlowerDandelion = BlocksReg.RegisterBlockClass("FlowerDandelion");
+            FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover");
+
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
-            Granite = BlocksReg.RegisterBlockClass("Granite");
+            
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
             GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen");
             GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue");
             GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple");
 
-            FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover"); // 195
-            Water = BlocksReg.RegisterBlockClassLiquid("Water", true);
+            
+            
             Lava = BlocksReg.RegisterBlockClassLiquid("Lava", false);
             Brol = BlocksReg.RegisterBlockClass("Brol");
             

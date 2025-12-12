@@ -80,5 +80,21 @@ namespace Mvk2.World.Biome
         {
             for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdSand);
         }
+
+        /// <summary>
+        /// Генерация столба поверхности, трава, цветы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevelSurface(int xz, int yh)
+        {
+            if (_noise17 < -3)
+            {
+                ushort b = _chunkPrimer.GetBlockId(xz, yh);
+                if (b == _blockIdTurf || b == _blockIdTurfLoam)
+                {
+                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
+                }
+            }
+        }
     }
 }

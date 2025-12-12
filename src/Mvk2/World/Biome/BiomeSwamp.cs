@@ -56,5 +56,33 @@ namespace Mvk2.World.Biome
             // Глина
             for (int y = level; y <= yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdClay);
         }
+
+        /// <summary>
+        /// Генерация столба поверхности, трава, цветы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevelSurface(int xz, int yh)
+        {
+            ushort b = _chunkPrimer.GetBlockId(xz, yh);
+            if (b == _blockIdTurf || b == _blockIdTurfLoam)
+            {
+                if (_noise7 < 0) // Много
+                {
+                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreIron);
+                }
+                else if (_noise7 < -6 && _noise7 == 1)
+                {
+                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerClover);
+                }
+                else if (_noise17 < -3)
+                {
+                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
+                }
+            }
+            //else if (b == _blockIdWater && _noise7 < 0)
+            //{
+            //    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreDiamond);
+            //}
+        }
     }
 }

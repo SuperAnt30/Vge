@@ -1,4 +1,5 @@
-﻿using Vge.Renderer.World;
+﻿using System.Runtime.CompilerServices;
+using Vge.Renderer.World;
 using Vge.Util;
 using WinGL.Util;
 
@@ -11,13 +12,19 @@ namespace Vge.World.Block.List
     {
         protected bool _biomeColor;
 
-        public BlockGrass(int numberTexture)
+       // public BlockGrass() { }
+
+        /// <summary>
+        /// Массив сторон прямоугольных форм для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override QuadSide[] GetQuads(uint met, int xb, int zb)
         {
-            Particle = numberTexture;
-            //IsUnique = true;
-            //FullBlock = false;
-           // AllSideForcibly = true;
+            int i = (xb + zb) & 7;
+            if (i > 4) i -= 4;
+            return _quads[i];
         }
+
         /*
 
             //Material = Materials.GetMaterialCache(EnumMaterial.Sapling);

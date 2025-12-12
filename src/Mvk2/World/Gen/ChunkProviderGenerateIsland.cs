@@ -146,7 +146,7 @@ namespace Mvk2.World.Gen
         {
             try
             {
-               // chunk.World.Filer.StartSection("ReliefChunk");
+                //chunk.World.Filer.StartSection("ReliefChunk");
 
                 int xbc = chunk.CurrentChunkX << 4;
                 int zbc = chunk.CurrentChunkY << 4;
@@ -179,9 +179,9 @@ namespace Mvk2.World.Gen
                 for (xz = 0; xz < 256; xz++)
                 {
                     // TODO::2025-11-29 временна чанки не грузим по X 0 и 1
-                    if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
-                        && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
-                        && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
+                    //if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
+                    //    && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
+                    //    && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
                     //if (chunk.CurrentChunkY == 1 && chunk.CurrentChunkX == -17)
                     {
                         //ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
@@ -198,7 +198,7 @@ namespace Mvk2.World.Gen
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
                         //Provider.DownNoise[xz] * 5f) +1
-                        int levelDebug = (int)(AreaNoise[xz] * .4f); // ~ 0 .. 3
+                        int levelDebug = (int)(AreaNoise[xz] * .48f); // ~ 0 .. 3
                         if (levelDebug < iMin) iMin = levelDebug;
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);

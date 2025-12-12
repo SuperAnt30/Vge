@@ -88,7 +88,9 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdOreRuby = BlocksRegMvk.OreRuby.IndexBlock;
         protected readonly ushort _blockIdOreSapphire = BlocksRegMvk.OreSapphire.IndexBlock;
 
-
+        protected readonly ushort _blockIdGrass = BlocksRegMvk.Grass.IndexBlock;
+        protected readonly ushort _blockIdFlowerDandelion = BlocksRegMvk.FlowerDandelion.IndexBlock;
+        protected readonly ushort _blockIdFlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
 
         /// <summary>
         /// Блок для отладки визуализации биома
@@ -127,6 +129,10 @@ namespace Mvk2.World.Biome
         /// Плавный шум для переходов слоёв в 7 блока (-3 .. 3)
         /// </summary>
         protected int _noise7;
+        /// <summary>
+        /// Мелкий шум для переходов слоёв в 17 блока (-8 .. 8) он же _noise
+        /// </summary>
+        protected int _noise17;
         /// <summary>
         /// Смещение от уровня моря
         /// </summary>
@@ -236,8 +242,10 @@ namespace Mvk2.World.Biome
 
             try
             {
-                // Мелкий шум для переходов слоёв в 7 блока (-3 .. 3)
-                _noise7 = -(int)(Provider.AreaNoise[xz] * .4f);
+                // Плавный шум для переходов слоёв в 7 блока (-3 .. 3)
+                _noise7 = -(int)(Provider.AreaNoise[xz] * .48f);
+                // Мелкий шум для переходов слоёв в 3 блока (-8 .. 8)
+                _noise17 = (int)(Provider.DownNoise[xz] * 32f);
                 // Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
                 _noise = (int)(Provider.DownNoise[xz] * 5f);
                 // Смещение от уровня моря
@@ -361,6 +369,10 @@ namespace Mvk2.World.Biome
                             if (yh > level4) _GenLevelUp(xz, yh, level4);
                         }
                         else if (yh > level5) _GenLevelUp(xz, yh, level5);
+                        if (yh >= HeightWater)
+                        {
+                            _GenLevelSurface(xz, yh);
+                        }
                     }
                 }
 
@@ -481,6 +493,30 @@ namespace Mvk2.World.Biome
                 // Суглинок
                 for (int y = level; y < yh; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdLoam);
                 _chunkPrimer.SetBlockState(xz, yh, yh < HeightWater ? _blockIdLoam : _blockIdTurfLoam);
+            }
+        }
+
+        /// <summary>
+        /// Генерация столба поверхности, трава, цветы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevelSurface(int xz, int yh)
+        {
+            if (_noise7 < -1) // Мало
+            {
+                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreIron);
+            }
+            else if (_noise17 > 6 && _noise7 == 1)
+            {
+                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerDandelion);
+            }
+            else if (_noise17 < -6 && _noise7 == -1)
+            {
+                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerClover);
+            }
+            else if (_noise17 < -3)
+            {
+                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
             }
         }
 

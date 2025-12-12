@@ -152,7 +152,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Массив сторон прямоугольных форм
         /// </summary>
-        private QuadSide[][] _quads;
+        protected QuadSide[][] _quads;
         /// <summary>
         /// Маска на все варианты и стороны, 4 ulong-a (256 бит)
         /// </summary>

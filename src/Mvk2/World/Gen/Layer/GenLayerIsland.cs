@@ -13,7 +13,7 @@ namespace Mvk2.World.Gen.Layer
         /// <summary>
         /// массив стартового шаблона мира
         /// </summary>
-        private readonly byte[] _arPattern0 = new byte[] {
+        private readonly byte[] _arPattern = new byte[] {
              // 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,
 /*  0 */        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 /*  1 */        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -52,7 +52,7 @@ namespace Mvk2.World.Gen.Layer
         /// <summary>
         /// массив стартового шаблона мира
         /// </summary>
-        private readonly byte[] _arPattern = new byte[] {
+        private readonly byte[] _arPattern0 = new byte[] {
              // 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,
 /*  0 */        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 /*  1 */        0, 6, 6, 9, 6, 6, 9, 9, 2, 0, 2, 0, 2, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 2, 0, 2, 5, 5, 0,
@@ -124,6 +124,7 @@ namespace Mvk2.World.Gen.Layer
         public static GenLayer[] BeginLayerBiome(long worldSeed)
         {
             GenLayer layerBiomeOne;
+            GenLayer layerBiomeParam0;
             GenLayer layerBiomeParam1;
             GenLayer layerBiomeParam2;
             GenLayer layerBiome;
@@ -140,7 +141,7 @@ namespace Mvk2.World.Gen.Layer
             int idSea = (int)EnumBiomeIsland.Sea;
 
             // Biome
-            layerBiome = new GenLayerZoomRandom(21, layerBiomeOne);
+            layerBiome = layerBiomeParam0 = new GenLayerZoomRandom(21, layerBiomeOne);
             // Расширяем биом реки, для бесконечного источника воды
             layerBiome = new GenLayerExpand(layerBiome, idRiver);
             layerBiome = new GenLayerExpand(layerBiome, idSea);
@@ -166,7 +167,7 @@ namespace Mvk2.World.Gen.Layer
             layerHeight = new GenLayerHeightAddBegin(2, layerHeight);
             layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(21, layerHeight));
             // Объект по добавлении высот (неровности вверх)
-            layerHeight = new GenLayerHeightAddUp(2, layerHeight);
+            layerHeight = new GenLayerHeightAddUp(2, layerHeight, layerBiomeParam0);
             layerHeight = new GenLayerSmoothMix(new GenLayerZoomRandom(24, layerHeight));
             // добавлении высот (ущелены в море и не большие неровности)
             layerHeight = new GenLayerHeightAddSea(100, layerHeight);

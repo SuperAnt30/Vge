@@ -15,7 +15,8 @@ namespace Mvk2.World.Gen.Layer
 
         private readonly GenLayer _layerBiome;
 
-        public GenLayerHeightAddBiome(long baseSeed, GenLayer parent, GenLayer layerBiome, bool isForest) : base(baseSeed)
+        public GenLayerHeightAddBiome(long baseSeed, GenLayer parent, GenLayer layerBiome, bool isForest) 
+            : base(baseSeed)
         {
             _parent = parent;
             _layerBiome = layerBiome;

@@ -17,7 +17,8 @@ namespace Mvk2.World.Gen.Layer
                 param = _NextInt(4) + 3;
             }
             // Добавляем не большие неровности
-            param += _NextInt(4) - 2;
+            //param += _NextInt(4) - 2;
+            param += _NextInt(3) - 2;
             return param;
         }
     }

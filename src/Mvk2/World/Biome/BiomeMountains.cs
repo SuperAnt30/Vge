@@ -112,5 +112,21 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelUp(int xz, int yh, int level)
             => _GenLevel(xz, yh, level, yh);
+
+        /// <summary>
+        /// Генерация столба поверхности, трава, цветы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevelSurface(int xz, int yh)
+        {
+            if (_noise17 < -3)
+            {
+                ushort b = _chunkPrimer.GetBlockId(xz, yh);
+                if (b == _blockIdTurf || b == _blockIdTurfLoam)
+                {
+                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
+                }
+            }
+        }
     }
 }
