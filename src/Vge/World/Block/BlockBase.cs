@@ -239,6 +239,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
                     if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
                     if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
+                    if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
                     if (json.IsKey(Ctb.Color))
                     {
                         float[] ar = json.GetArray().ToArrayFloat();

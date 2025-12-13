@@ -39,6 +39,10 @@
         /// Цвет блока, используется при BiomeColor = true. ([red, green, blue]), цвет указывается 0-1.0
         /// </summary>
         public const string Color = "Color";
+        /// <summary>
+        /// Блок без коллизии
+        /// </summary>
+        public const string NoCollision = "NoCollision";
 
         #endregion
 

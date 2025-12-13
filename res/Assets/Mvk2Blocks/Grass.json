@@ -1,6 +1,7 @@
 {
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
+    NoCollision: true,
     LightOpacity: 0,
     Translucent: true,
     Variants: [
