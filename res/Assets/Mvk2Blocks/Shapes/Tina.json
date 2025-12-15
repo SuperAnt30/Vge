@@ -1,0 +1,13 @@
+{
+    Texture: { All: "Blocks/Tina" },
+    Elements: [
+        {   From: [ -8, -0.125, -8 ],
+            To: [ 8, -0.125, 8 ],
+            Sharpness: true,
+            Faces: [
+                { Texture:"All", Side:"Down"},
+                { Texture:"All", Side:"Up"}
+            ]
+        }
+    ]
+}

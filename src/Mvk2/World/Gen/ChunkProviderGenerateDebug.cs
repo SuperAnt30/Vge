@@ -104,7 +104,7 @@ namespace Mvk2.World.Gen
                     //for (int y = h - 42; y < h; y++)
                     for (y = h - 2; y < h; y++)
                     {
-                        //SetBlockState(x, y, z, new BlockState(GlassBlue));
+                        //_chunkPrimer.SetBlockState(x, y, z, GlassBlue);
                         _chunkPrimer.SetBlockState(x, y, z, 0);
                         // SetBlockStateD(x, y, z, new BlockState(Water));
                     }
@@ -117,6 +117,8 @@ namespace Mvk2.World.Gen
                 for (z = 0; z < 16; z++)
                 {
                     _chunkPrimer.SetBlockState(x, h - 3, z, Water);
+                    _chunkPrimer.SetBlockState(x, h - 2, z, Water);
+                    _chunkPrimer.SetBlockState(x, h - 1, z, Water);
                 }
             }
 
@@ -149,9 +151,20 @@ namespace Mvk2.World.Gen
                 chunk.Biome[3 << 4 | 13] = 9;
 
 
+
                 _chunkPrimer.SetBlockState(5, h, 5, GlassRed);
-                _chunkPrimer.SetBlockState(5, h - 1, 4, GlassRed);
-                _chunkPrimer.SetBlockState(5, h - 2, 3, GlassRed);
+                _chunkPrimer.SetBlockState(5, h, 4, GlassRed);
+                _chunkPrimer.SetBlockState(5, h - 1, 3, GlassRed);
+                _chunkPrimer.SetBlockState(5, h - 2, 2, GlassRed);
+
+                _chunkPrimer.SetBlockState(4, h, 5, Glass);
+                _chunkPrimer.SetBlockState(4, h, 4, Glass);
+                _chunkPrimer.SetBlockState(4, h - 1, 3, Glass);
+                _chunkPrimer.SetBlockState(4, h - 2, 2, Glass);
+                _chunkPrimer.SetBlockState(3, h, 5, Glass);
+                _chunkPrimer.SetBlockState(3, h, 4, Glass);
+                _chunkPrimer.SetBlockState(3, h - 1, 3, Glass);
+                _chunkPrimer.SetBlockState(3, h - 2, 2, Glass);
 
                 _chunkPrimer.SetBlockState(4, h, 7, Water);
 

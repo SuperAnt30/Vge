@@ -1,0 +1,27 @@
+{
+    Texture: { All: "Blocks/TallGrassUp" }
+    Elements: [
+        {   From: [ -10, 0, 0 ],
+            To: [ 10, 16, 0 ],
+            Rotate: [ 0, 45, 0 ],
+            Shade: true,
+            Sharpness: true,
+            Wind: 1,
+            Faces: [
+                { Side:"North", Texture:"All", TypeColor:1 },
+                { Side:"South", Texture:"All", Uv:[16, 0, 0, 16], TypeColor:1 }
+            ]
+        },
+        {   From: [ 0, 0, -10 ],
+            To: [ 0, 16, 10 ],
+            Rotate: [ 0, 45, 0 ],
+            Shade: true,
+            Sharpness: true,
+            Wind: 1,
+            Faces: [
+                { Side:"East", Texture:"All", Uv:[16, 0, 0, 16], TypeColor:1 },
+                { Side:"West", Texture:"All", TypeColor:1 }
+            ]
+        }
+    ]
+}

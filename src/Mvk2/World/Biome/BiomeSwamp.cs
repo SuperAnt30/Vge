@@ -68,7 +68,7 @@ namespace Mvk2.World.Biome
             {
                 if (_noise7 < 0) // Много
                 {
-                    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreIron);
+                    _GenTallGrass(xz, yh + 1, 4);
                 }
                 else if (_noise7 < -6 && _noise7 == 1)
                 {
@@ -83,6 +83,18 @@ namespace Mvk2.World.Biome
             //{
             //    _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreDiamond);
             //}
+        }
+
+        /// <summary>
+        /// Генерация столба поверхности над водой, тина
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _GenLevelAboveWater(int xz, int yh)
+        {
+            if (_noise7 < 0 || _noise17 < -3) // Мало или мелких много
+            {
+                _chunkPrimer.SetBlockState(xz, yh, _blockIdTina);
+            }
         }
     }
 }

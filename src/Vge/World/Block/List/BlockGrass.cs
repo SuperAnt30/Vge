@@ -1,7 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Vge.Renderer.World;
-using Vge.Util;
-using WinGL.Util;
 
 namespace Vge.World.Block.List
 {
@@ -11,8 +8,6 @@ namespace Vge.World.Block.List
     public class BlockGrass : BlockBase
     {
         protected bool _biomeColor;
-
-       // public BlockGrass() { }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера

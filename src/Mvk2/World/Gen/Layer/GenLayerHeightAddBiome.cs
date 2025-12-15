@@ -47,7 +47,7 @@ namespace Mvk2.World.Gen.Layer
                     else if (b == _idMountains)
                     {
                         InitChunkSeed(x + areaX, z + areaZ);
-                        //c += _NextInt(9) - 4; Old version
+                        //c += _NextInt(9) - 4; //Old version
                         c += _NextInt(5) - 2;
                     }
                     else if (_isForest && b == _idBirchForest)

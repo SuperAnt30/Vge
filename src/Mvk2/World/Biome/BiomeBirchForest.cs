@@ -63,7 +63,7 @@ namespace Mvk2.World.Biome
         {
             if (_noise7 < 0) // Много
             {
-                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreIron);
+                _GenTallGrass(xz, yh + 1, 2);
             }
             else if (_noise17 > 6 && _noise7 == 1)
             {

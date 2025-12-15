@@ -106,7 +106,7 @@ namespace Vge.Renderer.World
                             h4 = (byte)(PosChunkZ % 2 == 0 ? PosChunkX % 2 != 0 ? 1 : 2 : 2);
                         }
                         else h4 = 0;
-                        blockUV.BuildingLiquidInsideWind(h1, h2, h3, h4);
+                        blockUV.BuildingLiquidInsideWind(h3, h4, h1, h2);
                     }
                     else
                     {

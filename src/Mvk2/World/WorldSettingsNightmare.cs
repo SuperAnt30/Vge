@@ -12,7 +12,7 @@ namespace Mvk2.World
         public WorldSettingsNightmare()
         {
             IdSetting = 2;
-            HasNoSky = true;
+           // HasNoSky = true;
             ActiveRadius = 3;
             NumberChunkSections = 16;
             Calendar = new СalendarNone();

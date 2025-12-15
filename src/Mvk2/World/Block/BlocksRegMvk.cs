@@ -1,4 +1,5 @@
-﻿using Vge.World.Block;
+﻿using Mvk2.World.Block.List;
+using Vge.World.Block;
 using Vge.World.Block.List;
 
 namespace Mvk2.World.Block
@@ -100,6 +101,15 @@ namespace Mvk2.World.Block
         /// Цветок клевер белый
         /// </summary>
         public static BlockBase FlowerClover { get; private set; }
+        /// <summary>
+        /// Блок высокой травы
+        /// </summary>
+        public static BlockBase TallGrass { get; private set; }
+        /// <summary>
+        /// Блок тины
+        /// </summary>
+        public static BlockBase Tina { get; private set; }
+        
 
         public static BlockBase Granite { get; private set; }
         public static BlockBase Glass { get; private set; }
@@ -134,9 +144,11 @@ namespace Mvk2.World.Block
             OreRuby = BlocksReg.RegisterBlockClass("OreRuby");
             OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire");
 
-            //Grass = BlocksReg.RegisterBlockClass("Grass");
-
             BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass());
+            BlocksReg.RegisterBlockClass("TallGrass", TallGrass = new BlockTallGrass());
+
+            Tina = BlocksReg.RegisterBlockClass("Tina");
+
 
             FlowerDandelion = BlocksReg.RegisterBlockClass("FlowerDandelion");
             FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover");

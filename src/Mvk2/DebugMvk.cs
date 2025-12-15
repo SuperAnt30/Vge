@@ -39,7 +39,7 @@ namespace Mvk2
             width = height = 4096;
             //width = height = 1024;
             //width = height = 8192;
-            int zoom = 1;
+            int zoom = 4;
             GenLayer[] genLayer = GenLayerIsland.BeginLayerBiome(seed);
 
             Bitmap bitmap = new Bitmap(width / zoom, height / zoom);
@@ -72,7 +72,7 @@ namespace Mvk2
                     }
                     else
                     {
-                        key = ar[z * width + x];
+                        key = ar[z * width * zoom + x * zoom];
                         if (key != 0)
                         {
                             bitmap.SetPixel(x, z, _ConvertBiomeHeight(key));

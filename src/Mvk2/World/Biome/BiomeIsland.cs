@@ -87,10 +87,11 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdOreEmerald = BlocksRegMvk.OreEmerald.IndexBlock;
         protected readonly ushort _blockIdOreRuby = BlocksRegMvk.OreRuby.IndexBlock;
         protected readonly ushort _blockIdOreSapphire = BlocksRegMvk.OreSapphire.IndexBlock;
-
         protected readonly ushort _blockIdGrass = BlocksRegMvk.Grass.IndexBlock;
         protected readonly ushort _blockIdFlowerDandelion = BlocksRegMvk.FlowerDandelion.IndexBlock;
         protected readonly ushort _blockIdFlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
+        protected readonly ushort _blockIdTallGrass = BlocksRegMvk.TallGrass.IndexBlock;
+        protected readonly ushort _blockIdTina = BlocksRegMvk.Tina.IndexBlock;
 
         /// <summary>
         /// Блок для отладки визуализации биома
@@ -248,14 +249,12 @@ namespace Mvk2.World.Biome
                 _noise17 = (int)(Provider.DownNoise[xz] * 32f);
                 // Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
                 _noise = (int)(Provider.DownNoise[xz] * 5f);
-                // Смещение от уровня моря
-                _biasWater = yh - HeightWater;
             
                 // Бедрок
                 int level0 = (int)(Provider.CaveRiversNoise[xz] / 5f) + 3; // ~ 2 .. 4
                 level0 += _noise;
                 if (level0 < 1) level0 = 1;
-                
+
                 // Определяем высоты
                 result = yh = height < level0 ? level0 : height;
                 // Смещение от уровня моря
@@ -381,6 +380,7 @@ namespace Mvk2.World.Biome
                     yh++;
                     // Меньше уровня воды, заливаем водой
                     for (y = yh; y < _heightWaterPlus; y++) _chunkPrimer.SetBlockState(xz, y, _blockIdWater);
+                    _GenLevelAboveWater(xz, _heightWaterPlus);
                     //yh = HeightWater;
                 }
             }
@@ -504,7 +504,7 @@ namespace Mvk2.World.Biome
         {
             if (_noise7 < -1) // Мало
             {
-                _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdOreIron);
+                _GenTallGrass(xz, yh + 1, 2);
             }
             else if (_noise17 > 6 && _noise7 == 1)
             {
@@ -517,6 +517,32 @@ namespace Mvk2.World.Biome
             else if (_noise17 < -3)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
+            }
+        }
+
+        /// <summary>
+        /// Генерация столба поверхности над водой, тина
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenLevelAboveWater(int xz, int yh) { }
+
+        /// <summary>
+        /// Сгенерировать столб высокой травы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _GenTallGrass(int xz, int yh, int maxHeight)
+        {
+            int height = _rand.Next(maxHeight) + yh;
+            for (int y = yh; y <= height; y++)
+            {
+                if (y == height)
+                {
+                    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass, 1);
+                }
+                else
+                {
+                    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass);
+                }
             }
         }
 
