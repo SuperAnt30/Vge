@@ -9,6 +9,7 @@ namespace Mvk2.World.Block
     /// </summary>
     public sealed class BlocksRegMvk
     {
+        public static BlockDebug Debug { get; private set; }
         public static BlockLiquid Water { get; private set; }
         public static BlockLiquid Lava { get; private set; }
         
@@ -123,7 +124,7 @@ namespace Mvk2.World.Block
         public static void Initialization()
         {
             // Отладочный
-            BlocksReg.RegisterBlockClass("Debug", new BlockDebug());
+            BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug());
             Water = BlocksReg.RegisterBlockClassLiquid("Water", true);
             Bedrock = BlocksReg.RegisterBlockClass("Bedrock");
             Limestone = BlocksReg.RegisterBlockClass("Limestone");

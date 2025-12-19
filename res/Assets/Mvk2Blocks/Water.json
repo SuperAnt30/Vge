@@ -2,6 +2,7 @@
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
     LightOpacity: 1,
+    NoCollision: true,
     Translucent: true,
     Color: [ 1, 1, 1 ],
     Liquid: "Water"

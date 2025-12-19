@@ -1,6 +1,7 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Item;
 using Mvk2.Packets;
+using Mvk2.World.Block;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
@@ -9,6 +10,9 @@ using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
+using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
 
 namespace Mvk2.Entity.List
 {
@@ -77,6 +81,35 @@ namespace Mvk2.Entity.List
         {
             // CheckKnowledge(stack);
             SendPacket(new PacketS2FSetSlot((short)e.SlotId, e.Stack));
+        }
+
+        /// <summary>
+        /// Пакет: Установки или взаимодействия с блоком
+        /// </summary>
+        public override void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
+        {
+            // Временно устанваливаем блок
+            byte currentIndex = Inventory.GetCurrentIndex();
+
+            ushort idBlock = BlocksRegMvk.Debug.IndexBlock;
+            if (currentIndex == 0) idBlock = BlocksRegMvk.Stone.IndexBlock;
+            else if (currentIndex == 1) idBlock = BlocksRegMvk.Water.IndexBlock;
+            else if (currentIndex == 2) idBlock = BlocksRegMvk.Glass.IndexBlock;
+            else if (currentIndex == 3) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
+            else if (currentIndex == 4) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
+
+            // Определяем на какую сторону смотрит игрок
+            Pole pole = PoleConvert.FromAngle(RotationYaw);
+
+            WorldServer worldServer = GetWorld();
+            BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
+            BlockBase block = blockState.GetBlock();
+
+            BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
+            // TODO::ВРЕМЕННО!!!
+            blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
+            //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
+            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
         }
 
         /// <summary>

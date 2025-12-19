@@ -436,6 +436,7 @@ namespace Vge.Management
                         }
 
                         activeRadius = _anchors[i].ActiveRadius;
+                        // TODO::2025-12-20 продумать сортировку активных, впервую очередь которые ближе, чтоб можно по времени отсекать не обязательные
                         // Собираем все активные чанки для будущих тиков
                         for (x = -activeRadius; x <= activeRadius; x++)
                         {

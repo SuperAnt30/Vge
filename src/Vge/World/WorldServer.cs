@@ -107,6 +107,9 @@ namespace Vge.World
               //  _testAnchor.Update();
             }
 
+            // Тикание блоков и чанков
+            _TickBlocks();
+
             // Обработка фрагментов в конце такта
             _FragmentEnd();
 
@@ -352,6 +355,33 @@ namespace Vge.World
                 entity.Update();
             }
             base._UpdateEntity(entity);
+        }
+
+        #endregion
+
+        #region Blocks
+
+        /// <summary>
+        /// Тикание блоков и чанков
+        /// </summary>
+        private void _TickBlocks()
+        {
+            int count = Fragment.ListChunkAction.Count;
+            ulong index;
+            ChunkBase chunk;
+
+            for (int i = 0; i < count; i++)
+            {
+                index = Fragment.ListChunkAction[i];
+                chunk = GetChunk(Conv.IndexToChunkX(index), Conv.IndexToChunkY(index));
+
+                if (chunk != null && chunk.IsSendChunk)
+                {
+                    Filer.StartSection("TickChunk" + index);
+                    chunk.UpdateServer();
+                    Filer.EndSection();
+                }
+            }
         }
 
         #endregion

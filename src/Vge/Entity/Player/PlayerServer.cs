@@ -435,7 +435,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Пакет: Установки или взаимодействия с блоком
         /// </summary>
-        public void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
+        public virtual void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
         {
             // Временно устанваливаем блок
             ushort idBlock = 0;

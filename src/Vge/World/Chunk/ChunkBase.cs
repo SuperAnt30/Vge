@@ -525,6 +525,15 @@ namespace Vge.World.Chunk
             return blockStateOld;
         }
 
+        /// <summary>
+        /// Задать тик блока с локальной позицие и время через сколько тактов надо тикнуть
+        /// </summary>
+        public void SetBlockTick(int x, int y, int z, uint timeTackt, bool priority = false)
+        {
+
+        }
+
+
         #endregion
 
         #region Entity
@@ -760,6 +769,19 @@ namespace Vge.World.Chunk
                 }
             }
             IsChunkPresent = true;
+        }
+
+        #endregion
+
+        #region Update
+
+        /// <summary>
+        /// Обновление в такте активных чанков, только на сервере
+        /// </summary>
+        public void UpdateServer()
+        {
+          // Debug.Burden(1);
+            return;
         }
 
         #endregion
