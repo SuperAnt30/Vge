@@ -46,6 +46,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Получить кэш блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockBase GetBlock() => Ce.Blocks.BlockObjects[Id];
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Веррнуть новый BlockState с новыйм мет данные
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockState NewMet(ushort met) => new BlockState(Id, met, LightBlock, LightSky);
 
         /// <summary>

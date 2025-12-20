@@ -432,8 +432,12 @@ namespace Vge.World.Block
         /// </summary>
         public virtual void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random) { }
 
-
         #endregion
+
+        /// <summary>
+        /// Смена соседнего блока
+        /// </summary>
+        public virtual void NeighborBlockChange(WorldServer world, BlockPos blockPos, BlockState state, BlockBase neighborBlock) { }
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

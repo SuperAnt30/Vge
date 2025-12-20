@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Entity.Sizes;
@@ -112,6 +113,22 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Изменить метданные блока
+        /// </summary>
+        public void SetBlockStateMet(BlockPos blockPos, ushort met, bool isMarkUpdate = true)
+        {
+            if (blockPos.IsValid(ChunkPr.Settings))
+            {
+                ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
+                if (chunk == null) return;
+                int yc = blockPos.Y >> 4;
+                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                chunk.StorageArrays[yc].NewMetBlock(index, met);
+                if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+            }
+        }
+
+        /// <summary>
         /// Задать блок неба, с флагом по умолчанию 14 (уведомление соседей, modifyRender, modifySave)
         /// </summary>
         /// <param name="blockPos">позици блока</param>
@@ -136,19 +153,22 @@ namespace Vge.World
             BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
             if (blockStateTrue.IsEmpty()) return false;
 
-            //BlockState blockStateTrue = chunk.SetBlockState(pos.X, pos.Y, pos.Z, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
-            //if (blockStateTrue.IsEmpty()) return false;
-
-            //if (!IsRemote)
-            //{
-            //    // Частички блока, только на сервере чтоб всем разослать
-            //    if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos, 50);
-            //}
-            //// Уведомление соседей и на сервере и на клиенте
-            //if ((flag & 2) != 0) NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
+            if (!IsRemote)
+            {
+                //    // Частички блока, только на сервере чтоб всем разослать
+                //    if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos, 50);
+                // Уведомление соседей только на сервере!
+                if ((flag & 2) != 0) _NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
+            }
+            
 
             return true;
         }
+
+        /// <summary>
+        /// Уведомить соседей об изменении состояния
+        /// </summary>
+        protected virtual void _NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block) { }
 
         #endregion
 

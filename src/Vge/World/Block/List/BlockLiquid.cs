@@ -1,4 +1,6 @@
-﻿using Vge.Json;
+﻿using System.Runtime.CompilerServices;
+using Vge.Json;
+using Vge.Util;
 using WinGL.Util;
 
 namespace Vge.World.Block.List
@@ -28,25 +30,41 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Инициализация объекта рендера для блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitBlockRender()
             => BlockRender = Gi.BlockLiquidAlphaRendFull;
 
         /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsCullFace(uint met, int indexSide) => false;
         /// <summary>
         /// Надо ли принудительно рисовать сторону, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsForceDrawFace(uint met, int indexSide) => false;
         /// <summary>
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsForceDrawNotExtremeFace(uint met, int indexSide) => false;
         /// <summary>
         /// Проверка масок сторон
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide) => false;
+
+        /// <summary>
+        /// Шаг волны для дистанции растекания, 15 / step = максимальная длинна
+        /// 1 = 14; 2 = 7; вода 3 = 4; нефть 4 = 3; лава
+        /// </summary>
+        protected int _stepWave = 2;
+        /// <summary>
+        /// Сколько игровых тиков между тиками
+        /// 5 вода, 15 нефть, 30 лава
+        /// </summary>
+        protected uint _tickRate = 8;
 
         /// <summary>
         /// Получить модель
@@ -61,6 +79,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Получить сторону для прорисовки жидкого блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override SideLiquid GetSideLiquid(int index) => _sideLiquids[index];
 
 
@@ -100,5 +119,219 @@ namespace Vge.World.Block.List
 
             return (vec.X == 0f && vec.Z == 0f) ? -1000f : Glm.Atan2(vec.Z, vec.X) - Glm.Pi90;
         }
+
+        #region Методы для тиков
+
+        /// <summary>
+        /// Случайный эффект частички и/или звука на блоке только для клиента
+        /// </summary>
+        public override void RandomDisplayTick(WorldBase world, BlockPos blockPos, BlockState blockState, Rand random)
+        {
+
+        }
+
+        
+
+        /// <summary>
+        /// Обновить блок в такте
+        /// </summary>
+        public override void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
+        {
+            int met = (int)(blockState.Met == 0 ? 15 : blockState.Met);
+
+            if (met == 15)
+            {
+                // Стоячая, был тик, пробуем растечься
+                met -= _stepWave;
+                _CheckSetSide(world, blockPos.OffsetDown(), met);
+                _CheckSetSide(world, blockPos.OffsetEast(), met);
+                _CheckSetSide(world, blockPos.OffsetNorth(), met);
+                _CheckSetSide(world, blockPos.OffsetSouth(), met);
+                _CheckSetSide(world, blockPos.OffsetWest(), met);
+            }
+            else
+            {
+                if (!_CheckEndlessSource(world, blockPos))
+                {
+                    int levelLiquidUp = _GetLevelLiquid(world, blockPos.OffsetUp());
+                    int levelLiquid = levelLiquidUp;
+                    if (levelLiquid < 15)
+                    {
+                        // проверим и горизонтальные
+                        for (int i = 2; i < 6; i++)
+                        {
+                            int levelLiquidCache = _GetLevelLiquid(world, blockPos.Offset(i));
+                            if (levelLiquidCache > levelLiquid)
+                            {
+                                levelLiquid = levelLiquidCache;
+                                if (levelLiquid == 15) break;
+                            }
+                        }
+                    }
+
+                    if (met >= levelLiquid && met < 15 && levelLiquidUp <= 0)
+                    {
+                        // уменьшаем, так-как рядом жидкость мельче
+                        met -= (_stepWave * 2);
+                        if (met <= 0)
+                        {
+                            // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
+                            if (_GetLevelLiquid(world, blockPos.OffsetDown()) > 0)
+                            {
+                                // высохла
+                                world.SetBlockToAir(blockPos);
+                            }
+                            else
+                            {
+                                world.SetBlockState(blockPos, new BlockState(IndexBlock, 1), 14);
+                            }
+                        }
+                        else
+                        {
+                            // мельче
+                            //world.SetBlockStateMet(blockPos, (ushort)met);
+                            world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
+                            world.SetBlockTick(blockPos, _tickRate);
+                        }
+                    }
+                    else if (met < levelLiquid - _stepWave)
+                    {
+                        // добавляем уровень жидкости
+                        met += _stepWave;
+                        if (met <= 15)
+                        {
+                            if (met == 15) met = 0;
+                            //world.SetBlockStateMet(blockPos, (ushort)met);
+                            world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
+                            world.SetBlockTick(blockPos, _tickRate);
+                        }
+                    }
+
+                    // надо продолжить растекаться
+                    BlockPos blockPosDown = blockPos.OffsetDown();
+                    if (_CheckCan(world, blockPosDown))
+                    {
+                        // течение вниз
+                        BlockState blockStateDown = world.GetBlockState(blockPosDown);
+                        BlockBase blockDown = blockStateDown.GetBlock();
+
+                        // Микс с низу
+                        if (!_MixingDown(world, blockPos, blockState, blockPosDown, blockStateDown))
+                        {
+                            _CheckSetSideDown(world, blockPosDown, met);
+                        }
+                    }
+                    else
+                    {
+                        met -= _stepWave;
+                        if (met >= 0)
+                        {
+                            // течение по сторонам
+                            _CheckSetSide(world, blockPos.OffsetEast(), met);
+                            _CheckSetSide(world, blockPos.OffsetNorth(), met);
+                            _CheckSetSide(world, blockPos.OffsetSouth(), met);
+                            _CheckSetSide(world, blockPos.OffsetWest(), met);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void _CheckSetSide(WorldServer world, BlockPos pos, int met)
+        {
+            int levelLiquid = _GetLevelLiquid(world, pos);
+            if (levelLiquid != -1 && levelLiquid < met)
+            {
+                _InteractionWithBlocks(world, pos);
+                world.SetBlockState(pos, new BlockState(IndexBlock, (uint)met), 14);
+                world.SetBlockTick(pos, _tickRate);
+            }
+        }
+
+        private void _CheckSetSideDown(WorldServer world, BlockPos pos, int met)
+        {
+            int levelLiquid = _GetLevelLiquid(world, pos);
+            if (levelLiquid != -1 && levelLiquid <= met)
+            {
+                _InteractionWithBlocks(world, pos);
+                world.SetBlockState(pos, new BlockState(IndexBlock, (uint)met), 14);
+                world.SetBlockTick(pos, _tickRate);
+            }
+        }
+
+        /// <summary>
+        /// Взаимодействие с блоками
+        /// </summary>
+        private void _InteractionWithBlocks(WorldServer world, BlockPos blockPos)
+        {
+
+        }
+
+        /// <summary>
+        /// Получиь уровень жидкости с этой позиции где, 15 макс, 0 можно разлить воды нет, -1 нельзя разлить воды нет.
+        /// </summary>
+        private int _GetLevelLiquid(WorldServer world, BlockPos pos)
+        {
+            BlockState blockState = world.GetBlockState(pos);
+            return blockState.Id == IndexBlock
+                ? (blockState.Met == 0 ? 15 : (int)blockState.Met)
+                : (_CheckCan(blockState) ? 0 : -1);
+            // EnumBlock enumBlock = blockState.GetBlock().EBlock;
+            //return enumBlock == eBlock ? 15 : enumBlock == eBlockFlowing ? blockState.met : CheckCan(blockState) ? 0 : -1;
+        }
+
+        /// <summary>
+        /// Можно ли разлить на эту позицию жидкость
+        /// </summary>
+        private bool _CheckCan(BlockState state)
+        {
+            BlockBase block = state.GetBlock();
+            //EnumMaterial eMaterial = block.Material.EMaterial;
+            return block.IsAir || state.Id == IndexBlock;
+                // || block.IsLiquidDestruction() || IsFire(eMaterial)
+                               //|| eMaterial == materialLiquid
+                               //// Взаимодействие лавы с водой и нефтью
+                               //|| (materialLiquid == EnumMaterial.Lava && (eMaterial == EnumMaterial.Oil || eMaterial == EnumMaterial.Water))
+                               //// Взаимодействие воды и нефти с лавой
+                               //|| (eMaterial == EnumMaterial.Lava && (materialLiquid == EnumMaterial.Oil || materialLiquid == EnumMaterial.Water));
+        }
+
+        /// <summary>
+        /// Можно ли разлить на эту позицию жидкость
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckCan(WorldServer world, BlockPos pos) => _CheckCan(world.GetBlockState(pos));
+
+        /// <summary>
+        /// Проверка бесконечного источника
+        /// </summary>
+        protected virtual bool _CheckEndlessSource(WorldServer world, BlockPos blockPos) => false;
+
+        #endregion
+
+        /// <summary>
+        /// Смена соседнего блока
+        /// </summary>
+        public override void NeighborBlockChange(WorldServer world, BlockPos blockPos, 
+            BlockState state, BlockBase neighborBlock)
+        {
+            if (!_Mixing(world, blockPos, state))
+            {
+                world.SetBlockTick(blockPos, _tickRate);
+            }
+        }
+
+        /// <summary>
+        /// Смешивание блоков
+        /// </summary>
+        protected virtual bool _Mixing(WorldServer world, BlockPos blockPos, BlockState state)
+            => false;
+
+        /// <summary>
+        /// Смешивание снизу
+        /// </summary>
+        protected virtual bool _MixingDown(WorldBase world, BlockPos blockPos, BlockState state,
+            BlockPos blockPosDown, BlockState blockStateDown) => false;
+
     }
 }

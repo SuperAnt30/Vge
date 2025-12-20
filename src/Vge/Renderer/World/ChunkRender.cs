@@ -378,6 +378,11 @@ namespace Vge.Renderer.World
                 float time = (_worldClient.Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
                 Debug.RenderChunckTimeAlpha8 = (Debug.RenderChunckTimeAlpha8 * 7f + time) / 8f;
             }
+            else
+            {
+                // Надо принудительно перезаписать, так-как в прошлый раз могли быть альфа блоки
+                _meshAlpha.SetBufferClear();
+            }
         }
 
         /// <summary>
@@ -509,5 +514,8 @@ namespace Vge.Renderer.World
 
             return BlockRenderFull.ColorWhite;
         }
+
+        public override string ToString()
+            => CurrentChunkX + " : " + CurrentChunkY + " MD:" + _meshDense.Status + " MA:" + _meshAlpha.Status;
     }
 }

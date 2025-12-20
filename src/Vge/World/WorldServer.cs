@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -420,6 +421,44 @@ namespace Vge.World
             {
                 GetChunkServer(blockPos.GetPositionChunk())
                     ?.SetBlockTick(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, timeTick, priority);
+            }
+        }
+
+        /// <summary>
+        /// Уведомить соседей об изменении состояния
+        /// </summary>
+        protected override void _NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block)
+        {
+            _NotifyBlockOfStateChange(pos.OffsetWest(), block);
+            _NotifyBlockOfStateChange(pos.OffsetEast(), block);
+            _NotifyBlockOfStateChange(pos.OffsetDown(), block);
+            _NotifyBlockOfStateChange(pos.OffsetUp(), block);
+            _NotifyBlockOfStateChange(pos.OffsetNorth(), block);
+            _NotifyBlockOfStateChange(pos.OffsetSouth(), block);
+            if (block.IsAir)
+            {
+                // Для дверей диагональ
+                _NotifyBlockOfStateChange(pos.Offset(1, 0, 1), block);
+                _NotifyBlockOfStateChange(pos.Offset(-1, 0, 1), block);
+                _NotifyBlockOfStateChange(pos.Offset(1, 0, -1), block);
+                _NotifyBlockOfStateChange(pos.Offset(-1, 0, -1), block);
+            }
+        }
+
+        /// <summary>
+        /// Уведомить о блок об изменения состоянии соседнего блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _NotifyBlockOfStateChange(BlockPos pos, BlockBase blockIn)
+        {
+            try
+            {
+                BlockState blockState = GetBlockState(pos);
+                blockState.GetBlock().NeighborBlockChange(this, pos, blockState, blockIn);
+            }
+            catch (Exception ex)
+            {
+                Logger.Crash(ex, "NotifyBlockOfStateChange " + pos.ToString());
             }
         }
 
