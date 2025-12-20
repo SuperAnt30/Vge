@@ -72,7 +72,6 @@ namespace Vge.Games
 
                 TagCompound nbt = new TagCompound();
                 nbt.SetLong("Seed", gameSettings.Seed);
-                nbt.SetLong("TickCounter", server.TickCounter);
                 nbt.SetLong("TimeCounter", server.TimeCounter);
                 nbt.SetShort("Version", Ce.IndexVersion);
                 // Таблица блоков

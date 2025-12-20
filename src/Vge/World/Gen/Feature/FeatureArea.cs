@@ -55,7 +55,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация областей которые могу выйти за 1 чанк
         /// </summary>
-        public void DecorationsArea(ChunkBase chunkSpawn, Rand rand, int biasX, int biasZ)
+        public void DecorationsArea(ChunkServer chunkSpawn, Rand rand, int biasX, int biasZ)
         {
             if (_probabilityOne > 0)
             {
@@ -85,7 +85,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация области одного прохода
         /// </summary>
-        protected virtual void _DecorationAreaOctave(ChunkBase chunkSpawn, Rand rand) { }
+        protected virtual void _DecorationAreaOctave(ChunkServer chunkSpawn, Rand rand) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void _SetBlockReplace(int x, int y, int z, ushort id, byte flag)

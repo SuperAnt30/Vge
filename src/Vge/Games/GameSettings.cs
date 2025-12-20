@@ -100,7 +100,7 @@ namespace Vge.Games
                 {
                     return false;
                 }
-                server.SetDataFile(nbt.GetLong("TimeCounter"), (uint)nbt.GetLong("TickCounter"));
+                server.SetDataFile(nbt.GetLong("TimeCounter"));
                 Seed = nbt.GetLong("Seed");
                 TableBlocks.Read("TableBlocks", nbt);
                 TableItems.Read("TableItems", nbt);

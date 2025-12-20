@@ -37,7 +37,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Список чанков которые надо загрузить
         /// </summary>
-        private readonly ListMessy<ChunkBase> _loadingChunks = new ListMessy<ChunkBase>();
+        private readonly ListMessy<ChunkServer> _loadingChunks = new ListMessy<ChunkServer>();
         /// <summary>
         /// Карта чанков которые надо загрузить
         /// </summary>
@@ -67,7 +67,7 @@ namespace Vge.World.Chunk
         /// </summary>
         public void InitialLoadingChunk(int x, int y)
         {
-            ChunkBase chunk = new ChunkBase(_worldServer, Settings, x, y);
+            ChunkServer chunk = new ChunkServer(_worldServer, Settings, x, y);
             _chunkMapping.Add(chunk);
             _LoadOrGen(chunk);
         }
@@ -79,7 +79,7 @@ namespace Vge.World.Chunk
         {
             _droppedChunks.Remove(Conv.ChunkXyToIndex(x, y));
             if (IsChunkLoaded(x, y)) return true;
-            ChunkBase chunk = new ChunkBase(_worldServer, Settings, x, y);
+            ChunkServer chunk = new ChunkServer(_worldServer, Settings, x, y);
             _loadingChunks.Add(chunk);
             _loadingChunkMapping.Add(chunk);
             return false;
@@ -88,11 +88,11 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить чанк по координатам чанка плюс проверка в загрузке
         /// </summary>
-        public ChunkBase GetChunkPlus(int x, int y)
+        public ChunkServer GetChunkPlus(int x, int y)
         {
-            if (!(_chunkMapping.Get(x, y) is ChunkBase chunk))
+            if (!(_chunkMapping.Get(x, y) is ChunkServer chunk))
             {
-                return _loadingChunkMapping.Get(x, y) as ChunkBase;
+                return _loadingChunkMapping.Get(x, y) as ChunkServer;
             }
             return chunk;
         }
@@ -110,7 +110,7 @@ namespace Vge.World.Chunk
             int count = _loadingChunks.Count;
             if (count > 0)
             {
-                ChunkBase chunk;
+                ChunkServer chunk;
                 int i;
 
                 long timeBegin = _worldServer.Server.Time();
@@ -136,7 +136,7 @@ namespace Vge.World.Chunk
         /// </summary>
         /// <param name="chunk">Объект чанка не null</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _LoadOrGen(ChunkBase chunk)
+        private void _LoadOrGen(ChunkServer chunk)
         {
             if (!chunk.IsChunkPresent)
             {

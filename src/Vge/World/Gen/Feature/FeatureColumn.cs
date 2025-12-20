@@ -46,7 +46,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк
         /// </summary>
-        public void DecorationsColumn(ChunkBase chunkSpawn, Rand rand)
+        public void DecorationsColumn(ChunkServer chunkSpawn, Rand rand)
         {
             if (_probabilityOne > 0)
             {
@@ -71,6 +71,6 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк, одного прохода
         /// </summary>
-        protected virtual void _DecorationColumnOctave(ChunkBase chunkSpawn, Rand rand) { }
+        protected virtual void _DecorationColumnOctave(ChunkServer chunkSpawn, Rand rand) { }
     }
 }

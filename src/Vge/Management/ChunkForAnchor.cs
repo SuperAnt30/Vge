@@ -101,7 +101,7 @@ namespace Vge.Management
                 {
                     if (_anchors.Count == 0 && _players.Count == 0)
                     {
-                        _previousGameTakt = World.Server.TickCounter;
+                        _previousGameTakt = World.TickCounter;
                     }
                     _players.Add(player);
                     player.AddChunk(CurrentChunkX, CurrentChunkY);
@@ -111,7 +111,7 @@ namespace Vge.Management
             {
                 if (_anchors.Count == 0 && _players.Count == 0)
                 {
-                    _previousGameTakt = World.Server.TickCounter;
+                    _previousGameTakt = World.TickCounter;
                 }
                 _anchors.Add(anchor);
                 anchor.AddChunk(CurrentChunkX, CurrentChunkY);
@@ -158,8 +158,8 @@ namespace Vge.Management
             ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
             if (chunk != null)
             {
-                uint countInhabitedTakt = World.Server.TickCounter - _previousGameTakt;
-                _previousGameTakt = World.Server.TickCounter;
+                uint countInhabitedTakt = World.TickCounter - _previousGameTakt;
+                _previousGameTakt = World.TickCounter;
                 chunk.SetInhabitedTime(chunk.InhabitedTakt + countInhabitedTakt);
             }
         }

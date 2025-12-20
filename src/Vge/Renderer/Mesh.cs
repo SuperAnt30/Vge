@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer
@@ -137,6 +138,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Прорисовать меш с треугольными полигонами через EBO
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Draw()
         {
             if (_countIndices > 0)

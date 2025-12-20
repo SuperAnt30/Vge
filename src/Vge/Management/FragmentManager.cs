@@ -216,7 +216,7 @@ namespace Vge.Management
         private void _ChunksUpdate()
         {
             // Чистка чанков по времени
-            uint time = World.Server.TickCounter;
+            uint time = World.TickCounter;
             int i, count;
             if (time - _previousTotalWorldTime > 8000)
             {

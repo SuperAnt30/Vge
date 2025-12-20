@@ -10,11 +10,11 @@ namespace Vge.World.Gen
         /// <summary>
         /// Генерация рельефа чанка, соседние чанки не требуются
         /// </summary>
-        void Relief(ChunkBase chunk);
+        void Relief(ChunkServer chunk);
 
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        void Decoration(ChunkProviderServer provider, ChunkBase chunk);
+        void Decoration(ChunkProviderServer provider, ChunkServer chunk);
     }
 }

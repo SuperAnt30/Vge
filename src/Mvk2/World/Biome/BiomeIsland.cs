@@ -552,22 +552,22 @@ namespace Mvk2.World.Biome
         /// Декорация в текущем чанке, не выходя за пределы
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        public void DecorationsColumn(ChunkBase chunkSpawn) 
+        public void DecorationsColumn(ChunkServer chunkSpawn) 
             => _DecorationsColumn(_featureColumns, chunkSpawn);
 
         /// <summary>
         /// Декорация в текущем чанке, не выходя за пределы после Area
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        public void DecorationsColumnAfter(ChunkBase chunkSpawn) 
+        public void DecorationsColumnAfter(ChunkServer chunkSpawn) 
             => _DecorationsColumn(_featureColumnsAfter, chunkSpawn);
 
         /// <summary>
         /// Декорация в текущем чанке, не выходя за пределы
         /// </summary>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        private void _DecorationsColumn(IFeatureGeneratorColumn[] featureColumns, 
-            ChunkBase chunkSpawn)
+        private void _DecorationsColumn(IFeatureGeneratorColumn[] featureColumns,
+            ChunkServer chunkSpawn)
         {
             int xbc = chunkSpawn.CurrentChunkX << 4;
             int zbc = chunkSpawn.CurrentChunkY << 4;
@@ -591,7 +591,7 @@ namespace Mvk2.World.Biome
         /// </summary>
         /// <param name="chunk">Чанк в который вносим данные</param>
         /// <param name="chunkSpawn">Чанк где был спавн декорации</param>
-        public void DecorationsArea(ChunkBase chunk, ChunkBase chunkSpawn)
+        public void DecorationsArea(ChunkServer chunk, ChunkServer chunkSpawn)
         {
             int xbc = chunkSpawn.CurrentChunkX << 4;
             int zbc = chunkSpawn.CurrentChunkY << 4;

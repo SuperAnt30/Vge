@@ -79,7 +79,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация области одного прохода
         /// </summary>
-        protected override void _DecorationAreaOctave(ChunkBase chunkSpawn, Rand rand)
+        protected override void _DecorationAreaOctave(ChunkServer chunkSpawn, Rand rand)
         {
             int x0 = rand.Next(16);
             int z0 = rand.Next(16);

@@ -28,7 +28,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Генерация рельефа чанка, соседние чанки не требуются
         /// </summary>
-        public void Relief(ChunkBase chunk)
+        public void Relief(ChunkServer chunk)
         {
             _chunkPrimer.Clear();
 
@@ -351,7 +351,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        public void Decoration(ChunkProviderServer provider, ChunkBase chunk)
+        public void Decoration(ChunkProviderServer provider, ChunkServer chunk)
         {
             Debug.Burden(1.5f);
         }

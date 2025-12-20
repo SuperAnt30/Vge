@@ -214,12 +214,14 @@ namespace Vge.World.Block
         /// <summary>
         /// Проверить локально позицию блока, 0..15
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool EqualsPositionInChunk(int x, int y, int z) 
             => (X & 15) == x && Y == y && (Z & 15) == z;
 
         /// <summary>
         /// Проверьте, имеет ли данный BlockPos действительные координаты
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsValid(ChunkSettings settings) 
             => X >= -30000000 && Z >= -30000000 && X < 30000000 && Z < 30000000 && Y >= 0 
             && Y <= settings.NumberMaxBlock;
@@ -285,6 +287,7 @@ namespace Vge.World.Block
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() 
             => X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
     }

@@ -299,7 +299,15 @@ namespace Vge.Renderer.World
             Debug.RenderChunckTime[(++Debug.dct) % 32] = time;
 
             // Если был рендер сплошных блоков, обязательно надо сделать рендер альфа блоков
-            RenderAlpha();
+            if (_countAlpha == 0)
+            {
+                // Надо принудительно перезаписать, так-как в прошлый раз могли быть альфа блоки
+                _meshAlpha.SetBufferClear();
+            }
+            else
+            {
+                RenderAlpha();
+            }
         }
 
         /// <summary>

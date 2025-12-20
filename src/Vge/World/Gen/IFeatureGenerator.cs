@@ -11,7 +11,7 @@ namespace Vge.World.Gen
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк
         /// </summary>
-        void DecorationsColumn(ChunkBase chunkSpawn, Rand rand);
+        void DecorationsColumn(ChunkServer chunkSpawn, Rand rand);
     }
 
     /// <summary>
@@ -22,6 +22,6 @@ namespace Vge.World.Gen
         /// <summary>
         /// Декорация областей которые могу выйти за 1 чанк
         /// </summary>
-        void DecorationsArea(ChunkBase chunkSpawn, Rand rand, int biasX, int biasZ);
+        void DecorationsArea(ChunkServer chunkSpawn, Rand rand, int biasX, int biasZ);
     }
 }

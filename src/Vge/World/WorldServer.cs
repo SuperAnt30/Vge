@@ -5,6 +5,7 @@ using Vge.Games;
 using Vge.Management;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -47,6 +48,16 @@ namespace Vge.World
         /// Запущен ли мир
         /// </summary>
         public bool IsRuning { get; private set; } = true;
+        /// <summary>
+        /// Увеличивается каждый такт конкретного мира
+        /// </summary>
+        public uint TickCounter { get; private set; }
+
+        /// <summary>
+        /// Кешовы Список BlockTick блоков которые должны мгновенно тикать,
+        /// нужен чтоб непересоздавать его в каждом чанке в каждом тике
+        /// </summary>
+        public readonly ListMessy<BlockTick> TickBlocksCache = new ListMessy<BlockTick>();
 
         /// <summary>
         /// Время затраченое за такт
@@ -159,14 +170,12 @@ namespace Vge.World
             int c0z = (z0) >> 4;
             int c1x = (x1) >> 4;
             int c1z = (z1) >> 4;
-            ChunkBase chunk;
             int x, z;
             for (x = c0x; x <= c1x; x++)
             {
                 for (z = c0z; z <= c1z; z++)
                 {
-                    chunk = ChunkPr.GetChunk(x, z);
-                    if (chunk != null) chunk.Modified();
+                    GetChunkServer(x, z)?.Modified();
                 }
             }
         }
@@ -194,7 +203,8 @@ namespace Vge.World
         /// </summary>
         private void _FragmentBegin()
         {
-            if (Server.TickCounter % Ce.Tps == 0)
+            TickCounter++;
+            if (TickCounter % Ce.Tps == 0)
             {
                 // Прошла секунда
                 ChunkPrServ.ClearCounter();
@@ -225,6 +235,23 @@ namespace Vge.World
             ChunkPrServ.UnloadingRequiredChunksFromQueue();
             Filer.EndSection();
         }
+
+        #endregion
+
+        #region Chunk
+
+        /// <summary>
+        /// Получить чанк по координатам чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ChunkServer GetChunkServer(int chunkPosX, int chunkPosY) 
+            => ChunkPr.GetChunk(chunkPosX, chunkPosY) as ChunkServer;
+        /// <summary>
+        /// Получить чанк по координатам чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ChunkServer GetChunkServer(Vector2i chunkPos)
+            => ChunkPr.GetChunk(chunkPos) as ChunkServer;
 
         #endregion
 
@@ -368,12 +395,12 @@ namespace Vge.World
         {
             int count = Fragment.ListChunkAction.Count;
             ulong index;
-            ChunkBase chunk;
+            ChunkServer chunk;
 
             for (int i = 0; i < count; i++)
             {
                 index = Fragment.ListChunkAction[i];
-                chunk = GetChunk(Conv.IndexToChunkX(index), Conv.IndexToChunkY(index));
+                chunk = GetChunkServer(Conv.IndexToChunkX(index), Conv.IndexToChunkY(index));
 
                 if (chunk != null && chunk.IsSendChunk)
                 {
@@ -381,6 +408,18 @@ namespace Vge.World
                     chunk.UpdateServer();
                     Filer.EndSection();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Задать тик блока
+        /// </summary>
+        public void SetBlockTick(BlockPos blockPos, uint timeTick, bool priority = false)
+        {
+            if (blockPos.IsValid(ChunkPr.Settings))
+            {
+                GetChunkServer(blockPos.GetPositionChunk())
+                    ?.SetBlockTick(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, timeTick, priority);
             }
         }
 
@@ -398,8 +437,19 @@ namespace Vge.World
 
         #endregion
 
-        public override string ToString() => "World-" + IdWorld 
-            + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
-            + "\r\n" + Tracker;
+        public override string ToString()
+        {
+            int chBt = 0;
+            if (Server.Players.PlayerOwner != null &&
+                Server.Players.PlayerOwner.IdWorld == IdWorld)
+            {
+                ChunkServer chunk = GetChunkServer(Server.Players.PlayerOwner.GetChunkPosition());
+                chBt = chunk.GetTickBlockCount();
+            }
+            return "World-" + IdWorld
+                + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
+                + "\r\n" + Tracker + " ChBt: " + chBt;
+        }
+        
     }
 }

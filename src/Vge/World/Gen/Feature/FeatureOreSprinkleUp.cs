@@ -40,7 +40,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк, одного прохода
         /// </summary>
-        protected override void _DecorationColumnOctave(ChunkBase chunkSpawn, Rand rand)
+        protected override void _DecorationColumnOctave(ChunkServer chunkSpawn, Rand rand)
         {
             int depth = _depthMin + rand.Next(_depthRandom);
             int z0 = rand.Next(14) + 1;

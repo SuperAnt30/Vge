@@ -117,7 +117,7 @@ namespace Vge.Network
         /// </summary>
         public void Update()
         {
-            if (_server.TickCounter % 150 == 0)
+            if (_server.TickCounterGlobal % 150 == 0)
             {
                 // Раз в 5 секунд
                 _lastPingTime = _server.Time();

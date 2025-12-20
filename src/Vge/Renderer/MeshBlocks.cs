@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Renderer.World;
 using WinGL.OpenGL;
 
@@ -100,6 +101,7 @@ namespace Vge.Renderer
         /// <summary>
         /// Изменить статус на рендеринг
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void StatusRendering()
         {
             IsModifiedRender = false;
@@ -124,6 +126,17 @@ namespace Vge.Renderer
                 _bufferFloat.Clear();
                 _bufferByte.Clear();
             }
+            Status = StatusMesh.Binding;
+        }
+
+        /// <summary>
+        /// Вносим пустой буфер
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBufferClear()
+        {
+            _bufferFloat.Clear();
+            _bufferByte.Clear();
             Status = StatusMesh.Binding;
         }
 

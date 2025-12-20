@@ -403,17 +403,42 @@ namespace Vge.World.Block
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока, зависящий от Metdata
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual int GetLightOpacity(int met) => LightOpacity;
         /// <summary>
         /// Количество излучаемого света (плафон), зависящий от Metdata
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual int GetLightValue(int met) => LightValue;
+
+        #endregion
+
+        #region Методы для тиков
+
+        /// <summary>
+        /// Случайный эффект частички и/или звука на блоке только для клиента
+        /// </summary>
+        public virtual void RandomDisplayTick(WorldBase world, BlockPos blockPos, BlockState blockState, Rand random) { }
+
+        /// <summary>
+        /// Случайный эффект блока, для сервера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void RandomTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
+            => UpdateTick(world, blockPos, blockState, random);
+
+        /// <summary>
+        /// Обновить блок в такте
+        /// </summary>
+        public virtual void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random) { }
+
 
         #endregion
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
             => state.NewMet(0);
 

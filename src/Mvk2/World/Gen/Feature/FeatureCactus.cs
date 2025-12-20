@@ -24,7 +24,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Декорация блока или столба не выходящего за чанк
         /// </summary>
-        public void DecorationsColumn(ChunkBase chunkSpawn, Rand rand)
+        public void DecorationsColumn(ChunkServer chunkSpawn, Rand rand)
         {
             if (rand.Next(_probabilityOne) == 0)
             {

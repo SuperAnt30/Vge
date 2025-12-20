@@ -142,7 +142,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Генерация рельефа чанка, соседние чанки не требуются
         /// </summary>
-        public void Relief(ChunkBase chunk)
+        public void Relief(ChunkServer chunk)
         {
             try
             {
@@ -245,7 +245,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Декорация чанков, требуются соседние чанки (3*3)
         /// </summary>
-        public void Decoration(ChunkProviderServer provider, ChunkBase chunk)
+        public void Decoration(ChunkProviderServer provider, ChunkServer chunk)
         {
           //  chunk.World.Filer.StartSection("DecorationChunk");
             // Debug.Burden(1.5f);
@@ -253,7 +253,7 @@ namespace Mvk2.World.Gen
 
             BiomeIsland biome = _biomes[chunk.Biome[136]];
             //biome.DecorationsColumn(chunk);
-            ChunkBase chunkSpawn;
+            ChunkServer chunkSpawn;
 
             int i;
             Vector2i[] array = Ce.AreaOne9priority[(chunk.CurrentChunkX % 2 == 0 ? 0 : 1) 
@@ -276,7 +276,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Экспортировать данные чанка с chunkPrimer в ChunkBase
         /// </summary>
-        private void _ExportChuck(ChunkBase chunk)
+        private void _ExportChuck(ChunkServer chunk)
         {
             ChunkStorage chunkStorage;
             int x, y, z, yc, ycb, y0, y8, yz;

@@ -36,9 +36,9 @@ namespace Vge.Games
         /// </summary>
         public bool IsServerRunning { get; private set; } = true;
         /// <summary>
-        /// Увеличивается каждый такт 
+        /// Увеличивается каждый такт глобально, для всех миров
         /// </summary>
-        public uint TickCounter { get; private set; }
+        public uint TickCounterGlobal { get; private set; }
         /// <summary>
         /// Увеличивается время каждый такт, время в мс
         /// </summary>
@@ -460,7 +460,7 @@ namespace Vge.Games
                         if (!_isGamePaused)
                         {
                             // Счётчик тиков
-                            TickCounter++;
+                            TickCounterGlobal++;
                             // Находим дельту времени между тактами
                             DeltaTime = (beginTicks - endTicks) / (double)_frequencyMs;
                             // Добавить время сколько прошло с прошлого шага в мс
@@ -473,7 +473,7 @@ namespace Vge.Games
                             // фиксируем время выполнения такта
                             timeExecutionTicks = _stopwatchTps.ElapsedTicks - beginTicks;
                             // фиксируем время выполнения такта
-                            _tickTimeArray[TickCounter % Ce.Tps] = timeExecutionTicks;
+                            _tickTimeArray[TickCounterGlobal % Ce.Tps] = timeExecutionTicks;
                         }
 
                         // Разница времени для счётчика времени обновляем, даже если пауза
@@ -541,7 +541,7 @@ namespace Vge.Games
             _packets.Update();
 
             // Прошла секунда
-            if (TickCounter % Ce.Tps == 0)
+            if (TickCounterGlobal % Ce.Tps == 0)
             {
                 UpCountClients();
 
@@ -563,7 +563,7 @@ namespace Vge.Games
             Worlds.Update();
 
             // Прошла 1/3 секунда, или 10 тактов
-            if (Ce.IsDebugDraw && TickCounter % 10 == 0)
+            if (Ce.IsDebugDraw && TickCounterGlobal % 10 == 0)
             {
                 // лог статистика за это время
                 _OnTextDebug();
@@ -591,9 +591,8 @@ namespace Vge.Games
         /// <summary>
         /// Задать время с загрузки файла
         /// </summary>
-        public void SetDataFile(long time, uint tick)
+        public void SetDataFile(long time)
         {
-            TickCounter = tick;
             TimeCounter = time;
         }
 
@@ -615,7 +614,7 @@ namespace Vge.Games
                 + "Owner: " + (Players.PlayerOwner == null ? "NULL" : Players.PlayerOwner.ToString())
                 + Ce.Br + _strNet
                 + Ce.Br + debugText,
-                tps, averageTime, _rxPrev, _txPrev, TickCounter, TimeCounter / 1000f, // 0-5
+                tps, averageTime, _rxPrev, _txPrev, TickCounterGlobal, TimeCounter / 1000f, // 0-5
                 _isGamePaused ? " PAUSE" : "" // 6
                 );
         }

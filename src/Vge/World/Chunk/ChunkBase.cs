@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -14,7 +13,7 @@ namespace Vge.World.Chunk
     /// <summary>
     /// Базовый объект чанка
     /// </summary>
-    public class ChunkBase : IChunkPosition
+    public abstract class ChunkBase : IChunkPosition
     {
         /// <summary>
         /// Исходящий буфер памяти для Zip
@@ -45,6 +44,14 @@ namespace Vge.World.Chunk
         /// Позиция Y текущего чанка
         /// </summary>
         public readonly int Y;
+        /// <summary>
+        /// Блочная позиция X текущего чанка
+        /// </summary>
+        public readonly int BlockX;
+        /// <summary>
+        /// Блочная позиция Z текущего чанка
+        /// </summary>
+        public readonly int BlockZ;
         /// <summary>
         /// Позиция X текущего чанка
         /// </summary>
@@ -84,10 +91,6 @@ namespace Vge.World.Chunk
         /// </summary>
         public readonly byte[] Biome = new byte[256];
         /// <summary>
-        /// Карта высот по чанку, рельефа при генерации z << 4 | x
-        /// </summary>
-        public readonly ushort[] HeightMapGen = new ushort[256];
-        /// <summary>
         /// Список сущностей в каждом псевдочанке
         /// </summary>
         public readonly MapEntity<EntityBase>[] ListEntitiesSection;
@@ -101,33 +104,28 @@ namespace Vge.World.Chunk
         /// </summary>
         private bool _hasEntities;
 
-        /// <summary>
-        /// Установите значение true, если чанк был изменен и нуждается в внутреннем обновлении. Для сохранения
-        /// </summary>
-        private bool _isModified;
-
         #region Кольца 1-4
 
         /// <summary>
         /// Присутствует, этап загрузки или начальная генерация #1 1*1
         /// </summary>
-        public bool IsChunkPresent { get; private set; }
+        public bool IsChunkPresent { get; protected set; }
         /// <summary>
         /// Было ли декорация чанка #2 3*3
         /// </summary>
-        public bool IsDecorated { get; private set; }
+        public bool IsDecorated { get; protected set; }
         /// <summary>
         /// Было ли карта высот с небесным освещением #3 5*5
         /// </summary>
-        public bool IsHeightMapSky { get; private set; }
+        public bool IsHeightMapSky { get; protected set; }
         /// <summary>
         /// Было ли боковое небесное освещение и блочное освещение #4 7*7
         /// </summary>
-        public bool IsSideLightSky { get; private set; }
+        public bool IsSideLightSky { get; protected set; }
         /// <summary>
         /// Готов ли чанк для отправки клиентам #5 9*9
         /// </summary>
-        public bool IsSendChunk { get; private set; }
+        public bool IsSendChunk { get; protected set; }
         /// <summary>
         /// Загружен ли чанк, false если была генерация, для дополнительной правки освещения.
         /// Для проверки не корректного освещения.
@@ -141,6 +139,8 @@ namespace Vge.World.Chunk
             World = world;
             X = CurrentChunkX = chunkPosX;
             Y = CurrentChunkY = chunkPosY;
+            BlockX = X << 4;
+            BlockZ = Y << 4;
             KeyCash = Conv.ChunkXyToIndex(X, Y);
             Settings = settings;
             NumberSections = Settings.NumberSections;
@@ -161,202 +161,12 @@ namespace Vge.World.Chunk
         public void SetInhabitedTime(uint takt) => InhabitedTakt = takt;
 
         /// <summary>
-        /// Сгенерировать копию высот для популяции
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void InitHeightMapGen()
-            => Buffer.BlockCopy(Light.HeightMap, 0, HeightMapGen, 0, 512);
-
-        /// <summary>
         /// Выгрузили чанк
         /// </summary>
         public virtual void OnChunkUnload()
         {
             IsChunkPresent = false;
         }
-
-        #region Кольца 1-4
-
-        /// <summary>
-        /// Готова начальная генерация или загрузка, приступаем к следующему этапу Populate
-        /// </summary>
-        public void ChunkPresent()
-        {
-            IsChunkPresent = true;
-
-            if (!World.IsRemote && World is WorldServer worldServer)
-            {
-                int x, y;
-                ChunkBase chunk;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = worldServer.ChunkPrServ.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk != null && chunk.IsChunkPresent)
-                        {
-                            chunk._Decoration(worldServer.ChunkPrServ);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// #2 3*3 Заполнение чанка декорацией
-        /// </summary>
-        private void _Decoration(ChunkProviderServer provider)
-        {
-            if (!IsDecorated)
-            {
-                int x, y;
-                // Если его в чанке нет проверяем чтоб у всех чанков близлежащих была генерация
-                ChunkBase chunk;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk == null || !chunk.IsChunkPresent)
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                // Decoration
-                //World.Filer.StartSection("GenDec " + CurrentChunkX + "," + CurrentChunkY);
-                provider.ChunkGenerate.Decoration(provider, this);
-                //World.Filer.EndSectionLog();
-                IsDecorated = true;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (/*chunk != null && */chunk.IsDecorated)
-                        {
-                            chunk._HeightMapSky(provider);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// #3 5*5 Карта высот с вертикальным небесным освещением
-        /// </summary>
-        private void _HeightMapSky(ChunkProviderServer provider)
-        {
-            if (!IsHeightMapSky)
-            {
-                int x, y;
-                ChunkBase chunk;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk == null || !chunk.IsDecorated)
-                        {
-                            return;
-                        }
-                    }
-                }
-
-
-                // Пробуем загрузить с файла
-                //World.Filer.StartSection("Hms " + CurrentChunkX + "," + CurrentChunkY);
-                if (World.Settings.HasNoSky)
-                {
-                    Light.GenerateHeightMap();
-                }
-                else
-                {
-                    Light.GenerateHeightMapSky(); // 0.09 - 0.13 мс
-                }
-                //World.Filer.EndSectionLog();
-                IsHeightMapSky = true;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (/*chunk != null && */chunk.IsHeightMapSky)
-                        {
-                            chunk._SideLightSky(provider);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// #4 7*7 Боковое небесное освещение и блочное освещение
-        /// </summary>
-        private void _SideLightSky(ChunkProviderServer provider)
-        {
-            if (!IsSideLightSky)
-            {
-                int x, y;
-                ChunkBase chunk;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk == null || !chunk.IsHeightMapSky)
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                // Боковое небесное освещение и блочное освещение
-                //World.Filer.StartSection("Sls " + CurrentChunkX + "," + CurrentChunkY);
-                Light.StartRecheckGaps(World.Settings.HasNoSky); // 0.12 - 0.2 мс
-                //World.Filer.EndSectionLog();
-                IsSideLightSky = true;
-
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (/*chunk != null && */chunk.IsSideLightSky)
-                        {
-                            chunk._SendChunk(provider);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// #5 9*9 Возможность отправлять чанк клиентам
-        /// </summary>
-        private void _SendChunk(ChunkProviderServer provider)
-        {
-            if (!IsSendChunk)
-            {
-                int x, y;
-                ChunkBase chunk;
-                for (x = -1; x <= 1; x++)
-                {
-                    for (y = -1; y <= 1; y++)
-                    {
-                        chunk = provider.GetChunkPlus(CurrentChunkX + x, CurrentChunkY + y);
-                        if (chunk == null || !chunk.IsSideLightSky)
-                        {
-                            return;
-                        }
-                    }
-                }
-                IsSendChunk = true;
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Возвращает самый верхний экземпляр ChunkStorage для этого фрагмента, который содержит блок.
@@ -455,7 +265,7 @@ namespace Vge.World.Chunk
             if (blockOld != block) // Блоки разные
             {
                 // Отмена тик блока
-                //RemoveBlockTick(bx, by, bz);
+                _RemoveBlockTick(bx, by, bz);
 
                 bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
                 if (differenceOpacity || block.LightValue != blockOld.LightValue)
@@ -526,13 +336,9 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
-        /// Задать тик блока с локальной позицие и время через сколько тактов надо тикнуть
+        /// Отменить мгновенный тик блока
         /// </summary>
-        public void SetBlockTick(int x, int y, int z, uint timeTackt, bool priority = false)
-        {
-
-        }
-
+        protected virtual void _RemoveBlockTick(int x, int y, int z) { }
 
         #endregion
 
@@ -642,43 +448,35 @@ namespace Vge.World.Chunk
             // Нужен соседний чанк
             if (bx == 0)
             {
-                ChunkBase chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY);
-                if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z);
+                World.GetChunk(CurrentChunkX - 1, CurrentChunkY)?.AwakenEntitiesTouching(x - 1, y, z);
                 if (bz == 0)
                 {
-                    chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY - 1);
-                    if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z - 1);
+                    World.GetChunk(CurrentChunkX - 1, CurrentChunkY - 1)?.AwakenEntitiesTouching(x - 1, y, z - 1);
                 }
                 else if (bz == 15)
                 {
-                    chunk = World.GetChunk(CurrentChunkX - 1, CurrentChunkY + 1);
-                    if (chunk != null) chunk.AwakenEntitiesTouching(x - 1, y, z + 1);
+                    World.GetChunk(CurrentChunkX - 1, CurrentChunkY + 1)?.AwakenEntitiesTouching(x - 1, y, z + 1);
                 }
             }
             else if (bx == 15)
             {
-                ChunkBase chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY);
-                if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z);
+                World.GetChunk(CurrentChunkX + 1, CurrentChunkY)?.AwakenEntitiesTouching(x + 1, y, z);
                 if (bz == 0)
                 {
-                    chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY - 1);
-                    if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z - 1);
+                    World.GetChunk(CurrentChunkX + 1, CurrentChunkY - 1)?.AwakenEntitiesTouching(x + 1, y, z - 1);
                 }
                 else if (bz == 15)
                 {
-                    chunk = World.GetChunk(CurrentChunkX + 1, CurrentChunkY + 1);
-                    if (chunk != null) chunk.AwakenEntitiesTouching(x + 1, y, z + 1);
+                    World.GetChunk(CurrentChunkX + 1, CurrentChunkY + 1)?.AwakenEntitiesTouching(x + 1, y, z + 1);
                 }
             }
             else if (bz == 0)
             {
-                ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY - 1);
-                if (chunk != null) chunk.AwakenEntitiesTouching(x, y, z - 1);
+                World.GetChunk(CurrentChunkX, CurrentChunkY - 1)?.AwakenEntitiesTouching(x, y, z - 1);
             }
             else if (bz == 15)
             {
-                ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY + 1);
-                if (chunk != null) chunk.AwakenEntitiesTouching(x, y, z + 1);
+                World.GetChunk(CurrentChunkX, CurrentChunkY + 1)?.AwakenEntitiesTouching(x, y, z + 1);
             }
         }
 
@@ -721,7 +519,6 @@ namespace Vge.World.Chunk
                 _bigStreamOut.Position = 0;
                 int sy, i;
                 ushort countMet;
-                int count = 0;
                 ushort key;
                 uint met;
                 for (sy = 0; sy < NumberSections; sy++)
@@ -773,29 +570,10 @@ namespace Vge.World.Chunk
 
         #endregion
 
-        #region Update
-
-        /// <summary>
-        /// Обновление в такте активных чанков, только на сервере
-        /// </summary>
-        public void UpdateServer()
-        {
-          // Debug.Burden(1);
-            return;
-        }
-
-        #endregion
-
         /// <summary>
         /// Пометить что надо перерендерить сетку чанка для клиента
         /// </summary>
         public virtual void ModifiedToRender(int y) { }
-
-        /// <summary>
-        /// Пометка что чанк надо будет перезаписать
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Modified() => _isModified = true;
 
         public override string ToString() => CurrentChunkX + " : " + CurrentChunkY;
 
