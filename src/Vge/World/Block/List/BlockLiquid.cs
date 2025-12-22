@@ -65,6 +65,10 @@ namespace Vge.World.Block.List
         /// 5 вода, 15 нефть, 30 лава
         /// </summary>
         protected uint _tickRate = 8;
+        /// <summary>
+        /// Лужа
+        /// </summary>
+        protected bool _puddle = true;
 
         /// <summary>
         /// Получить модель
@@ -120,6 +124,13 @@ namespace Vge.World.Block.List
             return (vec.X == 0f && vec.Z == 0f) ? -1000f : Glm.Atan2(vec.Z, vec.X) - Glm.Pi90;
         }
 
+        /// <summary>
+        /// Действие перед размещеннием блока, для определения метданных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
+            => state.NewMet(9);
+
         #region Методы для тиков
 
         /// <summary>
@@ -138,16 +149,16 @@ namespace Vge.World.Block.List
         public override void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
         {
             int met = (int)(blockState.Met == 0 ? 15 : blockState.Met);
-
             if (met == 15)
             {
                 // Стоячая, был тик, пробуем растечься
                 met -= _stepWave;
-                _CheckSetSide(world, blockPos.OffsetDown(), met);
-                _CheckSetSide(world, blockPos.OffsetEast(), met);
-                _CheckSetSide(world, blockPos.OffsetNorth(), met);
-                _CheckSetSide(world, blockPos.OffsetSouth(), met);
-                _CheckSetSide(world, blockPos.OffsetWest(), met);
+                int side = _GetVectors(world, blockPos, 15);
+                if ((side & 1) != 0) _CheckSetSide(world, blockPos.OffsetDown(), met);
+                if ((side & 1 << 1) != 0) _CheckSetSide(world, blockPos.OffsetEast(), met);
+                if ((side & 1 << 2) != 0) _CheckSetSide(world, blockPos.OffsetWest(), met);
+                if ((side & 1 << 3) != 0) _CheckSetSide(world, blockPos.OffsetNorth(), met);
+                if ((side & 1 << 4) != 0) _CheckSetSide(world, blockPos.OffsetSouth(), met);
             }
             else
             {
@@ -175,23 +186,55 @@ namespace Vge.World.Block.List
                         met -= (_stepWave * 2);
                         if (met <= 0)
                         {
-                            // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
-                            if (_GetLevelLiquid(world, blockPos.OffsetDown()) > 0)
+                            if (_puddle)
                             {
-                                // высохла
-                                world.SetBlockToAir(blockPos);
+                                // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
+                                BlockPos posDown = blockPos.OffsetDown();
+                                if (_GetLevelLiquid(world, posDown) > 0)
+                                {
+                                    // высохла
+                                    world.SetBlockToAir(blockPos);
+                                }
+                                else
+                                {
+                                    // Надо либо стечь, либо лужа
+                                    if (_GetLevelLiquid(world, posDown.OffsetEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorth()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouth()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetWest()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouthEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouthWest()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorthEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorthWest()) != -1)
+                                    {
+                                        // высохла
+                                        world.SetBlockToAir(blockPos);
+                                    }
+                                    else
+                                    {
+                                        if (blockState.Met != 1)
+                                        {
+                                            world.SetBlockState(blockPos, new BlockState(IndexBlock, 1), 14);
+                                        }
+                                    }
+                                    //world.SetBlockTick(blockPos, _tickRate);
+                                }
                             }
                             else
                             {
-                                world.SetBlockState(blockPos, new BlockState(IndexBlock, 1), 14);
+                                // высохла
+                                world.SetBlockToAir(blockPos);
                             }
                         }
                         else
                         {
                             // мельче
                             //world.SetBlockStateMet(blockPos, (ushort)met);
-                            world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
-                            world.SetBlockTick(blockPos, _tickRate);
+                            if (blockState.Met != met)
+                            {
+                                world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
+                                world.SetBlockTick(blockPos, _tickRate);
+                            }
                         }
                     }
                     else if (met < levelLiquid - _stepWave)
@@ -201,9 +244,12 @@ namespace Vge.World.Block.List
                         if (met <= 15)
                         {
                             if (met == 15) met = 0;
-                            //world.SetBlockStateMet(blockPos, (ushort)met);
-                            world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
-                            world.SetBlockTick(blockPos, _tickRate);
+                            if (blockState.Met != met)
+                            {
+                                //world.SetBlockStateMet(blockPos, (ushort)met);
+                                world.SetBlockState(blockPos, new BlockState(IndexBlock, (uint)met), 14);
+                                world.SetBlockTick(blockPos, _tickRate);
+                            }
                         }
                     }
 
@@ -213,12 +259,13 @@ namespace Vge.World.Block.List
                     {
                         // течение вниз
                         BlockState blockStateDown = world.GetBlockState(blockPosDown);
-                        BlockBase blockDown = blockStateDown.GetBlock();
 
                         // Микс с низу
                         if (!_MixingDown(world, blockPos, blockState, blockPosDown, blockStateDown))
                         {
-                            _CheckSetSideDown(world, blockPosDown, met);
+                            // TODO::2025-12-22 Доп растекание с высоты, раньше всегда 15
+                            if (met < 7) met = 7;
+                            _CheckSetSide(world, blockPosDown, met);
                         }
                     }
                     else
@@ -227,10 +274,17 @@ namespace Vge.World.Block.List
                         if (met >= 0)
                         {
                             // течение по сторонам
-                            _CheckSetSide(world, blockPos.OffsetEast(), met);
-                            _CheckSetSide(world, blockPos.OffsetNorth(), met);
-                            _CheckSetSide(world, blockPos.OffsetSouth(), met);
-                            _CheckSetSide(world, blockPos.OffsetWest(), met);
+                            int side = _GetVectors(world, blockPos, met);
+                            //if ((side & 1) != 0) _CheckSetSide(world, blockPos.OffsetDown(), met);
+                            if ((side & 1 << 1) != 0) _CheckSetSide(world, blockPos.OffsetEast(), met);
+                            if ((side & 1 << 2) != 0) _CheckSetSide(world, blockPos.OffsetWest(), met);
+                            if ((side & 1 << 3) != 0) _CheckSetSide(world, blockPos.OffsetNorth(), met);
+                            if ((side & 1 << 4) != 0) _CheckSetSide(world, blockPos.OffsetSouth(), met);
+
+                            //_CheckSetSide(world, blockPos.OffsetEast(), met);
+                            //_CheckSetSide(world, blockPos.OffsetNorth(), met);
+                            //_CheckSetSide(world, blockPos.OffsetSouth(), met);
+                            //_CheckSetSide(world, blockPos.OffsetWest(), met);
                         }
                     }
                 }
@@ -241,17 +295,6 @@ namespace Vge.World.Block.List
         {
             int levelLiquid = _GetLevelLiquid(world, pos);
             if (levelLiquid != -1 && levelLiquid < met)
-            {
-                _InteractionWithBlocks(world, pos);
-                world.SetBlockState(pos, new BlockState(IndexBlock, (uint)met), 14);
-                world.SetBlockTick(pos, _tickRate);
-            }
-        }
-
-        private void _CheckSetSideDown(WorldServer world, BlockPos pos, int met)
-        {
-            int levelLiquid = _GetLevelLiquid(world, pos);
-            if (levelLiquid != -1 && levelLiquid <= met)
             {
                 _InteractionWithBlocks(world, pos);
                 world.SetBlockState(pos, new BlockState(IndexBlock, (uint)met), 14);
@@ -270,6 +313,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Получиь уровень жидкости с этой позиции где, 15 макс, 0 можно разлить воды нет, -1 нельзя разлить воды нет.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int _GetLevelLiquid(WorldServer world, BlockPos pos)
         {
             BlockState blockState = world.GetBlockState(pos);
@@ -283,6 +327,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Можно ли разлить на эту позицию жидкость
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool _CheckCan(BlockState state)
         {
             BlockBase block = state.GetBlock();
@@ -303,9 +348,100 @@ namespace Vge.World.Block.List
         private bool _CheckCan(WorldServer world, BlockPos pos) => _CheckCan(world.GetBlockState(pos));
 
         /// <summary>
+        /// Можно ли разлить на эту позицию жидкость, без проверки материала
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool _CheckCanNotMaterial(WorldServer world, BlockPos pos)
+        {
+            BlockState state = world.GetBlockState(pos);
+            BlockBase block = state.GetBlock();
+            //EnumMaterial eMaterial = block.Material.EMaterial;
+            return block.IsAir || (state.Id == IndexBlock && state.Met > 0);
+            //block.IsLiquidDestruction() || IsFire(eMaterial)
+              //  || block.EBlock == eBlockFlowing;
+        }
+
+        /// <summary>
         /// Проверка бесконечного источника
         /// </summary>
         protected virtual bool _CheckEndlessSource(WorldServer world, BlockPos blockPos) => false;
+
+
+        /// <summary>
+        /// Получить список направлений куда может течь жидкость, в битах
+        /// 1 - Down, 2 - East, 4 - West, 8 - North, 16 - South
+        /// </summary>
+        protected int _GetVectors(WorldServer world, BlockPos blockPos, int level)
+        {
+            // течение вниз
+            bool down = _CheckCan(world, blockPos.OffsetDown());
+
+            BlockPos pos;
+            // Направление в битах
+            int side = down ? 1 : 0;
+
+            int stepStart = int.MaxValue;
+            for (int i = 2; i < 6; i++)
+            {
+                pos = blockPos.Offset(i);
+                if (_CheckCanNotMaterial(world, pos))
+                {
+                    int step = 0;
+                    if (!_CheckCan(world, pos.OffsetDown()))
+                    {
+                        step = _GetVectorsLong(world, pos, 1,
+                            PoleConvert.Reverse[i], ((level - 1) / _stepWave) - 1);
+                    }
+                    if (step < stepStart)
+                    {
+                        side = down ? 1 : 0;
+                    }
+
+                    if (step <= stepStart)
+                    {
+                        side += PoleConvert.Flag[i];
+                        stepStart = step;
+                    }
+                }
+            }
+
+            return side;
+        }
+
+        /// <summary>
+        /// Находим растояние в конкретной позиции
+        /// </summary>
+        /// <param name="world">мир</param>
+        /// <param name="blockPos">позиция проверки</param>
+        /// <param name="step">шаг смещения от начала</param>
+        /// <param name="pole">откуда пришёл</param>
+        protected int _GetVectorsLong(WorldServer world, BlockPos blockPos, int step, int poleOpposite, int level)
+        {
+            int stepResult = int.MaxValue;
+            BlockPos pos;
+            for (int i = 2; i < 6; i++)
+            {
+                if (i != poleOpposite)
+                {
+                    pos = blockPos.Offset(i);
+                    if (_CheckCanNotMaterial(world, pos))
+                    {
+                        if (_CheckCan(world, pos.OffsetDown())) return step;
+                        if (step < level)
+                        {
+                            int stepCache = _GetVectorsLong(world, pos, step + 1,
+                                PoleConvert.Reverse[i], level);
+                            if (stepCache < stepResult)
+                            {
+                                stepResult = stepCache;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return stepResult;
+        }
 
         #endregion
 

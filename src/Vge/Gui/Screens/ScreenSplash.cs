@@ -102,10 +102,12 @@ namespace Vge.Gui.Screens
             _list.AddRange(RenderFigure.Rectangle(w - w2, h - 40 * _si, w + w2, h, .13f, .44f, .91f));
             w2 = 304 * _si;
             _list.AddRange(RenderFigure.Rectangle(w - w2, h - 36 * _si, w + w2, h - 4 * _si, 1, 1, 1));
-            int wcl = _countDraw * 600 * _si / _max;
-            w2 = 300 * _si;
-            _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl * _si, h - 8 * _si, .13f, .44f, .91f));
-
+            if (_max > 0)
+            {
+                int wcl = _countDraw * 600 / _max;
+                w2 = 300 * _si;
+                _list.AddRange(RenderFigure.Rectangle(w - w2, h - 32 * _si, w - w2 + wcl * _si, h - 8 * _si, .13f, .44f, .91f));
+            }
             _meshProcess.Reload(_list.GetBufferAll(), _list.Count);
         }
 

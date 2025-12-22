@@ -97,6 +97,7 @@ namespace Mvk2.Entity.List
             else if (currentIndex == 2) idBlock = BlocksRegMvk.Glass.IndexBlock;
             else if (currentIndex == 3) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
             else if (currentIndex == 4) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
+            else if (currentIndex == 5) idBlock = BlocksRegMvk.Lava.IndexBlock;
 
             // Определяем на какую сторону смотрит игрок
             Pole pole = PoleConvert.FromAngle(RotationYaw);

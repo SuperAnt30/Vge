@@ -337,38 +337,42 @@ namespace Vge.Renderer.World
                     if (count > 0)
                     {
                         chunkStorage = StorageArrays[cbY];
-                        Gi.BlockAlphaRendFull.InitStorage(cbY);
-                        Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
-                        for (i = 0; i < count; i++)
-                        {
-                            index = _listAlphaBlock[cbY][i];
-                            x = index & 0xF;
-                            z = (index >> 4) & 0xF;
-                            y = index >> 8;
-                            realY = cbY << 4 | y;
-                            
-                            index = index & 0xFFF;
-                            data = chunkStorage.Data[index];
-                            id = (ushort)(data & 0xFFF);
-                            Gi.Block = Ce.Blocks.BlockObjects[id];
-                            Gi.Block.BlockRender.PosChunkX = x;
-                            Gi.Block.BlockRender.PosChunkY = realY;
-                            Gi.Block.BlockRender.PosChunkZ = z;
-                            // Определяем met блока
-                            Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
 
-                            if (Gi.Block.BlockRender.CheckSide())
+                        if (chunkStorage.Data != null)
+                        {
+                            Gi.BlockAlphaRendFull.InitStorage(cbY);
+                            Gi.BlockLiquidAlphaRendFull.InitStorage(cbY);
+                            for (i = 0; i < count; i++)
                             {
-                                Gi.Block.BlockRender.Light = chunkStorage.Light[index];
-                                Gi.Block.BlockRender.RenderSide();
-                                _listAlphaBuffer.Add(new BlockBufferDistance()
+                                index = _listAlphaBlock[cbY][i];
+                                x = index & 0xF;
+                                z = (index >> 4) & 0xF;
+                                y = index >> 8;
+                                realY = cbY << 4 | y;
+
+                                index = index & 0xFFF;
+                                data = chunkStorage.Data[index];
+                                id = (ushort)(data & 0xFFF);
+                                Gi.Block = Ce.Blocks.BlockObjects[id];
+                                Gi.Block.BlockRender.PosChunkX = x;
+                                Gi.Block.BlockRender.PosChunkY = realY;
+                                Gi.Block.BlockRender.PosChunkZ = z;
+                                // Определяем met блока
+                                Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+
+                                if (Gi.Block.BlockRender.CheckSide())
                                 {
-                                    BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
-                                    BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
-                                    Distance = Glm.Distance(posPlayer,
-                                        new Vector3i(cbX | x, realY, cbZ | z))
-                                });
-                                Gi.VertexAlpha.Clear();
+                                    Gi.Block.BlockRender.Light = chunkStorage.Light[index];
+                                    Gi.Block.BlockRender.RenderSide();
+                                    _listAlphaBuffer.Add(new BlockBufferDistance()
+                                    {
+                                        BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
+                                        BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
+                                        Distance = Glm.Distance(posPlayer,
+                                            new Vector3i(cbX | x, realY, cbZ | z))
+                                    });
+                                    Gi.VertexAlpha.Clear();
+                                }
                             }
                         }
                     }

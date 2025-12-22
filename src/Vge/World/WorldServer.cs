@@ -435,14 +435,14 @@ namespace Vge.World
             _NotifyBlockOfStateChange(pos.OffsetUp(), block);
             _NotifyBlockOfStateChange(pos.OffsetNorth(), block);
             _NotifyBlockOfStateChange(pos.OffsetSouth(), block);
-            if (block.IsAir)
-            {
-                // Для дверей диагональ
-                _NotifyBlockOfStateChange(pos.Offset(1, 0, 1), block);
-                _NotifyBlockOfStateChange(pos.Offset(-1, 0, 1), block);
-                _NotifyBlockOfStateChange(pos.Offset(1, 0, -1), block);
-                _NotifyBlockOfStateChange(pos.Offset(-1, 0, -1), block);
-            }
+            //if (block.IsAir)
+            //{
+            //    // Для дверей диагональ
+            //    _NotifyBlockOfStateChange(pos.Offset(1, 0, 1), block);
+            //    _NotifyBlockOfStateChange(pos.Offset(-1, 0, 1), block);
+            //    _NotifyBlockOfStateChange(pos.Offset(1, 0, -1), block);
+            //    _NotifyBlockOfStateChange(pos.Offset(-1, 0, -1), block);
+            //}
         }
 
         /// <summary>

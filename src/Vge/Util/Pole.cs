@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using System.Runtime.CompilerServices;
+using WinGL.Util;
 
 namespace Vge.Util
 {
@@ -25,27 +26,27 @@ namespace Vge.Util
     public enum Pole
     {
         /// <summary>
-        /// Север
+        /// Север 4 || 8
         /// </summary>
         North = 4,
         /// <summary>
-        /// Юг
+        /// Юг 5 || 16
         /// </summary>
         South = 5,
         /// <summary>
-        /// Запад
+        /// Запад 3 || 4
         /// </summary>
         West = 3,
         /// <summary>
-        /// Восток
+        /// Восток 2 
         /// </summary>
         East = 2,
         /// <summary>
-        /// Вверх
+        /// Вверх 0
         /// </summary>
         Up = 0,
         /// <summary>
-        /// Низ
+        /// Низ 1
         /// </summary>
         Down = 1,
         /// <summary>
@@ -58,6 +59,9 @@ namespace Vge.Util
     {
         public readonly static byte[] Reverse = new byte[] { 1, 0, 3, 2, 5, 4 };
 
+        public readonly static byte[] Flag = new byte[] { 0, 1, 2, 4, 8, 16 };
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pole GetPole(string name)
         {
             if (name == "Up") return Pole.Up;
@@ -72,6 +76,7 @@ namespace Vge.Util
         /// <summary>
         /// Повернуть стороны по Y
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int RotateY(int side, int rotate)
         {
             if (rotate != 0)
@@ -100,6 +105,7 @@ namespace Vge.Util
         /// Получите облицовку, соответствующую заданному углу (0-360). Угол 0 - SOUTH, угол 90 - WEST.
         /// </summary>
         /// <param name="angle">угол в радианах</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pole FromAngle(float angle)
         {
             if (angle >= -Glm.Pi45 && angle <= Glm.Pi45) return Pole.North;

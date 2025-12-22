@@ -156,6 +156,27 @@ namespace Vge.World.Block
         public BlockPos OffsetNorth() => new BlockPos(X, Y, Z - 1);
 
         /// <summary>
+        /// Позиция блока юга-запад
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockPos OffsetSouthWest() => new BlockPos(X - 1, Y, Z + 1);
+        /// <summary>
+        /// Позиция блока юга-восток
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockPos OffsetSouthEast() => new BlockPos(X + 1, Y, Z + 1);
+        /// <summary>
+        /// Позиция блока севера-запад
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockPos OffsetNorthWest() => new BlockPos(X - 1, Y, Z - 1);
+        /// <summary>
+        /// Позиция блока севера-восток
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockPos OffsetNorthEast() => new BlockPos(X + 1, Y, Z - 1);
+
+        /// <summary>
         /// Создать вектор с целыми числами
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
