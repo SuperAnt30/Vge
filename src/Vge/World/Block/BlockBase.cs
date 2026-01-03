@@ -327,7 +327,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Задать блок воздуха
         /// </summary>
-        protected void SetAir()
+        protected void _SetAir()
         {
            // Material = Materials.GetMaterialCache(EnumMaterial.Air);
             IsAir = true;
@@ -337,6 +337,9 @@ namespace Vge.World.Block
             Shadow = false;
             IsReplaceable = true;
             LightOpacity = 0;
+            Translucent = true;
+            IsCollidable = false;
+            FullBlock = false;
 
             _quads = new QuadSide[][] { new QuadSide[] { new QuadSide(0) } };
         }

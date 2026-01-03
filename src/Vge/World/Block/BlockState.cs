@@ -35,8 +35,8 @@ namespace Vge.World.Block
         /// <summary>
         /// Блок воздуха
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAir() => Id == 0;
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public bool IsAir() => Id == 0;
         /// <summary>
         /// Пустой ли объект
         /// </summary>

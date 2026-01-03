@@ -332,7 +332,7 @@ namespace Vge.World.Block.List
         {
             BlockBase block = state.GetBlock();
             //EnumMaterial eMaterial = block.Material.EMaterial;
-            return block.IsAir || state.Id == IndexBlock;
+            return block.IsAir || state.Id == IndexBlock || !block.FullBlock;
                 // || block.IsLiquidDestruction() || IsFire(eMaterial)
                                //|| eMaterial == materialLiquid
                                //// Взаимодействие лавы с водой и нефтью
@@ -356,9 +356,9 @@ namespace Vge.World.Block.List
             BlockState state = world.GetBlockState(pos);
             BlockBase block = state.GetBlock();
             //EnumMaterial eMaterial = block.Material.EMaterial;
-            return block.IsAir || (state.Id == IndexBlock && state.Met > 0);
+            return block.IsAir || (state.Id == IndexBlock && state.Met > 0) || !block.FullBlock;
             //block.IsLiquidDestruction() || IsFire(eMaterial)
-              //  || block.EBlock == eBlockFlowing;
+            //  || block.EBlock == eBlockFlowing;
         }
 
         /// <summary>

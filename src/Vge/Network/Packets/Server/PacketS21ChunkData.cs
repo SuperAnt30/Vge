@@ -65,8 +65,7 @@ namespace Vge.Network.Packets.Server
             IsBiom = biom;
             BufferRead = null;
 
-            ushort data;
-            int i, y;
+            int y, count;
             uint value;
             ChunkStorage chunkStorage;
             _bufferWrite.Clear();
@@ -87,9 +86,9 @@ namespace Vge.Network.Packets.Server
                         _bufferWrite.Add(1);
                         _bufferWrite.AddRange(chunkStorage.Data);
 
-                        data = (ushort)chunkStorage.Metadata.Count;
-                        _bufferWrite.Add((byte)(data >> 8));
-                        _bufferWrite.Add((byte)(data & 0xFF));
+                        count = chunkStorage.Metadata.Count;
+                        _bufferWrite.Add((byte)(count >> 8));
+                        _bufferWrite.Add((byte)(count & 0xFF));
 
                         foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
                         {

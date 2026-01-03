@@ -7,7 +7,7 @@ using WinGL.Util;
 namespace Vge.Renderer.World
 {
     /// <summary>
-    /// Объект рендера жидкого блока
+    /// Объект рендера жидкого блока Block Liquid
     /// </summary>
     public class BlockRenderLiquid : BlockRenderFull
     {
@@ -528,7 +528,7 @@ namespace Vge.Renderer.World
                 metLevel = vs[i];
                 if (metLevel > 0)
                 {
-                    if (metLevel == 15)
+                    if (metLevel >= 14)
                     {
                         // value чем больше тут цифра, тем ниже уровень 
                         // (.5 почти на уровне, 2.0 около двух пикселей от верха)

@@ -849,6 +849,17 @@ namespace Vge.Entity.Player
                             _game.World.GetBlockState(blockPosUp).ToInfo(),
                             _ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
                         );
+                        // TODO::2026-01-03 Третий блок сверху, убрать надо
+                        if (MovingObject.BlockPosition.Y + 1 < chunk.Settings.NumberBlocks)
+                        {
+                            blockPosUp = blockPosUp.OffsetUp();
+                            strUp += string.Format(
+                                "\r\nBlkUp2:{0} {1} L:{2}",
+                                blockPosUp,
+                                _game.World.GetBlockState(blockPosUp).ToInfo(),
+                                _ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
+                            );
+                        }
                     }
                     Debug.BlockFocus = string.Format(
                         "Block:{0} {1}{4} L:{2}\r\n{3}\r\n",//{5}, {6}\r\n",

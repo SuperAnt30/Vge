@@ -6,6 +6,7 @@ using Vge.Event;
 using Vge.Management;
 using Vge.Network;
 using Vge.Network.Packets.Server;
+using Vge.Realms;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -609,7 +610,9 @@ namespace Vge.Games
             float averageTime = Mth.Average(_tickTimeArray) / _frequencyMs;
             // TPS за последние 4 тактов (1/5 сек), должен быть 20
             float tps = averageTime > Ce.Tick​​Time ? Ce.Tick​​Time / averageTime * Ce.Tps : Ce.Tps;
-            return string.Format("[Server]: {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
+            return string.Format(ChatStyle.Bolb + "[Server]:" 
+                + ChatStyle.Reset
+                + " {0:0.00} tps {1:0.00} ms Rx {2} Tx {3} Tick {4} Time {5:0.0} s {6}"
                 + Ce.Br + Worlds.ToString()
                 + "Owner: " + (Players.PlayerOwner == null ? "NULL" : Players.PlayerOwner.ToString())
                 + Ce.Br + _strNet

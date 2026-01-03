@@ -518,7 +518,7 @@ namespace Vge.World.Chunk
                 bigStream.CopyTo(_bigStreamOut);
                 _bigStreamOut.Position = 0;
                 int sy, i;
-                ushort countMet;
+                int count;
                 ushort key;
                 uint met;
                 for (sy = 0; sy < NumberSections; sy++)
@@ -541,8 +541,8 @@ namespace Vge.World.Chunk
                             storage.UpCountBlock();
 
                             storage.Metadata.Clear();
-                            countMet = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
-                            for (i = 0; i < countMet; i++)
+                            count = _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte();
+                            for (i = 0; i < count; i++)
                             {
                                 key = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
                                 met = (uint)(_bigStreamOut.ReadByte() << 24 | _bigStreamOut.ReadByte() << 16

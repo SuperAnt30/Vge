@@ -499,7 +499,7 @@ namespace Vge.Renderer.World
                 {
                     flag = false;
                     gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
-                    gl.PolygonOffset(0.5f, 10f);
+                    gl.PolygonOffset(0.5f, -10f);
                 }
                 chunkRender = _arrayChunkRender[i];
                 // Прорисовка альфа блоков псевдо чанка

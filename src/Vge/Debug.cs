@@ -72,7 +72,7 @@ namespace Vge
                     + " a:" + RenderChunckTimeAlpha8.ToString("0.000")
                     + " rch: " + Mth.Average(RenderChunckTime)
                 + "\r\n" + Server
-                + ChatStyle.Italic + "[Client]: " + Client
+                + ChatStyle.Bolb + "[Client]: " + ChatStyle.Reset + Client
                 + "\r\nDS: " + DebugString + " " + BlockChange
                 + "\r\n" + ChatStyle.Gold + BlockFocus + ChatStyle.Reset
                 + "\r\n" + Text;
