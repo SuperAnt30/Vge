@@ -112,7 +112,7 @@ namespace Mvk2.Entity.List
             blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
             worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 46 : 63);
-            if (idBlock == BlocksRegMvk.Water.IndexBlock)
+            if (idBlock == BlocksRegMvk.Water.IndexBlock || idBlock == BlocksRegMvk.Lava.IndexBlock)
             {
                 worldServer.SetBlockTick(blockPos, 10);
             }

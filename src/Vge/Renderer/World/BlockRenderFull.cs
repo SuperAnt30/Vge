@@ -376,6 +376,7 @@ namespace Vge.Renderer.World
                     {
                         _blockCheck = Ce.Blocks.BlockObjects[id];
                     }
+                    // TODO::2026-01-10 Осталась бага, разных жидкостей, когда они в допах, пропадают между ними сторона, надо ли фиксить?!
 
                     if (_isCullFaceAll && _blockCheck.CullFaceAll && !_blockCheck.Translucent)// || !_blockCheck.Liquid))// && (!_isUp || Gi.Block.Liquid))
                     {

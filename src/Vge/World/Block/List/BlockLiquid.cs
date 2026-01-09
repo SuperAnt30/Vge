@@ -345,8 +345,15 @@ namespace Vge.World.Block.List
         {
             BlockBase block = blockState.GetBlock();
             //EnumMaterial eMaterial = block.Material.EMaterial;
-            return block.IsAir || blockState.Id == IndexBlock ||
-                block.CanAddLiquid();
+            if (block.IsAir || blockState.Id == IndexBlock) return true;
+
+            if (block.CanAddLiquid())
+            {
+                bool b = block.IsAddLiquid(blockState.Met);
+                if (!b || (b && Ce.Blocks.GetAddLiquidIndex(blockState.Met) == IndexBlock))
+                    return true;
+            }
+            return false;
                 // || block.IsLiquidDestruction() || IsFire(eMaterial)
                                //|| eMaterial == materialLiquid
                                //// Взаимодействие лавы с водой и нефтью
