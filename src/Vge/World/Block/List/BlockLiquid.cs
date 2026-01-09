@@ -128,7 +128,7 @@ namespace Vge.World.Block.List
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
-            => state.NewMet(0);
+            => state.NewMet(7);
 
         #region Методы для тиков
 
@@ -180,48 +180,44 @@ namespace Vge.World.Block.List
                     if (met >= levelLiquid && met < 15 && levelLiquidUp <= 0)
                     {
                         // уменьшаем, так-как рядом жидкость мельче
-                        met -= (_stepWave * 2);
+                        met -= _stepWave * 2;
                         if (met <= 0)
                         {
-                            //if (_puddle)
-                            //{
-                            //    // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
-                            //    BlockPos posDown = blockPos.OffsetDown();
-                            //    if (_GetLevelLiquid(world, posDown) > 0)
-                            //    {
-                            //        // высохла
-                            //        world.SetBlockToAir(blockPos);
-                            //    }
-                            //    else
-                            //    {
-                            //        // Надо либо стечь, либо лужа
-                            //        if (_GetLevelLiquid(world, posDown.OffsetEast()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetNorth()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetSouth()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetWest()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetSouthEast()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetSouthWest()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetNorthEast()) != -1
-                            //            || _GetLevelLiquid(world, posDown.OffsetNorthWest()) != -1)
-                            //        {
-                            //            // высохла
-                            //            world.SetBlockToAir(blockPos);
-                            //        }
-                            //        else
-                            //        {
-                            //            if (blockState.Met != 1)
-                            //            {
-                            //                world.SetBlockState(blockPos, blockState.NewMet(1), 14);
-                            //            }
-                            //        }
-                            //        //world.SetBlockTick(blockPos, _tickRate);
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    // высохла
+                            if (_puddle)
+                            {
+                                // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
+                                BlockPos posDown = blockPos.OffsetDown();
+                                if (_GetLevelLiquid(world, posDown) > 0)
+                                {
+                                    // высохла
+                                    world.SetLiquidBlockToAir(blockPos);
+                                }
+                                else
+                                {
+                                    // Надо либо стечь, либо лужа
+                                    if (_GetLevelLiquid(world, posDown.OffsetEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorth()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouth()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetWest()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouthEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetSouthWest()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorthEast()) != -1
+                                        || _GetLevelLiquid(world, posDown.OffsetNorthWest()) != -1)
+                                    {
+                                        // высохла
+                                        world.SetLiquidBlockToAir(blockPos);
+                                    }
+                                    else if (met0 != 1)
+                                    {
+                                        _SetBlock(world, blockPos, 1, isAddLiquid);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // высохла
                                 world.SetLiquidBlockToAir(blockPos);
-                            //}
+                            }
                         }
                         else
                         {
@@ -257,8 +253,8 @@ namespace Vge.World.Block.List
                         if (!_MixingDown(world, blockPos, blockState, blockPosDown, blockStateDown))
                         {
                             // TODO::2025-12-22 Доп растекание с высоты, раньше всегда 15
-                            //if (met < 7) met = 7;
-                            if (met < 3) met = 3;
+                            if (met < 7) met = 7;
+                            //if (met < 3) met = 3;
                             _CheckSetSide(world, blockPosDown, met);
                         }
                     }
