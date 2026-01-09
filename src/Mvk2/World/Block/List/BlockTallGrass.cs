@@ -18,7 +18,7 @@ namespace Mvk2.World.Block.List
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override QuadSide[] GetQuads(uint met, int xb, int zb)
+        public override QuadSide[] GetQuads(int met, int xb, int zb)
         {
             int i = (xb + zb) & 7;
             if (i > 4) i -= 4;

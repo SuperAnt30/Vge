@@ -91,13 +91,14 @@ namespace Mvk2.Entity.List
             // Временно устанваливаем блок
             byte currentIndex = Inventory.GetCurrentIndex();
 
-            ushort idBlock = BlocksRegMvk.Debug.IndexBlock;
+            int idBlock = BlocksRegMvk.Debug.IndexBlock;
             if (currentIndex == 0) idBlock = BlocksRegMvk.Stone.IndexBlock;
             else if (currentIndex == 1) idBlock = BlocksRegMvk.Water.IndexBlock;
-            else if (currentIndex == 2) idBlock = BlocksRegMvk.Glass.IndexBlock;
-            else if (currentIndex == 3) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
-            else if (currentIndex == 4) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
-            else if (currentIndex == 5) idBlock = BlocksRegMvk.Lava.IndexBlock;
+            else if (currentIndex == 2) idBlock = BlocksRegMvk.Lava.IndexBlock;
+            else if (currentIndex == 3) idBlock = BlocksRegMvk.FlowerDandelion.IndexBlock;// | (1 << 28) | (4 << 24);
+            else if (currentIndex == 4) idBlock = BlocksRegMvk.Glass.IndexBlock;
+            else if (currentIndex == 5) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
+            else if (currentIndex == 6) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
 
             // Определяем на какую сторону смотрит игрок
             Pole pole = PoleConvert.FromAngle(RotationYaw);
@@ -110,7 +111,7 @@ namespace Mvk2.Entity.List
             // TODO::ВРЕМЕННО!!!
             blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
             //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
-            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
+            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 46 : 63);
             if (idBlock == BlocksRegMvk.Water.IndexBlock)
             {
                 worldServer.SetBlockTick(blockPos, 10);

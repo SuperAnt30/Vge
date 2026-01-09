@@ -65,12 +65,12 @@ namespace Vge.Util
         /// <summary>
         /// Добавить массив значений
         /// </summary>
-        public void AddRange(ushort[] items)
+        public void AddRange(int[] items)
         {
-            int count = items.Length * 2;
+            int count = items.Length * 4;
             if (_size < Count + count)
             {
-                _size = Count + count + (Count + count) / 2;
+                _size = Count + count + (Count + count) / 4;
                 Array.Resize(ref _buffer, _size);
             }
             Buffer.BlockCopy(items, 0, _buffer, Count, count);

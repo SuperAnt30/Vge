@@ -34,6 +34,7 @@ namespace Vge.Entity.List
         /// </summary>
         public override void OnImpact(WorldBase world, MovingObjectPosition moving)
         {
+            // TODO::2026-01-09  OnImpact временно
             SetDead();
             if (moving.IsEntity())
             {
@@ -42,10 +43,10 @@ namespace Vge.Entity.List
                     moving.Entity.SetDead();
                 }
             }
-            else if (moving.IsBlock())
-            {
-                world.SetBlockToAir(moving.BlockPosition, world.IsRemote ? 14 : 31);
-            }
+            //else if (moving.IsBlock())
+            //{
+            //    world.SetBlockToAir(moving.BlockPosition, world.IsRemote ? 14 : 31);
+            //}
         }
     }
 }

@@ -26,10 +26,6 @@ namespace Vge.World.Block
         /// </summary>
         public readonly bool[] BlocksRandomTick;
         /// <summary>
-        /// Массив с флагом имеется ли у блока metadata
-        /// </summary>
-        public readonly bool[] BlocksMetadata;
-        /// <summary>
         /// Количество всех блоков
         /// </summary>
         public readonly int Count;
@@ -46,6 +42,10 @@ namespace Vge.World.Block
         /// Массив излучаемости освещения зависящий от Metdata блока
         /// </summary>
         private readonly bool[] _blocksLightMet;
+        /// <summary>
+        /// Получить массив индексов блоков жидкости, посути их менять нельзя они храняться в Met
+        /// </summary>
+        private readonly int[] _blockIndexLiquid;
 
         public BlockArrays()
         {
@@ -56,9 +56,10 @@ namespace Vge.World.Block
             _blocksOpacityMet = new bool[Count];
             _blocksLightMet = new bool[Count];
             BlocksRandomTick = new bool[Count];
-            BlocksMetadata = new bool[Count];
+            _blockIndexLiquid = new int[8];
 
             BlockBase block;
+            byte indexLiquid = 0;
             for (ushort id = 0; id < Count; id++)
             {
                 BlockAlias[id] = BlocksReg.Table.GetAlias(id);
@@ -67,7 +68,11 @@ namespace Vge.World.Block
                 BlockObjects[id] = block;
                 _blocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
                 BlocksRandomTick[id] = block.NeedsRandomTick;
-                BlocksMetadata[id] = block.IsMetadata;
+                if (block.Liquid && indexLiquid < 8)
+                {
+                    _blockIndexLiquid[++indexLiquid] = block.IndexBlock;
+                    block.SetIndexLiquid(indexLiquid);
+                }
             }
         }
 
@@ -81,6 +86,19 @@ namespace Vge.World.Block
                 BlockObjects[id].InitAfterItemsN3();
             }
         }
+
+        /// <summary>
+        /// Получить дополнительный блок жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockBase GetAddLiquid(int met) 
+            => Ce.Blocks.BlockObjects[_blockIndexLiquid[met >> 16]];
+
+        /// <summary>
+        /// Получить индекс дополнительного блока жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetAddLiquidIndex(int met) => _blockIndexLiquid[met >> 16];
 
         #region Light
 

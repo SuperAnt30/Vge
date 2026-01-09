@@ -19,8 +19,8 @@ namespace Mvk2.World.Gen
         /// 65536 = 16 * 16 * 256
         /// 32768 = 16 * 16 * 128
         /// </summary>
-        public readonly ushort[] Id;
-        public readonly uint[] Met;
+        public readonly int[] Id;
+        public readonly int[] Met;
         /// <summary>
         /// Массив флагов, 
         /// 1 = меняем если не воздух
@@ -50,14 +50,14 @@ namespace Mvk2.World.Gen
         public ChunkPrimerIsland(int numberChunkSections)
         {
             _count = 4096 * numberChunkSections;
-            Id = new ushort[_count];
-            Met = new uint[_count];
+            Id = new int[_count];
+            Met = new int[_count];
             Flag = new byte[_count];
             ArrayLightBlocks = new ArrayFast<uint>(_count);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockState(int xz, int y, ushort id, uint met = 0)
+        public void SetBlockState(int xz, int y, int id, int met = 0)
         {
             int index = y << 8 | xz;
             Id[index] = id;
@@ -65,7 +65,7 @@ namespace Mvk2.World.Gen
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockIdFlag(int xz, int y, ushort id, byte flag)
+        public void SetBlockIdFlag(int xz, int y, int id, byte flag)
         {
             int index = y << 8 | xz;
             Id[index] = id;
@@ -73,7 +73,7 @@ namespace Mvk2.World.Gen
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockState(int x, int y, int z, ushort id, uint met = 0)
+        public void SetBlockState(int x, int y, int z, int id, int met = 0)
         {
             int index = y << 8 | z << 4 | x;
             Id[index] = id;
@@ -81,7 +81,7 @@ namespace Mvk2.World.Gen
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ushort GetBlockId(int xz, int y) => Id[y << 8 | xz];
+        public int GetBlockId(int xz, int y) => Id[y << 8 | xz];
 
         /// <summary>
         /// Очистить

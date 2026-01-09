@@ -85,21 +85,6 @@ namespace Vge.Network.Packets.Server
                     {
                         _bufferWrite.Add(1);
                         _bufferWrite.AddRange(chunkStorage.Data);
-
-                        count = chunkStorage.Metadata.Count;
-                        _bufferWrite.Add((byte)(count >> 8));
-                        _bufferWrite.Add((byte)(count & 0xFF));
-
-                        foreach (KeyValuePair<ushort, uint> entry in chunkStorage.Metadata)
-                        {
-                            _bufferWrite.Add((byte)(entry.Key >> 8));
-                            _bufferWrite.Add((byte)(entry.Key & 0xFF));
-                            value = entry.Value;
-                            _bufferWrite.Add((byte)((value & 0xFF000000) >> 24));
-                            _bufferWrite.Add((byte)((value & 0xFF0000) >> 16));
-                            _bufferWrite.Add((byte)((value & 0xFF00) >> 8));
-                            _bufferWrite.Add((byte)(value & 0xFF));
-                        }
                     }
                 }
             }

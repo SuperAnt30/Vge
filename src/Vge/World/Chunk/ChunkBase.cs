@@ -207,8 +207,7 @@ namespace Vge.World.Chunk
             }
             else
             {
-                int index = (y & 15) << 8 | z << 4 | x;
-                return new BlockState(0, 0, (byte)(chunkStorage.Light[index] >> 4), (byte)(chunkStorage.Light[index] & 15));
+                return new BlockState(0, chunkStorage.Light[(y & 15) << 8 | z << 4 | x]);
             }
         }
 
@@ -235,12 +234,18 @@ namespace Vge.World.Chunk
         /// </summary>
         /// <param name="blockPos">Позици блока</param>
         /// <param name="blockState">Данные нового блока</param>
-        /// <param name="isModify">Пометка надо сохранение чанка</param>
-        /// <param name="isModifyRender">Пометка надо обновить рендер чанка</param>
-        /// <param name="isSound">Звуковое сопровождение сломанного блока</param>
-        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState,
-            bool isModify, bool isModifyRender, bool isSound)
+        /// <param name="flag">флаг, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
         {
+            // Пометка надо сохранение чанка
+            bool isModify = (flag & 8) != 0;
+            // Пометка надо обновить рендер чанка
+            bool isModifyRender = (flag & 4) != 0;
+            // Звуковое сопровождение сломанного блока
+            bool isSound = (flag & 16) != 0;
+            // Проверка доп жидкости
+            bool isCheckLiquid = (flag & 32) != 0;
+
             int bx = blockPos.X & 15;
             int by = blockPos.Y;
             int bz = blockPos.Z & 15;
@@ -253,11 +258,72 @@ namespace Vge.World.Chunk
 
             BlockBase block = blockState.GetBlock();
             ChunkStorage storage = StorageArrays[by >> 4];
-
             // Если в секторе блока нет и мы пробуем поставить блок воздуха, выплёвываем игнор
             if (storage.CountBlock == 0 && block.IsAir) return new BlockState().Empty();
-
             BlockBase blockOld = blockStateOld.GetBlock();
+
+            if (isCheckLiquid)
+            {
+                // Проверка жидкости, Как мы работаем.
+                // Если прилетает блок жидкости, а у нас не жидкость мы пробуем проверить и склеить.
+                // Если прилетает не жидкость, мы проверяем была ли доп жидкость и корректируем с ней
+
+                if (block.IsAir)
+                {
+                    if (blockState.Met == 0)
+                    {
+                        // Убираем блок
+                        if (blockOld.IsAddLiquid(blockStateOld.Met))
+                        {
+                            // Если прошлый есть доп жыдкость делаем её основной
+                            blockState.Id = Ce.Blocks.GetAddLiquidIndex(blockStateOld.Met);
+                            blockState.Met = blockOld.GetAddLiquidMet(blockStateOld.Met);
+                            block = Ce.Blocks.GetAddLiquid(blockStateOld.Met);
+                        }
+                    }
+                    else
+                    {
+                        // Убираем жидкость
+                        if (blockOld.IsAddLiquid(blockStateOld.Met))
+                        {
+                            blockState.Id = blockStateOld.Id;
+                            blockState.Met = blockStateOld.Met & 0xFFF;
+                            block = blockOld;
+                        }
+                        else
+                        {
+                            blockState.Met = 0;
+                        }
+                    }
+                }
+                else if (block.Liquid)
+                {
+                    if (!blockOld.Liquid && blockOld.CanAddLiquid())
+                    {
+                        // Добавляем жидкость в старый блок
+                        blockState.Id = blockStateOld.Id;
+                        blockState.Met = (block.IndexLiquid << 16)
+                            | (blockState.Met << 12)
+                            | (blockStateOld.Met & 0xFFF);
+                        block = blockOld;
+                    }
+                }
+                else if (blockOld.Liquid)
+                {
+                    if (!block.Liquid && block.CanAddLiquid())
+                    {
+                        // Добавляем блок в доп жидкость
+                        blockState.Met = (blockOld.IndexLiquid << 16)
+                            | (blockStateOld.Met << 12)
+                            | (blockState.Met & 0xFFF);
+                    }
+                }
+            }
+            else if (block.IsAir && blockState.Met != 0)
+            {
+                // Для того чтоб убрать блок жидкости
+                blockState.Met = 0;
+            }
 
             int index = (by & 15) << 8 | bz << 4 | bx;
             storage.SetData(index, blockState.Id, blockState.Met);
@@ -265,6 +331,7 @@ namespace Vge.World.Chunk
             if (blockOld != block) // Блоки разные
             {
                 // Отмена тик блока
+                // TODO::2026-01-09 !!! Надо исправить с жидкостью
                 _RemoveBlockTick(bx, by, bz);
 
                 bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
@@ -517,11 +584,7 @@ namespace Vge.World.Chunk
                 _bigStreamOut.Position = 0;
                 bigStream.CopyTo(_bigStreamOut);
                 _bigStreamOut.Position = 0;
-                int sy, i;
-                int count;
-                ushort key;
-                uint met;
-                for (sy = 0; sy < NumberSections; sy++)
+                for (int sy = 0; sy < NumberSections; sy++)
                 {
                     if ((flagsYAreas & 1 << sy) != 0)
                     {
@@ -534,28 +597,11 @@ namespace Vge.World.Chunk
                         }
                         else
                         {
-                            storage.Data = new ushort[4096];
-                            byte[] b = new byte[8192];
-                            _bigStreamOut.Read(b, 0, 8192);
-                            Buffer.BlockCopy(b, 0, storage.Data, 0, 8192);
+                            storage.Data = new int[4096];
+                            byte[] b = new byte[16384];
+                            _bigStreamOut.Read(b, 0, 16384);
+                            Buffer.BlockCopy(b, 0, storage.Data, 0, 16384);
                             storage.UpCountBlock();
-
-                            storage.Metadata.Clear();
-                            count = _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte();
-                            for (i = 0; i < count; i++)
-                            {
-                                key = (ushort)(_bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
-                                met = (uint)(_bigStreamOut.ReadByte() << 24 | _bigStreamOut.ReadByte() << 16
-                                    | _bigStreamOut.ReadByte() << 8 | _bigStreamOut.ReadByte());
-                                if (storage.Metadata.ContainsKey(key))
-                                {
-                                    storage.Metadata[key] = met;
-                                }
-                                else
-                                {
-                                    storage.Metadata.Add(key, met);
-                                }
-                            }
                         }
                     }
                 }

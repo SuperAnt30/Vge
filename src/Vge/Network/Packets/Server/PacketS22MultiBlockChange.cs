@@ -66,7 +66,7 @@ namespace Vge.Network.Packets.Server
                     blockPos.X = chx + ((index >> 4) & 15);
                     blockPos.Y = index >> 8;
                     blockPos.Z = chz + (index & 15);
-                    chunk.SetBlockState(blockPos, _blocks[i].State, false, true, true);
+                    chunk.SetBlockState(blockPos, _blocks[i].State, 20);
                 }
             }
         }

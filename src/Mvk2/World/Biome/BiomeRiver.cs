@@ -65,7 +65,7 @@ namespace Mvk2.World.Biome
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _GenLevelSurface(int xz, int yh)
         {
-            ushort b = _chunkPrimer.GetBlockId(xz, yh);
+            int b = _chunkPrimer.GetBlockId(xz, yh);
             if (b == _blockIdTurf || b == _blockIdTurfLoam)
             {
                 base._GenLevelSurface(xz, yh);

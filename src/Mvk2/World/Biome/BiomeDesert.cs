@@ -89,7 +89,7 @@ namespace Mvk2.World.Biome
         {
             if (_noise17 < -3)
             {
-                ushort b = _chunkPrimer.GetBlockId(xz, yh);
+                int b = _chunkPrimer.GetBlockId(xz, yh);
                 if (b == _blockIdTurf || b == _blockIdTurfLoam)
                 {
                     _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);

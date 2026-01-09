@@ -371,7 +371,7 @@ namespace Vge.Entity.Player
             if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
             {
                 BlockBase block = blockState.GetBlock();
-                worldServer.SetBlockToAir(packet.GetBlockPos(), worldServer.IsRemote ? 14 : 31);
+                worldServer.SetBlockToAir(packet.GetBlockPos(), worldServer.IsRemote ? 46 : 63);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }
             else
@@ -438,28 +438,28 @@ namespace Vge.Entity.Player
         public virtual void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
         {
             // Временно устанваливаем блок
-            ushort idBlock = 0;
-            for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
-            {
-                if (Ce.Blocks.BlockAlias[i] == "Debug") //Debug GlassBlue
-                {
-                    idBlock = i;
-                    break;
-                }
-            }
+            //ushort idBlock = 0;
+            //for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
+            //{
+            //    if (Ce.Blocks.BlockAlias[i] == "Debug") //Debug GlassBlue
+            //    {
+            //        idBlock = i;
+            //        break;
+            //    }
+            //}
 
-            // Определяем на какую сторону смотрит игрок
-            Pole pole = PoleConvert.FromAngle(RotationYaw);
+            //// Определяем на какую сторону смотрит игрок
+            //Pole pole = PoleConvert.FromAngle(RotationYaw);
 
-            WorldServer worldServer = GetWorld();
-            BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
-            BlockBase block = blockState.GetBlock();
+            //WorldServer worldServer = GetWorld();
+            //BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
+            //BlockBase block = blockState.GetBlock();
 
-            BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
-            // TODO::ВРЕМЕННО!!!
-            blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
-            //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
-            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
+            //BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
+            //// TODO::ВРЕМЕННО!!!
+            //blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
+            ////block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
+            //worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
         }
 
         /// <summary>

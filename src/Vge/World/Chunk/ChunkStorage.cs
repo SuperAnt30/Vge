@@ -28,9 +28,18 @@ namespace Vge.World.Chunk
 
         /// <summary>
         /// Данные блока
-        /// 12 bit Id блока и 4 bit параметр блока
+        /// 12 bit Id блока и 19 bit параметр блока
+        /// где 28 - 30 bit отвечает за дополнительную жидкость
+        /// 31 bit (отвечает за знак) не используется для простоты, чтоб не менять типы к uint 
+        /// 
+        /// NLLL mmmm MMMM MMMM MMMM BBBB BBBB BBBB
+        /// N - не используется
+        /// L - id блока жидкости через доп массив индексов
+        /// m - met данные жидкости
+        /// M - met данные блока
+        /// B - id блока
         /// </summary>
-        public ushort[] Data;
+        public int[] Data;
         /// <summary>
         /// Освещение блочное и небесное, по 4 bit
         /// Block << 4 | Sky & 0xF
@@ -40,10 +49,6 @@ namespace Vge.World.Chunk
         /// Количество блоков не воздуха
         /// </summary>
         public int CountBlock { get; private set; }
-        /// <summary>
-        /// Дополнительные данные блока
-        /// </summary>
-        public readonly Dictionary<ushort, uint> Metadata = new Dictionary<ushort, uint>();
 
         /// <summary>
         /// Количество блоков которым нужен тик
@@ -99,14 +104,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public BlockState GetBlockState(int x, int y, int z)
         {
-            ushort index = (ushort)(y << 8 | z << 4 | x);
+            int index = y << 8 | z << 4 | x;
             try
             {
-                ushort value = Data[index];
-                ushort id = (ushort)(value & 0xFFF);
-                return new BlockState(id,
-                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)(value >> 12),
-                    (byte)(Light[index] >> 4), (byte)(Light[index] & 15));
+                return new BlockState(Data[index], Light[index]);
             }
             catch (Exception ex)
             {
@@ -125,13 +126,10 @@ namespace Vge.World.Chunk
         /// </summary>
         public BlockState GetBlockStateNotLight(int xz, int y)
         {
-            ushort index = (ushort)(y << 8 | xz);
+            int index = y << 8 | xz;
             try
             {
-                ushort value = Data[index];
-                ushort id = (ushort)(value & 0xFFF);
-                return new BlockState(id,
-                    Ce.Blocks.BlocksMetadata[id] && Metadata.ContainsKey(index) ? Metadata[index] : (uint)(value >> 12));
+                return new BlockState(Data[index]);
             }
             catch (Exception ex)
             {
@@ -149,7 +147,7 @@ namespace Vge.World.Chunk
         /// Задать данные блока, XYZ 0..15 
         /// index = y << 8 | z << 4 | x
         /// </summary>
-        public void SetData(int index, ushort id, uint met = 0)
+        public void SetData(int index, int id, int met = 0)
         {
             if (id == 0)
             {
@@ -158,7 +156,6 @@ namespace Vge.World.Chunk
                 {
                     CountBlock--;
                     if (Ce.Blocks.BlocksRandomTick[Data[index] & 0xFFF]) _countTickBlock--;
-                    Metadata.Remove((ushort)index);
                     if (CountBlock == 0)
                     {
                         Data = null;
@@ -171,7 +168,7 @@ namespace Vge.World.Chunk
             {
                 if (CountBlock == 0)
                 {
-                    Data = new ushort[4096];
+                    Data = new int[4096];
                     _countTickBlock = 0;
                 }
                 if ((Data[index] & 0xFFF) == 0) CountBlock++;
@@ -179,18 +176,7 @@ namespace Vge.World.Chunk
                 bool rnew = Ce.Blocks.BlocksRandomTick[id];
                 if (!rold && rnew) _countTickBlock++;
                 else if (rold && !rnew) _countTickBlock--;
-                ushort key = (ushort)index;
-                if (Ce.Blocks.BlocksMetadata[id])
-                {
-                    Data[index] = id;
-                    if (Metadata.ContainsKey(key)) Metadata[key] = met;
-                    else Metadata.Add(key, met);
-                }
-                else
-                {
-                    Data[index] = (ushort)(id & 0xFFF | (ushort)(met << 12));
-                    Metadata.Remove(key);
-                }
+                Data[index] = id & 0xFFF | met << 12;
             }
         }
 
@@ -198,22 +184,12 @@ namespace Vge.World.Chunk
         /// Заменить только мет данные блока
         /// </summary>
         /// <param name="index">y << 8 | z << 4 | x</param>
-        public void NewMetBlock(int index, ushort met)
+        public void NewMetBlock(int index, int met)
         {
             if (CountBlock > 0)
             {
                 int id = Data[index] & 0xFFF;
-                ushort key = (ushort)index;
-                if (Ce.Blocks.BlocksMetadata[id])
-                {
-                    if (Metadata.ContainsKey(key)) Metadata[key] = met;
-                    else Metadata.Add(key, met);
-                }
-                else
-                {
-                    Data[index] = (ushort)(id & 0xFFF | met << 12);
-                    Metadata.Remove(key);
-                }
+                Data[index] = id & 0xFFF | met << 12;
             }
         }
 

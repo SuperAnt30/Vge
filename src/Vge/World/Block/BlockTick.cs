@@ -18,6 +18,10 @@
         /// </summary>
         public byte Z;
         /// <summary>
+        /// Отдельный тик для дополнительного блока жидкости
+        /// </summary>
+        public bool Liquid;
+        /// <summary>
         /// Игровое время когда этот блок должен сработать
         /// </summary>
         public uint ScheduledTick;
@@ -30,18 +34,19 @@
         /// </summary>
         public int Index;
 
-        public BlockTick(int x, int y, int z, uint scheduledTick, bool priority)
+        public BlockTick(int x, int y, int z, bool liquid, uint scheduledTick, bool priority)
         {
             X = (byte)x;
             Y = (ushort)y;
             Z = (byte)z;
+            Liquid = liquid;
             ScheduledTick = scheduledTick;
             Priority = priority;
             Index = 0;
         }
 
         public override string ToString()
-            => string.Format("{0},{1},{2} = {3}", X, Y, Z, ScheduledTick);
+            => string.Format("{0},{1},{2}{3} = {4}", X, Y, Z, Liquid ? "L" : "", ScheduledTick);
 
         public void Set(uint scheduledTick, bool priority)
         {

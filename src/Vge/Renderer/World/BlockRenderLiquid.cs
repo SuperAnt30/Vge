@@ -487,8 +487,20 @@ namespace Vge.Renderer.World
                 return _metCheck;
             }
 
+            if (_blockCheck.IsAddLiquid(_metCheck))
+            {
+                _metCheck = _blockCheck.GetAddLiquidMet(_metCheck);
+                // ТУТ надо вытакщить метданые доп жидкости с блока 2026-01-07
+                if (_metCheck == 0)
+                {
+                    // 14 это ограничение стыка между разными типами жидкости, для блокировки волны
+                    return 14;
+                }
+                return _metCheck;
+            }
+
             if (_blockCheck.CullFaceAll 
-                || _blockCheck.IsCullFace((uint)_metCheck, 1)) // Так же проверяем низ, чтоб был полный
+                || _blockCheck.IsCullFace(_metCheck, 1)) // Так же проверяем низ, чтоб был полный
             {
                 return _blockCheck.Translucent ? -3 : -2;
             }
@@ -564,6 +576,28 @@ namespace Vge.Renderer.World
             if (_sideLiquid.TypeColor == 4) return Gi.Block.Color;
             // Цвет от биома
             return chunk.GetColorSideFromBiom(_sideLiquid.TypeColor, bx, bz);
+        }
+
+        /// <summary>
+        /// Проверка для отпраковки по принудителному рисованию всех сторолн
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override bool _CheckForceDrawFace() => false;
+
+        /// <summary>
+        /// Обработка прозрачных блоков разного типа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _ProcessingTranslucentDifferentTypes()
+        {
+            if (_blockCheck.IsAddLiquid(_metCheck))
+            {
+                _resultSide[_indexSide] = -1;
+            }
+            else
+            {
+                base._ProcessingTranslucentDifferentTypes();
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Количество элементов Byte в одной вершине
         /// </summary>
-        private const byte _sizeByte = 8;
+        private const byte _sizeByte = 12;
 
         /// <summary>
         /// Буфер для склейки рендера, Float данных

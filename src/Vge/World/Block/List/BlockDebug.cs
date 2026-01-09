@@ -17,7 +17,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Стороны целого блока для рендера
         /// </summary>
-        public override QuadSide[] GetQuads(uint met, int xb, int zb) => _GetQuads((int)met);
+        public override QuadSide[] GetQuads(int met, int xb, int zb) => _GetQuads(met & 0xFF);
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

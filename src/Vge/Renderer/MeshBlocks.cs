@@ -80,10 +80,14 @@ namespace Vge.Renderer
         {
             // GL_STREAM_DRAW , GL_STATIC_DRAW, GL_DYNAMIC_DRAW
             _gl.BindVertexArray(_vao);
+
+            // TODO::2026-01-08 glNamedBufferSubData заменить
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferFloat.Size, _bufferFloat.Buffer, GL.GL_DYNAMIC_DRAW);// GL.GL_STATIC_DRAW);
+            // TODO::2026-01-08 glNamedBufferSubData заменить
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vboByte);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, _bufferByte.Size, _bufferByte.Buffer, GL.GL_DYNAMIC_DRAW);
+
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
         }

@@ -8,13 +8,17 @@ namespace Vge.World.Block
     public struct BlockState
     {
         /// <summary>
-        /// ID блока
+        /// ID блока, используется только 12 bit = 0 - 4095
         /// </summary>
-        public ushort Id;
+        public int Id;
         /// <summary>
-        /// Дополнительные параметры блока если имеются (32 бита)
+        /// Дополнительные параметры блока 19 bit
+        /// LLL mmmm MMMM MMMM MMMM
+        /// L - id блока жидкости через доп массив индексов
+        /// m - met данные жидкости
+        /// M - met данные блока
         /// </summary>
-        public uint Met;
+        public int Met;
         /// <summary>
         /// Освещение блочное, 4 bit используется
         /// </summary>
@@ -24,12 +28,20 @@ namespace Vge.World.Block
         /// </summary>
         public byte LightSky;
 
-        public BlockState(ushort id, uint met = 0, byte lightBlock = 0, byte lightSky = 0)
+        public BlockState(int idMet)
         {
-            Id = id;
-            Met = met;
-            LightBlock = lightBlock;
-            LightSky = lightSky;
+            Id = idMet & 0xFFF;
+            Met = idMet >> 12;
+            LightBlock = 0;
+            LightSky = 0;
+        }
+
+        public BlockState(int idMet, byte light)
+        {
+            Id = idMet & 0xFFF;
+            Met = idMet >> 12;
+            LightBlock = (byte)(light >> 4);
+            LightSky = (byte)(light & 15);
         }
 
         /// <summary>
@@ -66,7 +78,10 @@ namespace Vge.World.Block
         /// Веррнуть новый BlockState с новыйм мет данные
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BlockState NewMet(ushort met) => new BlockState(Id, met, LightBlock, LightSky);
+        public BlockState NewMet(int met) => new BlockState()
+        {
+            Id = Id, Met = met, LightBlock = LightBlock, LightSky = LightSky
+        };
 
         /// <summary>
         /// Записать блок в буффер пакета
@@ -74,8 +89,7 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteStream(WritePacket stream)
         {
-            stream.UShort(Id);
-            stream.UInt(Met);
+            stream.Int(Id | Met << 12);
             stream.Byte((byte)(LightBlock << 4 | LightSky & 0xF));
         }
 
@@ -85,13 +99,15 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadStream(ReadPacket stream)
         {
-            Id = stream.UShort();
-            Met = stream.UInt();
-            byte light = stream.Byte();
-            LightBlock = (byte)(light >> 4);
-            LightSky = (byte)(light & 0xF);
+            int value = stream.Int();
+            Id = value & 0xFFF;
+            Met = value >> 12;
+            value = stream.Byte();
+            LightBlock = (byte)(value >> 4);
+            LightSky = (byte)(value & 0xF);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(BlockState))
@@ -103,10 +119,13 @@ namespace Vge.World.Block
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() => Id ^ Met.GetHashCode() ^ LightBlock ^ LightSky;
 
-        public string ToInfo() => Id + " " + Ce.Blocks.BlockAlias[Id] + " M:" + Met;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ToInfo() => GetBlock().ToInfo(Met);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString() => "#" + Id + " M:" + Met;
     }
 }

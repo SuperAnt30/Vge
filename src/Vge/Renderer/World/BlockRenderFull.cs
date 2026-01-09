@@ -29,7 +29,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Метданные текущего блока
         /// </summary>
-        public uint Met;
+        public int Met;
 
         /// <summary>
         /// Позиция блока в чанке 0..15
@@ -55,7 +55,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Индекс стороны для массива, который храним наличие и свет
         /// </summary>
-        private int _indexSide = -1;
+        protected int _indexSide = -1;
         /// <summary>
         /// Массив сторон, который храним наличие и свет
         /// </summary>
@@ -345,13 +345,14 @@ namespace Vge.Renderer.World
             // На старте ~0.580
             i = (PosChunkY & 15) << 8 | (PosChunkZ & 15) << 4 | (PosChunkX & 15);
 
-            if (_isForceDrawFace)
+            if (_CheckForceDrawFace())
             {
                 // Принудительное рисование всех сторон, модель которые все стороны не касаются краёв
                 _emptySide = false;
                 _resultSide[_indexSide] = _storage.Light[i];
             }
-            else if (_storage.CountBlock > 0)
+            else
+            if (_storage.CountBlock > 0)
             {
                 id = _storage.Data[i];
                 if (id == 0)
@@ -397,15 +398,7 @@ namespace Vge.Renderer.World
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
-                            if (_blockCheck.CullFaceAll)
-                            {
-                                _resultSide[_indexSide] = _storage.Light[i]
-                                    | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
-                            }
-                            else
-                            {
-                                _resultSide[_indexSide] = _storage.Light[i];
-                            }
+                            _ProcessingTranslucentDifferentTypes();
                         }
                         else
                         {
@@ -414,13 +407,11 @@ namespace Vge.Renderer.World
                         }
                     }
                     else if (Gi.Block.IsForceDrawFace(Met, _indexSide)
-                        || !Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _blockCheck.IsMetadata
-                                ? _storage.Metadata[(ushort)index] : (uint)_metCheck))
+                        || !Gi.Block.ChekMaskCullFace(_indexSide, Met, _blockCheck, _metCheck))
                     {
                         // Принудительное рисование стороны, модель которая сторона не касаются краёв
                         _emptySide = false;
-                        if (_blockCheck.IsCullFace(_blockCheck.IsMetadata
-                                ? _storage.Metadata[(ushort)index] : (uint)_metCheck, PoleConvert.Reverse[_indexSide]))
+                        if (_blockCheck.IsCullFace(_metCheck, PoleConvert.Reverse[_indexSide]))
                         {
                             _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i])
                                 | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
@@ -447,6 +438,29 @@ namespace Vge.Renderer.World
             {
                 // Воздух нет сектора
                 _emptySide = false;
+                _resultSide[_indexSide] = _storage.Light[i];
+            }
+        }
+        
+        /// <summary>
+        /// Проверка для отпраковки по принудителному рисованию всех сторолн
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _CheckForceDrawFace() => _isForceDrawFace;
+
+        /// <summary>
+        /// Обработка прозрачных блоков разного типа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _ProcessingTranslucentDifferentTypes()
+        {
+            if (_blockCheck.CullFaceAll)
+            {
+                _resultSide[_indexSide] = _storage.Light[i]
+                    | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
+            }
+            else
+            {
                 _resultSide[_indexSide] = _storage.Light[i];
             }
         }

@@ -311,7 +311,7 @@ namespace Mvk2.World.Gen
             ChunkStorage chunkStorage;
 
             int yc, ycb, y0;
-            ushort id;
+            int id;
             int index, indexY, indexYZ;
             for (yc = 0; yc < NumberChunkSections; yc++)
             {

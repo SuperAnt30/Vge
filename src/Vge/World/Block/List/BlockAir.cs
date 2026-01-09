@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Block.List
+﻿using System.Runtime.CompilerServices;
+
+namespace Vge.World.Block.List
 {
     /// <summary>
     /// Блок воздуха, пустота
@@ -13,23 +15,34 @@
         /// <summary>
         /// Является ли блок проходимым, т.е. можно ли ходить через него
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsPassable(uint met) => true;
 
         /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
-        public override bool IsCullFace(uint met, int indexSide) => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsCullFace(int met, int indexSide) => false;
         /// <summary>
         /// Надо ли принудительно рисовать сторону, конкретного варианта
         /// </summary>
-        public override bool IsForceDrawFace(uint met, int indexSide) => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsForceDrawFace(int met, int indexSide) => false;
         /// <summary>
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
-        public override bool IsForceDrawNotExtremeFace(uint met, int indexSide) => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsForceDrawNotExtremeFace(int met, int indexSide) => false;
         /// <summary>
         /// Проверка масок сторон
         /// </summary>
-        public override bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide) => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool ChekMaskCullFace(int indexSide, int met, BlockBase blockSide, int metSide) => false;
+
+        /// <summary>
+        /// Может ли быть дополнительная жидкость в этом блоке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool CanAddLiquid() => false;
     }
 }

@@ -171,8 +171,6 @@ namespace Vge.Renderer.World
         {
             long timeBegin = _worldClient.Game.ElapsedTicks();
 
-            
-
             Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
             Gi.VertexDense.Clear();
 
@@ -180,7 +178,7 @@ namespace Vge.Renderer.World
             //int cbX = CurrentChunkX << 4;
             //int cbZ = CurrentChunkY << 4;
             int cbY, realY, index, yb, x, z, indexY, indexYZ;
-            ushort data, id;
+            int data, id;
 
             for (cbY = 0; cbY < NumberSections; cbY++)
             {
@@ -231,7 +229,7 @@ namespace Vge.Renderer.World
                                     Gi.Block.BlockRender.PosChunkY = realY;
                                     Gi.Block.BlockRender.PosChunkZ = z;
                                     // Определяем met блока
-                                    Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                    Gi.Block.BlockRender.Met = data >> 12;
                                     
                                     if (Gi.Block.BlockRender.CheckSide())
                                     {
@@ -250,8 +248,18 @@ namespace Vge.Renderer.World
                                             // Определяем met блока
                                             Gi.Block.BlockRender.Light = chunkStorage.Light[index];
                                             Gi.Block.BlockRender.RenderSide();
+
+                                            // Тут можно Gi.Block залить в метод чек Gi.Block.BlockRender.Met для понимания имеется ли жидкость
+                                            if (Gi.Block.IsAddLiquid(data >> 12))
+                                            {
+                                                _listAlphaBlock[cbY].Add((ushort)(yb << 8 | z << 4 | x));
+                                                if (Gi.Block.AlphaSort)
+                                                {
+                                                    // Помечаем только те альфа блоки которые сортируются, образно Лава не сортируется
+                                                    _sectionsCountAlphaSort[cbY]++;
+                                                }
+                                            }
                                         }
-                                        // Тут можно Gi.Block залить в метод чек Gi.Block.BlockRender.Met для понимания имеется ли жидкость
                                     }
                                 }
                             }
@@ -316,7 +324,7 @@ namespace Vge.Renderer.World
                 int cbZ = CurrentChunkY << 4;
 
                 int cbY, i, x, y, z, realY, index, count;
-                ushort data, id;
+                int data, id;
                 ChunkStorage chunkStorage;
                 Vector3i posPlayer = _worldClient.Game.Player.PositionAlphaBlock;
                 Gi.VertexAlpha.Clear();
@@ -355,7 +363,7 @@ namespace Vge.Renderer.World
                                         Gi.Block.BlockRender.PosChunkY = realY;
                                         Gi.Block.BlockRender.PosChunkZ = z;
                                         // Определяем met блока
-                                        Gi.Block.BlockRender.Met = Gi.Block.IsMetadata ? chunkStorage.Metadata[(ushort)index] : (uint)(data >> 12);
+                                        Gi.Block.BlockRender.Met = data >> 12;
 
                                         if (Gi.Block.BlockRender.CheckSide())
                                         {
@@ -369,6 +377,33 @@ namespace Vge.Renderer.World
                                                     new Vector3i(cbX | x, realY, cbZ | z))
                                             });
                                             Gi.VertexAlpha.Clear();
+                                        }
+                                    }
+                                    // Проверяем дополнительную жидкость
+                                    if (Gi.Block.IsAddLiquid(data >> 12))
+                                    {
+                                        Gi.Block = Ce.Blocks.GetAddLiquid(data >> 12);
+                                        if (!Gi.Block.IsAir && Gi.Block.Alpha)
+                                        {
+                                            Gi.Block.BlockRender.PosChunkX = x;
+                                            Gi.Block.BlockRender.PosChunkY = realY;
+                                            Gi.Block.BlockRender.PosChunkZ = z;
+                                            // Определяем met блока
+                                            Gi.Block.BlockRender.Met = data >> 12;
+
+                                            if (Gi.Block.BlockRender.CheckSide())
+                                            {
+                                                Gi.Block.BlockRender.Light = chunkStorage.Light[index];
+                                                Gi.Block.BlockRender.RenderSide();
+                                                _listAlphaBuffer.Add(new BlockBufferDistance()
+                                                {
+                                                    BufferFloat = Gi.VertexAlpha.BufferFloat.ToArray(),
+                                                    BufferByte = Gi.VertexAlpha.BufferByte.ToArray(),
+                                                    Distance = Glm.Distance(posPlayer,
+                                                        new Vector3i(cbX | x, realY, cbZ | z))
+                                                });
+                                                Gi.VertexAlpha.Clear();
+                                            }
                                         }
                                     }
                                 }

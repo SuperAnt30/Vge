@@ -420,7 +420,19 @@ namespace Vge.World
             if (blockPos.IsValid(ChunkPr.Settings))
             {
                 GetChunkServer(blockPos.GetPositionChunk())
-                    ?.SetBlockTick(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, timeTick, priority);
+                    ?.SetBlockTick(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, false, timeTick, priority);
+            }
+        }
+
+        /// <summary>
+        /// Задать тик дополнительного блока жидкости
+        /// </summary>
+        public void SetBlockAddLiquidTick(BlockPos blockPos, uint timeTick)
+        {
+            if (blockPos.IsValid(ChunkPr.Settings))
+            {
+                GetChunkServer(blockPos.GetPositionChunk())
+                    ?.SetBlockTick(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, true, timeTick, false);
             }
         }
 

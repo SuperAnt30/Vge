@@ -129,28 +129,39 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Задать блок неба, с флагом по умолчанию 14 (уведомление соседей, modifyRender, modifySave)
+        /// Задать блок неба, с флагом по умолчанию 46 (уведомление соседей, modifyRender, modifySave, isCheckLiquid)
         /// </summary>
         /// <param name="blockPos">позици блока</param>
-        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break</param>
-        public bool SetBlockToAir(BlockPos blockPos, int flag = 14) 
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SetBlockToAir(BlockPos blockPos, int flag = 46) 
             => SetBlockState(blockPos, new BlockState(0), flag);
 
         /// <summary>
-        /// Сменить блок
+        /// Задать блок неба доп жидкости или жидкости если она есть, с флагом по умолчанию 46 (уведомление соседей, modifyRender, modifySave, isCheckLiquid)
+        /// </summary>
+        /// <param name="blockPos">позици блока</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SetLiquidBlockToAir(BlockPos blockPos, int flag = 46)
+            => SetBlockState(blockPos, new BlockState(0 | (2 << 12)), flag);
+
+        /// <summary>
+        /// Сменить блока без проверки доп жидкости, как есть!
         /// </summary>
         /// <param name="blockPos">позици блока</param>
         /// <param name="blockState">данные блока</param>
-        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 
+        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
         /// <returns>true смена была</returns>
-        public virtual bool SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
+        public bool SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
         {
             if (!blockPos.IsValid(ChunkPr.Settings)) return false;
 
             ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
             if (chunk == null) return false;
 
-            BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, (flag & 8) != 0, (flag & 4) != 0, (flag & 16) != 0);
+            BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, flag);
             if (blockStateTrue.IsEmpty()) return false;
 
             if (!IsRemote)

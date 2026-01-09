@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Json;
+using Vge.Realms;
 using Vge.Renderer.World;
 using Vge.Util;
 using WinGL.Util;
@@ -33,10 +34,6 @@ namespace Vge.World.Block
 
         #region Для логики
 
-        /// <summary>
-        /// Имеет ли блок данные
-        /// </summary>
-        public bool IsMetadata;
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0
         /// В VoxelEngine он в public static byte GetBlockLightOpacity(EnumBlock eblock)
@@ -73,6 +70,10 @@ namespace Vge.World.Block
         /// Имеется ли у блока частичка
         /// </summary>
         public bool IsParticle { get; protected set; } = true;
+        /// <summary>
+        /// Индекс сокрощённого списка блоков жидкостей, нужен для оптимизации
+        /// </summary>
+        public byte IndexLiquid { get; protected set; }
 
         #region Для физики
 
@@ -95,9 +96,9 @@ namespace Vge.World.Block
         #region Для Render
 
         /// <summary>
-        /// Блок жидкости: вода, лава, нефть
+        /// Блок жидкости: вода, лава, нефть. Не доп жидкость!!!
         /// </summary>
-        public bool Liquid = false;
+        public bool Liquid { get; protected set; } = false;
         /// <summary>
         /// Параметр для жидкости, 0 или 1024
         /// </summary>
@@ -272,6 +273,56 @@ namespace Vge.World.Block
 
         #endregion
 
+        #region Методы для жидкости
+
+        /// <summary>
+        /// Задать индекс сокрощённого списка блоков жидкостей, нужен для оптимизации
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetIndexLiquid(byte id) => IndexLiquid = id;
+
+        /// <summary>
+        /// Может ли быть дополнительная жидкость в этом блоке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool CanAddLiquid() => !FullBlock && !Liquid;
+
+        /// <summary>
+        /// Имеется ли дополнительная жидкость в этом блоке
+        /// NLLL mmmm MMMM MMMM MMMM //BBBB BBBB BBBB
+        /// N - не используется
+        /// L - id блока жидкости через доп массив индексов
+        /// m - met данные жидкости
+        /// M - met данные блока
+        /// B - id блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsAddLiquid(int met) => met >> 16 != 0;
+
+        /// <summary>
+        /// Получить дополнительный блок жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockBase GetAddLiquid(int met) => Ce.Blocks.GetAddLiquid(met);
+
+        /// <summary>
+        /// Получить мет данные дополнительной жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetAddLiquidMet(int met) => (met >> 12) & 0xF;
+
+        /// <summary>
+        /// Сгенерировать параметры блока, внося данные доп жидкости
+        /// </summary>
+        /// <param name="met"></param>
+        //public int GenMetdataAddLiquid(int met)
+        //{
+
+        //}
+
+        #endregion
+
+
         #region Методы для физики
 
         /// <summary>
@@ -293,7 +344,7 @@ namespace Vge.World.Block
         /// <param name="a">точка от куда идёт лучь</param>
         /// <param name="dir">вектор луча</param>
         /// <param name="maxDist">максимальная дистания</param>
-        public bool CollisionRayTrace(BlockPos pos, uint met, 
+        public bool CollisionRayTrace(BlockPos pos, int met, 
             float px, float py, float pz, Vector3 dir, float maxDist)
         {
             if (IsAction)
@@ -317,7 +368,7 @@ namespace Vge.World.Block
         /// Передать список  ограничительных рамок блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, uint met)
+        public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
             => new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
 
         #endregion
@@ -358,7 +409,7 @@ namespace Vge.World.Block
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual QuadSide[] GetQuads(uint met, int xb, int zb) => _quads[0];
+        public virtual QuadSide[] GetQuads(int met, int xb, int zb) => _quads[0];
 
         /// <summary>
         /// Получить сторону для прорисовки жидкого блока
@@ -370,17 +421,17 @@ namespace Vge.World.Block
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsCullFace(uint met, int indexSide) => _cullFaces[met][indexSide];
+        public virtual bool IsCullFace(int met, int indexSide) => _cullFaces[met & 0xFF][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать сторону, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsForceDrawFace(uint met, int indexSide) => _forceDrawFaces[met][indexSide];
+        public virtual bool IsForceDrawFace(int met, int indexSide) => _forceDrawFaces[met & 0xFF][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsForceDrawNotExtremeFace(uint met, int indexSide) => _forceDrawNotExtremeFaces[met][indexSide];
+        public virtual bool IsForceDrawNotExtremeFace(int met, int indexSide) => _forceDrawNotExtremeFaces[met & 0xFF][indexSide];
 
         /// <summary>
         /// Проверка масок сторон
@@ -389,10 +440,10 @@ namespace Vge.World.Block
         /// <param name="met">Мет данные проверяющего блока</param>
         /// <param name="blockSide">Объект соседнего блока</param>
         /// <param name="metSide">Мет данные соседнего блока</param>
-        public virtual bool ChekMaskCullFace(int indexSide, uint met, BlockBase blockSide, uint metSide)
+        public virtual bool ChekMaskCullFace(int indexSide, int met, BlockBase blockSide, int metSide)
         {
-            ulong[] mask = _maskCullFaces[met][indexSide];
-            ulong[] maskCheck = blockSide._maskCullFaces[metSide][PoleConvert.Reverse[indexSide]];
+            ulong[] mask = _maskCullFaces[met & 0xFF][indexSide];
+            ulong[] maskCheck = blockSide._maskCullFaces[metSide & 0xFF][PoleConvert.Reverse[indexSide]];
             return (maskCheck[0] & mask[0]) == mask[0]
                 && (maskCheck[1] & mask[1]) == mask[1]
                 && (maskCheck[2] & mask[2]) == mask[2]
@@ -440,14 +491,38 @@ namespace Vge.World.Block
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
-        public virtual void NeighborBlockChange(WorldServer world, BlockPos blockPos, BlockState state, BlockBase neighborBlock) { }
+        public virtual void NeighborBlockChange(WorldServer world, BlockPos blockPos, 
+            BlockState blockState, BlockBase neighborBlock)
+        {
+            if (IsAddLiquid(blockState.Met))
+            {
+                // Если имеется жидкость, надо тикать жидкость
+                world.SetBlockAddLiquidTick(blockPos, 4);
+            }
+        }
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
-            => state.NewMet(0);
+        public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, 
+            BlockState blockState, Pole side, Vector3 facing) => blockState;
+
+        /// <summary>
+        /// Получить строку мет данных, для отладки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ToInfo(int met)
+        {
+            if (CanAddLiquid() && IsAddLiquid(met))
+            {
+                return ToString() + " M:" + met.ToString()
+                    + (met & 0xFFF) + ChatStyle.Blue
+                    + " Liquid " + Ce.Blocks.GetAddLiquid(met) + " M:" + GetAddLiquidMet(met)
+                    + ChatStyle.Reset;
+            }
+            return ToString() + " M:" + met.ToString();
+        }
 
         public override string ToString() => IndexBlock.ToString() + " " + Alias;
     }

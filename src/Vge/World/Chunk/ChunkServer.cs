@@ -244,14 +244,14 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Задать тик блока с локальной позицие и время через сколько тактов надо тикнуть
         /// </summary>
-        public void SetBlockTick(int x, int y, int z, uint timeTick, bool priority = false)
+        public void SetBlockTick(int x, int y, int z, bool liquid, uint timeTick, bool priority = false)
         {
             BlockTick tickBlock;
             bool empty = true;
             for (int i = 0; i < _tickBlocks.Count; i++)
             {
                 tickBlock = _tickBlocks[i];
-                if (tickBlock.X == x && tickBlock.Y == y && tickBlock.Z == z)
+                if (tickBlock.X == x && tickBlock.Y == y && tickBlock.Z == z && tickBlock.Liquid == liquid)
                 {
                     _tickBlocks[i].Set(timeTick + _worldServer.TickCounter, priority);
                     empty = false;
@@ -260,7 +260,7 @@ namespace Vge.World.Chunk
             }
             if (empty)
             {
-                _tickBlocks.Add(new BlockTick(x, y, z, timeTick + _worldServer.TickCounter, priority));
+                _tickBlocks.Add(new BlockTick(x, y, z, liquid, timeTick + _worldServer.TickCounter, priority));
             }
         }
 
@@ -321,7 +321,8 @@ namespace Vge.World.Chunk
                         _tickBlocks.RemoveAt(tickBlock.Index);
 
                         blockState = GetBlockStateNotCheck(tickBlock.X, tickBlock.Y, tickBlock.Z);
-                        BlockBase block = blockState.GetBlock();
+                        BlockBase block = tickBlock.Liquid ? Ce.Blocks.GetAddLiquid(blockState.Met)
+                            : blockState.GetBlock();
                         block.UpdateTick(_worldServer, 
                             new BlockPos(BlockX | tickBlock.X, tickBlock.Y, BlockZ | tickBlock.Z),
                             blockState, World.Rnd);

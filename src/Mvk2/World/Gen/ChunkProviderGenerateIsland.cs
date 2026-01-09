@@ -280,7 +280,7 @@ namespace Mvk2.World.Gen
         {
             ChunkStorage chunkStorage;
             int x, y, z, yc, ycb, y0, y8, yz;
-            ushort id, idOld;
+            int id, idOld;
             int index, indexY, indexYZ;
             for (yc = 0; yc < NumberChunkSections; yc++)
             {
