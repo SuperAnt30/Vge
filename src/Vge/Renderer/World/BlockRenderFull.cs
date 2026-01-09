@@ -411,15 +411,7 @@ namespace Vge.Renderer.World
                     {
                         // Принудительное рисование стороны, модель которая сторона не касаются краёв
                         _emptySide = false;
-                        if (_blockCheck.IsCullFace(_metCheck, PoleConvert.Reverse[_indexSide]))
-                        {
-                            _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i])
-                                | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
-                        }
-                        else
-                        {
-                            _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]);
-                        }
+                        _ProcessingForceDrawFace();
                     }
                     else if (Gi.Block.IsForceDrawNotExtremeFace(Met, _indexSide))
                     {
@@ -462,6 +454,23 @@ namespace Vge.Renderer.World
             else
             {
                 _resultSide[_indexSide] = _storage.Light[i];
+            }
+        }
+
+        /// <summary>
+        /// Обработка принудительно рисовать сторону, модель которая сторона не касаются краёв
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _ProcessingForceDrawFace()
+        {
+            if (_blockCheck.IsCullFace(_metCheck, PoleConvert.Reverse[_indexSide]))
+            {
+                _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i])
+                    | (Gi.Block.LiquidOutside - _blockCheck.NotLiquidOutside[_indexSide]);
+            }
+            else
+            {
+                _resultSide[_indexSide] = _GetSideUseNeighborBrightness(PosChunkX, PosChunkY, PosChunkZ, _storage.Light[i]);
             }
         }
 

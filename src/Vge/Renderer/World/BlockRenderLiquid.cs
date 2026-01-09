@@ -599,5 +599,21 @@ namespace Vge.Renderer.World
                 base._ProcessingTranslucentDifferentTypes();
             }
         }
+
+        /// <summary>
+        /// Обработка принудительно рисовать сторону, модель которая сторона не касаются краёв
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _ProcessingForceDrawFace()
+        {
+            if (_blockCheck.IsAddLiquid(_metCheck))
+            {
+                _resultSide[_indexSide] = -1;
+            }
+            else
+            {
+                base._ProcessingForceDrawFace();
+            }
+        }
     }
 }

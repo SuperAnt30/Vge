@@ -516,7 +516,7 @@ namespace Vge.World.Block
         {
             if (CanAddLiquid() && IsAddLiquid(met))
             {
-                return ToString() + " M:" + met.ToString()
+                return ToString() + " M:" 
                     + (met & 0xFFF) + ChatStyle.Blue
                     + " Liquid " + Ce.Blocks.GetAddLiquid(met) + " M:" + GetAddLiquidMet(met)
                     + ChatStyle.Reset;
