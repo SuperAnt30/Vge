@@ -1,7 +1,7 @@
 {
     Variants: [ 
         { Shape: "LogBirch" },
-        { Shape: "LogBirch", RotateX: 90, RotateY: 90 },
-        { Shape: "LogBirch", RotateX: 90 }
+        { Shape: "LogBirch", IsRotateX90: true, RotateY: 90 },
+        { Shape: "LogBirch", IsRotateX90: true }
     ]
 }

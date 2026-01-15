@@ -844,7 +844,7 @@ namespace Vge.Entity.Player
                     {
                         BlockPos blockPosUp = MovingObject.BlockPosition.OffsetUp();
                         strUp = string.Format(
-                            "BlkUp:{0} {1} L:{2}",
+                            "\r\nBlkUp:{0} {1} L:{2}",
                             blockPosUp,
                             _game.World.GetBlockState(blockPosUp).ToInfo(),
                             _ToBlockInfo(chunk, blockPosUp.GetPositionInChunk())
@@ -862,12 +862,13 @@ namespace Vge.Entity.Player
                         }
                     }
                     Debug.BlockFocus = string.Format(
-                        "Block:{0} {1}{4} L:{2}\r\n{3}\r\n",//{5}, {6}\r\n",
+                        "Block:{5} {0} {1}{4} L:{2}{3}\r\n",
                         MovingObject.BlockPosition,
                         MovingObject.Block.ToInfo(),
                         s1,
                         strUp,
-                        MovingObject.IsLiquid ? string.Format(" {0} {1}", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition) : ""
+                        MovingObject.IsLiquid ? string.Format(" {0} {1}", Ce.Blocks.BlockAlias[MovingObject.IdBlockLiquid], MovingObject.BlockLiquidPosition) : "",
+                        MovingObject.Side.ToString()
                     //chunk.Light.GetHeight(pos.X, pos.z),
                     //chunk.GetDebugAllSegment(),
 

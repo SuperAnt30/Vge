@@ -269,6 +269,97 @@ namespace Vge.World.Block
                 Vertex[i].Y = Mth.Round(vec.Y + yO, 3);
                 Vertex[i].Z = Mth.Round(vec.Z + zO, 3);
             }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Задать вращение в градусах по заданному центру
+        /// </summary>
+        public QuadSide SetRotateY(float yR, float xO, float yO, float zO, float yR2)
+        {
+            if (yR != 0)
+            {
+                Vector3 vec;
+                for (int i = 0; i < 4; i++)
+                {
+                    vec = Vertex[i].ToPosition();
+                    vec.X -= xO;
+                    vec.Y -= yO;
+                    vec.Z -= zO;
+                    vec = Glm.Rotate(vec, Glm.Radians(yR), new Vector3(0, 1, 0));
+
+                    Vertex[i].X = Mth.Round(vec.X + xO, 3);
+                    Vertex[i].Y = Mth.Round(vec.Y + yO, 3);
+                    Vertex[i].Z = Mth.Round(vec.Z + zO, 3);
+                }
+                if (yR2 == 90)
+                {
+                    Vertex3d f = Vertex[0];
+                    Vertex[0] = Vertex[3];
+                    Vertex[3] = Vertex[2];
+                    Vertex[2] = Vertex[1];
+                    Vertex[1] = f;
+                }
+                else if (yR2 == 180)
+                {
+                    (Vertex[2], Vertex[0]) = (Vertex[0], Vertex[2]);
+                    (Vertex[3], Vertex[1]) = (Vertex[1], Vertex[3]);
+                }
+                else if (yR2 == 270)
+                {
+                    Vertex3d f = Vertex[1];
+                    Vertex[1] = Vertex[2];
+                    Vertex[2] = Vertex[3];
+                    Vertex[3] = Vertex[0];
+                    Vertex[0] = f;
+                }
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Задать вращение в градусах по заданному центру
+        /// </summary>
+        public QuadSide SetRotateX(float xR, float xO, float yO, float zO, float xR2)
+        {
+            if (xR != 0)
+            {
+                Vector3 vec;
+                for (int i = 0; i < 4; i++)
+                {
+                    vec = Vertex[i].ToPosition();
+                    vec.X -= xO;
+                    vec.Y -= yO;
+                    vec.Z -= zO;
+                    vec = Glm.Rotate(vec, Glm.Radians(xR), new Vector3(1, 0, 0));
+
+                    Vertex[i].X = Mth.Round(vec.X + xO, 3);
+                    Vertex[i].Y = Mth.Round(vec.Y + yO, 3);
+                    Vertex[i].Z = Mth.Round(vec.Z + zO, 3);
+                }
+                if (xR2 == 90)
+                {
+                    Vertex3d f = Vertex[0];
+                    Vertex[0] = Vertex[3];
+                    Vertex[3] = Vertex[2];
+                    Vertex[2] = Vertex[1];
+                    Vertex[1] = f;
+                }
+                else if (xR2 == 180)
+                {
+                    (Vertex[2], Vertex[0]) = (Vertex[0], Vertex[2]);
+                    (Vertex[3], Vertex[1]) = (Vertex[1], Vertex[3]);
+                }
+                else if (xR2 == 270)
+                {
+                    Vertex3d f = Vertex[1];
+                    Vertex[1] = Vertex[2];
+                    Vertex[2] = Vertex[3];
+                    Vertex[3] = Vertex[0];
+                    Vertex[0] = f;
+                }
+            }
             return this;
         }
 
@@ -296,17 +387,30 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Вращение блока 90, 180, 270 
+        /// Вращение блока по X на 90 гр
         /// </summary>
         /// <param name="shade">Отсутствие оттенка</param>
-        public QuadSide SetRotateX(int rotate, bool shade)
+        public QuadSide SetRotateX90(bool shade)
         {
-            if (rotate != 0)
+            if (Side == 1 || Side == 4) // Down || North
             {
-                SetRotate(rotate, 0, 0, 0, .5f, .5f);
-                Side = PoleConvert.RotateX(Side, rotate);
-                LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
+                SetRotateX(90, .5f, .5f, .5f, 180);
+                Side = PoleConvert.RotateX(Side, 90);
             }
+            else if (Side == 2) // East x = +1
+            {
+                SetRotateX(90, .5f, .5f, .5f, 90);
+            }
+            else if (Side == 3) // West x = -1
+            {
+                SetRotateX(90, .5f, .5f, .5f, 270);
+            }
+            else // Up || South
+            {
+                SetRotate(90, 0, 0, .5f, .5f, .5f);
+                Side = PoleConvert.RotateX(Side, 90);
+            }
+            LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             return this;
         }
         /// <summary>
@@ -315,12 +419,20 @@ namespace Vge.World.Block
         /// <param name="shade">Отсутствие оттенка</param>
         public QuadSide SetRotateY(int rotate, bool shade)
         {
-            if (rotate != 0)
+            if (Side == 0) // Up
+            {
+                SetRotateY(rotate, .5f, 0, .5f, rotate);
+            }
+            else if (Side == 1) // Down
+            {
+                SetRotateY(rotate, .5f, 0, .5f, 360 - rotate);
+            }
+            else
             {
                 SetRotate(0, rotate, 0, .5f, 0, .5f);
                 Side = PoleConvert.RotateY(Side, rotate);
-                LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             }
+            LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             return this;
         }
 

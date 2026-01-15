@@ -35,20 +35,17 @@ namespace Vge.World.Block
         public float[] Rotate;
 
         /// <summary>
-        /// Вращение по X 0 | 90 | 180 | 270
+        /// Имеется ди вращение по X на 90 гр
+        /// Если используется и RotateX и RotateY, сначало вращаем X потом Y
         /// Только для блока
         /// </summary>
-        public int RotateX;
+        public bool IsRotateX90;
         /// <summary>
         /// Вращение по Y 0 | 90 | 180 | 270
+        /// Если используется и RotateX и RotateY, сначало вращаем X потом Y
         /// Только для блока
         /// </summary>
         public int RotateY;
-        /// <summary>
-        /// При вращении RotateY сохраняется текстура, и не вращается только сверху
-        /// Только для блока
-        /// </summary>
-        public bool UvLock;
 
         public void RunShape(JsonCompound view, bool isBlock, int sizeSprite)
         {
@@ -88,11 +85,9 @@ namespace Vge.World.Block
                     IsOffset = Offset[0] != 0 || Offset[1] != 0 || Offset[2] != 0;
 
                     // Имеется вращение по X 90 | 180 | 270
-                    RotateX = _CheckRotate(view.GetInt(Ctb.RotateX));
+                    IsRotateX90 = view.GetBool(Ctb.IsRotateX90);
                     // Имеется вращение по Y 90 | 180 | 270
                     RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
-                    // Защита от вращении текстуры вверха по Y
-                    UvLock = view.GetBool(Ctb.UvLock);
                 }
                 else
                 {

@@ -70,23 +70,17 @@
         public const string Scale = "Scale";
 
         /// <summary>
-        /// Фращение фигуры кратно 90 градусах по координате X. (90 || 180 || 270)
-        /// Если используется и RotateX и RotateY, сначало вращаем X потом Y
+        /// Имеется ли вращение фигуры на 90 градусах по координате X. (bool)
+        /// Если используется и IsRotateX90 и RotateY, сначало вращаем X потом Y
         /// Только для блока
         /// </summary>
-        public const string RotateX = "RotateX";
+        public const string IsRotateX90 = "IsRotateX90";
         /// <summary>
         /// Фращение фигуры кратно 90 градусах по координате Y. (90 || 180 || 270)
-        /// Если используется и RotateX и RotateY, сначало вращаем X потом Y
+        /// Если используется и IsRotateX90 и RotateY, сначало вращаем X потом Y
         /// Только для блока
         /// </summary>
         public const string RotateY = "RotateY";
-        
-        /// <summary>
-        /// При вращении RotateY сохраняется текстура, и не вращается только сверху. (bool)
-        /// Только для блока
-        /// </summary>
-        public const string UvLock = "UvLock";
 
         #endregion
 

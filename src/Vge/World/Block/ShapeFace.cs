@@ -141,33 +141,18 @@ namespace Vge.World.Block
             // Вращение текстуры 0 || 90 || 180 || 270
             int uvRotate = face.GetInt(Ctb.UvRotate);
 
-            if (_shapeAdd.RotateX != 0)
-            {
-                _quad.SetRotateX(_shapeAdd.RotateX, Shade);
-            }
+            SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+            _quad.SetTexture(resTexture.Index, u1, v1, u2, v2, uvRotate);
 
+            if (_shapeAdd.IsRotateX90)
+            {
+                _quad.SetRotateX90(Shade);
+            }
             if (_shapeAdd.RotateY != 0)
             {
                 _quad.SetRotateY(_shapeAdd.RotateY, Shade);
-
-                if (pole == Pole.Up && _shapeAdd.UvLock)
-                {
-                    uvRotate += _shapeAdd.RotateY;
-                    if (uvRotate > 270) uvRotate -= 360;
-                    if (_shapeAdd.RotateY == 90 || _shapeAdd.RotateY == 270)
-                    {
-                        float uv = v1;
-                        v1 = u1;
-                        u1 = uv;
-                        uv = v2;
-                        v2 = u2;
-                        u2 = uv;
-                    }
-                }
             }
 
-            SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
-            _quad.SetTexture(resTexture.Index, u1, v1, u2, v2, uvRotate);
             if (resTexture.CountHeight > 1)
             {
                 _quad.SetAnimal((byte)resTexture.CountHeight, (byte)face.GetInt(Ctb.Pause));

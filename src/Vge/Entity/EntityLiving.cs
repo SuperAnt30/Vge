@@ -3,6 +3,8 @@ using Vge.Entity.Inventory;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
 using Vge.Item;
+using Vge.Realms;
+using Vge.Util;
 using Vge.World;
 using WinGL.Util;
 
@@ -83,7 +85,8 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToStringPositionRotation()
-            => string.Format("{0:0.000}; {1:0.000}; {2:0.000} Y:{3:0.0} Yb:{4:0.0} P:{5:0.0}",
+            => string.Format(ChatStyle.Bolb + PoleConvert.FromAngle(RotationYaw) + 
+                ChatStyle.Reset + " {0:0.000}; {1:0.000}; {2:0.000} Y:{3:0.0} Yb:{4:0.0} P:{5:0.0}",
                 PosX, PosY, PosZ, Glm.Degrees(RotationYaw), 
                 Glm.Degrees(_rotationYawBody), Glm.Degrees(RotationPitch));
 
