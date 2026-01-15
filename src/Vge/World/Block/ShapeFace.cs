@@ -141,6 +141,11 @@ namespace Vge.World.Block
             // Вращение текстуры 0 || 90 || 180 || 270
             int uvRotate = face.GetInt(Ctb.UvRotate);
 
+            if (_shapeAdd.RotateX != 0)
+            {
+                _quad.SetRotateX(_shapeAdd.RotateX, Shade);
+            }
+
             if (_shapeAdd.RotateY != 0)
             {
                 _quad.SetRotateY(_shapeAdd.RotateY, Shade);

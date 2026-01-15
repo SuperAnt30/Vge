@@ -1,0 +1,10 @@
+{
+    Parent: "_Log",
+    Texture: { 
+        #Up: "Blocks/LogBirchUp",
+        #Side: "Blocks/LogBirch"
+        Up: "Blocks/DebugAnim",
+        Side: "Blocks/Debug"
+        
+    }
+}

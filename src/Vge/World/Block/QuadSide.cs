@@ -299,7 +299,21 @@ namespace Vge.World.Block
         /// Вращение блока 90, 180, 270 
         /// </summary>
         /// <param name="shade">Отсутствие оттенка</param>
-        public QuadSide SetRotateY(int rotate, bool shade)//, bool uvLock)
+        public QuadSide SetRotateX(int rotate, bool shade)
+        {
+            if (rotate != 0)
+            {
+                SetRotate(rotate, 0, 0, 0, .5f, .5f);
+                Side = PoleConvert.RotateX(Side, rotate);
+                LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
+            }
+            return this;
+        }
+        /// <summary>
+        /// Вращение блока 90, 180, 270 
+        /// </summary>
+        /// <param name="shade">Отсутствие оттенка</param>
+        public QuadSide SetRotateY(int rotate, bool shade)
         {
             if (rotate != 0)
             {

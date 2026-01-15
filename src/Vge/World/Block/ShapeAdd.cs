@@ -35,12 +35,17 @@ namespace Vge.World.Block
         public float[] Rotate;
 
         /// <summary>
+        /// Вращение по X 0 | 90 | 180 | 270
+        /// Только для блока
+        /// </summary>
+        public int RotateX;
+        /// <summary>
         /// Вращение по Y 0 | 90 | 180 | 270
         /// Только для блока
         /// </summary>
         public int RotateY;
         /// <summary>
-        /// При вращении RotateY сохраняется текстура, и не вращается сверху и снизу
+        /// При вращении RotateY сохраняется текстура, и не вращается только сверху
         /// Только для блока
         /// </summary>
         public bool UvLock;
@@ -82,10 +87,11 @@ namespace Vge.World.Block
                     Offset[2] += 8f;
                     IsOffset = Offset[0] != 0 || Offset[1] != 0 || Offset[2] != 0;
 
+                    // Имеется вращение по X 90 | 180 | 270
+                    RotateX = _CheckRotate(view.GetInt(Ctb.RotateX));
                     // Имеется вращение по Y 90 | 180 | 270
                     RotateY = _CheckRotate(view.GetInt(Ctb.RotateY));
-
-                    // Защита от вращении текстуры
+                    // Защита от вращении текстуры вверха по Y
                     UvLock = view.GetBool(Ctb.UvLock);
                 }
                 else

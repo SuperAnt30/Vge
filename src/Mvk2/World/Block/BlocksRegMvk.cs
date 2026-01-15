@@ -10,9 +10,16 @@ namespace Mvk2.World.Block
     public sealed class BlocksRegMvk
     {
         public static BlockDebug Debug { get; private set; }
+
+        #region Жидкие блоки
+
         public static BlockLiquid Water { get; private set; }
         public static BlockLiquid Lava { get; private set; }
-        
+
+        #endregion
+
+        #region Твёрдые каменные блоки
+
         /// <summary>
         /// Коренная порода
         /// </summary>
@@ -21,6 +28,23 @@ namespace Mvk2.World.Block
         /// Известняк
         /// </summary>
         public static BlockBase Limestone { get; private set; }
+        /// <summary>
+        /// Камень
+        /// </summary>
+        public static BlockBase Stone { get; private set; }
+        /// <summary>
+        /// Булыжника
+        /// </summary>
+        public static BlockBase Cobblestone { get; private set; }
+        /// <summary>
+        /// Гранит
+        /// </summary>
+        public static BlockBase Granite { get; private set; }
+
+        #endregion
+
+        #region Сыпучие блоки
+
         /// <summary>
         /// Глина
         /// </summary>
@@ -49,6 +73,11 @@ namespace Mvk2.World.Block
         /// Гравий
         /// </summary>
         public static BlockBase Gravel { get; private set; }
+
+        #endregion
+
+        #region Руды
+
         /// <summary>
         /// Угольная руда
         /// </summary>
@@ -82,14 +111,10 @@ namespace Mvk2.World.Block
         /// </summary>
         public static BlockBase OreSapphire { get; private set; }
 
-        /// <summary>
-        /// Камень
-        /// </summary>
-        public static BlockBase Stone { get; private set; }
-        /// <summary>
-        /// Булыжника
-        /// </summary>
-        public static BlockBase Cobblestone { get; private set; }
+        #endregion
+
+        #region Растительность
+
         /// <summary>
         /// Блок травы
         /// </summary>
@@ -110,9 +135,18 @@ namespace Mvk2.World.Block
         /// Блок тины
         /// </summary>
         public static BlockBase Tina { get; private set; }
-        
 
-        public static BlockBase Granite { get; private set; }
+        #endregion
+
+        #region Древесина
+
+        /// <summary>
+        /// Блок бревна берёзы
+        /// </summary>
+        public static BlockBase LogBirch { get; private set; }
+        
+        #endregion
+
         public static BlockBase Glass { get; private set; }
         public static BlockAlpha GlassRed { get; private set; }
         public static BlockAlpha GlassGreen { get; private set; }
@@ -150,13 +184,17 @@ namespace Mvk2.World.Block
 
             Tina = BlocksReg.RegisterBlockClass("Tina");
 
+            BlocksReg.RegisterBlockClass("FlowerDandelion", FlowerDandelion = new BlockGrass());
+            BlocksReg.RegisterBlockClass("FlowerClover", FlowerClover = new BlockGrass());
 
-            FlowerDandelion = BlocksReg.RegisterBlockClass("FlowerDandelion");
-            FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover");
+            //FlowerDandelion = BlocksReg.RegisterBlockClass("FlowerDandelion");
+            //FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover");
 
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
-            
+
+            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog());
+
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
             GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen");

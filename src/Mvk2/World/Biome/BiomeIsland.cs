@@ -92,7 +92,8 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdFlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
         protected readonly ushort _blockIdTallGrass = BlocksRegMvk.TallGrass.IndexBlock;
         protected readonly ushort _blockIdTina = BlocksRegMvk.Tina.IndexBlock;
-
+        protected readonly ushort _blockIdLogBirch = BlocksRegMvk.LogBirch.IndexBlock;
+        
         /// <summary>
         /// Блок для отладки визуализации биома
         /// </summary>

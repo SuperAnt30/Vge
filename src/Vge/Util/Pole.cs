@@ -74,6 +74,34 @@ namespace Vge.Util
         }
 
         /// <summary>
+        /// Повернуть стороны по X
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int RotateX(int side, int rotate)
+        {
+            if (rotate != 0)
+            {
+                if (side == 0) // Up Вверх
+                {
+                    side = rotate == 90 ? 5 : rotate == 180 ? 1 : 4;
+                }
+                else if (side == 1) // Down Низ
+                {
+                    side = rotate == 90 ? 4 : rotate == 180 ? 0 : 5;
+                }
+                else if (side == 4) // North Север
+                {
+                    side = rotate == 90 ? 0 : rotate == 180 ? 5 : 1;
+                }
+                else if (side == 5) // South Юг
+                {
+                    side = rotate == 90 ? 1 : rotate == 180 ? 4 : 0;
+                }
+            }
+            return side;
+        }
+
+        /// <summary>
         /// Повернуть стороны по Y
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

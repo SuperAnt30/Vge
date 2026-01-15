@@ -3,8 +3,8 @@
     UseNeighborBrightness: true,
     Color: [0.4, 0.6, 1],
     Variants: [
-        #{ Shape: "Debug" },
-        { Shape: "Nest", },
+        { Shape: "Debug" },
+        #{ Shape: "Nest", },
         { Shape: "Debug", RotateY: 90, UvLock:true },
         { Shape: "Debug", RotateY: 180, UvLock:true },
         { Shape: "Debug", RotateY: 270, UvLock:true }

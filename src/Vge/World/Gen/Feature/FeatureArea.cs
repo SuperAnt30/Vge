@@ -35,6 +35,9 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         private int _biasZ;
 
+        /// <summary>
+        /// Вероятность одной
+        /// </summary>
         public FeatureArea(IChunkPrimer chunkPrimer, byte probabilityOne, 
             ushort blockId)
         {
@@ -43,6 +46,9 @@ namespace Vge.World.Gen.Feature
             _blockId = blockId;
         }
 
+        /// <summary>
+        /// Количество в одном чанке
+        /// </summary>
         public FeatureArea(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom,
             ushort blockId)
         {
@@ -88,12 +94,22 @@ namespace Vge.World.Gen.Feature
         protected virtual void _DecorationAreaOctave(ChunkServer chunkSpawn, Rand rand) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _SetBlockReplace(int x, int y, int z, ushort id, byte flag)
+        protected void _SetBlockReplace(int x, int y, int z, int id, byte flag)
         {
             if (_biasX == (x >> 4) && _biasZ == (z >> 4))
             {
                 int xz = (z & 15) << 4 | (x & 15);
                 _chunkPrimer.SetBlockIdFlag(xz, y, id, flag);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SetBlockState(int x, int y, int z, int id, int met)
+        {
+            if (_biasX == (x >> 4) && _biasZ == (z >> 4))
+            {
+                int xz = (z & 15) << 4 | (x & 15);
+                _chunkPrimer.SetBlockState(xz, y, id, met);
             }
         }
     }
