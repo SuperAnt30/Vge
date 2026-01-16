@@ -825,8 +825,9 @@ namespace Vge.Renderer.World
 
             id = id & 0xFFF;
             _blockCheck = Ce.Blocks.BlockObjects[id];
-            aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 : 1;
             aoLight.Aoc = _blockCheck.АmbientOcclusion ? 1 : 0;
+            aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 
+                : aoLight.Aoc;
 
             if (aoLight.Aol == 0)
             {

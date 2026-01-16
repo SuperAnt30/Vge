@@ -1,8 +1,14 @@
 {
+    UseNeighborBrightness: true,
     АmbientOcclusion: false,
+    LightOpacity: 2,
+    Translucent: true,
     Variants: [ 
-        { Shape: "Wood/LeavesBirch" },
-        #{ Shape: "Wood/LogBirch", IsRotateX90: true, RotateY: 90 },
-        #{ Shape: "Wood/LogBirch", IsRotateX90: true }
+        { Shape: "Wood/LeavesUpBirch2", Offset: [ 0, -4, 0 ] },
+        { Shape: "Wood/LeavesDownBirch2", Offset: [ 0, 4, 0 ] },
+        { Shape: "Wood/LeavesSideBirch2", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/LeavesSideBirch2", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Wood/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Wood/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 270 }
     ]
 }

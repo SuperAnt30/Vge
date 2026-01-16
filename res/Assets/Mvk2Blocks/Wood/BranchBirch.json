@@ -1,5 +1,6 @@
-{
+
     АmbientOcclusion: false,
+    LightOpacity: 1,
     Variants: [ 
         { Shape: "Wood/BranchBirch" },
         { Shape: "Wood/BranchBirch", IsRotateX90: true, RotateY: 90 },

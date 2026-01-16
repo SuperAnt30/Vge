@@ -68,12 +68,29 @@ namespace Vge.World.Gen.Feature
             {
                 _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
             }
+            _SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
+            _SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
+
+            _SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
+            _SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
+            _SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
+            _SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
+
             _SetBlockState(x0, y0 + 4, z0, _blockId, 0);
             _SetBlockState(x0, y0 + 5, z0, _blockId, 0);
             _SetBlockState(x0, y0 + 6, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 7, z0, _blockBranchId, 0);
-            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 3);
-            _SetBlockState(x0, y0 + 9, z0, _blockLeavesId, 0);
+            _SetBlockState(x0, y0 + 7, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
+            _SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
+            _SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
+
+            _SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
+            _SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 2);
+            _SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 3);
+            _SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 4);
+            _SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 5);
+
+            _SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 0);
         }
     }
 }
