@@ -1,0 +1,8 @@
+{
+    #АmbientOcclusion: false,
+    Variants: [ 
+        { Shape: "Wood/LogBirch" },
+        { Shape: "Wood/LogBirch", IsRotateX90: true, RotateY: 90 },
+        { Shape: "Wood/LogBirch", IsRotateX90: true }
+    ]
+}

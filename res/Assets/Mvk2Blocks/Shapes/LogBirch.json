@@ -1,7 +1,0 @@
-{
-    Parent: "_Log",
-    Texture: { 
-        Up: "Blocks/LogBirchUp",
-        Side: "Blocks/LogBirch"
-    }
-}

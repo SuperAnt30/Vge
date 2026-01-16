@@ -13,7 +13,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Какой блок ставим
         /// </summary>
-        protected readonly ushort _blockId;
+        protected readonly int _blockId;
         /// <summary>
         /// Минимальное количество
         /// </summary>
@@ -39,7 +39,7 @@ namespace Vge.World.Gen.Feature
         /// Вероятность одной
         /// </summary>
         public FeatureArea(IChunkPrimer chunkPrimer, byte probabilityOne, 
-            ushort blockId)
+            int blockId)
         {
             _chunkPrimer = chunkPrimer;
             _probabilityOne = probabilityOne;
@@ -50,7 +50,7 @@ namespace Vge.World.Gen.Feature
         /// Количество в одном чанке
         /// </summary>
         public FeatureArea(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom,
-            ushort blockId)
+            int blockId)
         {
             _chunkPrimer = chunkPrimer;
             _minRandom = minRandom;

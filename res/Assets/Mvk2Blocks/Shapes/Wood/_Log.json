@@ -1,0 +1,19 @@
+{
+    Texture: { 
+        Up: "Blocks/DebugAnim",
+        Side: "Blocks/Debug""
+    },
+    Elements: [
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
+            Faces: [
+                { Texture:"Up", Side:"Down", Uv:[0, 16, 16, 0] },
+                { Texture:"Up", Side:"Up" },
+                { Texture:"Side", Side:"North" },
+                { Texture:"Side", Side:"East" },
+                { Texture:"Side", Side:"South" },
+                { Texture:"Side", Side:"West" }
+            ]
+        }
+    ]
+}

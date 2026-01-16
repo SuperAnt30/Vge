@@ -22,9 +22,15 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         private readonly byte _rangeY;
 
-        public FeatureTree(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, ushort blockId) 
-            : base(chunkPrimer, minRandom, maxRandom, blockId)
+        private readonly int _blockBranchId;
+        private readonly int _blockLeavesId;
+
+        public FeatureTree(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
+            int blockLogId, int blockBranchId, int blockLeavesId) 
+            : base(chunkPrimer, minRandom, maxRandom, blockLogId)
         {
+            _blockBranchId = blockBranchId;
+            _blockLeavesId = blockLeavesId;
             //_minY = minY;
             //_isAir = _minY == 255;
             //_flagAir = (byte)(_isAir ? 0 : 1);
@@ -32,8 +38,8 @@ namespace Vge.World.Gen.Feature
             //_count = count;
         }
 
-        public FeatureTree(IChunkPrimer chunkPrimer, byte probabilityOne, 
-            ushort blockId) : base(chunkPrimer, probabilityOne, blockId)
+        public FeatureTree(IChunkPrimer chunkPrimer, byte probabilityOne,
+            int blockId) : base(chunkPrimer, probabilityOne, blockId)
         {
             //_rangeY = _isAir ? maxY : (byte)(maxY - minY);
             //_count = count;
@@ -55,13 +61,19 @@ namespace Vge.World.Gen.Feature
 
             for (int x = x0 - 8; x < x0 + 9; x++)
             {
-                _SetBlockState(x, y0 + 3, z0, _blockId, 1);
+                _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
             }
+            _SetBlockState(x0, y0 + 3, z0, _blockId, 0);
             for (int z = z0 - 8; z < z0 + 9; z++)
             {
-                _SetBlockState(x0, y0 + 4, z, _blockId, 2);
+                _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
             }
-            _SetBlockReplace(x0, y0 + 5, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 4, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 5, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 6, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 7, z0, _blockBranchId, 0);
+            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 3);
+            _SetBlockState(x0, y0 + 9, z0, _blockLeavesId, 0);
         }
     }
 }

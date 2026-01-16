@@ -1,0 +1,15 @@
+{
+    Elements: [
+        {   From: [ -4, 0, -4 ],
+            To: [ 4, 16, 4 ],
+            Faces: [
+                { Texture:"All", Side:"Down", Uv:[8, 8, 16, 0]},
+                { Texture:"All", Side:"Up", Uv:[8, 0, 16, 8]},
+                { Texture:"All", Side:"North", Uv:[0, 0, 8, 16]},
+                { Texture:"All", Side:"East", Uv:[0, 0, 8, 16]},
+                { Texture:"All", Side:"South", Uv:[0, 0, 8, 16]},
+                { Texture:"All", Side:"West", Uv:[0, 0, 8, 16]}
+            ]
+        }
+    ]
+}

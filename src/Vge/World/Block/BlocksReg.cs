@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
@@ -112,10 +113,10 @@ namespace Vge.World.Block
         /// Зарегистрировать блок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockBase RegisterBlockClass(string alias)
+        public static BlockBase RegisterBlockClass(string alias, string path = "")
         {
             BlockBase block = new BlockBase();
-            RegisterBlockClass(alias, block);
+            RegisterBlockClass(alias, block, path);
             return block;
         }
 
@@ -144,9 +145,10 @@ namespace Vge.World.Block
         /// <summary>
         /// Зарегистрировать блок
         /// </summary>
-        public static void RegisterBlockClass(string alias, BlockBase blockObject)
+        public static void RegisterBlockClass(string alias, BlockBase blockObject, string path = "")
         {
-            JsonRead jsonRead = new JsonRead(Options.PathBlocks + alias + ".json");
+            if (path != "") path += Path.DirectorySeparatorChar;
+            JsonRead jsonRead = new JsonRead(Options.PathBlocks + path + alias + ".json");
             
             if (jsonRead.IsThereFile)
             {

@@ -57,11 +57,18 @@ namespace Mvk2.World.Gen
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockState(int xz, int y, int id, int met = 0)
+        public void SetBlockState(int xz, int y, int id)
         {
             int index = y << 8 | xz;
             Id[index] = id;
-            if (met != 0) Met[index] = met;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockState(int xz, int y, int id, int met)
+        {
+            int index = y << 8 | xz;
+            Id[index] = id;
+            Met[index] = met;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

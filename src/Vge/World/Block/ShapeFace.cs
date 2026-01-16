@@ -153,7 +153,7 @@ namespace Vge.World.Block
                 _quad.SetRotateY(_shapeAdd.RotateY, Shade);
             }
 
-            if (resTexture.CountHeight > 1)
+            if (resTexture.IsAnimation())
             {
                 _quad.SetAnimal((byte)resTexture.CountHeight, (byte)face.GetInt(Ctb.Pause));
             }

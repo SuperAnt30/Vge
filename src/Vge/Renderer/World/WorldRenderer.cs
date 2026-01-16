@@ -78,6 +78,10 @@ namespace Vge.Renderer.World
         /// Цвет тумана
         /// </summary>
         private Vector3 _colorFog = new Vector3(0);
+        /// <summary>
+        /// Параметр ветра для шедора
+        /// </summary>
+        private float _wind;
 
 
         public WorldRenderer(GameBase game) : base(game)
@@ -262,6 +266,9 @@ namespace Vge.Renderer.World
 
             Entities.UpdateMatrix(timeIndex);
 
+            // Параметр ветра
+            _Wind(timeIndex);
+
             // Буфер есть работаем дальше
             if (Shadow.RenderSceneBegin())
             {
@@ -406,8 +413,8 @@ namespace Vge.Renderer.World
         /// Расчитать силу ветра
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private float _Wind(float timeIndex)
-            => Glm.Cos((((int)_game.Time() / 48 & 0x7F) + timeIndex) * .049f) * .16f;
+        private void _Wind(float timeIndex)
+            => _wind = Glm.Cos((((int)_game.Time() / 48 & 0x7F) + timeIndex) * .049f) * .16f;
 
         /// <summary>
         /// Рисуем воксели сплошных и уникальных блоков для карты глубины
@@ -417,7 +424,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBiginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _Wind(timeIndex));
+                (int)_game.World.GetTickCounter(), _wind);
             
             int count = _arrayChunkRender.Count;
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
@@ -428,7 +435,7 @@ namespace Vge.Renderer.World
                 // Прорисовка сплошных блоков чанка
                 if (chunkRender.NotNullMeshDense)
                 {
-                    Render.ShsBlocks.UniformData(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
+                    Render.ShsBlocks.UniformDataChunk(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
                     chunkRender.DrawDense();
                 }
             }
@@ -442,7 +449,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _Wind(timeIndex), _overviewBlock,
+                (int)_game.World.GetTickCounter(), _wind, _overviewBlock,
                 _colorFog, 5);
 
             if (Debug.IsDrawVoxelLine)
@@ -464,7 +471,7 @@ namespace Vge.Renderer.World
                 // Прорисовка сплошных блоков чанка
                 if (chunkRender.NotNullMeshDense)
                 {
-                    Render.ShsBlocks.UniformData(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
+                    Render.ShsBlocks.UniformDataChunk(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
                     chunkRender.DrawDense();
                 }
             }
@@ -491,13 +498,13 @@ namespace Vge.Renderer.World
             int count = _arrayChunkRender.Count - 1;
             ChunkRender chunkRender;
 
-            bool flag = true;
+            bool flagAlpha = true;
             // Пробегаем по всем чанкам которые видим FrustumCulling
             for (int i = count; i >= 0; i--)
             {
-                if (flag && i < 9)
+                if (flagAlpha && i < 9)
                 {
-                    flag = false;
+                    flagAlpha = false;
                     gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
                     gl.PolygonOffset(0.5f, -10f);
                 }
@@ -505,7 +512,7 @@ namespace Vge.Renderer.World
                 // Прорисовка альфа блоков псевдо чанка
                 if (chunkRender.NotNullMeshAlpha)
                 {
-                    Render.ShsBlocks.UniformData(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
+                    Render.ShsBlocks.UniformDataChunk(chunkRender.CurrentChunkX << 4, chunkRender.CurrentChunkY << 4);
                     chunkRender.DrawAlpha();
                 }
             }

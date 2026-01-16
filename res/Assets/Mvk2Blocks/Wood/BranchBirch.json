@@ -1,0 +1,12 @@
+{
+    АmbientOcclusion: false,
+    Variants: [ 
+        { Shape: "Wood/BranchBirch" },
+        { Shape: "Wood/BranchBirch", IsRotateX90: true, RotateY: 90 },
+        { Shape: "Wood/BranchBirch", IsRotateX90: true },
+        { Shape: "Wood/BranchBirch", Offset: [ 4, 0, 0 ] },
+        { Shape: "Wood/BranchBirch", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/BranchBirch", Offset: [ 0, 0, -4 ] },
+        { Shape: "Wood/BranchBirch", Offset: [ 0, 0, 4 ] }
+    ]
+}

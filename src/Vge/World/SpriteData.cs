@@ -1,4 +1,6 @@
-﻿namespace Vge.World
+﻿using System.Runtime.CompilerServices;
+
+namespace Vge.World
 {
     /// <summary>
     /// Структура спрайта для генерации атласа блоков и предметов
@@ -30,5 +32,11 @@
             CountWidth = 1;
             CountHeight = 1;
         }
+
+        /// <summary>
+        /// Имеется ли анимация
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsAnimation() => CountHeight > 1 && CountHeight != CountWidth;
     }
 }

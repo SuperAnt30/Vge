@@ -143,8 +143,16 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок бревна берёзы
         /// </summary>
-        public static BlockBase LogBirch { get; private set; }
-        
+        public static BlockLog LogBirch { get; private set; }
+        /// <summary>
+        /// Блок ветки берёзы
+        /// </summary>
+        public static BlockBranch BranchBirch { get; private set; }
+        /// <summary>
+        /// Блок листвы берёзы
+        /// </summary>
+        public static BlockLeaves LeavesBirch { get; private set; }
+
         #endregion
 
         public static BlockBase Glass { get; private set; }
@@ -170,14 +178,14 @@ namespace Mvk2.World.Block
             Turf = BlocksReg.RegisterBlockClass("Turf");
             TurfLoam = BlocksReg.RegisterBlockClass("TurfLoam");
             Gravel = BlocksReg.RegisterBlockClass("Gravel");
-            OreCoal = BlocksReg.RegisterBlockClass("OreCoal");
-            OreIron = BlocksReg.RegisterBlockClass("OreIron");
-            OreGold = BlocksReg.RegisterBlockClass("OreGold");
-            OreSulfur = BlocksReg.RegisterBlockClass("OreSulfur");
-            OreDiamond = BlocksReg.RegisterBlockClass("OreDiamond");
-            OreEmerald = BlocksReg.RegisterBlockClass("OreEmerald");
-            OreRuby = BlocksReg.RegisterBlockClass("OreRuby");
-            OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire");
+            OreCoal = BlocksReg.RegisterBlockClass("OreCoal", "Ore");
+            OreIron = BlocksReg.RegisterBlockClass("OreIron", "Ore");
+            OreGold = BlocksReg.RegisterBlockClass("OreGold", "Ore");
+            OreSulfur = BlocksReg.RegisterBlockClass("OreSulfur", "Ore");
+            OreDiamond = BlocksReg.RegisterBlockClass("OreDiamond", "Ore");
+            OreEmerald = BlocksReg.RegisterBlockClass("OreEmerald", "Ore");
+            OreRuby = BlocksReg.RegisterBlockClass("OreRuby", "Ore");
+            OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire", "Ore");
 
             BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass());
             BlocksReg.RegisterBlockClass("TallGrass", TallGrass = new BlockTallGrass());
@@ -193,7 +201,10 @@ namespace Mvk2.World.Block
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
 
-            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog());
+            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(), "Wood");
+            BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(), "Wood");
+            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
+            
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

@@ -141,8 +141,15 @@ namespace Vge.Renderer.Shaders
         /// Внести данные в юниформы
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UniformData(int x, int y)
+        public void UniformDataChunk(int x, int y)
             => _shderAction.SetUniform2("chunk", x, y);
+
+        /// <summary>
+        /// Внести Ветер, значение от -1 до 1
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformDataWind(float wind)
+            => _shderAction.SetUniform1("wind", wind);
 
         #endregion
 
