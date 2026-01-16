@@ -3,6 +3,7 @@
         {   From: [ 0, 0, -24 ],
             To: [ 0, 48, 24 ],
             Rotate: [ 0, 46, 12 ],
+            Shade: true,
             Wind: 1,
             Faces: [
                 { Texture:"All", Side:"East", Uv:[0, 0, 48, 48], UvRotate: 270 },
@@ -12,6 +13,7 @@
         {   From: [ 0, 0, -24 ],
             To: [ 0, 48, 24 ],
             Rotate: [ 0, -40, -15 ],
+            Shade: true,
             Wind: 1,
             Faces: [
                 { Texture:"All", Side:"East", Uv:[0, 0, 48, 48], UvRotate: 270 },

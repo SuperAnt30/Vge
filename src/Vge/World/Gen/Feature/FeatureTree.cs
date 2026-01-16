@@ -10,34 +10,72 @@ namespace Vge.World.Gen.Feature
     public class FeatureTree : FeatureArea
     {
         /// <summary>
-        /// Количество блоков менерала
+        /// Индекс блока бревна
         /// </summary>
-        private readonly byte _count;
+        private readonly int _blockLogId;
         /// <summary>
-        /// Минимальный по уровню Y
+        /// Индекс блока ветки
         /// </summary>
-        private readonly byte _minY;
-        /// <summary>
-        /// Диапазон по Y
-        /// </summary>
-        private readonly byte _rangeY;
-
         private readonly int _blockBranchId;
+        /// <summary>
+        /// Индекс блока листвы
+        /// </summary>
         private readonly int _blockLeavesId;
+
+        /// <summary>
+        /// Высота ствола дерева
+        /// </summary>
+        protected int _trunkHeight;
+        /// <summary>
+        /// Ствол снизу без веток 
+        /// </summary>
+        protected int _trunkWithoutBranches;
+        /// <summary>
+        /// Cмещение ствола, через какое количество блоков может смещаться
+        /// </summary>
+        protected int _trunkBias;
+        /// <summary>
+        /// Максимальное смещение ствола от пенька
+        /// </summary>
+        protected int _maxTrunkBias;
+        /// <summary>
+        /// Количество секций веток для сужения
+        ///                _    / \
+        ///          _    / \  |   |
+        ///    _    / \  |   | |   |
+        ///   / \  |   | |   | |   |
+        ///   \ /   \ /   \ /   \ /
+        ///  2 |   3 |   4 |   5 |
+        /// </summary>
+        protected int _sectionCountBranches;
+        /// <summary>
+        /// Минимальная обязательная длинна ветки
+        /// </summary>
+        protected int _branchLengthMin;
+        /// <summary>
+        /// Случайная дополнительная длинна ветки к обязательной
+        /// </summary>
+        protected int _branchLengthRand;
+        /// <summary>
+        /// Насыщенность листвы на ветке, значение в NextInt() меньше 1 не допустимо, чем больше тем веток меньше
+        /// При значении 1 максимально
+        /// </summary>
+        protected int _foliageBranch;
+
+        /// <summary>
+        /// Заключительная часть LCG, которая использует координаты фрагмента X, Z
+        /// вместе с двумя другими начальными значениями для генерации псевдослучайных чисел
+        /// </summary>
+        private long _seed;
 
         public FeatureTree(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
             int blockLogId, int blockBranchId, int blockLeavesId) 
             : base(chunkPrimer, minRandom, maxRandom, blockLogId)
         {
+            _blockLogId = blockLogId;
             _blockBranchId = blockBranchId;
             _blockLeavesId = blockLeavesId;
-            //_minY = minY;
-            //_isAir = _minY == 255;
-            //_flagAir = (byte)(_isAir ? 0 : 1);
-            //_rangeY = _isAir ? maxY : (byte)(maxY - minY);
-            //_count = count;
         }
-
         public FeatureTree(IChunkPrimer chunkPrimer, byte probabilityOne,
             int blockId) : base(chunkPrimer, probabilityOne, blockId)
         {
@@ -46,51 +84,360 @@ namespace Vge.World.Gen.Feature
         }
 
         /// <summary>
+        /// Возвращает псевдослучайное число LCG из [0, x). Аргументы: целое х
+        /// </summary>
+        protected int _NextInt(int x)
+        {
+            int random = (int)((_seed >> 24) % x);
+            if (random < 0) random += x;
+            _seed *= _seed * 1284865837 + 4150755663;
+            return random;
+        }
+
+        /// <summary>
+        /// Вероятность, где 1 это 100%, 2 50/50. NextInt(x) != 0
+        /// </summary>
+        protected bool _NextBool(int x) => _NextInt(x) != 0;
+
+        /// <summary>
+        /// Задать случайное зерно
+        /// </summary>
+        protected void _SetRand(Rand rand)
+        {
+            // сид для доп генерации дерева, не отвлекаясь от генерации мира
+            _seed = rand.Next();
+            _RandSize();
+        }
+
+        /// <summary>
+        /// Случайные атрибуты дерева
+        /// </summary>
+        protected void _RandSize()
+        {
+            // Высота ствола дерева до кроны
+            _trunkHeight = _NextInt(12) + 12;
+            // Ствол снизу без веток 
+            _trunkWithoutBranches = _NextInt(3) + 2;
+            // смещение, через какое ствол может смещаться
+            _trunkBias = _NextInt(5) + 4;
+            // Максимальное смещение ствола от пенька
+            _maxTrunkBias = 3;
+            // Количество секций веток для сужения
+            //                _    / \
+            //          _    / \  |   |
+            //    _    / \  |   | |   |
+            //   / \  |   | |   | |   |
+            //   \ /   \ /   \ /   \ /
+            //  2 |   3 |   4 |   5 |
+            _sectionCountBranches = 5;
+            // Минимальная обязательная длинна ветки
+            _branchLengthMin = 1;
+            // Случайная дополнительная длинна ветки к обязательной
+            _branchLengthRand = 2;
+            // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
+            _foliageBranch = 64;
+        }
+
+        
+
+        /// <summary>
         /// Декорация области одного прохода
         /// </summary>
         protected override void _DecorationAreaOctave(ChunkServer chunkSpawn, Rand rand)
         {
-            int x0 = rand.Next(16);
-            int z0 = rand.Next(16);
-            int y0 = chunkSpawn.HeightMapGen[z0 << 4 | x0] - _rangeY;
+            int bx = rand.Next(16);
+            int bz = rand.Next(16);
+            int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
 
-                
-            _SetBlockReplace(x0, y0, z0, _blockId, 0);
-            _SetBlockReplace(x0, y0 + 1, z0, _blockId, 0);
-            _SetBlockReplace(x0, y0 + 2, z0, _blockId, 0);
+            _SetRand(rand);
+            // Корень
+            //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
 
-            for (int x = x0 - 8; x < x0 + 9; x++)
+            int vecX, vecY;
+            // Значения где формируется ствол, чтоб ствол не уходил далеко
+            int bx0 = bx;
+            int bz0 = bz;
+            // временное значение смещение ствола
+            int txz;
+            int y, iUp, iSide, iBranche;
+            // Длина ветки
+            int lightBranche;
+            // высота ствола
+            int count = _trunkHeight;
+            // ствол с ветками
+            int trunkWithBranches = _trunkHeight - _trunkWithoutBranches;
+            // i для счётчика сужения веток
+            int itwb;
+            // stick - палка
+            int sx, sy, sz;
+            // через сколько может быть смещение ветки по y, один раз
+            int stickBiasY;
+            // через сколько может быть смещение ветки по x или z, много раз
+            int stickBiasXZ;
+
+            // Массив смещения веток по конкретной стороне, чтоб не слипались друг с другом
+            int[] row = new int[] { _NextInt(3), _NextInt(3), _NextInt(3), _NextInt(3) };
+            // Коэффициент длинны веток 0 - 1
+            float factorLightBranches;
+            // Количество блоков в секции
+            int countBlockSection;
+            // снизу вверх
+            for (iUp = 0; iUp < count; iUp++)
             {
-                _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
+                y = by + iUp;
+                // готовим смещение ствола
+                if (_trunkBias <= 0)
+                {
+                    _trunkBias = _NextInt(3) + 1;
+                    txz = _NextInt(3) - 1;
+
+                    if (txz != 0 && bx0 >= bx + txz - _maxTrunkBias && bx0 <= bx + txz + _maxTrunkBias)
+                    {
+                        bx += txz;
+                    }
+                    else
+                    {
+                        txz = _NextInt(3) - 1;
+                        if (txz != 0 && bz0 >= bz + txz - _maxTrunkBias && bz0 <= bz + txz + _maxTrunkBias)
+                        {
+                            bz += txz;
+                        }
+                    }
+                }
+                else
+                {
+                    _trunkBias--;
+                }
+
+                // Ствол
+                // if (_CheckBlock(world, bx, y, bz)) return false;
+                // Ствол, если нижний то параметр для пенька
+                _SetBlockState(bx, y, bz, _blockLogId, 0);
+                //blockCaches.Add(new BlockCache(bx, y, bz, idLog, (ushort)(iUp == 0 ? 6 : 0), true));
+
+                // Ветки
+                if (iUp >= _trunkWithoutBranches)
+                {
+                    // Находи коэффициент длинны веток
+                    itwb = iUp - _trunkWithoutBranches;
+                    countBlockSection = trunkWithBranches / _sectionCountBranches;
+                    factorLightBranches = itwb < countBlockSection ? itwb / (float)countBlockSection : itwb > trunkWithBranches - countBlockSection
+                        ? (countBlockSection - (itwb - (trunkWithBranches - countBlockSection))) / (float)countBlockSection : 1;
+
+                    // цикл направлении веток
+                    for (iSide = 0; iSide < 4; iSide++)
+                    {
+                        if (row[iSide] == 0)
+                        {
+                            // Есть ветка
+                            if (_NextInt(16) == 0)
+                            {
+                                // Разреживание веток, отрицаем ветку и добавляем смещение к ветке
+                                row[iSide] = _NextInt(3);
+                            }
+                            else
+                            {
+                                // определяем длинну ветки
+                                lightBranche = (int)((_NextInt(_branchLengthRand) + _branchLengthMin) * factorLightBranches);
+                                if (lightBranche > 0)
+                                {
+                                    // Точно имеется ветка работаем с ней
+
+                                    // параметр смещения ветки, 2 - 3 можно откорректировать для разных деревьев
+                                    row[iSide] = _NextInt(2) + 2;
+
+                                    vecX = Ce.AreaOne4X[iSide];
+                                    vecY = Ce.AreaOne4Y[iSide];
+                                    sx = bx;
+                                    sy = y;
+                                    sz = bz;
+
+                                    stickBiasY = 3;
+                                    stickBiasXZ = 2;
+
+                                    for (iBranche = 1; iBranche <= lightBranche; iBranche++)
+                                    {
+                                        // цикл длинны ветки
+                                        if (vecX != 0) sx += vecX;
+                                        if (vecY != 0) sz += vecY;
+
+                                        // Проверка смещение ветки по вертикале
+                                        if (stickBiasY >= 0)
+                                        {
+                                            if (stickBiasY == 0) sy++;
+                                            stickBiasY--;
+                                        }
+
+                                        // Проверка смещение ветки по горизонтали
+                                        if (stickBiasXZ == 0)
+                                        {
+                                            stickBiasXZ = 2;
+                                            if (vecY == 0) sz += _NextInt(3) - 1;
+                                            if (vecX == 0) sx += _NextInt(3) - 1;
+                                        }
+                                        else
+                                        {
+                                            stickBiasXZ--;
+                                        }
+
+                                        //if (_CheckBlock(world, sx, sy, sz)) return false;
+
+                                        // фиксируем ветку
+                                        _SetBlockState(sx, sy, sz,
+                                             lightBranche > 1 && iBranche == 1 ? _blockLogId : _blockBranchId,
+                                            (iSide == 0 || iSide == 2) ? 2 : 1);
+                                        //blockCaches.Add(new BlockCache(sx, sy, sz, idLog,
+                                        //    (ushort)((iSide == 0 || iSide == 2) ? 2 : 1), true));
+
+                                        if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
+                                        {
+                                            // Листва на ветке
+                                           // _FoliageBranch(sx, sy, sz, iSide);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            row[iSide]--;
+                        }
+                    }
+                }
             }
-            _SetBlockState(x0, y0 + 3, z0, _blockId, 0);
-            for (int z = z0 - 8; z < z0 + 9; z++)
+
+            y = by + count;
+            // Ствол
+            _SetBlockState(bx, y, bz, _blockBranchId, 0);
+            // Листва на мокушке
+            _FoliageTop(bx, y, bz);
+
+            //_SetBlockReplace(x0, y0 + 1, z0, _blockId, 0);
+            //_SetBlockReplace(x0, y0 + 2, z0, _blockId, 0);
+
+            //for (int x = x0 - 8; x < x0 + 9; x++)
+            //{
+            //    _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
+            //}
+            //_SetBlockState(x0, y0 + 3, z0, _blockId, 0);
+            //for (int z = z0 - 8; z < z0 + 9; z++)
+            //{
+            //    _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
+            //}
+            //_SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
+            //_SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
+
+            //_SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
+            //_SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
+            //_SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
+            //_SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
+
+            //_SetBlockState(x0, y0 + 4, z0, _blockId, 0);
+            //_SetBlockState(x0, y0 + 5, z0, _blockId, 0);
+            //_SetBlockState(x0, y0 + 6, z0, _blockId, 0);
+            //_SetBlockState(x0, y0 + 7, z0, _blockId, 0);
+            //_SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
+            //_SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
+            //_SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
+
+            //_SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
+            //_SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
+            //_SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
+            //_SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
+            //_SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
+
+            //_SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 6);
+        }
+
+        /// <summary>
+        /// Проверить блок если вернёт true останавливаем генерацию
+        /// </summary>
+        protected bool _CheckBlock(WorldBase world, int x, int y, int z)
+        {
+            //if (!isGen)
+            //{
+            //    checkPos.X = x;
+            //    checkPos.Y = y;
+            //    checkPos.Z = z;
+            //    checkEnumBlock = world.GetBlockState(checkPos).GetEBlock();
+            //    checkEnumMaterial = Blocks.GetBlockCache(checkEnumBlock).Material.EMaterial;
+            //    if (!(checkEnumBlock == EnumBlock.Air || checkEnumMaterial == EnumMaterial.Leaves || checkEnumMaterial == EnumMaterial.Sapling)
+            //        && checkEnumBlock != log)
+            //    {
+            //        return true;
+            //    }
+            //}
+            return false;
+        }
+
+        /// <summary>
+        ///Листва на мокушке
+        /// </summary>
+        protected void _FoliageTop(int x, int y, int z)
+        {
+            // Up
+            _SetBlockState(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            // East
+            _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+            // West
+            _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+            // North
+            _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+            // South
+            _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+        }
+
+        /// <summary>
+        /// Листва на ветке, side = 0-3 горизонтальный вектор направление вектора MvkStatic.AreaOne4
+        /// 0 - South, 1 - East, 2 - North, 3 - West
+        /// </summary>
+        protected virtual void _FoliageBranch(int x, int y, int z, int side)
+        {
+            // Up
+            _SetBlockState(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            // Down
+            _SetBlockState(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
+
+            if (side == 0) // South
             {
-                _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
+                // Все кроме North
+                // East
+                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                // West
+                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                // South
+                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
             }
-            _SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
-            _SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
-
-            _SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
-            _SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
-            _SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
-            _SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
-
-            _SetBlockState(x0, y0 + 4, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 5, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 6, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 7, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
-            _SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
-            _SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
-
-            _SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
-            _SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 2);
-            _SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 3);
-            _SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 4);
-            _SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 5);
-
-            _SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 0);
+            else if (side == 1) // East
+            {
+                // Все кроме West
+                // East
+                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                // North
+                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                // South
+                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+            }
+            else if (side == 2) // North
+            {
+                // Все кроме South
+                // East
+                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                // West
+                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                // North
+                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+            }
+            else // West
+            {
+                // Все кроме East
+                // West
+                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                // North
+                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                // South
+                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+            }
         }
     }
 }

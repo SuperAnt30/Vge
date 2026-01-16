@@ -7,6 +7,7 @@
         {   From: [ -32, -8, 0 ],
             To: [ 16, 40, 0 ],
             Rotate: [ 24, 6, -90 ],
+            Shade: true,
             Wind: 1,
             Faces: [
                 { Texture:"Side", Side:"North", Uv:[48, 0, 0, 48], UvRotate: 90 },
@@ -16,6 +17,7 @@
         {   From: [ -32, -8, 0 ],
             To: [ 16, 40, 0 ],
             Rotate: [ -24, -6, -90 ],
+            Shade: true,
             Wind: 1,
             Faces: [
                 { Texture:"Side", Side:"North", Uv:[48, 0, 0, 48], UvRotate: 90 },
@@ -25,6 +27,7 @@
         {   From: [ -8, 8, -24 ],
             To: [ 40, 8, 24 ],
             Rotate: [ 17, 0, 0 ],
+            Shade: true,
             Wind: 1,
             Faces: [
                 { Texture:"Up", Side:"Up", Uv:[0, 0, 48, 48] }
@@ -33,6 +36,7 @@
         {   From: [ -8, 8, -24 ],
             To: [ 40, 8, 24 ],
             Rotate: [ 17, 0, 0 ],
+            Shade: true,
             Wind: 2,
             Faces: [
                 { Texture:"Up", Side:"Down", Uv:[48, 0, 0, 48], UvRotate: 180 }
