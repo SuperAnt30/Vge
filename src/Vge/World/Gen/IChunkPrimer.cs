@@ -12,5 +12,10 @@
         void SetBlockIdFlag(int xz, int y, int id, byte flag);
 
         int GetBlockId(int xz, int y);
+
+        /// <summary>
+        /// Очистить буфер
+        /// </summary>
+        void Clear();
     }
 }

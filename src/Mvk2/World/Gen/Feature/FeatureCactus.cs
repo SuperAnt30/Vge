@@ -8,14 +8,14 @@ namespace Mvk2.World.Gen.Feature
 {
     public class FeatureCactus : IFeatureGeneratorColumn
     {
-        protected ChunkPrimerIsland _chunkPrimer;
+        protected ChunkPrimerMvk _chunkPrimer;
 
         /// <summary>
         /// Вероятность одной
         /// </summary>
         private int _probabilityOne;
 
-        public FeatureCactus(ChunkPrimerIsland chunkPrimer, int probabilityOne)
+        public FeatureCactus(ChunkPrimerMvk chunkPrimer, int probabilityOne)
         {
             _chunkPrimer = chunkPrimer;
             _probabilityOne = probabilityOne;

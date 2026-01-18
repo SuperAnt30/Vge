@@ -10,7 +10,7 @@ namespace Mvk2.World.Gen
     /// Подготовительный чанк, для генерации мира остров
     /// x << 12 | z << 8 | y;
     /// </summary>
-    public class ChunkPrimerIsland : IChunkPrimer
+    public class ChunkPrimerMvk : IChunkPrimer
     {
         /// <summary>
         /// Данные блока
@@ -47,7 +47,7 @@ namespace Mvk2.World.Gen
         /// </summary>
         private readonly int _count;
 
-        public ChunkPrimerIsland(int numberChunkSections)
+        public ChunkPrimerMvk(int numberChunkSections)
         {
             _count = 4096 * numberChunkSections;
             Id = new int[_count];

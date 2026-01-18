@@ -4,8 +4,11 @@ using Mvk2.World.Gen.Layer;
 using System;
 using Vge;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
+using Vge.World.Gen.Element;
+using Vge.World.Gen.Feature;
 using Vge.World.Gen.Layer;
 using WinGL.Util;
 
@@ -19,7 +22,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Количество секций в чанке. Максимально 32
         /// </summary>
-        public readonly byte NumberChunkSections;
+        private readonly byte _numberChunkSections;
 
         /// <summary>
         /// Вспомогательный рандом
@@ -30,6 +33,12 @@ namespace Mvk2.World.Gen
         /// </summary>
         public readonly long Seed;
 
+
+        /// <summary>
+        /// Массив кеш блоков для генерации структур текущего мира
+        /// </summary>
+        public ArrayFast<BlockCache> BlockCaches { get; private set; } = new ArrayFast<BlockCache>(16384);
+
         /// <summary>
         /// Количество блокуоыв в высоту
         /// </summary>
@@ -38,7 +47,7 @@ namespace Mvk2.World.Gen
         /// <summary>
         /// Чанк для заполнения данных
         /// </summary>
-        public readonly ChunkPrimerIsland ChunkPrimer;
+        public readonly ChunkPrimerMvk ChunkPrimer;
 
         /// <summary>
         /// Объект генерации слоёв биомов
@@ -98,13 +107,18 @@ namespace Mvk2.World.Gen
         /// </summary>
         private readonly ushort _blockIdWater;
 
+        /// <summary>
+        /// Объект генератора берёзы
+        /// </summary>
+        private readonly ElementTree _elementTreeBirch;
+
         public ChunkProviderGenerateIsland(byte numberChunkSections, long seed)
         {
             Seed = seed;
             Rnd = new Rand(Seed);
-            NumberChunkSections = numberChunkSections;
+            _numberChunkSections = numberChunkSections;
             _countHeightBlock = numberChunkSections * 16 - 1;
-            ChunkPrimer = new ChunkPrimerIsland(NumberChunkSections);
+            ChunkPrimer = new ChunkPrimerMvk(_numberChunkSections);
 
             GenLayer[] gens = GenLayerIsland.BeginLayerBiome(Seed);
             _genLayerBiome = gens[0];
@@ -118,6 +132,9 @@ namespace Mvk2.World.Gen
             _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
 
             _blockIdWater = BlocksRegMvk.Water.IndexBlock;
+
+            _elementTreeBirch = new ElementTree(BlockCaches, BlocksRegMvk.LogBirch.IndexBlock,
+                BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock);
 
             _biomes = new BiomeIsland[]
             {
@@ -227,7 +244,7 @@ namespace Mvk2.World.Gen
                 biome = _biomes[chunk.Biome[136]];
                 biome.DecorationsColumn(chunk);
 
-                _ExportChuck(chunk);
+                _ExportChunk(chunk);
 
               // chunk.World.Filer.EndSectionLog(); // 0.3 мс
                 //World.Filer.StartSection("GHM " + CurrentChunkX + "," + CurrentChunkY);
@@ -269,20 +286,20 @@ namespace Mvk2.World.Gen
 
             biome.DecorationsColumnAfter(chunk);
             //biome.Decorator.GenDecorations(World, this, chunk);
-            _ExportChuck(chunk);
+            _ExportChunk(chunk);
            // chunk.World.Filer.EndSectionLog(); // 1.5
         }
 
         /// <summary>
         /// Экспортировать данные чанка с chunkPrimer в ChunkBase
         /// </summary>
-        private void _ExportChuck(ChunkServer chunk)
+        private void _ExportChunk(ChunkServer chunk)
         {
             ChunkStorage chunkStorage;
             int x, y, z, yc, ycb, y0, y8, yz;
             int id, idOld;
             int index, indexY, indexYZ;
-            for (yc = 0; yc < NumberChunkSections; yc++)
+            for (yc = 0; yc < _numberChunkSections; yc++)
             {
                 ycb = yc << 4;
                 chunkStorage = chunk.StorageArrays[yc];
@@ -393,6 +410,15 @@ namespace Mvk2.World.Gen
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Объект генерации элемента
+        /// </summary>
+        public IElementGenerator Element(string key)
+        {
+            // По номеру индекса мы активируем тот или иной элемент генерации
+            return _elementTreeBirch;
         }
     }
 }

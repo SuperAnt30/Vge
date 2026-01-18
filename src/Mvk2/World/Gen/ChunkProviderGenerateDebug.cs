@@ -1,6 +1,7 @@
 ﻿using Mvk2.World.Block;
 using Vge;
 using Vge.Games;
+using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -11,18 +12,22 @@ namespace Mvk2.World.Gen
     public class ChunkProviderGenerateDebug : IChunkProviderGenerate
     {
         /// <summary>
+        /// Массив кеш блоков для генерации структур текущего мира
+        /// </summary>
+        public ArrayFast<BlockCache> BlockCaches { get; private set; } = new ArrayFast<BlockCache>();
+        /// <summary>
         /// Количество секций в чанке. Максимально 32
         /// </summary>
         public readonly byte NumberChunkSections;
         /// <summary>
         /// Чанк для заполнения данных
         /// </summary>
-        private readonly ChunkPrimerIsland _chunkPrimer;
+        private readonly ChunkPrimerMvk _chunkPrimer;
 
         public ChunkProviderGenerateDebug(byte numberChunkSections)
         {
             NumberChunkSections = numberChunkSections;
-            _chunkPrimer = new ChunkPrimerIsland(numberChunkSections);
+            _chunkPrimer = new ChunkPrimerMvk(numberChunkSections);
         }
 
         /// <summary>
@@ -355,5 +360,10 @@ namespace Mvk2.World.Gen
         {
             Debug.Burden(1.5f);
         }
+
+        /// <summary>
+        /// Объект генерации элемента
+        /// </summary>
+        public IElementGenerator Element(string key) => null;
     }
 }

@@ -13,7 +13,7 @@ namespace Vge.World.Block.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override QuadSide[] GetQuads(int met, int xb, int zb)
         {
-            return _quads[met];
+            return _quads[met & 0xFF];
         }
     }
 }

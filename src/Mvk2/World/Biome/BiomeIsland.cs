@@ -63,7 +63,7 @@ namespace Mvk2.World.Biome
 
         public readonly ChunkProviderGenerateIsland Provider;
 
-        protected ChunkPrimerIsland _chunkPrimer;
+        protected ChunkPrimerMvk _chunkPrimer;
         protected int _xbc;
         protected int _zbc;
 
@@ -95,7 +95,9 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdLogBirch = BlocksRegMvk.LogBirch.IndexBlock;
         protected readonly ushort _blockIdBranchBirch = BlocksRegMvk.BranchBirch.IndexBlock;
         protected readonly ushort _blockIdLeavesBirch = BlocksRegMvk.LeavesBirch.IndexBlock;
+        protected readonly ushort _blockIdSaplingBirch = BlocksRegMvk.SaplingBirch.IndexBlock;
         
+
 
         /// <summary>
         /// Блок для отладки визуализации биома

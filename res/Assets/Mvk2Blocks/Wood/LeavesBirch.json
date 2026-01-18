@@ -2,6 +2,7 @@
     UseNeighborBrightness: true,
     АmbientOcclusion: false,
     LightOpacity: 2,
+    NoCollision: true,
     Translucent: true,
     Variants: [ 
         { Shape: "Wood/LeavesUpBirch", Offset: [ 0, -4, 0 ] },

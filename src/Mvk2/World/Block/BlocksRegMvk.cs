@@ -1,6 +1,7 @@
 ﻿using Mvk2.World.Block.List;
 using Vge.World.Block;
 using Vge.World.Block.List;
+using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Block
 {
@@ -152,6 +153,11 @@ namespace Mvk2.World.Block
         /// Блок листвы берёзы
         /// </summary>
         public static BlockLeaves LeavesBirch { get; private set; }
+        /// <summary>
+        /// Блок спженца берёзы
+        /// </summary>
+        public static BlockSapling SaplingBirch { get; private set; }
+        
 
         #endregion
 
@@ -204,7 +210,7 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(), "Wood");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(), "Wood");
             BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
-            
+            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling(), "Wood");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

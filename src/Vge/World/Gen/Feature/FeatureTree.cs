@@ -292,7 +292,7 @@ namespace Vge.World.Gen.Feature
                                         if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
                                         {
                                             // Листва на ветке
-                                           // _FoliageBranch(sx, sy, sz, iSide);
+                                            _FoliageBranch(sx, sy, sz, iSide);
                                         }
                                     }
                                 }

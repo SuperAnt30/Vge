@@ -103,6 +103,28 @@ namespace Vge.World
             => Filer.Log.Server(logMessage, args);
 
         /// <summary>
+        /// Экспортировать в мир временные блоки из генерации
+        /// </summary>
+        public void ExportBlockCaches()
+        {
+            int count = Settings.ChunkGenerate.BlockCaches.Count;
+            if (count > 0)
+            {
+                BlockCache blockCache;
+                for (int i = 0; i < count; i++)
+                {
+                    blockCache = Settings.ChunkGenerate.BlockCaches[i];
+                    SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
+                    if (blockCache.Tick != 0)
+                    {
+                        SetBlockTick(blockCache.Position, blockCache.Tick);
+                    }
+                }
+            }
+            Settings.ChunkGenerate.BlockCaches.Clear();
+        }
+
+        /// <summary>
         /// Такт выполнения
         /// </summary>
         public void Update()
