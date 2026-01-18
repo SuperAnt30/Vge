@@ -12,10 +12,6 @@ namespace Mvk2.World.Gen
     public class ChunkProviderGenerateDebug : IChunkProviderGenerate
     {
         /// <summary>
-        /// Массив кеш блоков для генерации структур текущего мира
-        /// </summary>
-        public ArrayFast<BlockCache> BlockCaches { get; private set; } = new ArrayFast<BlockCache>();
-        /// <summary>
         /// Количество секций в чанке. Максимально 32
         /// </summary>
         public readonly byte NumberChunkSections;

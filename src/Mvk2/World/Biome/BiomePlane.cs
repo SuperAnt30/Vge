@@ -20,6 +20,9 @@ namespace Mvk2.World.Biome
                 //new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch), // Дерево
                 // Берёза
                 new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch, _blockIdBranchBirch, _blockIdLeavesBirch), // Дерево
+                // Дуб
+                new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogOak, _blockIdBranchOak, _blockIdLeavesOak), // Дерево
+                
                 //new FeatureValun(_chunkPrimer, 1, 1, _blockIdStone, 4, 1, 2, 1, 0)
             };
         }

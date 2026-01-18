@@ -8,6 +8,7 @@ using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Gen;
 using WinGL.Util;
 
 namespace Vge.World
@@ -59,6 +60,10 @@ namespace Vge.World
         /// нужен чтоб непересоздавать его в каждом чанке в каждом тике
         /// </summary>
         public readonly ListMessy<BlockTick> TickBlocksCache = new ListMessy<BlockTick>();
+        /// <summary>
+        /// Объект генерации блоков, для элементов, структур и прочего, не генерации чанка
+        /// </summary>
+        public readonly BlocksElementGenerator BlocksGenerate;
 
         /// <summary>
         /// Время затраченое за такт
@@ -67,8 +72,8 @@ namespace Vge.World
 
         //private readonly TestAnchor _testAnchor;
 
-        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings) 
-            : base(worldSettings.NumberChunkSections * 16)
+        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings, 
+            BlocksElementGenerator blocksProviderGenerate) : base(worldSettings.NumberChunkSections * 16)
         {
             Server = server;
             IdWorld = idWorld;
@@ -80,6 +85,7 @@ namespace Vge.World
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
             Tracker = new EntityTrackerManager(this);
+            BlocksGenerate = blocksProviderGenerate;
 
             if (idWorld == 0)
             {
@@ -102,18 +108,20 @@ namespace Vge.World
         public override void SetLog(string logMessage, params object[] args) 
             => Filer.Log.Server(logMessage, args);
 
+        #region GenerationElement
+
         /// <summary>
         /// Экспортировать в мир временные блоки из генерации
         /// </summary>
         public void ExportBlockCaches()
         {
-            int count = Settings.ChunkGenerate.BlockCaches.Count;
+            int count = BlocksGenerate.BlockCaches.Count;
             if (count > 0)
             {
                 BlockCache blockCache;
                 for (int i = 0; i < count; i++)
                 {
-                    blockCache = Settings.ChunkGenerate.BlockCaches[i];
+                    blockCache = BlocksGenerate.BlockCaches[i];
                     SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
                     if (blockCache.Tick != 0)
                     {
@@ -121,8 +129,10 @@ namespace Vge.World
                     }
                 }
             }
-            Settings.ChunkGenerate.BlockCaches.Clear();
+            BlocksGenerate.BlockCaches.Clear();
         }
+
+        #endregion
 
         /// <summary>
         /// Такт выполнения

@@ -100,6 +100,7 @@ namespace Mvk2.Entity.List
             else if (currentIndex == 5) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
             else if (currentIndex == 6) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
             else if (currentIndex == 7) idBlock = BlocksRegMvk.SaplingBirch.IndexBlock;
+            else if (currentIndex == 8) idBlock = BlocksRegMvk.SaplingOak.IndexBlock;
 
             // Определяем на какую сторону смотрит игрок
             Pole pole = PoleConvert.FromAngle(RotationYaw);
@@ -117,7 +118,7 @@ namespace Mvk2.Entity.List
             {
                 worldServer.SetBlockTick(blockPos, 10);
             }
-            else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock)
+            else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock || idBlock == BlocksRegMvk.SaplingOak.IndexBlock)
             {
                 worldServer.SetBlockTick(blockPos, 45); // 1.5 sec
             }

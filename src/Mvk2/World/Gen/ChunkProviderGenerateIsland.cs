@@ -4,11 +4,8 @@ using Mvk2.World.Gen.Layer;
 using System;
 using Vge;
 using Vge.Util;
-using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
-using Vge.World.Gen.Element;
-using Vge.World.Gen.Feature;
 using Vge.World.Gen.Layer;
 using WinGL.Util;
 
@@ -32,12 +29,6 @@ namespace Mvk2.World.Gen
         /// Зерно генерации случайных чисел игры
         /// </summary>
         public readonly long Seed;
-
-
-        /// <summary>
-        /// Массив кеш блоков для генерации структур текущего мира
-        /// </summary>
-        public ArrayFast<BlockCache> BlockCaches { get; private set; } = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
         /// Количество блокуоыв в высоту
@@ -107,11 +98,6 @@ namespace Mvk2.World.Gen
         /// </summary>
         private readonly ushort _blockIdWater;
 
-        /// <summary>
-        /// Объект генератора берёзы
-        /// </summary>
-        private readonly ElementTree _elementTreeBirch;
-
         public ChunkProviderGenerateIsland(byte numberChunkSections, long seed)
         {
             Seed = seed;
@@ -132,9 +118,6 @@ namespace Mvk2.World.Gen
             _noiseCaveHeight2 = new NoiseGeneratorPerlin(new Rand(Seed + 13), 4);
 
             _blockIdWater = BlocksRegMvk.Water.IndexBlock;
-
-            _elementTreeBirch = new ElementTree(BlockCaches, BlocksRegMvk.LogBirch.IndexBlock,
-                BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock);
 
             _biomes = new BiomeIsland[]
             {
@@ -412,13 +395,6 @@ namespace Mvk2.World.Gen
             }
         }
 
-        /// <summary>
-        /// Объект генерации элемента
-        /// </summary>
-        public IElementGenerator Element(string key)
-        {
-            // По номеру индекса мы активируем тот или иной элемент генерации
-            return _elementTreeBirch;
-        }
+        
     }
 }

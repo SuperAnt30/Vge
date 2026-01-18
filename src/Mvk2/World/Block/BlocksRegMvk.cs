@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Block.List;
+using Mvk2.World.Gen;
 using Vge.World.Block;
 using Vge.World.Block.List;
 using Vge.World.Gen.Feature;
@@ -154,10 +155,27 @@ namespace Mvk2.World.Block
         /// </summary>
         public static BlockLeaves LeavesBirch { get; private set; }
         /// <summary>
-        /// Блок спженца берёзы
+        /// Блок саженца берёзы
         /// </summary>
         public static BlockSapling SaplingBirch { get; private set; }
-        
+
+        /// <summary>
+        /// Блок бревна дуба
+        /// </summary>
+        public static BlockLog LogOak { get; private set; }
+        /// <summary>
+        /// Блок ветки дуба
+        /// </summary>
+        public static BlockBranch BranchOak { get; private set; }
+        /// <summary>
+        /// Блок листвы дуба
+        /// </summary>
+        public static BlockLeaves LeavesOak { get; private set; }
+        /// <summary>
+        /// Блок саженца дуба
+        /// </summary>
+        public static BlockSapling SaplingOak { get; private set; }
+
 
         #endregion
 
@@ -210,7 +228,12 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(), "Wood");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(), "Wood");
             BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
-            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling(), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling((int)EnumElement.TreeBirch), "Wood");
+
+            BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockLog(), "Wood");
+            BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockBranch(), "Wood");
+            BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeaves(), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockSapling((int)EnumElement.TreeOak), "Wood");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

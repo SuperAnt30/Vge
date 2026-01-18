@@ -1,0 +1,21 @@
+{
+    UseNeighborBrightness: true,
+    АmbientOcclusion: false,
+    LightOpacity: 2,
+    NoCollision: true,
+    Translucent: true,
+    Variants: [ 
+        { Shape: "Wood/LeavesUpOak", Offset: [ 0, -4, 0 ] },
+        { Shape: "Wood/LeavesDownOak", Offset: [ 0, 4, 0 ] },
+        { Shape: "Wood/LeavesSideOak", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/LeavesSideOak", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Wood/LeavesSideOak", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Wood/LeavesSideOak", Offset: [ 0, 0, -4 ], RotateY: 270 },
+        { Shape: "Wood/LeavesUpOak2", Offset: [ 0, -4, 0 ] },
+        { Shape: "Wood/LeavesDownOak2", Offset: [ 0, 4, 0 ] },
+        { Shape: "Wood/LeavesSideOak2", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/LeavesSideOak2", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Wood/LeavesSideOak2", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Wood/LeavesSideOak2", Offset: [ 0, 0, -4 ], RotateY: 270 }
+    ]
+}

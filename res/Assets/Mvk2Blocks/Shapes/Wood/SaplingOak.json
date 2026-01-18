@@ -1,0 +1,4 @@
+{
+    Parent: "_Cross",
+    Texture: { All: "Blocks/Wood/SaplingOak" }
+}

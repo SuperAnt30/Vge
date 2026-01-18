@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Gen;
-using Vge.World.Gen.Feature;
 
 namespace Vge.World.Block.List
 {
@@ -10,10 +9,15 @@ namespace Vge.World.Block.List
     /// </summary>
     public class BlockSapling : BlockBase
     {
-        //public BlockSapling(FeatureTree featureTree)
-        //{
-        //    _featureTree = featureTree;
-        //}
+        /// <summary>
+        /// Индекс элемента для генерации
+        /// </summary>
+        private readonly int _elementId;
+
+        public BlockSapling(int elementId)
+        {
+            _elementId = elementId;
+        }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
@@ -35,7 +39,7 @@ namespace Vge.World.Block.List
             //else
             //world.SetBlockTick(pos, _tickRate);
             // Получить генератор дерева
-            IElementGenerator element = world.Settings.ChunkGenerate.Element("Tree");
+            IElementGenerator element = world.BlocksGenerate.Element(_elementId);
             if (element != null)
             {
                 element.Generation(world, blockPos);

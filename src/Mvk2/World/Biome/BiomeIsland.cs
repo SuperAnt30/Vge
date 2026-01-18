@@ -92,11 +92,17 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdFlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
         protected readonly ushort _blockIdTallGrass = BlocksRegMvk.TallGrass.IndexBlock;
         protected readonly ushort _blockIdTina = BlocksRegMvk.Tina.IndexBlock;
+
         protected readonly ushort _blockIdLogBirch = BlocksRegMvk.LogBirch.IndexBlock;
         protected readonly ushort _blockIdBranchBirch = BlocksRegMvk.BranchBirch.IndexBlock;
         protected readonly ushort _blockIdLeavesBirch = BlocksRegMvk.LeavesBirch.IndexBlock;
         protected readonly ushort _blockIdSaplingBirch = BlocksRegMvk.SaplingBirch.IndexBlock;
-        
+
+        protected readonly ushort _blockIdLogOak = BlocksRegMvk.LogOak.IndexBlock;
+        protected readonly ushort _blockIdBranchOak = BlocksRegMvk.BranchOak.IndexBlock;
+        protected readonly ushort _blockIdLeavesOak = BlocksRegMvk.LeavesOak.IndexBlock;
+        protected readonly ushort _blockIdSaplingOak = BlocksRegMvk.SaplingOak.IndexBlock;
+
 
 
         /// <summary>
