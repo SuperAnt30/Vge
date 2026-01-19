@@ -185,7 +185,7 @@ namespace Vge.World.Block.List
                         {
                             if (_puddle)
                             {
-                                // TODO::2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
+                                // 2025-12-21 Продумать как убрать с боку воду с 1, возможно в след тике
                                 BlockPos posDown = blockPos.OffsetDown();
                                 if (_GetLevelLiquid(world, posDown) > 0)
                                 {

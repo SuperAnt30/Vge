@@ -1,8 +1,7 @@
 ﻿using Mvk2.World.Block.List;
-using Mvk2.World.Gen;
+using Mvk2.World.Element;
 using Vge.World.Block;
 using Vge.World.Block.List;
-using Vge.World.Gen.Feature;
 
 namespace Mvk2.World.Block
 {
@@ -228,12 +227,12 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(), "Wood");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(), "Wood");
             BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
-            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling((int)EnumElement.TreeBirch), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling((int)EnumElementGen.TreeBirch), "Wood");
 
             BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockLog(), "Wood");
             BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockBranch(), "Wood");
             BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeaves(), "Wood");
-            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockSapling((int)EnumElement.TreeOak), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockSapling((int)EnumElementGen.TreeOak), "Wood");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

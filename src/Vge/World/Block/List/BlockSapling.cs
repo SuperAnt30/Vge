@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
-using Vge.World.Gen;
+using Vge.World.Element;
 
 namespace Vge.World.Block.List
 {

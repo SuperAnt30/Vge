@@ -1,10 +1,10 @@
-﻿namespace Mvk2.World.Gen
+﻿namespace Mvk2.World.Element
 {
     /// <summary>
     /// Перечень индексов элементов блочной генерации.
     /// Enum для удобства кодинга, для поиска. А так в целом Int. Всё хранится в массиве
     /// </summary>
-    public enum EnumElement
+    public enum EnumElementGen
     {
         /// <summary>
         /// Рост дерева берёзы

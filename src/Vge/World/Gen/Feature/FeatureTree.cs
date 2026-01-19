@@ -149,6 +149,7 @@ namespace Vge.World.Gen.Feature
             int bz = rand.Next(16);
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
 
+            /*
             _SetRand(rand);
             // Корень
             //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
@@ -312,41 +313,47 @@ namespace Vge.World.Gen.Feature
             // Листва на мокушке
             _FoliageTop(bx, y, bz);
 
-            //_SetBlockReplace(x0, y0 + 1, z0, _blockId, 0);
-            //_SetBlockReplace(x0, y0 + 2, z0, _blockId, 0);
+            */
+            int x0 = bx;
+            int y0 = by;
+            int z0 = bz;
 
-            //for (int x = x0 - 8; x < x0 + 9; x++)
-            //{
-            //    _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
-            //}
-            //_SetBlockState(x0, y0 + 3, z0, _blockId, 0);
-            //for (int z = z0 - 8; z < z0 + 9; z++)
-            //{
-            //    _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
-            //}
-            //_SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
-            //_SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
+            _SetBlockState(x0, y0, z0, _blockLogId, 3);
+            _SetBlockReplace(x0, y0 + 1, z0, _blockId, 0);
+            _SetBlockReplace(x0, y0 + 2, z0, _blockId, 0);
 
-            //_SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
-            //_SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
-            //_SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
-            //_SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
+            for (int x = x0 - 8; x < x0 + 9; x++)
+            {
+                _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
+            }
+            _SetBlockState(x0, y0 + 3, z0, _blockId, 0);
+            for (int z = z0 - 8; z < z0 + 9; z++)
+            {
+                _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
+            }
+            _SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
+            _SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
 
-            //_SetBlockState(x0, y0 + 4, z0, _blockId, 0);
-            //_SetBlockState(x0, y0 + 5, z0, _blockId, 0);
-            //_SetBlockState(x0, y0 + 6, z0, _blockId, 0);
-            //_SetBlockState(x0, y0 + 7, z0, _blockId, 0);
-            //_SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
-            //_SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
-            //_SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
+            _SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
+            _SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
+            _SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
+            _SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
 
-            //_SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
-            //_SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
-            //_SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
-            //_SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
-            //_SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
+            _SetBlockState(x0, y0 + 4, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 5, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 6, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 7, z0, _blockId, 0);
+            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
+            _SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
+            _SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
 
-            //_SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 6);
+            _SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
+            _SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
+            _SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
+            _SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
+            _SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
+
+            _SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 6);
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 {
     Texture: { 
         Up: "Blocks/DebugAnim",
-        Side: "Blocks/Debug""
+        Side: "Blocks/Debug"
     },
     Elements: [
         {   From: [ -8, 0, -8 ],

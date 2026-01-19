@@ -2,6 +2,7 @@
     Variants: [ 
         { Shape: "Wood/LogOak" },
         { Shape: "Wood/LogOak", IsRotateX90: true, RotateY: 90 },
-        { Shape: "Wood/LogOak", IsRotateX90: true }
+        { Shape: "Wood/LogOak", IsRotateX90: true },
+        { Shape: "Wood/LogLowerOak" }
     ]
 }

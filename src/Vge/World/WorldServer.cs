@@ -8,6 +8,7 @@ using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Element;
 using Vge.World.Gen;
 using WinGL.Util;
 
@@ -109,6 +110,30 @@ namespace Vge.World
             => Filer.Log.Server(logMessage, args);
 
         #region GenerationElement
+
+        /// <summary>
+        /// Определить чьи элементы и вернуть маски элементов
+        /// </summary>
+        public IElementMask[] FindElementMask(BlockPos blockPos)
+        {
+            return new IElementMask[0];
+        }
+
+        /// <summary>
+        /// Получить маску по тикающему блоку элемента
+        /// </summary>
+        public IElementMask GetElementMask(BlockPos blockPos)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Задать новую маску тикающему блоку элемента
+        /// </summary>
+        public bool SetElementMask(BlockPos blockPos)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Экспортировать в мир временные блоки из генерации

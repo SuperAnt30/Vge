@@ -356,10 +356,5 @@ namespace Mvk2.World.Gen
         {
             Debug.Burden(1.5f);
         }
-
-        /// <summary>
-        /// Объект генерации элемента
-        /// </summary>
-        public IElementGenerator Element(string key) => null;
     }
 }

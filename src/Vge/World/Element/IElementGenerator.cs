@@ -1,6 +1,6 @@
 ﻿using Vge.World.Block;
 
-namespace Vge.World.Gen
+namespace Vge.World.Element
 {
     /// <summary>
     /// Интерфейс генерации элемента

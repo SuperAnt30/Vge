@@ -2,7 +2,7 @@
 using Vge.Util;
 using Vge.World.Block;
 
-namespace Vge.World.Gen
+namespace Vge.World.Element
 {
     /// <summary>
     /// Базовый класс генерации блоков, для элементов, структур и прочего, не генерации чанка

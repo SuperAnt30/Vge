@@ -1,8 +1,7 @@
 ﻿using Mvk2.World.Block;
-using Vge.World.Gen;
-using Vge.World.Gen.Element;
+using Vge.World.Element;
 
-namespace Mvk2.World.Gen
+namespace Mvk2.World.Element
 {
     /// <summary>
     /// Объект генерации блоков MVK, для элементов, структур и прочего, не генерации чанка
@@ -14,12 +13,12 @@ namespace Mvk2.World.Gen
         public BlocksElementGeneratorMvk()
         {
             _elements = new IElementGenerator[2];
-            _elements[(int)EnumElement.TreeBirch] = new ElementTree(BlockCaches, 
+            _elements[(int)EnumElementGen.TreeBirch] = new ElementGenTree(BlockCaches, 
                 BlocksRegMvk.LogBirch.IndexBlock, BlocksRegMvk.BranchBirch.IndexBlock, 
-                BlocksRegMvk.LeavesBirch.IndexBlock);
-            _elements[(int)EnumElement.TreeOak] = new ElementTree(BlockCaches,
+                BlocksRegMvk.LeavesBirch.IndexBlock, BlocksRegMvk.SaplingBirch.IndexBlock);
+            _elements[(int)EnumElementGen.TreeOak] = new ElementGenTree(BlockCaches,
                 BlocksRegMvk.LogOak.IndexBlock, BlocksRegMvk.BranchOak.IndexBlock,
-                BlocksRegMvk.LeavesOak.IndexBlock);
+                BlocksRegMvk.LeavesOak.IndexBlock, BlocksRegMvk.SaplingOak.IndexBlock);
         }
     }
 }

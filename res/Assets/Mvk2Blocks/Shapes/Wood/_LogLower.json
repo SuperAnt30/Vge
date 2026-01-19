@@ -1,0 +1,29 @@
+{
+    Texture: { 
+        Up: "Blocks/Debug",
+        Side: "Blocks/Debug",
+        Grass: "Blocks/Debug",
+    },
+    Elements: [
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
+            Faces: [
+                { Texture:"Up", Side:"Down", Uv:[0, 16, 16, 0] },
+                { Texture:"Up", Side:"Up" },
+                { Texture:"Side", Side:"North" },
+                { Texture:"Side", Side:"East" },
+                { Texture:"Side", Side:"South" },
+                { Texture:"Side", Side:"West" }
+            ]
+        },
+        {   From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
+            Faces: [
+                { Texture:"Grass", Side:"North", Uv:[0, 16, 16, 0], TypeColor:1},
+                { Texture:"Grass", Side:"East", Uv:[0, 16, 16, 0], TypeColor:1},
+                { Texture:"Grass", Side:"South", Uv:[0, 16, 16, 0], TypeColor:1},
+                { Texture:"Grass", Side:"West", Uv:[0, 16, 16, 0], TypeColor:1}
+            ]
+        }
+    ]
+}
