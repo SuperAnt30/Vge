@@ -5,17 +5,17 @@
     NoCollision: true,
     Translucent: true,
     Variants: [ 
-        { Shape: "Wood/LeavesUpBirch", Offset: [ 0, -4, 0 ] },
-        { Shape: "Wood/LeavesDownBirch", Offset: [ 0, 4, 0 ] },
-        { Shape: "Wood/LeavesSideBirch", Offset: [ -4, 0, 0 ] },
-        { Shape: "Wood/LeavesSideBirch", Offset: [ -4, 0, 0 ], RotateY: 180 },
-        { Shape: "Wood/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 90 },
-        { Shape: "Wood/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 270 },
-        { Shape: "Wood/LeavesUpBirch2", Offset: [ 0, -4, 0 ] },
-        { Shape: "Wood/LeavesDownBirch2", Offset: [ 0, 4, 0 ] },
-        { Shape: "Wood/LeavesSideBirch2", Offset: [ -4, 0, 0 ] },
-        { Shape: "Wood/LeavesSideBirch2", Offset: [ -4, 0, 0 ], RotateY: 180 },
-        { Shape: "Wood/LeavesSideBirch2", Offset: [ 0, 0, -4 ], RotateY: 90 },
-        { Shape: "Wood/LeavesSideBirch2", Offset: [ 0, 0, -4 ], RotateY: 270 }
+        { Shape: "Wood/Leaves/LeavesUpBirch", Offset: [ 0, -4, 0 ] },
+        { Shape: "Wood/Leaves/LeavesDownBirch", Offset: [ 0, 4, 0 ] },
+        { Shape: "Wood/Leaves/LeavesSideBirch", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/Leaves/LeavesSideBirch", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Wood/Leaves/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Wood/Leaves/LeavesSideBirch", Offset: [ 0, 0, -4 ], RotateY: 270 },
+        { Shape: "Wood/Leaves/LeavesUpBirch2", Offset: [ 0, -4, 0 ] },
+        { Shape: "Wood/Leaves/LeavesDownBirch2", Offset: [ 0, 4, 0 ] },
+        { Shape: "Wood/Leaves/LeavesSideBirch2", Offset: [ -4, 0, 0 ] },
+        { Shape: "Wood/Leaves/LeavesSideBirch2", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Wood/Leaves/LeavesSideBirch2", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Wood/Leaves/LeavesSideBirch2", Offset: [ 0, 0, -4 ], RotateY: 270 }
     ]
 }
