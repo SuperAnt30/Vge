@@ -1,4 +1,5 @@
 ﻿using Vge.Network.Packets.Server;
+using Vge.World.Element;
 using Vge.World.Gen;
 using Vge.World.Сalendar;
 
@@ -33,6 +34,10 @@ namespace Vge.World
         /// Объект для генерации чанков, только для серверной части
         /// </summary>
         public IChunkProviderGenerate ChunkGenerate { get; protected set; }
+        /// <summary>
+        /// Объект обновлении блоков элементов в тактах блока
+        /// </summary>
+        public BlocksElementUpdate BlocksElement { get; protected set; }
 
         /// <summary>
         /// Пакет Возраждение в мире

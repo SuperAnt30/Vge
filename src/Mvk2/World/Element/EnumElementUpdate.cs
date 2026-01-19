@@ -4,7 +4,7 @@
     /// Перечень индексов элементов блочной генерации.
     /// Enum для удобства кодинга, для поиска. А так в целом Int. Всё хранится в массиве
     /// </summary>
-    public enum EnumElementGen
+    public enum EnumElementUpdate
     {
         /// <summary>
         /// Рост дерева берёзы

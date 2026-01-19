@@ -39,10 +39,10 @@ namespace Vge.World.Block.List
             //else
             //world.SetBlockTick(pos, _tickRate);
             // Получить генератор дерева
-            IElementGenerator element = world.BlocksGenerate.Element(_elementId);
+            IElementUpdate element = world.Settings.BlocksElement.Element(_elementId);
             if (element != null)
             {
-                element.Generation(world, blockPos);
+                element.Update(world, blockPos);
             }
             else
             {

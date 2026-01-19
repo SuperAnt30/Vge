@@ -19,9 +19,11 @@ namespace Mvk2.World.Biome
                 new FeatureMinable(_chunkPrimer, 5, _blockIdWater, 33, 24, 44), // Пресная вода
                 //new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch), // Дерево
                 // Берёза
-                new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch, _blockIdBranchBirch, _blockIdLeavesBirch), // Дерево
+                new FeatureTree(chunkProvider.BlockCaches, _chunkPrimer, 1, 2, 
+                _blockIdLogBirch, _blockIdBranchBirch, _blockIdLeavesBirch), // Дерево
                 // Дуб
-                new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogOak, _blockIdBranchOak, _blockIdLeavesOak), // Дерево
+                new FeatureTree(chunkProvider.BlockCaches,_chunkPrimer, 1, 2, 
+                _blockIdLogOak, _blockIdBranchOak, _blockIdLeavesOak), // Дерево
                 
                 //new FeatureValun(_chunkPrimer, 1, 1, _blockIdStone, 4, 1, 2, 1, 0)
             };

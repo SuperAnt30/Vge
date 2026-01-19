@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 
 namespace Vge.World.Gen.Feature
@@ -98,8 +99,7 @@ namespace Vge.World.Gen.Feature
         {
             if (_biasX == (x >> 4) && _biasZ == (z >> 4))
             {
-                int xz = (z & 15) << 4 | (x & 15);
-                _chunkPrimer.SetBlockIdFlag(xz, y, id, flag);
+                _chunkPrimer.SetBlockIdFlag((z & 15) << 4 | (x & 15), y, id, flag);
             }
         }
 
@@ -108,8 +108,25 @@ namespace Vge.World.Gen.Feature
         {
             if (_biasX == (x >> 4) && _biasZ == (z >> 4))
             {
-                int xz = (z & 15) << 4 | (x & 15);
-                _chunkPrimer.SetBlockState(xz, y, id, met);
+                _chunkPrimer.SetBlockState((z & 15) << 4 | (x & 15), y, id, met);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SetBlockState(BlockCache blockCache)
+        {
+            if (_biasX == (blockCache.Position.X >> 4) && _biasZ == (blockCache.Position.Z >> 4))
+            {
+                if (blockCache.Tick != 0)
+                {
+                    _chunkPrimer.SetBlockStateTick((blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15),
+                    blockCache.Position.Y, blockCache.Id, blockCache.Met, blockCache.Tick);
+                }
+                else
+                {
+                    _chunkPrimer.SetBlockState((blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15),
+                        blockCache.Position.Y, blockCache.Id, blockCache.Met);
+                }
             }
         }
     }

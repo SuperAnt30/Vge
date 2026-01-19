@@ -5,26 +5,25 @@ using Vge.World.Block;
 namespace Vge.World.Element
 {
     /// <summary>
-    /// Базовый класс генерации блоков, для элементов, структур и прочего, не генерации чанка
+    /// Базовый класс изменения блоков, для элементов, структур и прочего, в обновлении мира.
     /// Для роста деревьев и прочего, где взаимодействие множества блоков.
-    /// Т.е. когда уже мир сгенерирован, и делаем доп генерации
     /// </summary>
-    public class BlocksElementGenerator
+    public class BlocksElementUpdate
     {
         /// <summary>
-        /// Массив кеш блоков для генерации структур текущего мира
+        /// Массив кеш блоков для обновления структур текущего мира в потоке тиков
         /// </summary>
         public readonly ArrayFast<BlockCache> BlockCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
         /// Массив всех элементов генерации
         /// </summary>
-        protected IElementGenerator[] _elements;
+        protected IElementUpdate[] _elements;
 
         /// <summary>
         /// Объект генерации элемента
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual IElementGenerator Element(int index) => _elements[index];
+        public virtual IElementUpdate Element(int index) => _elements[index];
     }
 }

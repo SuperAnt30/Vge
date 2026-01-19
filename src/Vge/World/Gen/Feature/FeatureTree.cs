@@ -1,11 +1,15 @@
-﻿using Vge.Util;
+﻿using System.Runtime.CompilerServices;
+using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Element;
 using WinGL.Util;
 
 namespace Vge.World.Gen.Feature
 {
     /// <summary>
-    /// Генерация дерева
+    /// Генерация дерева на этапе создания чанка.
+    /// Так же есть рост дерева объект работает в тактах ElementGrowthTree
     /// </summary>
     public class FeatureTree : FeatureArea
     {
@@ -68,20 +72,26 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         private long _seed;
 
-        public FeatureTree(IChunkPrimer chunkPrimer, byte minRandom, byte maxRandom, 
-            int blockLogId, int blockBranchId, int blockLeavesId) 
+        /// <summary>
+        /// Массив кеш блоков для генерации структур текущего мира в потоке генерации
+        /// </summary>
+        private readonly ArrayFast<BlockCache> _blockCaches;
+
+        public FeatureTree(ArrayFast<BlockCache> blockCaches, IChunkPrimer chunkPrimer, 
+            byte minRandom, byte maxRandom, int blockLogId, int blockBranchId, int blockLeavesId) 
             : base(chunkPrimer, minRandom, maxRandom, blockLogId)
         {
+            _blockCaches = blockCaches; 
             _blockLogId = blockLogId;
             _blockBranchId = blockBranchId;
             _blockLeavesId = blockLeavesId;
         }
-        public FeatureTree(IChunkPrimer chunkPrimer, byte probabilityOne,
-            int blockId) : base(chunkPrimer, probabilityOne, blockId)
-        {
-            //_rangeY = _isAir ? maxY : (byte)(maxY - minY);
-            //_count = count;
-        }
+        //public FeatureTree(IChunkPrimer chunkPrimer, byte probabilityOne,
+        //    int blockId) : base(chunkPrimer, probabilityOne, blockId)
+        //{
+        //    //_rangeY = _isAir ? maxY : (byte)(maxY - minY);
+        //    //_count = count;
+        //}
 
         /// <summary>
         /// Возвращает псевдослучайное число LCG из [0, x). Аргументы: целое х
@@ -148,6 +158,7 @@ namespace Vge.World.Gen.Feature
             int bx = rand.Next(16);
             int bz = rand.Next(16);
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
+            _blockCaches.Clear();
 
             /*
             _SetRand(rand);
@@ -318,42 +329,44 @@ namespace Vge.World.Gen.Feature
             int y0 = by;
             int z0 = bz;
 
-            _SetBlockState(x0, y0, z0, _blockLogId, 3);
-            _SetBlockReplace(x0, y0 + 1, z0, _blockId, 0);
-            _SetBlockReplace(x0, y0 + 2, z0, _blockId, 0);
+            _SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
+            _SetBlockCache(x0, y0 + 1, z0, _blockId);
+            _SetBlockCache(x0, y0 + 2, z0, _blockId);
 
             for (int x = x0 - 8; x < x0 + 9; x++)
             {
-                _SetBlockState(x, y0 + 3, z0, _blockBranchId, 1);
+                _SetBlockCache(x, y0 + 3, z0, _blockBranchId, 1);
             }
-            _SetBlockState(x0, y0 + 3, z0, _blockId, 0);
+            _SetBlockCache(x0, y0 + 3, z0, _blockId);
             for (int z = z0 - 8; z < z0 + 9; z++)
             {
-                _SetBlockState(x0, y0 + 4, z, _blockBranchId, 2);
+                _SetBlockCache(x0, y0 + 4, z, _blockBranchId, 2);
             }
-            _SetBlockState(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
-            _SetBlockState(x0, y0 + 5, z0 - 4, _blockLeavesId, 0);
+            _SetBlockCache(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
+            _SetBlockCache(x0, y0 + 5, z0 - 4, _blockLeavesId);
 
-            _SetBlockState(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
-            _SetBlockState(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
-            _SetBlockState(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
-            _SetBlockState(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
+            _SetBlockCache(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
+            _SetBlockCache(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
+            _SetBlockCache(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
+            _SetBlockCache(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
 
-            _SetBlockState(x0, y0 + 4, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 5, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 6, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 7, z0, _blockId, 0);
-            _SetBlockState(x0, y0 + 8, z0, _blockBranchId, 0);
-            _SetBlockState(x0, y0 + 9, z0, _blockBranchId, 4);
-            _SetBlockState(x0, y0 + 10, z0, _blockBranchId, 0);
+            _SetBlockCache(x0, y0 + 4, z0, _blockId);
+            _SetBlockCache(x0, y0 + 5, z0, _blockId);
+            _SetBlockCache(x0, y0 + 6, z0, _blockId);
+            _SetBlockCache(x0, y0 + 7, z0, _blockId);
+            _SetBlockCache(x0, y0 + 8, z0, _blockBranchId);
+            _SetBlockCache(x0, y0 + 9, z0, _blockBranchId, 4);
+            _SetBlockCache(x0, y0 + 10, z0, _blockBranchId);
 
-            _SetBlockState(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
-            _SetBlockState(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
-            _SetBlockState(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
-            _SetBlockState(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
-            _SetBlockState(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
+            _SetBlockCache(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
+            _SetBlockCache(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
+            _SetBlockCache(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
+            _SetBlockCache(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
+            _SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
-            _SetBlockState(x0, y0 + 11, z0, _blockLeavesId, 6);
+            _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
+
+            _ExportBlockCaches();
         }
 
         /// <summary>
@@ -445,6 +458,40 @@ namespace Vge.World.Gen.Feature
                 // South
                 _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SetBlockCache(int x, int y, int z, int id)
+            => _blockCaches.Add(new BlockCache(x, y, z, id));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SetBlockCache(int x, int y, int z, int id, int met)
+            => _blockCaches.Add(new BlockCache(x, y, z, id, met));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)
+            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Tick = tick });
+
+        /// <summary>
+        /// Экспортировать кэш блоки в временные для чанка генерации
+        /// </summary>
+        protected void _ExportBlockCaches()
+        {
+            int count = _blockCaches.Count;
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    _SetBlockState(_blockCaches[i]);
+
+                    //SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
+                    //if (blockCache.Tick != 0)
+                    //{
+                    //    SetBlockTick(blockCache.Position, blockCache.Tick);
+                    //}
+                }
+            }
+            _blockCaches.Clear();
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using Vge.Util;
 using Vge.World.Block;
-using Vge.World.Chunk;
 
 namespace Vge.World.Element
 {
     /// <summary>
-    /// Объект генерации элемента ромта дерева
+    /// Объект роста или старения дерева, в такте мира
     /// </summary>
-    public class ElementGenTree : IElementGenerator
+    public class ElementGrowthTree : IElementUpdate
     {
         /// <summary>
         /// Индекс блока бревна
@@ -31,7 +30,7 @@ namespace Vge.World.Element
         /// </summary>
         protected ArrayFast<BlockCache> _blockCaches;
 
-        public ElementGenTree(ArrayFast<BlockCache> blockCache, int blockLogId, int blockBranchId, 
+        public ElementGrowthTree(ArrayFast<BlockCache> blockCache, int blockLogId, int blockBranchId, 
             int blockLeavesId, int blockSaplingId)
         {
             _blockCaches = blockCache;
@@ -42,9 +41,9 @@ namespace Vge.World.Element
         }
 
         /// <summary>
-        /// Генерация элемента в выбранной позиции
+        /// Изменение элемента в выбранной позиции
         /// </summary>
-        public void Generation(WorldServer world, BlockPos blockPos)
+        public void Update(WorldServer world, BlockPos blockPos)
         {
             _blockCaches.Clear();
 

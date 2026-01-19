@@ -16,6 +16,10 @@ namespace Vge.World.Block
         /// </summary>
         public int Id;
         /// <summary>
+        /// Met данные блока
+        /// </summary>
+        public int Met;
+        /// <summary>
         /// Тело, доп параметр
         /// </summary>
         public int Flag;
@@ -24,21 +28,30 @@ namespace Vge.World.Block
         /// </summary>
         public uint Tick;
 
-        public BlockCache(BlockPos blockPos, int id, int flag = 0, uint tick = 0)
+        public BlockCache(int x, int y, int z, int id, int met = 0)
+        {
+            Position = new BlockPos(x, y, z);
+            Id = id;
+            Met = met;
+            Flag = 0;
+            Tick = 0;
+        }
+        public BlockCache(BlockPos blockPos, int id, int met = 0)
         {
             Position = blockPos;
             Id = id;
-            Flag = flag;
-            Tick = tick;
+            Met = met;
+            Flag = 0;
+            Tick = 0;
         }
 
         /// <summary>
         /// Получить данные блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BlockState GetBlockState() => new BlockState(Id);
+        public BlockState GetBlockState() => new BlockState(Id) { Met = Met };
 
         public override string ToString() 
-            => string.Format("{0} Id:{1} F:{2}", Position, Id, Flag);
+            => string.Format("{0} Id:{1} Met:{2} F:{3}", Position, Id, Met, Flag);
     }
 }

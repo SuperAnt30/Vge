@@ -4,6 +4,7 @@ using Mvk2.World.Gen.Layer;
 using System;
 using Vge;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using Vge.World.Gen.Layer;
@@ -39,6 +40,10 @@ namespace Mvk2.World.Gen
         /// Чанк для заполнения данных
         /// </summary>
         public readonly ChunkPrimerMvk ChunkPrimer;
+        /// <summary>
+        /// Массив кеш блоков для генерации структур текущего мира в потоке генерации
+        /// </summary>
+        public readonly ArrayFast<BlockCache> BlockCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
         /// Объект генерации слоёв биомов
@@ -317,6 +322,11 @@ namespace Mvk2.World.Gen
                                     else
                                     {
                                         chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                    }
+                                    if (ChunkPrimer.Tick[index] != 0)
+                                    {
+                                        // Тик
+                                        chunk.SetBlockTick(x, y, z, false, ChunkPrimer.Tick[index]);
                                     }
                                 }
                             }

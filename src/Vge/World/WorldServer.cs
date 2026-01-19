@@ -61,11 +61,7 @@ namespace Vge.World
         /// нужен чтоб непересоздавать его в каждом чанке в каждом тике
         /// </summary>
         public readonly ListMessy<BlockTick> TickBlocksCache = new ListMessy<BlockTick>();
-        /// <summary>
-        /// Объект генерации блоков, для элементов, структур и прочего, не генерации чанка
-        /// </summary>
-        public readonly BlocksElementGenerator BlocksGenerate;
-
+        
         /// <summary>
         /// Время затраченое за такт
         /// </summary>
@@ -73,8 +69,8 @@ namespace Vge.World
 
         //private readonly TestAnchor _testAnchor;
 
-        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings, 
-            BlocksElementGenerator blocksProviderGenerate) : base(worldSettings.NumberChunkSections * 16)
+        public WorldServer(GameServer server, byte idWorld, WorldSettings worldSettings) 
+            : base(worldSettings.NumberChunkSections * 16)
         {
             Server = server;
             IdWorld = idWorld;
@@ -86,7 +82,6 @@ namespace Vge.World
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
             Tracker = new EntityTrackerManager(this);
-            BlocksGenerate = blocksProviderGenerate;
 
             if (idWorld == 0)
             {
@@ -140,13 +135,13 @@ namespace Vge.World
         /// </summary>
         public void ExportBlockCaches()
         {
-            int count = BlocksGenerate.BlockCaches.Count;
+            int count = Settings.BlocksElement.BlockCaches.Count;
             if (count > 0)
             {
                 BlockCache blockCache;
                 for (int i = 0; i < count; i++)
                 {
-                    blockCache = BlocksGenerate.BlockCaches[i];
+                    blockCache = Settings.BlocksElement.BlockCaches[i];
                     SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
                     if (blockCache.Tick != 0)
                     {
@@ -154,7 +149,7 @@ namespace Vge.World
                     }
                 }
             }
-            BlocksGenerate.BlockCaches.Clear();
+            Settings.BlocksElement.BlockCaches.Clear();
         }
 
         #endregion
