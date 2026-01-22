@@ -2,7 +2,6 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using Vge.World.Element;
 using WinGL.Util;
 
 namespace Vge.World.Gen.Feature
@@ -122,7 +121,7 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Случайные атрибуты дерева
         /// </summary>
-        protected void _RandSize()
+        protected virtual void _RandSize()
         {
             // Высота ствола дерева до кроны
             _trunkHeight = _NextInt(12) + 12;
@@ -160,7 +159,7 @@ namespace Vge.World.Gen.Feature
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
             _blockCaches.Clear();
 
-            /*
+            
             _SetRand(rand);
             // Корень
             //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
@@ -224,7 +223,8 @@ namespace Vge.World.Gen.Feature
                 // Ствол
                 // if (_CheckBlock(world, bx, y, bz)) return false;
                 // Ствол, если нижний то параметр для пенька
-                _SetBlockState(bx, y, bz, _blockLogId, 0);
+                _SetBlockCache(bx, y, bz, _blockLogId, iUp == 0 ? 3 : 0);
+                //_SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
                 //blockCaches.Add(new BlockCache(bx, y, bz, idLog, (ushort)(iUp == 0 ? 6 : 0), true));
 
                 // Ветки
@@ -295,9 +295,12 @@ namespace Vge.World.Gen.Feature
                                         //if (_CheckBlock(world, sx, sy, sz)) return false;
 
                                         // фиксируем ветку
-                                        _SetBlockState(sx, sy, sz,
-                                             lightBranche > 1 && iBranche == 1 ? _blockLogId : _blockBranchId,
+                                        _SetBlockCache(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId,
                                             (iSide == 0 || iSide == 2) ? 2 : 1);
+
+                                        //_SetBlockCache(sx, sy, sz, _blockLogId,
+                                        //    (iSide == 0 || iSide == 2) ? 2 : 1);
+
                                         //blockCaches.Add(new BlockCache(sx, sy, sz, idLog,
                                         //    (ushort)((iSide == 0 || iSide == 2) ? 2 : 1), true));
 
@@ -320,11 +323,12 @@ namespace Vge.World.Gen.Feature
 
             y = by + count;
             // Ствол
-            _SetBlockState(bx, y, bz, _blockBranchId, 0);
+            _SetBlockCache(bx, y, bz, _blockBranchId, 0);
             // Листва на мокушке
             _FoliageTop(bx, y, bz);
 
-            */
+            
+            /*
             int x0 = bx;
             int y0 = by;
             int z0 = bz;
@@ -365,7 +369,7 @@ namespace Vge.World.Gen.Feature
             _SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
             _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
-
+            */
             _ExportBlockCaches();
         }
 
@@ -396,15 +400,15 @@ namespace Vge.World.Gen.Feature
         protected void _FoliageTop(int x, int y, int z)
         {
             // Up
-            _SetBlockState(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
             // East
-            _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+            _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
             // West
-            _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+            _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
             // North
-            _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+            _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
             // South
-            _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+            _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
         }
 
         /// <summary>
@@ -414,49 +418,49 @@ namespace Vge.World.Gen.Feature
         protected virtual void _FoliageBranch(int x, int y, int z, int side)
         {
             // Up
-            _SetBlockState(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
             // Down
-            _SetBlockState(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
+            _SetBlockCache(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
-                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
                 // West
-                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
                 // South
-                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
-                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
                 // North
-                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
                 // South
-                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
-                _SetBlockState(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
                 // West
-                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
                 // North
-                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
             }
             else // West
             {
                 // Все кроме East
                 // West
-                _SetBlockState(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
                 // North
-                _SetBlockState(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
                 // South
-                _SetBlockState(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
             }
         }
 

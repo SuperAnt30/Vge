@@ -1,5 +1,6 @@
 ﻿using Vge.Network.Packets.Server;
-using Vge.World.Element;
+using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Gen;
 using Vge.World.Сalendar;
 
@@ -35,9 +36,10 @@ namespace Vge.World
         /// </summary>
         public IChunkProviderGenerate ChunkGenerate { get; protected set; }
         /// <summary>
-        /// Объект обновлении блоков элементов в тактах блока
+        /// Массив кеш блоков для обновления блоков текущего мира в потоке тиков.
+        /// НЕ ГЕНЕРАЦИЯ ЧАНКА, чанк генерируется в другом потоке!
         /// </summary>
-        public BlocksElementUpdate BlocksElement { get; protected set; }
+        public readonly ArrayFast<BlockCache> BlockCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
         /// Пакет Возраждение в мире

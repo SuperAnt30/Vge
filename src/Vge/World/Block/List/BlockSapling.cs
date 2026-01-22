@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
-using Vge.World.Element;
 
 namespace Vge.World.Block.List
 {
@@ -14,10 +13,7 @@ namespace Vge.World.Block.List
         /// </summary>
         private readonly int _elementId;
 
-        public BlockSapling(int elementId)
-        {
-            _elementId = elementId;
-        }
+        public BlockSapling(int elementId) => _elementId = elementId; 
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
@@ -38,16 +34,20 @@ namespace Vge.World.Block.List
             //world.SetBlockAddLiquidTick(pos, _tickRate);
             //else
             //world.SetBlockTick(pos, _tickRate);
+
+            // TileEntity
             // Получить генератор дерева
-            IElementUpdate element = world.Settings.BlocksElement.Element(_elementId);
-            if (element != null)
-            {
-                element.Update(world, blockPos);
-            }
-            else
-            {
-                world.SetBlockToAir(blockPos);
-            }
+            //IElementUpdate element = world.Settings.BlocksElement.Element(_elementId);
+            //if (element != null)
+            //{
+            //    element.Update(world, blockPos);
+            //}
+            //else
+            //{
+            //    world.SetBlockToAir(blockPos);
+            //}
+
+
             //if (blockState.lightSky > 9 && random.Next(14) == 0 && world.IsAreaLoaded(blockPos, 12))
             //{
            // _featureTree.GenefateTree(world, random, blockPos);

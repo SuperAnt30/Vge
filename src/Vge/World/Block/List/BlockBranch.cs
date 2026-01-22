@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Util;
 
 namespace Vge.World.Block.List
 {
@@ -8,12 +9,22 @@ namespace Vge.World.Block.List
     public class BlockBranch : BlockBase
     {
         /// <summary>
+        /// Индекс элемента для генерации
+        /// </summary>
+        private readonly int _elementId;
+
+        public BlockBranch(int elementId) => _elementId = elementId;
+
+        /// <summary>
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override QuadSide[] GetQuads(int met, int xb, int zb)
-        {
-            return _quads[met & 0xFF];
-        }
+        public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 0xFF];
+
+        /// <summary>
+        /// Обновить блок в такте
+        /// </summary>
+        //public override void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
+        //    => world.Settings.BlocksElement.Element(_elementId)?.Update(world, blockPos);
     }
 }

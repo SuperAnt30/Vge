@@ -1,5 +1,4 @@
 ﻿using Mvk2.World.Block.List;
-using Mvk2.World.Element;
 using Vge.World.Block;
 using Vge.World.Block.List;
 
@@ -136,6 +135,10 @@ namespace Mvk2.World.Block
         /// Блок тины
         /// </summary>
         public static BlockBase Tina { get; private set; }
+        /// <summary>
+        /// Блок сухого саженца
+        /// </summary>
+        public static BlockBase SaplingDry { get; private set; }
 
         #endregion
 
@@ -224,15 +227,17 @@ namespace Mvk2.World.Block
             Stone = BlocksReg.RegisterBlockClass("Stone");
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
 
-            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(), "Wood");
-            BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(), "Wood");
-            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
-            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling((int)EnumElementUpdate.TreeBirch), "Wood");
+            SaplingDry = BlocksReg.RegisterBlockClass("SaplingDry", "Wood");
 
-            BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockLog(), "Wood");
-            BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockBranch(), "Wood");
+            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockLog(0), "Wood");
+            BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockBranch(0), "Wood");
+            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockSapling(0), "Wood");
+
+            BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockLog(1), "Wood");
+            BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockBranch(1), "Wood");
             BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeaves(), "Wood");
-            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockSapling((int)EnumElementUpdate.TreeOak), "Wood");
+            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockSapling(1), "Wood");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

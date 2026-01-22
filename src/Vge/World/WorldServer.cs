@@ -8,7 +8,6 @@ using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using Vge.World.Element;
 using Vge.World.Gen;
 using WinGL.Util;
 
@@ -104,44 +103,20 @@ namespace Vge.World
         public override void SetLog(string logMessage, params object[] args) 
             => Filer.Log.Server(logMessage, args);
 
-        #region GenerationElement
+        #region BlockCaches
 
         /// <summary>
-        /// Определить чьи элементы и вернуть маски элементов
-        /// </summary>
-        public IElementMask[] FindElementMask(BlockPos blockPos)
-        {
-            return new IElementMask[0];
-        }
-
-        /// <summary>
-        /// Получить маску по тикающему блоку элемента
-        /// </summary>
-        public IElementMask GetElementMask(BlockPos blockPos)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Задать новую маску тикающему блоку элемента
-        /// </summary>
-        public bool SetElementMask(BlockPos blockPos)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Экспортировать в мир временные блоки из генерации
+        /// Экспортировать в мир временные блоки из кэша блоков обнолений
         /// </summary>
         public void ExportBlockCaches()
         {
-            int count = Settings.BlocksElement.BlockCaches.Count;
+            int count = Settings.BlockCaches.Count;
             if (count > 0)
             {
                 BlockCache blockCache;
                 for (int i = 0; i < count; i++)
                 {
-                    blockCache = Settings.BlocksElement.BlockCaches[i];
+                    blockCache = Settings.BlockCaches[i];
                     SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
                     if (blockCache.Tick != 0)
                     {
@@ -149,7 +124,35 @@ namespace Vge.World
                     }
                 }
             }
-            Settings.BlocksElement.BlockCaches.Clear();
+            Settings.BlockCaches.Clear();
+        }
+
+        /// <summary>
+        /// Проверить в мире временные блоки из кэша блоков обнолений
+        /// </summary>
+        public bool CheckBlockCaches()
+        {
+            int count = Settings.BlockCaches.Count;
+            if (count > 0)
+            {
+                BlockCache blockCache;
+                BlockState blockState;
+                for (int i = 0; i < count; i++)
+                {
+                    blockCache = Settings.BlockCaches[i];
+                    if (blockCache.Flag == 1)
+                    {
+                        // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
+                    }
+                    else
+                    {
+                        // Тут проверяем на воздух
+                        blockState = GetBlockState(blockCache.Position);
+                        if (blockState.Id != 0) return false;
+                    }
+                }
+            }
+            return true;
         }
 
         #endregion

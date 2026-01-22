@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Gen;
+using Mvk2.World.Gen.Feature;
 using System.Runtime.CompilerServices;
 using Vge.World.Gen;
 using Vge.World.Gen.Feature;
@@ -19,11 +20,9 @@ namespace Mvk2.World.Biome
                 new FeatureMinable(_chunkPrimer, 5, _blockIdWater, 33, 24, 44), // Пресная вода
                 //new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch), // Дерево
                 // Берёза
-                new FeatureTree(chunkProvider.BlockCaches, _chunkPrimer, 1, 2, 
-                _blockIdLogBirch, _blockIdBranchBirch, _blockIdLeavesBirch), // Дерево
+                new FeatureTreeBirch(chunkProvider.BlockCaches, _chunkPrimer), // Дерево
                 // Дуб
-                new FeatureTree(chunkProvider.BlockCaches,_chunkPrimer, 1, 2, 
-                _blockIdLogOak, _blockIdBranchOak, _blockIdLeavesOak), // Дерево
+                new FeatureTreeOak(chunkProvider.BlockCaches,_chunkPrimer), // Дерево
                 
                 //new FeatureValun(_chunkPrimer, 1, 1, _blockIdStone, 4, 1, 2, 1, 0)
             };

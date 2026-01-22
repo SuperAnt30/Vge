@@ -45,6 +45,16 @@ namespace Vge.World.Block
             Tick = 0;
         }
 
+        public BlockCache CopyNotFlag()
+            => new BlockCache(Position, Id, Met);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetIdMet(int id, int met)
+        {
+            Id = id;
+            Met = met;
+        }
+
         /// <summary>
         /// Получить данные блока
         /// </summary>

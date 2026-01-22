@@ -298,6 +298,7 @@ namespace Vge.World.Block
 
         public override string ToString() => X + "; " + Y + "; " + Z;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(BlockPos))

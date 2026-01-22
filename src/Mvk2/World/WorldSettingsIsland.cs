@@ -1,5 +1,4 @@
-﻿using Mvk2.World.Element;
-using Mvk2.World.Gen;
+﻿using Mvk2.World.Gen;
 using Vge.World;
 using Vge.World.Сalendar;
 
@@ -22,7 +21,6 @@ namespace Mvk2.World
                 // Сид используется только в серверной части
                 ChunkGenerate = new ChunkProviderGenerateIsland(NumberChunkSections, seed);
             }
-            BlocksElement = new BlocksElementUpdateMvk();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
@@ -197,6 +198,8 @@ namespace Vge.Renderer.World
             {
                 if (_isRenderingSection[cbY])
                 {
+                    //long timeBeginSection = _worldClient.Game.ElapsedTicks();
+
                     _sectionsCountAlphaSort[cbY] = 0;
                     _listAlphaBlock[cbY].Clear();
                     chunkStorage = StorageArrays[cbY];
@@ -278,6 +281,9 @@ namespace Vge.Renderer.World
                         }
                     }
                     _isRenderingSection[cbY] = false;
+
+                    //float timeSection = (_worldClient.Game.ElapsedTicks() - timeBeginSection) / (float)Ticker.TimerFrequency;
+                    //Console.WriteLine("Render: " + timeSection);
                 }
             }
             // Пересчитываем количество альфа блоков
