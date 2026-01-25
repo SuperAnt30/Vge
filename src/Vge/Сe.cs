@@ -3,6 +3,7 @@ using Vge.Entity;
 using Vge.Item;
 using Vge.TileEntity;
 using Vge.World.Block;
+using Vge.World.BlockEntity;
 using WinGL.Util;
 
 /// <summary>
@@ -49,6 +50,10 @@ public sealed class Ce
     /// Различные массивы сущностей
     /// </summary>
     public static EntityArrays Entities;
+    /// <summary>
+    /// Различные массивы блоков сущностей, в первой части аналог TileEntity
+    /// </summary>
+    public static BlockEntityArrays BlocksEntity;
     /// <summary>
     /// Различные массивы предметов
     /// </summary>

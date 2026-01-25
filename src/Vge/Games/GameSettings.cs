@@ -34,6 +34,10 @@ namespace Vge.Games
         /// Корректировочная таблица Id сущностей
         /// </summary>
         public readonly CorrectTable TableEntities = new CorrectTable();
+        /// <summary>
+        /// Корректировочная таблица Id блоков сущностей
+        /// </summary>
+        public readonly CorrectTable TableBlocksEntity = new CorrectTable();
 
         #region PathFile
 
@@ -105,6 +109,7 @@ namespace Vge.Games
                 TableBlocks.Read("TableBlocks", nbt);
                 TableItems.Read("TableItems", nbt);
                 TableEntities.Read("TableEntities", nbt);
+                TableBlocksEntity.Read("TableBlocksEntity", nbt);
             }
             return true;
         }

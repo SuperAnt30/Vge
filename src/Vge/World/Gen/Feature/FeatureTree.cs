@@ -159,7 +159,7 @@ namespace Vge.World.Gen.Feature
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
             _blockCaches.Clear();
 
-            
+            /*
             _SetRand(rand);
             // Корень
             //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
@@ -327,8 +327,8 @@ namespace Vge.World.Gen.Feature
             // Листва на мокушке
             _FoliageTop(bx, y, bz);
 
+            */
             
-            /*
             int x0 = bx;
             int y0 = by;
             int z0 = bz;
@@ -346,13 +346,13 @@ namespace Vge.World.Gen.Feature
             {
                 _SetBlockCache(x0, y0 + 4, z, _blockBranchId, 2);
             }
-            _SetBlockCache(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
-            _SetBlockCache(x0, y0 + 5, z0 - 4, _blockLeavesId);
+            //_SetBlockCache(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
+            //_SetBlockCache(x0, y0 + 5, z0 - 4, _blockLeavesId);
 
-            _SetBlockCache(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
-            _SetBlockCache(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
-            _SetBlockCache(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
-            _SetBlockCache(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
+            //_SetBlockCache(x0 + 1, y0 + 6, z0, _blockLeavesId, 2);
+            //_SetBlockCache(x0 - 1, y0 + 6, z0, _blockLeavesId, 3);
+            //_SetBlockCache(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
+            //_SetBlockCache(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
 
             _SetBlockCache(x0, y0 + 4, z0, _blockId);
             _SetBlockCache(x0, y0 + 5, z0, _blockId);
@@ -362,15 +362,18 @@ namespace Vge.World.Gen.Feature
             _SetBlockCache(x0, y0 + 9, z0, _blockBranchId, 4);
             _SetBlockCache(x0, y0 + 10, z0, _blockBranchId);
 
-            _SetBlockCache(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
-            _SetBlockCache(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
-            _SetBlockCache(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
-            _SetBlockCache(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
-            _SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
+            //_SetBlockCache(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
+            //_SetBlockCache(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
+            //_SetBlockCache(x0 - 1, y0 + 10, z0, _blockLeavesId, 9);
+            //_SetBlockCache(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
+            //_SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
             _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
-            */
-            _ExportBlockCaches();
+
+            //if (_CheckBlockCaches(chunkSpawn))
+            {
+                _ExportBlockCaches();
+            }
         }
 
         /// <summary>
@@ -496,6 +499,42 @@ namespace Vge.World.Gen.Feature
                 }
             }
             _blockCaches.Clear();
+        }
+
+        /// <summary>
+        /// Проверить в мире временные блоки из кэша блоков обнолений
+        /// </summary>
+        protected bool _CheckBlockCaches(ChunkServer chunkSpawn)
+        {
+            int count = _blockCaches.Count;
+            if (count > 0)
+            {
+                BlockCache blockCache;
+                BlockState blockState;
+                BlockPos blockPos = new BlockPos();
+                for (int i = 0; i < count; i++)
+                {
+                    blockCache = _blockCaches[i];
+                    if (blockCache.Flag == 1)
+                    {
+                        // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
+                    }
+                    else
+                    {
+                        // Тут проверяем на воздух
+                        blockPos.X = chunkSpawn.BlockX | blockCache.Position.X & 15;
+                        blockPos.Y = blockCache.Position.Y;
+                        blockPos.Z = chunkSpawn.BlockZ | blockCache.Position.Z & 15;
+                        blockState = chunkSpawn.World.GetBlockState(blockPos);
+                            
+                        if (blockState.Id != 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
     }
 }

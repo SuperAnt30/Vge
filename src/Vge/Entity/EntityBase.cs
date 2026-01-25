@@ -31,7 +31,6 @@ namespace Vge.Entity
         /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
         public ushort IndexEntity { get; protected set; }
-        
 
         /// <summary>
         /// Сущность мертва, не активна

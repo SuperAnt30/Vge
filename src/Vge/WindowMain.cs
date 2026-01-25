@@ -14,6 +14,7 @@ using Vge.World;
 using Vge.World.Block;
 using Vge.Entity;
 using Vge.Item;
+using Vge.World.BlockEntity;
 
 namespace Vge
 {
@@ -542,6 +543,10 @@ namespace Vge
         /// Инициализация сущностей
         /// </summary>
         protected virtual void _InitializationEntities() => EntitiesReg.Initialization(this);
+        /// <summary>
+        /// Инициализация блоков сущностей
+        /// </summary>
+        protected virtual void _InitializationBlocksEntity() => BlocksEntityReg.Initialization(this);
 
         /// <summary>
         /// Инициализация блоков, атласа, модели сущностей и предметов
@@ -552,6 +557,7 @@ namespace Vge
             _InitializationItems();
             BlocksReg.InitializationAtlas(this);
             _InitializationEntities();
+            _InitializationBlocksEntity();
             EntitiesReg.TextureManagerRun();
         }
 

@@ -4,7 +4,7 @@ using Vge.World.Chunk;
 namespace Vge.World.Gen
 {
     /// <summary>
-    /// Интерфейс генерации особенностей, элементов
+    /// Интерфейс генерации особенностей, не выходящего за чанк
     /// </summary>
     public interface IFeatureGeneratorColumn
     {
@@ -15,7 +15,7 @@ namespace Vge.World.Gen
     }
 
     /// <summary>
-    /// Интерфейс генерации особенностей, элементов
+    /// Интерфейс генерации особенностей, которые могу выйти за 1 чанк
     /// </summary>
     public interface IFeatureGeneratorArea
     {

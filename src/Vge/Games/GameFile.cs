@@ -80,6 +80,8 @@ namespace Vge.Games
                 gameSettings.TableItems.Write("TableItems", nbt);
                 // Таблица сущностей
                 gameSettings.TableEntities.Write("TableEntities", nbt);
+                // Таблица блок сущностей
+                gameSettings.TableBlocksEntity.Write("TableBlocksEntity", nbt);
 
                 NBTTools.WriteToFile(nbt, pathGame + NameFaileGame, true);
                 server.Log.Server(Srl.ServerSavingGame);

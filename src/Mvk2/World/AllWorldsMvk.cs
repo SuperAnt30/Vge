@@ -3,6 +3,7 @@ using Vge.Games;
 using Vge.Item;
 using Vge.World;
 using Vge.World.Block;
+using Vge.World.BlockEntity;
 
 namespace Mvk2.World
 {
@@ -27,6 +28,7 @@ namespace Mvk2.World
             BlocksReg.Correct(server.Settings.TableBlocks);
             ItemsReg.Correct(server.Settings.TableItems);
             EntitiesReg.Correct(server.Settings.TableEntities);
+            BlocksEntityReg.Correct(server.Settings.TableBlocksEntity);
 
             // Инициализация ID сущностей и прочего
             //Server.ModServer.InitAfterStartGame();

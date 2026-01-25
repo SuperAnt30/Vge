@@ -16,6 +16,7 @@ using Vge.Games;
 using Mvk2.Games;
 using Mvk2.Item;
 using Vge.Item;
+using Mvk2.World.BlockEntity;
 
 namespace Mvk2
 {
@@ -228,6 +229,15 @@ namespace Mvk2
         {
             base._InitializationEntities();
             EntitiesRegMvk.Initialization();
+        }
+
+        /// <summary>
+        /// Инициализация блоков сущностей
+        /// </summary>
+        protected override void _InitializationBlocksEntity()
+        {
+            base._InitializationBlocksEntity();
+            BlocksEntityRegMvk.Initialization();
         }
 
         /// <summary>
