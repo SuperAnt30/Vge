@@ -1,4 +1,7 @@
-﻿namespace Vge.World.Gen
+﻿using Vge.World.Block;
+using Vge.World.BlockEntity;
+
+namespace Vge.World.Gen
 {
     /// <summary>
     /// Индерфейс подготовительного чанка для генерации
@@ -13,8 +16,12 @@
 
         void SetBlockStateTick(int xz, int y, int id, int met, uint tick);
 
-
         int GetBlockId(int xz, int y);
+
+        /// <summary>
+        /// Задать блок сущностей к конкретному блоку, пример дерево
+        /// </summary>
+        void SetBlockEntity(BlockEntityBase blockEntity);
 
         /// <summary>
         /// Очистить буфер

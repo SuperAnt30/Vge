@@ -1,10 +1,14 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Mvk2.World.BlockEntity.List;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Vge.Util;
+using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using WinGL.Util;
+using Vge.World.Gen;
+using Vge.World.Gen.Feature;
 
-namespace Vge.World.Gen.Feature
+namespace Mvk2.World.Gen.Feature
 {
     /// <summary>
     /// Генерация дерева на этапе создания чанка.
@@ -158,16 +162,19 @@ namespace Vge.World.Gen.Feature
             int bz = rand.Next(16);
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
             _blockCaches.Clear();
-
-            /*
-            _SetRand(rand);
-            // Корень
-            //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
-
-            int vecX, vecY;
             // Значения где формируется ствол, чтоб ствол не уходил далеко
             int bx0 = bx;
             int bz0 = bz;
+
+            BlockState blockBegin = new BlockState(_blockLogId | 3 << 12);
+            
+            _SetRand(rand);
+            // Корень
+            //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
+            //_SetBlockCacheTick(bx, by, bz, _blockLogId, 3, 120);
+
+            int vecX, vecY;
+            
             // временное значение смещение ствола
             int txz;
             int y, iUp, iSide, iBranche;
@@ -223,7 +230,14 @@ namespace Vge.World.Gen.Feature
                 // Ствол
                 // if (_CheckBlock(world, bx, y, bz)) return false;
                 // Ствол, если нижний то параметр для пенька
-                _SetBlockCache(bx, y, bz, _blockLogId, iUp == 0 ? 3 : 0);
+                if (iUp == 0)
+                {
+                    _SetBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
+                }
+                else
+                {
+                    _SetBlockCache(bx, y, bz, _blockLogId);
+                }
                 //_SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
                 //blockCaches.Add(new BlockCache(bx, y, bz, idLog, (ushort)(iUp == 0 ? 6 : 0), true));
 
@@ -327,8 +341,8 @@ namespace Vge.World.Gen.Feature
             // Листва на мокушке
             _FoliageTop(bx, y, bz);
 
-            */
             
+            /*
             int x0 = bx;
             int y0 = by;
             int z0 = bz;
@@ -370,10 +384,22 @@ namespace Vge.World.Gen.Feature
 
             _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
 
-            //if (_CheckBlockCaches(chunkSpawn))
+            */
+
+            if (_biasX == 0 && _biasZ == 0)
             {
-                _ExportBlockCaches();
+                // Чанк спавна равен текущему чанку записи
+                // Можно подготовить массив для TileEntity из _blockCaches
+                BlockEntityTree blockEntity = new BlockEntityTree();
+                
+                blockEntity.SetBlockPosition(blockBegin, 
+                    new BlockPos(chunkSpawn.BlockX + bx0, by, chunkSpawn.BlockZ + bz0));
+                blockEntity.SetArray(_blockCaches.ToArray());
+                _chunkPrimer.SetBlockEntity(blockEntity);
+                    //x0, y0, z0, _blockCaches.ToArray());
             }
+
+            _ExportBlockCaches();
         }
 
         /// <summary>
@@ -503,6 +529,7 @@ namespace Vge.World.Gen.Feature
 
         /// <summary>
         /// Проверить в мире временные блоки из кэша блоков обнолений
+        /// TODO::2026-01-24 не используется
         /// </summary>
         protected bool _CheckBlockCaches(ChunkServer chunkSpawn)
         {

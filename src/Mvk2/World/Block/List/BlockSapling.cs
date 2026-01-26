@@ -1,7 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
+using Vge.World.Chunk;
 
-namespace Vge.World.Block.List
+namespace Mvk2.World.Block.List
 {
     /// <summary>
     /// Блок саженца
@@ -27,7 +30,8 @@ namespace Vge.World.Block.List
         // <summary>
         /// Обновить блок в такте
         /// </summary>
-        public override void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
+        public override void UpdateTick(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, Rand random)
         {
             //world.SetBlockState(pos, new BlockState() { Id = IndexBlock, Met = met }, 46);
             //if (isAddLiquid)

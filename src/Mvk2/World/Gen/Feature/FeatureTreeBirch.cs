@@ -2,7 +2,6 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Gen;
-using Vge.World.Gen.Feature;
 
 
 namespace Mvk2.World.Gen.Feature

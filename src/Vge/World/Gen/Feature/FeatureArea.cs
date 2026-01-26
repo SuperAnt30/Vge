@@ -10,7 +10,7 @@ namespace Vge.World.Gen.Feature
     /// </summary>
     public abstract class FeatureArea : IFeatureGeneratorArea
     {
-        private readonly IChunkPrimer _chunkPrimer;
+        protected readonly IChunkPrimer _chunkPrimer;
         /// <summary>
         /// Какой блок ставим
         /// </summary>
@@ -30,11 +30,11 @@ namespace Vge.World.Gen.Feature
         /// <summary>
         /// Смещение чанка по X, для определения чанка в какой сетим
         /// </summary>
-        private int _biasX;
+        protected int _biasX;
         /// <summary>
         /// Смещение чанка по Z, для определения чанка в какой сетим
         /// </summary>
-        private int _biasZ;
+        protected int _biasZ;
 
         /// <summary>
         /// Вероятность одной

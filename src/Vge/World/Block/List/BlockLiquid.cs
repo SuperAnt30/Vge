@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
+using Vge.World.Chunk;
 using WinGL.Util;
 
 namespace Vge.World.Block.List
@@ -140,7 +141,8 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Обновить блок в такте
         /// </summary>
-        public override void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
+        public override void UpdateTick(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, Rand random)
         {
             int met0 = blockState.Met;
             bool isAddLiquid = met0 > 4096;

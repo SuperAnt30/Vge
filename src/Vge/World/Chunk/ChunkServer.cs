@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Util;
 using Vge.World.Block;
+using Vge.World.BlockEntity;
 
 namespace Vge.World.Chunk
 {
@@ -30,6 +32,11 @@ namespace Vge.World.Chunk
         /// Один на весь мир
         /// </summary>
         private readonly ListMessy<BlockTick> _tickBlocksCache;
+
+        /// <summary>
+        /// Карта сущностей блока y << 8 | z << 4 | x
+        /// </summary>
+        private readonly Dictionary<ushort, BlockEntityBase> _mapBlocksEntity = new Dictionary<ushort, BlockEntityBase>();
 
         /// <summary>
         /// Установите значение true, если чанк был изменен и нуждается в внутреннем обновлении. Для сохранения
@@ -324,13 +331,67 @@ namespace Vge.World.Chunk
                         blockState = GetBlockStateNotCheck(tickBlock.X, tickBlock.Y, tickBlock.Z);
                         BlockBase block = tickBlock.Liquid ? Ce.Blocks.GetAddLiquid(blockState.Met)
                             : blockState.GetBlock();
-                        block.UpdateTick(_worldServer, 
+                        block.UpdateTick(_worldServer, this,
                             new BlockPos(BlockX | tickBlock.X, tickBlock.Y, BlockZ | tickBlock.Z),
                             blockState, World.Rnd);
                     }
                 }
             }
         }
+
+        #endregion
+
+        #region BlockEntity
+
+        /// <summary>
+        /// Получить блок сущности по глобальным координатам блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockEntityBase GetBlockEntity(BlockPos pos)
+            => GetBlockEntity(pos.X & 15, pos.Y, pos.Z & 15);
+
+        /// <summary>
+        /// Получить блок сущности по локальным координатам xz 0..15 y 0..127
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockEntityBase GetBlockEntity(int x, int y, int z)
+        {
+            ushort key = (ushort)(y << 8 | z << 4 | x);
+            if (X == -31 && Y == 8)
+            {
+                Console.WriteLine("G " + key + " " + x + " " + z);
+            }
+            return _mapBlocksEntity.ContainsKey(key) ? _mapBlocksEntity[key] : null;
+        }
+
+        /// <summary>
+        /// Добавить блок сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockEntity(BlockEntityBase blockEntity)
+        {
+            BlockPos pos = blockEntity.Position;
+            ushort key = (ushort)(pos.Y << 8 | (pos.Z & 15) << 4 | (pos.X & 15));
+            if (X == -31 && Y == 8)
+            {
+                Console.WriteLine("S " + key + " " + (pos.X & 15) + " " + (pos.Z & 15) + " " + pos.ToString());
+            }
+            if (_mapBlocksEntity.ContainsKey(key))
+            {
+                _mapBlocksEntity[key] = blockEntity;
+            }
+            else
+            {
+                _mapBlocksEntity.Add(key, blockEntity);
+            }
+        }
+
+        /// <summary>
+        /// Удалить блок сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveBlockEntity(int x, int y, int z) 
+            => _mapBlocksEntity.Remove((ushort)(y << 8 | z << 4 | x));
 
         #endregion
 

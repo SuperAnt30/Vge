@@ -4,6 +4,7 @@ using Vge.Json;
 using Vge.Realms;
 using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World.Chunk;
 using WinGL.Util;
 
 namespace Vge.World.Block
@@ -478,13 +479,14 @@ namespace Vge.World.Block
         /// Случайный эффект блока, для сервера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void RandomTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random)
-            => UpdateTick(world, blockPos, blockState, random);
+        public virtual void RandomTick(WorldServer world, ChunkServer chunk, BlockPos blockPos, BlockState blockState, Rand random)
+            => UpdateTick(world, chunk, blockPos, blockState, random);
 
         /// <summary>
         /// Обновить блок в такте
         /// </summary>
-        public virtual void UpdateTick(WorldServer world, BlockPos blockPos, BlockState blockState, Rand random) { }
+        public virtual void UpdateTick(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, Rand random) { }
 
         #endregion
 

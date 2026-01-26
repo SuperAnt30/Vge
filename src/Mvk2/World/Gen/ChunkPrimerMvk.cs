@@ -2,6 +2,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
+using Vge.World.Block;
+using Vge.World.BlockEntity;
 using Vge.World.Gen;
 
 namespace Mvk2.World.Gen
@@ -45,6 +47,10 @@ namespace Mvk2.World.Gen
         /// z << 4 | x;
         /// </summary>
         public readonly int[] HeightMap = new int[256];
+        /// <summary>
+        /// Массив объектов блоков сущностей, пример Дерево.
+        /// </summary>
+        public readonly ListFast<BlockEntityBase> ListBlockEntity = new ListFast<BlockEntityBase>(10);
 
         /// <summary>
         /// Количество возможных блоков в чанке
@@ -119,6 +125,15 @@ namespace Mvk2.World.Gen
             }
             ArrayLightBlocks.Clear();
             Array.Clear(Tick, 0, _count);
+            ListBlockEntity.Clear();
+        }
+
+        /// <summary>
+        /// Задать блочную структура к конкретному блоку, пример дерево
+        /// </summary>
+        public void SetBlockEntity(BlockEntityBase blockEntity)
+        {
+            ListBlockEntity.Add(blockEntity);
         }
     }
 }

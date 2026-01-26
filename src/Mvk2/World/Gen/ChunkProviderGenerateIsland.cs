@@ -326,12 +326,21 @@ namespace Mvk2.World.Gen
                                     if (ChunkPrimer.Tick[index] != 0)
                                     {
                                         // Тик
-                                        chunk.SetBlockTick(x, y, z, false, ChunkPrimer.Tick[index]);
+                                        chunk.SetBlockTick(x, y0, z, false, ChunkPrimer.Tick[index]);
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+            // Экспортировать BlockEntity из ChunkPrimer в ChunkServer 
+            int count = ChunkPrimer.ListBlockEntity.Count;
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    chunk.SetBlockEntity(ChunkPrimer.ListBlockEntity[i]);
                 }
             }
         }

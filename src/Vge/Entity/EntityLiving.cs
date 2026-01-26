@@ -86,9 +86,10 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToStringPositionRotation()
             => string.Format(ChatStyle.Bolb + PoleConvert.FromAngle(RotationYaw) + 
-                ChatStyle.Reset + " {0:0.000}; {1:0.000}; {2:0.000} Y:{3:0.0} Yb:{4:0.0} P:{5:0.0}",
-                PosX, PosY, PosZ, Glm.Degrees(RotationYaw), 
-                Glm.Degrees(_rotationYawBody), Glm.Degrees(RotationPitch));
+                ChatStyle.Reset + " {0:0.000}; {1:0.000}; {2:0.000} Y:{3:0.0} Yb:{4:0.0} P:{5:0.0} Ch: {6}; {7}; {8}",
+                PosX, PosY, PosZ, Glm.Degrees(RotationYaw), // 0 - 3
+                Glm.Degrees(_rotationYawBody), Glm.Degrees(RotationPitch), // 4 - 5
+                ChunkPositionX, ChunkPositionY, ChunkPositionZ); // 6 - 8
 
         /// <summary>
         /// Получить угол Yaw тела для кадра
