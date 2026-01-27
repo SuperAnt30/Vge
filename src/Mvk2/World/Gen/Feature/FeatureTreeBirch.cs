@@ -2,6 +2,7 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Gen;
+using WinGL.Util;
 
 
 namespace Mvk2.World.Gen.Feature
@@ -10,7 +11,7 @@ namespace Mvk2.World.Gen.Feature
     {
 
         public FeatureTreeBirch(ArrayFast<BlockCache> blockCaches, IChunkPrimer chunkPrimer)
-            : base(blockCaches, chunkPrimer, 1, 2,
+            : base(blockCaches, chunkPrimer, 3, 4,
                   BlocksRegMvk.LogBirch.IndexBlock, BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock)
         {
 
@@ -44,5 +45,11 @@ namespace Mvk2.World.Gen.Feature
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = 64;
         }
+
+        /// <summary>
+        /// Сгенерировать стартовое положение в чанке
+        /// </summary>
+        protected override Vector2i _GetRandomPosBegin(Rand rand)
+            => new Vector2i(rand.Next(8) * 2, rand.Next(16));
     }
 }

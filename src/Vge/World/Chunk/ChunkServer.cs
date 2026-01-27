@@ -344,6 +344,12 @@ namespace Vge.World.Chunk
         #region BlockEntity
 
         /// <summary>
+        /// Количество блоков сущности в чанке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetBlockEntityCount() => _mapBlocksEntity.Count;
+
+        /// <summary>
         /// Получить блок сущности по глобальным координатам блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -357,10 +363,6 @@ namespace Vge.World.Chunk
         public BlockEntityBase GetBlockEntity(int x, int y, int z)
         {
             ushort key = (ushort)(y << 8 | z << 4 | x);
-            if (X == -31 && Y == 8)
-            {
-                Console.WriteLine("G " + key + " " + x + " " + z);
-            }
             return _mapBlocksEntity.ContainsKey(key) ? _mapBlocksEntity[key] : null;
         }
 
@@ -372,10 +374,6 @@ namespace Vge.World.Chunk
         {
             BlockPos pos = blockEntity.Position;
             ushort key = (ushort)(pos.Y << 8 | (pos.Z & 15) << 4 | (pos.X & 15));
-            if (X == -31 && Y == 8)
-            {
-                Console.WriteLine("S " + key + " " + (pos.X & 15) + " " + (pos.Z & 15) + " " + pos.ToString());
-            }
             if (_mapBlocksEntity.ContainsKey(key))
             {
                 _mapBlocksEntity[key] = blockEntity;
@@ -386,6 +384,12 @@ namespace Vge.World.Chunk
             }
         }
 
+        /// <summary>
+        /// Удалить блок сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveBlockEntity(BlockPos pos)
+            => RemoveBlockEntity(pos.X & 15, pos.Y, pos.Z & 15);
         /// <summary>
         /// Удалить блок сущности
         /// </summary>

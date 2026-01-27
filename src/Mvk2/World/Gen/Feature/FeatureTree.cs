@@ -7,6 +7,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using Vge.World.Gen.Feature;
+using WinGL.Util;
 
 namespace Mvk2.World.Gen.Feature
 {
@@ -79,6 +80,11 @@ namespace Mvk2.World.Gen.Feature
         /// Массив кеш блоков для генерации структур текущего мира в потоке генерации
         /// </summary>
         private readonly ArrayFast<BlockCache> _blockCaches;
+        /// <summary>
+        /// Массив всех стартующих в этом чанке деревев.
+        /// Защита от рандома в том же месте, если в чанке много однотипных дервеьев, типа лесов
+        /// </summary>
+        private readonly ListFast<BlockPos> _listTreeBegin = new ListFast<BlockPos>(10);
 
         public FeatureTree(ArrayFast<BlockCache> blockCaches, IChunkPrimer chunkPrimer, 
             byte minRandom, byte maxRandom, int blockLogId, int blockBranchId, int blockLeavesId) 
@@ -151,16 +157,43 @@ namespace Mvk2.World.Gen.Feature
             _foliageBranch = 64;
         }
 
-        
+        /// <summary>
+        /// Сгенерировать стартовое положение в чанке
+        /// </summary>
+        protected virtual Vector2i _GetRandomPosBegin(Rand rand)
+            => new Vector2i(rand.Next(16), rand.Next(16));
+
+        /// <summary>
+        /// Перед декорацией областе всех проходов
+        /// </summary>
+        protected override void _DecorationAreaOctaveBefore()
+        {
+            _listTreeBegin.Clear();
+        }
 
         /// <summary>
         /// Декорация области одного прохода
         /// </summary>
         protected override void _DecorationAreaOctave(ChunkServer chunkSpawn, Rand rand)
         {
-            int bx = rand.Next(16);
-            int bz = rand.Next(16);
+            Vector2i posBegin = _GetRandomPosBegin(rand);
+            int bx = posBegin.X;
+            int bz = posBegin.Y;
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
+
+            BlockPos posPen = new BlockPos(bx, by, bz);
+            //if (_chunkPrimer.GetBlockEntity(bx0, by, bz0) != null)
+            if (_listTreeBegin.Count > 0)
+            {
+                if (_listTreeBegin.Contains(posPen))
+                {
+                    // На этом месте уже имеется что-то, скорее всего дерево.
+                    // По этому мы не будем тут генерировать дерево
+                    return;
+                }
+            }
+            _listTreeBegin.Add(posPen);
+
             _blockCaches.Clear();
             // Значения где формируется ствол, чтоб ствол не уходил далеко
             int bx0 = bx;
@@ -169,9 +202,14 @@ namespace Mvk2.World.Gen.Feature
             BlockState blockBegin = new BlockState(_blockLogId | 3 << 12);
             
             _SetRand(rand);
+
             // Корень
             //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
             //_SetBlockCacheTick(bx, by, bz, _blockLogId, 3, 120);
+
+
+            // Пенёк основа
+            _SetBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
 
             int vecX, vecY;
             
@@ -230,11 +268,7 @@ namespace Mvk2.World.Gen.Feature
                 // Ствол
                 // if (_CheckBlock(world, bx, y, bz)) return false;
                 // Ствол, если нижний то параметр для пенька
-                if (iUp == 0)
-                {
-                    _SetBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
-                }
-                else
+                if (iUp != 0)
                 {
                     _SetBlockCache(bx, y, bz, _blockLogId);
                 }
@@ -340,7 +374,7 @@ namespace Mvk2.World.Gen.Feature
             _SetBlockCache(bx, y, bz, _blockBranchId, 0);
             // Листва на мокушке
             _FoliageTop(bx, y, bz);
-
+            
             
             /*
             int x0 = bx;
@@ -383,8 +417,8 @@ namespace Mvk2.World.Gen.Feature
             //_SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
             _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
-
             */
+            
 
             if (_biasX == 0 && _biasZ == 0)
             {
@@ -402,6 +436,7 @@ namespace Mvk2.World.Gen.Feature
             _ExportBlockCaches();
         }
 
+        
         /// <summary>
         /// Проверить блок если вернёт true останавливаем генерацию
         /// </summary>

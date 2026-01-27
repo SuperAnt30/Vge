@@ -64,12 +64,15 @@ namespace Vge.World.Gen.Feature
         /// </summary>
         public void DecorationsArea(ChunkServer chunkSpawn, Rand rand, int biasX, int biasZ)
         {
+            
+
             if (_probabilityOne > 0)
             {
                 if (rand.Next(_probabilityOne) == 0)
                 {
                     _biasX = biasX;
                     _biasZ = biasZ;
+                    _DecorationAreaOctaveBefore();
                     _DecorationAreaOctave(chunkSpawn, rand);
                 }
             }
@@ -80,7 +83,7 @@ namespace Vge.World.Gen.Feature
                 {
                     _biasX = biasX;
                     _biasZ = biasZ;
-
+                    _DecorationAreaOctaveBefore();
                     for (int ir = 0; ir < countRandom; ir++)
                     {
                         _DecorationAreaOctave(chunkSpawn, rand);
@@ -88,6 +91,11 @@ namespace Vge.World.Gen.Feature
                 }
             }
         }
+
+        /// <summary>
+        /// Перед декорацией областе всех проходов
+        /// </summary>
+        protected virtual void _DecorationAreaOctaveBefore() { }
 
         /// <summary>
         /// Декорация области одного прохода

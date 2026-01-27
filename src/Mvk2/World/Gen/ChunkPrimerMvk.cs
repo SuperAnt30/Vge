@@ -135,5 +135,28 @@ namespace Mvk2.World.Gen
         {
             ListBlockEntity.Add(blockEntity);
         }
+
+        /// <summary>
+        /// Получить блок сущности если имеется
+        /// </summary>
+        public BlockEntityBase GetBlockEntity(int x, int y, int z)
+        {
+            int count = ListBlockEntity.Count;
+            if (count > 0)
+            {
+                BlockPos blockPos;
+                for (int i = 0; i < count; i++)
+                {
+                    blockPos = ListBlockEntity[i].Position;
+                    if ((blockPos.X & 15) == x && blockPos.Y == y 
+                        && (blockPos.Z & 15) == z)
+                    {
+                        return ListBlockEntity[i];
+                    }
+                }
+            }
+            return null;
+        }
+
     }
 }

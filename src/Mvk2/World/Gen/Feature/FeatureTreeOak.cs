@@ -2,7 +2,7 @@
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Gen;
-using Vge.World.Gen.Feature;
+using WinGL.Util;
 
 namespace Mvk2.World.Gen.Feature
 {
@@ -44,5 +44,11 @@ namespace Mvk2.World.Gen.Feature
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = _NextInt(8) == 0 ? _NextInt(8) + 1 : 32;
         }
+
+        /// <summary>
+        /// Сгенерировать стартовое положение в чанке
+        /// </summary>
+        protected override Vector2i _GetRandomPosBegin(Rand rand)
+            => new Vector2i(rand.Next(8) * 2 + 1, rand.Next(16));
     }
 }

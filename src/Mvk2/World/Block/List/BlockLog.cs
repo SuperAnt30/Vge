@@ -46,6 +46,7 @@ namespace Mvk2.World.Block.List
                 BlockEntityTree blockEntityTree = chunk.GetBlockEntity(blockPos) as BlockEntityTree;
                 if (blockEntityTree != null)
                 {
+                    // TODO::2026-01-27 это временно, для отладки, рост дерева
                     int count = blockEntityTree.Count();
                     for (int i = 0; i < count; i++)
                     {
@@ -54,9 +55,23 @@ namespace Mvk2.World.Block.List
                             BlockPos pos = blockEntityTree.GetBlockPos(i);
                             pos.X += chunk.BlockX;
                             pos.Z += chunk.BlockZ;
+                            if (i > 0)
+                            {
+                                //if (world.GetBlockState(pos).Id == BlocksRegMvk.LogBirch.IndexBlock
+                                //    && world.GetBlockState(pos).Met == 3)
+                                {
+                                    // Возможно это пень, проверим на наличие BlockEntity
+                                    if (world.GetChunkServer(pos).GetBlockEntity(pos) != null)
+                                    {
+                                        // Имеется BlockEntity, пропускаем удаления этого блока
+                                        continue;
+                                    }
+                                }
+                            }
                             world.SetBlockToAir(pos);
                         }
                     }
+                    chunk.RemoveBlockEntity(blockPos);
                 }
                 world.SetBlockStateMet(blockPos, 0);
             }

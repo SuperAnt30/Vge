@@ -308,6 +308,13 @@ namespace Vge.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkServer GetChunkServer(Vector2i chunkPos)
             => ChunkPr.GetChunk(chunkPos) as ChunkServer;
+        
+        /// <summary>
+        /// Получить чанк по координатам блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ChunkServer GetChunkServer(BlockPos blockPos)
+            => ChunkPr.GetChunk(blockPos.GetPositionChunkX(), blockPos.GetPositionChunkZ()) as ChunkServer;
 
         #endregion
 
@@ -546,15 +553,17 @@ namespace Vge.World
         public override string ToString()
         {
             int chBt = 0;
+            int chBe = 0;
             if (Server.Players.PlayerOwner != null &&
                 Server.Players.PlayerOwner.IdWorld == IdWorld)
             {
                 ChunkServer chunk = GetChunkServer(Server.Players.PlayerOwner.GetChunkPosition());
                 chBt = chunk.GetTickBlockCount();
+                chBe = chunk.GetBlockEntityCount();
             }
             return "World-" + IdWorld
                 + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
-                + "\r\n" + Tracker + " ChBt: " + chBt;
+                + "\r\n" + Tracker + " ChBt: " + chBt + " ChBe: " + chBe;
         }
         
     }

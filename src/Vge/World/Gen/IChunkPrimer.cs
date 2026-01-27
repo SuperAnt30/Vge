@@ -22,6 +22,11 @@ namespace Vge.World.Gen
         /// Задать блок сущностей к конкретному блоку, пример дерево
         /// </summary>
         void SetBlockEntity(BlockEntityBase blockEntity);
+        
+        /// <summary>
+        /// Получить блок сущности если имеется
+        /// </summary>
+        BlockEntityBase GetBlockEntity(int x, int y, int z);
 
         /// <summary>
         /// Очистить буфер
