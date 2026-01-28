@@ -370,7 +370,7 @@ namespace Vge.World.Chunk
                 else
                 {
                     // Действие блока после его удаления
-                 //   blockOld.OnBreakBlock(World, blockPos, blockStateOld);
+                    blockOld.OnBreakBlock((WorldServer)World, (ChunkServer)this, blockPos, blockStateOld);
                 }
             }
             else if (blockState.Met != blockStateOld.Met) // Метданные разные

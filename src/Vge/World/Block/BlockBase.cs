@@ -490,6 +490,8 @@ namespace Vge.World.Block
 
         #endregion
 
+        #region Действия с блоком
+
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
@@ -507,8 +509,17 @@ namespace Vge.World.Block
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, 
+        public virtual BlockState OnBlockPlaced(WorldBase world, BlockPos blockPos, 
             BlockState blockState, Pole side, Vector3 facing) => blockState;
+
+        /// <summary>
+        /// Действие блока после его удаления
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState state) { }
+
+        #endregion
 
         /// <summary>
         /// Получить строку мет данных, для отладки

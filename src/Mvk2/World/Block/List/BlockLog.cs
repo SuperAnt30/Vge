@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
+using Vge.World.BlockEntity;
 using Vge.World.Chunk;
 
 namespace Mvk2.World.Block.List
@@ -26,7 +27,7 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Индекс элемента для генерации
         /// </summary>
-        private readonly int _elementId;
+        protected readonly int _elementId;
 
         public BlockLog(int elementId) => _elementId = elementId;
 
@@ -52,12 +53,12 @@ namespace Mvk2.World.Block.List
 
                     int up = random.Next(3) + 1;
                     // Тест поиск по блоку и отрубание далее ветки
-                    if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
-                    {
-                        // Если имеется блок
-                        // Откусить бы вверх
-                        blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
-                    }
+                    //if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
+                    //{
+                    //    // Если имеется блок
+                    //    // Откусить бы вверх
+                    //    blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
+                    //}
 
 
                     /*
@@ -123,6 +124,30 @@ namespace Mvk2.World.Block.List
             {
                 blocksCache.Add(new BlockCache(node.PosLoc));
                 _RemoveNodeChildren(node, blocksCache);
+            }
+        }
+
+        /// <summary>
+        /// Действие блока после его удаления
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState state)
+        {
+            if (chunk.GetBlockEntityCount() > 0)
+            {
+                foreach (KeyValuePair<int, BlockEntityBase> item in chunk.MapBlocksEntity)
+                {
+                    if (item.Value is BlockEntityTree blockEntityTree)
+                    {
+                        if (blockEntityTree.FindBlock(blockPos))
+                        {
+                            // Это блок принадлежит этому дереву
+                            // Откусить
+                            blockEntityTree.RemoveBlock(world, chunk, blockPos);
+                        }
+                    }
+                }
             }
         }
     }

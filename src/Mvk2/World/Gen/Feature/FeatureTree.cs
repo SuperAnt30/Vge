@@ -210,6 +210,7 @@ namespace Mvk2.World.Gen.Feature
 
             BlockState blockBegin = new BlockState(_blockLogId | 3 << 12);
             
+            /*
             _SetRand(rand);
 
             // Корень
@@ -367,7 +368,7 @@ namespace Mvk2.World.Gen.Feature
                                         if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
                                         {
                                             // Листва на ветке
-                                            _FoliageBranch(sx, sy, sz, iSide, treeBranch);
+                                     //       _FoliageBranch(sx, sy, sz, iSide, treeBranch);
                                         }
                                     }
                                 }
@@ -388,25 +389,52 @@ namespace Mvk2.World.Gen.Feature
             treeMain.Children.Add(treeTrunk);
             // Листва на мокушке
             _FoliageTop(bx, y, bz, treeTrunk);
+            */
             
             
-            /*
             int x0 = bx;
             int y0 = by;
             int z0 = bz;
 
+            
             _SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
+            //treeBranch = new TreeNode(x0, y0 + 1, z0, _blockId);
+            treeMain.Children.Add(new TreeNode(x0, y0 + 1, z0, _blockId));
             _SetBlockCache(x0, y0 + 1, z0, _blockId);
+            treeMain.Children.Add(new TreeNode(x0, y0 + 2, z0, _blockId));
             _SetBlockCache(x0, y0 + 2, z0, _blockId);
 
-            for (int x = x0 - 8; x < x0 + 9; x++)
+            treeTrunk = new TreeNode(x0, y0 + 3, z0, _blockId);
+            treeMain.Children.Add(treeTrunk);
+            _SetBlockCache(x0, y0 + 3, z0, _blockId);
+            for (int x = x0 + 1; x < x0 + 9; x++)
             {
+                treeTrunk.Children.Add(new TreeNode(x, y0 + 3, z0, _blockBranchId));
                 _SetBlockCache(x, y0 + 3, z0, _blockBranchId, 1);
             }
-            _SetBlockCache(x0, y0 + 3, z0, _blockId);
-            for (int z = z0 - 8; z < z0 + 9; z++)
+            treeTrunk = new TreeNode(x0, y0 + 4, z0, _blockId);
+            treeMain.Children.Add(treeTrunk);
+            _SetBlockCache(x0, y0 + 4, z0, _blockId);
+            for (int x = x0 - 1; x > x0 - 9; x--)
             {
-                _SetBlockCache(x0, y0 + 4, z, _blockBranchId, 2);
+                treeTrunk.Children.Add(new TreeNode(x, y0 + 4, z0, _blockBranchId));
+                _SetBlockCache(x, y0 + 4, z0, _blockBranchId, 1);
+            }
+            treeTrunk = new TreeNode(x0, y0 + 5, z0, _blockId);
+            treeMain.Children.Add(treeTrunk);
+            _SetBlockCache(x0, y0 + 5, z0, _blockId);
+            for (int z = z0 + 1; z < z0 + 9; z++)
+            {
+                treeTrunk.Children.Add(new TreeNode(x0, y0 + 5, z, _blockBranchId));
+                _SetBlockCache(x0, y0 + 5, z, _blockBranchId, 2);
+            }
+            treeTrunk = new TreeNode(x0, y0 + 6, z0, _blockId);
+            treeMain.Children.Add(treeTrunk);
+            _SetBlockCache(x0, y0 + 6, z0, _blockId);
+            for (int z = z0 - 1; z > z0 - 9; z--)
+            {
+                treeTrunk.Children.Add(new TreeNode(x0, y0 + 6, z, _blockBranchId));
+                _SetBlockCache(x0, y0 + 6, z, _blockBranchId, 2);
             }
             //_SetBlockCache(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
             //_SetBlockCache(x0, y0 + 5, z0 - 4, _blockLeavesId);
@@ -416,12 +444,18 @@ namespace Mvk2.World.Gen.Feature
             //_SetBlockCache(x0, y0 + 6, z0 - 1, _blockLeavesId, 4);
             //_SetBlockCache(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
 
-            _SetBlockCache(x0, y0 + 4, z0, _blockId);
-            _SetBlockCache(x0, y0 + 5, z0, _blockId);
-            _SetBlockCache(x0, y0 + 6, z0, _blockId);
-            _SetBlockCache(x0, y0 + 7, z0, _blockId);
+
+            for (int y = y0 + 7; y <= y0 + 7; y++)
+            {
+                treeMain.Children.Add(new TreeNode(x0, y, z0, _blockId));
+                _SetBlockCache(x0, y, z0, _blockId);
+            }
+            treeMain.Children.Add(new TreeNode(x0, y0 + 8, z0, _blockBranchId));
             _SetBlockCache(x0, y0 + 8, z0, _blockBranchId);
+            treeMain.Children.Add(new TreeNode(x0, y0 + 9, z0, _blockBranchId));
             _SetBlockCache(x0, y0 + 9, z0, _blockBranchId, 4);
+            treeTrunk = new TreeNode(x0, y0 + 10, z0, _blockBranchId);
+            treeMain.Children.Add(treeTrunk);
             _SetBlockCache(x0, y0 + 10, z0, _blockBranchId);
 
             //_SetBlockCache(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
@@ -430,8 +464,9 @@ namespace Mvk2.World.Gen.Feature
             //_SetBlockCache(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
             //_SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
+            treeTrunk.Children.Add(new TreeNode(x0, y0 + 11, z0, _blockLeavesId));
             _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
-            */
+            
             
 
             if (_biasX == 0 && _biasZ == 0)

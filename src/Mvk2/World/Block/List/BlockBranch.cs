@@ -7,14 +7,10 @@ namespace Mvk2.World.Block.List
     /// <summary>
     /// Блок ветки
     /// </summary>
-    public class BlockBranch : BlockBase
+    public class BlockBranch : BlockLog
     {
-        /// <summary>
-        /// Индекс элемента для генерации
-        /// </summary>
-        private readonly int _elementId;
 
-        public BlockBranch(int elementId) => _elementId = elementId;
+        public BlockBranch(int elementId) : base(elementId) { }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера

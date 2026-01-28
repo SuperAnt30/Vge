@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Util;
@@ -36,7 +37,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Карта сущностей блока y << 8 | z << 4 | x
         /// </summary>
-        private readonly Dictionary<int, BlockEntityBase> _mapBlocksEntity = new Dictionary<int, BlockEntityBase>();
+        public readonly Dictionary<int, BlockEntityBase> MapBlocksEntity = new Dictionary<int, BlockEntityBase>();
 
         /// <summary>
         /// Установите значение true, если чанк был изменен и нуждается в внутреннем обновлении. Для сохранения
@@ -347,7 +348,7 @@ namespace Vge.World.Chunk
         /// Количество блоков сущности в чанке
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetBlockEntityCount() => _mapBlocksEntity.Count;
+        public int GetBlockEntityCount() => MapBlocksEntity.Count;
 
         /// <summary>
         /// Получить блок сущности по глобальным координатам блока
@@ -363,7 +364,7 @@ namespace Vge.World.Chunk
         public BlockEntityBase GetBlockEntity(int x, int y, int z)
         {
             int key = y << 8 | z << 4 | x;
-            return _mapBlocksEntity.ContainsKey(key) ? _mapBlocksEntity[key] : null;
+            return MapBlocksEntity.ContainsKey(key) ? MapBlocksEntity[key] : null;
         }
 
         /// <summary>
@@ -374,13 +375,13 @@ namespace Vge.World.Chunk
         {
             BlockPos pos = blockEntity.Position;
             int key = pos.Y << 8 | (pos.Z & 15) << 4 | (pos.X & 15);
-            if (_mapBlocksEntity.ContainsKey(key))
+            if (MapBlocksEntity.ContainsKey(key))
             {
-                _mapBlocksEntity[key] = blockEntity;
+                MapBlocksEntity[key] = blockEntity;
             }
             else
             {
-                _mapBlocksEntity.Add(key, blockEntity);
+                MapBlocksEntity.Add(key, blockEntity);
             }
         }
 
@@ -395,7 +396,7 @@ namespace Vge.World.Chunk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveBlockEntity(int x, int y, int z) 
-            => _mapBlocksEntity.Remove(y << 8 | z << 4 | x);
+            => MapBlocksEntity.Remove(y << 8 | z << 4 | x);
 
         #endregion
 
