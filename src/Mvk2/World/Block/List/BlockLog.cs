@@ -1,4 +1,6 @@
-﻿using Mvk2.World.BlockEntity.List;
+﻿using Mvk2.Util;
+using Mvk2.World.BlockEntity.List;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
@@ -47,35 +49,81 @@ namespace Mvk2.World.Block.List
                 if (blockEntityTree != null)
                 {
                     // TODO::2026-01-27 это временно, для отладки, рост дерева
-                    int count = blockEntityTree.Count();
-                    for (int i = 0; i < count; i++)
+
+                    int up = random.Next(3) + 1;
+                    // Тест поиск по блоку и отрубание далее ветки
+                    if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
                     {
-                        if (blockEntityTree.GetBlockId(i) != IndexBlock)
+                        // Если имеется блок
+                        // Откусить бы вверх
+                        blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
+                    }
+
+
+                    /*
+                    // Тест по древу
+                    List<BlockCache> blocksCache = new List<BlockCache>();
+
+                    foreach(TreeNode node in blockEntityTree.Tree.Children)
+                    {
+                        blocksCache.Add(new BlockCache(node.PosLoc));
+                        _RemoveNodeChildren(node, blocksCache);
+                    }
+
+                    BlockPos pos = new BlockPos();
+                    foreach (BlockCache blockCache in blocksCache)
+                    {
+                        pos = blockCache.Position;
+                        pos.X += chunk.BlockX;
+                        pos.Z += chunk.BlockZ;
+                        world.SetBlockToAir(pos);
+                    }
+                    */
+
+                        /*
+                        int count = blockEntityTree.Count();
+                        for (int i = 0; i < count; i++)
                         {
-                            BlockPos pos = blockEntityTree.GetBlockPos(i);
-                            pos.X += chunk.BlockX;
-                            pos.Z += chunk.BlockZ;
-                            if (i > 0)
+                            if (blockEntityTree.GetBlockId(i) != IndexBlock)
                             {
-                                //if (world.GetBlockState(pos).Id == BlocksRegMvk.LogBirch.IndexBlock
-                                //    && world.GetBlockState(pos).Met == 3)
+                                BlockPos pos = blockEntityTree.GetBlockPos(i);
+                                pos.X += chunk.BlockX;
+                                pos.Z += chunk.BlockZ;
+                                if (i > 0)
                                 {
-                                    // Возможно это пень, проверим на наличие BlockEntity
-                                    if (world.GetChunkServer(pos).GetBlockEntity(pos) != null)
+                                    //if (world.GetBlockState(pos).Id == BlocksRegMvk.LogBirch.IndexBlock
+                                    //    && world.GetBlockState(pos).Met == 3)
                                     {
-                                        // Имеется BlockEntity, пропускаем удаления этого блока
-                                        continue;
+                                        // Возможно это пень, проверим на наличие BlockEntity
+                                        if (world.GetChunkServer(pos).GetBlockEntity(pos) != null)
+                                        {
+                                            // Имеется BlockEntity, пропускаем удаления этого блока
+                                            continue;
+                                        }
                                     }
                                 }
+                                world.SetBlockToAir(pos);
                             }
-                            world.SetBlockToAir(pos);
                         }
-                    }
-                    chunk.RemoveBlockEntity(blockPos);
+
+                        */
+                      //  chunk.RemoveBlockEntity(blockPos);
                 }
                 world.SetBlockStateMet(blockPos, 0);
             }
         }
-        //    => world.Settings.BlocksElement.Element(_elementId)?.Update(world, blockPos);
+
+
+        /// <summary>
+        /// Для отладки удалить все ветки
+        /// </summary>
+        private void _RemoveNodeChildren(TreeNode nodeMain, List<BlockCache> blocksCache)
+        {
+            foreach (TreeNode node in nodeMain.Children)
+            {
+                blocksCache.Add(new BlockCache(node.PosLoc));
+                _RemoveNodeChildren(node, blocksCache);
+            }
+        }
     }
 }

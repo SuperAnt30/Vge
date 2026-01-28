@@ -44,6 +44,14 @@ namespace Vge.World.Block
             Flag = 0;
             Tick = 0;
         }
+        public BlockCache(BlockPosLoc posLoc, int met = 0)
+        {
+            Position = posLoc.GetBlockPos();
+            Id = posLoc.Id;
+            Met = met;
+            Flag = 0;
+            Tick = 0;
+        }
 
         public BlockCache CopyNotFlag()
             => new BlockCache(Position, Id, Met);

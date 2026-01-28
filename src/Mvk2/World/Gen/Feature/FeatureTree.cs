@@ -1,4 +1,6 @@
-﻿using Mvk2.World.BlockEntity.List;
+﻿using Mvk2.Util;
+using Mvk2.World.BlockEntity.List;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Vge.Util;
@@ -194,6 +196,13 @@ namespace Mvk2.World.Gen.Feature
             }
             _listTreeBegin.Add(posPen);
 
+            // Основа пенёк дерева
+            TreeNode treeMain = new TreeNode(bx, by, bz, _blockLogId);
+            // Ствол дерева
+            TreeNode treeTrunk = null;
+            // Ветка дерева
+            TreeNode treeBranch = null;
+
             _blockCaches.Clear();
             // Значения где формируется ствол, чтоб ствол не уходил далеко
             int bx0 = bx;
@@ -271,6 +280,8 @@ namespace Mvk2.World.Gen.Feature
                 if (iUp != 0)
                 {
                     _SetBlockCache(bx, y, bz, _blockLogId);
+                    treeTrunk = new TreeNode(bx, y, bz, _blockLogId);
+                    treeMain.Children.Add(treeTrunk);
                 }
                 //_SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
                 //blockCaches.Add(new BlockCache(bx, y, bz, idLog, (ushort)(iUp == 0 ? 6 : 0), true));
@@ -345,7 +356,8 @@ namespace Mvk2.World.Gen.Feature
                                         // фиксируем ветку
                                         _SetBlockCache(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId,
                                             (iSide == 0 || iSide == 2) ? 2 : 1);
-
+                                        treeBranch = new TreeNode(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId);
+                                        treeTrunk.Children.Add(treeBranch);
                                         //_SetBlockCache(sx, sy, sz, _blockLogId,
                                         //    (iSide == 0 || iSide == 2) ? 2 : 1);
 
@@ -355,7 +367,7 @@ namespace Mvk2.World.Gen.Feature
                                         if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
                                         {
                                             // Листва на ветке
-                                            _FoliageBranch(sx, sy, sz, iSide);
+                                            _FoliageBranch(sx, sy, sz, iSide, treeBranch);
                                         }
                                     }
                                 }
@@ -372,8 +384,10 @@ namespace Mvk2.World.Gen.Feature
             y = by + count;
             // Ствол
             _SetBlockCache(bx, y, bz, _blockBranchId, 0);
+            treeTrunk = new TreeNode(bx, y, bz, _blockBranchId);
+            treeMain.Children.Add(treeTrunk);
             // Листва на мокушке
-            _FoliageTop(bx, y, bz);
+            _FoliageTop(bx, y, bz, treeTrunk);
             
             
             /*
@@ -428,7 +442,7 @@ namespace Mvk2.World.Gen.Feature
                 
                 blockEntity.SetBlockPosition(blockBegin, 
                     new BlockPos(chunkSpawn.BlockX + bx0, by, chunkSpawn.BlockZ + bz0));
-                blockEntity.SetArray(_blockCaches.ToArray());
+                blockEntity.SetArray(treeMain, _blockCaches);
                 _chunkPrimer.SetBlockEntity(blockEntity);
                     //x0, y0, z0, _blockCaches.ToArray());
             }
@@ -461,83 +475,102 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         ///Листва на мокушке
         /// </summary>
-        protected void _FoliageTop(int x, int y, int z)
+        protected void _FoliageTop(int x, int y, int z, TreeNode treeBranch)
         {
             // Up
             _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x, y + 1, z, _blockLeavesId));
             // East
             _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
             // West
             _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
             // North
             _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
             // South
             _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
         }
 
         /// <summary>
         /// Листва на ветке, side = 0-3 горизонтальный вектор направление вектора MvkStatic.AreaOne4
         /// 0 - South, 1 - East, 2 - North, 3 - West
         /// </summary>
-        protected virtual void _FoliageBranch(int x, int y, int z, int side)
+        protected virtual void _FoliageBranch(int x, int y, int z, int side, TreeNode treeBranch)
         {
             // Up
             _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x, y + 1, z, _blockLeavesId));
             // Down
             _SetBlockCache(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
+            treeBranch.Children.Add(new TreeNode(x, y - 1, z, _blockLeavesId));
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
                 _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
                 // West
                 _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
                 // South
                 _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
                 _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
                 // North
                 _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
                 // South
                 _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
                 _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
                 // West
                 _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
                 // North
                 _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
             }
             else // West
             {
                 // Все кроме East
                 // West
                 _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
                 // North
                 _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
                 // South
                 _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _SetBlockCache(int x, int y, int z, int id)
+        private void _SetBlockCache(int x, int y, int z, int id)
             => _blockCaches.Add(new BlockCache(x, y, z, id));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _SetBlockCache(int x, int y, int z, int id, int met)
+        private void _SetBlockCache(int x, int y, int z, int id, int met)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)
+        private void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Tick = tick });
 
         /// <summary>
@@ -560,43 +593,6 @@ namespace Mvk2.World.Gen.Feature
                 }
             }
             _blockCaches.Clear();
-        }
-
-        /// <summary>
-        /// Проверить в мире временные блоки из кэша блоков обнолений
-        /// TODO::2026-01-24 не используется
-        /// </summary>
-        protected bool _CheckBlockCaches(ChunkServer chunkSpawn)
-        {
-            int count = _blockCaches.Count;
-            if (count > 0)
-            {
-                BlockCache blockCache;
-                BlockState blockState;
-                BlockPos blockPos = new BlockPos();
-                for (int i = 0; i < count; i++)
-                {
-                    blockCache = _blockCaches[i];
-                    if (blockCache.Flag == 1)
-                    {
-                        // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
-                    }
-                    else
-                    {
-                        // Тут проверяем на воздух
-                        blockPos.X = chunkSpawn.BlockX | blockCache.Position.X & 15;
-                        blockPos.Y = blockCache.Position.Y;
-                        blockPos.Z = chunkSpawn.BlockZ | blockCache.Position.Z & 15;
-                        blockState = chunkSpawn.World.GetBlockState(blockPos);
-                            
-                        if (blockState.Id != 0)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
         }
     }
 }

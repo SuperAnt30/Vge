@@ -36,7 +36,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Карта сущностей блока y << 8 | z << 4 | x
         /// </summary>
-        private readonly Dictionary<ushort, BlockEntityBase> _mapBlocksEntity = new Dictionary<ushort, BlockEntityBase>();
+        private readonly Dictionary<int, BlockEntityBase> _mapBlocksEntity = new Dictionary<int, BlockEntityBase>();
 
         /// <summary>
         /// Установите значение true, если чанк был изменен и нуждается в внутреннем обновлении. Для сохранения
@@ -362,7 +362,7 @@ namespace Vge.World.Chunk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockEntityBase GetBlockEntity(int x, int y, int z)
         {
-            ushort key = (ushort)(y << 8 | z << 4 | x);
+            int key = y << 8 | z << 4 | x;
             return _mapBlocksEntity.ContainsKey(key) ? _mapBlocksEntity[key] : null;
         }
 
@@ -373,7 +373,7 @@ namespace Vge.World.Chunk
         public void SetBlockEntity(BlockEntityBase blockEntity)
         {
             BlockPos pos = blockEntity.Position;
-            ushort key = (ushort)(pos.Y << 8 | (pos.Z & 15) << 4 | (pos.X & 15));
+            int key = pos.Y << 8 | (pos.Z & 15) << 4 | (pos.X & 15);
             if (_mapBlocksEntity.ContainsKey(key))
             {
                 _mapBlocksEntity[key] = blockEntity;
@@ -395,7 +395,7 @@ namespace Vge.World.Chunk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveBlockEntity(int x, int y, int z) 
-            => _mapBlocksEntity.Remove((ushort)(y << 8 | z << 4 | x));
+            => _mapBlocksEntity.Remove(y << 8 | z << 4 | x);
 
         #endregion
 
