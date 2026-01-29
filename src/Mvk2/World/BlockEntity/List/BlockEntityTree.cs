@@ -1,5 +1,4 @@
-﻿using Mvk2.Util;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -13,46 +12,25 @@ namespace Mvk2.World.BlockEntity.List
     /// </summary>
     public class BlockEntityTree : BlockEntityBase
     {
-        private BlockPos _pos = new BlockPos();
+        /// <summary>
+        /// Массив всех блоков
+        /// </summary>
+        private BlockPosLoc[] _blocks;
 
         /// <summary>
-        /// Дерево
+        /// Получить массив всех блоков древесины.
+        /// Тут позиция от текущего чанка, где зараждено дерево.
+        /// Массив должен быть правельный, Parent всегда идти на увеличения исключение новых веток.
+        /// Ветка идёт по очереди без обрывов.
         /// </summary>
-        public TreeNode Tree { get; private set; }
-
-        /// <summary>
-        /// Список всех блоков без древа
-        /// </summary>
-        private List<BlockPosLoc> _blocks = new List<BlockPosLoc>();
-
-        /// <summary>
-        /// Получить массив всех блоков древесины
-        /// Тут позиция от текущего чанко, где зараждено дерево.
-        /// т.е. -15..[0..15]..30 (в чанке старт и в любую сторону до 15) 45, нам надо 6 бит.
-        /// y << 12 | z << 6 | x
-        /// ---- ---- | ---y yyyy | yyyy zzzz | zzxx xxxx
-        /// 4 байта, т.е. int
-        /// </summary>
-        public void SetArray(TreeNode node, ArrayFast<BlockCache> blockCaches)
+        public void SetArray(ArrayFast<BlockCache> blockCaches)
         {
-            Tree = node;
             int count = blockCaches.Count;
-            _blocks = new List<BlockPosLoc>(count);
+            _blocks = new BlockPosLoc[count];
             for (int i = 0; i < count; i++)
             {
-                _blocks.Add(new BlockPosLoc(blockCaches[i]));
+                _blocks[i] = new BlockPosLoc(blockCaches[i]);
             }
-        }
-
-        public int Count() => _blocks.Count;
-
-        public BlockPos GetBlockPos(int index)
-        {
-            BlockPosLoc posLoc = _blocks[index];
-            _pos.X = posLoc.GetX();
-            _pos.Y = posLoc.GetY();
-            _pos.Z = posLoc.GetZ();
-            return _pos;
         }
 
         /// <summary>
@@ -60,7 +38,7 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         public bool FindBlock(BlockPos blockPos)
         {
-            int count = _blocks.Count;
+            int count = _blocks.Length;
             if (count > 0)
             {
                 int x = (Position.X >> 4) << 4;
@@ -75,117 +53,111 @@ namespace Mvk2.World.BlockEntity.List
         }
 
         /// <summary>
-        /// Поиск узла родителя
-        /// </summary>
-        private TreeNode _FindBlockParent(int posLoc, TreeNode parent)
-        {
-            int count = parent.Children.Count;
-            if (count > 0)
-            {
-                TreeNode node;
-                for (int i = 0; i < count; i++)
-                {
-                    node = parent.Children[i];
-                    if (node.PosLoc.EqualsPos(posLoc)) return parent;
-                    node = _FindBlockParent(posLoc, node);
-                    if (node != null) return node;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Удалить цепочку блоков
         /// </summary>
         public void RemoveBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos)
         {
-            List<BlockPos> list = new List<BlockPos>();
+            // Список для пополнения блоков удаления по цепочке дерева
+            List<PosId> list = new List<PosId>();
             int biasX = (Position.X >> 4) << 4;
             int biasZ = (Position.Z >> 4) << 4;
             int posLoc = blockPos.Y << 12 | (blockPos.Z - biasZ + 16) << 6 | (blockPos.X - biasX + 16);
+            int count = _blocks.Length;
 
-            if (Tree.PosLoc.EqualsPos(posLoc))
+            bool remove = false;
+            int id = 0;
+            for (int i = 0; i < count; i++)
             {
-                // Пень, значит надо удалять всё!
-                int count = _blocks.Count;
-                for (int i = 0; i < count; i++)
+                if (!remove)
                 {
-                    list.Add(_blocks[i].GetBlockPos(biasX, biasZ));
-                }
-                _blocks.Clear();
-                // Удаляем 
-                chunk.RemoveBlockEntity(blockPos);
-                //Tree.
-            }
-            else
-            {
-                int count = Tree.Children.Count;
-                if (count > 0)
-                {
-                    // Сначало ищем узел родителя
-                    TreeNode node = _FindBlockParent(posLoc, Tree);
-                    if (node != null)
+                    // Ищем
+                    if (_blocks[i].EqualsPos(posLoc))
                     {
-                        // Теперь ищем блок и от него начинаем всё удалять
-                        _RemoveFindBlock(posLoc, node, list, biasX, biasZ);
+                        remove = true;
+                        list.Add(new PosId(i, _blocks[i].GetBlockPos(biasX, biasZ)));
+                        id = i;
                     }
                 }
-            }
-
-            // Удаляем блоки
-            foreach (BlockPos pos in list)
-            {
-                world.SetBlockToAir(pos);
-            }
-        }
-
-        private void _RemoveFindBlock(int posLoc, TreeNode inNode, List<BlockPos> list,
-            int biasX, int biasZ)
-        {
-            int count = inNode.Children.Count;
-            if (count > 0)
-            {
-                TreeNode node;
-                bool remove = false;
-                for (int i = 0; i < count; i++)
+                else
                 {
-                    node = inNode.Children[i];
-                    if (remove)
+                    // Найден
+                    if (_blocks[i].ParentId < id)
                     {
-                        list.Add(node.PosLoc.GetBlockPos(biasX, biasZ));
-                        _RemoveBlock(node, list, biasX, biasZ);
+                        break;
                     }
                     else
                     {
-                        if (node.PosLoc.EqualsPos(posLoc))
-                        {
-                            remove = true;
-                            list.Add(node.PosLoc.GetBlockPos(biasX, biasZ));
-                            _RemoveBlock(node, list, biasX, biasZ);
-                        }
+                        list.Add(new PosId(i, _blocks[i].GetBlockPos(biasX, biasZ)));
                     }
                 }
             }
-        }
 
-        private void _RemoveBlock(TreeNode inNode, List<BlockPos> list,
-            int biasX, int biasZ)
-        {
-            int count = inNode.Children.Count;
-            if (count > 0)
+            if (list.Count > 0)
             {
-                TreeNode node;
-                for (int i = 0; i < count; i++)
+                // Удалить кэш блоков надо до удаления их в мире
+                int countNew = _blocks.Length - list.Count;
+                if (countNew == 0)
                 {
-                    node = inNode.Children[i];
-                    list.Add(node.PosLoc.GetBlockPos(biasX, biasZ));
-                    _RemoveBlock(node, list, biasX, biasZ);
+                    // Полностью удалили
+                    _blocks = new BlockPosLoc[0];
+                    // Удаляем BlockEntity
+                    chunk.RemoveBlockEntity(blockPos);
+                }
+                else
+                {
+                    BlockPosLoc posLoc2;
+                    BlockPosLoc[] blocksNew = new BlockPosLoc[countNew];
+                    int idBegin = list[0].Index; // 13
+                    int bias = list[list.Count - 1].Index - idBegin + 1; // 20 - 13 + 1 = 8
+                    for (int i = 0; i < countNew; i++)
+                    {
+                        if (i < idBegin)
+                        {
+                            // Начальные блоки остаются как есть
+                            blocksNew[i] = _blocks[i];
+                        }
+                        else
+                        {
+                            posLoc2 = _blocks[i + bias];
+                            if (posLoc2.ParentId < idBegin)
+                            {
+                                blocksNew[i] = posLoc2;
+                            }
+                            else
+                            {
+                                blocksNew[i] = new BlockPosLoc(posLoc2, posLoc2.ParentId - bias);
+                            }
+                        }
+                    }
+                    
+                    _blocks = blocksNew;
+                }
+
+                // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
+                foreach (PosId pos in list)
+                {
+                    world.SetBlockToAir(pos.Pos);
                 }
             }
         }
 
-        public int GetBlockId(int index) => _blocks[index].Id;
+        public override string ToString() => Position + " Tree:" + _blocks.Length;
 
-        public override string ToString() => _pos + " " + _blocks.Count;
+        /// <summary>
+        /// Дополнительная структура, для удаления
+        /// </summary>
+        readonly struct PosId
+        {
+            public readonly BlockPos Pos;
+            public readonly int Index;
+
+            public PosId(int index, BlockPos pos)
+            {
+                Index = index;
+                Pos = pos;
+            }
+
+            public override string ToString() => Index + " [" + Pos + "]";
+        }
     }
 }

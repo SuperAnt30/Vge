@@ -53,12 +53,12 @@ namespace Mvk2.World.Block.List
 
                     int up = random.Next(3) + 1;
                     // Тест поиск по блоку и отрубание далее ветки
-                    //if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
-                    //{
-                    //    // Если имеется блок
-                    //    // Откусить бы вверх
-                    //    blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
-                    //}
+                    if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
+                    {
+                        // Если имеется блок
+                        // Откусить бы вверх
+                        blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
+                    }
 
 
                     /*
@@ -111,19 +111,6 @@ namespace Mvk2.World.Block.List
                       //  chunk.RemoveBlockEntity(blockPos);
                 }
                 world.SetBlockStateMet(blockPos, 0);
-            }
-        }
-
-
-        /// <summary>
-        /// Для отладки удалить все ветки
-        /// </summary>
-        private void _RemoveNodeChildren(TreeNode nodeMain, List<BlockCache> blocksCache)
-        {
-            foreach (TreeNode node in nodeMain.Children)
-            {
-                blocksCache.Add(new BlockCache(node.PosLoc));
-                _RemoveNodeChildren(node, blocksCache);
             }
         }
 

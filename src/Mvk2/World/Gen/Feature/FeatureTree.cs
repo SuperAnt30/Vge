@@ -196,13 +196,6 @@ namespace Mvk2.World.Gen.Feature
             }
             _listTreeBegin.Add(posPen);
 
-            // Основа пенёк дерева
-            TreeNode treeMain = new TreeNode(bx, by, bz, _blockLogId);
-            // Ствол дерева
-            TreeNode treeTrunk = null;
-            // Ветка дерева
-            TreeNode treeBranch = null;
-
             _blockCaches.Clear();
             // Значения где формируется ствол, чтоб ствол не уходил далеко
             int bx0 = bx;
@@ -210,7 +203,7 @@ namespace Mvk2.World.Gen.Feature
 
             BlockState blockBegin = new BlockState(_blockLogId | 3 << 12);
             
-            /*
+            
             _SetRand(rand);
 
             // Корень
@@ -220,7 +213,9 @@ namespace Mvk2.World.Gen.Feature
 
             // Пенёк основа
             _SetBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
-
+            int parent = _Parent();
+            // родитель ветки
+            int parentBranch;
             int vecX, vecY;
             
             // временное значение смещение ствола
@@ -275,17 +270,12 @@ namespace Mvk2.World.Gen.Feature
                     _trunkBias--;
                 }
 
-                // Ствол
-                // if (_CheckBlock(world, bx, y, bz)) return false;
                 // Ствол, если нижний то параметр для пенька
                 if (iUp != 0)
                 {
-                    _SetBlockCache(bx, y, bz, _blockLogId);
-                    treeTrunk = new TreeNode(bx, y, bz, _blockLogId);
-                    treeMain.Children.Add(treeTrunk);
+                    _SetBlockCache(bx, y, bz, _blockLogId, parent);
+                    parent = _Parent();
                 }
-                //_SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
-                //blockCaches.Add(new BlockCache(bx, y, bz, idLog, (ushort)(iUp == 0 ? 6 : 0), true));
 
                 // Ветки
                 if (iUp >= _trunkWithoutBranches)
@@ -314,7 +304,7 @@ namespace Mvk2.World.Gen.Feature
                                 if (lightBranche > 0)
                                 {
                                     // Точно имеется ветка работаем с ней
-
+                                    parentBranch = parent;
                                     // параметр смещения ветки, 2 - 3 можно откорректировать для разных деревьев
                                     row[iSide] = _NextInt(2) + 2;
 
@@ -352,23 +342,15 @@ namespace Mvk2.World.Gen.Feature
                                             stickBiasXZ--;
                                         }
 
-                                        //if (_CheckBlock(world, sx, sy, sz)) return false;
-
                                         // фиксируем ветку
-                                        _SetBlockCache(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId,
-                                            (iSide == 0 || iSide == 2) ? 2 : 1);
-                                        treeBranch = new TreeNode(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId);
-                                        treeTrunk.Children.Add(treeBranch);
-                                        //_SetBlockCache(sx, sy, sz, _blockLogId,
-                                        //    (iSide == 0 || iSide == 2) ? 2 : 1);
-
-                                        //blockCaches.Add(new BlockCache(sx, sy, sz, idLog,
-                                        //    (ushort)((iSide == 0 || iSide == 2) ? 2 : 1), true));
+                                        _SetBlockCacheMet(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId,
+                                            (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
+                                        parentBranch = _Parent();
 
                                         if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
                                         {
                                             // Листва на ветке
-                                     //       _FoliageBranch(sx, sy, sz, iSide, treeBranch);
+                                            _FoliageBranch(sx, sy, sz, iSide, parentBranch);
                                         }
                                     }
                                 }
@@ -384,58 +366,44 @@ namespace Mvk2.World.Gen.Feature
 
             y = by + count;
             // Ствол
-            _SetBlockCache(bx, y, bz, _blockBranchId, 0);
-            treeTrunk = new TreeNode(bx, y, bz, _blockBranchId);
-            treeMain.Children.Add(treeTrunk);
+            _SetBlockCache(bx, y, bz, _blockBranchId, parent);
+            parent = _Parent();
             // Листва на мокушке
-            _FoliageTop(bx, y, bz, treeTrunk);
-            */
+            _FoliageTop(bx, y, bz, parent);
             
             
+            /*
             int x0 = bx;
             int y0 = by;
             int z0 = bz;
 
             
             _SetBlockCacheTick(x0, y0, z0, _blockLogId, 3, 120);
-            //treeBranch = new TreeNode(x0, y0 + 1, z0, _blockId);
-            treeMain.Children.Add(new TreeNode(x0, y0 + 1, z0, _blockId));
-            _SetBlockCache(x0, y0 + 1, z0, _blockId);
-            treeMain.Children.Add(new TreeNode(x0, y0 + 2, z0, _blockId));
-            _SetBlockCache(x0, y0 + 2, z0, _blockId);
-
-            treeTrunk = new TreeNode(x0, y0 + 3, z0, _blockId);
-            treeMain.Children.Add(treeTrunk);
-            _SetBlockCache(x0, y0 + 3, z0, _blockId);
+            _SetBlockCache(x0, y0 + 1, z0, _blockId, _Parent());
+            _SetBlockCache(x0, y0 + 2, z0, _blockId, _Parent());
+            _SetBlockCache(x0, y0 + 3, z0, _blockId, _Parent());
+            int parent = _Parent();
             for (int x = x0 + 1; x < x0 + 9; x++)
             {
-                treeTrunk.Children.Add(new TreeNode(x, y0 + 3, z0, _blockBranchId));
-                _SetBlockCache(x, y0 + 3, z0, _blockBranchId, 1);
+                _SetBlockCacheMet(x, y0 + 3, z0, _blockBranchId, 1, _Parent());
             }
-            treeTrunk = new TreeNode(x0, y0 + 4, z0, _blockId);
-            treeMain.Children.Add(treeTrunk);
-            _SetBlockCache(x0, y0 + 4, z0, _blockId);
+            _SetBlockCache(x0, y0 + 4, z0, _blockId, parent);
+            parent = _Parent();
             for (int x = x0 - 1; x > x0 - 9; x--)
             {
-                treeTrunk.Children.Add(new TreeNode(x, y0 + 4, z0, _blockBranchId));
-                _SetBlockCache(x, y0 + 4, z0, _blockBranchId, 1);
+                _SetBlockCacheMet(x, y0 + 4, z0, _blockBranchId, 1, _Parent());
             }
-            treeTrunk = new TreeNode(x0, y0 + 5, z0, _blockId);
-            treeMain.Children.Add(treeTrunk);
-            _SetBlockCache(x0, y0 + 5, z0, _blockId);
+            _SetBlockCache(x0, y0 + 5, z0, _blockId, parent);
+            parent = _Parent();
             for (int z = z0 + 1; z < z0 + 9; z++)
             {
-                treeTrunk.Children.Add(new TreeNode(x0, y0 + 5, z, _blockBranchId));
-                _SetBlockCache(x0, y0 + 5, z, _blockBranchId, 2);
+                _SetBlockCacheMet(x0, y0 + 5, z, _blockBranchId, 2, _Parent());
             }
-            treeTrunk = new TreeNode(x0, y0 + 6, z0, _blockId);
-            treeMain.Children.Add(treeTrunk);
-            _SetBlockCache(x0, y0 + 6, z0, _blockId);
             for (int z = z0 - 1; z > z0 - 9; z--)
             {
-                treeTrunk.Children.Add(new TreeNode(x0, y0 + 6, z, _blockBranchId));
-                _SetBlockCache(x0, y0 + 6, z, _blockBranchId, 2);
+                _SetBlockCacheMet(x0, y0 + 5, z, _blockBranchId, 2, z == z0 - 1 ? parent : _Parent());
             }
+            _SetBlockCache(x0, y0 + 6, z0, _blockId, parent);
             //_SetBlockCache(x0, y0 + 3, z0 - 4, _blockLeavesId, 1);
             //_SetBlockCache(x0, y0 + 5, z0 - 4, _blockLeavesId);
 
@@ -445,18 +413,10 @@ namespace Mvk2.World.Gen.Feature
             //_SetBlockCache(x0, y0 + 6, z0 + 1, _blockLeavesId, 5);
 
 
-            for (int y = y0 + 7; y <= y0 + 7; y++)
-            {
-                treeMain.Children.Add(new TreeNode(x0, y, z0, _blockId));
-                _SetBlockCache(x0, y, z0, _blockId);
-            }
-            treeMain.Children.Add(new TreeNode(x0, y0 + 8, z0, _blockBranchId));
-            _SetBlockCache(x0, y0 + 8, z0, _blockBranchId);
-            treeMain.Children.Add(new TreeNode(x0, y0 + 9, z0, _blockBranchId));
-            _SetBlockCache(x0, y0 + 9, z0, _blockBranchId, 4);
-            treeTrunk = new TreeNode(x0, y0 + 10, z0, _blockBranchId);
-            treeMain.Children.Add(treeTrunk);
-            _SetBlockCache(x0, y0 + 10, z0, _blockBranchId);
+            _SetBlockCache(x0, y0 + 7, z0, _blockId, _Parent());
+            _SetBlockCache(x0, y0 + 8, z0, _blockBranchId, _Parent());
+            _SetBlockCacheMet(x0, y0 + 9, z0, _blockBranchId, 4, _Parent());
+            _SetBlockCache(x0, y0 + 10, z0, _blockBranchId, _Parent());
 
             //_SetBlockCache(x0 + 1, y0 + 8, z0, _blockLeavesId, 2);
             //_SetBlockCache(x0 + 1, y0 + 10, z0, _blockLeavesId, 8);
@@ -464,11 +424,12 @@ namespace Mvk2.World.Gen.Feature
             //_SetBlockCache(x0, y0 + 10, z0 - 1, _blockLeavesId, 10);
             //_SetBlockCache(x0, y0 + 10, z0 + 1, _blockLeavesId, 11);
 
-            treeTrunk.Children.Add(new TreeNode(x0, y0 + 11, z0, _blockLeavesId));
-            _SetBlockCache(x0, y0 + 11, z0, _blockLeavesId, 6);
-            
-            
+            _SetBlockCacheMet(x0, y0 + 11, z0, _blockLeavesId, 6, _Parent());
+            */
 
+
+            // ==== End
+            
             if (_biasX == 0 && _biasZ == 0)
             {
                 // Чанк спавна равен текущему чанку записи
@@ -477,9 +438,8 @@ namespace Mvk2.World.Gen.Feature
                 
                 blockEntity.SetBlockPosition(blockBegin, 
                     new BlockPos(chunkSpawn.BlockX + bx0, by, chunkSpawn.BlockZ + bz0));
-                blockEntity.SetArray(treeMain, _blockCaches);
+                blockEntity.SetArray(_blockCaches);
                 _chunkPrimer.SetBlockEntity(blockEntity);
-                    //x0, y0, z0, _blockCaches.ToArray());
             }
 
             _ExportBlockCaches();
@@ -506,107 +466,92 @@ namespace Mvk2.World.Gen.Feature
             //}
             return false;
         }
-
+        
         /// <summary>
         ///Листва на мокушке
         /// </summary>
-        protected void _FoliageTop(int x, int y, int z, TreeNode treeBranch)
+        protected void _FoliageTop(int x, int y, int z, int parent)
         {
             // Up
-            _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x, y + 1, z, _blockLeavesId));
+            _SetBlockCacheMet(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
             // East
-            _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
+            _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
             // West
-            _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
+            _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
             // North
-            _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
+            _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
             // South
-            _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
+            _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
         }
 
         /// <summary>
         /// Листва на ветке, side = 0-3 горизонтальный вектор направление вектора MvkStatic.AreaOne4
         /// 0 - South, 1 - East, 2 - North, 3 - West
         /// </summary>
-        protected virtual void _FoliageBranch(int x, int y, int z, int side, TreeNode treeBranch)
+        protected virtual void _FoliageBranch(int x, int y, int z, int side, int parent)
         {
             // Up
-            _SetBlockCache(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x, y + 1, z, _blockLeavesId));
+            _SetBlockCacheMet(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
             // Down
-            _SetBlockCache(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
-            treeBranch.Children.Add(new TreeNode(x, y - 1, z, _blockLeavesId));
+            _SetBlockCacheMet(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6, parent);
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
-                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // West
-                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
-                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
-                _SetBlockCache(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x + 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // West
-                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
             }
             else // West
             {
                 // Все кроме East
                 // West
-                _SetBlockCache(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x - 1, y, z, _blockLeavesId));
+                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCache(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z - 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCache(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
-                treeBranch.Children.Add(new TreeNode(x, y, z + 1, _blockLeavesId));
+                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SetBlockCache(int x, int y, int z, int id)
-            => _blockCaches.Add(new BlockCache(x, y, z, id));
+        private int _Parent() => _blockCaches.Count - 1;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SetBlockCache(int x, int y, int z, int id, int met)
-            => _blockCaches.Add(new BlockCache(x, y, z, id, met));
+        private void _SetBlockCache(int x, int y, int z, int id, int parent)
+            => _blockCaches.Add(new BlockCache(x, y, z, id) { Parent = parent });
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetBlockCacheMet(int x, int y, int z, int id, int met, int parent)
+            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Parent = parent });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Tick = tick });
+
 
         /// <summary>
         /// Экспортировать кэш блоки в временные для чанка генерации

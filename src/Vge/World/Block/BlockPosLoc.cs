@@ -6,7 +6,7 @@ namespace Vge.World.Block
     /// Локальная позиция блока с Id, безм мет данных, для генерации и BlockEntity
     /// В 2 инта
     /// </summary>
-    public readonly struct BlockPosLoc
+    public struct BlockPosLoc
     {
         /// <summary>
         /// Позиция 
@@ -22,22 +22,34 @@ namespace Vge.World.Block
         /// </summary>
         public readonly int Id;
 
-        public BlockPosLoc(int x, int y, int z, int id)
+        public readonly int ParentId;
+
+        public BlockPosLoc(int x, int y, int z, int id, int parent)
         {
             _position = y << 12 | (z + 16) << 6 | (x + 16);
             Id = id;
+            ParentId = parent;
         }
 
         public BlockPosLoc(BlockCache blockCache)
         {
             _position = blockCache.Position.Y << 12 | (blockCache.Position.Z + 16) << 6 | (blockCache.Position.X + 16);
             Id = blockCache.Id;
+            ParentId = blockCache.Parent;
         }
 
-        public BlockPosLoc(BlockPos blockPos, int id)
+        public BlockPosLoc(BlockPos blockPos, int id, int parent)
         {
             _position = blockPos.Y << 12 | (blockPos.Z + 16) << 6 | (blockPos.X + 16);
             Id = id;
+            ParentId = parent;
+        }
+
+        public BlockPosLoc(BlockPosLoc posLoc, int parent)
+        {
+            _position = posLoc._position;
+            Id = posLoc.Id;
+            ParentId = parent;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,6 +67,6 @@ namespace Vge.World.Block
         public BlockPos GetBlockPos(int x, int z) => new BlockPos(GetX() + x, GetY(), GetZ() + z);
 
         public override string ToString()
-            => "Id:" + Id + " [" + GetX() + ", " + GetY() + ", " + GetZ() + "]";
+            => "Id:" + Id + " [" + GetX() + ", " + GetY() + ", " + GetZ() + "] P:" + ParentId;
     }
 }
