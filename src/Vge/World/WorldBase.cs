@@ -243,7 +243,7 @@ namespace Vge.World
         protected virtual void _UpdateEntities()
         {
             // колекция для удаления
-          //  MapListEntity entityRemove = new MapListEntity();
+            //  MapListEntity entityRemove = new MapListEntity();
 
             //profiler.StartSection("EntitiesUnloadedList");
 
@@ -252,7 +252,7 @@ namespace Vge.World
             //entityRemove.AddRange(UnloadedEntityList);
             //UnloadedEntityList.Clear();
 
-            //profiler.EndStartSection("EntityTick");
+            Filer.EndStartSection("EntityTick");
 
 
             // Пробегаем по всем сущностям и обрабатываеи их такт
@@ -273,7 +273,7 @@ namespace Vge.World
                 }
             }
 
-            //profiler.EndStartSection("EntityRemove");
+            Filer.EndStartSection("EntityRemove");
 
             // Удаляем 
             while (UnloadedEntityList.Count > 0)
@@ -304,7 +304,7 @@ namespace Vge.World
                 _OnEntityRemoved(entity);
             }
 
-            //profiler.EndSection();
+            Filer.EndSection();
         }
 
         /// <summary>

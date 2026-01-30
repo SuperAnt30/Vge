@@ -537,6 +537,8 @@ namespace Vge.World.Block
             return ToString() + " M:" + met.ToString();
         }
 
+        public int CountShape() => _quads == null ? 0 : _quads.Length;
+
         public override string ToString() => IndexBlock.ToString() + " " + Alias;
     }
 }

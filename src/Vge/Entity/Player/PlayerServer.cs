@@ -382,13 +382,16 @@ namespace Vge.Entity.Player
                     int id = Ce.Entities.IndexItem;
                     if (id > 0)
                     {
-                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, worldServer);
-                        if (entity is EntityItem entityItem)
+                       // for (int i = 0; i < 10; i++)
                         {
-                            entityItem.InitRun(this, 0);
-                            entityItem.SetEntityItemStack(itemStack);
+                            EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, worldServer);
+                            if (entity is EntityItem entityItem)
+                            {
+                                entityItem.InitRun(this, 0);
+                                entityItem.SetEntityItemStack(itemStack);
+                            }
+                            worldServer.SpawnEntityInWorld(entity);
                         }
-                        worldServer.SpawnEntityInWorld(entity);
                     }
                 }
                 /*

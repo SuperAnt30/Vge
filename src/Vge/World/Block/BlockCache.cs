@@ -28,9 +28,9 @@ namespace Vge.World.Block
         /// </summary>
         public uint Tick;
         /// <summary>
-        /// Родитель
+        /// Индекс родителя из массива. Если нет родителя = -1
         /// </summary>
-        public int Parent;
+        public int ParentIndex;
 
         public BlockCache(int x, int y, int z, int id, int met = 0)
         {
@@ -39,7 +39,7 @@ namespace Vge.World.Block
             Met = met;
             Flag = 0;
             Tick = 0;
-            Parent = -1;
+            ParentIndex = -1;
         }
         public BlockCache(BlockPos blockPos, int id, int met = 0)
         {
@@ -48,7 +48,7 @@ namespace Vge.World.Block
             Met = met;
             Flag = 0;
             Tick = 0;
-            Parent = -1;
+            ParentIndex = -1;
         }
         public BlockCache(BlockPosLoc posLoc, int met = 0)
         {
@@ -57,7 +57,7 @@ namespace Vge.World.Block
             Met = met;
             Flag = 0;
             Tick = 0;
-            Parent = -1;
+            ParentIndex = -1;
         }
 
         public BlockCache CopyNotFlag()
@@ -77,6 +77,6 @@ namespace Vge.World.Block
         public BlockState GetBlockState() => new BlockState(Id) { Met = Met };
 
         public override string ToString() 
-            => string.Format("{0} Id:{1} Met:{2} F:{3} P:{4}", Position, Id, Met, Flag, Parent);
+            => string.Format("{0} Id:{1} Met:{2} F:{3} P:{4}", Position, Id, Met, Flag, ParentIndex);
     }
 }

@@ -1,10 +1,6 @@
-﻿using Mvk2.Util;
-using Mvk2.World.BlockEntity.List;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Mvk2.World.BlockEntity.List;
 using System.Runtime.CompilerServices;
 using Vge.Util;
-using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
@@ -107,6 +103,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Возвращает псевдослучайное число LCG из [0, x). Аргументы: целое х
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int _NextInt(int x)
         {
             int random = (int)((_seed >> 24) % x);
@@ -118,6 +115,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Вероятность, где 1 это 100%, 2 50/50. NextInt(x) != 0
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool _NextBool(int x) => _NextInt(x) != 0;
 
         /// <summary>
@@ -133,6 +131,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Случайные атрибуты дерева
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _RandSize()
         {
             // Высота ствола дерева до кроны
@@ -162,16 +161,15 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Сгенерировать стартовое положение в чанке
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual Vector2i _GetRandomPosBegin(Rand rand)
             => new Vector2i(rand.Next(16), rand.Next(16));
 
         /// <summary>
         /// Перед декорацией областе всех проходов
         /// </summary>
-        protected override void _DecorationAreaOctaveBefore()
-        {
-            _listTreeBegin.Clear();
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _DecorationAreaOctaveBefore() => _listTreeBegin.Clear();
 
         /// <summary>
         /// Декорация области одного прохода
@@ -184,7 +182,6 @@ namespace Mvk2.World.Gen.Feature
             int by = chunkSpawn.HeightMapGen[bz << 4 | bx];
 
             BlockPos posPen = new BlockPos(bx, by, bz);
-            //if (_chunkPrimer.GetBlockEntity(bx0, by, bz0) != null)
             if (_listTreeBegin.Count > 0)
             {
                 if (_listTreeBegin.Contains(posPen))
@@ -203,13 +200,7 @@ namespace Mvk2.World.Gen.Feature
 
             BlockState blockBegin = new BlockState(_blockLogId | 3 << 12);
             
-            
             _SetRand(rand);
-
-            // Корень
-            //  _SetBlockReplace(bx, by, bz, _blockLogId, 0);
-            //_SetBlockCacheTick(bx, by, bz, _blockLogId, 3, 120);
-
 
             // Пенёк основа
             _SetBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
@@ -449,23 +440,23 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Проверить блок если вернёт true останавливаем генерацию
         /// </summary>
-        protected bool _CheckBlock(WorldBase world, int x, int y, int z)
-        {
-            //if (!isGen)
-            //{
-            //    checkPos.X = x;
-            //    checkPos.Y = y;
-            //    checkPos.Z = z;
-            //    checkEnumBlock = world.GetBlockState(checkPos).GetEBlock();
-            //    checkEnumMaterial = Blocks.GetBlockCache(checkEnumBlock).Material.EMaterial;
-            //    if (!(checkEnumBlock == EnumBlock.Air || checkEnumMaterial == EnumMaterial.Leaves || checkEnumMaterial == EnumMaterial.Sapling)
-            //        && checkEnumBlock != log)
-            //    {
-            //        return true;
-            //    }
-            //}
-            return false;
-        }
+        //protected bool _CheckBlock(WorldBase world, int x, int y, int z)
+        //{
+        //    if (!isGen)
+        //    {
+        //        checkPos.X = x;
+        //        checkPos.Y = y;
+        //        checkPos.Z = z;
+        //        checkEnumBlock = world.GetBlockState(checkPos).GetEBlock();
+        //        checkEnumMaterial = Blocks.GetBlockCache(checkEnumBlock).Material.EMaterial;
+        //        if (!(checkEnumBlock == EnumBlock.Air || checkEnumMaterial == EnumMaterial.Leaves || checkEnumMaterial == EnumMaterial.Sapling)
+        //            && checkEnumBlock != log)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
         
         /// <summary>
         ///Листва на мокушке
@@ -542,11 +533,11 @@ namespace Mvk2.World.Gen.Feature
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCache(int x, int y, int z, int id, int parent)
-            => _blockCaches.Add(new BlockCache(x, y, z, id) { Parent = parent });
+            => _blockCaches.Add(new BlockCache(x, y, z, id) { ParentIndex = parent });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCacheMet(int x, int y, int z, int id, int met, int parent)
-            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Parent = parent });
+            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = parent });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)

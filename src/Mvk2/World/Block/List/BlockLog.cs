@@ -53,11 +53,11 @@ namespace Mvk2.World.Block.List
 
                     int up = random.Next(3) + 1;
                     // Тест поиск по блоку и отрубание далее ветки
-                    if (blockEntityTree.FindBlock(blockPos.OffsetUp(up)))
+                    if (blockEntityTree.IsAABB(blockPos.OffsetUp(up)))
                     {
                         // Если имеется блок
                         // Откусить бы вверх
-                        blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
+                      //  blockEntityTree.RemoveBlock(world, chunk, blockPos.OffsetUp(up));
                     }
 
 
@@ -121,18 +121,29 @@ namespace Mvk2.World.Block.List
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState state)
         {
+            _RemoveBlockTreeInChunk(world, chunk, blockPos);
+            for (int i = 0; i < 8; i++)
+            {
+                _RemoveBlockTreeInChunk(world, 
+                    world.GetChunkServer(chunk.X + Ce.AreaOne8X[i], chunk.Y + Ce.AreaOne8Y[i]), blockPos);
+            }
+        }
+
+        /// <summary>
+        /// Удаление блока дерева в чанке
+        /// </summary>
+        private void _RemoveBlockTreeInChunk(WorldServer world, ChunkServer chunk, BlockPos blockPos)
+        {
             if (chunk.GetBlockEntityCount() > 0)
             {
                 foreach (KeyValuePair<int, BlockEntityBase> item in chunk.MapBlocksEntity)
                 {
-                    if (item.Value is BlockEntityTree blockEntityTree)
-                    {
-                        if (blockEntityTree.FindBlock(blockPos))
-                        {
-                            // Это блок принадлежит этому дереву
-                            // Откусить
-                            blockEntityTree.RemoveBlock(world, chunk, blockPos);
-                        }
+                    if (item.Value is BlockEntityTree blockEntityTree
+                        && blockEntityTree.IsAABB(blockPos))
+                    {     
+                        // Это блок принадлежит этому дереву
+                        // Откусить
+                        blockEntityTree.RemoveBlock(world, chunk, blockPos);
                     }
                 }
             }

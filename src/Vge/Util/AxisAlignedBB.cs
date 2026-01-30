@@ -355,7 +355,13 @@ namespace Vge.Util
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsVecInside(Vector3 vec) 
-            => vec.X > Min.X && vec.X < Max.X && vec.Y > Min.Y && vec.Y < Max.Y && vec.Z > Min.Z && vec.Z < Max.Z;
+            => vec.X >= Min.X && vec.X <= Max.X && vec.Y >= Min.Y && vec.Y <= Max.Y && vec.Z >= Min.Z && vec.Z <= Max.Z;
+        /// <summary>
+        /// Возвращает, если предоставленный Vector3 полностью находится внутри ограничивающей рамки.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsVecInside(BlockPos vec)
+            => vec.X >= Min.X && vec.X <= Max.X && vec.Y >= Min.Y && vec.Y <= Max.Y && vec.Z >= Min.Z && vec.Z <= Max.Z;
 
         /// <summary>
         /// Возвращает среднюю длину краев ограничивающей рамки

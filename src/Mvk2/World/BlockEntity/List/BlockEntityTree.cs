@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -13,9 +14,17 @@ namespace Mvk2.World.BlockEntity.List
     public class BlockEntityTree : BlockEntityBase
     {
         /// <summary>
-        /// Массив всех блоков
+        /// Массив всех блоков дерева
         /// </summary>
         private BlockPosLoc[] _blocks;
+        /// <summary>
+        /// Хитбокс древа
+        /// </summary>
+        private int _minX, _minY, _minZ, _maxX, _maxY, _maxZ;
+        /// <summary>
+        /// Пустой ли
+        /// </summary>
+        private bool _empty = true;
 
         /// <summary>
         /// Получить массив всех блоков древесины.
@@ -31,10 +40,19 @@ namespace Mvk2.World.BlockEntity.List
             {
                 _blocks[i] = new BlockPosLoc(blockCaches[i]);
             }
+            _UpdateAxis();
         }
 
         /// <summary>
-        /// Найти имеется ли тут блок
+        /// Попадает ли блок в AABB древа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsAABB(BlockPos pos) => !_empty && pos.X >= _minX && pos.X <= _maxX
+            && pos.Y >= _minY && pos.Y <= _maxY && pos.Z >= _minZ && pos.Z <= _maxZ;
+
+        /// <summary>
+        /// Найти имеется ли блок
+        /// Покуда не используется 2026-01-30
         /// </summary>
         public bool FindBlock(BlockPos blockPos)
         {
@@ -81,7 +99,7 @@ namespace Mvk2.World.BlockEntity.List
                 else
                 {
                     // Найден
-                    if (_blocks[i].ParentId < id)
+                    if (_blocks[i].ParentIndex < id)
                     {
                         break;
                     }
@@ -119,19 +137,21 @@ namespace Mvk2.World.BlockEntity.List
                         else
                         {
                             posLoc2 = _blocks[i + bias];
-                            if (posLoc2.ParentId < idBegin)
+                            if (posLoc2.ParentIndex < idBegin)
                             {
                                 blocksNew[i] = posLoc2;
                             }
                             else
                             {
-                                blocksNew[i] = new BlockPosLoc(posLoc2, posLoc2.ParentId - bias);
+                                blocksNew[i] = new BlockPosLoc(posLoc2, posLoc2.ParentIndex - bias);
                             }
                         }
                     }
                     
                     _blocks = blocksNew;
                 }
+
+                _UpdateAxis();
 
                 // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
                 foreach (PosId pos in list)
@@ -141,12 +161,56 @@ namespace Mvk2.World.BlockEntity.List
             }
         }
 
-        public override string ToString() => Position + " Tree:" + _blocks.Length;
+        /// <summary>
+        /// Обновить размер хитбокса
+        /// </summary>
+        private void _UpdateAxis()
+        {
+            int count = _blocks.Length;
+            if (count > 0)
+            {
+                _empty = false;
+                _minX = int.MaxValue;
+                _minY = int.MaxValue;
+                _minZ = int.MaxValue;
+                _maxX = int.MinValue;
+                _maxY = int.MinValue;
+                _maxZ = int.MinValue;
+
+                BlockPosLoc posLoc;
+                for (int i = 0; i < count; i++)
+                {
+                    posLoc = _blocks[i];
+                    if (posLoc.X < _minX) _minX = posLoc.X;
+                    if (posLoc.Y < _minY) _minY = posLoc.Y;
+                    if (posLoc.Z < _minZ) _minZ = posLoc.Z;
+                    if (posLoc.X > _maxX) _maxX = posLoc.X;
+                    if (posLoc.Y > _maxY) _maxY = posLoc.Y;
+                    if (posLoc.Z > _maxZ) _maxZ = posLoc.Z;
+                }
+                int biasX = (Position.X >> 4) << 4;
+                int biasZ = (Position.Z >> 4) << 4;
+                _minX += biasX;
+                _maxX += biasX;
+                _minZ += biasZ;
+                _maxZ += biasZ;
+            }
+            else
+            {
+                _empty = true;
+            }
+        }
+
+        public override string ToString() 
+            => Position 
+            + " Box[" + (_empty ? "empty" : (_minX + "; " + _minY + "; " + _minZ
+            + " -> " + _maxX + "; " + _maxY + "; " + _maxZ))
+            + "] Tree:" + _blocks.Length;
 
         /// <summary>
         /// Дополнительная структура, для удаления
         /// </summary>
-        readonly struct PosId
+        private readonly struct PosId
         {
             public readonly BlockPos Pos;
             public readonly int Index;

@@ -58,6 +58,7 @@ namespace Vge.World.Block
             BlocksRandomTick = new bool[Count];
             _blockIndexLiquid = new int[8];
 
+            int countShape = 0;
             BlockBase block;
             byte indexLiquid = 0;
             for (ushort id = 0; id < Count; id++)
@@ -73,7 +74,10 @@ namespace Vge.World.Block
                     _blockIndexLiquid[++indexLiquid] = block.IndexBlock;
                     block.SetIndexLiquid(indexLiquid);
                 }
+                countShape += block.CountShape();
             }
+
+            return;
         }
 
         /// <summary>
