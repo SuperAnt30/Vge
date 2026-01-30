@@ -120,20 +120,30 @@ namespace Vge.World.Gen.Feature
             }
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //protected void _SetBlockState(int x, int y, int z, int id, int met)
+        //{
+        //    if (_biasX == (x >> 4) && _biasZ == (z >> 4))
+        //    {
+        //        _chunkPrimer.SetBlockState((z & 15) << 4 | (x & 15), y, id, met);
+        //    }
+        //}
+
+        //void SetBlockCache(BlockCache blockCache);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void _SetBlockState(BlockCache blockCache)
         {
             if (_biasX == (blockCache.Position.X >> 4) && _biasZ == (blockCache.Position.Z >> 4))
             {
-                if (blockCache.Tick != 0)
+                //if (blockCache.Tick != 0)
+                //{
+                //    _chunkPrimer.SetBlockStateTick((blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15),
+                //    blockCache.Position.Y, blockCache.Id, blockCache.Met, blockCache.Tick);
+                //}
+                //else
                 {
-                    _chunkPrimer.SetBlockStateTick((blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15),
-                    blockCache.Position.Y, blockCache.Id, blockCache.Met, blockCache.Tick);
-                }
-                else
-                {
-                    _chunkPrimer.SetBlockState((blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15),
-                        blockCache.Position.Y, blockCache.Id, blockCache.Met);
+                    _chunkPrimer.SetBlockCache(blockCache);
                 }
             }
         }

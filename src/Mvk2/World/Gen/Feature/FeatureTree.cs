@@ -234,10 +234,13 @@ namespace Mvk2.World.Gen.Feature
             float factorLightBranches;
             // Количество блоков в секции
             int countBlockSection;
+            // Имеется ли смещение ствола в этом уровне
+            bool isTrunkBiasLevel;
             // снизу вверх
             for (iUp = 0; iUp < count; iUp++)
             {
                 y = by + iUp;
+                isTrunkBiasLevel = false;
                 // готовим смещение ствола
                 if (_trunkBias <= 0)
                 {
@@ -247,6 +250,7 @@ namespace Mvk2.World.Gen.Feature
                     if (txz != 0 && bx0 >= bx + txz - _maxTrunkBias && bx0 <= bx + txz + _maxTrunkBias)
                     {
                         bx += txz;
+                        isTrunkBiasLevel = true;
                     }
                     else
                     {
@@ -254,6 +258,7 @@ namespace Mvk2.World.Gen.Feature
                         if (txz != 0 && bz0 >= bz + txz - _maxTrunkBias && bz0 <= bz + txz + _maxTrunkBias)
                         {
                             bz += txz;
+                            isTrunkBiasLevel = true;
                         }
                     }
                 }
@@ -270,7 +275,7 @@ namespace Mvk2.World.Gen.Feature
                 }
 
                 // Ветки
-                if (iUp >= _trunkWithoutBranches)
+                if (!isTrunkBiasLevel && iUp >= _trunkWithoutBranches)
                 {
                     // Находи коэффициент длинны веток
                     itwb = iUp - _trunkWithoutBranches;
@@ -466,15 +471,15 @@ namespace Mvk2.World.Gen.Feature
         protected void _FoliageTop(int x, int y, int z, int parent)
         {
             // Up
-            _SetBlockCacheMet(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
             // East
-            _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
             // West
-            _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
             // North
-            _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
             // South
-            _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
         }
 
         /// <summary>
@@ -484,49 +489,49 @@ namespace Mvk2.World.Gen.Feature
         protected virtual void _FoliageBranch(int x, int y, int z, int side, int parent)
         {
             // Up
-            _SetBlockCacheMet(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6, parent);
             // Down
-            _SetBlockCacheMet(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6, parent);
+            _SetBlockCacheLeaves(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6, parent);
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
-                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // West
-                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
-                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
-                _SetBlockCacheMet(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6, parent);
                 // West
-                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
             }
             else // West
             {
                 // Все кроме East
                 // West
-                _SetBlockCacheMet(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6, parent);
                 // North
-                _SetBlockCacheMet(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6, parent);
                 // South
-                _SetBlockCacheMet(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
+                _SetBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6, parent);
             }
         }
 
@@ -540,6 +545,10 @@ namespace Mvk2.World.Gen.Feature
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCacheMet(int x, int y, int z, int id, int met, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = parent });
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetBlockCacheLeaves(int x, int y, int z, int id, int met, int parent)
+            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = parent, Flag = 2 });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _SetBlockCacheTick(int x, int y, int z, int id, int met, uint tick)

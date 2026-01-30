@@ -287,6 +287,7 @@ namespace Mvk2.World.Gen
             int x, y, z, yc, ycb, y0, y8, yz;
             int id, idOld;
             int index, indexY, indexYZ;
+            byte flag;
             for (yc = 0; yc < _numberChunkSections; yc++)
             {
                 ycb = yc << 4;
@@ -308,12 +309,24 @@ namespace Mvk2.World.Gen
                                 id = ChunkPrimer.Id[index];
                                 if (id != 0)
                                 {
-                                    if (ChunkPrimer.Flag[index] == 1)
+                                    flag = ChunkPrimer.Flag[index];
+                                    if (flag == 1)
                                     {
                                         if (chunkStorage.CountBlock > 0)
                                         {
                                             idOld = chunkStorage.Data[yz | x];
                                             if (idOld != 0 && idOld != _blockIdWater)
+                                            {
+                                                chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                            }
+                                        }
+                                    }
+                                    else if (flag == 2)
+                                    {
+                                        if (chunkStorage.CountBlock > 0)
+                                        {
+                                            idOld = chunkStorage.Data[yz | x];
+                                            if (idOld == 0)
                                             {
                                                 chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
                                             }

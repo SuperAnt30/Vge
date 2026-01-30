@@ -25,7 +25,9 @@ namespace Mvk2.World.Gen
         public readonly int[] Met;
         /// <summary>
         /// Массив флагов, 
+        /// 0 = всегда меняем
         /// 1 = меняем если не воздух
+        /// 2 = меняем если только воздух
         /// </summary>
         public readonly byte[] Flag;
         /// <summary>
@@ -96,6 +98,16 @@ namespace Mvk2.World.Gen
             int index = y << 8 | z << 4 | x;
             Id[index] = id;
             if (met != 0) Met[index] = met;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockCache(BlockCache blockCache)
+        {
+            int index = blockCache.Position.Y << 8 | (blockCache.Position.Z & 15) << 4 | (blockCache.Position.X & 15);
+            Id[index] = blockCache.Id;
+            Met[index] = blockCache.Met;
+            Flag[index] = blockCache.Flag;
+            Tick[index] = blockCache.Tick;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

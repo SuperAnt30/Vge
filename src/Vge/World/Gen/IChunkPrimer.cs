@@ -14,6 +14,8 @@ namespace Vge.World.Gen
 
         void SetBlockIdFlag(int xz, int y, int id, byte flag);
 
+        void SetBlockCache(BlockCache blockCache);
+
         void SetBlockStateTick(int xz, int y, int id, int met, uint tick);
 
         int GetBlockId(int xz, int y);

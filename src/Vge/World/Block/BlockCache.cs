@@ -22,7 +22,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Тело, доп параметр
         /// </summary>
-        public int Flag;
+        public byte Flag;
         /// <summary>
         /// Тикащий блок, если значение не равно 0, и оно означает время тика, без приоритета
         /// </summary>

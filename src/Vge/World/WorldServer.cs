@@ -130,30 +130,30 @@ namespace Vge.World
         /// <summary>
         /// Проверить в мире временные блоки из кэша блоков обнолений
         /// </summary>
-        public bool CheckBlockCaches()
-        {
-            int count = Settings.BlockCaches.Count;
-            if (count > 0)
-            {
-                BlockCache blockCache;
-                BlockState blockState;
-                for (int i = 0; i < count; i++)
-                {
-                    blockCache = Settings.BlockCaches[i];
-                    if (blockCache.Flag == 1)
-                    {
-                        // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
-                    }
-                    else
-                    {
-                        // Тут проверяем на воздух
-                        blockState = GetBlockState(blockCache.Position);
-                        if (blockState.Id != 0) return false;
-                    }
-                }
-            }
-            return true;
-        }
+        //public bool CheckBlockCaches()
+        //{
+        //    int count = Settings.BlockCaches.Count;
+        //    if (count > 0)
+        //    {
+        //        BlockCache blockCache;
+        //        BlockState blockState;
+        //        for (int i = 0; i < count; i++)
+        //        {
+        //            blockCache = Settings.BlockCaches[i];
+        //            if (blockCache.Flag == 1)
+        //            {
+        //                // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
+        //            }
+        //            else
+        //            {
+        //                // Тут проверяем на воздух
+        //                blockState = GetBlockState(blockCache.Position);
+        //                if (blockState.Id != 0) return false;
+        //            }
+        //        }
+        //    }
+        //    return true;
+        //}
 
         #endregion
 

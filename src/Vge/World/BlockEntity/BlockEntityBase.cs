@@ -71,9 +71,17 @@ namespace Vge.World.BlockEntity
             => Block = chunk.GetBlockState(Position.X & 15, Position.Y, Position.Z & 15);
 
         /// <summary>
+        /// Задать новый такт
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetTick(ChunkServer chunk, int timeTick, bool priority = false)
+            => chunk.SetBlockTick(Position.X & 15, Position.Y, Position.Z & 15, priority, (uint)timeTick);
+
+
+        /// <summary>
         /// Обновить блок плитки в такте
         /// </summary>
-        public virtual void UpdateTick(WorldServer worldServer, Rand random) { }
+        public virtual void UpdateTick(WorldServer world, ChunkServer chunk, Rand random) { }
 
         public virtual void WriteToNBT(TagCompound nbt)
         {

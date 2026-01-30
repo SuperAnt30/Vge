@@ -25,6 +25,10 @@ namespace Mvk2.World.BlockEntity.List
         /// Пустой ли
         /// </summary>
         private bool _empty = true;
+        /// <summary>
+        /// Шаги
+        /// </summary>
+        private int _step = 0;
 
         /// <summary>
         /// Получить массив всех блоков древесины.
@@ -54,26 +58,106 @@ namespace Mvk2.World.BlockEntity.List
         /// Найти имеется ли блок
         /// Покуда не используется 2026-01-30
         /// </summary>
-        public bool FindBlock(BlockPos blockPos)
+        //public bool FindBlock(BlockPos blockPos)
+        //{
+        //    int count = _blocks.Length;
+        //    if (count > 0)
+        //    {
+        //        int x = (Position.X >> 4) << 4;
+        //        int z = (Position.Z >> 4) << 4;
+        //        int posLoc = blockPos.Y << 12 | (blockPos.Z - z + 16) << 6 | (blockPos.X - x + 16);
+        //        for (int i = 0; i < count; i++)
+        //        {
+        //            if (_blocks[i].EqualsPos(posLoc)) return true;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+        /// <summary>
+        /// Обновить блок плитки в такте
+        /// </summary>
+        public override void UpdateTick(WorldServer world, ChunkServer chunk, Rand random)
         {
-            int count = _blocks.Length;
-            if (count > 0)
+          //  return;
+            if (_step == 0)
             {
-                int x = (Position.X >> 4) << 4;
-                int z = (Position.Z >> 4) << 4;
-                int posLoc = blockPos.Y << 12 | (blockPos.Z - z + 16) << 6 | (blockPos.X - x + 16);
-                for (int i = 0; i < count; i++)
+                // Удалим
+                int up = random.Next(2) + 1;
+                if (RemoveBlock(world, chunk, Position.OffsetUp(up)))
                 {
-                    if (_blocks[i].EqualsPos(posLoc)) return true;
+                    // Откусили
+                    _step = 2;
                 }
+                else
+                {
+                    _step = 1;
+                }
+                SetTick(chunk, random.Next(90) + 60);
             }
-            return false;
+            else if (_step == 1)
+            {
+                RemoveBlock(world, chunk, Position);
+            }
+            else if (_step < 10)
+            {
+                // Пробуем вырости
+                _step++;
+                BlockPosLoc posLoc = _blocks[_blocks.Length - 1];
+                int biasX = (Position.X >> 4) << 4;
+                int biasZ = (Position.Z >> 4) << 4;
+                BlockPos pos = posLoc.GetBlockPos(biasX, biasZ);
+                AddBlock(world, chunk, pos.OffsetUp(), posLoc.Id);
+                SetTick(chunk, random.Next(90) + 60);
+            }
         }
 
         /// <summary>
-        /// Удалить цепочку блоков
+        /// Установить часть блоков
         /// </summary>
-        public void RemoveBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos)
+        public void AddBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos, int id)
+        {
+            List<PosId> list = new List<PosId>
+            {
+                new PosId(id, blockPos)
+            };
+
+            int x = (Position.X >> 4) << 4;
+            int z = (Position.Z >> 4) << 4;
+            // Удалить кэш блоков надо до удаления их в мире
+            int idBegin = _blocks.Length;
+            int countNew = idBegin + list.Count;
+            BlockPosLoc[] blocksNew = new BlockPosLoc[countNew];
+            int parent = -1;
+            for (int i = 0; i < countNew; i++)
+            {
+                if (i < idBegin)
+                {
+                    // Начальные блоки остаются как есть
+                    blocksNew[i] = _blocks[i];
+                    parent = i;
+                }
+                else
+                {
+                    blocksNew[i] = new BlockPosLoc(list[idBegin - i].Pos.Offset(-x, 0, -z), list[idBegin - i].Index, parent);
+                }
+            }
+
+            _blocks = blocksNew;
+
+            _UpdateAxis();
+
+            foreach (PosId pos in list)
+            {
+                world.SetBlockState(pos.Pos, new BlockState(pos.Index), 63);
+            }
+        }
+
+        /// <summary>
+        /// Удалить цепочку блоков,
+        /// Возвращает true если хоть один блок удалён
+        /// </summary>
+        public bool RemoveBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos)
         {
             // Список для пополнения блоков удаления по цепочке дерева
             List<PosId> list = new List<PosId>();
@@ -158,8 +242,12 @@ namespace Mvk2.World.BlockEntity.List
                 {
                     world.SetBlockToAir(pos.Pos);
                 }
+                return true;
             }
+            return false;
         }
+
+
 
         /// <summary>
         /// Обновить размер хитбокса
