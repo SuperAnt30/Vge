@@ -45,11 +45,6 @@ namespace Vge.World
         public virtual int GetEntityItemIndex() => -1;
 
         /// <summary>
-        /// Получить индекс кидаемого блока
-        /// </summary>
-        public virtual int GetDebugIndex(int b) => -1;
-
-        /// <summary>
         /// Такт сервера
         /// </summary>
         public void Update()

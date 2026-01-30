@@ -251,7 +251,7 @@ namespace Mvk2.World.Gen
                 _chunkPrimer.SetBlockState(8, h + 3, 7, Cobblestone, 0);
                 _chunkPrimer.SetBlockState(8, h + 4, 7, Limestone, 0);
 
-
+                
                 for (y = h + 5; y < h + 10; y++)
                 {
                     _chunkPrimer.SetBlockState(8, y, 3, Granite, 0);
@@ -262,43 +262,45 @@ namespace Mvk2.World.Gen
                     _chunkPrimer.SetBlockState(10, y, 13, GlassBlue, 0);
                     _chunkPrimer.SetBlockState(11, y, 15, GlassPurple, 0);
                 }
-
+                
+                
                 _chunkPrimer.SetBlockState(12, h + 5, 5, GlassRed, 0);
                 _chunkPrimer.SetBlockState(12, h + 6, 5, GlassGreen, 0);
 
-                _chunkPrimer.SetBlockState(11, h - 1, 4, 1);
-                _chunkPrimer.SetBlockState(11, h - 1, 3, 1);
-                _chunkPrimer.SetBlockState(12, h - 1, 4, 1);
-                _chunkPrimer.SetBlockState(12, h - 1, 3, 1);
-                _chunkPrimer.SetBlockState(11, h - 2, 4, 0);
-                _chunkPrimer.SetBlockState(11, h - 2, 3, 0);
-                _chunkPrimer.SetBlockState(12, h - 2, 4, 0);
-                _chunkPrimer.SetBlockState(12, h - 2, 3, 0);
+                _chunkPrimer.SetBlockState(11, h - 1, 4, 1, 0);
+                _chunkPrimer.SetBlockState(11, h - 1, 3, 1, 0);
+                _chunkPrimer.SetBlockState(12, h - 1, 4, 1, 0);
+                _chunkPrimer.SetBlockState(12, h - 1, 3, 1, 0);
+                _chunkPrimer.SetBlockState(11, h - 2, 4, 0, 0);
+                _chunkPrimer.SetBlockState(11, h - 2, 3, 0, 0);
+                _chunkPrimer.SetBlockState(12, h - 2, 4, 0, 0);
+                _chunkPrimer.SetBlockState(12, h - 2, 3, 0, 0);
 
-                _chunkPrimer.SetBlockState(13, h, 8, 1);
-                _chunkPrimer.SetBlockState(12, h, 7, 1, 1);
-                _chunkPrimer.SetBlockState(11, h, 7, 1, 2);
-                _chunkPrimer.SetBlockState(11, h, 6, 1, 3);
-                _chunkPrimer.SetBlockState(12, h, 6, 1, 3);
+                //_chunkPrimer.SetBlockState(13, h, 8, 1);
+                //_chunkPrimer.SetBlockState(12, h, 7, 1, 1);
+                //_chunkPrimer.SetBlockState(11, h, 7, 1, 2);
+                //_chunkPrimer.SetBlockState(11, h, 6, 1, 3);
+                //_chunkPrimer.SetBlockState(12, h, 6, 1, 3);
                 _chunkPrimer.SetBlockState(10, h, 6, Granite, 0);
 
 
-                _chunkPrimer.SetBlockState(12, h + 1, 9, 1);
+                _chunkPrimer.SetBlockState(12, h + 1, 9, 1, 0);
                 _chunkPrimer.SetBlockState(12, h + 2, 9, 1, 0);
-                _chunkPrimer.SetBlockState(12, h + 3, 9, 1, 1);
-                _chunkPrimer.SetBlockState(12, h + 4, 9, 1, 1);
-                _chunkPrimer.SetBlockState(12, h + 5, 9, 1, 1);
-                _chunkPrimer.SetBlockState(12, h + 6, 9, 1, 2);
-                _chunkPrimer.SetBlockState(12, h + 7, 9, 1, 2);
-                _chunkPrimer.SetBlockState(12, h + 8, 9, 1, 2);
-                _chunkPrimer.SetBlockState(12, h + 9, 9, 1, 3);
-                _chunkPrimer.SetBlockState(12, h + 10, 9, 1, 3);
-                _chunkPrimer.SetBlockState(12, h + 11, 9, 1, 3);
+                //_chunkPrimer.SetBlockState(12, h + 3, 9, 1, 1);
+                //_chunkPrimer.SetBlockState(12, h + 4, 9, 1, 1);
+                //_chunkPrimer.SetBlockState(12, h + 5, 9, 1, 1);
+                //_chunkPrimer.SetBlockState(12, h + 6, 9, 1, 2);
+                //_chunkPrimer.SetBlockState(12, h + 7, 9, 1, 2);
+                //_chunkPrimer.SetBlockState(12, h + 8, 9, 1, 2);
+                //_chunkPrimer.SetBlockState(12, h + 9, 9, 1, 3);
+                //_chunkPrimer.SetBlockState(12, h + 10, 9, 1, 3);
+                //_chunkPrimer.SetBlockState(12, h + 11, 9, 1, 3);
                 _chunkPrimer.SetBlockState(12, h, 9, 1, 0);
                 _chunkPrimer.SetBlockState(11, h, 9, 1, 0);
                 _chunkPrimer.SetBlockState(11, h, 10, 1, 0);
                 _chunkPrimer.SetBlockState(12, h, 10, 1, 0);
 
+                
             }
             //if (X > 4 || X < -4) return;
             //if (Y > 4 || Y < -4) return;

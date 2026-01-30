@@ -8,6 +8,14 @@ namespace Mvk2.Entity
     /// </summary>
     public sealed class EntitiesRegMvk
     {
+        /// <summary>
+        /// Инициализация Id
+        /// </summary>
+        public static void InitId()
+        {
+
+        }
+
         public static void Initialization()
         {
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");

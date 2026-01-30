@@ -1,7 +1,9 @@
-﻿using Mvk2.Entity.List;
+﻿using Mvk2.Entity;
+using Mvk2.Entity.List;
 using Mvk2.Gui;
 using Mvk2.World;
 using Mvk2.World.Biome;
+using Mvk2.World.BlockEntity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Gui.Huds;
@@ -31,6 +33,19 @@ namespace Mvk2.Games
             _windowMvk = window;
             Colors.CreateGrass(Biomes.ColorsGrass);
             Colors.CreateWater(Biomes.ColorsWater);
+        }
+
+        /// <summary>
+        /// Корректировка блоков, сущностей и прочего перед инициализации миров, 
+        /// тут только сетевой!
+        /// Для инициализация ID сущностей и подобного.
+        /// </summary>
+        public override void CorrectObjects(PacketS02LoadingGame packet)
+        {
+            base.CorrectObjects(packet);
+            // Присвоение корректных ID
+            EntitiesRegMvk.InitId();
+            BlocksEntityRegMvk.InitId();
         }
 
         /// <summary>

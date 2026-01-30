@@ -1,5 +1,7 @@
-﻿using Mvk2.Entity.List;
+﻿using Mvk2.Entity;
+using Mvk2.Entity.List;
 using Mvk2.Item;
+using Mvk2.World.BlockEntity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
@@ -39,6 +41,19 @@ namespace Mvk2.Games
 
             Ce.TileHole.SetStackInSlot(17, new ItemStack(ItemsRegMvk.Cobblestone, 7));
             Ce.TileHole.SetStackInSlot(18, new ItemStack(ItemsRegMvk.Brol, 2));
+        }
+
+        /// <summary>
+        /// Корректировка блоков, сущностей и прочего перед инициализации миров, 
+        /// тут для сервера и/или сингла!
+        /// Для инициализация ID сущностей и подобного.
+        /// </summary>
+        public override void CorrectObjects()
+        {
+            base.CorrectObjects();
+            // Присвоение корректных ID
+            EntitiesRegMvk.InitId();
+            BlocksEntityRegMvk.InitId();
         }
     }
 }

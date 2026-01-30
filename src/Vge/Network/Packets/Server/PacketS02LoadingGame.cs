@@ -22,29 +22,35 @@
         /// Массив сущностей
         /// </summary>
         public string[] Entities { get; private set; }
+        /// <summary>
+        /// Массив блоков сущности
+        /// </summary>
+        public string[] BlocksEntity { get; private set; }
 
         /// <summary>
         /// Передать таблицу блоков
         /// </summary>
-        public PacketS02LoadingGame(string[] blocks, string[] items, string[] entities)
+        public PacketS02LoadingGame(string[] blocks, string[] items, 
+            string[] entities, string[] blocksEntity)
         {
             Status = EnumStatus.BeginNet;
             Blocks = blocks;
             Items = items;
             Entities = entities;
+            BlocksEntity = blocksEntity;
             Value = 0;
         }
 
         public PacketS02LoadingGame(EnumStatus status)
         {
-            Entities = Items = Blocks = new string[0];
+            BlocksEntity = Entities = Items = Blocks = new string[0];
             Status = status;
             Value = 0;
         }
 
         public PacketS02LoadingGame(ushort value)
         {
-            Entities = Items = Blocks = new string[0];
+            BlocksEntity = Entities = Items = Blocks = new string[0];
             Status = EnumStatus.Begin;
             Value = value;
         }
@@ -76,6 +82,12 @@
                 {
                     Entities[i] = stream.String();
                 }
+                count = stream.UShort();
+                BlocksEntity = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    BlocksEntity[i] = stream.String();
+                }
             }
         }
 
@@ -105,6 +117,12 @@
                 for (int i = 0; i < count; i++)
                 {
                     stream.String(Entities[i]);
+                }
+                count = (ushort)BlocksEntity.Length;
+                stream.UShort(count);
+                for (int i = 0; i < count; i++)
+                {
+                    stream.String(BlocksEntity[i]);
                 }
             }
         }

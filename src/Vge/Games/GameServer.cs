@@ -238,7 +238,7 @@ namespace Vge.Games
             {
                 // Отправляем ему таблицы для сверки
                 ResponsePacket(e.Side, new PacketS02LoadingGame(Ce.Blocks.BlockAlias, 
-                    Ce.Items.ItemAlias, Ce.Entities.EntitiesAlias));
+                    Ce.Items.ItemAlias, Ce.Entities.EntitiesAlias, Ce.BlocksEntity.BlockEntityAlias));
             }
             else
             {

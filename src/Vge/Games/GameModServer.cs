@@ -1,5 +1,9 @@
-﻿using Vge.Entity.Player;
+﻿using Vge.Entity;
+using Vge.Entity.Player;
+using Vge.Item;
 using Vge.Network;
+using Vge.World.Block;
+using Vge.World.BlockEntity;
 
 namespace Vge.Games
 {
@@ -29,6 +33,19 @@ namespace Vge.Games
         /// Инициализация прямо перед циклом сервера
         /// </summary>
         public virtual void InitBeforeLoop() { }
+
+        /// <summary>
+        /// Корректировка блоков, сущностей и прочего перед инициализации миров, 
+        /// тут для сервера и/или сингла!
+        /// Для инициализация ID сущностей и подобного.
+        /// </summary>
+        public virtual void CorrectObjects()
+        {
+            BlocksReg.Correct(Server.Settings.TableBlocks);
+            ItemsReg.Correct(Server.Settings.TableItems);
+            EntitiesReg.Correct(Server.Settings.TableEntities);
+            BlocksEntityReg.Correct(Server.Settings.TableBlocksEntity);
+        }
 
         /// <summary>
         /// Создать объект сетевого игрока

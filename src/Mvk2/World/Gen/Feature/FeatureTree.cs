@@ -1,4 +1,5 @@
-﻿using Mvk2.World.BlockEntity.List;
+﻿using Mvk2.World.BlockEntity;
+using Mvk2.World.BlockEntity.List;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Block;
@@ -425,8 +426,9 @@ namespace Mvk2.World.Gen.Feature
             {
                 // Чанк спавна равен текущему чанку записи
                 // Можно подготовить массив для TileEntity из _blockCaches
-                BlockEntityTree blockEntity = new BlockEntityTree();
-                
+                BlockEntityTree blockEntity = Ce.BlocksEntity.CreateEntityServer(
+                    BlocksEntityRegMvk.IdTree, chunkSpawn.WorldServ) as BlockEntityTree;
+
                 blockEntity.SetBlockPosition(blockBegin, 
                     new BlockPos(chunkSpawn.BlockX + bx0, by, chunkSpawn.BlockZ + bz0));
                 blockEntity.SetArray(_blockCaches);

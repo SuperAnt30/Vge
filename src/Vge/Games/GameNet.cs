@@ -2,14 +2,11 @@
 using System.IO;
 using System.Net;
 using System.Threading;
-using Vge.Entity;
 using Vge.Event;
-using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
-using Vge.World.Block;
 
 namespace Vge.Games
 {
@@ -212,11 +209,8 @@ namespace Vge.Games
                 PacketS02LoadingGame.EnumStatus status = packet.Status;
                 if (status == PacketS02LoadingGame.EnumStatus.BeginNet)
                 {
-                    // В начальном запуске сразу передаём массивы таблиц 
-                    BlocksReg.Correct(new CorrectTable(packet.Blocks));
-                    ItemsReg.Correct(new CorrectTable(packet.Items));
-                    EntitiesReg.Correct(new CorrectTable(packet.Entities));
-
+                    // Корректировка блоков, сущностей и прочего перед инициализации миров
+                    ModClient.CorrectObjects(packet);
                     _socket.SendPacket(new PacketC02LoginStart(Player.Login, Player.Token, Ce.IndexVersion));
                 }
                 else if (status == PacketS02LoadingGame.EnumStatus.VersionAnother)

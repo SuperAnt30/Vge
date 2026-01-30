@@ -1,9 +1,14 @@
-﻿using Vge.Entity.Player;
+﻿using Vge.Entity;
+using Vge.Entity.Player;
 using Vge.Gui.Huds;
 using Vge.Gui.Screens;
+using Vge.Item;
 using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
+using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
+using Vge.World.BlockEntity;
 using WinGL.Actions;
 
 namespace Vge.Games
@@ -39,6 +44,20 @@ namespace Vge.Games
         /// Инициализация после старта игры, когда уже все блоки и сущности загружены
         /// </summary>
         public virtual void InitAfterStartGame() { }
+
+        /// <summary>
+        /// Корректировка блоков, сущностей и прочего перед инициализации миров, 
+        /// тут только сетевой!
+        /// Для инициализация ID сущностей и подобного.
+        /// </summary>
+        public virtual void CorrectObjects(PacketS02LoadingGame packet)
+        {
+            // В начальном запуске сразу передаём массивы таблиц 
+            BlocksReg.Correct(new CorrectTable(packet.Blocks));
+            ItemsReg.Correct(new CorrectTable(packet.Items));
+            EntitiesReg.Correct(new CorrectTable(packet.Entities));
+            BlocksEntityReg.Correct(new CorrectTable(packet.BlocksEntity));
+        }
 
         /// <summary>
         /// Создать настройки мира по id

@@ -22,7 +22,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Объект серверного мира
         /// </summary>
-        private readonly WorldServer _worldServer;
+        public readonly WorldServer WorldServ;
         /// <summary>
         /// Список BlockTick блоков которые должны мгновенно тикать
         /// </summary>
@@ -47,8 +47,8 @@ namespace Vge.World.Chunk
         public ChunkServer(WorldServer worldServer, ChunkSettings settings, int chunkPosX, int chunkPosY)
             : base(worldServer, settings, chunkPosX, chunkPosY)
         {
-            _worldServer = worldServer;
-            _tickBlocksCache = _worldServer.TickBlocksCache;
+            WorldServ = worldServer;
+            _tickBlocksCache = WorldServ.TickBlocksCache;
         }
 
         #region Кольца 1-4
@@ -262,14 +262,14 @@ namespace Vge.World.Chunk
                 tickBlock = _tickBlocks[i];
                 if (tickBlock.X == x && tickBlock.Y == y && tickBlock.Z == z && tickBlock.Liquid == liquid)
                 {
-                    _tickBlocks[i].Set(timeTick + _worldServer.TickCounter, priority);
+                    _tickBlocks[i].Set(timeTick + WorldServ.TickCounter, priority);
                     empty = false;
                     break;
                 }
             }
             if (empty)
             {
-                _tickBlocks.Add(new BlockTick(x, y, z, liquid, timeTick + _worldServer.TickCounter, priority));
+                _tickBlocks.Add(new BlockTick(x, y, z, liquid, timeTick + WorldServ.TickCounter, priority));
             }
         }
 
@@ -306,7 +306,7 @@ namespace Vge.World.Chunk
             {
                 BlockTick tickBlock;
                 _tickBlocksCache.Clear();
-                uint time = _worldServer.TickCounter;
+                uint time = WorldServ.TickCounter;
 
                 // Пробегаемся по всем тикам блоков и собираем которые надо выполнять
                 for (int i = 0; i < count; i++)
@@ -332,7 +332,7 @@ namespace Vge.World.Chunk
                         blockState = GetBlockStateNotCheck(tickBlock.X, tickBlock.Y, tickBlock.Z);
                         BlockBase block = tickBlock.Liquid ? Ce.Blocks.GetAddLiquid(blockState.Met)
                             : blockState.GetBlock();
-                        block.UpdateTick(_worldServer, this,
+                        block.UpdateTick(WorldServ, this,
                             new BlockPos(BlockX | tickBlock.X, tickBlock.Y, BlockZ | tickBlock.Z),
                             blockState, World.Rnd);
                     }
