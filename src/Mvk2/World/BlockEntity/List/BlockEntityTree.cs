@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Mvk2.World.Block.List;
+using Mvk2.World.Gen;
+using Mvk2.World.Gen.Feature;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
@@ -31,12 +35,37 @@ namespace Mvk2.World.BlockEntity.List
         private int _step = 0;
 
         /// <summary>
-        /// Получить массив всех блоков древесины.
+        /// Задать позицию блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetBlockPosition(BlockState blockState, BlockPos pos)
+        {
+            base .SetBlockPosition(blockState, pos);
+
+            BlockTree block = Block.GetBlock() as BlockTree;
+        }
+
+        #region Методы изменения
+
+        /// <summary>
+        /// Задать начальный блок в глобальных координатах. После саженца
+        /// </summary>
+        public void SetBeginBlock(BlockPos blockPos, BlockState blockState)
+        {
+            _blocks = new BlockPosLoc[1];
+            _blocks[0] = new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, 
+                blockState.Id, -1);
+            _UpdateAxis();
+            _step = 2;
+
+        }
+        /// <summary>
+        /// Получить массив всех блоков древесины, в локальных координатах
         /// Тут позиция от текущего чанка, где зараждено дерево.
         /// Массив должен быть правельный, Parent всегда идти на увеличения исключение новых веток.
         /// Ветка идёт по очереди без обрывов.
         /// </summary>
-        public void SetArray(ArrayFast<BlockCache> blockCaches)
+        public void SetArrayLocal(ArrayFast<BlockCache> blockCaches)
         {
             int count = blockCaches.Count;
             _blocks = new BlockPosLoc[count];
@@ -74,48 +103,51 @@ namespace Mvk2.World.BlockEntity.List
         //    return false;
         //}
 
+        
+
         /// <summary>
-        /// Обновить блок плитки в такте
+        /// Установить часть блоков
         /// </summary>
-        public override void UpdateTick(WorldServer world, ChunkServer chunk, Rand random)
+        public void AddBlocks(WorldServer world, ChunkServer chunk, BlockPosLoc[] posLocs)
         {
-          //  return;
-            if (_step == 0)
+            int idBegin = _blocks.Length;
+            int countNew = idBegin + posLocs.Length;
+            BlockPosLoc[] blocksNew = new BlockPosLoc[countNew];
+            int parent = -1;
+            //Array.Copy()
+            for (int i = 0; i < countNew; i++)
             {
-                // Удалим
-                int up = random.Next(2) + 1;
-                if (RemoveBlock(world, chunk, Position.OffsetUp(up)))
+                if (i < idBegin)
                 {
-                    // Откусили
-                    _step = 2;
+                    // Начальные блоки остаются как есть
+                    blocksNew[i] = _blocks[i];
+                    parent = i;
                 }
                 else
                 {
-                    _step = 1;
+                    // Новые блоки
+                    blocksNew[i] = new BlockPosLoc(posLocs[i - idBegin],
+                        posLocs[i - idBegin].ParentIndex + parent);
                 }
-                SetTick(chunk, random.Next(90) + 60);
             }
-            else if (_step == 1)
+
+            _blocks = blocksNew;
+
+            _UpdateAxis();
+            int biasX = (Position.X >> 4) << 4;
+            int biasZ = (Position.Z >> 4) << 4;
+
+            foreach (BlockPosLoc pos in blocksNew)
             {
-                RemoveBlock(world, chunk, Position);
-            }
-            else if (_step < 10)
-            {
-                // Пробуем вырости
-                _step++;
-                BlockPosLoc posLoc = _blocks[_blocks.Length - 1];
-                int biasX = (Position.X >> 4) << 4;
-                int biasZ = (Position.Z >> 4) << 4;
-                BlockPos pos = posLoc.GetBlockPos(biasX, biasZ);
-                AddBlock(world, chunk, pos.OffsetUp(), posLoc.Id);
-                SetTick(chunk, random.Next(90) + 60);
+                world.SetBlockState(pos.GetBlockPos(biasX, biasZ),
+                    new BlockState(pos.Id), 63);
             }
         }
 
         /// <summary>
         /// Установить часть блоков
         /// </summary>
-        public void AddBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos, int id)
+        public void AddBlock(WorldServer world, BlockPos blockPos, int id)
         {
             List<PosId> list = new List<PosId>
             {
@@ -176,7 +208,7 @@ namespace Mvk2.World.BlockEntity.List
                     if (_blocks[i].EqualsPos(posLoc))
                     {
                         remove = true;
-                        list.Add(new PosId(i, _blocks[i].GetBlockPos(biasX, biasZ)));
+                        list.Add(new PosId(_blocks[i].Id, i, _blocks[i].GetBlockPos(biasX, biasZ)));
                         id = i;
                     }
                 }
@@ -189,7 +221,7 @@ namespace Mvk2.World.BlockEntity.List
                     }
                     else
                     {
-                        list.Add(new PosId(i, _blocks[i].GetBlockPos(biasX, biasZ)));
+                        list.Add(new PosId(_blocks[i].Id, i, _blocks[i].GetBlockPos(biasX, biasZ)));
                     }
                 }
             }
@@ -240,14 +272,15 @@ namespace Mvk2.World.BlockEntity.List
                 // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
                 foreach (PosId pos in list)
                 {
-                    world.SetBlockToAir(pos.Pos);
+                    if (pos.Id == world.GetBlockState(pos.Pos).Id)
+                    {
+                        world.SetBlockToAir(pos.Pos);
+                    }
                 }
                 return true;
             }
             return false;
         }
-
-
 
         /// <summary>
         /// Обновить размер хитбокса
@@ -289,6 +322,56 @@ namespace Mvk2.World.BlockEntity.List
             }
         }
 
+        #endregion
+
+        /// <summary>
+        /// Обновить блок плитки в такте
+        /// </summary>
+        public void UpdateTick(WorldServer world, ChunkServer chunk, 
+            Rand random, FeatureTree genFeature)
+        {
+            return;
+            if (_step == 0)
+            {
+                // Удалим
+                int up = random.Next(2) + 1;
+                if (RemoveBlock(world, chunk, Position.OffsetUp(up)))
+                {
+                    // Откусили
+                    _step = 2;
+                }
+                else
+                {
+                    _step = 1;
+                }
+                // SetTick(chunk, random.Next(90) + 60);
+            }
+            else if (_step == 1)
+            {
+                RemoveBlock(world, chunk, Position);
+            }
+            else if (_step < 10)
+            {
+                // Пробуем вырости
+                _step++;
+                BlockPosLoc posLoc = _blocks[_blocks.Length - 1];
+
+                int count = random.Next(3) + 1;
+                BlockPosLoc[] blocks = new BlockPosLoc[count];
+                for (int i = 0; i < count; i++)
+                {
+                    blocks[i] = new BlockPosLoc(posLoc.X, posLoc.Y + i + 1, posLoc.Z,
+                        posLoc.Id, i);
+                }
+                AddBlocks(world, chunk, blocks);
+                //int biasX = (Position.X >> 4) << 4;
+                //int biasZ = (Position.Z >> 4) << 4;
+                //BlockPos pos = posLoc.GetBlockPos(biasX, biasZ);
+                //AddBlock(world, pos.OffsetUp(), posLoc.Id);
+                SetTick(chunk, random.Next(90) + 60);
+            }
+        }
+
         public override string ToString() 
             => Position 
             + " Box[" + (_empty ? "empty" : (_minX + "; " + _minY + "; " + _minZ
@@ -300,11 +383,28 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         private readonly struct PosId
         {
-            public readonly BlockPos Pos;
+            /// <summary>
+            /// Id блока
+            /// </summary>
+            public readonly int Id;
+            /// <summary>
+            /// Порядковый индекс в массиве
+            /// </summary>
             public readonly int Index;
+            /// <summary>
+            /// Позиция
+            /// </summary>
+            public readonly BlockPos Pos;
 
             public PosId(int index, BlockPos pos)
             {
+                Id = -1;
+                Index = index;
+                Pos = pos;
+            }
+            public PosId(int id, int index, BlockPos pos)
+            {
+                Id = id;
                 Index = index;
                 Pos = pos;
             }

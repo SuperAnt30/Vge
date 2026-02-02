@@ -4,18 +4,23 @@ using Vge.World.Block;
 using Vge.World.Gen;
 using WinGL.Util;
 
-
 namespace Mvk2.World.Gen.Feature
 {
     public class FeatureTreeBirch : FeatureTree
     {
-
-        public FeatureTreeBirch(ArrayFast<BlockCache> blockCaches, IChunkPrimer chunkPrimer)
-            : base(blockCaches, chunkPrimer, 3, 4,
+        public FeatureTreeBirch(ArrayFast<BlockCache> blockCaches, byte minRandom, byte maxRandom, IChunkPrimer chunkPrimer)
+            : base(blockCaches, chunkPrimer, minRandom, maxRandom,
                   BlocksRegMvk.LogBirch.IndexBlock, BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock)
-        {
+        { }
 
-        }
+        public FeatureTreeBirch(ArrayFast<BlockCache> blockCaches, byte probabilityOne, IChunkPrimer chunkPrimer)
+            : base(blockCaches, chunkPrimer, probabilityOne,
+                  BlocksRegMvk.LogBirch.IndexBlock, BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock)
+        { }
+
+        public FeatureTreeBirch(ArrayFast<BlockCache> blockCaches) : base(blockCaches, 
+            BlocksRegMvk.LogBirch.IndexBlock, BlocksRegMvk.BranchBirch.IndexBlock, BlocksRegMvk.LeavesBirch.IndexBlock)
+        { }
 
         /// <summary>
         /// Случайные атрибуты дерева

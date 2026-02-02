@@ -1,5 +1,6 @@
 ﻿using Mvk2.World.Gen;
 using System.Runtime.CompilerServices;
+using Vge.World.Gen;
 
 namespace Mvk2.World.Biome
 {
@@ -9,7 +10,14 @@ namespace Mvk2.World.Biome
     public class BiomeBirchForest : BiomeIsland
     {
         public BiomeBirchForest(ChunkProviderGenerateIsland chunkProvider)
-            : base(chunkProvider) { }
+            : base(chunkProvider)
+        {
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+                // Берёза
+                chunkProvider.Tree.CreateBirrchGen(2, 6)
+            };
+        }
 
         /// <summary>
         /// Генерация столба от 3 до 5 уровня

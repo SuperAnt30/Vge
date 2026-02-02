@@ -32,7 +32,7 @@ namespace Vge.World.BlockEntity
             {
                 BlockEntityAlias[id] = BlocksEntityReg.Table.GetAlias(id);
                 resourcesEntity = BlocksEntityReg.Table[id];
-                resourcesEntity.SetIndex(id);
+                resourcesEntity?.SetIndex(id);
                 _entitiesObjects[id] = resourcesEntity;
             }
         }

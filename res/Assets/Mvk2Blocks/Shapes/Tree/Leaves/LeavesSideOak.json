@@ -1,0 +1,7 @@
+{
+    Parent: "Tree/Leaves/_LeavesSide",
+    Texture: {
+        Up: "Blocks/Tree/LeavesOakUp",
+        Side: "Blocks/Tree/LeavesOak",
+    }
+}

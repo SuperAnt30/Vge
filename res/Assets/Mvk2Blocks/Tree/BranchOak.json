@@ -1,0 +1,13 @@
+
+    АmbientOcclusion: false,
+    LightOpacity: 1,
+    Variants: [ 
+        { Shape: "Tree/BranchOak" },
+        { Shape: "Tree/BranchOak", IsRotateX90: true, RotateY: 90 },
+        { Shape: "Tree/BranchOak", IsRotateX90: true },
+        { Shape: "Tree/BranchOak", Offset: [ 4, 0, 0 ] },
+        { Shape: "Tree/BranchOak", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/BranchOak", Offset: [ 0, 0, -4 ] },
+        { Shape: "Tree/BranchOak", Offset: [ 0, 0, 4 ] }
+    ]
+}

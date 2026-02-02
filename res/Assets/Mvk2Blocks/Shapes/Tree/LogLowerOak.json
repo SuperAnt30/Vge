@@ -1,0 +1,8 @@
+{
+    Parent: "Tree/_LogLower",
+    Texture: { 
+        Up: "Blocks/Tree/LogOakUp",
+        Side: "Blocks/Tree/LogOak",
+        Grass: "Blocks/GrassSide"
+    }
+}

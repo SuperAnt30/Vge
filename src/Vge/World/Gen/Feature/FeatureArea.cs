@@ -37,6 +37,11 @@ namespace Vge.World.Gen.Feature
         protected int _biasZ;
 
         /// <summary>
+        /// Для дополнительных генераций уже после генерации, типа рост дерева
+        /// </summary>
+        protected FeatureArea() { }
+
+        /// <summary>
         /// Вероятность одной
         /// </summary>
         public FeatureArea(IChunkPrimer chunkPrimer, byte probabilityOne, 

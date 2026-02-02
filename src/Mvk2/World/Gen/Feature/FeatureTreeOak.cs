@@ -8,13 +8,19 @@ namespace Mvk2.World.Gen.Feature
 {
     public class FeatureTreeOak : FeatureTree
     {
-
-        public FeatureTreeOak(ArrayFast<BlockCache> blockCaches, IChunkPrimer chunkPrimer) 
-            : base(blockCaches, chunkPrimer, 1, 2,
+        public FeatureTreeOak(ArrayFast<BlockCache> blockCaches, byte minRandom, byte maxRandom, IChunkPrimer chunkPrimer)
+            : base(blockCaches, chunkPrimer, minRandom, maxRandom,
                   BlocksRegMvk.LogOak.IndexBlock, BlocksRegMvk.BranchOak.IndexBlock, BlocksRegMvk.LeavesOak.IndexBlock)
-        {
+        { }
 
-        }
+        public FeatureTreeOak(ArrayFast<BlockCache> blockCaches, byte probabilityOne, IChunkPrimer chunkPrimer)
+            : base(blockCaches, chunkPrimer, probabilityOne,
+                  BlocksRegMvk.LogOak.IndexBlock, BlocksRegMvk.BranchOak.IndexBlock, BlocksRegMvk.LeavesOak.IndexBlock)
+        { }
+
+        public FeatureTreeOak(ArrayFast<BlockCache> blockCaches) : base(blockCaches,
+            BlocksRegMvk.LogOak.IndexBlock, BlocksRegMvk.BranchOak.IndexBlock, BlocksRegMvk.LeavesOak.IndexBlock)
+        { }
 
         /// <summary>
         /// Случайные атрибуты дерева

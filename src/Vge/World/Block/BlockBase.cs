@@ -216,9 +216,9 @@ namespace Vge.World.Block
         public void SetIndex(ushort id) => IndexBlock = id;
 
         /// <summary>
-        /// Дополнительная инициализация блока после инициализации предметов
+        /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков
         /// </summary>
-        public virtual void InitAfterItemsN3() { }
+        public virtual void InitAfterItems() { }
 
         #endregion
 
@@ -517,7 +517,7 @@ namespace Vge.World.Block
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState state) { }
+            BlockPos blockPos, BlockState stateOld, BlockState stateNew) { }
 
         #endregion
 

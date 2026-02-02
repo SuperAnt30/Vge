@@ -81,13 +81,13 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Дополнительная инициализация блоков после инициализации предметов
+        /// Дополнительная инициализация блоков после инициализации предметов и корректировки id блоков
         /// </summary>
-        public void InitializationAfterItemsN3()
+        public void InitializationAfterItems()
         {
             for (ushort id = 0; id < Count; id++)
             {
-                BlockObjects[id].InitAfterItemsN3();
+                BlockObjects[id].InitAfterItems();
             }
         }
 

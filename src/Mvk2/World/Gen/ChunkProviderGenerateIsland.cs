@@ -4,7 +4,6 @@ using Mvk2.World.Gen.Layer;
 using System;
 using Vge;
 using Vge.Util;
-using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using Vge.World.Gen.Layer;
@@ -15,7 +14,7 @@ namespace Mvk2.World.Gen
     /// <summary>
     /// Объект генерации чанка для мира, генерация Остров
     /// </summary>
-    public class ChunkProviderGenerateIsland : IChunkProviderGenerate
+    public class ChunkProviderGenerateIsland : IChunkProviderGenerate, IGenTree
     {
         /// <summary>
         /// Количество секций в чанке. Максимально 32
@@ -41,10 +40,9 @@ namespace Mvk2.World.Gen
         /// </summary>
         public readonly ChunkPrimerMvk ChunkPrimer;
         /// <summary>
-        /// Массив кеш блоков для генерации структур текущего мира в потоке генерации
+        /// Генерация деревьев
         /// </summary>
-        public readonly ArrayFast<BlockCache> BlockCaches = new ArrayFast<BlockCache>(16384);
-
+        public GenTree Tree { get; private set; }
         /// <summary>
         /// Объект генерации слоёв биомов
         /// </summary>
@@ -110,6 +108,8 @@ namespace Mvk2.World.Gen
             _numberChunkSections = numberChunkSections;
             _countHeightBlock = numberChunkSections * 16 - 1;
             ChunkPrimer = new ChunkPrimerMvk(_numberChunkSections);
+
+            Tree = new GenTree(ChunkPrimer);
 
             GenLayer[] gens = GenLayerIsland.BeginLayerBiome(Seed);
             _genLayerBiome = gens[0];
