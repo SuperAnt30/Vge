@@ -34,8 +34,13 @@ namespace Mvk2.World.Block.List
          * 
          * Для Sapling Саженец
          * 0 - вверх
+         * 
+         * Для Root корень
+         * 0 - вверх, генерация
+         * 1/2 - бок, генерация
+         * 
          */
-        
+
         /// <summary>
         /// Тип блока дерева
         /// </summary>
@@ -52,7 +57,11 @@ namespace Mvk2.World.Block.List
             /// <summary>
             /// Ветвь
             /// </summary>
-            Branch
+            Branch,
+            /// <summary>
+            /// Корень
+            /// </summary>
+            Root
         }
 
         /// <summary>
@@ -96,7 +105,7 @@ namespace Mvk2.World.Block.List
         /// Обновить блок в такте
         /// </summary>
         public override void UpdateTick(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, Rand random)
+            BlockPos blockPos, BlockState blockState, Rand rand)
         {
             FeatureTree genTree = _GetFeatureTree(world);
             if (genTree != null)
@@ -104,24 +113,23 @@ namespace Mvk2.World.Block.List
                 if (Type == TypeTree.Sapling)
                 {
                     // Саженец
+                    genTree.StepSapling(world, chunk, blockPos, rand);
+                    //{
+                    //    //BlockEntityTree blockEntity = _CreateBlockEntity(world);
 
-                    if (genTree.StepSapling())
-                    {
-                        BlockEntityTree blockEntity = _CreateBlockEntity(world);
-
-                        BlockState blockStateNew = new BlockState(IdBranch);
-                        blockEntity.SetBlockPosition(blockStateNew, blockPos);
-                        blockEntity.SetBeginBlock(blockPos, blockStateNew);
-                        world.SetBlockState(blockPos, blockStateNew, 46);
-                        chunk.SetBlockEntity(blockEntity);
-                        blockEntity.SetTick(chunk, 60);
-                    }
+                    //    //BlockState blockStateNew = new BlockState(IdBranch);
+                    //    //blockEntity.SetBlockPosition(blockStateNew, blockPos);
+                    //    //blockEntity.SetBeginBlock(blockPos, blockStateNew);
+                    //    //world.SetBlockState(blockPos, blockStateNew, 46);
+                    //    //chunk.SetBlockEntity(blockEntity);
+                    //    //blockEntity.SetTick(chunk, 60);
+                    //}
                 }
                 else
                 {
                     // Обновление блока только в основание может быть, типа пня
-                    (chunk.GetBlockEntity(blockPos) as BlockEntityTree)?.UpdateTick(world, 
-                        chunk, random, genTree);
+                    //(chunk.GetBlockEntity(blockPos) as BlockEntityTree)?.UpdateTick(world, 
+                    //    chunk, rand, genTree);
                 }
             }
         }
@@ -146,7 +154,7 @@ namespace Mvk2.World.Block.List
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
-            if (Type != TypeTree.Sapling)
+            if (Type != TypeTree.Sapling && Type != TypeTree.Root)
             {
 
                 // TODO:: тут надо игнорить при смене Sapling на Branch и Branch на Log

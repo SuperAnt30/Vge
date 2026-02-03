@@ -136,14 +136,19 @@ namespace Mvk2.World.Block
         /// Блок тины
         /// </summary>
         public static BlockBase Tina { get; private set; }
-        /// <summary>
-        /// Блок сухого саженца
-        /// </summary>
-        public static BlockBase SaplingDry { get; private set; }
 
         #endregion
 
         #region Древесина
+
+        /// <summary>
+        /// Блок сухого саженца
+        /// </summary>
+        public static BlockBase SaplingDry { get; private set; }
+        /// <summary>
+        /// Блок корня древесины
+        /// </summary>
+        public static BlockBase TreeRoot { get; private set; }
 
         /// <summary>
         /// Блок бревна берёзы
@@ -229,6 +234,7 @@ namespace Mvk2.World.Block
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
 
             SaplingDry = BlocksReg.RegisterBlockClass("SaplingDry", "Tree");
+            BlocksReg.RegisterBlockClass("TreeRoot", TreeRoot = new BlockTreeBirch(BlockTree.TypeTree.Root), "Tree");
 
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockTreeBirch(BlockTree.TypeTree.Log), "Tree");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(BlockTree.TypeTree.Branch), "Tree");
