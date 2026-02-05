@@ -9,12 +9,17 @@ using Vge.World.Gen;
 
 namespace Mvk2.World.Gen
 {
-    public class ChunkProviderGenerateDebug : IChunkProviderGenerate
+    public class ChunkProviderGenerateDebug : IChunkProviderGenerate, IGenTree
     {
         /// <summary>
         /// Количество секций в чанке. Максимально 32
         /// </summary>
         public readonly byte NumberChunkSections;
+        /// <summary>
+        /// Генерация деревьев
+        /// </summary>
+        public GenTree Tree { get; private set; }
+
         /// <summary>
         /// Чанк для заполнения данных
         /// </summary>
@@ -24,6 +29,8 @@ namespace Mvk2.World.Gen
         {
             NumberChunkSections = numberChunkSections;
             _chunkPrimer = new ChunkPrimerMvk(numberChunkSections);
+
+            Tree = new GenTree(_chunkPrimer);
         }
 
         /// <summary>
@@ -52,6 +59,8 @@ namespace Mvk2.World.Gen
             ushort Turf = BlocksRegMvk.Turf.IndexBlock;
             //ushort Brol = BlocksRegMvk.Brol.IndexBlock;
 
+            int Leaves = BlocksRegMvk.LeavesBirch.IndexBlock;
+
             for (x = 0; x < 16; x++)
             {
                 for (z = 0; z < 16; z++)
@@ -67,6 +76,21 @@ namespace Mvk2.World.Gen
                     else
                     {
                         _chunkPrimer.SetBlockState(x, h - 1, z, Stone, 0);
+                    }
+                }
+            }
+
+            if (chunk.X >= 10 && chunk.X <= 14 && chunk.Y >= 0 && chunk.Y <= 4)
+            {
+                // Это листва для Sciner
+                for (x = 0; x < 16; x++)
+                {
+                    for (z = 0; z < 16; z++)
+                    {
+                        for (y = h; y < h + 80; y++)
+                        {
+                            _chunkPrimer.SetBlockState(x, y, z, Leaves, 0);
+                        }
                     }
                 }
             }

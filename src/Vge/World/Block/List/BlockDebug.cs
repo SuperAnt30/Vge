@@ -22,7 +22,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
-        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state,
+        public override BlockState OnBlockPlaced(WorldServer worldIn, BlockPos blockPos, BlockState state,
             Pole side, Vector3 facing)
         {
             // Определяем на какую сторону смотрит игрок

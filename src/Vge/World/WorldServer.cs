@@ -523,12 +523,12 @@ namespace Vge.World
         /// Уведомить о блок об изменения состоянии соседнего блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _NotifyBlockOfStateChange(BlockPos pos, BlockBase blockIn)
+        private void _NotifyBlockOfStateChange(BlockPos pos, BlockBase block)
         {
             try
             {
                 BlockState blockState = GetBlockState(pos);
-                blockState.GetBlock().NeighborBlockChange(this, pos, blockState, blockIn);
+                blockState.GetBlock().NeighborBlockChange(this, pos, blockState, block);
             }
             catch (Exception ex)
             {

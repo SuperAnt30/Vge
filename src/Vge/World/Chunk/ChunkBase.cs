@@ -234,7 +234,8 @@ namespace Vge.World.Chunk
         /// </summary>
         /// <param name="blockPos">Позици блока</param>
         /// <param name="blockState">Данные нового блока</param>
-        /// <param name="flag">флаг, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        /// <param name="flag">флаг, 4 modifyRender, 8 modifySave, 16 sound break, 
+        /// 32 проверка доп жидкости, 64 OnBreakBlock отключить!</param>
         public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
         {
             // Пометка надо сохранение чанка
@@ -367,7 +368,7 @@ namespace Vge.World.Chunk
                 {
                     World.DebugString(World.Light.ToDebugString());
                 }
-                else
+                else if ((flag & 64) == 0) // проверку сломаного
                 {
                     // Действие блока после его удаления
                     blockOld.OnBreakBlock((WorldServer)World, (ChunkServer)this, blockPos, blockStateOld, blockState);

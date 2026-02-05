@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.World;
 using Vge.World.Block;
 
 namespace Mvk2.World.Block.List
@@ -19,6 +20,30 @@ namespace Mvk2.World.Block.List
             int i = (xb + zb) & 7;
             if (i > 4) i -= 4;
             return _quads[i];
+        }
+
+        /// <summary>
+        /// Смена соседнего блока
+        /// </summary>
+        public override void NeighborBlockChange(WorldServer world, BlockPos blockPos,
+            BlockState blockState, BlockBase neighborBlock)
+        {
+            base.NeighborBlockChange(world, blockPos, blockState, neighborBlock);
+            if (!CanBlockStay(world, blockPos))
+            {
+                //DropBlockAsItem(worldIn, blockPos, state);
+                world.SetBlockToAir(blockPos);
+            }
+        }
+
+        /// <summary> 
+        /// Проверка установи блока, можно ли его установить тут
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool CanBlockStay(WorldServer world, BlockPos blockPos, int met = 0)
+        {
+            BlockBase block = world.GetBlockState(blockPos.OffsetDown()).GetBlock();
+            return block.IndexBlock == BlocksRegMvk.TurfLoam.IndexBlock;
         }
 
         /*

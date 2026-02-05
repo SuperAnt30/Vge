@@ -1,6 +1,5 @@
 ﻿using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
-using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -30,7 +29,7 @@ namespace Mvk2.World.Block.List
          * Для Branch Ветвь
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
-         * 3-6 - вверх, генерация, смещение к краю
+         * 3-6 - вверх, генерация, смещение к краю +X -X -Z +Z
          * 
          * Для Sapling Саженец
          * 0 - вверх
@@ -38,6 +37,14 @@ namespace Mvk2.World.Block.List
          * Для Root корень
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
+         * 
+         * Для Leaves листва
+         * 0 - вверх
+         * 1 - низ
+         * 2-5 бок
+         * 6 - вверх 2
+         * 7 - низ 2
+         * 8-11 бок 2
          * 
          */
 
@@ -61,7 +68,11 @@ namespace Mvk2.World.Block.List
             /// <summary>
             /// Корень
             /// </summary>
-            Root
+            Root,
+            /// <summary>
+            /// Листва
+            /// </summary>
+            Leaves
         }
 
         /// <summary>
@@ -114,32 +125,13 @@ namespace Mvk2.World.Block.List
                 {
                     // Саженец
                     genTree.StepSapling(world, chunk, blockPos, rand);
-                    //{
-                    //    //BlockEntityTree blockEntity = _CreateBlockEntity(world);
-
-                    //    //BlockState blockStateNew = new BlockState(IdBranch);
-                    //    //blockEntity.SetBlockPosition(blockStateNew, blockPos);
-                    //    //blockEntity.SetBeginBlock(blockPos, blockStateNew);
-                    //    //world.SetBlockState(blockPos, blockStateNew, 46);
-                    //    //chunk.SetBlockEntity(blockEntity);
-                    //    //blockEntity.SetTick(chunk, 60);
-                    //}
                 }
                 else
                 {
-                    // Обновление блока только в основание может быть, типа пня
-                    //(chunk.GetBlockEntity(blockPos) as BlockEntityTree)?.UpdateTick(world, 
-                    //    chunk, rand, genTree);
+                    genTree.StepsGrowth(world, chunk, blockPos, rand);
                 }
             }
         }
-
-        /// <summary>
-        /// Создать блок сущности для дерева
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual BlockEntityTree _CreateBlockEntity(WorldServer world) =>
-            Ce.BlocksEntity.CreateEntityServer(BlocksEntityRegMvk.IdTree, world) as BlockEntityTree;
 
         /// <summary>
         /// Получить объект генерации дерева
@@ -154,34 +146,28 @@ namespace Mvk2.World.Block.List
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
-            if (Type != TypeTree.Sapling && Type != TypeTree.Root)
+            if (Type == TypeTree.Root)
             {
+                // Удаление корня, для фиксации его мощи
 
-                // TODO:: тут надо игнорить при смене Sapling на Branch и Branch на Log
-                //if (Type == TypeTree.Log)
-                {
-                    _RemoveBlockTreeInChunk(world, chunk, blockPos);
-                    for (int i = 0; i < 8; i++)
-                    {
-                        _RemoveBlockTreeInChunk(world,
-                            world.GetChunkServer(chunk.X + Ce.AreaOne8X[i], chunk.Y + Ce.AreaOne8Y[i]), blockPos);
-                    }
-                }
             }
-        }
-
-        /// <summary>
-        /// Удаление блока дерева в чанке
-        /// </summary>
-        private void _RemoveBlockTreeInChunk(WorldServer world, ChunkServer chunk, BlockPos blockPos)
-        {
-            if (chunk.GetBlockEntityCount() > 0)
+            else if (Type != TypeTree.Sapling && Type != TypeTree.Leaves)
             {
-                foreach (KeyValuePair<int, BlockEntityBase> item in chunk.MapBlocksEntity)// TODO::2026-02-02 Ошибка может быть, надо заменить
+                //System.Console.WriteLine("OnBreakBlock " + blockPos + " " + stateOld.Id + "->" + stateNew.Id);
+                // Список всех блок сущностей в квадрате 3*3 чанка
+                List<BlockEntityBase> blocksEntity = new List<BlockEntityBase>();
+                chunk.AddRangeBlockEntity(blocksEntity);
+                for (int i = 0; i < 8; i++)
                 {
-                    if (item.Value is BlockEntityTree blockEntityTree
+                    world.GetChunkServer(chunk.X + Ce.AreaOne8X[i], chunk.Y + Ce.AreaOne8Y[i]).AddRangeBlockEntity(blocksEntity);
+                }
+
+                // Пробегаемся и производим удаление
+                foreach(BlockEntityBase blockEntity in blocksEntity)
+                {
+                    if (blockEntity is BlockEntityTree blockEntityTree
                         && blockEntityTree.IsAABB(blockPos))
-                    {     
+                    {
                         // Это блок возможно принадлежит этому дереву. Откусить
                         blockEntityTree.RemoveBlock(world, chunk, blockPos);
                     }

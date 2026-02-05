@@ -1,7 +1,4 @@
-﻿using Mvk2.World.Block.List;
-using Mvk2.World.Gen;
-using Mvk2.World.Gen.Feature;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
@@ -30,35 +27,36 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         private bool _empty = true;
         /// <summary>
-        /// Шаги
+        /// Шаги роста
         /// </summary>
-        private int _step = 0;
+        public TypeStep Step { get; private set; } = TypeStep.Young;
 
         /// <summary>
-        /// Задать позицию блока
+        /// Типа этапа роста дерева
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SetBlockPosition(BlockState blockState, BlockPos pos)
+        public enum TypeStep
         {
-            base .SetBlockPosition(blockState, pos);
-
-            BlockTree block = Block.GetBlock() as BlockTree;
+            /// <summary>
+            /// Молодое дерево
+            /// </summary>
+            Young,
+            /// <summary>
+            /// Нормальное дерево
+            /// </summary>
+            Norm,
+            /// <summary>
+            /// Сухое дерево
+            /// </summary>
+            Dry
         }
 
         #region Методы изменения
 
         /// <summary>
-        /// Задать начальный блок в глобальных координатах. После саженца
+        /// Задать дерево выросло
         /// </summary>
-        public void SetBeginBlock(BlockPos blockPos, BlockState blockState)
-        {
-            _blocks = new BlockPosLoc[1];
-            _blocks[0] = new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, 
-                blockState.Id, -1);
-            _UpdateAxis();
-            _step = 2;
+        public void StepNorm() => Step = TypeStep.Norm;
 
-        }
         /// <summary>
         /// Получить массив всех блоков древесины, в локальных координатах
         /// Тут позиция от текущего чанка, где зараждено дерево.
@@ -68,11 +66,21 @@ namespace Mvk2.World.BlockEntity.List
         public void SetArrayLocal(ArrayFast<BlockCache> blockCaches)
         {
             int count = blockCaches.Count;
-            _blocks = new BlockPosLoc[count];
+            List<BlockPosLoc> list = new List<BlockPosLoc>();
             for (int i = 0; i < count; i++)
             {
-                _blocks[i] = new BlockPosLoc(blockCaches[i]);
+                if (blockCaches[i].ParentIndex != -2)
+                {
+                    list.Add(new BlockPosLoc(blockCaches[i]));
+                }
             }
+            _blocks = list.ToArray();
+
+            //_blocks = new BlockPosLoc[count];
+            //for (int i = 0; i < count; i++)
+            //{
+            //    _blocks[i] = new BlockPosLoc(blockCaches[i]);
+            //}
             _UpdateAxis();
         }
 
@@ -185,6 +193,8 @@ namespace Mvk2.World.BlockEntity.List
             }
         }
 
+        #region Remove
+
         /// <summary>
         /// Удалить цепочку блоков,
         /// Возвращает true если хоть один блок удалён
@@ -197,7 +207,7 @@ namespace Mvk2.World.BlockEntity.List
             int biasZ = (Position.Z >> 4) << 4;
             int posLoc = blockPos.Y << 12 | (blockPos.Z - biasZ + 16) << 6 | (blockPos.X - biasX + 16);
             int count = _blocks.Length;
-
+            
             bool remove = false;
             int id = 0;
             for (int i = 0; i < count; i++)
@@ -274,13 +284,97 @@ namespace Mvk2.World.BlockEntity.List
                 {
                     if (pos.Id == world.GetBlockState(pos.Pos).Id)
                     {
-                        world.SetBlockToAir(pos.Pos);
+                        world.SetBlockToAir(pos.Pos, 110); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock 
                     }
                 }
                 return true;
             }
             return false;
         }
+
+        /// <summary>
+        /// Удалить все блоки
+        /// </summary>
+        public void RemoveAll(WorldServer world)
+        {
+            BlockPosLoc[] blocks = CopyArrayBlocks();
+
+            int biasX = (Position.X >> 4) << 4;
+            int biasZ = (Position.Z >> 4) << 4;
+
+            // Полностью удалили
+            _blocks = new BlockPosLoc[0];
+            _UpdateAxis();
+
+            // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
+            BlockPos pos = new BlockPos();
+            foreach (BlockPosLoc posLoc in blocks)
+            {
+                pos.X = posLoc.X + biasX;
+                pos.Y = posLoc.Y;
+                pos.Z = posLoc.Z + biasZ;
+                if (posLoc.Id == world.GetBlockState(pos).Id)
+                {
+                    world.SetBlockToAir(pos, 108); // 4 8 32 64 без проверки бокового
+                }
+            }
+        }
+
+        /// <summary>
+        /// Удалить все блоки листвы и плодов
+        /// </summary>
+        public void RemoveAllLeaves(WorldServer world)
+        {
+            int count = _blocks.Length;
+            if (count > 0)
+            {
+                int biasX = (Position.X >> 4) << 4;
+                int biasZ = (Position.Z >> 4) << 4;
+
+                BlockPosLoc posLoc;
+                BlockPos pos = new BlockPos();
+                BlockState state;
+                // Пробегаемся по всем блокам траектории дерева, и удаляем рядом листву.
+                // Алгоритм упрощён, иметируем удаление блока, он тащит за собой удаление листвы,
+                // а потом возвращаем блок
+                for (int i = 0; i < count; i++)
+                {
+                    posLoc = _blocks[i];
+                    pos.X = posLoc.X + biasX;
+                    pos.Y = posLoc.Y;
+                    pos.Z = posLoc.Z + biasZ;
+                    state = world.GetBlockState(pos);
+                    
+                    if (posLoc.Id == state.Id)
+                    {
+                        world.SetBlockToAir(pos, 66); // 64 блокировка, 2 смена соседа
+                        world.SetBlockState(pos, state, 64);
+
+                        // TODO::2026-02-05 сделать вкусный вариант на мире сервера, для проверки боковых. без изменения
+                        // А может и не надо, это не так часто бывает!
+                        //world._NotifyNeighborsOfStateChange(pos, stateAir.GetBlock());
+                    }
+                }
+            }
+            Step = TypeStep.Dry;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Сделать копию блоков
+        /// </summary>
+        public BlockPosLoc[] CopyArrayBlocks()
+        {
+            BlockPosLoc[] blocks = new BlockPosLoc[_blocks.Length];
+            Array.Copy(_blocks, blocks, blocks.Length);
+            return blocks;
+        }
+
+        /// <summary>
+        /// Получить высоту дерева
+        /// </summary>
+        public int GetHeight() => _maxY - _minY;
 
         /// <summary>
         /// Обновить размер хитбокса
@@ -323,54 +417,6 @@ namespace Mvk2.World.BlockEntity.List
         }
 
         #endregion
-
-        /// <summary>
-        /// Обновить блок плитки в такте
-        /// </summary>
-        public void UpdateTick(WorldServer world, ChunkServer chunk, 
-            Rand random, FeatureTree genFeature)
-        {
-            return;
-            if (_step == 0)
-            {
-                // Удалим
-                int up = random.Next(2) + 1;
-                if (RemoveBlock(world, chunk, Position.OffsetUp(up)))
-                {
-                    // Откусили
-                    _step = 2;
-                }
-                else
-                {
-                    _step = 1;
-                }
-                // SetTick(chunk, random.Next(90) + 60);
-            }
-            else if (_step == 1)
-            {
-                RemoveBlock(world, chunk, Position);
-            }
-            else if (_step < 10)
-            {
-                // Пробуем вырости
-                _step++;
-                BlockPosLoc posLoc = _blocks[_blocks.Length - 1];
-
-                int count = random.Next(3) + 1;
-                BlockPosLoc[] blocks = new BlockPosLoc[count];
-                for (int i = 0; i < count; i++)
-                {
-                    blocks[i] = new BlockPosLoc(posLoc.X, posLoc.Y + i + 1, posLoc.Z,
-                        posLoc.Id, i);
-                }
-                AddBlocks(world, chunk, blocks);
-                //int biasX = (Position.X >> 4) << 4;
-                //int biasZ = (Position.Z >> 4) << 4;
-                //BlockPos pos = posLoc.GetBlockPos(biasX, biasZ);
-                //AddBlock(world, pos.OffsetUp(), posLoc.Id);
-                SetTick(chunk, random.Next(90) + 60);
-            }
-        }
 
         public override string ToString() 
             => Position 

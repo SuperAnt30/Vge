@@ -505,11 +505,17 @@ namespace Vge.World.Block
             }
         }
 
+        /// <summary> 
+        /// Проверка установка блока, можно ли его установить тут
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool CanBlockStay(WorldServer world, BlockPos blockPos, int met = 0) => true;
+
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual BlockState OnBlockPlaced(WorldBase world, BlockPos blockPos, 
+        public virtual BlockState OnBlockPlaced(WorldServer world, BlockPos blockPos, 
             BlockState blockState, Pole side, Vector3 facing) => blockState;
 
         /// <summary>

@@ -161,11 +161,15 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок листвы берёзы
         /// </summary>
-        public static BlockLeaves LeavesBirch { get; private set; }
+        public static BlockTree LeavesBirch { get; private set; }
         /// <summary>
         /// Блок саженца берёзы
         /// </summary>
         public static BlockTree SaplingBirch { get; private set; }
+        /// <summary>
+        /// Берёзовый плод, серёжки
+        /// </summary>
+        public static BlockFetus FetusBirch { get; private set; }
 
         /// <summary>
         /// Блок бревна дуба
@@ -178,11 +182,15 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок листвы дуба
         /// </summary>
-        public static BlockLeaves LeavesOak { get; private set; }
+        public static BlockTree LeavesOak { get; private set; }
         /// <summary>
         /// Блок саженца дуба
         /// </summary>
         public static BlockTree SaplingOak { get; private set; }
+        /// <summary>
+        /// Дубовый плод, жёлудь
+        /// </summary>
+        public static BlockFetus FetusOak { get; private set; }
 
 
         #endregion
@@ -238,16 +246,16 @@ namespace Mvk2.World.Block
 
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockTreeBirch(BlockTree.TypeTree.Log), "Tree");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(BlockTree.TypeTree.Branch), "Tree");
-            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeaves(), "Tree");
+            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeavesBirch(), "Tree");
             BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockTreeBirch(BlockTree.TypeTree.Sapling), "Tree");
-            //BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFruit(0), "Tree");
+            BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFetus(), "Tree");
 
 
             BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockTreeOak(BlockTree.TypeTree.Log), "Tree");
             BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockTreeOak(BlockTree.TypeTree.Branch), "Tree");
-            BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeaves(), "Tree");
+            BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeavesOak(), "Tree");
             BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockTreeOak(BlockTree.TypeTree.Sapling), "Tree");
-            //BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockOak(1), "Tree");
+            BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetus(), "Tree");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");

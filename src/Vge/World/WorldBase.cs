@@ -130,18 +130,26 @@ namespace Vge.World
 
         /// <summary>
         /// Задать блок неба, с флагом по умолчанию 46 (уведомление соседей, modifyRender, modifySave, isCheckLiquid)
+        /// флаг, 1 частички старого блока, 2 уведомление соседей, 
+        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости,
+        /// 64 OnBreakBlock отключить!
         /// </summary>
         /// <param name="blockPos">позици блока</param>
-        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 
+        /// 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool SetBlockToAir(BlockPos blockPos, int flag = 46) 
             => SetBlockState(blockPos, new BlockState(0), flag);
 
         /// <summary>
         /// Задать блок неба доп жидкости или жидкости если она есть, с флагом по умолчанию 46 (уведомление соседей, modifyRender, modifySave, isCheckLiquid)
+        /// флаг, 1 частички старого блока, 2 уведомление соседей, 
+        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости,
+        /// 64 OnBreakBlock отключить!
         /// </summary>
         /// <param name="blockPos">позици блока</param>
-        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 
+        /// 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool SetLiquidBlockToAir(BlockPos blockPos, int flag = 46)
             => SetBlockState(blockPos, new BlockState(0 | (2 << 12)), flag);
@@ -152,7 +160,8 @@ namespace Vge.World
         /// <param name="blockPos">позици блока</param>
         /// <param name="blockState">данные блока</param>
         /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 
-        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
+        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости,
+        /// 64 OnBreakBlock отключить!</param>
         /// <returns>true смена была</returns>
         public bool SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
         {
@@ -171,7 +180,6 @@ namespace Vge.World
                 // Уведомление соседей только на сервере!
                 if ((flag & 2) != 0) _NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
             }
-            
 
             return true;
         }

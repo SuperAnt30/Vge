@@ -81,6 +81,12 @@ namespace Vge.World.Block
         public bool EqualsPos(int posLos) => _posCache == posLos;
 
         /// <summary>
+        /// Проверка текущих координат
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool EqualsPos(BlockPos pos) => X == pos.X && Y == pos.Y && Z == pos.Z;
+
+        /// <summary>
         /// Получить позицию блока локальный
         /// </summary>
         /// <returns></returns>

@@ -20,7 +20,10 @@ namespace Vge.World.Block
         /// </summary>
         public int Met;
         /// <summary>
-        /// Тело, доп параметр
+        /// Флаг, доп параметр
+        /// 0 = всегда меняем
+        /// 1 = меняем если не воздух
+        /// 2 = меняем если только воздух
         /// </summary>
         public byte Flag;
         /// <summary>

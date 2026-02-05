@@ -1,0 +1,4 @@
+{
+    Parent: "Tree/_Fetus",
+    Texture: { All: "Blocks/Tree/FetusOak" }
+}
