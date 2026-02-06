@@ -248,22 +248,20 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(BlockTree.TypeTree.Branch), "Tree");
             BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeavesBirch(), "Tree");
             BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockTreeBirch(BlockTree.TypeTree.Sapling), "Tree");
-            BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFetus(), "Tree");
+            BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFetusBirch(), "Tree");
 
 
             BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockTreeOak(BlockTree.TypeTree.Log), "Tree");
             BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockTreeOak(BlockTree.TypeTree.Branch), "Tree");
             BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeavesOak(), "Tree");
             BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockTreeOak(BlockTree.TypeTree.Sapling), "Tree");
-            BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetus(), "Tree");
+            BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetusOak(), "Tree");
 
             Glass = BlocksReg.RegisterBlockClass("Glass");
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
             GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen");
             GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue");
             GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple");
-
-            
             
             Lava = BlocksReg.RegisterBlockClassLiquid("Lava", false);
             Brol = BlocksReg.RegisterBlockClass("Brol");

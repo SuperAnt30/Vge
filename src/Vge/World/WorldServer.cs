@@ -65,6 +65,12 @@ namespace Vge.World
         /// Время затраченое за такт
         /// </summary>
         private short _timeTick = 0;
+        /// <summary>
+        /// Содержит текущее начальное число линейного конгруэнтного генератора для обновлений блоков. 
+        /// Используется со значением A, равным 3, и значением C, равным 0x3c6ef35f, 
+        /// создавая очень плоский ряд значений, плохо подходящих для выбора случайных блоков в поле 16x128x16.
+        /// </summary>
+        private int _updateLCG;
 
         //private readonly TestAnchor _testAnchor;
 
@@ -167,7 +173,7 @@ namespace Vge.World
 
             // Обработка фрагментов в начале такта
             _FragmentBegin();
-
+            _FragmentEnd();
             // Тут начинается все действия с блоками АИ мобов и всё такое....
             if (IdWorld == 0)
             {
@@ -177,8 +183,9 @@ namespace Vge.World
             // Тикание блоков и чанков
             _TickBlocks();
 
+            // TODO::2026-02-06!!! Поток генерации
             // Обработка фрагментов в конце такта
-            _FragmentEnd();
+            //_FragmentEnd();
 
             Filer.StartSection("Entities");
             _UpdateEntities();
@@ -457,19 +464,59 @@ namespace Vge.World
         private void _TickBlocks()
         {
             int count = Fragment.ListChunkAction.Count;
-            ulong index;
-            ChunkServer chunk;
-
-            for (int i = 0; i < count; i++)
+            if (count > 0)
             {
-                index = Fragment.ListChunkAction[i];
-                chunk = GetChunkServer(Conv.IndexToChunkX(index), Conv.IndexToChunkY(index));
+                // Случайная скорость тика, для случайных обновлений блока в чанке, параметр из майна 1.8
+                int randomTickSpeed = 3;
+                ulong index;
+                int yc, i, j, x, y, z, k;
+                ChunkServer chunk;
+                ChunkStorage chunkStorage;
+                BlockPos blockPos = new BlockPos();
+                BlockState blockState;
+                BlockBase block;
 
-                if (chunk != null && chunk.IsSendChunk)
+                for (i = 0; i < count; i++)
                 {
-                    Filer.StartSection("TickChunk" + index);
-                    chunk.UpdateServer();
-                    Filer.EndSection();
+                    index = Fragment.ListChunkAction[i];
+                    chunk = GetChunkServer(Conv.IndexToChunkX(index), Conv.IndexToChunkY(index));
+
+                    if (chunk != null && chunk.IsSendChunk)
+                    {
+                        Filer.StartSection("TickChunk " + chunk.X + ":" + chunk.Y);
+                        chunk.UpdateServer();
+                        Filer.EndSection();
+
+                        // Тикаем рандом блоки
+                        for (yc = 0; yc < chunk.NumberSections; yc++)
+                        {
+                            chunkStorage = chunk.StorageArrays[yc];
+                            if (!chunkStorage.IsEmptyData() && chunkStorage.GetNeedsRandomTick())
+                            {
+                                for (j = 0; j < randomTickSpeed; j++)
+                                {
+                                    _updateLCG = _updateLCG * 3 + 1013904223;
+                                    k = _updateLCG >> 2;
+                                    x = k & 15;
+                                    z = k >> 8 & 15;
+                                    y = k >> 16 & 15;
+                                    blockPos.X = x + chunk.BlockX;
+                                    blockPos.Y = y + chunkStorage.YBase;
+                                    blockPos.Z = z + chunk.BlockZ;
+                                    blockState = chunkStorage.GetBlockState(x, y, z);
+                                    block = blockState.GetBlock();
+                                    if (block.NeedsRandomTick)
+                                    {
+                                        block.RandomTick(this, chunk, blockPos, blockState, Rnd);
+                                        if (chunkStorage.IsEmptyData() || !chunkStorage.GetNeedsRandomTick())
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

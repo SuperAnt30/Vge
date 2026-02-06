@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
+using Vge.World.Chunk;
 
 namespace Mvk2.World.Block.List
 {
@@ -17,6 +19,10 @@ namespace Mvk2.World.Block.List
         /// ID блок ветки текущего дерева
         /// </summary>
         protected int _idBranch;
+        /// <summary>
+        /// ID блок плода текущего дерева
+        /// </summary>
+        protected int _idFetus;
 
         public BlockLeaves() : base(TypeTree.Leaves) { }
 
@@ -52,6 +58,19 @@ namespace Mvk2.World.Block.List
             if (met > 5) met -= 6;
             int id = world.GetBlockState(blockPos.OffsetReversal(met)).Id;
             return id == _idLog || id == _idBranch;
+        }
+
+        /// <summary>
+        /// Случайный эффект блока, для сервера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void RandomTick(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, Rand random)
+        {
+            if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
+            {
+                world.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 12);
+            }
         }
     }
 }

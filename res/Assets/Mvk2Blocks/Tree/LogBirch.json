@@ -1,4 +1,5 @@
 {
+    NeedsRandomTick: true,
     Variants: [ 
         { Shape: "Tree/LogBirch" },
         { Shape: "Tree/LogBirch", IsRotateX90: true, RotateY: 90 },

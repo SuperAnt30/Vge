@@ -49,8 +49,8 @@ namespace Mvk2.World.Gen.Feature
             _branchLengthRand = 4;
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = _NextInt(8) == 0 ? _NextInt(8) + 1 : 32;
-            // Длинна корня
-            _rootLenght = _NextInt(7) + 3;
+            // Длинна корня, у дуба достаточно длинный
+            _rootLenght = _trunkHeight / 2 - 1;
         }
 
         /// <summary>

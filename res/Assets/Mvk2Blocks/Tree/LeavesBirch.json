@@ -4,6 +4,7 @@
     LightOpacity: 2,
     NoCollision: true,
     Translucent: true,
+    NeedsRandomTick: true,
     Variants: [ 
         { Shape: "Tree/Leaves/LeavesUpBirch", Offset: [ 0, -4, 0 ] },
         { Shape: "Tree/Leaves/LeavesDownBirch", Offset: [ 0, 4, 0 ] },

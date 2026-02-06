@@ -118,10 +118,10 @@ namespace Mvk2.Entity.List
             {
                 worldServer.SetBlockTick(blockPos, 10);
             }
-            else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock || idBlock == BlocksRegMvk.SaplingOak.IndexBlock)
-            {
-                worldServer.SetBlockTick(blockPos, 45); // 1.5 sec
-            }
+            //else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock || idBlock == BlocksRegMvk.SaplingOak.IndexBlock)
+            //{
+            //    worldServer.SetBlockTick(blockPos, 45); // 1.5 sec
+            //}
         }
 
         /// <summary>

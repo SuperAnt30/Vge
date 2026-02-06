@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Event;
 using Vge.Management;
@@ -574,6 +575,7 @@ namespace Vge.Games
         /// <summary>
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long Time() => _stopwatchTps.ElapsedMilliseconds;
 
         #endregion
@@ -583,6 +585,7 @@ namespace Vge.Games
         /// <summary>
         /// Счётчик зарегистрированных сущностей с начала запуска игры
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int LastEntityId() => ++_lastEntityId;
 
         #endregion

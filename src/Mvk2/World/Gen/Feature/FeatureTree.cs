@@ -188,7 +188,7 @@ namespace Mvk2.World.Gen.Feature
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = 64;
             // Длинна корня
-            _rootLenght = _NextInt(5) + 1;
+            _rootLenght = _NextInt(5) + 2;
         }
 
         /// <summary>
@@ -228,12 +228,12 @@ namespace Mvk2.World.Gen.Feature
             }
             _listTreeBegin.Add(posPen);
 
-            BlockState blockBegin = chunkSpawn.GetBlockState(bx, by - 2, bz);
+            int idBlockBegin = chunkSpawn.GetBlockState(bx, by - 2, bz).Id;
 
-            if (blockBegin.Id == BlocksRegMvk.Loam.IndexBlock
-                || blockBegin.Id == BlocksRegMvk.Humus.IndexBlock 
-                || blockBegin.Id == _blockRootId
-                || blockBegin.Id == _blockLogId)
+            if (idBlockBegin == BlocksRegMvk.Loam.IndexBlock
+                || idBlockBegin == BlocksRegMvk.Humus.IndexBlock 
+                || idBlockBegin == _blockRootId
+                || idBlockBegin == _blockLogId)
             {
                 _SetRand(rand);
                 _GenerationCache(bx, by, bz);
@@ -241,19 +241,13 @@ namespace Mvk2.World.Gen.Feature
                 if (_biasX == 0 && _biasZ == 0)
                 {
                     // Чанк спавна равен текущему чанку записи
-                    // Можно подготовить массив для TileEntity из _blockCaches
                     BlockEntityTree blockEntity = _CreateBlockEntity(chunkSpawn.WorldServ);
-
                     blockEntity.SetBlockPosition(new BlockState(_blockLogId | 3 << 12),
                         new BlockPos(chunkSpawn.BlockX + bx, by, chunkSpawn.BlockZ + bz));
                     blockEntity.SetArrayLocal(_blockCaches);
-                    blockEntity.StepNorm();
+                    blockEntity.StepNorm(_rootLenght);
                     _chunkPrimer.SetBlockEntity(blockEntity);
                 }
-
-                //_AddBlockCache(bx, by - 1, bz, _blockLogId, -2);
-                //_AddBlockCache(bx, by - 2, bz, BlocksRegMvk.TreeRoot.IndexBlock, -2);
-                //_AddBlockCacheMet(bx, by - 2, bz - 1, BlocksRegMvk.TreeRoot.IndexBlock, 2, -2);
 
                 _ExportBlockCachesInChunkPrimer();
             }
@@ -367,10 +361,6 @@ namespace Mvk2.World.Gen.Feature
         private void AddBlockCacheLeaves(int x, int y, int z, int id, int met)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = -2, Flag = 2 });
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockCacheTick(int x, int y, int z, int id, int met, uint tick)
-            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { Tick = tick });
-
         /// <summary>
         /// Создать блок сущности для дерева
         /// </summary>
@@ -448,7 +438,7 @@ namespace Mvk2.World.Gen.Feature
             int bz0 = bz;
 
             // Пенёк основа
-            _AddBlockCacheTick(bx0, by, bz0, _blockLogId, 3, 120);
+            _AddBlockCacheMet(bx0, by, bz0, _blockLogId, 3, -1);
             // общий счётчик родителя
             int parentAmount = 0;
             // родитель ствола
@@ -477,35 +467,67 @@ namespace Mvk2.World.Gen.Feature
 
             // Массив смещения веток по конкретной стороне, чтоб не слипались друг с другом
             int[] row = new int[] { _NextInt(3), _NextInt(3), _NextInt(3), _NextInt(3) };
+            // Была ли ветка на стороне прошлым уровнем
+            bool[] branchSide = new bool[4];
             // Коэффициент длинны веток 0 - 1
             float factorLightBranches;
             // Количество блоков в секции
             int countBlockSection;
-            // Имеется ли смещение ствола в этом уровне
-            bool isTrunkBiasLevel;
+            // Сторона смещение ствола в этом уровне
+            int sideTrunkBiasLevel = -1;
+            // Сторона смещение ствола в прошлом уровне
+            int sideTrunkBiasLevelPrev;
             // снизу вверх
             for (iUp = 0; iUp < count; iUp++)
             {
                 y = by + iUp;
-                isTrunkBiasLevel = false;
+                sideTrunkBiasLevelPrev = sideTrunkBiasLevel;
+                sideTrunkBiasLevel = -1;
                 // готовим смещение ствола
                 if (_trunkBias <= 0)
                 {
                     _trunkBias = _NextInt(3) + 1;
                     txz = _NextInt(3) - 1;
-
                     if (txz != 0 && bx0 >= bx + txz - _maxTrunkBias && bx0 <= bx + txz + _maxTrunkBias)
                     {
-                        bx += txz;
-                        isTrunkBiasLevel = true;
+                        if (txz == 1)
+                        {
+                            if (!branchSide[1])
+                            {
+                                bx++;
+                                sideTrunkBiasLevel = 3;
+                            }
+                        }
+                        else
+                        {
+                            if (!branchSide[3])
+                            {
+                                bx--;
+                                sideTrunkBiasLevel = 1;
+                            }
+                        }
                     }
                     else
                     {
                         txz = _NextInt(3) - 1;
                         if (txz != 0 && bz0 >= bz + txz - _maxTrunkBias && bz0 <= bz + txz + _maxTrunkBias)
                         {
-                            bz += txz;
-                            isTrunkBiasLevel = true;
+                            if (txz == 1)
+                            {
+                                if (!branchSide[0])
+                                {
+                                    bz++;
+                                    sideTrunkBiasLevel = 2;
+                                }
+                            }
+                            else
+                            {
+                                if (!branchSide[2])
+                                {
+                                    bz--;
+                                    sideTrunkBiasLevel = 0;
+                                }
+                            }
                         }
                     }
                 }
@@ -522,7 +544,7 @@ namespace Mvk2.World.Gen.Feature
                 }
 
                 // Ветки
-                if (!isTrunkBiasLevel && iUp >= _trunkWithoutBranches)
+                if (iUp >= _trunkWithoutBranches)
                 {
                     // Находи коэффициент длинны веток
                     itwb = iUp - _trunkWithoutBranches;
@@ -533,7 +555,8 @@ namespace Mvk2.World.Gen.Feature
                     // цикл направлении веток
                     for (iSide = 0; iSide < 4; iSide++)
                     {
-                        if (row[iSide] == 0)
+                        branchSide[iSide] = false;
+                        if (row[iSide] <= 0 && sideTrunkBiasLevel != iSide)
                         {
                             // Есть ветка
                             if (_NextInt(16) == 0)
@@ -547,6 +570,7 @@ namespace Mvk2.World.Gen.Feature
                                 lightBranche = (int)((_NextInt(_branchLengthRand) + _branchLengthMin) * factorLightBranches);
                                 if (lightBranche > 0)
                                 {
+                                    branchSide[iSide] = true;
                                     // Точно имеется ветка работаем с ней
                                     parentBranch = parentTrunk;
                                     // параметр смещения ветки, 2 - 3 можно откорректировать для разных деревьев
@@ -567,28 +591,36 @@ namespace Mvk2.World.Gen.Feature
                                         if (vecX != 0) sx += vecX;
                                         if (vecY != 0) sz += vecY;
 
-                                        // Проверка смещение ветки по вертикале
-                                        if (stickBiasY >= 0)
+                                        if (iBranche != lightBranche)
                                         {
-                                            if (stickBiasY == 0) sy++;
-                                            stickBiasY--;
-                                        }
+                                            // Проверка смещение ветки по вертикале
+                                            if (stickBiasY >= 0)
+                                            {
+                                                if (stickBiasY == 0) sy++;
+                                                stickBiasY--;
+                                            }
 
-                                        // Проверка смещение ветки по горизонтали
-                                        if (stickBiasXZ == 0)
-                                        {
-                                            stickBiasXZ = 2;
-                                            if (vecY == 0) sz += _NextInt(3) - 1;
-                                            if (vecX == 0) sx += _NextInt(3) - 1;
+                                            // Проверка смещение ветки по горизонтали
+                                            if (stickBiasXZ == 0)
+                                            {
+                                                stickBiasXZ = 2;
+                                                if (vecY == 0) sz += _NextInt(3) - 1;
+                                                if (vecX == 0) sx += _NextInt(3) - 1;
+                                            }
+                                            else
+                                            {
+                                                stickBiasXZ--;
+                                            }
+                                            // фиксируем ветку
+                                            _AddBlockCacheMet(sx, sy, sz, _blockLogId,
+                                                (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
                                         }
                                         else
                                         {
-                                            stickBiasXZ--;
+                                            // фиксируем тонкую ветку
+                                            _AddBlockCacheMet(sx, sy, sz, _blockBranchId,
+                                                (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
                                         }
-
-                                        // фиксируем ветку
-                                        _AddBlockCacheMet(sx, sy, sz, iBranche == lightBranche ? _blockBranchId : _blockLogId,
-                                            (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
                                         parentBranch = ++parentAmount;
 
                                         if (iBranche == lightBranche || _NextInt(_foliageBranch) == 0)
@@ -617,8 +649,7 @@ namespace Mvk2.World.Gen.Feature
             // === Корень
 
             _AddBlockCacheMet(bx0, by - 1, bz0, _blockLogId, 3, -2);
-            int rootCount = _rootLenght + 1;
-            for (iUp = 0; iUp < rootCount; iUp++)
+            for (iUp = 0; iUp < _rootLenght; iUp++)
             {
                 y = by - 2 - iUp;
                 _AddBlockCache(bx0, y, bz0, _blockRootId, -2);
@@ -630,10 +661,12 @@ namespace Mvk2.World.Gen.Feature
                 lightBranche = _NextInt(4);
                 if (lightBranche > 0)
                 {
+                    sy = _NextInt(4);
+                    if (sy >= _rootLenght) sy = _rootLenght - 1;
+                    sy = by - 2 - sy;
                     vecX = Ce.AreaOne4X[iSide];
                     vecY = Ce.AreaOne4Y[iSide];
                     sx = bx0;
-                    sy = by - 2 - _NextInt(4);
                     sz = bz0;
                     for (iBranche = 1; iBranche <= lightBranche; iBranche++)
                     {
@@ -654,7 +687,7 @@ namespace Mvk2.World.Gen.Feature
             _blockCaches.Clear();
 
             // Пенёк основа
-            _AddBlockCacheTick(bx, by, bz, _blockBranchId, 0, 120);
+            _AddBlockCacheMet(bx, by, bz, _blockBranchId, 0, -1);
             // родитель ствола
             int parentTrunk = 0;
 
@@ -720,6 +753,8 @@ namespace Mvk2.World.Gen.Feature
 
         #endregion
 
+        #region Checks
+
         /// <summary>
         /// Проверяем блоки на возможность установить
         /// </summary>
@@ -729,19 +764,25 @@ namespace Mvk2.World.Gen.Feature
             if (count > 0)
             {
                 BlockPos pos;
+                BlockCache blockCache;
                 int id;
                 for (int i = 0; i < count; i++)
                 {
-                    //TODO::2026-02-05 Тут добавить проверку корня!!!!
-                    if (_blockCaches[i].ParentIndex != -2)
+                    blockCache = _blockCaches[i];
+
+                    if (blockCache.Flag != 2) // Листву игнорируем
                     {
-                        pos = _blockCaches[i].Position;
+                        pos = blockCache.Position;
                         if (!_IsPresentBlock(pos))
                         {
                             pos.X += bX;
                             pos.Z += bZ;
                             id = world.GetBlockState(pos).Id;
-                            if (id != 0 && id != _blockLeavesId)
+                            if (blockCache.ParentIndex == -2) // Корень
+                            {
+                                if (!_CheckRoot(id)) return false;
+                            }
+                            else if (id != 0 && id != _blockLeavesId)
                             {
                                 return false;
                             }
@@ -751,6 +792,39 @@ namespace Mvk2.World.Gen.Feature
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Проверка корня
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _CheckRoot(int id)
+        {
+            //Ce.Blocks.BlockObjects[Id];
+            return id == 0 || id == _blockRootId
+                || id == BlocksRegMvk.TurfLoam.IndexBlock
+                || id == BlocksRegMvk.Turf.IndexBlock
+                || id == BlocksRegMvk.Loam.IndexBlock
+                || id == BlocksRegMvk.Humus.IndexBlock
+                || id == BlocksRegMvk.Sand.IndexBlock
+                || id == BlocksRegMvk.Water.IndexBlock
+                || id == BlocksRegMvk.Clay.IndexBlock;
+        }
+
+        /// <summary>
+        /// Меряем фактическую глубину корня
+        /// </summary>
+        private int _GetRootLenght(ChunkServer chunk, BlockPos blockPos)
+        {
+            int y = blockPos.Y - 2;
+            int xz = (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+            int length = 0;
+            while (chunk.GetBlockStateNotCheckLight(xz, y).Id == _blockRootId)
+            {
+                length++;
+                y--;
+            }
+            return length;
         }
 
         /// <summary>
@@ -770,6 +844,8 @@ namespace Mvk2.World.Gen.Feature
             return false;
         }
 
+        #endregion
+
         #region Steps
 
         /// <summary>
@@ -782,7 +858,6 @@ namespace Mvk2.World.Gen.Feature
             _blocks = new BlockPosLoc[] { new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, _blockBranchId, -1) };
             // Генерация древа
             _GenerationCacheStepSapling(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
-            //_GenerationCacheDebug(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
 
             // Проверка кто мешает
             if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
@@ -795,49 +870,27 @@ namespace Mvk2.World.Gen.Feature
                 blockEntity.SetArrayLocal(_blockCaches);
                 chunk.SetBlockEntity(blockEntity);
 
-                // Тест плодов
-                //for (int i = 0; i < _blockCaches.Count; i++)
-                //{
-                //    if (_blockCaches[i].Id == _blockLeavesId && _blockCaches[i].Met != 0)
-                //    {
-                //        world.SetBlockState(_blockCaches[i].Position.Offset(chunk.BlockX, -1, chunk.BlockZ),
-                //            new BlockState(BlocksRegMvk.FetusOak.IndexBlock), 44);
-                            
-                //    }
-                //}
-                // Экспортируем блоки в мир
                 _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
-
-
-                // Активируем тик
-                world.SetBlockTick(blockPos, 60);
             }
             else if(_NextInt(5) == 0)
             {
                 // Саженец засох
                 world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), 44);
             }
-            else
-            {
-                // Активируем тик для следующей попытке роста
-                world.SetBlockTick(blockPos, 60);
-            }
             _blocks = null;
         }
 
         /// <summary>
-        /// Шаги роста, когда уже имеется блок сущности, не саженец
+        /// Другие шаги, когда уже имеется блок сущности, не саженец
         /// </summary>
-        public void StepsGrowth(WorldServer world, ChunkServer chunk, BlockPos blockPos, Rand rand)
+        public void StepsOther(WorldServer world, ChunkServer chunk, BlockPos blockPos, Rand rand)
         {
             if (chunk.GetBlockEntity(blockPos) is BlockEntityTree blockEntity)
             {
-                _SetRand(rand);
-
                 if (blockEntity.Step == BlockEntityTree.TypeStep.Young)
                 {
-                    // Для роста надо вытащить блок сущности
-                    _blocks = blockEntity.CopyArrayBlocks();
+                    // Пробуем рост с молодого в нормальное дерево
+                    _SetRand(rand);
 
                     // Генерация древа
                     if (blockEntity.GetHeight() < _trunkHeight / 5)
@@ -848,6 +901,9 @@ namespace Mvk2.World.Gen.Feature
                     }
                     else
                     {
+                        // Для роста надо вытащить блок сущности
+                        _blocks = blockEntity.CopyArrayBlocks();
+
                         // Взрослое
                         _GenerationCache(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
 
@@ -857,31 +913,32 @@ namespace Mvk2.World.Gen.Feature
                             // Удаляем все блоки прошлого дерева в мире
                             blockEntity.RemoveAll(world);
                             // Меняем шаг
-                            blockEntity.StepNorm();
+                            blockEntity.StepNorm(_rootLenght);
                             // Вносим новый массив дерева
                             blockEntity.SetArrayLocal(_blockCaches);
                             // Экспорт
                             _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
-
-                            world.SetBlockTick(blockPos, 60);
                         }
-                        else if (_NextInt(5) == 0)
+                        // Если не смоглы выростить из-за вписать модель, генерируем высыхание
+                        else if (_NextInt(10) == 0)
                         {
                             // Удалить листву и перестаём тикать
                             blockEntity.RemoveAllLeaves(world);
                         }
-                        else
-                        {
-                            // Если что-то помешало, пробуем через время
-                            world.SetBlockTick(blockPos, 60);
-                        }
+                        _blocks = null;
                     }
-                    _blocks = null;
                 }
-                else
+                else if (blockEntity.Step == BlockEntityTree.TypeStep.Norm)
                 {
-                    // Удалить листву и перестаём тикать
-                  //  blockEntity.RemoveAllLeaves(world);
+                    // Если номальное дерево
+                    // Надо проверить корень
+                    int rootLenght = _GetRootLenght(chunk, blockPos);
+                    // Удалить листву
+                    if (rootLenght < blockEntity.RootLenght)
+                    {
+                        // Корень короче, предлагаю дерево высушить
+                        blockEntity.RemoveAllLeaves(world);
+                    }
                 }
             }
         }

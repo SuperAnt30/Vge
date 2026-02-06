@@ -166,11 +166,11 @@ namespace Vge.World.Block
         /// <summary>
         /// Принудительное рисование стороны
         /// </summary>
-        private bool[][] _forceDrawFaces;
+        protected bool[][] _forceDrawFaces;
         /// <summary>
         /// Принудительное рисование не крайней стороны 
         /// </summary>
-        private bool[][] _forceDrawNotExtremeFaces;
+        protected bool[][] _forceDrawNotExtremeFaces;
 
         #endregion
 
@@ -234,6 +234,7 @@ namespace Vge.World.Block
                 // Статы
                 foreach (JsonKeyValue json in state.Items)
                 {
+                    if (json.IsKey(Ctb.NeedsRandomTick)) NeedsRandomTick = json.GetBool();
                     if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
                     if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
@@ -479,7 +480,8 @@ namespace Vge.World.Block
         /// Случайный эффект блока, для сервера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void RandomTick(WorldServer world, ChunkServer chunk, BlockPos blockPos, BlockState blockState, Rand random)
+        public virtual void RandomTick(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState blockState, Rand random)
             => UpdateTick(world, chunk, blockPos, blockState, random);
 
         /// <summary>

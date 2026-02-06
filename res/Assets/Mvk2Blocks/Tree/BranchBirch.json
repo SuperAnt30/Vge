@@ -1,6 +1,7 @@
 
     АmbientOcclusion: false,
     LightOpacity: 1,
+    NeedsRandomTick: true,
     Variants: [ 
         { Shape: "Tree/BranchBirch" },
         { Shape: "Tree/BranchBirch", IsRotateX90: true, RotateY: 90 },

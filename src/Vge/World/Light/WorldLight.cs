@@ -19,10 +19,6 @@ namespace Vge.World.Light
         /// Вторая группа
         /// </summary>
         private readonly int _indexStep3; // 776192
-        /// <summary>
-        /// Максималька из трёх групп
-        /// </summary>
-        private readonly int _indexStepMax; // 1164288
 
         /// <summary>
         /// Вспомогательный массив, значения в битах 000000LL LLzzzzzz yyyyyyyy yyxxxxxx
@@ -31,9 +27,22 @@ namespace Vge.World.Light
         /// y = index >> 6 & 511;
         /// z = index >> 16 & 63;
         /// L = index >> 22 & 15;
-        /// Это старый рассчёт с первой части, ощущение, что я ошибся! Должно быть меньше. 2024-12-05
-        /// 388096 * 3, где 388096 максимально возможное количество блоков в чанке плюс соседние блоки
-        /// (16 * 16 + (14 * 16 + 13 * 6 + 13) * 4) * 256 = 388 096 * 3 (для смещения и затемнения)
+        /// 388096 * 3, где 388096 максимально возможное количество блоков в чанке плюс соседние блоки на столб 256
+        /// (16 * 16 + (14 * 16 + 13 * 6 + 13) * 4) = 1516
+        /// 1516 * 256 = 388 096 * 3 (для смещения и затемнения)
+        ///    
+        ///     / +-----+ \
+        ///   /91 | 224 | 91\
+        /// +-----+-----+-----+
+        /// | 224 | 256 | 224 | = 1516
+        /// +-----+-----+-----+
+        ///   \91 | 224 | 91/
+        ///     \ +-----+ /
+        /// Или 
+        ///  /|\
+        /// /_|_\ = 481
+        /// \ | /  где горизонталь и вертикаль 31 блок
+        ///  \|/
         /// </summary>
         private readonly int[] _arCache;
         /// <summary>
@@ -97,10 +106,10 @@ namespace Vge.World.Light
         public WorldLight(WorldBase world, int numberBlocks)
         {
             _world = world;
+            //_indexStep2 = 1516 * numberBlocks;
             _indexStep2 = 481 * numberBlocks;
-            _indexStep3 = _indexStep2 * 2;
-            _indexStepMax = _indexStep2 + _indexStep3;
-            _arCache = new int[_indexStepMax];
+            _indexStep3 = _indexStep2 + _indexStep2;
+            _arCache = new int[_indexStep2 + _indexStep3];
         }
 
         #region Debug

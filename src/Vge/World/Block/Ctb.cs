@@ -8,6 +8,10 @@
         #region Статы блока
 
         /// <summary>
+        /// Отмечает, относится ли этот блок к типу, требующему случайной пометки в тиках. (bool)
+        /// </summary>
+        public const string NeedsRandomTick = "NeedsRandomTick";
+        /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0. (0-15)
         /// </summary>
         public const string LightOpacity = "LightOpacity";

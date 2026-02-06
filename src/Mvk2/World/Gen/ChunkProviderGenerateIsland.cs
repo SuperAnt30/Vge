@@ -331,6 +331,10 @@ namespace Mvk2.World.Gen
                                                 chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
                                             }
                                         }
+                                        else
+                                        {
+                                            chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
+                                        }
                                     }
                                     else
                                     {

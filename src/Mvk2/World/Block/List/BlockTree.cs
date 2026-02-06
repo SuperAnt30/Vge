@@ -128,7 +128,7 @@ namespace Mvk2.World.Block.List
                 }
                 else
                 {
-                    genTree.StepsGrowth(world, chunk, blockPos, rand);
+                    genTree.StepsOther(world, chunk, blockPos, rand);
                 }
             }
         }

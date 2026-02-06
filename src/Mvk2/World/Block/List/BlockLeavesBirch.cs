@@ -17,6 +17,7 @@ namespace Mvk2.World.Block.List
         {
             _idLog = BlocksRegMvk.LogBirch.IndexBlock;
             _idBranch = BlocksRegMvk.BranchBirch.IndexBlock;
+            _idFetus = BlocksRegMvk.FetusBirch.IndexBlock;
         }
 
         /// <summary>

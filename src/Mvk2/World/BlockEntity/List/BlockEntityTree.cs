@@ -30,6 +30,10 @@ namespace Mvk2.World.BlockEntity.List
         /// Шаги роста
         /// </summary>
         public TypeStep Step { get; private set; } = TypeStep.Young;
+        /// <summary>
+        /// Длинна корня
+        /// </summary>
+        public int RootLenght { get; private set; } = 0;
 
         /// <summary>
         /// Типа этапа роста дерева
@@ -55,7 +59,11 @@ namespace Mvk2.World.BlockEntity.List
         /// <summary>
         /// Задать дерево выросло
         /// </summary>
-        public void StepNorm() => Step = TypeStep.Norm;
+        public void StepNorm(int rootLenght)
+        {
+            Step = TypeStep.Norm;
+            RootLenght = rootLenght;
+        }
 
         /// <summary>
         /// Получить массив всех блоков древесины, в локальных координатах
@@ -315,7 +323,7 @@ namespace Mvk2.World.BlockEntity.List
                 pos.Z = posLoc.Z + biasZ;
                 if (posLoc.Id == world.GetBlockState(pos).Id)
                 {
-                    world.SetBlockToAir(pos, 108); // 4 8 32 64 без проверки бокового
+                    world.SetBlockToAir(pos, 110); // 2 4 8 32 64
                 }
             }
         }
@@ -422,7 +430,8 @@ namespace Mvk2.World.BlockEntity.List
             => Position 
             + " Box[" + (_empty ? "empty" : (_minX + "; " + _minY + "; " + _minZ
             + " -> " + _maxX + "; " + _maxY + "; " + _maxZ))
-            + "] Tree:" + _blocks.Length;
+            + "] Tree:" + _blocks.Length
+            + " Root:" + RootLenght;
 
         /// <summary>
         /// Дополнительная структура, для удаления

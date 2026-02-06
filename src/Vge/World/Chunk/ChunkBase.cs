@@ -186,6 +186,12 @@ namespace Vge.World.Chunk
         #region Block
 
         /// <summary>
+        /// Получить блок данных, по глобальным координатам
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockState GetBlockState(BlockPos blockPos)
+            => GetBlockState(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+        /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -195,6 +201,12 @@ namespace Vge.World.Chunk
             return new BlockState().Empty();
         }
 
+        /// <summary>
+        /// Получить блок данных, по глобальным координатам без проверки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockState GetBlockStateNotCheck(BlockPos blockPos)
+            => GetBlockStateNotCheck(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255 без проверки
         /// </summary>
@@ -211,6 +223,12 @@ namespace Vge.World.Chunk
             }
         }
 
+        /// <summary>
+        /// Получить блок данных, по глобальным координатам без проверки и без света
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public BlockState GetBlockStateNotCheckLight(BlockPos blockPos)
+            => GetBlockStateNotCheckLight(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255 без проверки и без света
         /// </summary>
