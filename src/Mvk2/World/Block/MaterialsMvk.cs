@@ -23,12 +23,12 @@ namespace Mvk2.World.Block
 
         public MaterialsMvk()
         {
-            Air = new MaterialBase((int)EnumMaterial.Air).SetTurfDoesNotDry();
+            Air = new MaterialMvk((int)EnumMaterial.Air).SetRootGrowing().SetTurfDoesNotDry();
             Debug = new MaterialBase((int)EnumMaterial.Debug);
-            Water = new MaterialBase((int)EnumMaterial.Water).Liquid();
+            Water = new MaterialBase((int)EnumMaterial.Water).SetRootGrowing().Liquid();
             Bedrock = new MaterialBase((int)EnumMaterial.Bedrock);
             Solid = new MaterialMvk((int)EnumMaterial.Solid).SetSimpleCraft();
-            Loose = new MaterialMvk((int)EnumMaterial.Loose).SetSimpleCraft();
+            Loose = new MaterialMvk((int)EnumMaterial.Loose).SetSimpleCraft().SetRootGrowing();
             Ore = new MaterialBase((int)EnumMaterial.Ore);
             Plant = new MaterialBase((int)EnumMaterial.Plant).SetRequiresNoTool().SetTurfDoesNotDry();
             Wood = new MaterialMvk((int)EnumMaterial.Wood).SetSimpleCraft();

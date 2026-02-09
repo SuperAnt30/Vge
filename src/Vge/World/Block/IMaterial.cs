@@ -30,5 +30,9 @@
         /// Воспламеняет (лава или огонь)
         /// </summary>
         bool Ignites { get; }
+        /// <summary>
+        /// Растёт корень
+        /// </summary>
+        bool RootGrowing { get; }
     }
 }

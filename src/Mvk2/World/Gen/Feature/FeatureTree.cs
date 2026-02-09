@@ -415,8 +415,8 @@ namespace Mvk2.World.Gen.Feature
                     }
                     else
                     {
-                        // Без соседей
-                        world.SetBlockState(pos, blockCache.GetBlockState(), 44);
+                        // Без соседей, кроме первого
+                        world.SetBlockState(pos, blockCache.GetBlockState(), i == 0 ? 46 : 44);
                     }
                 }
             }
@@ -796,17 +796,7 @@ namespace Mvk2.World.Gen.Feature
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual bool _CheckRoot(int id)
-        {
-            //Ce.Blocks.BlockObjects[Id];
-            return id == 0 || id == _blockRootId
-                || id == BlocksRegMvk.TurfLoam.IndexBlock
-                || id == BlocksRegMvk.Turf.IndexBlock
-                || id == BlocksRegMvk.Loam.IndexBlock
-                || id == BlocksRegMvk.Humus.IndexBlock
-                || id == BlocksRegMvk.Sand.IndexBlock
-                || id == BlocksRegMvk.Water.IndexBlock
-                || id == BlocksRegMvk.Clay.IndexBlock;
-        }
+            => id == _blockRootId || Ce.Blocks.BlockObjects[id].Material.RootGrowing;
 
         /// <summary>
         /// Проверить наличие блока в массиве блока сущности дерева.

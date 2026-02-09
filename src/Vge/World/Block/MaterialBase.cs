@@ -8,27 +8,31 @@
         /// <summary>
         /// Получить уникальный номер материала
         /// </summary>
-        public int IndexMaterial { get; protected set; }
+        public int IndexMaterial { get; private set; }
         /// <summary>
         /// Возвращает, если блоки этих материалов являются жидкостями
         /// </summary>
-        public bool IsLiquid { get; protected set; } = false;
+        public bool IsLiquid { get; private set; }
         /// <summary>
         /// Не требует инструмента для разрушения блока
         /// </summary>
-        public bool RequiresNoTool { get; protected set; } = false;
+        public bool RequiresNoTool { get; private set; }
         /// <summary>
         /// Является ли блок стеклянным, блок или панель
         /// </summary>
-        public bool Glass { get; protected set; } = false;
+        public bool Glass { get; private set; }
         /// <summary>
         /// Дёрн не сохнет, под этим блоком
         /// </summary>
-        public bool TurfDoesNotDry { get; protected set; } = false;
+        public bool TurfDoesNotDry { get; private set; }
         /// <summary>
         /// Воспламеняет (лава или огонь)
         /// </summary>
-        public bool Ignites { get; protected set; } = false;
+        public bool Ignites { get; private set; }
+        /// <summary>
+        /// Растёт корень
+        /// </summary>
+        public bool RootGrowing { get; private set; }
 
         public MaterialBase(int index) => IndexMaterial = index;
 
@@ -74,6 +78,15 @@
         public MaterialBase SetIgnites()
         {
             Ignites = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Задать на этих блоках может рости корень дерева
+        /// </summary>
+        public MaterialBase SetRootGrowing()
+        {
+            RootGrowing = true;
             return this;
         }
 

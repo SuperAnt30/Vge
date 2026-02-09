@@ -11,5 +11,6 @@ namespace Mvk2.World.Block
         /// На каких блоках можно делать простой крафт
         /// </summary>
         bool SimpleCraft { get; }
+        
     }
 }

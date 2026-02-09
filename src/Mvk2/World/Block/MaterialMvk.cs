@@ -10,7 +10,7 @@ namespace Mvk2.World.Block
         /// <summary>
         /// На каких блоках можно делать простой крафт
         /// </summary>
-        public bool SimpleCraft { get; protected set; } = false;
+        public bool SimpleCraft { get; private set; }
 
         public MaterialMvk(int index) : base(index) { }
 
