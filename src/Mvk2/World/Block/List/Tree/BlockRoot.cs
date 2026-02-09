@@ -41,7 +41,7 @@ namespace Mvk2.World.Block.List
             {
                 y++;
             }
-            blockPos.Y = y + 1;
+            blockPos.Y = y;
             if (chunk.GetBlockEntity(blockPos) is BlockEntityTree blockEntityTree)
             {
                 blockEntityTree.RemoveAllLeaves(world);

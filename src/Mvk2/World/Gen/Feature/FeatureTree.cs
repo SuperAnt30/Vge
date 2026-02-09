@@ -242,8 +242,8 @@ namespace Mvk2.World.Gen.Feature
                 {
                     // Чанк спавна равен текущему чанку записи
                     BlockEntityTree blockEntity = _CreateBlockEntity();
-                    blockEntity.SetBlockPosition(chunkSpawn, new BlockState(_blockLogId | 3 << 12),
-                        new BlockPos(chunkSpawn.BlockX + bx, by, chunkSpawn.BlockZ + bz));
+                    blockEntity.SetBlockPosition(chunkSpawn, new BlockState(_blockLogId | 515 << 12),
+                        new BlockPos(chunkSpawn.BlockX + bx, by - 1, chunkSpawn.BlockZ + bz));
                     blockEntity.SetArrayLocal(_blockCaches);
                     blockEntity.StepNorm(_rootLenght);
                     _chunkPrimer.SetBlockEntity(blockEntity);
@@ -263,7 +263,7 @@ namespace Mvk2.World.Gen.Feature
         protected void _LeavesTop(int x, int y, int z, int metBias = 0)
         {
             // Up
-            AddBlockCacheLeaves(x, y + 1, z, _blockLeavesId, metBias + _NextInt(2) * 6);
+            AddBlockLeaves(x, y + 1, z, metBias + _NextInt(2) * 6);
             // Бок
             _LeavesTrunk(x, y, z, metBias);
         }
@@ -274,13 +274,13 @@ namespace Mvk2.World.Gen.Feature
         protected void _LeavesTrunk(int x, int y, int z, int metBias = 0)
         {
             // East
-            AddBlockCacheLeaves(x + 1, y, z, _blockLeavesId, metBias + 2 + _NextInt(2) * 6);
+            AddBlockLeaves(x + 1, y, z, metBias + 2 + _NextInt(2) * 6);
             // West
-            AddBlockCacheLeaves(x - 1, y, z, _blockLeavesId, metBias + 3 + _NextInt(2) * 6);
+            AddBlockLeaves(x - 1, y, z, metBias + 3 + _NextInt(2) * 6);
             // North
-            AddBlockCacheLeaves(x, y, z - 1, _blockLeavesId, metBias + 4 + _NextInt(2) * 6);
+            AddBlockLeaves(x, y, z - 1, metBias + 4 + _NextInt(2) * 6);
             // South
-            AddBlockCacheLeaves(x, y, z + 1, _blockLeavesId, metBias + 5 + _NextInt(2) * 6);
+            AddBlockLeaves(x, y, z + 1, metBias + 5 + _NextInt(2) * 6);
         }
 
         /// <summary>
@@ -290,49 +290,49 @@ namespace Mvk2.World.Gen.Feature
         protected virtual void _LeavesBranch(int x, int y, int z, int side)
         {
             // Up
-            AddBlockCacheLeaves(x, y + 1, z, _blockLeavesId, _NextInt(2) * 6);
+            AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
             // Down
-            AddBlockCacheLeaves(x, y - 1, z, _blockLeavesId, 1 + _NextInt(2) * 6);
+            AddBlockLeaves(x, y - 1, z, 1 + _NextInt(2) * 6);
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
-                AddBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // West
-                AddBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // South
-                AddBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
-                AddBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // North
-                AddBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
                 // South
-                AddBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
-                AddBlockCacheLeaves(x + 1, y, z, _blockLeavesId, 2 + _NextInt(2) * 6);
+                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // West
-                AddBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // North
-                AddBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
             }
             else // West
             {
                 // Все кроме East
                 // West
-                AddBlockCacheLeaves(x - 1, y, z, _blockLeavesId, 3 + _NextInt(2) * 6);
+                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // North
-                AddBlockCacheLeaves(x, y, z - 1, _blockLeavesId, 4 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
                 // South
-                AddBlockCacheLeaves(x, y, z + 1, _blockLeavesId, 5 + _NextInt(2) * 6);
+                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
         }
 
@@ -341,25 +341,39 @@ namespace Mvk2.World.Gen.Feature
         #region Add blocks
 
         /// <summary>
-        /// Добавить блок в кеш без мет данных
+        /// Добавить блок в кеш ствол, без мет
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockCache(int x, int y, int z, int id, int parent)
+        private void _AddBlockTrunk(int x, int y, int z, int id, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, id) { ParentIndex = parent });
 
         /// <summary>
-        /// Добавить блок в кеш с мет данными
+        /// Добавить блок в кеш с мет данными, ветки или начальный блок (пень) молодого дерева
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockCacheMet(int x, int y, int z, int id, int met, int parent)
+        private void _AddBlockMet(int x, int y, int z, int id, int met, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = parent });
 
         /// <summary>
-        /// Добавить блок в кеш листву с мет данных и пометко нет привязки к древу
+        /// Добавить блок в кеш пняь с мет данными и пометкой что можно ломать блоки как корень
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddBlockCacheLeaves(int x, int y, int z, int id, int met)
-            => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = -3, Flag = 2 });
+        private void _AddBlockStump(int x, int y, int z, int met, int parent)
+            => _blockCaches.Add(new BlockCache(x, y, z, _blockLogId, met) { ParentIndex = parent, Flag = 3 });
+
+        /// <summary>
+        /// Добавить блок в кеш пняь с мет данными и пометкой что можно ломать блоки как корень
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _AddBlockRoot(int x, int y, int z, int met)
+            => _blockCaches.Add(new BlockCache(x, y, z, _blockRootId, met) { ParentIndex = -2 });
+
+        /// <summary>
+        /// Добавить блок в кеш листву с мет данных и пометкой нет привязки к древу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddBlockLeaves(int x, int y, int z, int met)
+            => _blockCaches.Add(new BlockCache(x, y, z, _blockLeavesId, met) { ParentIndex = -3, Flag = 2 });
 
         /// <summary>
         /// Создать блок сущности для дерева
@@ -437,14 +451,18 @@ namespace Mvk2.World.Gen.Feature
             int bx0 = bx;
             int bz0 = bz;
 
-            // Пенёк основа
-            _AddBlockCacheMet(bx0, by, bz0, _blockLogId, 515, -1);
             // общий счётчик родителя
             int parentAmount = 0;
             // родитель ствола
             int parentTrunk = 0;
             // родитель ветки
             int parentBranch;
+
+            // Пенёк основа
+            _AddBlockStump(bx0, by - 1, bz0, 515, -1);
+            _AddBlockStump(bx0, by, bz0, 3, parentTrunk);
+
+            parentTrunk = ++parentAmount;
             int vecX, vecY;
 
             // временное значение смещение ствола
@@ -536,7 +554,7 @@ namespace Mvk2.World.Gen.Feature
                 // Ствол, если нижний то параметр для пенька
                 if (iUp != 0)
                 {
-                    _AddBlockCache(bx, y, bz, _blockLogId, parentTrunk);
+                    _AddBlockTrunk(bx, y, bz, _blockLogId, parentTrunk);
                     parentTrunk = ++parentAmount;
                 }
 
@@ -609,13 +627,13 @@ namespace Mvk2.World.Gen.Feature
                                                 stickBiasXZ--;
                                             }
                                             // фиксируем ветку
-                                            _AddBlockCacheMet(sx, sy, sz, _blockLogId,
+                                            _AddBlockMet(sx, sy, sz, _blockLogId,
                                                 (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
                                         }
                                         else
                                         {
                                             // фиксируем тонкую ветку
-                                            _AddBlockCacheMet(sx, sy, sz, _blockBranchId,
+                                            _AddBlockMet(sx, sy, sz, _blockBranchId,
                                                 (iSide == 0 || iSide == 2) ? 2 : 1, parentBranch);
                                         }
                                         parentBranch = ++parentAmount;
@@ -639,17 +657,15 @@ namespace Mvk2.World.Gen.Feature
 
             y = by + count;
             // Ствол
-            _AddBlockCache(bx, y, bz, _blockBranchId, parentTrunk);
+            _AddBlockTrunk(bx, y, bz, _blockBranchId, parentTrunk);
             // Листва на мокушке
             _LeavesTop(bx, y, bz);
 
             // === Корень
-
-            _AddBlockCacheMet(bx0, by - 1, bz0, _blockLogId, 3, -2);
             for (iUp = 0; iUp < _rootLenght; iUp++)
             {
                 y = by - 2 - iUp;
-                _AddBlockCache(bx0, y, bz0, _blockRootId, -2);
+                _AddBlockRoot(bx0, y, bz0, 0);
             }
             // Стороны
             // цикл направлении веток
@@ -670,7 +686,7 @@ namespace Mvk2.World.Gen.Feature
                         // цикл длинны ветки
                         if (vecX != 0) sx += vecX;
                         if (vecY != 0) sz += vecY;
-                        _AddBlockCacheMet(sx, sy, sz, _blockRootId, (iSide == 0 || iSide == 2) ? 2 : 1, -2);
+                        _AddBlockRoot(sx, sy, sz, (iSide == 0 || iSide == 2) ? 2 : 1);
                     }
                 }
             }
@@ -684,7 +700,7 @@ namespace Mvk2.World.Gen.Feature
             _blockCaches.Clear();
 
             // Пенёк основа
-            _AddBlockCacheMet(bx, by, bz, _blockBranchId, 512, -1);
+            _AddBlockMet(bx, by, bz, _blockBranchId, 512, -1);
             // родитель ствола
             int parentTrunk = 0;
 
@@ -726,7 +742,7 @@ namespace Mvk2.World.Gen.Feature
                 }
 
                 // Ствол
-                _AddBlockCacheMet(bx, y, bz, _blockBranchId, met, parentTrunk);
+                _AddBlockMet(bx, y, bz, _blockBranchId, met, parentTrunk);
                 parentTrunk++;
 
                 // Листва
@@ -743,7 +759,7 @@ namespace Mvk2.World.Gen.Feature
 
             y = by + _trunkHeight;
             // Ствол
-            _AddBlockCache(bx, y, bz, _blockBranchId, parentTrunk);
+            _AddBlockTrunk(bx, y, bz, _blockBranchId, parentTrunk);
             // Листва на мокушке
             _LeavesTop(bx, y, bz, 256);
         }
@@ -775,7 +791,7 @@ namespace Mvk2.World.Gen.Feature
                             pos.X += bX;
                             pos.Z += bZ;
                             id = world.GetBlockState(pos).Id;
-                            if (blockCache.ParentIndex == -2) // Корень
+                            if (blockCache.ParentIndex == -2 || blockCache.Flag == 3) // Корень или пень
                             {
                                 if (!_CheckRoot(id)) return false;
                             }
@@ -889,6 +905,12 @@ namespace Mvk2.World.Gen.Feature
                             blockEntity.SetArrayLocal(_blockCaches);
                             // Экспорт
                             _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
+
+                            chunk.RemoveBlockEntity(blockPos);
+
+                            blockPos = blockPos.OffsetDown();
+                            blockEntity.SetBlockPosition(chunk, chunk.GetBlockState(blockPos), blockPos);
+                            chunk.SetBlockEntity(blockEntity);
                         }
                         // Если не смоглы выростить из-за вписать модель, генерируем высыхание
                         else if (_NextInt(10) == 0)

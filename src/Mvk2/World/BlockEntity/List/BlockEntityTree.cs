@@ -296,7 +296,7 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         private int _GetRootLenght(ChunkServer chunk, BlockPos blockPos)
         {
-            int y = blockPos.Y - 2;
+            int y = blockPos.Y - 1;
             int xz = (blockPos.Z & 15) << 4 | (blockPos.X & 15);
             int length = 0;
             while (chunk.GetBlockStateNotCheckLight(xz, y).Id == BlocksRegMvk.TreeRoot.IndexBlock)
