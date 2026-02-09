@@ -5,6 +5,7 @@
     /// </summary>
     public enum EnumTimeYear
     {
+        None = -1,
         /// <summary>
         /// Весна
         /// </summary>

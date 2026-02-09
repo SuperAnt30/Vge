@@ -6,14 +6,13 @@ using Vge.World;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
 using Vge.World.Chunk;
-using Vge.World.Сalendar;
 
 namespace Mvk2.World.Block.List
 {
     /// <summary>
     /// Блок листвы
     /// </summary>
-    public class BlockLeaves : BlockTree
+    public class BlockLeaves : BlockBase
     {
         /***
          * Met 0001 0000 1111
@@ -25,7 +24,7 @@ namespace Mvk2.World.Block.List
          * 7 - низ 2
          * 8-11 бок 2
          * 
-         * +256 - молодой, нельзя выращивать плоды || Можно вешать плод
+         * +256 - Можно вешать плод
          * +512 - надо удалять
          */
 
@@ -42,7 +41,13 @@ namespace Mvk2.World.Block.List
         /// </summary>
         protected int _idFetus;
 
-        public BlockLeaves(IMaterial material) : base(material, TypeTree.Leaves) { }
+        public BlockLeaves(IMaterial material) : base(material) { }
+
+        /// <summary>
+        /// Массив сторон прямоугольных форм для рендера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 0xF];
 
         /// <summary>
         /// Смена соседнего блока
@@ -78,6 +83,17 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, BlockState blockState, Rand random)
         {
             int met = blockState.Met;
+            if ((met & 1 << 9) != 0) // 512
+            {
+                // Удаляем
+                world.SetBlockToAir(blockPos);
+            }
+            else if ((met & 1 << 8) != 0) // 256
+            {
+                // Вешаем плод
+
+            }
+            /*
          //   if (met < 255)// && chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
             {
                 // Найти ветку
@@ -101,11 +117,10 @@ namespace Mvk2.World.Block.List
                         {
                             world.SetBlockToAir(blockPos);
                         }
-                        else if (blockEntityTree.Step == BlockEntityTree.TypeStep.Norm)
+                        else if (blockEntityTree.Step == BlockEntityTree.TypeStep.Mature)
                         {
-                            // Тут мы бываем только при TypeStep.Norm
                             // Проверяем состояние дерева черз тик основания
-                            blockEntityTree.CheckingCondition();
+                          //  blockEntityTree.CheckingCondition();
 
                             //if (world.Settings.Calendar is Сalendar32 сalendar32 
                             //    && сalendar32.TimeYear == EnumTimeYear.Spring)
@@ -122,9 +137,9 @@ namespace Mvk2.World.Block.List
                     }
                 }
 
-
                // world.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 12);
             }
+        */
         }
     }
 }

@@ -62,5 +62,10 @@ namespace Vge.World.Сalendar
         /// Получить цвет тумана
         /// </summary>
         Vector3 GetColorFog();
+
+        /// <summary>
+        /// Пара года
+        /// </summary>
+        EnumTimeYear TimeYear { get; }
     }
 }

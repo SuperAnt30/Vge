@@ -603,7 +603,7 @@ namespace Vge.World
             }
             return "World-" + IdWorld
                 + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
-                + "\r\n" + Tracker + " ChBt: " + chBt + " ChBe: " + chBe;
+                + "\r\n" + Tracker + " ChBt: " + chBt + " ChBe: " + chBe + " " + Settings.Calendar;
         }
         
     }

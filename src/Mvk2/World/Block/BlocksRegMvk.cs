@@ -160,7 +160,7 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок листвы берёзы
         /// </summary>
-        public static BlockTree LeavesBirch { get; private set; }
+        public static BlockLeaves LeavesBirch { get; private set; }
         /// <summary>
         /// Блок саженца берёзы
         /// </summary>
@@ -181,7 +181,7 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок листвы дуба
         /// </summary>
-        public static BlockTree LeavesOak { get; private set; }
+        public static BlockLeaves LeavesOak { get; private set; }
         /// <summary>
         /// Блок саженца дуба
         /// </summary>

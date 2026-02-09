@@ -215,5 +215,8 @@ namespace Vge.World.Сalendar
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetColorFog() => _colorFog;
+
+        public override string ToString()
+            => "d:" + Day + " y:" + Year + " " + TimeYear;
     }
 }

@@ -27,6 +27,11 @@ namespace Vge.World.Сalendar
         private readonly Vector3 _colorFog = new Vector3(.2f);
 
         /// <summary>
+        /// Пара года
+        /// </summary>
+        public EnumTimeYear TimeYear { get; private set; } = EnumTimeYear.None;
+
+        /// <summary>
         /// Обновление раз в тик на клиенте
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,5 +88,7 @@ namespace Vge.World.Сalendar
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetColorFog() => _colorFog;
+
+        public override string ToString() => "";
     }
 }

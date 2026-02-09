@@ -1,6 +1,7 @@
 ﻿using Mvk2.World.Block;
 using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
@@ -8,6 +9,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using Vge.World.Gen.Feature;
+using Vge.World.Сalendar;
 using WinGL.Util;
 
 namespace Mvk2.World.Gen.Feature
@@ -236,7 +238,7 @@ namespace Mvk2.World.Gen.Feature
                 || idBlockBegin == _blockLogId)
             {
                 _SetRand(rand);
-                _GenerationCache(bx, by, bz);
+                _GenerationMature(bx, by, bz);
 
                 if (_biasX == 0 && _biasZ == 0)
                 {
@@ -245,7 +247,7 @@ namespace Mvk2.World.Gen.Feature
                     blockEntity.SetBlockPosition(chunkSpawn, new BlockState(_blockLogId | 515 << 12),
                         new BlockPos(chunkSpawn.BlockX + bx, by - 1, chunkSpawn.BlockZ + bz));
                     blockEntity.SetArrayLocal(_blockCaches);
-                    blockEntity.StepNorm(_rootLenght);
+                    blockEntity.StepMature(_rootLenght);
                     _chunkPrimer.SetBlockEntity(blockEntity);
                 }
 
@@ -260,27 +262,27 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         ///Листва на мокушке
         /// </summary>
-        protected void _LeavesTop(int x, int y, int z, int metBias = 0)
+        protected void _LeavesTop(int x, int y, int z)
         {
             // Up
-            AddBlockLeaves(x, y + 1, z, metBias + _NextInt(2) * 6);
+            AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
             // Бок
-            _LeavesTrunk(x, y, z, metBias);
+            _LeavesTrunk(x, y, z);
         }
 
         /// <summary>
         ///Листва на стволе
         /// </summary>
-        protected void _LeavesTrunk(int x, int y, int z, int metBias = 0)
+        protected void _LeavesTrunk(int x, int y, int z)
         {
             // East
-            AddBlockLeaves(x + 1, y, z, metBias + 2 + _NextInt(2) * 6);
+            AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
             // West
-            AddBlockLeaves(x - 1, y, z, metBias + 3 + _NextInt(2) * 6);
+            AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
             // North
-            AddBlockLeaves(x, y, z - 1, metBias + 4 + _NextInt(2) * 6);
+            AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
             // South
-            AddBlockLeaves(x, y, z + 1, metBias + 5 + _NextInt(2) * 6);
+            AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
         }
 
         /// <summary>
@@ -442,9 +444,9 @@ namespace Mvk2.World.Gen.Feature
         #region Generation
 
         /// <summary>
-        /// Сгенерировать древо в кеш блоки из локальных координат чанка
+        /// Сгенерировать взрослое древо в кеш блоки из локальных координат чанка
         /// </summary>
-        private void _GenerationCache(int bx, int by, int bz)
+        private void _GenerationMature(int bx, int by, int bz)
         {
             _blockCaches.Clear();
             // Значения где формируется ствол, чтоб ствол не уходил далеко
@@ -693,9 +695,9 @@ namespace Mvk2.World.Gen.Feature
         }
 
         /// <summary>
-        /// Сгенерировать древо в кеш блоки из локальных координат чанка шаг первый саженец
+        /// Сгенерировать молодое дерево в кеш блоки из локальных координат чанка, шаг из саженеца
         /// </summary>
-        private void _GenerationCacheStepSapling(int bx, int by, int bz)
+        private void _GenerationYoung(int bx, int by, int bz)
         {
             _blockCaches.Clear();
 
@@ -749,7 +751,7 @@ namespace Mvk2.World.Gen.Feature
                 if (_trunkWithoutBranches < 0)
                 {
                     _trunkWithoutBranches = _NextInt(2) + 1;
-                    _LeavesTrunk(bx, y, bz, 256);
+                    _LeavesTrunk(bx, y, bz);
                 }
                 else if (iUp < _trunkHeight - 2)
                 {
@@ -761,7 +763,7 @@ namespace Mvk2.World.Gen.Feature
             // Ствол
             _AddBlockTrunk(bx, y, bz, _blockBranchId, parentTrunk);
             // Листва на мокушке
-            _LeavesTop(bx, y, bz, 256);
+            _LeavesTop(bx, y, bz);
         }
 
         #endregion
@@ -844,7 +846,7 @@ namespace Mvk2.World.Gen.Feature
             // Для роста надо вытащить блок сущности
             _blocks = new BlockPosLoc[] { new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, _blockBranchId, -1) };
             // Генерация древа
-            _GenerationCacheStepSapling(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+            _GenerationYoung(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
 
             // Проверка кто мешает
             if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
@@ -892,7 +894,7 @@ namespace Mvk2.World.Gen.Feature
                         _blocks = blockEntity.CopyArrayBlocks();
 
                         // Взрослое
-                        _GenerationCache(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+                        _GenerationMature(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
 
                         // Проверка кто мешает
                         if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
@@ -900,7 +902,7 @@ namespace Mvk2.World.Gen.Feature
                             // Удаляем все блоки прошлого дерева в мире
                             blockEntity.RemoveAll(world);
                             // Меняем шаг
-                            blockEntity.StepNorm(_rootLenght);
+                            blockEntity.StepMature(_rootLenght);
                             // Вносим новый массив дерева
                             blockEntity.SetArrayLocal(_blockCaches);
                             // Экспорт
@@ -921,10 +923,18 @@ namespace Mvk2.World.Gen.Feature
                         _blocks = null;
                     }
                 }
-                else if (blockEntity.Step == BlockEntityTree.TypeStep.Norm)
+                else if (blockEntity.Step == BlockEntityTree.TypeStep.Mature)
                 {
-                    // Если номальное дерево
-                    blockEntity.CheckingCondition();
+                    // Если взрослое дерево
+                    BlockEntityTree.StateVariant state = blockEntity.CheckingCondition(world);
+
+                    if (state == BlockEntityTree.StateVariant.Dry)
+
+                    
+                    //if (blockEntity.Step == BlockEntityTree.TypeStep.Dry)
+                    //{
+                        blockEntity.RemoveAllLeaves(world);
+                    //}
                 }
             }
         }

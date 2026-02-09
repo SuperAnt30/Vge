@@ -1,8 +1,4 @@
-﻿using Mvk2.World.Gen;
-using Mvk2.World.Gen.Feature;
-using System.Runtime.CompilerServices;
-using Vge.World;
-using Vge.World.Block;
+﻿using Vge.World.Block;
 
 namespace Mvk2.World.Block.List
 {
@@ -22,13 +18,5 @@ namespace Mvk2.World.Block.List
             _idBranch = BlocksRegMvk.BranchBirch.IndexBlock;
             _idFetus = BlocksRegMvk.FetusBirch.IndexBlock;
         }
-
-        /// <summary>
-        /// Получить объект генерации дерева
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override FeatureTree _GetFeatureTree(WorldServer world)
-            => world.ChunkPrServ.ChunkGenerate is IGenTree genTree ? genTree.Tree.BirchUp
-            : (FeatureTree)null;
     }
 }

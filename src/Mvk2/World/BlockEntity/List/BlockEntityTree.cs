@@ -7,6 +7,7 @@ using Vge.World;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
 using Vge.World.Chunk;
+using Vge.World.Сalendar;
 
 namespace Mvk2.World.BlockEntity.List
 {
@@ -36,9 +37,9 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         public int RootLenght { get; private set; } = 0;
         /// <summary>
-        /// Количество возможных плодов
+        /// Готов ли для урожая
         /// </summary>
-        public int CountFetus { get; private set; } = 5;
+        private bool _isFetus;
 
         /// <summary>
         /// Типа этапа роста дерева
@@ -50,23 +51,46 @@ namespace Mvk2.World.BlockEntity.List
             /// </summary>
             Young,
             /// <summary>
-            /// Нормальное дерево
+            /// Взрослое дерево
             /// </summary>
-            Norm,
+            Mature,
             /// <summary>
             /// Сухое дерево
             /// </summary>
             Dry
         }
 
+        /// <summary>
+        /// Вариант состояния дерева
+        /// </summary>
+        public enum StateVariant
+        {
+            /// <summary>
+            /// Без изменения
+            /// </summary>
+            Norm,
+            /// <summary>
+            /// Надо указать листве, что надо сохнуть, Leaves.Met += 512;
+            /// </summary>
+            Dry,
+            /// <summary>
+            /// Надо готовить листву для урожая, Leaves.Met += 256;
+            /// </summary>
+            Fetus,
+            /// <summary>
+            /// Отменить готовность листвы к урожаю, Leaves.Met -= 256;
+            /// </summary>
+            Cancel
+        }
+
         #region Методы изменения
 
         /// <summary>
-        /// Задать дерево выросло
+        /// Задать взрослое дерево, с длинной корня
         /// </summary>
-        public void StepNorm(int rootLenght)
+        public void StepMature(int rootLenght)
         {
-            Step = TypeStep.Norm;
+            Step = TypeStep.Mature;
             RootLenght = rootLenght;
         }
 
@@ -248,6 +272,7 @@ namespace Mvk2.World.BlockEntity.List
                     
                     if (posLoc.Id == state.Id)
                     {
+                        
                         world.SetBlockToAir(pos, 66); // 64 блокировка, 2 смена соседа
                         world.SetBlockState(pos, state, 64);
 
@@ -263,32 +288,42 @@ namespace Mvk2.World.BlockEntity.List
         #endregion
 
         /// <summary>
-        /// Проверить состояние дерева
+        /// Проверить состояние дерева, только для Mature
         /// </summary>
-        public void CheckingCondition()
+        public StateVariant CheckingCondition(WorldServer world)
         {
             // Надо проверить корень
             int rootLenght = _GetRootLenght(Chunk, Position);
-
             if (rootLenght < RootLenght)
             {
                 // Корень короче, предлагаю дерево высушить
                 Step = TypeStep.Dry;
+                return StateVariant.Dry;
             }
-        }
-
-        /// <summary>
-        /// Можно ли добавить плод, если да счётчик добалвения
-        /// </summary>
-        public bool IsAddFetus()
-        {
-            if (CountFetus > 0)
+            else
             {
-                CountFetus--;
-                return true;
+                EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+                if (timeYear == EnumTimeYear.Summer)
+                {
+                    // Погода, для роста (лето)
+                    if (!_isFetus)
+                    {
+                        // Тут надо проверка корня, и удобрения
+                        _isFetus = true;
+                        return StateVariant.Fetus;
+                    }
+                }
+                else if (timeYear == EnumTimeYear.Winter || timeYear == EnumTimeYear.Autumn)
+                {
+                    // Убрать рост (зима, весна)
+                    if (_isFetus)
+                    {
+                        _isFetus = true;
+                        return StateVariant.Cancel;
+                    }
+                }
             }
-            return false;
-            
+            return StateVariant.Norm;
         }
 
         /// <summary>
@@ -410,7 +445,7 @@ namespace Mvk2.World.BlockEntity.List
             + " Box[" + (_empty ? "empty" : (_minX + "; " + _minY + "; " + _minZ
             + " -> " + _maxX + "; " + _maxY + "; " + _maxZ))
             + "] Tree:" + _blocks.Length
-            + " Root:" + RootLenght;
+            + " Root:" + RootLenght + " " + Step;
 
         /// <summary>
         /// Дополнительная структура, для удаления

@@ -12,11 +12,11 @@ namespace Mvk2.World.Block.List
     public class BlockRoot : BlockBase
     {
         /***
-         * Met
+         * Met 0001 0000 0011
+         * Для Root корень 2 bit форма 1 bit игрок 
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
-         * 
-         * 
+         * +256 - игрок
          */
 
         public BlockRoot(IMaterial material) : base(material) { }
@@ -34,40 +34,23 @@ namespace Mvk2.World.Block.List
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
-
-            int y = blockPos.Y + 1;
-            int xz = (blockPos.Z & 15) << 4 | (blockPos.X & 15);
-            while (chunk.GetBlockStateNotCheckLight(xz, y).Id == IndexBlock)
+            if (stateOld.Met < 256) // только для сгенерированных блоков
             {
-                y++;
+                int y = blockPos.Y + 1;
+                int x = blockPos.X & 15;
+                int z = blockPos.Z & 15;
+                int xz = z << 4 | x;
+                while (chunk.GetBlockStateNotCheckLight(xz, y).Id == IndexBlock)
+                {
+                    y++;
+                }
+                blockPos.Y = y;
+                if (chunk.GetBlockEntity(blockPos) is BlockEntityTree)
+                {
+                    // Запускаем тикер чтоб древо отработало
+                    chunk.SetBlockTick(x, y, z, false, 3);
+                }
             }
-            blockPos.Y = y;
-            if (chunk.GetBlockEntity(blockPos) is BlockEntityTree blockEntityTree)
-            {
-                blockEntityTree.RemoveAllLeaves(world);
-            }
-
-           // chunk.AddRangeBlockEntity(blocksEntity);
-
-            //if (Type == TypeTree.Log || Type == TypeTree.Branch)
-            //{
-
-
-
-            //    // Список всех блок сущностей в квадрате 3*3 чанка
-            //    List<BlockEntityBase> blocksEntity = world.GetBlocksEntity3x3(chunk);
-
-            //    // Пробегаемся и производим удаление
-            //    foreach (BlockEntityBase blockEntity in blocksEntity)
-            //    {
-            //        if (blockEntity is BlockEntityTree blockEntityTree
-            //            && blockEntityTree.IsAABB(blockPos))
-            //        {
-            //            // Это блок возможно принадлежит этому дереву. Откусить
-            //            blockEntityTree.RemoveBlock(world, chunk, blockPos);
-            //        }
-            //    }
-            //}
         }
     }
 }
