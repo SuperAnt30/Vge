@@ -13,17 +13,6 @@ namespace Mvk2.World.Block.List
         public BlockTreeBirch(TypeTree type)  : base(type) { }
 
         /// <summary>
-        /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков
-        /// </summary>
-        public override void InitAfterItems()
-        {
-            IdSapling = BlocksRegMvk.SaplingBirch.IndexBlock;
-            IdLog = BlocksRegMvk.LogBirch.IndexBlock;
-            IdBranch = BlocksRegMvk.BranchBirch.IndexBlock;
-            IdLeaves = BlocksRegMvk.LeavesBirch.IndexBlock;
-        }
-
-        /// <summary>
         /// Получить объект генерации дерева
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

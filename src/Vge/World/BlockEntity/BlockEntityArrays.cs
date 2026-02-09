@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Entity;
+using Vge.World.Chunk;
 
 namespace Vge.World.BlockEntity
 {
@@ -56,12 +57,12 @@ namespace Vge.World.BlockEntity
         /// Создать сущность для сервера по индексу из таблицы сервера.
         /// Регистрацию индексов сущностей можно заполнить в GameModClient.InitAfterStartGame() 
         /// </summary>
-        public BlockEntityBase CreateEntityServer(short index, WorldServer worldServer)
+        public BlockEntityBase CreateEntityServer(short index)
         {
             if (index < Count)
             {
                 BlockEntityBase entity = Activator.CreateInstance(_entitiesObjects[index].EntityType) as BlockEntityBase;
-                entity.InitServer(index, worldServer);
+                entity.InitServer(index);
                 return entity;
             }
             throw new Exception(Sr.GetString(Sr.IndexOutsideEntityType, index, Count));

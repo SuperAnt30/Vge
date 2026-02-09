@@ -27,10 +27,6 @@ namespace Vge.World.Block
         /// </summary>
         public byte Flag;
         /// <summary>
-        /// Тикащий блок, если значение не равно 0, и оно означает время тика, без приоритета
-        /// </summary>
-        public uint Tick;
-        /// <summary>
         /// Индекс родителя из массива. Если нет родителя = -1
         /// </summary>
         public int ParentIndex;
@@ -41,7 +37,6 @@ namespace Vge.World.Block
             Id = id;
             Met = met;
             Flag = 0;
-            Tick = 0;
             ParentIndex = -1;
         }
         public BlockCache(BlockPos blockPos, int id, int met = 0)
@@ -50,7 +45,6 @@ namespace Vge.World.Block
             Id = id;
             Met = met;
             Flag = 0;
-            Tick = 0;
             ParentIndex = -1;
         }
         public BlockCache(BlockPosLoc posLoc, int met = 0)
@@ -59,7 +53,6 @@ namespace Vge.World.Block
             Id = posLoc.Id;
             Met = met;
             Flag = 0;
-            Tick = 0;
             ParentIndex = -1;
         }
 

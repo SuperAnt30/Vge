@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.World;
 using Vge.World.Block;
+using Vge.World.Chunk;
 
 namespace Mvk2.World.Block.List
 {
@@ -9,6 +10,14 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockFetus : BlockBase
     {
+        /***
+         * Met
+         * 0 - Зелёное
+         * 1 - Жёлтое
+         * 2 - Красное
+         * 3 - Гнилое
+         */
+
         /// <summary>
         /// ID блок листвы текущего дерева
         /// </summary>
@@ -17,11 +26,11 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
-        public override void NeighborBlockChange(WorldServer world, BlockPos blockPos,
-            BlockState blockState, BlockBase neighborBlock)
+        public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
-            base.NeighborBlockChange(world, blockPos, blockState, neighborBlock);
-            if (!CanBlockStay(world, blockPos, blockState.Met))
+            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+            if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
                 world.SetBlockToAir(blockPos, 47); // 1 2 4 8 32 без звука но с частичками
@@ -32,9 +41,10 @@ namespace Mvk2.World.Block.List
         /// Проверка установи блока, можно ли его установить тут
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool CanBlockStay(WorldServer world, BlockPos blockPos, int met = 0)
+        public override bool CanBlockStay(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, int met = 0)
         {
-            return world.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;
+            return chunk.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;
         }
     }
 }

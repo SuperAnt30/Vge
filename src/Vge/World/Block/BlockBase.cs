@@ -497,8 +497,8 @@ namespace Vge.World.Block
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
-        public virtual void NeighborBlockChange(WorldServer world, BlockPos blockPos, 
-            BlockState blockState, BlockBase neighborBlock)
+        public virtual void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
             if (IsAddLiquid(blockState.Met))
             {
@@ -511,7 +511,8 @@ namespace Vge.World.Block
         /// Проверка установка блока, можно ли его установить тут
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool CanBlockStay(WorldServer world, BlockPos blockPos, int met = 0) => true;
+        public virtual bool CanBlockStay(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, int met = 0) => true;
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

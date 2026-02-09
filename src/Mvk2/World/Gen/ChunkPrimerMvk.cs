@@ -36,10 +36,6 @@ namespace Mvk2.World.Gen
         /// </summary>
         public readonly ArrayFast<uint> ArrayLightBlocks;
         /// <summary>
-        /// Массив блоков которые тикают
-        /// </summary>
-        public readonly uint[] Tick;
-        /// <summary>
         /// Биомы
         /// z << 4 | x;
         /// </summary>
@@ -66,7 +62,6 @@ namespace Mvk2.World.Gen
             Met = new int[_count];
             Flag = new byte[_count];
             ArrayLightBlocks = new ArrayFast<uint>(_count);
-            Tick = new uint[_count];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -107,16 +102,6 @@ namespace Mvk2.World.Gen
             Id[index] = blockCache.Id;
             Met[index] = blockCache.Met;
             Flag[index] = blockCache.Flag;
-            Tick[index] = blockCache.Tick;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetBlockStateTick(int xz, int y, int id, int met, uint tick)
-        {
-            int index = y << 8 | xz;
-            Id[index] = id;
-            if (met != 0) Met[index] = met;
-            Tick[index] = tick;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,7 +121,6 @@ namespace Mvk2.World.Gen
                 HeightMap[i] = 0;
             }
             ArrayLightBlocks.Clear();
-            Array.Clear(Tick, 0, _count);
             ListBlockEntity.Clear();
         }
 

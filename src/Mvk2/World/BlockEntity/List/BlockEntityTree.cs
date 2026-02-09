@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mvk2.World.Block;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
@@ -34,6 +35,10 @@ namespace Mvk2.World.BlockEntity.List
         /// Длинна корня
         /// </summary>
         public int RootLenght { get; private set; } = 0;
+        /// <summary>
+        /// Количество возможных плодов
+        /// </summary>
+        public int CountFetus { get; private set; } = 5;
 
         /// <summary>
         /// Типа этапа роста дерева
@@ -77,129 +82,17 @@ namespace Mvk2.World.BlockEntity.List
             List<BlockPosLoc> list = new List<BlockPosLoc>();
             for (int i = 0; i < count; i++)
             {
-                if (blockCaches[i].ParentIndex != -2)
+                if (blockCaches[i].ParentIndex > -2)
                 {
                     list.Add(new BlockPosLoc(blockCaches[i]));
                 }
             }
             _blocks = list.ToArray();
 
-            //_blocks = new BlockPosLoc[count];
-            //for (int i = 0; i < count; i++)
-            //{
-            //    _blocks[i] = new BlockPosLoc(blockCaches[i]);
-            //}
             _UpdateAxis();
         }
 
-        /// <summary>
-        /// Попадает ли блок в AABB древа
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAABB(BlockPos pos) => !_empty && pos.X >= _minX && pos.X <= _maxX
-            && pos.Y >= _minY && pos.Y <= _maxY && pos.Z >= _minZ && pos.Z <= _maxZ;
-
-        /// <summary>
-        /// Найти имеется ли блок
-        /// Покуда не используется 2026-01-30
-        /// </summary>
-        //public bool FindBlock(BlockPos blockPos)
-        //{
-        //    int count = _blocks.Length;
-        //    if (count > 0)
-        //    {
-        //        int x = (Position.X >> 4) << 4;
-        //        int z = (Position.Z >> 4) << 4;
-        //        int posLoc = blockPos.Y << 12 | (blockPos.Z - z + 16) << 6 | (blockPos.X - x + 16);
-        //        for (int i = 0; i < count; i++)
-        //        {
-        //            if (_blocks[i].EqualsPos(posLoc)) return true;
-        //        }
-        //    }
-        //    return false;
-        //}
-
-        
-
-        /// <summary>
-        /// Установить часть блоков
-        /// </summary>
-        public void AddBlocks(WorldServer world, ChunkServer chunk, BlockPosLoc[] posLocs)
-        {
-            int idBegin = _blocks.Length;
-            int countNew = idBegin + posLocs.Length;
-            BlockPosLoc[] blocksNew = new BlockPosLoc[countNew];
-            int parent = -1;
-            //Array.Copy()
-            for (int i = 0; i < countNew; i++)
-            {
-                if (i < idBegin)
-                {
-                    // Начальные блоки остаются как есть
-                    blocksNew[i] = _blocks[i];
-                    parent = i;
-                }
-                else
-                {
-                    // Новые блоки
-                    blocksNew[i] = new BlockPosLoc(posLocs[i - idBegin],
-                        posLocs[i - idBegin].ParentIndex + parent);
-                }
-            }
-
-            _blocks = blocksNew;
-
-            _UpdateAxis();
-            int biasX = (Position.X >> 4) << 4;
-            int biasZ = (Position.Z >> 4) << 4;
-
-            foreach (BlockPosLoc pos in blocksNew)
-            {
-                world.SetBlockState(pos.GetBlockPos(biasX, biasZ),
-                    new BlockState(pos.Id), 63);
-            }
-        }
-
-        /// <summary>
-        /// Установить часть блоков
-        /// </summary>
-        public void AddBlock(WorldServer world, BlockPos blockPos, int id)
-        {
-            List<PosId> list = new List<PosId>
-            {
-                new PosId(id, blockPos)
-            };
-
-            int x = (Position.X >> 4) << 4;
-            int z = (Position.Z >> 4) << 4;
-            // Удалить кэш блоков надо до удаления их в мире
-            int idBegin = _blocks.Length;
-            int countNew = idBegin + list.Count;
-            BlockPosLoc[] blocksNew = new BlockPosLoc[countNew];
-            int parent = -1;
-            for (int i = 0; i < countNew; i++)
-            {
-                if (i < idBegin)
-                {
-                    // Начальные блоки остаются как есть
-                    blocksNew[i] = _blocks[i];
-                    parent = i;
-                }
-                else
-                {
-                    blocksNew[i] = new BlockPosLoc(list[idBegin - i].Pos.Offset(-x, 0, -z), list[idBegin - i].Index, parent);
-                }
-            }
-
-            _blocks = blocksNew;
-
-            _UpdateAxis();
-
-            foreach (PosId pos in list)
-            {
-                world.SetBlockState(pos.Pos, new BlockState(pos.Index), 63);
-            }
-        }
+        #endregion
 
         #region Remove
 
@@ -370,6 +263,94 @@ namespace Mvk2.World.BlockEntity.List
         #endregion
 
         /// <summary>
+        /// Проверить состояние дерева
+        /// </summary>
+        public void CheckingCondition()
+        {
+            // Надо проверить корень
+            int rootLenght = _GetRootLenght(Chunk, Position);
+
+            if (rootLenght < RootLenght)
+            {
+                // Корень короче, предлагаю дерево высушить
+                Step = TypeStep.Dry;
+            }
+        }
+
+        /// <summary>
+        /// Можно ли добавить плод, если да счётчик добалвения
+        /// </summary>
+        public bool IsAddFetus()
+        {
+            if (CountFetus > 0)
+            {
+                CountFetus--;
+                return true;
+            }
+            return false;
+            
+        }
+
+        /// <summary>
+        /// Меряем фактическую глубину корня
+        /// </summary>
+        private int _GetRootLenght(ChunkServer chunk, BlockPos blockPos)
+        {
+            int y = blockPos.Y - 2;
+            int xz = (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+            int length = 0;
+            while (chunk.GetBlockStateNotCheckLight(xz, y).Id == BlocksRegMvk.TreeRoot.IndexBlock)
+            {
+                length++;
+                y--;
+            }
+            return length;
+        }
+
+        /// <summary>
+        /// Найти имеется ли блок
+        /// Покуда не используется 2026-01-30
+        /// </summary>
+        public bool FindBlock(BlockPos blockPos)
+        {
+            int count = _blocks.Length;
+            if (count > 0)
+            {
+                int x = (Position.X >> 4) << 4;
+                int z = (Position.Z >> 4) << 4;
+                int posLoc = blockPos.Y << 12 | (blockPos.Z - z + 16) << 6 | (blockPos.X - x + 16);
+                for (int i = 0; i < count; i++)
+                {
+                    if (_blocks[i].EqualsPos(posLoc)) return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Обновление блока листвы
+        /// </summary>
+        //public void UpdateTickLeaves(WorldServer world, ChunkServer chunk, 
+        //    BlockPos blockPosBranch, BlockPos blockPosLeaves, int idFetus)
+        //{
+        //    if (Step == TypeStep.Dry)
+        //    {
+        //        RemoveBlock(world, chunk, blockPosBranch);
+        //    }
+        //    else if (chunk.GetBlockStateNotCheck(blockPosLeaves.OffsetDown()).Id == 0)
+        //    {
+        //        world.SetBlockState(blockPosLeaves.OffsetDown(), new BlockState(idFetus), 12);
+        //    }
+        //}
+
+        /// <summary>
+        /// Попадает ли блок в AABB древа
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsAABB(BlockPos pos) => !_empty && pos.X >= _minX && pos.X <= _maxX
+            && pos.Y >= _minY && pos.Y <= _maxY && pos.Z >= _minZ && pos.Z <= _maxZ;
+
+        /// <summary>
         /// Сделать копию блоков
         /// </summary>
         public BlockPosLoc[] CopyArrayBlocks()
@@ -423,8 +404,6 @@ namespace Mvk2.World.BlockEntity.List
                 _empty = true;
             }
         }
-
-        #endregion
 
         public override string ToString() 
             => Position 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Player;
@@ -7,6 +8,7 @@ using Vge.Management;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
+using Vge.World.BlockEntity;
 using Vge.World.Chunk;
 using Vge.World.Gen;
 using WinGL.Util;
@@ -124,42 +126,10 @@ namespace Vge.World
                 {
                     blockCache = Settings.BlockCaches[i];
                     SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
-                    if (blockCache.Tick != 0)
-                    {
-                        SetBlockTick(blockCache.Position, blockCache.Tick);
-                    }
                 }
             }
             Settings.BlockCaches.Clear();
         }
-
-        /// <summary>
-        /// Проверить в мире временные блоки из кэша блоков обнолений
-        /// </summary>
-        //public bool CheckBlockCaches()
-        //{
-        //    int count = Settings.BlockCaches.Count;
-        //    if (count > 0)
-        //    {
-        //        BlockCache blockCache;
-        //        BlockState blockState;
-        //        for (int i = 0; i < count; i++)
-        //        {
-        //            blockCache = Settings.BlockCaches[i];
-        //            if (blockCache.Flag == 1)
-        //            {
-        //                // Это флаг игнора, т.е. блок который надо заменить, это врядли воздух
-        //            }
-        //            else
-        //            {
-        //                // Тут проверяем на воздух
-        //                blockState = GetBlockState(blockCache.Position);
-        //                if (blockState.Id != 0) return false;
-        //            }
-        //        }
-        //    }
-        //    return true;
-        //}
 
         #endregion
 
@@ -456,6 +426,25 @@ namespace Vge.World
 
         #endregion
 
+        #region BlockEntity
+
+        /// <summary>
+        /// Список всех блок сущностей в квадрате 3*3 чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public List<BlockEntityBase> GetBlocksEntity3x3(ChunkServer chunk)
+        {
+            List<BlockEntityBase> blocksEntity = new List<BlockEntityBase>();
+            chunk.AddRangeBlockEntity(blocksEntity);
+            for (int i = 0; i < 8; i++)
+            {
+                GetChunkServer(chunk.X + Ce.AreaOne8X[i], chunk.Y + Ce.AreaOne8Y[i]).AddRangeBlockEntity(blocksEntity);
+            }
+            return blocksEntity;
+        }
+
+        #endregion
+
         #region Blocks
 
         /// <summary>
@@ -574,8 +563,12 @@ namespace Vge.World
         {
             try
             {
-                BlockState blockState = GetBlockState(pos);
-                blockState.GetBlock().NeighborBlockChange(this, pos, blockState, block);
+                ChunkServer chunk = GetChunkServer(pos);
+                if (chunk != null)
+                {
+                    BlockState blockState = chunk.GetBlockState(pos);
+                    blockState.GetBlock().NeighborBlockChange(this, chunk, pos, blockState, block);
+                }
             }
             catch (Exception ex)
             {

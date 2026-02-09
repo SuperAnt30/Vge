@@ -13,17 +13,6 @@ namespace Mvk2.World.Block.List
         public BlockTreeOak(TypeTree type) : base(type) { }
 
         /// <summary>
-        /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков
-        /// </summary>
-        public override void InitAfterItems()
-        {
-            IdSapling = BlocksRegMvk.SaplingOak.IndexBlock;
-            IdLog = BlocksRegMvk.LogOak.IndexBlock;
-            IdBranch = BlocksRegMvk.BranchOak.IndexBlock;
-            IdLeaves = BlocksRegMvk.LeavesOak.IndexBlock;
-        }
-
-        /// <summary>
         /// Получить объект генерации дерева
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

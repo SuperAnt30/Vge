@@ -340,11 +340,6 @@ namespace Mvk2.World.Gen
                                     {
                                         chunkStorage.SetData(yz | x, id, ChunkPrimer.Met[index]);
                                     }
-                                    if (ChunkPrimer.Tick[index] != 0)
-                                    {
-                                        // Тик
-                                        chunk.SetBlockTick(x, y0, z, false, ChunkPrimer.Tick[index]);
-                                    }
                                 }
                             }
                         }

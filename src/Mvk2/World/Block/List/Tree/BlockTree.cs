@@ -18,34 +18,33 @@ namespace Mvk2.World.Block.List
     {
         /***
          * Met
-         * Для Log Бревно
+         * 
+         * 0011 0000 0011
+         * Для Log Бревно 2 bit форма 1 bit игрок 1 bit тикер
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
          * 3 - вверх, генерация, нижний блок для пня и тика
-         * 
          * 4 - вверх, игрок
          * 5/6 - бок, игрок
+         * +256 - игрок
+         * +512 - тикер
          * 
-         * Для Branch Ветвь
+         * 0011 0000 0111
+         * Для Branch Ветвь 3 bit форма 1 bit игрок 1 bit тикер
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
          * 3-6 - вверх, генерация, смещение к краю +X -X -Z +Z
+         * +256 - игрок
+         * +512 - тикер
          * 
          * Для Sapling Саженец
          * 0 - вверх
          * 
-         * Для Root корень
+         * 0001 0000 0011
+         * Для Root корень 2 bit форма 1 bit игрок 
          * 0 - вверх, генерация
          * 1/2 - бок, генерация
-         * 
-         * Для Leaves листва
-         * 0 - вверх
-         * 1 - низ
-         * 2-5 бок
-         * 6 - вверх 2
-         * 7 - низ 2
-         * 8-11 бок 2
-         * 
+         * +256 - игрок
          */
 
         /// <summary>
@@ -80,37 +79,13 @@ namespace Mvk2.World.Block.List
         /// </summary>
         public readonly TypeTree Type;
 
-        /// <summary>
-        /// ID блок саженца текущего дерева
-        /// </summary>
-        public int IdSapling { get; protected set; }
-        /// <summary>
-        /// ID блок бревна текущего дерева
-        /// </summary>
-        public int IdLog { get; protected set; }
-        /// <summary>
-        /// ID блок ветки текущего дерева
-        /// </summary>
-        public int IdBranch { get; protected set; }
-        /// <summary>
-        /// ID блок листвы текущего дерева
-        /// </summary>
-        public int IdLeaves { get; protected set; }
-        /// <summary>
-        /// ID блок плода текущего дерева
-        /// </summary>
-        public int IdFetus { get; protected set; }
-
-        public BlockTree(TypeTree type)
-        {
-            Type = type;
-        }
+        public BlockTree(TypeTree type) => Type = type;
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 0xFF];
+        public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 0xF];
 
         /// <summary>
         /// Обновить блок в такте
@@ -118,18 +93,15 @@ namespace Mvk2.World.Block.List
         public override void UpdateTick(WorldServer world, ChunkServer chunk,
             BlockPos blockPos, BlockState blockState, Rand rand)
         {
-            FeatureTree genTree = _GetFeatureTree(world);
-            if (genTree != null)
+            if (Type == TypeTree.Sapling)
             {
-                if (Type == TypeTree.Sapling)
-                {
-                    // Саженец
-                    genTree.StepSapling(world, chunk, blockPos, rand);
-                }
-                else
-                {
-                    genTree.StepsOther(world, chunk, blockPos, rand);
-                }
+                // Саженец
+                _GetFeatureTree(world)?.StepSapling(world, chunk, blockPos, rand);
+            }
+            else if (blockState.Met >= 512)
+            {
+                // Другие шаги дерева
+                _GetFeatureTree(world)?.StepsOther(world, chunk, blockPos, rand);
             }
         }
 
@@ -146,21 +118,10 @@ namespace Mvk2.World.Block.List
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
-            if (Type == TypeTree.Root)
+            if (Type == TypeTree.Log || Type == TypeTree.Branch)
             {
-                // Удаление корня, для фиксации его мощи
-
-            }
-            else if (Type != TypeTree.Sapling && Type != TypeTree.Leaves)
-            {
-                //System.Console.WriteLine("OnBreakBlock " + blockPos + " " + stateOld.Id + "->" + stateNew.Id);
                 // Список всех блок сущностей в квадрате 3*3 чанка
-                List<BlockEntityBase> blocksEntity = new List<BlockEntityBase>();
-                chunk.AddRangeBlockEntity(blocksEntity);
-                for (int i = 0; i < 8; i++)
-                {
-                    world.GetChunkServer(chunk.X + Ce.AreaOne8X[i], chunk.Y + Ce.AreaOne8Y[i]).AddRangeBlockEntity(blocksEntity);
-                }
+                List<BlockEntityBase> blocksEntity = world.GetBlocksEntity3x3(chunk);
 
                 // Пробегаемся и производим удаление
                 foreach(BlockEntityBase blockEntity in blocksEntity)

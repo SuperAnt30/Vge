@@ -469,8 +469,8 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
-        public override void NeighborBlockChange(WorldServer world, BlockPos blockPos, 
-            BlockState blockState, BlockBase neighborBlock)
+        public override void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
             if (!_Mixing(world, blockPos, blockState))
             {

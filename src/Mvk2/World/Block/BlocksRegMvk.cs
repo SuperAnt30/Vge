@@ -148,7 +148,7 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок корня древесины
         /// </summary>
-        public static BlockBase TreeRoot { get; private set; }
+        public static BlockRoot TreeRoot { get; private set; }
 
         /// <summary>
         /// Блок бревна берёзы
@@ -191,7 +191,6 @@ namespace Mvk2.World.Block
         /// Дубовый плод, жёлудь
         /// </summary>
         public static BlockFetus FetusOak { get; private set; }
-
 
         #endregion
 
@@ -242,7 +241,7 @@ namespace Mvk2.World.Block
             Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
 
             SaplingDry = BlocksReg.RegisterBlockClass("SaplingDry", "Tree");
-            BlocksReg.RegisterBlockClass("TreeRoot", TreeRoot = new BlockTreeBirch(BlockTree.TypeTree.Root), "Tree");
+            BlocksReg.RegisterBlockClass("TreeRoot", TreeRoot = new BlockRoot(), "Tree");
 
             BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockTreeBirch(BlockTree.TypeTree.Log), "Tree");
             BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(BlockTree.TypeTree.Branch), "Tree");

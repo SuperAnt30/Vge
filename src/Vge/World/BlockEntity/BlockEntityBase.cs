@@ -42,12 +42,16 @@ namespace Vge.World.BlockEntity
         /// Структура данных блока
         /// </summary>
         public BlockState Block { get; private set; }
-
+        /// <summary>
+        /// Чанк сервера
+        /// TODO::2026-02-07 покуда эти объекты только на стороне сервера
+        /// </summary>
+        public ChunkServer Chunk { get; private set; }
 
         /// <summary>
         /// Инициализация для сервера
         /// </summary>
-        public virtual void InitServer(short index, WorldServer worldServer)
+        public virtual void InitServer(short index)
         {
             IndexEntity = index;
             //_world = worldServer;
@@ -57,8 +61,9 @@ namespace Vge.World.BlockEntity
         /// Задать позицию блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void SetBlockPosition(BlockState blockState, BlockPos pos)
+        public virtual void SetBlockPosition(ChunkServer chunk, BlockState blockState, BlockPos pos)
         {
+            Chunk = chunk;
             Position = pos;
             Block = blockState;
         }
