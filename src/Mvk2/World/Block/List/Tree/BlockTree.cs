@@ -79,7 +79,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         public readonly TypeTree Type;
 
-        public BlockTree(TypeTree type) => Type = type;
+        public BlockTree(IMaterial material, TypeTree type) : base(material) => Type = type;
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера

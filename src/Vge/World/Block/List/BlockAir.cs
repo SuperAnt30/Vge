@@ -10,7 +10,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Блок воздуха
         /// </summary>
-        public BlockAir() => _SetAir();
+        public BlockAir(IMaterial material) : base(material) => _SetAir();
 
         /// <summary>
         /// Является ли блок проходимым, т.е. можно ли ходить через него

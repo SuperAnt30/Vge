@@ -2,6 +2,7 @@
 using Mvk2.World.Gen.Feature;
 using System.Runtime.CompilerServices;
 using Vge.World;
+using Vge.World.Block;
 
 namespace Mvk2.World.Block.List
 {
@@ -10,7 +11,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockTreeBirch : BlockTree
     {
-        public BlockTreeBirch(TypeTree type)  : base(type) { }
+        public BlockTreeBirch(IMaterial material, TypeTree type)  : base(material, type) { }
 
         /// <summary>
         /// Получить объект генерации дерева

@@ -1,14 +1,16 @@
 ﻿using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
 using WinGL.Util;
 
-namespace Vge.World.Block.List
+namespace Mvk2.World.Block.List
 {
     /// <summary>
     /// Универсальный объект твёрдых блоков
     /// </summary>
     public class BlockDebug : BlockBase
     {
-        public BlockDebug()
+        public BlockDebug(IMaterial material) : base(material)
         {
             //Particle = numberTexture;
             //_InitQuads(numberTexture);

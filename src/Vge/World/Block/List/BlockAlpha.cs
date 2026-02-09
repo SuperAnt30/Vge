@@ -5,7 +5,7 @@
     /// </summary>
     public class BlockAlpha : BlockBase
     {
-        public BlockAlpha()
+        public BlockAlpha(IMaterial material) : base(material)
         {
             Alpha = true;
             AlphaSort = true;

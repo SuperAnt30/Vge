@@ -29,6 +29,11 @@ namespace Vge.World.Block
         public BlockRenderFull BlockRender;
 
         /// <summary>
+        /// Объект материала
+        /// </summary>
+        public readonly IMaterial Material;
+
+        /// <summary>
         /// Явлыется ли блок небом
         /// </summary>
         public bool IsAir { get; private set; } = false;
@@ -174,6 +179,8 @@ namespace Vge.World.Block
 
         #endregion
 
+        public BlockBase(IMaterial material) => Material = material;
+
         #region Init
 
         /// <summary>
@@ -194,16 +201,23 @@ namespace Vge.World.Block
                 // Фигура
                 _ShapeDefinition(state, shapes);
             } 
-            else if (BlocksReg.AliasAir == alias)
-            {
-                // Если блок воздуха
-            }
             else
             {
                 // Отсутствует фигура блока в json
                 throw new Exception(Sr.GetString(Sr.FileMissingJsonBlock, alias));
             }
 
+            _InitBlockRender();
+            // Задать что блок не прозрачный
+            if (LightOpacity > 13) IsNotTransparent = true;
+        }
+
+        /// <summary>
+        /// Инициализация блока Воздух
+        /// </summary>
+        public void InitAir()
+        {
+            Alias = "Air";
             _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;

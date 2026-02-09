@@ -12,6 +12,8 @@ namespace Mvk2.World.Block.List
     {
         protected bool _biomeColor;
 
+        public BlockGrass(IMaterial material) : base(material) { }
+
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>

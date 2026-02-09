@@ -14,6 +14,8 @@ namespace Mvk2.World.Block.List
         * 1 - вверх
         */
 
+        public BlockTallGrass(IMaterial material) : base(material) { }
+
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
         /// </summary>

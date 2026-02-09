@@ -1,5 +1,4 @@
 ﻿using Mvk2.World.Block.List;
-using Mvk2.World.Gen.Feature;
 using Vge.World.Block;
 using Vge.World.Block.List;
 
@@ -204,66 +203,71 @@ namespace Mvk2.World.Block
 
         public static void Initialization()
         {
+            // Регестрируем материалы
+            MaterialsMvk materials = new MaterialsMvk();
+
+            // Регистрация обязательных блоков Воздух
+            BlockAir air = new BlockAir(materials.Air);
+            air.InitAir();
+            BlocksReg.Table.Add("Air", air);
+
             // Отладочный
-            BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug());
-            Water = BlocksReg.RegisterBlockClassLiquid("Water", true);
-            Bedrock = BlocksReg.RegisterBlockClass("Bedrock");
-            Limestone = BlocksReg.RegisterBlockClass("Limestone");
-            Granite = BlocksReg.RegisterBlockClass("Granite");
-            Clay = BlocksReg.RegisterBlockClass("Clay");
-            Sand = BlocksReg.RegisterBlockClass("Sand");
-            Loam = BlocksReg.RegisterBlockClass("Loam");
-            Humus = BlocksReg.RegisterBlockClass("Humus");
-            Turf = BlocksReg.RegisterBlockClass("Turf");
-            TurfLoam = BlocksReg.RegisterBlockClass("TurfLoam");
-            Gravel = BlocksReg.RegisterBlockClass("Gravel");
-            OreCoal = BlocksReg.RegisterBlockClass("OreCoal", "Ore");
-            OreIron = BlocksReg.RegisterBlockClass("OreIron", "Ore");
-            OreGold = BlocksReg.RegisterBlockClass("OreGold", "Ore");
-            OreSulfur = BlocksReg.RegisterBlockClass("OreSulfur", "Ore");
-            OreDiamond = BlocksReg.RegisterBlockClass("OreDiamond", "Ore");
-            OreEmerald = BlocksReg.RegisterBlockClass("OreEmerald", "Ore");
-            OreRuby = BlocksReg.RegisterBlockClass("OreRuby", "Ore");
-            OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire", "Ore");
+            BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug(materials.Debug));
+            Water = BlocksReg.RegisterBlockClassLiquid("Water", materials.Water, true);
+            Bedrock = BlocksReg.RegisterBlockClass("Bedrock", materials.Bedrock);
+            Limestone = BlocksReg.RegisterBlockClass("Limestone", materials.Solid);
+            Granite = BlocksReg.RegisterBlockClass("Granite", materials.Solid);
+            Clay = BlocksReg.RegisterBlockClass("Clay", materials.Loose);
+            Sand = BlocksReg.RegisterBlockClass("Sand", materials.Loose);
+            Loam = BlocksReg.RegisterBlockClass("Loam", materials.Loose);
+            Humus = BlocksReg.RegisterBlockClass("Humus", materials.Loose);
+            Turf = BlocksReg.RegisterBlockClass("Turf", materials.Loose);
+            TurfLoam = BlocksReg.RegisterBlockClass("TurfLoam", materials.Loose);
+            Gravel = BlocksReg.RegisterBlockClass("Gravel", materials.Loose);
+            OreCoal = BlocksReg.RegisterBlockClass("OreCoal", materials.Ore, "Ore");
+            OreIron = BlocksReg.RegisterBlockClass("OreIron", materials.Ore, "Ore");
+            OreGold = BlocksReg.RegisterBlockClass("OreGold", materials.Ore, "Ore");
+            OreSulfur = BlocksReg.RegisterBlockClass("OreSulfur", materials.Ore, "Ore");
+            OreDiamond = BlocksReg.RegisterBlockClass("OreDiamond", materials.Ore, "Ore");
+            OreEmerald = BlocksReg.RegisterBlockClass("OreEmerald", materials.Ore, "Ore");
+            OreRuby = BlocksReg.RegisterBlockClass("OreRuby", materials.Ore, "Ore");
+            OreSapphire = BlocksReg.RegisterBlockClass("OreSapphire", materials.Ore, "Ore");
 
-            BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass());
-            BlocksReg.RegisterBlockClass("TallGrass", TallGrass = new BlockTallGrass());
+            BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass(materials.Plant));
+            BlocksReg.RegisterBlockClass("TallGrass", TallGrass = new BlockTallGrass(materials.Plant));
 
-            Tina = BlocksReg.RegisterBlockClass("Tina");
+            Tina = BlocksReg.RegisterBlockClass("Tina", materials.Plant);
 
-            BlocksReg.RegisterBlockClass("FlowerDandelion", FlowerDandelion = new BlockGrass());
-            BlocksReg.RegisterBlockClass("FlowerClover", FlowerClover = new BlockGrass());
+            BlocksReg.RegisterBlockClass("FlowerDandelion", FlowerDandelion = new BlockGrass(materials.Plant));
+            BlocksReg.RegisterBlockClass("FlowerClover", FlowerClover = new BlockGrass(materials.Plant));
 
-            //FlowerDandelion = BlocksReg.RegisterBlockClass("FlowerDandelion");
-            //FlowerClover = BlocksReg.RegisterBlockClass("FlowerClover");
+            Stone = BlocksReg.RegisterBlockClass("Stone", materials.Solid);
+            Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone", materials.Solid);
 
-            Stone = BlocksReg.RegisterBlockClass("Stone");
-            Cobblestone= BlocksReg.RegisterBlockClass("Cobblestone");
+            SaplingDry = BlocksReg.RegisterBlockClass("SaplingDry", materials.Plant, "Tree");
+            BlocksReg.RegisterBlockClass("TreeRoot", TreeRoot = new BlockRoot(materials.Wood), "Tree");
 
-            SaplingDry = BlocksReg.RegisterBlockClass("SaplingDry", "Tree");
-            BlocksReg.RegisterBlockClass("TreeRoot", TreeRoot = new BlockRoot(), "Tree");
-
-            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockTreeBirch(BlockTree.TypeTree.Log), "Tree");
-            BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(BlockTree.TypeTree.Branch), "Tree");
-            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeavesBirch(), "Tree");
-            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockTreeBirch(BlockTree.TypeTree.Sapling), "Tree");
-            BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFetusBirch(), "Tree");
+            BlocksReg.RegisterBlockClass("LogBirch", LogBirch = new BlockTreeBirch(materials.Wood, BlockTree.TypeTree.Log), "Tree");
+            BlocksReg.RegisterBlockClass("BranchBirch", BranchBirch = new BlockTreeBirch(materials.Branch, BlockTree.TypeTree.Branch), "Tree");
+            BlocksReg.RegisterBlockClass("LeavesBirch", LeavesBirch = new BlockLeavesBirch(materials.Leaves), "Tree");
+            BlocksReg.RegisterBlockClass("SaplingBirch", SaplingBirch = new BlockTreeBirch(materials.Plant, BlockTree.TypeTree.Sapling), "Tree");
+            BlocksReg.RegisterBlockClass("FetusBirch", FetusBirch = new BlockFetusBirch(materials.Plant), "Tree");
 
 
-            BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockTreeOak(BlockTree.TypeTree.Log), "Tree");
-            BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockTreeOak(BlockTree.TypeTree.Branch), "Tree");
-            BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeavesOak(), "Tree");
-            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockTreeOak(BlockTree.TypeTree.Sapling), "Tree");
-            BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetusOak(), "Tree");
+            BlocksReg.RegisterBlockClass("LogOak", LogOak = new BlockTreeOak(materials.Wood, BlockTree.TypeTree.Log), "Tree");
+            BlocksReg.RegisterBlockClass("BranchOak", BranchOak = new BlockTreeOak(materials.Branch, BlockTree.TypeTree.Branch), "Tree");
+            BlocksReg.RegisterBlockClass("LeavesOak", LeavesOak = new BlockLeavesOak(materials.Leaves), "Tree");
+            BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockTreeOak(materials.Plant, BlockTree.TypeTree.Sapling), "Tree");
+            BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetusOak(materials.Plant), "Tree");
 
-            Glass = BlocksReg.RegisterBlockClass("Glass");
-            GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed");
-            GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen");
-            GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue");
-            GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple");
+            Glass = BlocksReg.RegisterBlockClass("Glass", materials.Glass);
+            GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed", materials.Glass);
+            GlassGreen = BlocksReg.RegisterBlockClassAlpha("GlassGreen", materials.Glass);
+            GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue", materials.Glass);
+            GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple", materials.Glass);
             
-            Lava = BlocksReg.RegisterBlockClassLiquid("Lava", false);
-            Brol = BlocksReg.RegisterBlockClass("Brol");
+            Lava = BlocksReg.RegisterBlockClassLiquid("Lava", materials.Lava, false);
+            Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
             
             //for (int i = 0; i < 500; i++)
             //{

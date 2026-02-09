@@ -18,6 +18,8 @@ namespace Mvk2.World.Block.List
          * 3 - Гнилое
          */
 
+        public BlockFetus(IMaterial material) : base(material) { }
+
         /// <summary>
         /// ID блок листвы текущего дерева
         /// </summary>

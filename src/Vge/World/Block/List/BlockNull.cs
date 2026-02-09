@@ -8,7 +8,7 @@
         /// <summary>
         /// Отсутствующий блок, может появится если в новой версии не будет прошлого блока
         /// </summary>
-        public BlockNull()
+        public BlockNull() : base(null)
         {
             _SetAir();
 

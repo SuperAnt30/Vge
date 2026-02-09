@@ -42,7 +42,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         protected int _idFetus;
 
-        public BlockLeaves() : base(TypeTree.Leaves) { }
+        public BlockLeaves(IMaterial material) : base(material, TypeTree.Leaves) { }
 
         /// <summary>
         /// Смена соседнего блока

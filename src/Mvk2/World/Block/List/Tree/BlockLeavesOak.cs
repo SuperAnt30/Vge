@@ -2,6 +2,7 @@
 using Mvk2.World.Gen.Feature;
 using System.Runtime.CompilerServices;
 using Vge.World;
+using Vge.World.Block;
 
 namespace Mvk2.World.Block.List
 {
@@ -10,6 +11,8 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockLeavesOak : BlockLeaves
     {
+        public BlockLeavesOak(IMaterial material) : base(material) { }
+
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков
         /// </summary>

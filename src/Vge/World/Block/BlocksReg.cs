@@ -14,18 +14,9 @@ namespace Vge.World.Block
     public sealed class BlocksReg
     {
         /// <summary>
-        /// Псевдоним обязательного блока воздуха
-        /// </summary>
-        public const string AliasAir = "Air";
-        /// <summary>
         /// Псевдоним обязательного блока барьер
         /// </summary>
        // public const string Barrier = "Barrier";
-
-        /// <summary>
-        /// Блок воздуха
-        /// </summary>
-        public static BlockAir Air { get; private set; }
 
         /// <summary>
         /// Таблица блоков для регистрации
@@ -69,12 +60,6 @@ namespace Vge.World.Block
 
             // Очистить таблицы и вспомогательные данные json
             _Clear();
-
-            // Регистрация обязательных блоков
-            // Воздух
-            Air = new BlockAir();
-            Air.InitAliasAndJoinN1(AliasAir, new JsonCompound(), new JsonCompound(new JsonKeyValue[] { }));
-            Table.Add(AliasAir, Air);
         }
 
         /// <summary>
@@ -113,9 +98,9 @@ namespace Vge.World.Block
         /// Зарегистрировать блок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockBase RegisterBlockClass(string alias, string path = "")
+        public static BlockBase RegisterBlockClass(string alias, IMaterial material, string path = "")
         {
-            BlockBase block = new BlockBase();
+            BlockBase block = new BlockBase(material);
             RegisterBlockClass(alias, block, path);
             return block;
         }
@@ -124,9 +109,9 @@ namespace Vge.World.Block
         /// Зарегистрировать полупрозрачными блок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockAlpha RegisterBlockClassAlpha(string alias)
+        public static BlockAlpha RegisterBlockClassAlpha(string alias, IMaterial material)
         {
-            BlockAlpha block = new BlockAlpha();
+            BlockAlpha block = new BlockAlpha(material);
             RegisterBlockClass(alias, block);
             return block;
         }
@@ -135,9 +120,9 @@ namespace Vge.World.Block
         /// Зарегистрировать блок жидкости
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockLiquid RegisterBlockClassLiquid(string alias, bool alphaSort)
+        public static BlockLiquid RegisterBlockClassLiquid(string alias, IMaterial material, bool alphaSort)
         {
-            BlockLiquid block = new BlockLiquid(alphaSort);
+            BlockLiquid block = new BlockLiquid(material, alphaSort);
             RegisterBlockClass(alias, block);
             return block;
         }
