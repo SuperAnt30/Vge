@@ -1,7 +1,10 @@
-﻿using Mvk2.World.Block;
+﻿using Mvk2.Item;
+using Mvk2.World.Block;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity.List;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -205,11 +208,27 @@ namespace Mvk2.World.BlockEntity.List
                 _UpdateAxis();
 
                 // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
+                BlockState blockState;
                 foreach (PosId pos in list)
                 {
-                    if (pos.Id == world.GetBlockState(pos.Pos).Id)
+                    blockState = world.GetBlockState(pos.Pos);
+                    if (pos.Id == blockState.Id)
                     {
                         world.SetBlockToAir(pos.Pos, 110); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock 
+                        // Разрушаем блок ветки
+
+                        EntityItem entity = new EntityItem();
+                        entity.InitServer(Ce.Entities.IndexItem, world);
+                        entity.PosX = pos.Pos.X + (pos.Pos.Y - blockPos.Y) * .05f;
+                        entity.PosY = pos.Pos.Y;
+                        entity.PosZ = pos.Pos.Z + (pos.Pos.Y - blockPos.Y) * .05f;
+                        entity.Physics.MotionX = (pos.Pos.Y - blockPos.Y) * .05f;
+                        entity.Physics.MotionZ = (pos.Pos.Y - blockPos.Y) * .05f;
+                        entity.SetEntityItemStack(new ItemStack(ItemsRegMvk.Cobblestone, 1));
+                        //entity.SetDefaultPickupDelay();
+                        world.SpawnEntityInWorld(entity);
+
+                      //  blockState.GetBlock().DropBlockAsItem(world, pos.Pos, blockState);
                     }
                 }
                 return true;

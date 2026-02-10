@@ -1,8 +1,10 @@
-﻿using Mvk2.World.BlockEntity;
+﻿using Mvk2.Item;
+using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
 using Mvk2.World.Gen.Feature;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -126,7 +128,18 @@ namespace Mvk2.World.Block.List
                         blockEntityTree.RemoveBlock(world, chunk, blockPos);
                     }
                 }
+
+                // Разрушаем блок ветки
+                //DropBlockAsItem(world, blockPos, stateOld);
             }
+        }
+
+        /// <summary>
+        /// Спавн предмета при разрушении этого блока
+        /// </summary>
+        public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state)
+        {
+            ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Cobblestone, 1));
         }
     }
 }

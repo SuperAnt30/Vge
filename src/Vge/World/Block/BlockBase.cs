@@ -542,6 +542,20 @@ namespace Vge.World.Block
         public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew) { }
 
+        ///// <summary>
+        ///// Спавн предмета при разрушении этого блока
+        ///// </summary>
+        //protected virtual void _DropBlockAsItemServer(WorldServer world, Rand rand, BlockPos blockPos,
+        //    BlockState state)
+        //{
+        //    ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(Items.GetItemCache(state.id)));
+        //}
+
+        /// <summary>
+        /// Спавн предмета при разрушении этого блока
+        /// </summary>
+        public virtual void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state) { }
+
         #endregion
 
         /// <summary>

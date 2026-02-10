@@ -1,6 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
+using Vge.Entity.List;
 using Vge.NBT;
 using Vge.Network;
+using Vge.World;
+using Vge.World.Block;
+using WinGL.Util;
 
 namespace Vge.Item
 {
@@ -121,6 +126,37 @@ namespace Vge.Item
 
         #endregion
 
+        #region Spawn
+
+        /// <summary>
+        /// Создает данный ItemStack как EntityItem в мире в заданной позиции 
+        /// </summary>
+        public static void SpawnAsEntity(WorldServer world, BlockPos blockPos, ItemStack itemStack)
+        {
+            Vector3 pos = new Vector3(
+                blockPos.X + world.Rnd.NextFloat() * .5f + .25f,
+                blockPos.Y + world.Rnd.NextFloat() * .5f + .25f,
+                blockPos.Z + world.Rnd.NextFloat() * .5f + .25f
+            );
+            _SpawnAsEntityPos(world, pos, itemStack);
+        }
+
+        /// <summary>
+        /// Создает данный ItemStack как EntityItem в мире в заданной позиции 
+        /// </summary>
+        private static void _SpawnAsEntityPos(WorldServer world, Vector3 pos, ItemStack itemStack)
+        {
+            EntityItem entity = new EntityItem();
+            entity.InitServer(Ce.Entities.IndexItem, world);
+            entity.PosX = pos.X;
+            entity.PosY = pos.Y;
+            entity.PosZ = pos.Z;
+            entity.SetEntityItemStack(itemStack);
+            //entity.SetDefaultPickupDelay();
+            world.SpawnEntityInWorld(entity);
+        }
+
+        #endregion
 
         /// <summary>
         /// Записать стак в буффер пакета
