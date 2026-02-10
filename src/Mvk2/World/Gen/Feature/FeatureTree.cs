@@ -133,6 +133,8 @@ namespace Mvk2.World.Gen.Feature
             _blockRootId = BlocksRegMvk.TreeRoot.IndexBlock;
         }
 
+        #region Random
+
         /// <summary>
         /// Возвращает псевдослучайное число LCG из [0, x). Аргументы: целое х
         /// </summary>
@@ -146,19 +148,22 @@ namespace Mvk2.World.Gen.Feature
         }
 
         /// <summary>
-        /// Вероятность, где 1 это 100%, 2 50/50. NextInt(x) != 0
+        /// Вероятность, где 1 это 100%, 2 50/50. NextInt(x) == 0
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool _NextBool(int x) => _NextInt(x) != 0;
+        protected bool _NextBool(int x) => _NextInt(x) == 0;
 
         /// <summary>
         /// Задать случайное зерно
         /// </summary>
-        protected void _SetRand(Rand rand)
+        protected void _SetRand(Rand rand, bool size = true)
         {
             // сид для доп генерации дерева, не отвлекаясь от генерации мира
             _seed = rand.Next();
-            _RandSize();
+            if (size)
+            {
+                _RandSize();
+            }
         }
 
         /// <summary>
@@ -199,6 +204,8 @@ namespace Mvk2.World.Gen.Feature
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual Vector2i _GetRandomPosBegin(Rand rand)
             => new Vector2i(rand.Next(16), rand.Next(16));
+
+        #endregion
 
         #region Decoration
 
@@ -885,8 +892,7 @@ namespace Mvk2.World.Gen.Feature
                     if (blockEntity.GetHeight() < _trunkHeight / 5)
                     {
                         // Засохло, скорее всего срубленное
-                        // Удалить листву и перестаём тикать
-                        blockEntity.RemoveAllLeaves(world);
+                        _DriedUp(world, blockEntity);
                     }
                     else
                     {
@@ -915,10 +921,10 @@ namespace Mvk2.World.Gen.Feature
                             chunk.SetBlockEntity(blockEntity);
                         }
                         // Если не смоглы выростить из-за вписать модель, генерируем высыхание
-                        else if (_NextInt(10) == 0)
+                        else if (_NextInt(5) == 0)
                         {
                             // Удалить листву и перестаём тикать
-                            blockEntity.RemoveAllLeaves(world);
+                            _DriedUp(world, blockEntity);
                         }
                         _blocks = null;
                     }
@@ -929,12 +935,165 @@ namespace Mvk2.World.Gen.Feature
                     BlockEntityTree.StateVariant state = blockEntity.CheckingCondition(world);
 
                     if (state == BlockEntityTree.StateVariant.Dry)
+                    {
+                        _DriedUp(world, blockEntity);
+                    }
+                    else if (state == BlockEntityTree.StateVariant.Fetus)
+                    {
+                        _SetRand(rand, false);
+                        _PlaceFetus(world, blockEntity);
+                    }
+                    else if (state == BlockEntityTree.StateVariant.Cancel)
+                    {
+                        _CancelFetus(world, blockEntity);
+                    }
+                }
+            }
+        }
 
-                    
-                    //if (blockEntity.Step == BlockEntityTree.TypeStep.Dry)
-                    //{
-                        blockEntity.RemoveAllLeaves(world);
-                    //}
+        #endregion
+
+        #region StateVariant
+
+        /// <summary>
+        /// Дерево засохло, надо пометить всю листву на высыхание
+        /// </summary>
+        private void _DriedUp(WorldServer world, BlockEntityTree blockEntity)
+        {
+            blockEntity.DriedUp();
+            int count = blockEntity.Blocks.Length;
+            if (count > 0)
+            {
+                int biasX = (blockEntity.Position.X >> 4) << 4;
+                int biasZ = (blockEntity.Position.Z >> 4) << 4;
+
+                BlockPosLoc posLoc;
+                BlockPos pos = new BlockPos();
+                BlockPos posLeaves;
+                BlockState state;
+                // Пробегаемся по всем блокам траектории дерева, и помечаем листву +512 на высыхание
+                int i, j, met;
+                for (i = 0; i < count; i++)
+                {
+                    posLoc = blockEntity.Blocks[i];
+                    pos.X = posLoc.X + biasX;
+                    pos.Y = posLoc.Y;
+                    pos.Z = posLoc.Z + biasZ;
+
+                    for (j = 0; j < 6; j++) // 6 сторон ветки
+                    {
+                        posLeaves = pos.Offset(j);
+                        state = world.GetBlockState(posLeaves);
+                        if (state.Id == _blockLeavesId) // Если текущая ветка
+                        {
+                            met = state.Met;
+                            if (met > 255) met = met & 0xF;
+                            if (met > 5) met -= 6;
+                            if (met == j) // Если текущаяя сторона
+                            {
+                                world.SetBlockStateMet(posLeaves, state.Met & 0xF | 512, false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Дерево готовится к урожаю плотов, надо пометить часть листвы на урожай
+        /// </summary>
+        private void _PlaceFetus(WorldServer world, BlockEntityTree blockEntity)
+        {
+            int count = blockEntity.Blocks.Length;
+            if (count > 0)
+            {
+                int biasX = (blockEntity.Position.X >> 4) << 4;
+                int biasZ = (blockEntity.Position.Z >> 4) << 4;
+
+                // Удача, чем меньше число, тем больше фруктов
+                // TODO::2026-02-10 удача для плодов, от корня можно или почвы
+                int fortune = 10;
+
+                BlockPosLoc posLoc;
+                BlockPos pos = new BlockPos();
+                BlockPos posLeaves;
+                BlockState state;
+                // Пробегаемся по всем блокам траектории дерева, и помечаем листву +256 на урожай
+                int i, j, met;
+                
+                //int c1 = 0;
+                //int c2 = 0;
+                for (i = 0; i < count; i++)
+                {
+                    posLoc = blockEntity.Blocks[i];
+                    pos.X = posLoc.X + biasX;
+                    pos.Y = posLoc.Y;
+                    pos.Z = posLoc.Z + biasZ;
+
+                    for (j = 0; j < 6; j++) // 6 сторон ветки
+                    {
+                        posLeaves = pos.Offset(j);
+                        state = world.GetBlockState(posLeaves);
+                        if (state.Id == _blockLeavesId) // Если текущая ветка
+                        {
+                            met = state.Met;
+                            if (met > 255) met = met & 0xF;
+                            if (met > 5) met -= 6;
+                            if (met == j && _NextBool(fortune)) // Если текущаяя сторона
+                            {
+                                world.SetBlockStateMet(posLeaves, state.Met & 0xF | 256, false);
+                                //c2++;
+                            }
+                            //c1++;
+                        }
+                    }
+                }
+                //Console.WriteLine("Fetus " + blockEntity.Position + " " + c1 + "/" + c2);
+            }
+        }
+
+        /// <summary>
+        /// Дерево закончило выращивать плоды, надо пометить всю листву чтоб не выращивала
+        /// </summary>
+        private void _CancelFetus(WorldServer world, BlockEntityTree blockEntity)
+        {
+            int count = blockEntity.Blocks.Length;
+            if (count > 0)
+            {
+                int biasX = (blockEntity.Position.X >> 4) << 4;
+                int biasZ = (blockEntity.Position.Z >> 4) << 4;
+
+                BlockPosLoc posLoc;
+                BlockPos pos = new BlockPos();
+                BlockPos posLeaves;
+                BlockState state;
+                // Пробегаемся по всем блокам траектории дерева, и помечаем листву -256
+                int i, j, met;
+                for (i = 0; i < count; i++)
+                {
+                    posLoc = blockEntity.Blocks[i];
+                    pos.X = posLoc.X + biasX;
+                    pos.Y = posLoc.Y;
+                    pos.Z = posLoc.Z + biasZ;
+
+                    for (j = 0; j < 6; j++) // 6 сторон ветки
+                    {
+                        posLeaves = pos.Offset(j);
+                        state = world.GetBlockState(posLeaves);
+                        if (state.Id == _blockLeavesId) // Если текущая ветка
+                        {
+                            met = state.Met;
+                            if (met > 255)
+                            {
+                                met = met & 0xF;
+                                if (met > 5) met -= 6;
+                                if (met == j) // Если текущаяя сторона
+                                {
+                                    world.SetBlockStateMet(posLeaves, state.Met & 0xF, false);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

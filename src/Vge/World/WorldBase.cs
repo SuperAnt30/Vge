@@ -115,7 +115,7 @@ namespace Vge.World
         /// <summary>
         /// Изменить метданные блока
         /// </summary>
-        public void SetBlockStateMet(BlockPos blockPos, ushort met, bool isMarkUpdate = true)
+        public void SetBlockStateMet(BlockPos blockPos, int met, bool isMarkUpdate = true)
         {
             if (blockPos.IsValid(ChunkPr.Settings))
             {

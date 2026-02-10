@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Сalendar;
 
 namespace Mvk2.World.Block.List
 {
@@ -10,14 +12,6 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockFetus : BlockBase
     {
-        /***
-         * Met
-         * 0 - Зелёное
-         * 1 - Жёлтое
-         * 2 - Красное
-         * 3 - Гнилое
-         */
-
         public BlockFetus(IMaterial material) : base(material) { }
 
         /// <summary>
@@ -47,6 +41,20 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, int met = 0)
         {
             return chunk.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;
+        }
+
+        /// <summary>
+        /// Случайный эффект блока, для сервера
+        /// </summary>
+        public override void RandomTick(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState, Rand random)
+        {
+            EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+            if (timeYear == EnumTimeYear.Winter || timeYear == EnumTimeYear.Spring)
+            {
+                // Удаляем
+                world.SetBlockToAir(blockPos);
+            }
         }
     }
 }

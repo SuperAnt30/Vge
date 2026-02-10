@@ -248,6 +248,20 @@ namespace Vge.World.Chunk
             => GetBlockStateNotCheckLight(z << 4 | x, y);
 
         /// <summary>
+        /// Изменить метданные блока, без изменения для клиента
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockStateMet(BlockPos blockPos, int met)
+        {
+            if (blockPos.IsValid(Settings))
+            {
+                int yc = blockPos.Y >> 4;
+                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                StorageArrays[yc].NewMetBlock(index, met);
+            }
+        }
+
+        /// <summary>
         /// Задать новые данные блока, с перерасчётом освещения если надо и прочего, возвращает прошлые данные блока
         /// </summary>
         /// <param name="blockPos">Позици блока</param>

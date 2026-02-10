@@ -19,7 +19,7 @@ namespace Mvk2.World.BlockEntity.List
         /// <summary>
         /// Массив всех блоков дерева
         /// </summary>
-        private BlockPosLoc[] _blocks;
+        public BlockPosLoc[] Blocks { get; private set; }
         /// <summary>
         /// Хитбокс древа
         /// </summary>
@@ -111,7 +111,7 @@ namespace Mvk2.World.BlockEntity.List
                     list.Add(new BlockPosLoc(blockCaches[i]));
                 }
             }
-            _blocks = list.ToArray();
+            Blocks = list.ToArray();
 
             _UpdateAxis();
         }
@@ -131,7 +131,7 @@ namespace Mvk2.World.BlockEntity.List
             int biasX = (Position.X >> 4) << 4;
             int biasZ = (Position.Z >> 4) << 4;
             int posLoc = blockPos.Y << 12 | (blockPos.Z - biasZ + 16) << 6 | (blockPos.X - biasX + 16);
-            int count = _blocks.Length;
+            int count = Blocks.Length;
             
             bool remove = false;
             int id = 0;
@@ -140,23 +140,23 @@ namespace Mvk2.World.BlockEntity.List
                 if (!remove)
                 {
                     // Ищем
-                    if (_blocks[i].EqualsPos(posLoc))
+                    if (Blocks[i].EqualsPos(posLoc))
                     {
                         remove = true;
-                        list.Add(new PosId(_blocks[i].Id, i, _blocks[i].GetBlockPos(biasX, biasZ)));
+                        list.Add(new PosId(Blocks[i].Id, i, Blocks[i].GetBlockPos(biasX, biasZ)));
                         id = i;
                     }
                 }
                 else
                 {
                     // Найден
-                    if (_blocks[i].ParentIndex < id)
+                    if (Blocks[i].ParentIndex < id)
                     {
                         break;
                     }
                     else
                     {
-                        list.Add(new PosId(_blocks[i].Id, i, _blocks[i].GetBlockPos(biasX, biasZ)));
+                        list.Add(new PosId(Blocks[i].Id, i, Blocks[i].GetBlockPos(biasX, biasZ)));
                     }
                 }
             }
@@ -164,11 +164,11 @@ namespace Mvk2.World.BlockEntity.List
             if (list.Count > 0)
             {
                 // Удалить кэш блоков надо до удаления их в мире
-                int countNew = _blocks.Length - list.Count;
+                int countNew = Blocks.Length - list.Count;
                 if (countNew == 0)
                 {
                     // Полностью удалили
-                    _blocks = new BlockPosLoc[0];
+                    Blocks = new BlockPosLoc[0];
                     // Удаляем BlockEntity
                     chunk.RemoveBlockEntity(blockPos);
                 }
@@ -183,11 +183,11 @@ namespace Mvk2.World.BlockEntity.List
                         if (i < idBegin)
                         {
                             // Начальные блоки остаются как есть
-                            blocksNew[i] = _blocks[i];
+                            blocksNew[i] = Blocks[i];
                         }
                         else
                         {
-                            posLoc2 = _blocks[i + bias];
+                            posLoc2 = Blocks[i + bias];
                             if (posLoc2.ParentIndex < idBegin)
                             {
                                 blocksNew[i] = posLoc2;
@@ -199,7 +199,7 @@ namespace Mvk2.World.BlockEntity.List
                         }
                     }
                     
-                    _blocks = blocksNew;
+                    Blocks = blocksNew;
                 }
 
                 _UpdateAxis();
@@ -228,7 +228,7 @@ namespace Mvk2.World.BlockEntity.List
             int biasZ = (Position.Z >> 4) << 4;
 
             // Полностью удалили
-            _blocks = new BlockPosLoc[0];
+            Blocks = new BlockPosLoc[0];
             _UpdateAxis();
 
             // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
@@ -246,11 +246,16 @@ namespace Mvk2.World.BlockEntity.List
         }
 
         /// <summary>
+        /// Дерево засохло, надо пометить всю листву на высыхание
+        /// </summary>
+        public void DriedUp() => Step = TypeStep.Dry;
+
+        /// <summary>
         /// Удалить все блоки листвы и плодов
         /// </summary>
-        public void RemoveAllLeaves(WorldServer world)
+        private void RemoveAllLeaves(WorldServer world)
         {
-            int count = _blocks.Length;
+            int count = Blocks.Length;
             if (count > 0)
             {
                 int biasX = (Position.X >> 4) << 4;
@@ -264,7 +269,7 @@ namespace Mvk2.World.BlockEntity.List
                 // а потом возвращаем блок
                 for (int i = 0; i < count; i++)
                 {
-                    posLoc = _blocks[i];
+                    posLoc = Blocks[i];
                     pos.X = posLoc.X + biasX;
                     pos.Y = posLoc.Y;
                     pos.Z = posLoc.Z + biasZ;
@@ -313,12 +318,12 @@ namespace Mvk2.World.BlockEntity.List
                         return StateVariant.Fetus;
                     }
                 }
-                else if (timeYear == EnumTimeYear.Winter || timeYear == EnumTimeYear.Autumn)
+                else if (timeYear == EnumTimeYear.Winter || timeYear == EnumTimeYear.Spring)
                 {
                     // Убрать рост (зима, весна)
                     if (_isFetus)
                     {
-                        _isFetus = true;
+                        _isFetus = false;
                         return StateVariant.Cancel;
                     }
                 }
@@ -348,7 +353,7 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         public bool FindBlock(BlockPos blockPos)
         {
-            int count = _blocks.Length;
+            int count = Blocks.Length;
             if (count > 0)
             {
                 int x = (Position.X >> 4) << 4;
@@ -356,7 +361,7 @@ namespace Mvk2.World.BlockEntity.List
                 int posLoc = blockPos.Y << 12 | (blockPos.Z - z + 16) << 6 | (blockPos.X - x + 16);
                 for (int i = 0; i < count; i++)
                 {
-                    if (_blocks[i].EqualsPos(posLoc)) return true;
+                    if (Blocks[i].EqualsPos(posLoc)) return true;
                 }
             }
             return false;
@@ -390,8 +395,8 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         public BlockPosLoc[] CopyArrayBlocks()
         {
-            BlockPosLoc[] blocks = new BlockPosLoc[_blocks.Length];
-            Array.Copy(_blocks, blocks, blocks.Length);
+            BlockPosLoc[] blocks = new BlockPosLoc[Blocks.Length];
+            Array.Copy(Blocks, blocks, blocks.Length);
             return blocks;
         }
 
@@ -405,7 +410,7 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         private void _UpdateAxis()
         {
-            int count = _blocks.Length;
+            int count = Blocks.Length;
             if (count > 0)
             {
                 _empty = false;
@@ -419,7 +424,7 @@ namespace Mvk2.World.BlockEntity.List
                 BlockPosLoc posLoc;
                 for (int i = 0; i < count; i++)
                 {
-                    posLoc = _blocks[i];
+                    posLoc = Blocks[i];
                     if (posLoc.X < _minX) _minX = posLoc.X;
                     if (posLoc.Y < _minY) _minY = posLoc.Y;
                     if (posLoc.Z < _minZ) _minZ = posLoc.Z;
@@ -444,7 +449,7 @@ namespace Mvk2.World.BlockEntity.List
             => Position 
             + " Box[" + (_empty ? "empty" : (_minX + "; " + _minY + "; " + _minZ
             + " -> " + _maxX + "; " + _maxY + "; " + _maxZ))
-            + "] Tree:" + _blocks.Length
+            + "] Tree:" + Blocks.Length
             + " Root:" + RootLenght + " " + Step;
 
         /// <summary>

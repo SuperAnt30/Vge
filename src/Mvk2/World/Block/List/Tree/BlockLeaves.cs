@@ -85,61 +85,24 @@ namespace Mvk2.World.Block.List
             int met = blockState.Met;
             if ((met & 1 << 9) != 0) // 512
             {
-                // Удаляем
-                world.SetBlockToAir(blockPos);
+                if (random.Next(3) == 0)
+                {
+                    // Удаляем
+                    world.SetBlockToAir(blockPos);
+                }
             }
             else if ((met & 1 << 8) != 0) // 256
             {
-                // Вешаем плод
-
-            }
-            /*
-         //   if (met < 255)// && chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
-            {
-                // Найти ветку
-                if (met > 255) met = met & 0xF;
-                if (met > 5) met -= 6;
-
-                BlockPos blockPosBranch = blockPos.OffsetReversal(met);
-
-                // Список всех блок сущностей в квадрате 3*3 чанка
-                List<BlockEntityBase> blocksEntity = world.GetBlocksEntity3x3(chunk);
-
-                // Пробегаемся и производим удаление
-                foreach (BlockEntityBase blockEntity in blocksEntity)
+                if (random.Next(10) == 0)
                 {
-                    if (blockEntity is BlockEntityTree blockEntityTree
-                        && blockEntityTree.IsAABB(blockPosBranch)
-                        && blockEntityTree.FindBlock(blockPosBranch))
+                    // Вешаем плод
+                    if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
                     {
-
-                        if (blockEntityTree.Step == BlockEntityTree.TypeStep.Dry)
-                        {
-                            world.SetBlockToAir(blockPos);
-                        }
-                        else if (blockEntityTree.Step == BlockEntityTree.TypeStep.Mature)
-                        {
-                            // Проверяем состояние дерева черз тик основания
-                          //  blockEntityTree.CheckingCondition();
-
-                            //if (world.Settings.Calendar is Сalendar32 сalendar32 
-                            //    && сalendar32.TimeYear == EnumTimeYear.Spring)
-                            if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0
-                                && blockEntityTree.IsAddFetus())
-                            {
-                                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 12);
-                            }
-                        }
-                        // Делаем обновление тика листвы
-                        // blockEntityTree.UpdateTickLeaves(world, chunk, blockPosBranch, blockPos, _idFetus);
-                    // Это блок возможно принадлежит этому дереву. Откусить
-                        //blockEntityTree.RemoveBlock(world, chunk, blockPosBranch);
+                        chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 44);
                     }
+                    chunk.SetBlockStateMet(blockPos, met - 256);
                 }
-
-               // world.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 12);
             }
-        */
         }
     }
 }
