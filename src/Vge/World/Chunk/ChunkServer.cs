@@ -446,15 +446,44 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Прочесть чанк в файл региона
+        /// </summary>
+        public void LoadFileChunk()
+        {
+            RegionFile region = WorldServ.Regions.Get(X, Y);
+            if (region != null)
+            {
+                TagCompound nbt = region.ReadChunk(X, Y);
+                if (nbt != null)
+                {
+                    try
+                    {
+                        _ReadChunkFromNBT(nbt);
+                        IsChunkPresent = true;
+                        IsDecorated = true;
+                        IsHeightMapSky = true;
+                        IsSideLightSky = true;
+                        IsSendChunk = true;
+                        IsLoaded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        WorldServ.Server.Log.Error(ex);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Сохранить чанк
         /// </summary>
         private void _WriteChunkToNBT(TagCompound nbt)
         {
-            uint time = WorldServ.TickCounter;
+            uint tick = WorldServ.TickCounter;
             nbt.SetShort("Version", 1);
             nbt.SetInt("X", X);
             nbt.SetInt("Z", Y);
-            nbt.SetLong("LastUpdate", time);
+            nbt.SetLong("LastUpdate", tick);
             nbt.SetLong("InhabitedTick", InhabitedTick);
             nbt.SetShort("HeightMapMax", (short)Light.HeightMapMax);
             nbt.SetByteArray("HeightMap", TagByteArray.ConvToByte(Light.HeightMap));
@@ -483,11 +512,71 @@ namespace Vge.World.Chunk
                     tagCompound.SetByte("X", tickBlock.X);
                     tagCompound.SetShort("Y", tickBlock.Y);
                     tagCompound.SetByte("Z", tickBlock.Z);
-                    tagCompound.SetInt("Time", (int)(tickBlock.ScheduledTick - time));
+                    tagCompound.SetBool("Liquid", tickBlock.Liquid);
+                    tagCompound.SetInt("Tick", (int)(tickBlock.ScheduledTick - tick));
                     tagCompound.SetBool("P", tickBlock.Priority);
                     tagListTickBlocks.AppendTag(tagCompound);
                 }
                 nbt.SetTag("BlockTicks", tagListTickBlocks);
+            }
+        }
+
+        /// <summary>
+        /// Прочесть чанка
+        /// </summary>
+        private void _ReadChunkFromNBT(TagCompound nbt)
+        {
+            uint tick = WorldServ.TickCounter;
+            uint timeDelta = tick - (uint)nbt.GetLong("LastUpdate");
+            InhabitedTick = (uint)nbt.GetLong("InhabitedTick");
+            Light.HeightMapMax = nbt.GetShort("HeightMapMax");
+            TagByteArray.ConvToUShort(nbt.GetByteArray("HeightMap"), Light.HeightMap);
+            TagByteArray.ConvToUShort(nbt.GetByteArray("HeightMapGen"), HeightMapGen);
+            Buffer.BlockCopy(Biome, 0, nbt.GetByteArray("Biomes"), 0, Biome.Length);
+
+            // ---Sections
+
+            TagList tagListSections = nbt.GetTagList("Sections", 10);
+            int count = tagListSections.TagCount();
+            if (tagListSections.GetTagType() == 10)
+            {
+                int y;
+                bool[] flag = new bool[NumberSections];
+                for (int i = 0; i < count; i++)
+                {
+                    TagCompound tagCompound = tagListSections.Get(i) as TagCompound;
+                    y = tagCompound.GetByte("Y");
+                    flag[y] = true;
+                    StorageArrays[y].ReadDataFromNBT(tagCompound);
+                }
+                if (count < NumberSections)
+                {
+                    TagCompound tagCompound = new TagCompound();
+                    for (int i = 0; i < NumberSections; i++)
+                    {
+                        if (!flag[i])
+                        {
+                            StorageArrays[i].ReadDataFromNBT(tagCompound);
+                        }
+                    }
+                }
+            }
+
+            // ---BlockTicks
+
+            _tickBlocks.Clear();
+            TagList tagListTickBlocks = nbt.GetTagList("BlockTicks", 10);
+            count = tagListTickBlocks.TagCount();
+            if (tagListTickBlocks.GetTagType() == 10)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    TagCompound tagCompound = tagListTickBlocks.Get(i) as TagCompound;
+                    _tickBlocks.Add(new BlockTick(
+                        tagCompound.GetByte("X"), tagCompound.GetShort("Y"), tagCompound.GetByte("Z"),
+                        tagCompound.GetBool("Liquid"), (uint)tagCompound.GetInt("Tick") + tick,
+                        tagCompound.GetBool("P")));
+                }
             }
         }
 

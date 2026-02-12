@@ -126,7 +126,7 @@ namespace Vge.World.Chunk
         /// Загружен ли чанк, false если была генерация, для дополнительной правки освещения.
         /// Для проверки не корректного освещения.
         /// </summary>
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded { get; protected set; }
 
         #endregion
 

@@ -265,6 +265,47 @@ namespace Vge.World.Chunk
             }
         }
 
+        public void ReadDataFromNBT(TagCompound nbt)
+        {
+            int count;
+            int i;
+            int[] data = nbt.GetIntArray("BlockStates");
+            // нету блоков
+            if (data.Length == 4096)
+            {
+                int idMet;
+                for (i = 0; i < 4096; i++)
+                {
+                    idMet = data[i];
+                    SetData(i, idMet & 0xFFF, idMet >> 12);
+                }
+            }
+
+            Array.Clear(Light, 0, Light.Length);
+            byte[] buffer = nbt.GetByteArray("BlockLight");
+            // нету блоков освещения блока
+            if (buffer.Length == 2048)
+            {
+                for (i = 0; i < 2048; i++)
+                {
+                    count = i * 2;
+                    Light[count] = (byte)((buffer[i] & 0xF) << 4);
+                    Light[count + 1] = (byte)((buffer[i] >> 4) << 4);
+                }
+            }
+            buffer = nbt.GetByteArray("SkyLight");
+            // нету блоков освещения неба
+            if (buffer.Length == 2048)
+            {
+                for (i = 0; i < 2048; i++)
+                {
+                    count = i * 2;
+                    Light[count] |= (byte)(buffer[i] & 0xF);
+                    Light[count + 1] |= (byte)(buffer[i] >> 4);
+                }
+            }
+        }
+
         #endregion
 
         /// <summary>

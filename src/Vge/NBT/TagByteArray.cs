@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.NBT
 {
@@ -53,11 +54,8 @@ namespace Vge.NBT
         /// <summary>
         /// Конвертируем массив byte в ushort
         /// </summary>
-        public static ushort[] ConvToUShort(byte[] byteArray)
-        {
-            ushort[] ushortArray = new ushort[byteArray.Length / 2];
-            Buffer.BlockCopy(byteArray, 0, ushortArray, 0, byteArray.Length);
-            return ushortArray;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ConvToUShort(byte[] byteArray, ushort[] ushortArray)
+            => Buffer.BlockCopy(byteArray, 0, ushortArray, 0, byteArray.Length);
     }
 }

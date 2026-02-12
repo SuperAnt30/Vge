@@ -165,7 +165,7 @@ namespace Vge.World.Chunk
                 {
                     //Stopwatch stopwatch = new Stopwatch();
                     //stopwatch.Start();
-                    //chunk.LoadFileChunk(worldServer);
+                    chunk.LoadFileChunk();
                     // if (chunk.IsChunkLoaded) world.Log.Log("ChunkLoad[{1}]: {0:0.00} ms", stopwatch.ElapsedTicks / (float)MvkStatic.TimerFrequency, chunk.Position);
                 }
                 catch (Exception ex)
