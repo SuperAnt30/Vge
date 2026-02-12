@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using System.Runtime.CompilerServices;
+using WinGL.Util;
 
 namespace Vge.World.Chunk
 {
@@ -43,12 +44,14 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить чанк по координатам чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ChunkBase GetChunk(int x, int y) 
             => _chunkMapping.Get(x, y) as ChunkBase;
 
         /// <summary>
         /// Получить чанк по координатам чанка
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkBase GetChunk(Vector2i chunkPos)
             => _chunkMapping.Get(chunkPos.X, chunkPos.Y) as ChunkBase;
 
@@ -60,6 +63,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Список чанков только для отладки
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IChunkPosition[] GetListDebug() => _chunkMapping.ToArrayDebug();
 
         #endregion

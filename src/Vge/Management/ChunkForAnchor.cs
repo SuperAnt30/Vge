@@ -155,12 +155,12 @@ namespace Vge.Management
         /// </summary>
         private void _IncreaseInhabitedTime()
         {
-            ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
+            ChunkServer chunk = World.GetChunkServer(CurrentChunkX, CurrentChunkY);
             if (chunk != null)
             {
-                uint countInhabitedTakt = World.TickCounter - _previousGameTakt;
+                uint countInhabitedTick = World.TickCounter - _previousGameTakt;
                 _previousGameTakt = World.TickCounter;
-                chunk.SetInhabitedTime(chunk.InhabitedTakt + countInhabitedTakt);
+                chunk.SetInhabitedTick(chunk.InhabitedTick + countInhabitedTick);
             }
         }
 

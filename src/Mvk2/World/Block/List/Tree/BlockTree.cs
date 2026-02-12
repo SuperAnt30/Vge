@@ -139,7 +139,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state)
         {
-            ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Cobblestone, 1));
+            ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
         }
     }
 }

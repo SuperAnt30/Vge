@@ -45,6 +45,10 @@ namespace Vge.World
         /// </summary>
         public readonly ChunkProviderServer ChunkPrServ;
         /// <summary>
+        /// Регионы для хранения данных чанков
+        /// </summary>
+        public readonly RegionProvider Regions;
+        /// <summary>
         /// Ждать обработчик
         /// </summary>
         public readonly WaitHandler Wait;
@@ -89,6 +93,7 @@ namespace Vge.World
             Filer = new Profiler(server.Log, "[Server] ");
             Fragment = new FragmentManager(this);
             Tracker = new EntityTrackerManager(this);
+            Regions = new RegionProvider(this);
 
             if (idWorld == 0)
             {
@@ -141,9 +146,22 @@ namespace Vge.World
             long timeBegin = Server.Time();
             Settings.Calendar.UpdateServer();
 
-            // Обработка фрагментов в начале такта
-            _FragmentBegin();
-            _FragmentEnd();
+            TickCounter++;
+            if (TickCounter % Ce.Tps == 0)
+            {
+                // Прошла секунда
+                ChunkPrServ.ClearCounter();
+            }
+            // Запускаем фрагмент, тут определение какие чанки выгрузить, какие загрузить, 
+            // определение активных чанков.
+            Fragment.Update();
+            // Выгрузка ненужных чанков из очереди
+            Filer.StartSection("UnloadingUnnecessaryChunksFromQueue");
+            ChunkPrServ.UnloadingUnnecessaryChunksFromQueue();
+            Filer.EndSection();
+            // Загрузка поставленных в очередь чанков
+            ChunkPrServ.LoadQueuedChunks();
+
             // Тут начинается все действия с блоками АИ мобов и всё такое....
             if (IdWorld == 0)
             {
@@ -153,14 +171,29 @@ namespace Vge.World
             // Тикание блоков и чанков
             _TickBlocks();
 
-            // TODO::2026-02-06!!! Поток генерации
-            // Обработка фрагментов в конце такта
-            //_FragmentEnd();
-
             Filer.StartSection("Entities");
             _UpdateEntities();
             Filer.EndStartSection("Tracker");
             Tracker.Update();
+            // Выгрузка требуемых чанков из очереди которые отработали
+            Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
+            ChunkPrServ.UnloadingRequiredChunksFromQueue();
+            Filer.EndSection();
+
+            if (TickCounter % 900 == 0) // 900 = 45 сек
+            {
+                // Запуск сохранения чанков
+                Filer.StartSection("BeginSaving");
+                ChunkPrServ.BeginSaving();
+                Filer.EndSection();
+            }
+
+            Filer.StartSection("TickSaving");
+            // Сохраняем пакет чанков в регионы 
+            ChunkPrServ.TickSaving();
+            Filer.EndStartSection("SaveToFileRegions");
+            // Сохраняем регионы в файл
+            ChunkPrServ.SavingRegions();
             Filer.EndSection();
 
             _timeTick = (short)((_timeTick * 3 + (Server.Time() - timeBegin)) / 4);
@@ -172,7 +205,6 @@ namespace Vge.World
         public void Stoping()
         {
             IsRuning = false;
-            ChunkPrServ.Wait.Stoping();
             Wait?.Stoping();
             _WriteToFile();
         }
@@ -229,44 +261,6 @@ namespace Vge.World
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Обработка фрагментов в начале такта
-        /// </summary>
-        private void _FragmentBegin()
-        {
-            TickCounter++;
-            if (TickCounter % Ce.Tps == 0)
-            {
-                // Прошла секунда
-                ChunkPrServ.ClearCounter();
-            }
-            // Запускаем фрагмент, тут определение какие чанки выгрузить, какие загрузить, 
-            // определение активных чанков.
-            Filer.StartSection("Fragment");
-            Fragment.Update();
-            // Выгрузка ненужных чанков из очереди
-            Filer.StartSection("UnloadingUnnecessaryChunksFromQueue");
-            ChunkPrServ.UnloadingUnnecessaryChunksFromQueue();
-            Filer.EndSection();
-
-            // Этап запуска чанков в отдельном потоке
-            ChunkPrServ.Wait.RunInFlow();
-        }
-
-        /// <summary>
-        /// Обработка фрагментов в конце такта
-        /// </summary>
-        private void _FragmentEnd()
-        {
-            // Дожидаемся загрузки чанков
-            ChunkPrServ.Wait.Waiting();
-
-            // Выгрузка требуемых чанков из очереди которые отработали в отдельном потоке
-            Filer.EndStartSection("UnloadingRequiredChunksFromQueue");
-            ChunkPrServ.UnloadingRequiredChunksFromQueue();
-            Filer.EndSection();
         }
 
         #endregion
@@ -586,6 +580,11 @@ namespace Vge.World
         private void _WriteToFile()
         {
             GameFile.CheckPath(PathWorld);
+
+            // Сохраняем чанки в регионы 
+            ChunkPrServ.SaveChunks();
+            // Сохраняем регионы в файл
+            Regions.WriteToFile(true);
         }
 
         #endregion

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World.Gen;
@@ -20,10 +22,6 @@ namespace Vge.World.Chunk
         /// Объект для генерации чанков
         /// </summary>
         public readonly IChunkProviderGenerate ChunkGenerate;
-        /// <summary>
-        /// Ждать обработчик
-        /// </summary>
-        public readonly WaitHandler Wait;
 
         /// <summary>
         /// Посредник серверного чанка
@@ -42,7 +40,11 @@ namespace Vge.World.Chunk
         /// Карта чанков которые надо загрузить
         /// </summary>
         private readonly MapChunk _loadingChunkMapping = new MapChunk();
-        
+        /// <summary>
+        /// Список чанков для сохранения
+        /// </summary>
+        private ListMessy<ChunkServer> _savingChunks = new ListMessy<ChunkServer>();
+
         /// <summary>
         /// Счётчик для партии закачки чанков прошлой секунды
         /// </summary>
@@ -51,15 +53,33 @@ namespace Vge.World.Chunk
         /// Счётчик для партии закачки чанков в секунду
         /// </summary>
         private int _counterLBS;
+        /// <summary>
+        /// Флаг для сохранения региона
+        /// </summary>
+        private FlagSave _flagSaveRegion = FlagSave.None;
+
+        private enum FlagSave
+        {
+            /// <summary>
+            /// Нет действия
+            /// </summary>
+            None,
+            /// <summary>
+            /// Был запуск сохранения но чанки ещё не готовы
+            /// </summary>
+            SavingChunk,
+            /// <summary>
+            /// Надо сохранять регион
+            /// </summary>
+            SavingRegin
+        }
+
 
         public ChunkProviderServer(WorldServer world) : base(world)
         {
             _worldServer = world;
             Settings.SetHeightChunks(world.Settings.NumberChunkSections);
             ChunkGenerate = world.Settings.ChunkGenerate;
-            Wait = new WaitHandler("Chunk" + world.IdWorld);
-            Wait.DoInFlow += (sender, e) => _LoadQueuedChunks();
-            Wait.Run();
         }
 
         /// <summary>
@@ -105,7 +125,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Загрузка поставленных в очередь чанков
         /// </summary>
-        private void _LoadQueuedChunks()
+        public void LoadQueuedChunks()
         {
             int count = _loadingChunks.Count;
             if (count > 0)
@@ -193,7 +213,7 @@ namespace Vge.World.Chunk
             int first = count - Ce.MaxCountDroppedChunks;
             if (first < 0) first = 0;
             ulong index;
-            ChunkBase chunk;
+            ChunkServer chunk;
             count--;
             for (i = count; i >= first; i--)
             {
@@ -201,12 +221,12 @@ namespace Vge.World.Chunk
                 x = Conv.IndexToChunkX(index);
                 y = Conv.IndexToChunkY(index);
                 _droppedChunks.RemoveLast();
-                chunk = _chunkMapping.Get(x, y) as ChunkBase;
+                chunk = _chunkMapping.Get(x, y) as ChunkServer;
                 if (chunk != null)
                 {
                     chunk.OnChunkUnload();
                     //Тут сохраняем чанк
-                    //SaveChunkData(chunk);
+                    _SaveChunkData(chunk);
                     _chunkMapping.Remove(x, y);
                     // Для дебага
                     _worldServer.Fragment.flagDebugChunkProviderServer = true;
@@ -222,6 +242,108 @@ namespace Vge.World.Chunk
             _counterLBSprev = _counterLBS;
             _counterLBS = 0;
         }
+
+        #region Save
+
+        /// <summary>
+        /// Начало сохранение чанков
+        /// </summary>
+        public void BeginSaving()
+        {
+            if (_savingChunks.Count == 0)
+            {
+                // готовим список чанков для сохранения
+                List<IChunkPosition> chunks = _chunkMapping.GetList();
+                foreach (ChunkServer chunk in chunks.Cast<ChunkServer>())
+                {
+                    _savingChunks.Add(chunk);
+                }
+                _flagSaveRegion = FlagSave.SavingChunk;
+            }
+        }
+
+        /// <summary>
+        /// Сохранение чанков в одном тике
+        /// </summary>
+        public void TickSaving()
+        {
+            if (_flagSaveRegion == FlagSave.SavingChunk)
+            {
+                if (_savingChunks.Count > 0)
+                {
+                    // Если были не сохранённые чанки сохраняем пакет из 50 чанков за тик
+                    int i = 0;
+                    bool b = true;
+                    while (i < 50 && b)
+                    {
+                        if (_savingChunks.Count == 0) b = false;
+                        else if (_SaveChunkData(_savingChunks[0])) i++;
+                    }
+                }
+                else
+                {
+                    _flagSaveRegion = FlagSave.SavingRegin;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сохранение регионов
+        /// </summary>
+        public void SavingRegions()
+        {
+            if (_flagSaveRegion == FlagSave.SavingRegin)
+            {
+                _worldServer.Regions.WriteToFile(false);
+                _flagSaveRegion = FlagSave.None;
+            }
+        }
+
+        /// <summary>
+        /// Сохранить все чанки при закрытии мира
+        /// </summary>
+        public void SaveChunks()
+        {
+            List<IChunkPosition> chunks = _chunkMapping.GetList();
+            int all = 0;
+            int save = 0;
+            foreach (ChunkServer chunk in chunks.Cast<ChunkServer>())
+            {
+                if (_SaveChunkData(chunk)) save++;
+                all++;
+            }
+            _worldServer.Server.Log.Server(Srl.ServerSavingChunk, all, save);
+        }
+
+        /// <summary>
+        /// Сохранить основные данные чанка
+        /// </summary>
+        private bool _SaveChunkData(ChunkServer chunk)
+        {
+            if (chunk != null)
+            {
+                try
+                {
+                    _savingChunks.Remove(chunk);
+                    return chunk.SaveFileChunk();
+                }
+                catch (Exception ex)
+                {
+                    _worldServer.Server.Log.Error(Srl.ServerSavingChunkError,
+                        ex.Message, ex.StackTrace,
+                        chunk.X, chunk.Y, chunk.X >> 5, chunk.Y >> 5);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Cгенерировать список регионов
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public List<ulong> GetRegionList() => _chunkMapping.GetRegionList();
+
+        #endregion
 
         public override string ToString() => "Ch:" + _chunkMapping.ToString()
             + " Lbs:" + LoadingBatchSize + "|" + _counterLBSprev

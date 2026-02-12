@@ -12,7 +12,7 @@
         /// <summary>
         /// Позиция блока в чанке Y
         /// </summary>
-        public ushort Y;
+        public short Y;
         /// <summary>
         /// Локальная позици в чанке Z
         /// </summary>
@@ -37,7 +37,7 @@
         public BlockTick(int x, int y, int z, bool liquid, uint scheduledTick, bool priority)
         {
             X = (byte)x;
-            Y = (ushort)y;
+            Y = (short)y;
             Z = (byte)z;
             Liquid = liquid;
             ScheduledTick = scheduledTick;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.NBT;
 using Vge.Util;
 using Vge.World.Block;
 
@@ -198,6 +199,73 @@ namespace Vge.World.Chunk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetNeedsRandomTick() => _countTickBlock > 0;
+
+        #region NBT
+
+        public void WriteDataToNBT(TagList nbt)
+        {
+            int i, count;
+            // нету блоков
+            bool emptyB = IsEmptyData();
+            // нету блоков освещения блока
+            bool emptyLB = true;
+            // нету блоков освещения неба
+            bool emptyLS = true;
+            for (i = 0; i < 4096; i++)
+            {
+                if ((Light[i] >> 4) > 0)
+                {
+                    emptyLB = false;
+                    break;
+                }
+            }
+            for (i = 0; i < 4096; i++)
+            {
+                if ((Light[i] & 15) < 15)
+                {
+                    emptyLS = false;
+                    break;
+                }
+            }
+
+            byte[] buffer;
+            TagCompound tagCompound = new TagCompound();
+            
+            if (!emptyB)
+            {
+                tagCompound.SetIntArray("BlockStates", Data);
+            }
+            if (!emptyLB)
+            {
+                buffer = new byte[2048];
+                // яркость от блоков
+                for (i = 0; i < 2048; i++)
+                {
+                    count = i * 2;
+                    buffer[i] = (byte)(((Light[count] >> 4) & 0xF) | ((Light[count + 1] >> 4) << 4));
+                }
+                tagCompound.SetByteArray("BlockLight", buffer);
+            }
+            if (!emptyLS)
+            {
+                buffer = new byte[2048];
+                // яркость от неба
+                for (i = 0; i < 2048; i++)
+                {
+                    count = i * 2;
+                    buffer[i] = (byte)(((Light[count] & 15) & 0xF) | ((Light[count + 1] & 15) << 4));
+                }
+                tagCompound.SetByteArray("SkyLight", buffer);
+            }
+
+            if (!emptyB || !emptyLB || !emptyLS)
+            {
+                tagCompound.SetByte("Y", (byte)(YBase >> 4));
+                nbt.AppendTag(tagCompound);
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Вернуть количество блоков не воздуха и количество тикающих блоков

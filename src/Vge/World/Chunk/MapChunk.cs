@@ -12,7 +12,7 @@ namespace Vge.World.Chunk
         // new Vector2i((int)((xy & 0xFFFFFFFF00000000) >> 27), (int)xy << 5);
 
         /// <summary>
-        /// Общекк количество элементов
+        /// Общее количество элементов
         /// </summary>
         public int Count { get; private set; } = 0;
 
@@ -46,6 +46,19 @@ namespace Vge.World.Chunk
             }
 
             return chunks;
+        }
+
+        /// <summary>
+        /// Cгенерировать список ключей всех регионов
+        /// </summary>
+        public List<ulong> GetRegionList()
+        {
+            List<ulong> list = new List<ulong>();
+            foreach (ulong key in _map.Keys)
+            {
+                list.Add(key);
+            }
+            return list;
         }
 
         /// <summary>

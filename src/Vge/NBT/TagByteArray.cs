@@ -39,5 +39,25 @@ namespace Vge.NBT
         public override int GetHashCode() => base.GetHashCode() ^ data.GetHashCode();
 
         public byte[] GetByteArray() => data;
+
+        /// <summary>
+        /// Конвертируем массив ushort в byte
+        /// </summary>
+        public static byte[] ConvToByte(ushort[] ushortArray)
+        {
+            byte[] byteArray = new byte[ushortArray.Length * 2];
+            Buffer.BlockCopy(ushortArray, 0, byteArray, 0, byteArray.Length);
+            return byteArray;
+        }
+
+        /// <summary>
+        /// Конвертируем массив byte в ushort
+        /// </summary>
+        public static ushort[] ConvToUShort(byte[] byteArray)
+        {
+            ushort[] ushortArray = new ushort[byteArray.Length / 2];
+            Buffer.BlockCopy(byteArray, 0, ushortArray, 0, byteArray.Length);
+            return ushortArray;
+        }
     }
 }

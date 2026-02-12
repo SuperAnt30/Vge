@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.NBT;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
@@ -23,6 +24,12 @@ namespace Vge.World.Chunk
         /// Объект серверного мира
         /// </summary>
         public readonly WorldServer WorldServ;
+
+        /// <summary>
+        /// Совокупное количество тиков, которые якори провели в этом чанке 
+        /// </summary>
+        public uint InhabitedTick { get; private set; }
+
         /// <summary>
         /// Список BlockTick блоков которые должны мгновенно тикать
         /// </summary>
@@ -50,6 +57,12 @@ namespace Vge.World.Chunk
             WorldServ = worldServer;
             _tickBlocksCache = WorldServ.TickBlocksCache;
         }
+        
+        /// <summary>
+        /// Задать совокупное количество тактов, которые якоря провели в этом чанке 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetInhabitedTick(uint tick) => InhabitedTick = tick;
 
         #region Кольца 1-4
 
@@ -276,14 +289,14 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Отменить мгновенный тик блока
         /// </summary>
-        protected override void _RemoveBlockTick(int x, int y, int z)
+        protected override void _RemoveBlockTick(int x, int y, int z, bool liquid)
         {
             BlockTick tickBlock;
             int index = -1;
             for (int i = 0; i < _tickBlocks.Count; i++)
             {
                 tickBlock = _tickBlocks[i];
-                if (tickBlock.X == x && tickBlock.Y == y && tickBlock.Z == z)
+                if (tickBlock.X == x && tickBlock.Y == y && tickBlock.Z == z && tickBlock.Liquid == liquid)
                 {
                     index = i;
                     break;
@@ -312,7 +325,8 @@ namespace Vge.World.Chunk
                 for (int i = 0; i < count; i++)
                 {
                     tickBlock = _tickBlocks[i];
-                    if (tickBlock.ScheduledTick <= time && (_tickBlocksCache.Count < 8 || tickBlock.Priority))
+                    if (tickBlock.ScheduledTick <= time 
+                        && (_tickBlocksCache.Count < Ce.CountTickBlockChunk || tickBlock.Priority))
                     {
                         tickBlock.Index = i;
                         _tickBlocksCache.Add(tickBlock);
@@ -407,10 +421,76 @@ namespace Vge.World.Chunk
 
         #endregion
 
+        #region Save
+
         /// <summary>
         /// Пометка что чанк надо будет перезаписать
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Modified() => _isModified = true;
+
+        /// <summary>
+        /// Сохранить чанк в файл региона
+        /// </summary>
+        public bool SaveFileChunk()
+        {
+            if (IsSendChunk && (_hasEntities || _isModified))
+            {
+                TagCompound nbt = new TagCompound();
+                _WriteChunkToNBT(nbt);
+                WorldServ.Regions.Get(X, Y).WriteChunk(nbt, X, Y);
+                _isModified = false;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Сохранить чанк
+        /// </summary>
+        private void _WriteChunkToNBT(TagCompound nbt)
+        {
+            uint time = WorldServ.TickCounter;
+            nbt.SetShort("Version", 1);
+            nbt.SetInt("X", X);
+            nbt.SetInt("Z", Y);
+            nbt.SetLong("LastUpdate", time);
+            nbt.SetLong("InhabitedTick", InhabitedTick);
+            nbt.SetShort("HeightMapMax", (short)Light.HeightMapMax);
+            nbt.SetByteArray("HeightMap", TagByteArray.ConvToByte(Light.HeightMap));
+            nbt.SetByteArray("HeightMapGen", TagByteArray.ConvToByte(HeightMapGen));
+            nbt.SetByteArray("Biomes", Biome);
+
+            // ---Sections
+
+            TagList tagListSections = new TagList();
+            for (int ys = 0; ys < NumberSections; ys++)
+            {
+                StorageArrays[ys].WriteDataToNBT(tagListSections);
+            }
+            nbt.SetTag("Sections", tagListSections);
+
+            // ---BlockTicks
+
+            if (_tickBlocks.Count > 0)
+            {
+                TagList tagListTickBlocks = new TagList();
+                BlockTick tickBlock;
+                for (int i = 0; i < _tickBlocks.Count; i++)
+                {
+                    tickBlock = _tickBlocks[i];
+                    TagCompound tagCompound = new TagCompound();
+                    tagCompound.SetByte("X", tickBlock.X);
+                    tagCompound.SetShort("Y", tickBlock.Y);
+                    tagCompound.SetByte("Z", tickBlock.Z);
+                    tagCompound.SetInt("Time", (int)(tickBlock.ScheduledTick - time));
+                    tagCompound.SetBool("P", tickBlock.Priority);
+                    tagListTickBlocks.AppendTag(tagCompound);
+                }
+                nbt.SetTag("BlockTicks", tagListTickBlocks);
+            }
+        }
+
+        #endregion
     }
 }

@@ -85,10 +85,6 @@ namespace Vge.Games
 
                 NBTTools.WriteToFile(nbt, pathGame + NameFaileGame, true);
                 server.Log.Server(Srl.ServerSavingGame);
-                // Сохраняем чанки в регионы 
-                //World.ChunkPrServ.SaveChunks();
-                // Сохраняем регионы в файл
-                //World.Regions.WriteToFile(true);
             }
             catch (Exception ex)
             {

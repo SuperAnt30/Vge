@@ -217,18 +217,18 @@ namespace Mvk2.World.BlockEntity.List
                         world.SetBlockToAir(pos.Pos, 110); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock 
                         // Разрушаем блок ветки
 
-                        EntityItem entity = new EntityItem();
-                        entity.InitServer(Ce.Entities.IndexItem, world);
-                        entity.PosX = pos.Pos.X + (pos.Pos.Y - blockPos.Y) * .05f;
-                        entity.PosY = pos.Pos.Y;
-                        entity.PosZ = pos.Pos.Z + (pos.Pos.Y - blockPos.Y) * .05f;
-                        entity.Physics.MotionX = (pos.Pos.Y - blockPos.Y) * .05f;
-                        entity.Physics.MotionZ = (pos.Pos.Y - blockPos.Y) * .05f;
-                        entity.SetEntityItemStack(new ItemStack(ItemsRegMvk.Cobblestone, 1));
+                        //EntityItem entity = new EntityItem();
+                        //entity.InitServer(Ce.Entities.IndexItem, world);
+                        //entity.PosX = pos.Pos.X + (pos.Pos.Y - blockPos.Y) * .1f;
+                        //entity.PosY = pos.Pos.Y;
+                        //entity.PosZ = pos.Pos.Z + (pos.Pos.Y - blockPos.Y) * .1f;
+                        //entity.Physics.MotionX = (pos.Pos.Y - blockPos.Y) * .015f;
+                        //entity.Physics.MotionZ = (pos.Pos.Y - blockPos.Y) * .015f;
+                        //entity.SetEntityItemStack(new ItemStack(ItemsRegMvk.Brol, 1));
                         //entity.SetDefaultPickupDelay();
-                        world.SpawnEntityInWorld(entity);
+                      //  world.SpawnEntityInWorld(entity);
 
-                      //  blockState.GetBlock().DropBlockAsItem(world, pos.Pos, blockState);
+                        blockState.GetBlock().DropBlockAsItem(world, pos.Pos, blockState);
                     }
                 }
                 return true;
@@ -268,46 +268,6 @@ namespace Mvk2.World.BlockEntity.List
         /// Дерево засохло, надо пометить всю листву на высыхание
         /// </summary>
         public void DriedUp() => Step = TypeStep.Dry;
-
-        /// <summary>
-        /// Удалить все блоки листвы и плодов
-        /// </summary>
-        private void RemoveAllLeaves(WorldServer world)
-        {
-            int count = Blocks.Length;
-            if (count > 0)
-            {
-                int biasX = (Position.X >> 4) << 4;
-                int biasZ = (Position.Z >> 4) << 4;
-
-                BlockPosLoc posLoc;
-                BlockPos pos = new BlockPos();
-                BlockState state;
-                // Пробегаемся по всем блокам траектории дерева, и удаляем рядом листву.
-                // Алгоритм упрощён, иметируем удаление блока, он тащит за собой удаление листвы,
-                // а потом возвращаем блок
-                for (int i = 0; i < count; i++)
-                {
-                    posLoc = Blocks[i];
-                    pos.X = posLoc.X + biasX;
-                    pos.Y = posLoc.Y;
-                    pos.Z = posLoc.Z + biasZ;
-                    state = world.GetBlockState(pos);
-                    
-                    if (posLoc.Id == state.Id)
-                    {
-                        
-                        world.SetBlockToAir(pos, 66); // 64 блокировка, 2 смена соседа
-                        world.SetBlockState(pos, state, 64);
-
-                        // TODO::2026-02-05 сделать вкусный вариант на мире сервера, для проверки боковых. без изменения
-                        // А может и не надо, это не так часто бывает!
-                        //world._NotifyNeighborsOfStateChange(pos, stateAir.GetBlock());
-                    }
-                }
-            }
-            Step = TypeStep.Dry;
-        }
 
         #endregion
 

@@ -1,6 +1,8 @@
 {
     Parent: "_Block",
+    Width: 0.3,
+    Height: 0.6,
     ShapeBlock: "Brol",
     ShapeBlockGui: "Brol",
-    View: { Rotate:[0, 0, 0], Scale: 0.6 }
+    View: { Rotate:[0, 0, 0], Offset:[0, 8, 0], Scale: 0.6 }
 }

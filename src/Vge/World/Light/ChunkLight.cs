@@ -26,7 +26,7 @@ namespace Vge.World.Light
         /// <summary>
         /// Высотная карта самый высокий блок в чанке от неба
         /// </summary>
-        private int _heightMapMax = 0;
+        public int HeightMapMax = 0;
         /// <summary>
         /// Объект обработки освещения для мира
         /// </summary>
@@ -93,7 +93,7 @@ namespace Vge.World.Light
             int yNew = blockPos.Y + 1;
             int yOld = HeightMap[index];
 
-            if (yNew == _heightMapMax)
+            if (yNew == HeightMapMax)
             {
                 // обновляем максимальные высоты
                 GenerateHeightMap();
@@ -113,7 +113,7 @@ namespace Vge.World.Light
                     {
                         // первый блок препятствия сверху
                         HeightMap[index] = (ushort)y;
-                        if (_heightMapMax < y) _heightMapMax = y;
+                        if (HeightMapMax < y) HeightMapMax = y;
                         break;
                     }
                 }
@@ -126,7 +126,7 @@ namespace Vge.World.Light
         public void GenerateHeightMap()
         {
             ChunkStorage chunkStorage;
-            _heightMapMax = 0;
+            HeightMapMax = 0;
             int yb = Chunk.GetTopFilledSegment() + 17;
             if (yb > Chunk.Settings.NumberBlocks + 1) yb = Chunk.Settings.NumberBlocks + 1;
             int x, y, z, y1;
@@ -144,7 +144,7 @@ namespace Vge.World.Light
                         {
                             // первый блок препятствия сверху
                             HeightMap[z << 4 | x] = (ushort)y;
-                            if (_heightMapMax < y) _heightMapMax = y;
+                            if (HeightMapMax < y) HeightMapMax = y;
                             break;
                         }
                     }
@@ -158,7 +158,7 @@ namespace Vge.World.Light
         /// </summary>
         public void GenerateHeightMapSky()
         {
-            _heightMapMax = 0;
+            HeightMapMax = 0;
             int x, y, z, y1, opacity, light, y2, index;
             int yb = Chunk.Settings.NumberBlocks;
             int y1c = Chunk.Settings.NumberSectionsLess;
@@ -189,7 +189,7 @@ namespace Vge.World.Light
                             {
                                 // первый блок препятствия сверху
                                 HeightMap[z << 4 | x] = (ushort)y;
-                                if (_heightMapMax < y) _heightMapMax = y;
+                                if (HeightMapMax < y) HeightMapMax = y;
 
                                 light = 15;
                                 y2 = y;
@@ -330,7 +330,7 @@ namespace Vge.World.Light
             int yh2 = yh0;
             if (yh2 > numberBlocks + 1) yh2 = numberBlocks + 1;
             HeightMap[zb << 4 | xb] = (ushort)yh2;
-            if (_heightMapMax < yh2) _heightMapMax = yh2;
+            if (HeightMapMax < yh2) HeightMapMax = yh2;
 
             if (yh < yh0)
             {
@@ -346,7 +346,7 @@ namespace Vge.World.Light
                 int yDown = yh0;
                 int yUp = yh;
                 // пометка что убераем вверхний блок
-                bool hMax = yh == _heightMapMax;
+                bool hMax = yh == HeightMapMax;
                 _worldLight.BrighterLightColumnSky(x, yDown, z, yUp);
                 // for (int y = yDown; y < yUp; y++) World.SetBlockDebug(new BlockPos(x, y, z), EnumBlock.Glass);
                 // обновляем максимальные высоты

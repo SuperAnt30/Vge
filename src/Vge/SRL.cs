@@ -51,6 +51,8 @@ internal sealed class Srl
     internal const string StoppedServer = "Остановлен.";
     internal const string ServerVersionAnother = "Версия [{1}] клиента [{0}] другая.";
     internal const string ServerSavingGame = "Сохранение игры на сервере.";
+    internal const string ServerSavingChunk = "Сохранение чанков, {1} из {0}.";
+    internal const string ServerSavingChunkError = "Не удалось сохранить чанк [{2}; {3}] в регионе [{4}; {5}] {0}\r\n{1}";
     internal const string ServerLoginIncorrect = "Никнейм [{0}] некорректный.";
     internal const string ServerLoginDuplicate = "Никнейм [{0}] повторяется, игрок с таким никнеймом уже в игре.";
     internal const string ServerInvalidToken = "Токен [{1}] никнейма [{0}] отличается с прошлого входа в игру.";

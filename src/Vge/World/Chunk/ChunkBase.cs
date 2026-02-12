@@ -73,10 +73,6 @@ namespace Vge.World.Chunk
         /// </summary>
         public readonly ChunkStorage[] StorageArrays;
         /// <summary>
-        /// Совокупное количество тиков, которые якори провели в этом чанке 
-        /// </summary>
-        public uint InhabitedTakt { get; private set; }
-        /// <summary>
         /// Количество секций в чанке (old COUNT_HEIGHT)
         /// </summary>
         public readonly byte NumberSections;
@@ -102,7 +98,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Имеет ли этот фрагмент какие-либо сущности и, следовательно, требует сохранения на каждом тике
         /// </summary>
-        private bool _hasEntities;
+        protected bool _hasEntities;
 
         #region Кольца 1-4
 
@@ -153,12 +149,6 @@ namespace Vge.World.Chunk
             }
             Light = new ChunkLight(this);
         }
-
-        /// <summary>
-        /// Задать совокупное количество тактов, которые якоря провели в этом чанке 
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetInhabitedTime(uint takt) => InhabitedTakt = takt;
 
         /// <summary>
         /// Выгрузили чанк
@@ -364,8 +354,7 @@ namespace Vge.World.Chunk
             if (blockOld != block) // Блоки разные
             {
                 // Отмена тик блока
-                // TODO::2026-01-09 !!! Надо исправить с жидкостью
-                _RemoveBlockTick(bx, by, bz);
+                _RemoveBlockTick(bx, by, bz, false);
 
                 bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
                 if (differenceOpacity || block.LightValue != blockOld.LightValue)
@@ -438,7 +427,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Отменить мгновенный тик блока
         /// </summary>
-        protected virtual void _RemoveBlockTick(int x, int y, int z) { }
+        protected virtual void _RemoveBlockTick(int x, int y, int z, bool liquid) { }
 
         #endregion
 

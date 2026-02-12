@@ -95,6 +95,10 @@ public sealed class Ce
     /// Через сколько тактов происходит переформирование FrustumCulling если хоть один чанк не догружен
     /// </summary>
     public const int CheckTickInitFrustumCulling = 5;
+    /// <summary>
+    /// Количество тикающих блоков в чанке за такт, без приоритета
+    /// </summary>
+    public const int CountTickBlockChunk = 8;
 
     #endregion
 
