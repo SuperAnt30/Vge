@@ -41,7 +41,7 @@ namespace Vge.World
            // _world = world;
            // _regionX = x;
            // _regionZ = z;
-            _path = world.PathWorld;
+            _path = world.Settings.PathWorld;
             _fileName = "r." + x + "." + z + ".mca";
             ReadCreate();
         }

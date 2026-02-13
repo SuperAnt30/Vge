@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -41,6 +42,17 @@ namespace Vge.World.Light
         {
             Chunk = chunk;
             _worldLight = Chunk.World.Light;
+        }
+
+        /// <summary>
+        /// Очистить всё, для регенерации
+        /// </summary>
+        public void Clear()
+        {
+            Array.Clear(HeightMap, 0, HeightMap.Length);
+            Array.Clear(HeightMapOpacity, 0, HeightMapOpacity.Length);
+            _lightBlocks.Clear();
+            HeightMapMax = 0;
         }
 
         /// <summary>

@@ -248,6 +248,46 @@ namespace Vge.World.Chunk
         #endregion
 
         /// <summary>
+        /// Перегенерация всего чанка, кроме сущностейи бокового небесного освещения, пока!
+        /// </summary>
+        public void Regen()
+        {
+            // Сначало надо удалить все тайлы
+            _mapBlocksEntity.Clear();
+            for (int index = 0; index < NumberSections; index++)
+            {
+                StorageArrays[index] = new ChunkStorage(KeyCash, index);
+            }
+            Light.Clear();
+
+            WorldServ.ChunkPrServ.ChunkGenerate.Relief(this);
+            IsDecorated = false;
+            IsHeightMapSky = false;
+            IsSideLightSky = false;
+            IsSendChunk = false;
+            IsLoaded = false;
+            ChunkPresent();
+
+            Modified();
+            for (int index = 0; index < NumberSections; index++)
+            {
+                WorldServ.Fragment.FlagChunkForUpdate(X, index, Y);
+            }
+
+            // Проверка рядом освещения
+            for (int i = 0; i < 3; i++) // Не всегода с первого раза всё чистит по свету
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        WorldServ.Light.FixChunkLightBlock(X + x, Y + y);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Сгенерировать копию высот для популяции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

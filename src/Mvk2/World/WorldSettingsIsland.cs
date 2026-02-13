@@ -19,26 +19,28 @@ namespace Mvk2.World
         /// Дыра хранилища на весь мир
         /// </summary>
         public readonly BlockHole StorageHole;
+
         /// <summary>
-        /// Имя пути к папке
+        /// Для клиента
         /// </summary>
-        private readonly string _pathWorld;
+        public WorldSettingsIsland() : base() { }
 
         /// <summary>
         /// Для сервера
         /// </summary>
-        public WorldSettingsIsland(byte idWorld, GameServer server) : this()
+        public WorldSettingsIsland(string pathWorld, GameServer server) : base(pathWorld)
         {
             // Сид используется только в серверной части
             ChunkGenerate = new ChunkProviderGenerateIsland(NumberChunkSections, server.Settings.Seed);
 
-            _pathWorld = server.Settings.GetPathWorld(idWorld) + "setting.dat";
             StorageHole = new BlockHole(server);
 
-            if (File.Exists(_pathWorld))
+            if (File.Exists(_pathFileSetting))
             {
+                TagCompound nbt = NBTTools.ReadFromFile(_pathFileSetting, true);
                 // Загрузить дыру хранилищ
-                StorageHole.ReadFromNBT(NBTTools.ReadFromFile(_pathWorld, true));
+                Calendar.SetTickCounter((uint)nbt.GetLong("TickCounter"));
+                StorageHole.ReadFromNBT(nbt);
             }
             else
             {
@@ -55,10 +57,7 @@ namespace Mvk2.World
             }
         }
 
-        /// <summary>
-        /// Для клиента
-        /// </summary>
-        public WorldSettingsIsland()
+        protected override void _Init()
         {
             IdSetting = 1;
             ActiveRadius = 8;
@@ -67,15 +66,13 @@ namespace Mvk2.World
             Calendar = new Сalendar32(36000);
         }
 
-
         /// <summary>
-        /// Сохраняем доп данных мира
+        /// Сохранить данные мира
         /// </summary>
-        public override void WriteToFile()
+        protected override void _WriteToNBT(TagCompound nbt)
         {
-            TagCompound nbt = new TagCompound();
+            base._WriteToNBT(nbt);
             StorageHole.WriteToNBT(nbt);
-            NBTTools.WriteToFile(nbt, _pathWorld, true);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Vge.Network.Packets.Server;
+﻿using Vge.NBT;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Gen;
@@ -40,6 +41,30 @@ namespace Vge.World
         /// НЕ ГЕНЕРАЦИЯ ЧАНКА, чанк генерируется в другом потоке!
         /// </summary>
         public readonly ArrayFast<BlockCache> BlockCaches = new ArrayFast<BlockCache>(16384);
+        /// <summary>
+        /// Имя пути к папке мира
+        /// </summary>
+        public readonly string PathWorld;
+        /// <summary>
+        /// Имя файла с путем к настройкам мира
+        /// </summary>
+        protected readonly string _pathFileSetting;
+
+        /// <summary>
+        /// Для сервера
+        /// </summary>
+        protected WorldSettings(string pathWorld)
+        {
+            PathWorld = pathWorld;
+            _pathFileSetting = PathWorld + "setting.dat";
+            _Init();
+        }
+        /// <summary>
+        /// Для клиента
+        /// </summary>
+        protected WorldSettings() => _Init();
+
+        protected virtual void _Init() { }
 
         /// <summary>
         /// Пакет Возраждение в мире
@@ -54,7 +79,19 @@ namespace Vge.World
         /// <summary>
         /// Сохраняем доп данных мира
         /// </summary>
-        public virtual void WriteToFile() { }
+        public void WriteToFile()
+        {
+            TagCompound nbt = new TagCompound();
+            _WriteToNBT(nbt);
+            NBTTools.WriteToFile(nbt, _pathFileSetting, true);
+        }
 
+        /// <summary>
+        /// Сохранить данные мира
+        /// </summary>
+        protected virtual void _WriteToNBT(TagCompound nbt) 
+        {
+            nbt.SetLong("TickCounter", Calendar.TickCounter);
+        }
     }
 }

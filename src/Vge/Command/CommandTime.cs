@@ -59,6 +59,13 @@ namespace Vge.Command
                 return "";
             }
 
+            if (uint.TryParse(param, out uint tick))
+            {
+                worldServer.SetTickCounter(totalWorldTick + tick);
+                worldServer.Tracker.SendToAllMessage(ChatStyle.Aqua + L.S("CommandsAddTime") + " " + tick);
+                return "";
+            }
+
             return ChatStyle.Red + L.S("CommandsTimeErrorParmas");
         }
 

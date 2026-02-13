@@ -22,8 +22,10 @@ namespace Mvk2.World
             // Корректировка блоков, сущностей и прочего перед инициализации миров
             Server.ModServer.CorrectObjects();
             
-            _worldServers[0] = new WorldServer(server, 0, new WorldSettingsIsland(0, server));
-            _worldServers[1] = new WorldServer(server, 1, new WorldSettingsNightmare());
+            _worldServers[0] = new WorldServer(server, 0, 
+                new WorldSettingsIsland(server.Settings.GetPathWorld(0), server));
+            _worldServers[1] = new WorldServer(server, 1,
+                new WorldSettingsNightmare(server.Settings.GetPathWorld(1)));
 
             // Дополнительная инициализация блоков после инициализации миров и корректировки id блоков
             Ce.Blocks.InitializationAfterItems();

@@ -24,10 +24,6 @@ namespace Vge.World
         /// </summary>
         public readonly byte IdWorld;
         /// <summary>
-        /// Имя пути к папке
-        /// </summary>
-        public readonly string PathWorld;
-        /// <summary>
         /// Основной сервер
         /// </summary>
         public readonly GameServer Server;
@@ -58,7 +54,7 @@ namespace Vge.World
         /// <summary>
         /// Увеличивается каждый такт конкретного мира
         /// </summary>
-        public uint TickCounter { get; private set; }
+        public uint TickCounter => Settings.Calendar.TickCounter;
 
         /// <summary>
         /// Кешовы Список BlockTick блоков которые должны мгновенно тикать,
@@ -84,7 +80,6 @@ namespace Vge.World
         {
             Server = server;
             IdWorld = idWorld;
-            PathWorld = server.Settings.GetPathWorld(IdWorld);
             Settings = worldSettings;
             Rnd = new Rand(server.Settings.Seed);
             ChunkPr = ChunkPrServ = new ChunkProviderServer(this);
@@ -145,7 +140,6 @@ namespace Vge.World
             long timeBegin = Server.Time();
             Settings.Calendar.UpdateServer();
 
-            TickCounter++;
             if (TickCounter % Ce.Tps == 0)
             {
                 // Прошла секунда
@@ -578,7 +572,7 @@ namespace Vge.World
         /// </summary>
         private void _WriteToFile()
         {
-            GameFile.CheckPath(PathWorld);
+            GameFile.CheckPath(Settings.PathWorld);
 
             // Сохраняем доп данных мира
             Settings.WriteToFile();
