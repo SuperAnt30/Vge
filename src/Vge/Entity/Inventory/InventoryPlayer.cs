@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
-using Vge.TileEntity;
+using Vge.World.BlockEntity;
 
 namespace Vge.Entity.Inventory
 {
@@ -44,9 +44,10 @@ namespace Vge.Entity.Inventory
         private readonly ConteinerManagement _conteiner;
 
         /// <summary>
-        /// Активный тайл инвентаря (склад), если null, то работаем с инвентарём игрока. Только для сервера
+        /// Активный блок инвентаря (склад), если null, то работаем с инвентарём игрока.
+        /// Только для сервера
         /// </summary>
-        private ITileEntity _tileEntity;
+        private IBlockStorage _blockStorage;
 
         public InventoryPlayer(PlayerServer playerServer, byte pocketCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
@@ -119,24 +120,24 @@ namespace Vge.Entity.Inventory
         }
 
         /// <summary>
-        /// Получить активный тайл, если нет вернёт null
+        /// Получить активный блок хранилища, если нет вернёт null
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override ITileEntity GetTileEntity() => _tileEntity;
+        public override IBlockStorage GetBlockStorage() => _blockStorage;
 
         /// <summary>
         /// Открыли инвентарь, для сервера
         /// </summary>
-        public void ServerOpenInventory(ITileEntity tileEntity)
-        { 
-            _tileEntity = tileEntity;
-            _tileEntity.OpenWindow(_playerServer);
+        public void ServerOpenInventory(IBlockStorage blockStorage)
+        {
+            _blockStorage = blockStorage;
+            _blockStorage.OpenWindow(_playerServer);
         }
 
         /// <summary>
         /// Закрыли инвентарь, для сервера
         /// </summary>
-        public void ServerCloseInventory() => _tileEntity = null;
+        public void ServerCloseInventory() => _blockStorage = null;
 
         /// <summary>
         /// Проверка по лимитам
@@ -201,7 +202,7 @@ namespace Vge.Entity.Inventory
                     if (slotIn < 100)
                     {
                         // Кликнули на инвентарь
-                        if (_tileEntity == null)
+                        if (_blockStorage == null)
                         {
                             // Тут клики через шифт по инвентарю
                             if (slotIn < _pocketCount)
@@ -237,7 +238,7 @@ namespace Vge.Entity.Inventory
                         }
                         else
                         {
-                            if (!_tileEntity.AddItemStackToInventory(_CheckSlotToAir(stackSlot)))
+                            if (!_blockStorage.AddItemStackToInventory(_CheckSlotToAir(stackSlot)))
                             {
                                 _SetSendSlotContents(slotIn, stackSlot);
                             }
@@ -251,7 +252,7 @@ namespace Vge.Entity.Inventory
                     {
                         if (_CanPutItemStack(slotIn, stackSlot))
                         {
-                            if (_tileEntity == null)
+                            if (_blockStorage == null)
                             {
                                 // Кликнули из рюкзака
                                 _conteiner.IdDamageCategory = 2;
@@ -432,9 +433,9 @@ namespace Vge.Entity.Inventory
                 byte key = GetSlotClothKey(slotIn);
                 return key == 0 || (stack != null && stack.Item.CheckSlotClothKey(key));
             }
-            else if (_tileEntity != null)
+            else if (_blockStorage != null)
             {
-                return _tileEntity.CanPutItemStack(slotIn - 100, stack);
+                return _blockStorage.CanPutItemStack(slotIn - 100, stack);
             }
             return false;
         }
@@ -447,9 +448,9 @@ namespace Vge.Entity.Inventory
             if (slotIn > 99)
             {
                 // слот склада
-                if (_tileEntity != null)
+                if (_blockStorage != null)
                 {
-                    return _tileEntity.GetStackInSlot(slotIn - 100);
+                    return _blockStorage.GetStackInSlot(slotIn - 100);
                 }
                 return null;
             }
@@ -512,10 +513,10 @@ namespace Vge.Entity.Inventory
                     }
                 }
             }
-            else if (_tileEntity != null) // только сервер
+            else if (_blockStorage != null) // только сервер
             {
                 // Склад
-                _tileEntity.SetStackInSlot(slotIn - 100, stack);
+                _blockStorage.SetStackInSlot(slotIn - 100, stack);
                 //_OnSlotSetted(slotIn, stack); Это не надо, так-как склад рассылается всем кто его видит в другом месте
             }
         }

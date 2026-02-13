@@ -9,7 +9,6 @@ namespace Mvk2.World
     /// </summary>
     public class AllWorldsMvk : AllWorlds
     {
-
         public AllWorldsMvk()
         {
             _count = 2;
@@ -23,7 +22,7 @@ namespace Mvk2.World
             // Корректировка блоков, сущностей и прочего перед инициализации миров
             Server.ModServer.CorrectObjects();
             
-            _worldServers[0] = new WorldServer(server, 0, new WorldSettingsIsland(server.Settings.Seed));
+            _worldServers[0] = new WorldServer(server, 0, new WorldSettingsIsland(0, server));
             _worldServers[1] = new WorldServer(server, 1, new WorldSettingsNightmare());
 
             // Дополнительная инициализация блоков после инициализации миров и корректировки id блоков

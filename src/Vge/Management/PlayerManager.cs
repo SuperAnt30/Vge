@@ -6,8 +6,8 @@ using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
-using Vge.TileEntity;
 using Vge.Util;
+using Vge.World.BlockEntity;
 
 namespace Vge.Management
 {
@@ -190,21 +190,21 @@ namespace Vge.Management
         }
 
         /// <summary>
-        /// Отправить всем игрокам пакет, которые используют этот TileEntity
+        /// Отправить всем игрокам пакет, которые используют этот BlockStorage
         /// </summary>
-        public void SendToAllUseTileEntity(ITileEntity tileEntity, IPacket packet)
+        public void SendToAllUseBlockStorage(IBlockStorage blockStorage, IPacket packet)
         {
-            if (tileEntity != null)
+            if (blockStorage != null)
             {
                 // Основной игрок
-                if (tileEntity.CheckEquals(PlayerOwner.Inventory.GetTileEntity()))
+                if (blockStorage.CheckEquals(PlayerOwner.Inventory.GetBlockStorage()))
                 {
                     Server.ResponsePacketOwner(packet);
                 }
                 // Сетевые игроки
                 foreach (PlayerServer player in _players)
                 {
-                    if (tileEntity.CheckEquals(player.Inventory.GetTileEntity()))
+                    if (blockStorage.CheckEquals(player.Inventory.GetBlockStorage()))
                     {
                         player.SendPacket(packet);
                     }

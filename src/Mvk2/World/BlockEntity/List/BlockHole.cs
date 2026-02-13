@@ -1,23 +1,29 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
+using Vge.NBT;
 using Vge.Network.Packets.Server;
+using Vge.World.BlockEntity;
 
-namespace Vge.TileEntity
+namespace Mvk2.World.BlockEntity.List
 {
     /// <summary>
-    /// Тайл дыры хранения
+    /// Блок дыры хранения для всех, не привязан к конкретному блоку.
+    /// Один на весь мир
     /// </summary>
-    public class TileEntityHole : ITileEntity
+    public class BlockHole : IBlockStorage
     {
         /// <summary>
-        /// Количество слотов
+        /// Количество ячеек дыры
         /// </summary>
-        public static int Count = 5;
-
-        private ItemStack[] _stacks = new ItemStack[Count];
+        public const int Count = 48;
+        /// <summary>
+        /// Количество стаков в дыре
+        /// </summary>
+        private readonly ItemStack[] _stacks;
 
         /// <summary>
         /// Управление контейнером для передачи пачками
@@ -26,9 +32,8 @@ namespace Vge.TileEntity
 
         private GameServer _server;
 
-        public TileEntityHole(GameServer server, int count)
+        public BlockHole(GameServer server)
         {
-            Count = count;
             _stacks = new ItemStack[Count];
             _server = server;
             _conteiner.SendSetSlot += _Conteiner_SendSetSlot;
@@ -41,7 +46,7 @@ namespace Vge.TileEntity
         private void _Conteiner_SendSetSlot(object sender, SlotEventArgs e)
         {
             // Обновляем всем кто сейчас смотрит содержимое
-            _server.Players.SendToAllUseTileEntity(this, new PacketS2FSetSlot((short)e.SlotId, e.Stack));
+            _server.Players.SendToAllUseBlockStorage(this, new PacketS2FSetSlot((short)e.SlotId, e.Stack));
         }
 
         /// <summary>
@@ -52,13 +57,13 @@ namespace Vge.TileEntity
             => entityPlayer.SendPacket(new PacketS30WindowItems(false, _stacks));
 
         /// <summary>
-        /// Проверить равенства тайла
+        /// Проверить равенства
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CheckEquals(ITileEntity tileEntity)
+        public bool CheckEquals(IBlockStorage blockStorage)
         {
-            if (tileEntity == null) return false;
-            return tileEntity.GetType() == typeof(TileEntityHole);
+            if (blockStorage == null) return false;
+            return blockStorage.GetType() == typeof(BlockHole);
         }
 
         #region ItemStack
@@ -80,8 +85,8 @@ namespace Vge.TileEntity
         /// Добавляет стак предметов в инвентарь, возвращает false, если это невозможно.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool AddItemStackToInventory(ItemStack stack) 
-            => CanPutItemStack(0, stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, Count);
+        public virtual bool AddItemStackToInventory(ItemStack stack)
+            => CanPutItemStack(0, stack) && _conteiner.AddItemStackToInventory(_stacks, 0, stack, _stacks.Length);
 
         /// <summary>
         /// Проверяем можно ли установить данный стак в определённой ячейке склада
@@ -95,5 +100,19 @@ namespace Vge.TileEntity
         //public virtual void SpawnAsEntityOnBreakBlock() { }
 
         #endregion
+
+        public void WriteToNBT(TagCompound nbt)
+        {
+            NBTTools.ItemStacksWriteToNBT(nbt, "Hole", _stacks);
+        }
+
+        public void ReadFromNBT(TagCompound nbt)
+        {
+            Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Hole");
+            foreach (Slot slot in slots)
+            {
+                SetStackInSlot(slot.SlotId, slot.Stack);
+            }
+        }
     }
 }

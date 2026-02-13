@@ -1,13 +1,9 @@
 ﻿using Mvk2.Entity;
 using Mvk2.Entity.List;
-using Mvk2.Item;
-using Mvk2.World.Block;
 using Mvk2.World.BlockEntity;
 using Vge.Entity.Player;
 using Vge.Games;
-using Vge.Item;
 using Vge.Network;
-using Vge.TileEntity;
 
 namespace Mvk2.Games
 {
@@ -23,26 +19,6 @@ namespace Mvk2.Games
         /// </summary>
         public override PlayerServer CreatePlayerServer(string login, string token, SocketSide socketSide)
             => new PlayerServerMvk(login, token, socketSide, Server);
-
-        /// <summary>
-        /// Вторая инициализация когда готовы предметы и блоки и сущности
-        /// </summary>
-        public override void InitTwo()
-        {
-            // Для отладки
-            Ce.TileHole = new TileEntityHole(Server, 48);
-
-            Ce.TileHole.SetStackInSlot(0, new ItemStack(ItemsRegMvk.AxeIron, 1, 315));
-            Ce.TileHole.SetStackInSlot(1, new ItemStack(ItemsRegMvk.Tie));
-            Ce.TileHole.SetStackInSlot(2, new ItemStack(ItemsRegMvk.ShirtBranded));
-            Ce.TileHole.SetStackInSlot(3, new ItemStack(ItemsRegMvk.BootsBranded));
-            Ce.TileHole.SetStackInSlot(4, new ItemStack(ItemsRegMvk.BackpackBranded));
-            Ce.TileHole.SetStackInSlot(5, new ItemStack(ItemsRegMvk.CapDark));
-            
-
-            Ce.TileHole.SetStackInSlot(17, new ItemStack(ItemsRegMvk.Cobblestone, 7));
-            Ce.TileHole.SetStackInSlot(18, new ItemStack(ItemsRegMvk.Brol, 2));
-        }
 
         /// <summary>
         /// Корректировка блоков, сущностей и прочего перед инициализации миров, 

@@ -2,8 +2,8 @@
 using System.Runtime.CompilerServices;
 using Vge.Item;
 using Vge.NBT;
-using Vge.TileEntity;
 using Vge.World;
+using Vge.World.BlockEntity;
 
 namespace Vge.Entity.Inventory
 {
@@ -139,10 +139,10 @@ namespace Vge.Entity.Inventory
         public virtual bool AddItemStackToInventory(ItemStack itemStack) => false;
 
         /// <summary>
-        /// Получить активный тайл, если нет вернёт null
+        /// Получить активный блок хранилища, если нет вернёт null
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual ITileEntity GetTileEntity() => null;
+        public virtual IBlockStorage GetBlockStorage() => null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _Clear() { }

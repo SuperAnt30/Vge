@@ -10,7 +10,6 @@ using Vge.Util;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
 using Vge.World.Chunk;
-using Vge.World.Gen;
 using WinGL.Util;
 
 namespace Vge.World
@@ -581,6 +580,8 @@ namespace Vge.World
         {
             GameFile.CheckPath(PathWorld);
 
+            // Сохраняем доп данных мира
+            Settings.WriteToFile();
             // Сохраняем чанки в регионы 
             ChunkPrServ.SaveChunks();
             // Сохраняем регионы в файл

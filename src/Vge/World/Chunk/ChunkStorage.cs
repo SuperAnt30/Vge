@@ -253,7 +253,7 @@ namespace Vge.World.Chunk
                 for (i = 0; i < 2048; i++)
                 {
                     count = i * 2;
-                    buffer[i] = (byte)(((Light[count] & 15) & 0xF) | ((Light[count + 1] & 15) << 4));
+                    buffer[i] = (byte)((Light[count] & 0xF) | ((Light[count + 1] & 0xF) << 4));
                 }
                 tagCompound.SetByteArray("SkyLight", buffer);
             }
@@ -304,6 +304,11 @@ namespace Vge.World.Chunk
                     Light[count + 1] |= (byte)(buffer[i] >> 4);
                 }
             }
+            else
+            {
+                for (i = 0; i < 4096; i++) Light[i] |= 15;
+            }
+            return;
         }
 
         #endregion

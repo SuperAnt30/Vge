@@ -1,12 +1,12 @@
 ﻿using Vge.Entity.Player;
 using Vge.Item;
 
-namespace Vge.TileEntity
+namespace Vge.World.BlockEntity
 {
     /// <summary>
-    /// Интерфейс тайл энтети для инвентаря
+    /// Интерфейс блок хранилища, если у блока имеется аналог инвентаря
     /// </summary>
-    public interface ITileEntity
+    public interface IBlockStorage
     {
         /// <summary>
         /// Открыли окно, вызывается объектом PlayerServer
@@ -34,9 +34,8 @@ namespace Vge.TileEntity
         bool CanPutItemStack(int slotIn, ItemStack stack);
 
         /// <summary>
-        /// Проверить равенства тайла
+        /// Проверить равенства
         /// </summary>
-        bool CheckEquals(ITileEntity tileEntity);
-
+        bool CheckEquals(IBlockStorage blockStorage);
     }
 }

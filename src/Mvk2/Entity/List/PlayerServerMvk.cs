@@ -1,6 +1,7 @@
 ﻿using Mvk2.Entity.Inventory;
 using Mvk2.Item;
 using Mvk2.Packets;
+using Mvk2.World;
 using Mvk2.World.Block;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
@@ -71,7 +72,7 @@ namespace Mvk2.Entity.List
         /// Событие слот хранилища изменён, обновляем всем кто сейчас смотрит содержимое
         /// </summary>
         private void _InventoryPlayer_SlotStorageChanged(object sender, SlotEventArgs e)
-            => _server.Players.SendToAllUseTileEntity(Inventory.GetTileEntity(), 
+            => _server.Players.SendToAllUseBlockStorage(Inventory.GetBlockStorage(), 
                 new PacketS2FSetSlot((short)e.SlotId, e.Stack));
 
         /// <summary>
@@ -141,7 +142,14 @@ namespace Mvk2.Entity.List
             switch (action)
             {
                 case EnumActionClickWindow.OpenBoxDebug:
-                    InvPlayer.ServerOpenInventory(Ce.TileHole);
+                    if (GetWorld().Settings is WorldSettingsIsland worldIsland)
+                    {
+                        InvPlayer.ServerOpenInventory(worldIsland.StorageHole);
+                    }
+                    //if (_server.ModServer is Games.GameModServerMvk mod)
+                    //{
+                    //    InvPlayer.ServerOpenInventory(mod.Hole);
+                    //}
                     break;
                 case EnumActionClickWindow.OpenInventory:
                     break;

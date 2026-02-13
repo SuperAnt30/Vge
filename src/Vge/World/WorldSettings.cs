@@ -50,5 +50,11 @@ namespace Vge.World
             NumberChunkSections = packet.NumberChunkSections;
             Calendar.SetTickCounter(packet.TickCounter);
         }
+
+        /// <summary>
+        /// Сохраняем доп данных мира
+        /// </summary>
+        public virtual void WriteToFile() { }
+
     }
 }

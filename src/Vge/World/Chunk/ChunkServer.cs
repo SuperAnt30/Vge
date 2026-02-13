@@ -519,6 +519,9 @@ namespace Vge.World.Chunk
                 }
                 nbt.SetTag("BlockTicks", tagListTickBlocks);
             }
+
+            // ---BlockEntity
+
         }
 
         /// <summary>

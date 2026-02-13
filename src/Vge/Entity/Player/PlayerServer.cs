@@ -628,7 +628,7 @@ namespace Vge.Entity.Player
                     PosPrevZ = PosZ = nbt.GetFloat("PosZ");
                     RotationPrevYaw = RotationYaw = nbt.GetFloat("Yaw");
                     RotationPrevPitch = RotationPitch = nbt.GetFloat("Pitch");
-                  //  Inventory.ReadFromNBT(nbt);
+                    Inventory.ReadFromNBT(nbt);
                     return true;
                 }
                 catch
