@@ -1,10 +1,8 @@
-﻿using Mvk2.Item;
-using Mvk2.World.Block;
+﻿using Mvk2.World.Block;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Vge.Entity.List;
-using Vge.Item;
+using Vge.NBT;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -22,7 +20,7 @@ namespace Mvk2.World.BlockEntity.List
         /// <summary>
         /// Массив всех блоков дерева
         /// </summary>
-        public BlockPosLoc[] Blocks { get; private set; }
+        public BlockPosLoc[] Blocks { get; private set; } = new BlockPosLoc[0];
         /// <summary>
         /// Хитбокс древа
         /// </summary>
@@ -52,15 +50,15 @@ namespace Mvk2.World.BlockEntity.List
             /// <summary>
             /// Молодое дерево
             /// </summary>
-            Young,
+            Young = 0,
             /// <summary>
             /// Взрослое дерево
             /// </summary>
-            Mature,
+            Mature = 1,
             /// <summary>
             /// Сухое дерево
             /// </summary>
-            Dry
+            Dry = 2
         }
 
         /// <summary>
@@ -423,6 +421,51 @@ namespace Mvk2.World.BlockEntity.List
                 _empty = true;
             }
         }
+
+        #region NBT
+
+        public override void WriteToNBT(TagCompound nbt)
+        {
+            base.WriteToNBT(nbt);
+            nbt.SetByte("Step", (byte)Step);
+            nbt.SetByte("RootLenght", (byte)RootLenght);
+            nbt.SetBool("Fetus", _isFetus);
+            // Blocks
+            TagList tagListBlosks = new TagList();
+            for (int i = 0; i < Blocks.Length; i++)
+            {
+                Blocks[i].WriteDataToNBT(tagListBlosks);
+            }
+            nbt.SetTag("Blocks", tagListBlosks);
+        }
+
+        public override void ReadFromNBT(TagCompound nbt, ChunkServer chunk)
+        {
+            base.ReadFromNBT(nbt, chunk);
+            Step = (TypeStep)nbt.GetByte("Step");
+            RootLenght = nbt.GetByte("RootLenght");
+            _isFetus = nbt.GetBool("Fetus");
+            // Blocks
+            TagList tagListBlocks = nbt.GetTagList("Blocks", 10);
+            int count = tagListBlocks.TagCount();
+            Blocks = new BlockPosLoc[count]; 
+            if (tagListBlocks.GetTagType() == 10)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    TagCompound tagCompound = tagListBlocks.Get(i) as TagCompound;
+                    Blocks[i] = new BlockPosLoc(
+                        tagCompound.GetShort("X"),
+                        tagCompound.GetShort("Y"),
+                        tagCompound.GetShort("Z"),
+                        tagCompound.GetInt("Id"),
+                        tagCompound.GetShort("Parent"));
+                }
+            }
+            _UpdateAxis();
+        }
+
+        #endregion
 
         public override string ToString() 
             => Position 

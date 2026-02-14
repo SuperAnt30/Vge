@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using Vge.Entity;
 using Vge.NBT;
 using Vge.Util;
 using Vge.World.Block;
@@ -560,8 +558,22 @@ namespace Vge.World.Chunk
                 nbt.SetTag("BlockTicks", tagListTickBlocks);
             }
 
-            // ---BlockEntity
+            // ---BlocksEntity
 
+            if (_mapBlocksEntity.Count > 0)
+            {
+                TagList tagListBlocksEntity = new TagList();
+                foreach (KeyValuePair<int, BlockEntityBase> keyTileEntity in _mapBlocksEntity)
+                {
+                    TagCompound tagCompound = new TagCompound();
+                    keyTileEntity.Value.WriteToNBT(tagCompound);
+                    tagListBlocksEntity.AppendTag(tagCompound);
+                }
+                if (tagListBlocksEntity.TagCount() > 0)
+                {
+                    nbt.SetTag("BlocksEntity", tagListBlocksEntity);
+                }
+            }
         }
 
         /// <summary>
@@ -619,6 +631,29 @@ namespace Vge.World.Chunk
                         tagCompound.GetByte("X"), tagCompound.GetShort("Y"), tagCompound.GetByte("Z"),
                         tagCompound.GetBool("Liquid"), (uint)tagCompound.GetInt("Tick") + tick,
                         tagCompound.GetBool("P")));
+                }
+            }
+
+            // ---BlocksEntity
+
+            _mapBlocksEntity.Clear();
+            TagList tagListTileEntities = nbt.GetTagList("BlocksEntity", 10);
+            count = tagListTileEntities.TagCount();
+            if (tagListTileEntities.GetTagType() == 10)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    try
+                    {
+                        TagCompound tagCompound = tagListTileEntities.Get(i) as TagCompound;
+                        BlockEntityBase blockEntity = Ce.BlocksEntity.CreateEntityServer(tagCompound.GetByte("Id"));
+                        blockEntity.ReadFromNBT(tagCompound, this);
+                        SetBlockEntity(blockEntity);
+                    }
+                    catch (Exception ex)
+                    {
+                        WorldServ.Server.Log.Error(ex);
+                    }
                 }
             }
         }

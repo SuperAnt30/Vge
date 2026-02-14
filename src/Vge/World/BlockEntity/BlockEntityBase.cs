@@ -69,13 +69,6 @@ namespace Vge.World.BlockEntity
         }
 
         /// <summary>
-        /// Задать блок по чанку, зная до этого позицию блока
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void InitBlock(ChunkServer chunk)
-            => Block = chunk.GetBlockState(Position.X & 15, Position.Y, Position.Z & 15);
-
-        /// <summary>
         /// Задать новый такт
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,6 +81,8 @@ namespace Vge.World.BlockEntity
         /// </summary>
         public virtual void UpdateTick(WorldServer world, ChunkServer chunk, Rand random) { }
 
+        #region NBT
+
         public virtual void WriteToNBT(TagCompound nbt)
         {
             nbt.SetShort("Id", IndexEntity);
@@ -96,9 +91,12 @@ namespace Vge.World.BlockEntity
             nbt.SetInt("Z", Position.Z);
         }
 
-        public virtual void ReadFromNBT(TagCompound nbt)
+        public virtual void ReadFromNBT(TagCompound nbt, ChunkServer chunk)
         {
             Position = new BlockPos(nbt.GetInt("X"), nbt.GetInt("Y"), nbt.GetInt("Z"));
+            SetBlockPosition(chunk, chunk.GetBlockState(Position), Position);
         }
+
+        #endregion
     }
 }

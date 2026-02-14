@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.NBT;
 
 namespace Vge.World.Block
 {
@@ -97,6 +98,21 @@ namespace Vge.World.Block
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockPos GetBlockPos(int x, int z) => new BlockPos(X + x, Y, Z + z);
+
+        #region NBT
+
+        public void WriteDataToNBT(TagList nbt)
+        {
+            TagCompound tagCompound = new TagCompound();
+            tagCompound.SetShort("X", (short)X);
+            tagCompound.SetShort("Y", (short)Y);
+            tagCompound.SetShort("Z", (short)Z);
+            tagCompound.SetInt("Id", Id);
+            tagCompound.SetShort("Parent", (short)ParentIndex);
+            nbt.AppendTag(tagCompound);
+        }
+
+        #endregion
 
         public override string ToString()
             => "Id:" + Id + " [" + GetBlockPos() + "] P:" + ParentIndex;
