@@ -159,7 +159,7 @@ namespace Mvk2.World.Gen
                 ChunkPrimer.Clear();
 
                 // Шум для бедрока
-                _noiseDown.GenerateNoise2d(DownNoise, xbc, zbc, 16, 16, 1, 1);
+                _noiseDown.GenerateNoise2d(DownNoise, xbc, zbc, 16, 16, .95f, .95f);
                 // Доп шумы
                 _noiseArea.GenerateNoise2d(AreaNoise, xbc, zbc, 16, 16, .4f, .4f);
                 // Шумы речных пещер
@@ -187,6 +187,8 @@ namespace Mvk2.World.Gen
                     //if (chunk.CurrentChunkY != 0 && chunk.CurrentChunkY != 1
                     //    && chunk.CurrentChunkY != -4 && chunk.CurrentChunkY != -3
                     //    && chunk.CurrentChunkY != -8 && chunk.CurrentChunkY != -7)
+                    if (chunk.CurrentChunkY != 24 && chunk.CurrentChunkY != 25)
+                    //    && chunk.CurrentChunkY != 14 && chunk.CurrentChunkY != 8)
                     //if (chunk.CurrentChunkY == 1 && chunk.CurrentChunkX == -17)
                     {
                         //ChunkPrimer.SetBlockState(xz, 0, BlocksRegMvk.Bedrock.IndexBlock);
@@ -203,7 +205,9 @@ namespace Mvk2.World.Gen
                         level = biome.ReliefColumn(xz, arHeight[xz]);
 
                         //Provider.DownNoise[xz] * 5f) +1
-                        int levelDebug = (int)(AreaNoise[xz] * .48f); // ~ 0 .. 3
+                        //int levelDebug = (int)(AreaNoise[xz] * .48f); // ~ 0 .. 3
+                        int levelDebug = (int)(DownNoise[xz] * 9.5f); // ~ -8 .. 8
+                        //int levelDebug = (int)(DownNoise[xz] * 1.2f); // ~ -1 .. 1
                         if (levelDebug < iMin) iMin = levelDebug;
                         if (levelDebug > iMax) iMax = levelDebug;
                         Debug.Text = string.Format("{0:0.0} {1:0.0}", iMin, iMax);

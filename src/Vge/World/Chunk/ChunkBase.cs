@@ -88,6 +88,7 @@ namespace Vge.World.Chunk
         public readonly byte[] Biome = new byte[256];
         /// <summary>
         /// Список сущностей в каждом псевдочанке
+        /// TODO:2026-02-15 Может ListEntitiesSection и не нужен?!
         /// </summary>
         public readonly MapEntity<EntityBase>[] ListEntitiesSection;
         /// <summary>

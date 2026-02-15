@@ -259,9 +259,9 @@ namespace Mvk2.World.Biome
                 // Плавный шум для переходов слоёв в 7 блока (-3 .. 3)
                 _noise7 = -(int)(Provider.AreaNoise[xz] * .48f);
                 // Мелкий шум для переходов слоёв в 3 блока (-8 .. 8)
-                _noise17 = (int)(Provider.DownNoise[xz] * 32f);
+                _noise17 = (int)(Provider.DownNoise[xz] * 9.5f);
                 // Мелкий шум для переходов слоёв в 3 блока (-1 .. 1)
-                _noise = (int)(Provider.DownNoise[xz] * 5f);
+                _noise = (int)(Provider.DownNoise[xz] * 1.2f);
             
                 // Бедрок
                 int level0 = (int)(Provider.CaveRiversNoise[xz] / 5f) + 3; // ~ 2 .. 4
@@ -519,15 +519,15 @@ namespace Mvk2.World.Biome
             {
                 _GenTallGrass(xz, yh + 1, 2);
             }
-            else if (_noise17 > 6 && _noise7 == 1)
+            else if (_noise17 > 3 && _noise7 > 0)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerDandelion);
             }
-            else if (_noise17 < -6 && _noise7 == -1)
+            else if (_noise17 < -3 && _noise7 < 0)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerClover);
             }
-            else if (_noise17 < -3)
+            else if (_noise17 < -1)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
             }

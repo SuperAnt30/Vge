@@ -37,7 +37,9 @@ namespace Mvk2.Entity.List
         public override void CreatePlayer()
         {
             // TODO::2026-02-15 Именно тут надо определять где спавнится игрок впервые!
+            PosPrevX = PosX = -320;
             PosPrevY = PosY = 100;
+            PosPrevZ = PosZ = 130;
             // Карманы
             //Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             //Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));

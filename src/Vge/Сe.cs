@@ -21,6 +21,11 @@ public sealed class Ce
         FrequencyMs = Stopwatch.Frequency / 1000;
     }
 
+    /// <summary>
+    /// Сохраняем ли мир. Для отладки, по умолчанию true
+    /// </summary>
+    public static bool SaveWorld = false;
+
     #region Debug
 
     /// <summary>
@@ -145,7 +150,6 @@ public sealed class Ce
     }
 
     #endregion
-
 
     #region Game Геометрия
 

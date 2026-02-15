@@ -9,15 +9,7 @@ namespace Vge.World
         /// <summary>
         /// Сылка на объект мира сервера
         /// </summary>
-     //   private readonly WorldServer _world;
-        /// <summary>
-        /// Координата региона X = chX >> 5
-        /// </summary>
-       // private readonly int _regionX;
-        /// <summary>
-        /// Координата региона Z = chZ >> 5
-        /// </summary>
-       // private readonly int _regionZ;
+        private readonly WorldServer _world;
 
         /// <summary>
         /// Путь к папке с регионами
@@ -38,9 +30,7 @@ namespace Vge.World
 
         public RegionFile(WorldServer world, int x, int z)
         {
-           // _world = world;
-           // _regionX = x;
-           // _regionZ = z;
+            _world = world;
             _path = world.Settings.PathWorld;
             _fileName = "r." + x + "." + z + ".mca";
             ReadCreate();
@@ -86,7 +76,8 @@ namespace Vge.World
             }
             catch (Exception ex)
             {
-                //world.Log.Error("Server.Error.RegionFile.ReadCreate({1}). {0}", ex.Message, fileName);
+                _world.Filer.Log.Error("Server.Error.RegionFile.ReadCreate({1}, world{2}). {0}",
+                    ex.Message, _fileName, _world.IdWorld);
             }
         }
 
@@ -95,8 +86,7 @@ namespace Vge.World
         /// </summary>
         public void WriteToFile()
         {
-            // TODO::2023-10-23 пометка не сохранять мир
-            if (true)//MvkGlobal.SAVE_WORLD)
+            if (Ce.SaveWorld)
             {
                 string pathFile = _path + _fileName;
                 try
@@ -145,7 +135,8 @@ namespace Vge.World
                 }
                 catch (Exception ex)
                 {
-                   // world.Log.Error("Server.Error.RegionFile.WriteToFile({1}). {0}", ex.Message, fileName);
+                    _world.Filer.Log.Error("Server.Error.RegionFile.WriteToFile({1}, world{2}). {0}",
+                        ex.Message, _fileName, _world.IdWorld);
                 }
             }
         }

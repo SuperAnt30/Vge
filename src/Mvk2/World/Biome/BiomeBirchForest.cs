@@ -73,11 +73,11 @@ namespace Mvk2.World.Biome
             {
                 _GenTallGrass(xz, yh + 1, 2);
             }
-            else if (_noise17 > 6 && _noise7 == 1)
+            else if (_noise17 > 3 && _noise7 > 0)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdFlowerDandelion);
             }
-            else if (_noise17 < -3)
+            else if (_noise17 < 0)
             {
                 _chunkPrimer.SetBlockState(xz, yh + 1, _blockIdGrass);
             }
