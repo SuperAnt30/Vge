@@ -607,33 +607,33 @@ namespace Vge.Entity
 
         #region NBT
 
-        protected virtual void _WriteToNBT(TagCompound nbt)
-        {
-            nbt.SetShort("Id", (short)IndexEntity);
-            nbt.SetFloat("X", PosX);
-            nbt.SetFloat("Y", PosY);
-            nbt.SetFloat("Z", PosZ);
-        }
-
         /// <summary>
         /// Если записываем эту сущность в указанный тег NBT, верниёт true.
         /// Если возвращает false объект не сохраняется.
+        /// Нужен всё кроме игрока!
         /// </summary>
         public virtual bool WriteToNBT(TagCompound nbt)
         {
             if (!IsDead && _persistenceRequired)
             {
+                nbt.SetShort("Id", (short)IndexEntity);
                 _WriteToNBT(nbt);
                 return true;
             }
             return false;
         }
 
+        protected virtual void _WriteToNBT(TagCompound nbt)
+        {
+            nbt.SetTag("Pos", new TagList(new float[] { PosX, PosY, PosZ }));
+        }
+
         public virtual void ReadFromNBT(TagCompound nbt)
         {
-            PosX = PosPrevX = nbt.GetFloat("X");
-            PosY = PosPrevY = nbt.GetFloat("Y");
-            PosZ = PosPrevZ = nbt.GetFloat("Z");
+            TagList pos = nbt.GetTagList("Pos", 5);
+            PosX = PosPrevX = pos.GetFloat(0);
+            PosY = PosPrevY = pos.GetFloat(1) + .1f;
+            PosZ = PosPrevZ = pos.GetFloat(2);
         }
 
         #endregion

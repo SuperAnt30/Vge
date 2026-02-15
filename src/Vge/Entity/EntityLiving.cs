@@ -3,6 +3,7 @@ using Vge.Entity.Inventory;
 using Vge.Entity.MetaData;
 using Vge.Entity.Sizes;
 using Vge.Item;
+using Vge.NBT;
 using Vge.Realms;
 using Vge.Util;
 using Vge.World;
@@ -366,6 +367,26 @@ namespace Vge.Entity
         /// <param name="longAway">Далеко бросить от себя</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway) { }
+
+        #endregion
+
+        #region NBT
+
+        protected override void _WriteToNBT(TagCompound nbt)
+        {
+            base._WriteToNBT(nbt);
+            nbt.SetFloat("Yaw", RotationYaw);
+            nbt.SetFloat("Pitch", RotationPitch);
+            Inventory?.WriteToNBT(nbt);
+        }
+
+        public override void ReadFromNBT(TagCompound nbt)
+        {
+            base.ReadFromNBT(nbt);
+            RotationPrevYaw = RotationYaw = nbt.GetFloat("Yaw");
+            RotationPrevPitch = RotationPitch = nbt.GetFloat("Pitch");
+            Inventory?.ReadFromNBT(nbt);
+        }
 
         #endregion
     }

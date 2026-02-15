@@ -8,6 +8,7 @@ using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
+using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -28,10 +29,15 @@ namespace Mvk2.Entity.List
         public InventoryPlayerMvk InvPlayer { get; private set; }
 
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
-            : base(login, token, socket, server)
-        {
-           // Ce.TileHole;
+            : base(login, token, socket, server) { }
 
+        /// <summary>
+        /// Создать игрока, тут первый спавн игрока
+        /// </summary>
+        public override void CreatePlayer()
+        {
+            // TODO::2026-02-15 Именно тут надо определять где спавнится игрок впервые!
+            PosPrevY = PosY = 100;
             // Карманы
             //Inventory.SetStackInSlot(0, new ItemStack(Ce.Items.ItemObjects[0], 1, 315));
             //Inventory.SetStackInSlot(1, new ItemStack(Ce.Items.ItemObjects[1], 12));
@@ -56,6 +62,22 @@ namespace Mvk2.Entity.List
             // При запуске на сервере
             InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака
         }
+
+        #region NBT
+
+        protected override void _WriteToNBT(TagCompound nbt)
+        {
+            base._WriteToNBT(nbt);
+        }
+
+        public override void ReadFromNBT(TagCompound nbt)
+        {
+            base.ReadFromNBT(nbt);
+            // При запуске на сервере
+            InvPlayer.CheckingClothes(false); // иметируем клиента, чтоб не дропнуть предметы с рюкзака
+        }
+
+        #endregion
 
         /// <summary>
         /// Инициализация инвенторя

@@ -100,6 +100,7 @@ namespace Vge.Entity.Inventory
             ItemStack stackSlot = itemStack?.Copy();
 
             // Сразу в карманы пробуем
+            Console.WriteLine("LimitPocket " + LimitPocket);
             _conteiner.IdDamageCategory = 2;
             _conteiner.IdDamageSlotIgnor = _currentIndex;
             if (!_conteiner.AddItemStackToInventory(_items, 0, stackSlot, LimitPocket)) // * в карман
@@ -107,6 +108,7 @@ namespace Vge.Entity.Inventory
                 // Если не залезло всё, суём в рюкзак
                 _conteiner.IdDamageCategory = 1;
                 _conteiner.IdDamageSlotIgnor = 255;
+                Console.WriteLine("LimitBackpack " + LimitBackpack);
                 if (!_conteiner.AddItemStackToInventory(_items, _pocketCount + _clothCount, // * в рюкзак
                     stackSlot, LimitBackpack))
                 {

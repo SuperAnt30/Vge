@@ -482,16 +482,8 @@ namespace Vge.Management
                 return token.Equals(entityPlayer.Token);
             }
             // Игрок впервые зашёл, создаём
-            _CreatePlayer(entityPlayer);
+            entityPlayer.CreatePlayer();
             return true;
-        }
-
-        /// <summary>
-        /// Создать игрока, тут первый спавн игрока
-        /// </summary>
-        private void _CreatePlayer(PlayerServer entityPlayer)
-        {
-            //TODO::2024-10-03 Создать игрока, тут первый спавн игрока
         }
 
         #endregion

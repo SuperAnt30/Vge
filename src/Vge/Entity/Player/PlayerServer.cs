@@ -153,6 +153,11 @@ namespace Vge.Entity.Player
             _CreateInventory();
         }
 
+        /// <summary>
+        /// Создать игрока, тут первый спавн игрока
+        /// </summary>
+        public virtual void CreatePlayer() { }
+
         #region Tracker
 
         /// <summary>
@@ -611,6 +616,17 @@ namespace Vge.Entity.Player
         #region WriteRead
 
         /// <summary>
+        /// Записать данные игрока в файл
+        /// </summary>
+        public void WriteToFile()
+        {
+            GameFile.CheckPath(_server.Settings.PathPlayers);
+            TagCompound nbt = new TagCompound();
+            _WriteToNBT(nbt);
+            NBTTools.WriteToFile(nbt, _pathName, true);
+        }
+
+        /// <summary>
         /// Прочесть данные игрока с файла, возращает true если файл существола
         /// </summary>
         public bool ReadFromFile()
@@ -620,15 +636,7 @@ namespace Vge.Entity.Player
                 try
                 {
                     TagCompound nbt = NBTTools.ReadFromFile(_pathName, true);
-                    Token = nbt.GetString("Token");
-                    TimesExisted = nbt.GetLong("TimesExisted");
-                    IdWorld = nbt.GetByte("IdWorld");
-                    PosPrevX = PosX = nbt.GetFloat("PosX");
-                    PosPrevY = PosY = nbt.GetFloat("PosY");
-                    PosPrevZ = PosZ = nbt.GetFloat("PosZ");
-                    RotationPrevYaw = RotationYaw = nbt.GetFloat("Yaw");
-                    RotationPrevPitch = RotationPitch = nbt.GetFloat("Pitch");
-                    Inventory.ReadFromNBT(nbt);
+                    ReadFromNBT(nbt);
                     return true;
                 }
                 catch
@@ -639,23 +647,24 @@ namespace Vge.Entity.Player
             return false;
         }
 
-        /// <summary>
-        /// Записать данные игрока в файл
-        /// </summary>
-        public void WriteToFile()
+        #endregion
+
+        #region NBT
+
+        protected override void _WriteToNBT(TagCompound nbt)
         {
-            GameFile.CheckPath(_server.Settings.PathPlayers);
-            TagCompound nbt = new TagCompound();
+            base._WriteToNBT(nbt);
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
             nbt.SetByte("IdWorld", IdWorld);
-            nbt.SetFloat("PosX", PosX);
-            nbt.SetFloat("PosY", PosY);
-            nbt.SetFloat("PosZ", PosZ);
-            nbt.SetFloat("Yaw", RotationYaw);
-            nbt.SetFloat("Pitch", RotationPitch);
-            Inventory.WriteToNBT(nbt);
-            NBTTools.WriteToFile(nbt, _pathName, true);
+        }
+
+        public override void ReadFromNBT(TagCompound nbt)
+        {
+            base.ReadFromNBT(nbt);
+            Token = nbt.GetString("Token");
+            TimesExisted = nbt.GetLong("TimesExisted");
+            IdWorld = nbt.GetByte("IdWorld");
         }
 
         #endregion
