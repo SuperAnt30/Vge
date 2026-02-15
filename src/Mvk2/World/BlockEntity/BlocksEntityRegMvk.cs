@@ -12,7 +12,7 @@ namespace Mvk2.World.BlockEntity
         /// <summary>
         /// Id Блок сущности дерева
         /// </summary>
-        public static short IdTree { get; private set; }
+        public static ushort IdTree { get; private set; }
 
         /// <summary>
         /// Инициализация Id
@@ -30,10 +30,10 @@ namespace Mvk2.World.BlockEntity
         /// <summary>
         /// Получить Id предмета
         /// </summary>
-        private static short _GetId(string key)
+        private static ushort _GetId(string key)
         {
             int count = Ce.BlocksEntity.BlockEntityAlias.Length;
-            for (short i = 0; i < count; i++)
+            for (ushort i = 0; i < count; i++)
             {
                 if (key == Ce.BlocksEntity.BlockEntityAlias[i])
                 {

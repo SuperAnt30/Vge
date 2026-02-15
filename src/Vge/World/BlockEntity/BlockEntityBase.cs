@@ -32,7 +32,7 @@ namespace Vge.World.BlockEntity
         /// <summary>
         /// Индекс тип блока сущности, полученый на сервере из таблицы
         /// </summary>
-        public short IndexEntity { get; protected set; }
+        public ushort IndexEntity { get; protected set; }
 
         /// <summary>
         /// Позиция к какому блоку принадлежит плитка
@@ -51,7 +51,7 @@ namespace Vge.World.BlockEntity
         /// <summary>
         /// Инициализация для сервера
         /// </summary>
-        public virtual void InitServer(short index)
+        public virtual void InitServer(ushort index)
         {
             IndexEntity = index;
             //_world = worldServer;
@@ -85,7 +85,7 @@ namespace Vge.World.BlockEntity
 
         public virtual void WriteToNBT(TagCompound nbt)
         {
-            nbt.SetShort("Id", IndexEntity);
+            nbt.SetShort("Id", (short)IndexEntity);
             nbt.SetInt("X", Position.X);
             nbt.SetInt("Y", Position.Y);
             nbt.SetInt("Z", Position.Z);

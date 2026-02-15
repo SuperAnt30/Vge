@@ -5,6 +5,7 @@ using Vge.Entity.Physics;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
+using Vge.NBT;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
@@ -144,6 +145,12 @@ namespace Vge.Entity
         /// Спит ли физика, для отладки если Physics == null
         /// </summary>
         private bool _physicSleepDebug;
+
+        /// <summary>
+        /// Должна ли эта сущность НЕ исчезать при сохранении, по умолчанию исчезнет
+        /// true - не исчезнет
+        /// </summary>
+        protected bool _persistenceRequired;
 
         /// <summary>
         /// Объект сетевого мира, существует только у сущностей на сервере
@@ -594,6 +601,40 @@ namespace Vge.Entity
         #region Get
 
 
+
+        #endregion
+
+
+        #region NBT
+
+        protected virtual void _WriteToNBT(TagCompound nbt)
+        {
+            nbt.SetShort("Id", (short)IndexEntity);
+            nbt.SetFloat("X", PosX);
+            nbt.SetFloat("Y", PosY);
+            nbt.SetFloat("Z", PosZ);
+        }
+
+        /// <summary>
+        /// Если записываем эту сущность в указанный тег NBT, верниёт true.
+        /// Если возвращает false объект не сохраняется.
+        /// </summary>
+        public virtual bool WriteToNBT(TagCompound nbt)
+        {
+            if (!IsDead && _persistenceRequired)
+            {
+                _WriteToNBT(nbt);
+                return true;
+            }
+            return false;
+        }
+
+        public virtual void ReadFromNBT(TagCompound nbt)
+        {
+            PosX = PosPrevX = nbt.GetFloat("X");
+            PosY = PosPrevY = nbt.GetFloat("Y");
+            PosZ = PosPrevZ = nbt.GetFloat("Z");
+        }
 
         #endregion
 

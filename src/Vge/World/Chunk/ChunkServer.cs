@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.NBT;
 using Vge.Util;
 using Vge.World.Block;
@@ -517,6 +518,7 @@ namespace Vge.World.Chunk
         /// </summary>
         private void _WriteChunkToNBT(TagCompound nbt)
         {
+            int ys, i;
             uint tick = WorldServ.TickCounter;
             nbt.SetShort("Version", 1);
             nbt.SetInt("X", X);
@@ -531,7 +533,7 @@ namespace Vge.World.Chunk
             // ---Sections
 
             TagList tagListSections = new TagList();
-            for (int ys = 0; ys < NumberSections; ys++)
+            for (ys = 0; ys < NumberSections; ys++)
             {
                 StorageArrays[ys].WriteDataToNBT(tagListSections);
             }
@@ -543,7 +545,7 @@ namespace Vge.World.Chunk
             {
                 TagList tagListTickBlocks = new TagList();
                 BlockTick tickBlock;
-                for (int i = 0; i < _tickBlocks.Count; i++)
+                for (i = 0; i < _tickBlocks.Count; i++)
                 {
                     tickBlock = _tickBlocks[i];
                     TagCompound tagCompound = new TagCompound();
@@ -572,6 +574,29 @@ namespace Vge.World.Chunk
                 if (tagListBlocksEntity.TagCount() > 0)
                 {
                     nbt.SetTag("BlocksEntity", tagListBlocksEntity);
+                }
+            }
+
+            // ---Entities
+
+            // проверяю есть ли сущность, если есть то true;
+            _hasEntities = false;
+            int count = ListEntities.Count;
+            if (count > 0)
+            {
+                TagList tagListEntities = new TagList();
+                for (i = 0; i < count; i++)
+                {
+                    TagCompound tagCompound = new TagCompound();
+                    if (ListEntities.GetAt(i).WriteToNBT(tagCompound)) 
+                    {
+                        _hasEntities = true;
+                        tagListEntities.AppendTag(tagCompound);
+                    }
+                }
+                if (tagListEntities.TagCount() > 0)
+                {
+                    nbt.SetTag("Entities", tagListEntities);
                 }
             }
         }
@@ -646,9 +671,33 @@ namespace Vge.World.Chunk
                     try
                     {
                         TagCompound tagCompound = tagListTileEntities.Get(i) as TagCompound;
-                        BlockEntityBase blockEntity = Ce.BlocksEntity.CreateEntityServer(tagCompound.GetByte("Id"));
+                        BlockEntityBase blockEntity = Ce.BlocksEntity.CreateEntityServer((ushort)tagCompound.GetShort("Id"));
                         blockEntity.ReadFromNBT(tagCompound, this);
                         SetBlockEntity(blockEntity);
+                    }
+                    catch (Exception ex)
+                    {
+                        WorldServ.Server.Log.Error(ex);
+                    }
+                }
+            }
+
+            // ---Entities
+
+            // Скорее всего будет добавление сущности AddEntity, а там hasEntities = true;
+            TagList tagListEntities = nbt.GetTagList("Entities", 10);
+            count = tagListEntities.TagCount();
+            if (tagListEntities.GetTagType() == 10)
+            {
+                _hasEntities = true;
+                for (int i = 0; i < count; i++)
+                {
+                    try
+                    {
+                        TagCompound tagCompound = tagListEntities.Get(i) as TagCompound;
+                        EntityBase entity = Ce.Entities.CreateEntityServer((ushort)tagCompound.GetShort("Id"), WorldServ);
+                        entity.ReadFromNBT(tagCompound);
+                        World.SpawnEntityInWorld(entity);
                     }
                     catch (Exception ex)
                     {

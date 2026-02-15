@@ -5,6 +5,7 @@ using Vge.Entity.Player;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Item;
+using Vge.NBT;
 using Vge.Renderer.World.Entity;
 using Vge.World;
 using WinGL.Util;
@@ -20,6 +21,11 @@ namespace Vge.Entity.List
         /// Сколько тиков жизни
         /// </summary>
         protected int _age = 0;
+
+        public EntityItem()
+        {
+            _persistenceRequired = true;
+        }
 
         /// <summary>
         /// Запуск сущности после всех инициализаций, как правило только на сервере
@@ -249,5 +255,30 @@ namespace Vge.Entity.List
                 player.AddItemStackToInventory(GetEntityItemStack());
             }
         }
+
+        #region NBT
+
+        protected override void _WriteToNBT(TagCompound nbt)
+        {
+            base._WriteToNBT(nbt);
+            ItemStack itemStack = GetEntityItemStack();
+            if (itemStack != null)
+            {
+                nbt.SetTag("Item", itemStack.WriteToNBT(new TagCompound()));
+            }
+        }
+
+        public override void ReadFromNBT(TagCompound nbt)
+        {
+            base.ReadFromNBT(nbt);
+            TagCompound tag = nbt.GetCompoundTag("Item");
+            SetEntityItemStack(ItemStack.ReadFromNBT(tag));
+            if (GetEntityItemStack() == null)
+            {
+                SetDead();
+            }
+        }
+
+        #endregion
     }
 }

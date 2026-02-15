@@ -57,7 +57,7 @@ namespace Vge.World.BlockEntity
         /// Создать сущность для сервера по индексу из таблицы сервера.
         /// Регистрацию индексов сущностей можно заполнить в GameModClient.InitAfterStartGame() 
         /// </summary>
-        public BlockEntityBase CreateEntityServer(short index)
+        public BlockEntityBase CreateEntityServer(ushort index)
         {
             if (index < Count)
             {
