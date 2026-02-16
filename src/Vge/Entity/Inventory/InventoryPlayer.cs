@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.World.BlockEntity;
@@ -45,13 +46,21 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Креативный ли инвентарь
         /// </summary>
-        private bool _isCreative;
+        protected bool _isCreative;
+        /// <summary>
+        /// Номер закладки креатива
+        /// </summary>
+        protected int _creativeTab;
+        /// <summary>
+        /// Номер страницы креатива
+        /// </summary>
+        protected int _creativePage;
 
         /// <summary>
         /// Активный блок инвентаря (склад), если null, то работаем с инвентарём игрока.
         /// Только для сервера
         /// </summary>
-        private IBlockStorage _blockStorage;
+        protected IBlockStorage _blockStorage;
 
         public InventoryPlayer(PlayerServer playerServer, byte pocketCount, byte clothCount, byte backpackCount)
             // Первый слот одеждый это ячейка левой руки
@@ -150,7 +159,12 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Открыть креативный инвентарь, флаг
         /// </summary>
-        public void OpenCreativeInventory() => _isCreative = true;
+        public void OpenCreativeInventory(int tab, int page)
+        {
+            _isCreative = true;
+            _creativeTab = tab;
+            _creativePage = page;
+        }
 
         /// <summary>
         /// Проверка по лимитам
@@ -483,7 +497,7 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Возвращает стак слота, из инвентаря или хранилища выбранного блока
         /// </summary>
-        private ItemStack _GetStackInSlotAndStorage(int slotIn)
+        protected virtual ItemStack _GetStackInSlotAndStorage(int slotIn)
         {
             if (slotIn > 99)
             {

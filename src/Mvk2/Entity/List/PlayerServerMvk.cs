@@ -177,7 +177,7 @@ namespace Mvk2.Entity.List
                     break;
                 case EnumActionClickWindow.OpenCreativeInventory:
                     InvPlayer.ServerOpenInventory(ItemsRegMvk.Creative);
-                    InvPlayer.OpenCreativeInventory();
+                    InvPlayer.OpenCreativeInventory(packet.Number >> 8, packet.Number & 255);
                     break;
                 case EnumActionClickWindow.OpenInventory:
                     break;

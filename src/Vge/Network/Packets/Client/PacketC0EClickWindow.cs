@@ -16,6 +16,15 @@ namespace Vge.Network.Packets.Client
 
         private bool _onlyAction;
 
+        public PacketC0EClickWindow(byte action, int number)
+        {
+            Action = action;
+            _onlyAction = false;
+            Number = number;
+            IsShift = false;
+            IsRight = false;
+        }
+
         public PacketC0EClickWindow(byte action)
         {
             Action = action;
