@@ -1,0 +1,114 @@
+﻿using Mvk2.Gui.Controls;
+using Mvk2.Item;
+using Mvk2.Packets;
+using Mvk2.World.BlockEntity.List;
+using System.Runtime.CompilerServices;
+using Vge.Gui.Screens;
+using Vge.Item;
+using Vge.Network;
+using Vge.Network.Packets.Client;
+using Vge.Network.Packets.Server;
+using WinGL.Actions;
+
+namespace Mvk2.Gui.Screens
+{
+    /// <summary>
+    /// Окно креативного инвентаря для игры Малювеки 2
+    /// </summary>
+    public class ScreenStorageCreative : ScreenStorage
+    {
+        /// <summary>
+        /// Количенство ячеек дыры
+        /// </summary>
+        private readonly int _count = BlockHole.Count;
+
+        public ScreenStorageCreative(WindowMvk window) : base(window)
+            => _windowMvk.Game.TrancivePacket(new PacketC0EClickWindow((byte)EnumActionClickWindow.OpenCreativeInventory));
+
+        /// <summary>
+        /// Инициализация слотов
+        /// </summary>
+        protected override void _Init()
+        {
+            base._Init();
+
+            // Ящик
+            for (int i = 0; i < _count; i++)
+            {
+                _SetSlot(i + _inventoryCount, new ControlSlotMvk(_windowMvk, null, (byte)(i + 100)));
+                _slot[i + _inventoryCount].SetEnable(false);
+            }
+
+            //_slot[_inventoryCount].SetStack(new ItemStack(ItemsRegMvk.Cobblestone));
+            //_slot[_inventoryCount + 1].SetStack(new ItemStack(ItemsRegMvk.FlowerClover));
+        }
+
+        /// <summary>
+        /// Название заголовка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override string _GetTitle() => L.T("Creative");
+
+        /// <summary>
+        /// Количество слотов
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override int _GetSlotCount() => _inventoryCount + _count;
+
+        /// <summary>
+        /// Получить сетевой пакет
+        /// </summary>
+        public override void AcceptNetworkPackage(IPacket packet)
+        {
+            if (packet is PacketS2FSetSlot packetS2F)
+            {
+                // Изменился один слот (из вне поменялся, образно другой игрок)
+                _slot[packetS2F.SlotId - 100 + _inventoryCount].SetStack(packetS2F.Stack);
+            }
+            else if (packet is PacketS30WindowItems packetS30)
+            {
+                // Загрузить все слоты в ящик
+                for (int i = _inventoryCount; i < _inventoryCount + _count; i++)
+                {
+                    _slot[i].SetStack(packetS30.Stacks[i - _inventoryCount]);
+                    _slot[i].SetEnable(true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        protected override void _OnResized()
+        {
+            base._OnResized();
+
+            // Ящик на 48 слот
+            int i = 0;
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 0; x < 12; x++)
+                {
+                    _slot[i + _inventoryCount].SetPosition(PosX + 12 + x * 36, PosY + 27 + y * 36);
+                    i++;
+                }
+            }
+        }
+
+        public override void OnKeyDown(Keys keys)
+        {
+            base.OnKeyDown(keys);
+
+            if (keys == Keys.C)
+            {
+                _Close();
+            }
+        }
+
+        /// <summary>
+        /// Запустить текстуру фона
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _BindTextureBg() => _windowMvk.GetRender().BindTextureConteinerStorage();
+    }
+}

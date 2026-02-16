@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -30,7 +29,7 @@ namespace Mvk2.World.BlockEntity.List
         /// </summary>
         private readonly ConteinerManagement _conteiner = new ConteinerManagement(100);
 
-        private GameServer _server;
+        private readonly GameServer _server;
 
         public BlockHole(GameServer server)
         {

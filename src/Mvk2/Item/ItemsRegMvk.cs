@@ -7,6 +7,11 @@ namespace Mvk2.Item
     /// </summary>
     public sealed class ItemsRegMvk
     {
+        /// <summary>
+        /// Объект креативного инвентаря
+        /// </summary>
+        public static ItemsCreative Creative { get; private set; }
+
         #region Одежда
         /// <summary>
         /// Галстук
@@ -138,6 +143,9 @@ namespace Mvk2.Item
             BeltBranded = ItemsReg.RegisterItemClothClass("BeltBranded");
             Tie = ItemsReg.RegisterItemClothClass("Tie");
             CapDark = ItemsReg.RegisterItemClothClass("CapDark");
+
+
+            Creative = new ItemsCreative();
         }
     }
 }

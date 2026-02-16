@@ -71,5 +71,9 @@ namespace Mvk2.Gui.Screens
         /// Создать скрин хранилища отладки
         /// </summary>
         public void StorageDebug() => window.ScreenCreate(new ScreenStorageHole(_windowMvk));
+        /// <summary>
+        /// Создать скрин креативного инвентаря
+        /// </summary>
+        public void CreativeInventory() => window.ScreenCreate(new ScreenStorageCreative(_windowMvk));
     }
 }

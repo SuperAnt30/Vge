@@ -92,6 +92,8 @@ namespace Mvk2.Games
                 case Keys.E: _windowMvk.LScreenMvk.Inventory(); break;
                 // скрин хранилища
                 case Keys.R: _windowMvk.LScreenMvk.StorageDebug(); break;
+                // скрин креативного инвентаря
+                case Keys.C: _windowMvk.LScreenMvk.CreativeInventory(); break;
                 case Keys.F5: Player.ViewCameraNext(); break;
                 // Скрин
                 case Keys.F6: DebugMvk.ScreenFileBiomeArea(Game); break;

@@ -175,6 +175,10 @@ namespace Mvk2.Entity.List
                     //    InvPlayer.ServerOpenInventory(mod.Hole);
                     //}
                     break;
+                case EnumActionClickWindow.OpenCreativeInventory:
+                    InvPlayer.ServerOpenInventory(ItemsRegMvk.Creative);
+                    InvPlayer.OpenCreativeInventory();
+                    break;
                 case EnumActionClickWindow.OpenInventory:
                     break;
                 case EnumActionClickWindow.Close:

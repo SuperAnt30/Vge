@@ -42,6 +42,10 @@ namespace Vge.Entity.Inventory
         /// Управление контейнером для передачи пачками
         /// </summary>
         private readonly ConteinerManagement _conteiner;
+        /// <summary>
+        /// Креативный ли инвентарь
+        /// </summary>
+        private bool _isCreative;
 
         /// <summary>
         /// Активный блок инвентаря (склад), если null, то работаем с инвентарём игрока.
@@ -137,7 +141,16 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Закрыли инвентарь, для сервера
         /// </summary>
-        public void ServerCloseInventory() => _blockStorage = null;
+        public void ServerCloseInventory()
+        {
+            _blockStorage = null;
+            _isCreative = false;
+        }
+
+        /// <summary>
+        /// Открыть креативный инвентарь, флаг
+        /// </summary>
+        public void OpenCreativeInventory() => _isCreative = true;
 
         /// <summary>
         /// Проверка по лимитам
@@ -268,6 +281,11 @@ namespace Vge.Entity.Inventory
                                 _conteiner.IdDamageCategory = 0;
                                 _conteiner.IdDamageSlotIgnor = 255;
                             }
+                            else if (_isCreative)
+                            {
+                                // === Кликнули из креатива!
+                                _SetSendAirContents(stackSlot.SetAmount(stackSlot.Item.MaxStackSize));
+                            }
                             else
                             {
                                 // Кликнули из хранилища
@@ -324,7 +342,29 @@ namespace Vge.Entity.Inventory
                             if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamage == stackAir.ItemDamage)
                             {
                                 // Если предметы одинаковые
-                                if (isRight && stackAir.Amount > 1)
+                                if (slotIn >= 100 && _isCreative)
+                                {
+                                    // === Креатив
+                                    if (isRight)
+                                    {
+                                        if (stackAir.Amount == 1)
+                                        {
+                                            // Удаяем в воздухе
+                                            _SetSendAirContents();
+                                        }
+                                        else
+                                        {
+                                            // Минусуем в воздухе
+                                            _SetSendAirContents(stackAir.ReduceAmount(1));
+                                        }
+                                    }
+                                    else if (stackAir.Amount < stackAir.Item.MaxStackSize)
+                                    {
+                                        // Плюсуем в воздухе
+                                        _SetSendAirContents(stackAir.AddAmount(1));
+                                    }
+                                }
+                                else if (isRight && stackAir.Amount > 1)
                                 {
                                     if (stackSlot.Item.MaxStackSize > stackSlot.Amount)
                                     {
