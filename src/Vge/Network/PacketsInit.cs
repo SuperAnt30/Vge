@@ -39,6 +39,7 @@ namespace Vge.Network
                 case 0x2F: return new PacketS2FSetSlot();
                 case 0x30: return new PacketS30WindowItems();
                 case 0x3A: return new PacketS3AMessage();
+                case 0x39: return new PacketS39PlayerAbilities();
             }
 
             return null;

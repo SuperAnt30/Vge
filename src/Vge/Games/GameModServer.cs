@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using Vge.Command;
+using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Network;
@@ -52,5 +53,10 @@ namespace Vge.Games
         /// </summary>
         public virtual PlayerServer CreatePlayerServer(string login, string token, SocketSide socketSide)
             => new PlayerServer(login, token, socketSide, Server);
+
+        /// <summary>
+        /// Инициализация, регистрация комманд
+        /// </summary>
+        public virtual void InitCommand(ManagerCommand managerCommand) { }
     }
 }

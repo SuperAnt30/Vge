@@ -13,33 +13,34 @@ namespace Vge.Command
         /// <summary>
         /// Перечень всех доступных команд
         /// </summary>
-        private readonly Dictionary<string, CommandBase> commands = new Dictionary<string, CommandBase>();
+        private readonly Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>();
 
         public ManagerCommand(GameServer server)
         {
             //_Registration(new CommandKill(world));
-            _Registration(new CommandTeleport(server));
-            _Registration(new CommandTime(server));
-            _Registration(new CommandRegen(server));
+            Registration(new CommandTeleport(server));
+            Registration(new CommandTime(server));
+            Registration(new CommandSeed(server));
+
+            server.ModServer.InitCommand(this);
+
             //_Registration(new CommandKick(server));
 
-
-            //Registration(new CommandGameMode(world));
             //Registration(new CommandFix(world));
 
             //Registration(new CommandKnowledge(world));
             //Registration(new CommandSpawn(world));
             //Registration(new CommandExperience(world));
-            //Registration(new CommandSeed(world));
+            
         }
 
         /// <summary>
         /// Регистрация команды
         /// </summary>
-        private void _Registration(CommandBase command)
+        public void Registration(CommandBase command)
         {
-            if (command.NameMin != "") commands.Add(command.NameMin, command);
-            commands.Add(command.Name, command);
+            if (command.NameMin != "") _commands.Add(command.NameMin, command);
+            _commands.Add(command.Name, command);
         }
 
         /// <summary>
@@ -54,10 +55,10 @@ namespace Vge.Command
             if (commandName != "" && commandName[0] == '/')
             {
                 commandName = commandName.Substring(1);
-                if (commandName != "" && commands.ContainsKey(commandName))
+                if (commandName != "" && _commands.ContainsKey(commandName))
                 {
                     // Команда такая имеется, выполняем
-                    return commands[commandName].UseCommand(sender);
+                    return _commands[commandName].UseCommand(sender);
                 }
             }
             // Команды такой нет, оповещаем

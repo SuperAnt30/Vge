@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
+using Vge.Command;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Realms;
 using Vge.World;
 
-namespace Vge.Command
+namespace Mvk2.Command
 {
     /// <summary>
     /// Команда регенерации

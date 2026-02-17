@@ -23,7 +23,6 @@ namespace Vge.Entity.Physics
             : base(collision, entity)
         {
             _entityLiving = entity;
-            NoClip = true;
         }
         
 

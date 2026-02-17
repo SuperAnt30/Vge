@@ -68,10 +68,6 @@ namespace Vge.Entity.Physics
         /// </summary>
         public bool IsPoseChange { get; protected set; } = false;
         /// <summary>
-        /// Будет ли эта сущность проходить сквозь блоки
-        /// </summary>
-        public bool NoClip { get; protected set; } = false;
-        /// <summary>
         /// Сколько тактов сущность зажата в блоке
         /// </summary>
         public ushort CaughtInBlock { get; private set; } = 0;
@@ -245,7 +241,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected void _CheckMoveColliding(ISizeEntityBox size)
         {
-            if (!NoClip)
+            if (!Entity.NoClip)
             {
                 AxisAlignedBB boundingBox = size.GetBoundingBox();
 
@@ -530,7 +526,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected void _CheckMoveCollidingPoint()
         {
-            if (!NoClip)
+            if (!Entity.NoClip)
             {
                 Vector3 dir = new Vector3(MotionX, MotionY, MotionZ);
                 Collision.RayCast(Entity.PosX, Entity.PosY, Entity.PosZ,

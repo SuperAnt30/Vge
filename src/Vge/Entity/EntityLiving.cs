@@ -287,7 +287,7 @@ namespace Vge.Entity
         /// Возвращает true, если флаг активен для сущности.Известные флаги:
         /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 
         /// </summary>
-        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) невидимый</param>
+        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение (невидимый)</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool GetFlag(int flag) => (MetaData.GetByte(0) & 1 << flag) != 0;
 
@@ -295,7 +295,7 @@ namespace Vge.Entity
         /// Включите или отключите флаг сущности
         /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 6) спит 7) невидимый по чаре
         /// </summary>
-        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) невидимый</param>
+        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение (невидимый)</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SetFlag(int flag, bool set)
         {

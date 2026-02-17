@@ -108,6 +108,20 @@ namespace Vge.Entity
         #endregion
 
         /// <summary>
+        /// Разрешается ли летать
+        /// </summary>
+        public bool AllowFlying { get; protected set; }
+        /// <summary>
+        /// Отключить урон
+        /// </summary>
+        public bool DisableDamage { get; protected set; }
+        /// <summary>
+        /// Будет ли проходить сквозь блоки.
+        /// Нельзя на прямую в физику, так-как может меняться физика.
+        /// </summary>
+        public bool NoClip { get; protected set; }
+
+        /// <summary>
         /// Объект физики
         /// </summary>
         public PhysicsBase Physics { get; protected set; }
@@ -456,6 +470,7 @@ namespace Vge.Entity
         /// <summary>
         /// Задать выбранной сущности импульс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _SetEntityPhysicsImpulse(int id, float x, float y, float z) { }
 
         /// <summary>
@@ -474,7 +489,7 @@ namespace Vge.Entity
         /// </summary>
         public void ApplyEntityCollision(EntityBase entityIn)
         {
-            if (!entityIn.NoClip() && !NoClip())
+            if (!entityIn.NoClip && !NoClip)
             {
                 float x = entityIn.PosX - PosX;
                 float z = entityIn.PosZ - PosZ;
@@ -501,16 +516,14 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Будет ли эта сущность проходить сквозь блоки
-        /// </summary>
-        public virtual bool NoClip() => false;
-        /// <summary>
         /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool CanBeCollidedWith() => false;
         /// <summary>
         /// Возвращает true, если этот объект можно толкать и толкает другие объекты при столкновении
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool CanBePushed() => true;
 
         /// <summary>

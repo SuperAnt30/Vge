@@ -39,10 +39,29 @@ namespace Vge.Entity.Player
         public byte IdWorld { get; protected set; } = 0;
 
         /// <summary>
+        /// Творческий режим, бесконечный инвентарь, и всё ломаем за один клик
+        /// </summary>
+        public bool CreativeMode { get; protected set; } = false;
+
+        /// <summary>
         /// Последнее время пинга в милисекундах
         /// </summary>
         protected long _lastTimeServer;
 
+        #region MetaData
+
+        /// <summary>
+        /// Наблюдение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSpectator() => GetFlag(5);
+        /// <summary>
+        /// Задать наблюдение сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSpectator(bool invisible) => SetFlag(5, invisible);
+
+        #endregion
 
         #region Overview
 

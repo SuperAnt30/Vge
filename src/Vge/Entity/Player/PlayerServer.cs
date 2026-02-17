@@ -192,6 +192,19 @@ namespace Vge.Entity.Player
         public override void SetPhysicsImpulse(float x, float y, float z)
             => SendPacket(new PacketS08PlayerPosLook(x, y, z));
 
+        /// <summary>
+        /// Задать режим игры игрока
+        /// </summary>
+        /// <param name="gm">0 - выживания, 1 - творческий, 2 - наблюдателя, 3 - наблюдателя конца игры</param>
+        public virtual void SetGameMode(int gm)
+        {
+            SetSpectator(gm >= 2);
+            CreativeMode = gm == 1;
+            NoClip = gm == 2;
+            DisableDamage = AllowFlying = gm != 0;
+            SendPlayerAbilities();
+        }
+
         #endregion
 
         #region Update
@@ -336,6 +349,12 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Отправить атрибуты игрока клиенту
+        /// </summary>
+        public void SendPlayerAbilities() 
+            => SendPacket(new PacketS39PlayerAbilities(this));
+
+        /// <summary>
         /// Пакет: позиции игрока
         /// </summary>
         public void PacketPlayerPosition(PacketC04PlayerPosition packet)
@@ -359,10 +378,6 @@ namespace Vge.Entity.Player
             }
             LevelMotionChange = 1;
         }
-
-
-        private int idBox = 0;
-        private int idItem = 0;
 
         /// <summary>
         /// Пакет: Игрок копает / ломает
@@ -553,6 +568,8 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // Передаём весь инвентарь
             SendPacket(new PacketS30WindowItems(true, Inventory.GetAll()));
+            // Атрибуты игрока
+            SendPlayerAbilities();
 
             // И другие пакеты, такие как позиция и инвентарь и прочее
 
@@ -562,9 +579,6 @@ namespace Vge.Entity.Player
 
             // Установленный перемещенный якорь
             MountedMovedAnchor();
-
-            //
-            //isPos = true;
         }
 
         /// <summary>
@@ -657,6 +671,11 @@ namespace Vge.Entity.Player
             nbt.SetString("Token", Token);
             nbt.SetLong("TimesExisted", (long)TimesExisted);
             nbt.SetByte("IdWorld", IdWorld);
+            nbt.SetBool("CreativeMode", CreativeMode);
+            nbt.SetBool("NoClip", NoClip);
+            nbt.SetBool("AllowFlying", AllowFlying);
+            nbt.SetBool("DisableDamage", DisableDamage);
+            nbt.SetBool("Invisible", IsSpectator());
         }
 
         public override void ReadFromNBT(TagCompound nbt)
@@ -665,6 +684,11 @@ namespace Vge.Entity.Player
             Token = nbt.GetString("Token");
             TimesExisted = nbt.GetLong("TimesExisted");
             IdWorld = nbt.GetByte("IdWorld");
+            CreativeMode = nbt.GetBool("CreativeMode");
+            NoClip = nbt.GetBool("NoClip");
+            AllowFlying = nbt.GetBool("AllowFlying");
+            DisableDamage = nbt.GetBool("DisableDamage");
+            SetSpectator(nbt.GetBool("Invisible"));
         }
 
         #endregion

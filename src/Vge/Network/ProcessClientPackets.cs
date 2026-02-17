@@ -113,6 +113,8 @@ namespace Vge.Network
                 case 0x2F: _Handle2FSetSlot((PacketS2FSetSlot)packet); break;
                 case 0x30: _Handle30WindowItems((PacketS30WindowItems)packet); break;
                 case 0x3A: _Handle3AMessage((PacketS3AMessage)packet); break;
+                case 0x39: _Handle39PlayerAbilities((PacketS39PlayerAbilities)packet); break;
+                    
             }
         }
 
@@ -429,6 +431,13 @@ namespace Vge.Network
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle3AMessage(PacketS3AMessage packet)
             => Game.Player.PacketMessage(packet);
+
+        /// <summary>
+        /// Пакет атрибут игрока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Handle39PlayerAbilities(PacketS39PlayerAbilities packet)
+            => Game.Player.PacketPlayerAbilities(packet);
 
         #endregion
     }

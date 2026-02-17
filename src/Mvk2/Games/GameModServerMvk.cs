@@ -1,6 +1,8 @@
-﻿using Mvk2.Entity;
+﻿using Mvk2.Command;
+using Mvk2.Entity;
 using Mvk2.Entity.List;
 using Mvk2.World.BlockEntity;
+using Vge.Command;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network;
@@ -32,5 +34,11 @@ namespace Mvk2.Games
             EntitiesRegMvk.InitId();
             BlocksEntityRegMvk.InitId();
         }
+
+        /// <summary>
+        /// Инициализация, регистрация комманд
+        /// </summary>
+        public override void InitCommand(ManagerCommand managerCommand)
+            => ManagerCommandMvk.Init(Server, managerCommand);
     }
 }

@@ -165,11 +165,6 @@ namespace Vge.Entity.Player
         #region Методы от Entity
 
         /// <summary>
-        /// Наблюдение
-        /// </summary>
-        public bool IsSpectator() => false;
-
-        /// <summary>
         /// Высота глаз
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -248,7 +243,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public void KeyDoubleClickSpace()
         {
-            if (true) // Положение стоя
+            if (!NoClip && AllowFlying)
             {
                 if (Physics is PhysicsPlayer)
                 {
@@ -976,6 +971,30 @@ namespace Vge.Entity.Player
         public void PacketMessage(PacketS3AMessage packet)
         {
             Chat.AddMessage(packet.Message, Gi.WindowsChatWidthMessage,  Gi.Si);
+        }
+
+        // <summary>
+        /// Задать атрибуты игроку
+        /// </summary>
+        public void PacketPlayerAbilities(PacketS39PlayerAbilities packet)
+        {
+            if (packet.Spectator && Physics is PhysicsPlayer)
+            {
+                // Только полёт
+                Physics = new PhysicsFly(_game.World.Collision, this);
+            }
+            else if (!packet.AllowFlying && Physics is PhysicsFly)
+            {
+                // Только по земле
+                Physics = new PhysicsPlayer(_game.World.Collision, this);
+            }
+
+            CreativeMode = packet.CreativeMode;
+            NoClip = packet.NoClip;
+            /*IsFlying =*/ AllowFlying = packet.AllowFlying;
+            DisableDamage = packet.DisableDamage;
+
+            
         }
 
         #endregion
