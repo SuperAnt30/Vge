@@ -19,19 +19,28 @@ namespace Mvk2.Item
         public const int Count = 48;
         /// <summary>
         /// Количество вкладок
+        /// All, Blocks, Craft, Tools, Cloth, Food
         /// </summary>
-        public const int CountTab = 4;
+        public const int CountTab = 6;
 
         private ItemStack[][][] _stacks;
 
         public ItemsCreative()
         {
-            // Раздел первый блоки
-            List<ItemStack> tabCube = new List<ItemStack>();
-            tabCube.Add(new ItemStack(ItemsRegMvk.Cobblestone));
-            tabCube.Add(new ItemStack(ItemsRegMvk.Brol));
+            // Раздел блоки
+            List<ItemStack> tabBlocks = new List<ItemStack>();
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
 
-            // Раздел второй одежда
+            // Раздел крафтовые предметы 
+            List<ItemStack> tabCraft = new List<ItemStack>();
+            tabCraft.Add(new ItemStack(ItemsRegMvk.FlowerClover));
+
+            // Раздел инструменты и оружие
+            List<ItemStack> tabTools = new List<ItemStack>();
+            tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
+
+            // Раздел одежда
             List<ItemStack> tabCloth = new List<ItemStack>();
             
             tabCloth.Add(new ItemStack(ItemsRegMvk.Tie, 1, ItemsRegMvk.Tie.MaxDamage));
@@ -45,28 +54,33 @@ namespace Mvk2.Item
             tabCloth.Add(new ItemStack(ItemsRegMvk.StrawHat, 1, ItemsRegMvk.StrawHat.MaxDamage));
             tabCloth.Add(new ItemStack(ItemsRegMvk.CamouflageJacket, 1, ItemsRegMvk.CamouflageJacket.MaxDamage));
 
-            tabCloth.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
-
-            // Раздел третий 
-            List<ItemStack> tab3 = new List<ItemStack>();
-            tab3.Add(new ItemStack(ItemsRegMvk.FlowerClover));
+            // Раздел еда
+            List<ItemStack> tabFood = new List<ItemStack>();
+           // tabFood.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
 
             // Раздел всего
             List<ItemStack> tabAll = new List<ItemStack>();
-            tabAll.AddRange(tabCube);
+            tabAll.AddRange(tabBlocks);
+            tabAll.AddRange(tabCraft);
+            tabAll.AddRange(tabTools);
             tabAll.AddRange(tabCloth);
-            tabAll.AddRange(tab3);
+            tabAll.AddRange(tabFood);
 
             _stacks = new ItemStack[CountTab][][];
             _Init(0, tabAll);
-            _Init(1, tabCube);
-            _Init(2, tabCloth);
-            _Init(3, tab3);
+            _Init(1, tabBlocks);
+            _Init(2, tabCraft);
+            _Init(3, tabTools);
+            _Init(4, tabCloth);
+            _Init(5, tabFood);
+
+            return;
         }
 
         private void _Init(int index, List<ItemStack> tab)
         {
             int count = (tab.Count + Count - 1) / Count;
+            if (count < 1) count = 1;
             _stacks[index] = new ItemStack[count][];
             for (int i = 0; i < count; i++)
             {

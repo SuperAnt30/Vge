@@ -30,10 +30,10 @@ namespace Mvk2.Gui.Screens
         /// <summary>
         /// Массив кнопок закладок
         /// </summary>
-        private readonly ButtonRemove[] _buttonTab = new ButtonRemove[_countTab];
+        private readonly ButtonTab[] _buttonTab = new ButtonTab[_countTab];
         private readonly Label _labelPage;
-        private readonly ButtonRemove _buttonBack;
-        private readonly ButtonRemove _buttonNext;
+        private readonly ButtonArrow _buttonBack;
+        private readonly ButtonArrow _buttonNext;
         /// <summary>
         /// Номер закладки
         /// </summary>
@@ -51,15 +51,15 @@ namespace Mvk2.Gui.Screens
         {
             for (int i = 0; i < _countTab; i++)
             {
-                _buttonTab[i] = new ButtonRemove(window);
+                _buttonTab[i] = new ButtonTab(window, i);
                 _buttonTab[i].Tag = i;
                 _buttonTab[i].Click += _ButtonTab_Click;
             }
 
             _labelPage = new Label(window, window.Render.FontMain, 40, 16, "");
-            _buttonBack = new ButtonRemove(window);
+            _buttonBack = new ButtonArrow(window, false);
             _buttonBack.Click += (sender, e) => _PageBackNext(false);
-            _buttonNext = new ButtonRemove(window);
+            _buttonNext = new ButtonArrow(window, true);
             _buttonNext.Click += (sender, e) => _PageBackNext(true);
             _ActionTab();
         }
@@ -141,7 +141,7 @@ namespace Mvk2.Gui.Screens
         private void _ButtonTab_Click(object sender, EventArgs e)
         {
             _buttonTab[_tab].SetEnable(true);
-            _tab = (int)((ButtonRemove)sender).Tag;
+            _tab = (int)((WidgetBase)sender).Tag;
             _ActionTab();
         }
 
