@@ -318,7 +318,7 @@ namespace Mvk2.Gui.Screens
             // Прорисовки игрока
             if (window.Game.Player.Render is EntityRenderAnimation renderAnimation)
             {
-                int y = (PosY + 240) * _si;
+                int y = (PosY + 240 - 36) * _si;
                 int x = (PosX + 102) * _si;
 
                 float pitch = y > window.MouseY ? (1f - window.MouseY / (float)y)
@@ -326,7 +326,7 @@ namespace Mvk2.Gui.Screens
                 float yaw = x > window.MouseX ? (1f - window.MouseX / (float)x)
                     : -(window.MouseX - x) / (float)(Gi.Width - x);
 
-                renderAnimation.DrawGui((PosX + 102) * _si, (PosY + _biasY + 169) * _si,
+                renderAnimation.DrawGui((PosX + 102) * _si, (PosY + _biasY + 169 - 36) * _si,
                     Glm.Sin(yaw), Glm.Sin(pitch), 32 * _si); // 36
                 window.Render.ShaderBindGuiColor();
             }

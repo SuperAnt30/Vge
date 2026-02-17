@@ -9,14 +9,17 @@ namespace Mvk2.Gui.Controls
     /// </summary>
     public class ButtonTab : ButtonIcon
     {
-        private readonly float u1;
-        private readonly float u2;
+        private readonly float _u1;
+        private readonly float _u2;
 
-        public ButtonTab(WindowMain window, int index)
+        private readonly string _nameTab;
+
+        public ButtonTab(WindowMain window, int index, string nameTab)
             : base(window, 24, 20)
         {
-            u1 = .5f + index * .0625f;
-            u2 = u1 + .0625f;
+            _u1 = .5f + index * .0625f;
+            _u2 = _u1 + .0625f;
+            _nameTab = nameTab;
         }
 
         #region Draw
@@ -30,9 +33,14 @@ namespace Mvk2.Gui.Controls
         {
             float v1 = Enabled ? _isLeftDown ? .5625f : (Enter ? .5f : .4375f) : .375f;
             _meshBg.Reload(RenderFigure.Rectangle(x, y, x + 32 * _si, y + 32 * _si,
-                u1, v1, u2, v1 + .0625f));
+                _u1, v1, _u2, v1 + .0625f));
         }
 
         #endregion
+
+        /// <summary>
+        /// Вернуть подсказку у контрола
+        /// </summary>
+        public override string GetToolTip() => _nameTab;
     }
 }

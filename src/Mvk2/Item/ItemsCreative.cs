@@ -22,6 +22,13 @@ namespace Mvk2.Item
         /// All, Blocks, Craft, Tools, Cloth, Food
         /// </summary>
         public const int CountTab = 6;
+        /// <summary>
+        /// Массив названий разделов
+        /// </summary>
+        public readonly static string[] NameTab = new string[]
+        {
+            L.T("All"), L.T("Blocks"), L.T("Craft"), L.T("Tools"), L.T("Cloth"), L.T("Food")
+        };
 
         private ItemStack[][][] _stacks;
 

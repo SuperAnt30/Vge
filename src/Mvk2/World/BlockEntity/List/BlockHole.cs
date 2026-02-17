@@ -110,7 +110,10 @@ namespace Mvk2.World.BlockEntity.List
             Slot[] slots = NBTTools.ItemStacksReadFromNBT(nbt, "Hole");
             foreach (Slot slot in slots)
             {
-                SetStackInSlot(slot.SlotId, slot.Stack);
+                if (slot.SlotId < Count)
+                {
+                    SetStackInSlot(slot.SlotId, slot.Stack);
+                }
             }
         }
     }

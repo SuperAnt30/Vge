@@ -51,7 +51,8 @@ namespace Mvk2.Gui.Screens
         {
             for (int i = 0; i < _countTab; i++)
             {
-                _buttonTab[i] = new ButtonTab(window, i);
+                _buttonTab[i] = new ButtonTab(window, i,
+                    ItemsCreative.NameTab[i]);
                 _buttonTab[i].Tag = i;
                 _buttonTab[i].Click += _ButtonTab_Click;
             }
