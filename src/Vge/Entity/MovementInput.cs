@@ -146,7 +146,7 @@ namespace Vge.Entity
         public void SetStop()
         {
             Forward = Sprinting = Sneak = Jump = Back = StrafeLeft = StrafeRight = false;
-            MoveForward = MoveStrafe = MoveSpeed = 0;
+            MoveVertical = MoveForward = MoveStrafe = MoveSpeed = 0;
             Flags = 0;
         }
 

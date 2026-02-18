@@ -90,9 +90,17 @@ namespace Vge.Entity.Physics
             else if (!Movement.Sneak && isSneaking)
             {
                 // Проверка коллизии вверхней части при положении стоя
-                _entityLiving.SetSneaking(false);
                 _entityLiving.Standing();
-                IsPoseChange = true;
+                if (_entityLiving.NoClip
+                    || !Collision.IsBoundingBoxes(_entityLiving.SizeLiving.GetBoundingBox(), _entityLiving.Id))
+                {
+                    _entityLiving.SetSneaking(false);
+                    IsPoseChange = true;
+                }
+                else
+                {
+                    _entityLiving.Sitting();
+                }
             }
 
             // Sprinting

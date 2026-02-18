@@ -203,6 +203,7 @@ namespace Vge.Entity.Player
             NoClip = gm == 2;
             DisableDamage = AllowFlying = gm != 0;
             SendPlayerAbilities();
+            // На сервере нет физики у игрока, по этому её не переключаем
         }
 
         #endregion
@@ -676,6 +677,7 @@ namespace Vge.Entity.Player
             nbt.SetBool("AllowFlying", AllowFlying);
             nbt.SetBool("DisableDamage", DisableDamage);
             nbt.SetBool("Invisible", IsSpectator());
+            nbt.SetBool("Sneak", IsSneaking());
         }
 
         public override void ReadFromNBT(TagCompound nbt)
@@ -689,6 +691,7 @@ namespace Vge.Entity.Player
             AllowFlying = nbt.GetBool("AllowFlying");
             DisableDamage = nbt.GetBool("DisableDamage");
             SetSpectator(nbt.GetBool("Invisible"));
+            SetSneaking(nbt.GetBool("Sneak"));
         }
 
         #endregion

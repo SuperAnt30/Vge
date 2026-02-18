@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Util;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -273,6 +274,44 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Имеется ли хоть одна сущность, которые могут сталкиваются с aabb из секторов чанка,
+        /// </summary>
+        /// <param name="aabb">проверяемая рамка</param>
+        /// <param name="id">исключение ID сущности</param>
+        public bool IsEntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
+        {
+            // TODO::2025-06-18 Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
+            Vector3i min = aabb.MinInt() - 2;
+            Vector3i max = aabb.MaxInt() + 2;
+
+            int minCx = min.X >> 4;
+            int minCz = min.Z >> 4;
+            int maxCx = max.X >> 4;
+            int maxCz = max.Z >> 4;
+            int minCY = min.Y;
+            if (minCY < 0) minCY = 0; else if (minCY > _numberBlocks) minCY = _numberBlocks;
+            minCY = minCY >> 4;
+            int maxCY = max.Y;
+            if (maxCY < 0) maxCY = 0; else if (maxCY > _numberBlocks) maxCY = _numberBlocks;
+            maxCY = maxCY >> 4;
+
+            int xc, zc;
+            for (xc = minCx; xc <= maxCx; xc++)
+            {
+                for (zc = minCz; zc <= maxCz; zc++)
+                {
+                    ChunkBase chunk = World.GetChunk(xc, zc);
+                    // Не надо отрабатывать null, для этого есть отработка в статике
+                    if (chunk != null && chunk.IsEntityBoundingBoxesFromSector(aabb, minCY, maxCY, id))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Пересечения луча
         /// </summary>
         /// <param name="px">точка X от куда идёт лучь</param>
@@ -483,6 +522,15 @@ namespace Vge.World
                 MovingObject.SetLiquid(idBlockLiquid, blockPosLiquid);
             }
         }
+
+        /// <summary>
+        /// Имеется ли хоть одно статическое (блок) или сущности столкновения с aabb
+        /// </summary>
+        /// <param name="aabb">проверяемая рамка</param>
+        /// <param name="id">исключение ID сущности</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsBoundingBoxes(AxisAlignedBB aabb, int id)
+            => IsStaticBoundingBoxes(aabb) || IsEntityBoundingBoxesFromSector(aabb, id);
 
         #region Old
         /*

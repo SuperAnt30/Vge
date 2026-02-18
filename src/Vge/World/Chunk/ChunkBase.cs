@@ -507,6 +507,36 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Имеется ли сущность, которые могут находится в секторах чанка
+        /// </summary>
+        /// <param name="id">исключение ID сущности</param>
+        public bool IsEntityBoundingBoxesFromSector(AxisAlignedBB aabb, int minY, int maxY, int id)
+        {
+            EntityBase entity;
+            MapEntity<EntityBase> entityMap;
+            int count;
+            for (int cy = minY; cy <= maxY; cy++)
+            {
+                entityMap = ListEntitiesSection[cy];
+                count = entityMap.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    entity = entityMap.GetAt(i);
+                    // TODO::2025-06-09 !entity.IsDead в колизии, продумать, когда сущность умерла, что с колизией делать?
+                    if (entity.Id != id)// && !entity.IsDead)
+                    {
+                        if (entity.Size.IntersectsWith(aabb))
+                        {
+
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Пробудить сущности соприкасающих с блоком и проверить 
         /// соседние чанки если блок коснулся xz = 0 || 15
         /// </summary>

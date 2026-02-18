@@ -720,12 +720,19 @@ namespace Vge.Entity.Player
             // Подготовка анимационных триггеров
             if (Movement.Changed)
             {
+                // Не может встать
+                bool cantGetUp = !Movement.Sneak && IsSneaking();
+
+                if (cantGetUp) Movement.SetSneak(true);
+
                 // Отправить анимацию
                 _game.TrancivePacket(new PacketC0APlayerAnimation(Movement.Flags));
                 // Задать анимацию
                 Render.SetMovingFlags(Movement.Flags);
 
-               // Console.WriteLine("Flags: " + Movement.Flags);
+                // Console.WriteLine("Flags: " + Movement.Flags);
+
+                if (cantGetUp) Movement.SetSneak(false);
 
                 // Зачистить
                 Movement.UpdateAfter();
