@@ -18,7 +18,7 @@ namespace Vge.Entity.Physics
             : base(collision, entity)
         {
             //SetHeightAutoJump(.2f);
-            SetHeightAutoJump(1f);
+            SetHeightAutoJump(1f, .25f);
         }
 
         /// <summary>

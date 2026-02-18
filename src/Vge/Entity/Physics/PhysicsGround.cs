@@ -20,6 +20,10 @@ namespace Vge.Entity.Physics
         /// </summary>
         private float _heightAutoJump;
         /// <summary>
+        /// Высота авто прыжка за один такт, для плавности
+        /// </summary>
+        private float _heightAutoJumpTick;
+        /// <summary>
         /// Имеется ли авто прыжок
         /// </summary>
         private bool _isAutoJump;
@@ -53,9 +57,11 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Задать высоту автопрыжка, если 0 нет авто прыжка
         /// </summary>
-        public PhysicsGround SetHeightAutoJump(float height)
+        /// <param name="heightTick">Высота за один такт, для плавности</param>
+        public PhysicsGround SetHeightAutoJump(float height, float heightTick)
         {
             _heightAutoJump = height;
+            _heightAutoJumpTick = heightTick;
             _isAutoJump = height != 0;
             return this;
         }
@@ -281,8 +287,28 @@ namespace Vge.Entity.Physics
                 else
                 {
                     // Авто прыжок
-                    Entity.PosY += y + heightAutoJump;
-                    y = 0;
+                    if (heightAutoJump < _heightAutoJumpTick)
+                    {
+                        // За один такт
+                        Entity.PosY += y + heightAutoJump;
+                        y = 0;
+                    }
+                    else
+                    {
+                        // За несколько тактов
+                        if (_heightAutoJumpTick < (y + heightAutoJump))
+                        {
+                            // Это если не последний такт
+                            x = monCacheX;
+                            z = monCacheZ;
+                        }
+                        Entity.PosY += _heightAutoJumpTick;
+                        y = 0;
+                        //Console.WriteLine(heightAutoJump + " " + Entity.PosY);
+                    }
+
+                    //Entity.PosY += y + heightAutoJump;
+                    //y = 0;
                 }
             }
         }
