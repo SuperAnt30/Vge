@@ -132,6 +132,14 @@ namespace Vge.Entity.Player
         /// Обновить матрицы камеры
         /// </summary>
         private bool _updateCamera = true;
+        /// <summary>
+        /// Зажат ли контрол активной рукки
+        /// </summary>
+        private bool _controlHandAction;
+        /// <summary>
+        /// Зажат ли контрол использование предмета
+        /// </summary>
+        private bool _controlItemUse;
 
         public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
@@ -175,69 +183,59 @@ namespace Vge.Entity.Player
         #region Inputs (Mouse Key)
 
         /// <summary>
-        /// Нажата или отпущена клавиша идти вперёд
+        /// Нажат или отпущен контрол
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeyForward(bool value)
+        /// <param name="index">Номер контрола</param>
+        /// <param name="down">true - нажат, false - отпущен</param>
+        public void Control(int index, bool down)
         {
-            Movement.SetForward(value);
-            Physics.AwakenPhysics();
+            if (Options.ControlForward == index)
+            {
+                Movement.SetForward(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlBack == index)
+            {
+                Movement.SetBack(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlStrafeLeft == index)
+            {
+                Movement.SetStrafeLeft(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlStrafeRight == index)
+            {
+                Movement.SetStrafeRight(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlJump == index)
+            {
+                Movement.SetJump(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlSneak == index)
+            {
+                Movement.SetSneak(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlSprinting == index)
+            {
+                Movement.SetSprinting(down);
+                Physics.AwakenPhysics();
+            }
+            else if (Options.ControlHandAction == index)
+            {
+                if (down) _HandAction();
+                else _UndoHandAction();
+            }
+            else if (Options.ControlItemUse == index)
+            {
+                if (down) _ItemUse();
+                else _StoppedUsingItem();
+            }
         }
-        /// <summary>
-        /// Нажата или отпущена клавиша идти назад
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeyBack(bool value)
-        {
-            Movement.SetBack(value);
-            Physics.AwakenPhysics();
-        }
-        /// <summary>
-        /// Нажата или отпущена клавиша шаг влево
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeyStrafeLeft(bool value)
-        {
-            Movement.SetStrafeLeft(value);
-            Physics.AwakenPhysics();
-        }
-        /// <summary>
-        /// Нажата или отпущена клавиша шаг вправо
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeyStrafeRight(bool value)
-        {
-            Movement.SetStrafeRight(value);
-            Physics.AwakenPhysics();
-        }
-        /// <summary>
-        /// Нажата или отпущена клавиша прыжка или движение вверх
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeyJump(bool value)
-        {
-            Movement.SetJump(value);
-            Physics.AwakenPhysics();
-        }
-        /// <summary>
-        /// Нажата или отпущена клавиша присесть или движение вниз
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeySneak(bool value)
-        {
-            Movement.SetSneak(value);
-            Physics.AwakenPhysics();
-        }
-        /// <summary>
-        /// Нажата или отпущена клавиша ускорения
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void KeySprinting(bool value)
-        {
-            Movement.SetSprinting(value);
-            Physics.AwakenPhysics();
-        }
-
+        
         /// <summary>
         /// Двойной клик пробела
         /// </summary>
@@ -281,6 +279,15 @@ namespace Vge.Entity.Player
         public void ActionStop()
         {
             Movement.SetStop();
+            if (_controlHandAction)
+            {
+                _UndoHandAction();
+            }
+            if (_controlItemUse)
+            {
+                _StoppedUsingItem();
+            }
+
             Physics.AwakenPhysics();
             if (!_game.IsRunNet())
             {
@@ -291,6 +298,7 @@ namespace Vge.Entity.Player
                 RotationFramePitch = RotationPrevPitch = RotationPitch;
                 RotationYawBiasInput = RotationPitchBiasInput = 0;
             }
+
             // Задать анимацию
             Render.SetMovingFlags(Movement.Flags);
         }
@@ -306,10 +314,11 @@ namespace Vge.Entity.Player
         /// Основное действие правой рукой. Левый клик мыши
         /// (old HandAction)
         /// </summary>
-        public void HandAction()
+        private void _HandAction()
         {
             if (!IsSpectator() && true)
             {
+                _controlHandAction = true;
                 if (MovingObject.IsBlock())
                 {
                     TestHandAction = true;
@@ -328,17 +337,19 @@ namespace Vge.Entity.Player
         /// Отмена действия правой рукой
         /// (old UndoHandAction)
         /// </summary>
-        public void UndoHandAction()
+        private void _UndoHandAction()
         {
-           // _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.About));
+            _controlHandAction = false;
+            // _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.About));
         }
 
         /// <summary>
         /// Использовать предмет (ставим блок, кушаем). Правый клик мыши
         /// (old HandActionRight)
         /// </summary>
-        public void ItemUse()
+        private void _ItemUse()
         {
+            _controlItemUse = true;
             TestHandAction = true;
             if (MovingObject.IsEntity())
             {
@@ -356,9 +367,9 @@ namespace Vge.Entity.Player
         /// Остановить использование предмета
         /// (old OnStoppedUsingItem)
         /// </summary>
-        public void StoppedUsingItem()
+        private void _StoppedUsingItem()
         {
-
+            _controlItemUse = false;
         }
 
         #endregion

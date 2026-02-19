@@ -115,14 +115,6 @@ namespace Vge.Games
         /// </summary>
         private bool _isMouseFirstPersonView;
         /// <summary>
-        /// Зажата ли левая клавиша мыши
-        /// </summary>
-        private bool _isMouseDownLeft;
-        /// <summary>
-        /// Зажата ли праваля клавиша мыши
-        /// </summary>
-        private bool _isMouseDownRight;
-        /// <summary>
         /// Флаг первого запуска упровление мышкой вида от первого лица
         /// </summary>
         private bool _flagFirstMouseFPV;
@@ -269,18 +261,6 @@ namespace Vge.Games
                 {
                     // Выключить вид от первого лица
                     Player.ActionStop();
-
-                    // При отключении режима от первого лица, надо убрать клики мыши
-                    if (_isMouseDownLeft || _isMouseDownRight)
-                    {
-                        _isMouseDownLeft = false;
-                        Player.UndoHandAction();
-                        if (_isMouseDownRight)
-                        {
-                            _isMouseDownRight = false;
-                            Player.StoppedUsingItem();
-                        }
-                    }
                 }
             }
         }
@@ -310,34 +290,20 @@ namespace Vge.Games
         {
             if (_isMouseFirstPersonView)
             {
-                // Если режим от первого лица, начинаем кликать руками игрока
-                if (button == MouseButton.Left)
-                {
-                    _isMouseDownLeft = true;
-                    Player.HandAction();
-                }
-                else if (button == MouseButton.Right)
-                {
-                    _isMouseDownRight = true;
-                    Player.ItemUse();
-                }
+                Player.Control((int)button << 20, true);
             }
-
-            // Включить вид от первого лица, если это необходимо
-            MouseFirstPersonView(true);
+            else
+            {
+                // Включить вид от первого лица
+                MouseFirstPersonView(true);
+            }
         }
 
         public override void OnMouseUp(MouseButton button, int x, int y)
         {
-            Player.UndoHandAction();
-            if (button == MouseButton.Left)
+            if (_isMouseFirstPersonView)
             {
-                _isMouseDownLeft = false;
-            }
-            else if (button == MouseButton.Right)
-            {
-                _isMouseDownRight = false;
-                Player.StoppedUsingItem();
+                Player.Control((int)(button) << 20, false);
             }
         }
 
@@ -363,13 +329,24 @@ namespace Vge.Games
         public override void OnKeyDown(Keys keys)
         {
             Key.OnKeyDown(keys);
+            if (_isMouseFirstPersonView)
+            {
+                Player.Control((int)keys, true);
+            }
             ModClient.OnKeyDown(keys);
         }
-        
+
         /// <summary>
         /// Клавиша отпущена
         /// </summary>
-        public override void OnKeyUp(Keys keys) => Key.OnKeyUp(keys);
+        public override void OnKeyUp(Keys keys)
+        {
+            Key.OnKeyUp(keys);
+            if (_isMouseFirstPersonView)
+            {
+                Player.Control((int)keys, false);
+            }
+        }
 
         /// <summary>
         /// Нажата клавиша в char формате

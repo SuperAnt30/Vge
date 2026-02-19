@@ -1,5 +1,6 @@
 ﻿using System;
 using Vge.Games;
+using Vge.Util;
 using WinGL.Actions;
 
 namespace Vge.Actions
@@ -56,21 +57,8 @@ namespace Vge.Actions
                     }
                     _timeClickSpace = ms;
                 }
-
-                switch (keys)
-                {
-                    case Keys.W: _game.Player.KeyForward(true); break;
-                    case Keys.A: _game.Player.KeyStrafeLeft(true); break;
-                    case Keys.D: _game.Player.KeyStrafeRight(true); break;
-                    case Keys.S: _game.Player.KeyBack(true); break;
-                    case Keys.Space: _game.Player.KeyJump(true); break;
-                    case Keys.ShiftKey: _game.Player.KeySneak(true); break;
-                    case Keys.ControlKey: _game.Player.KeySprinting(true); break;
-                    case Keys.Tab: _game.MouseFirstPersonView(false); break;
-                    
-                }
-
-                if (keys == Keys.PageUp)
+                else if (keys == Keys.Tab) _game.MouseFirstPersonView(false);
+                else if (keys == Keys.PageUp)
                 {
                     if (_game.Player.OverviewChunk < 49)
                     {
@@ -90,19 +78,7 @@ namespace Vge.Actions
         /// <summary>
         /// Клавиша отпущена
         /// </summary>
-        public void OnKeyUp(Keys keys)
-        {
-            switch (keys)
-            {
-                case Keys.W: _game.Player.KeyForward(false); break;
-                case Keys.A: _game.Player.KeyStrafeLeft(false); break;
-                case Keys.D: _game.Player.KeyStrafeRight(false); break;
-                case Keys.S: _game.Player.KeyBack(false); break;
-                case Keys.Space: _game.Player.KeyJump(false); break;
-                case Keys.ShiftKey: _game.Player.KeySneak(false); break;
-                case Keys.ControlKey: _game.Player.KeySprinting(false); break;
-            }
-        }
+        public void OnKeyUp(Keys keys) { }
 
         /// <summary>
         /// Нажата клавиша в char формате

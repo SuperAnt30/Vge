@@ -58,7 +58,7 @@ namespace Vge.Util
             {
                 file.WriteLine("# " + _title);
                 file.WriteLine("# File Created: {0:dd.MM.yyyy HH:mm.ss}" + Ce.Br, DateTime.Now);
-                _SaveLine(file);
+                _WriteLine(file);
                 file.Close();
             }
             _UpData();
@@ -88,35 +88,44 @@ namespace Vge.Util
                 case "MusicVolume": Options.MusicVolume = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
                 case "OverviewChunk": Options.OverviewChunk = byte.Parse(value); return true;
+                case "ControlForward": Options.ControlForward = int.Parse(value); return true;
+                case "ControlStrafeLeft": Options.ControlStrafeLeft = int.Parse(value); return true;
+                case "ControlStrafeRight": Options.ControlStrafeRight = int.Parse(value); return true;
+                case "ControlBack": Options.ControlBack = int.Parse(value); return true;
+                case "ControlJump": Options.ControlJump = int.Parse(value); return true;
+                case "ControlSneak": Options.ControlSneak = int.Parse(value); return true;
+                case "ControlSprinting": Options.ControlSprinting = int.Parse(value); return true;
+                case "ControlHandAction": Options.ControlHandAction = int.Parse(value); return true;
+                case "ControlItemUse": Options.ControlItemUse = int.Parse(value); return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Загрузить построчно опции
+        /// Сохранить построчно опции
         /// </summary>
-        protected virtual void _SaveLine(StreamWriter file)
+        protected virtual void _WriteLine(StreamWriter file)
         {
-            file.WriteLine("PathAssets: " + Options.PathAssets);
-            file.WriteLine("PathGames: " + Options.PathGames);
-            file.WriteLine("\r\n# General");
-            file.WriteLine("Nickname: " + Options.Nickname);
-            file.WriteLine("Token: " + Options.Token);
-            file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
-            file.WriteLine("\r\n# Graphics");
-            file.WriteLine("AmbientOcclusion: " + (Options.AmbientOcclusion ? "1" : "0"));
-            file.WriteLine("Shadow: " + (Options.Shadow ? "1" : "0"));
-            file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));
-            file.WriteLine("VSync: " + (Options.VSync ? "1" : "0"));
-            file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());
-            file.WriteLine("Fps: " + Options.Fps.ToString());
-            file.WriteLine("\r\n# Audio");
-            file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
-            file.WriteLine("MusicVolume: " + Options.MusicVolume.ToString());
-            file.WriteLine("\r\n# Controls");
-            file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());
-            file.WriteLine("\r\n# Game");
-            file.WriteLine("OverviewChunk: " + Options.OverviewChunk.ToString());
+            //file.WriteLine("PathAssets: " + Options.PathAssets);
+            //file.WriteLine("PathGames: " + Options.PathGames);
+            //file.WriteLine("\r\n# General");
+            //file.WriteLine("Nickname: " + Options.Nickname);
+            //file.WriteLine("Token: " + Options.Token);
+            //file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
+            //file.WriteLine("\r\n# Graphics");
+            //file.WriteLine("AmbientOcclusion: " + (Options.AmbientOcclusion ? "1" : "0"));
+            //file.WriteLine("Shadow: " + (Options.Shadow ? "1" : "0"));
+            //file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));
+            //file.WriteLine("VSync: " + (Options.VSync ? "1" : "0"));
+            //file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());
+            //file.WriteLine("Fps: " + Options.Fps.ToString());
+            //file.WriteLine("\r\n# Audio");
+            //file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
+            //file.WriteLine("MusicVolume: " + Options.MusicVolume.ToString());
+            //file.WriteLine("\r\n# Controls");
+            //file.WriteLine("MouseSensitivity: " + Options.MouseSensitivity.ToString());
+            //file.WriteLine("\r\n# Game");
+            //file.WriteLine("OverviewChunk: " + Options.OverviewChunk.ToString());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using WinGL.Actions;
 
 namespace Vge.Util
 {
@@ -134,6 +135,47 @@ namespace Vge.Util
         /// IP адрес сервера
         /// </summary>
         public static string IpAddress = "127.0.0.1";
+
+        #region Controls
+
+        /// <summary>
+        /// Контрол движения вперёд
+        /// </summary>
+        public static int ControlForward = (int)Keys.W;
+        /// <summary>
+        /// Контрол шаг влево
+        /// </summary>
+        public static int ControlStrafeLeft = (int)Keys.A;
+        /// <summary>
+        /// Контрол шаг вправо
+        /// </summary>
+        public static int ControlStrafeRight = (int)Keys.D;
+        /// <summary>
+        /// Контрол движения назад
+        /// </summary>
+        public static int ControlBack = (int)Keys.S;
+        /// <summary>
+        /// Контрол прыжок
+        /// </summary>
+        public static int ControlJump = (int)Keys.Space;
+        /// <summary>
+        /// Контрол присесть
+        /// </summary>
+        public static int ControlSneak = (int)Keys.ShiftKey;
+        /// <summary>
+        /// Контрол ускорение
+        /// </summary>
+        public static int ControlSprinting = (int)Keys.ControlKey;
+        /// <summary>
+        /// Контрол активного действия руки
+        /// </summary>
+        public static int ControlHandAction = (int)MouseButton.Left << 20;
+        /// <summary>
+        /// Контрол вспомогательного действия руки
+        /// </summary>
+        public static int ControlItemUse = (int)MouseButton.Right << 20;
+
+        #endregion
 
         /// <summary>
         /// Обновить данные переменных
