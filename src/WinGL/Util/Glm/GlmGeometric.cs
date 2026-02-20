@@ -81,6 +81,12 @@ namespace WinGL.Util
         public static float Distance(Vector2 v1) => Mth.Sqrt(v1.X * v1.X + v1.Y * v1.Y);
 
         /// <summary>
+        /// Получить растояние вектора
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Distance(float x, float y) => Mth.Sqrt(x * x + y * y);
+
+        /// <summary>
         /// Квадрат евклидова расстояния между этим и заданным вектором.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

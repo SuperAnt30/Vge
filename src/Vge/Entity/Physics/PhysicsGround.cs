@@ -20,10 +20,6 @@ namespace Vge.Entity.Physics
         /// </summary>
         private float _heightAutoJump;
         /// <summary>
-        /// Высота авто прыжка за один такт, для плавности
-        /// </summary>
-        private float _heightAutoJumpTick;
-        /// <summary>
         /// Имеется ли авто прыжок
         /// </summary>
         private bool _isAutoJump;
@@ -57,11 +53,9 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Задать высоту автопрыжка, если 0 нет авто прыжка
         /// </summary>
-        /// <param name="heightTick">Высота за один такт, для плавности</param>
-        public PhysicsGround SetHeightAutoJump(float height, float heightTick)
+        public PhysicsGround SetHeightAutoJump(float height)
         {
             _heightAutoJump = height;
-            _heightAutoJumpTick = heightTick;
             _isAutoJump = height != 0;
             return this;
         }
@@ -287,7 +281,10 @@ namespace Vge.Entity.Physics
                 else
                 {
                     // Авто прыжок
-                    if (heightAutoJump < _heightAutoJumpTick)
+
+                    // Высота авто прыжка за один такт, для плавности
+                    float heightAutoJumpTick = Glm.Distance(MotionX, MotionZ);
+                    if (heightAutoJump < heightAutoJumpTick)
                     {
                         // За один такт
                         Entity.PosY += y + heightAutoJump;
@@ -296,19 +293,16 @@ namespace Vge.Entity.Physics
                     else
                     {
                         // За несколько тактов
-                        if (_heightAutoJumpTick < (y + heightAutoJump))
+                        if (heightAutoJumpTick < (y + heightAutoJump))
                         {
                             // Это если не последний такт
                             x = monCacheX;
                             z = monCacheZ;
                         }
-                        Entity.PosY += _heightAutoJumpTick;
+                        Entity.PosY += heightAutoJumpTick;
                         y = 0;
                         //Console.WriteLine(heightAutoJump + " " + Entity.PosY);
                     }
-
-                    //Entity.PosY += y + heightAutoJump;
-                    //y = 0;
                 }
             }
         }
