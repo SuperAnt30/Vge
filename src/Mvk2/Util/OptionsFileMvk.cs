@@ -57,6 +57,7 @@ namespace Mvk2.Util
             file.WriteLine("VSync: " + (Options.VSync ? "1" : "0"));
             file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());
             file.WriteLine("Fps: " + Options.Fps.ToString());
+            file.WriteLine("Fov: " + Options.Fov.ToString());
             file.WriteLine("\r\n# Audio");
             file.WriteLine("SoundVolume: " + Options.SoundVolume.ToString());
             file.WriteLine("MusicVolume: " + Options.MusicVolume.ToString());

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using WinGL.Actions;
+using WinGL.Util;
 
 namespace Vge.Util
 {
@@ -90,6 +91,14 @@ namespace Vge.Util
         /// Желаемый FPS
         /// </summary>
         public static int Fps = 60;
+        /// <summary>
+        /// Угол обзора камеры
+        /// </summary>
+        public static int Fov = 70;
+        /// <summary>
+        /// Получить громкость звуковых эффектов
+        /// </summary>
+        public static float FovFloat { get; private set; }
 
         /// <summary>
         /// Общая громкость
@@ -184,6 +193,7 @@ namespace Vge.Util
         {
             SoundVolumeFloat = SoundVolume / 100f;
             MusicVolumeFloat = MusicVolume / 100f;
+            FovFloat = Glm.Radians(Fov);
 
             if (MouseSensitivity > 50)
             {

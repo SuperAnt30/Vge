@@ -715,7 +715,7 @@ namespace Vge.Entity.Inventory
             => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId, stack));
 
 
-        // TODO:: 2025-10-01 удалить
+        // TODO::2025-10-01 удалить
         /// <summary>
         /// Событие изменён слот
         /// </summary>

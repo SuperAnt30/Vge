@@ -189,8 +189,16 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Задать импульс
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetPhysicsImpulse(float x, float y, float z)
             => SendPacket(new PacketS08PlayerPosLook(x, y, z));
+
+        /// <summary>
+        /// Пробудить физику
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void AwakenPhysicSleep()
+            => SendPacket(new PacketS08PlayerPosLook(PacketS08PlayerPosLook.EnumAction.Awaken));
 
         /// <summary>
         /// Задать режим игры игрока

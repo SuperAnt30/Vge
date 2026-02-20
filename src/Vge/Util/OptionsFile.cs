@@ -84,6 +84,7 @@ namespace Vge.Util
                 case "AmbientOcclusion": Options.AmbientOcclusion = value == "1"; return true;
                 case "Shadow": Options.Shadow = value == "1"; return true;
                 case "Fps": Options.Fps = int.Parse(value); return true;
+                case "Fov": Options.Fov = int.Parse(value); return true;
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "MusicVolume": Options.MusicVolume = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;

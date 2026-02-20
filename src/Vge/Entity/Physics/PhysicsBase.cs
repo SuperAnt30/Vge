@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
@@ -11,6 +12,11 @@ namespace Vge.Entity.Physics
     /// </summary>
     public class PhysicsBase
     {
+        /// <summary>
+        /// Максимальный предел зажаточти сущности в тактах, после этого перестанет работать физика
+        /// 1 мин = 1800
+        /// </summary>
+        private const ushort CountTickCaughtMax = 1800;
         /// <summary>
         /// Обект перемещений
         /// </summary>
@@ -300,7 +306,7 @@ namespace Vge.Entity.Physics
                     }
                     else
                     {
-                        if (CaughtInBlock < 65535)
+                        if (CaughtInBlock < CountTickCaughtMax)
                         {
                             CaughtInBlock++;
                             AwakenPhysics();
@@ -334,7 +340,8 @@ namespace Vge.Entity.Physics
         protected void _CheckMoveCollidingEntity(AxisAlignedBB boundingBox, ref float x, ref float y, ref float z)
         {
             // Собираем все близлижащий сущностей для дальнейше проверки
-            Collision.EntityBoundingBoxesFromSector(boundingBox.AddCoordBias(x, y, z).Expand(.2f), Entity.Id);
+            Collision.EntityBoundingBoxesFromSector(
+                boundingBox.AddCoordBias(x, y, z).Expand(.2f, 1.2f, .2f), Entity.Id);
 
             // Если нет сущностей, то не зачем дальше обрабатывать
             if (Collision.ListEntity.Count == 0)
@@ -392,7 +399,7 @@ namespace Vge.Entity.Physics
                 // +-----+
                 // |  я  |
                 // +-----+
-                aabbCheck = boundingBox.Up(.2f);
+                aabbCheck = boundingBox.Up(1.2f);
                 for (int i = 0; i < count; i++)
                 {
                     entity = entities[i];
@@ -511,7 +518,7 @@ namespace Vge.Entity.Physics
             }
             else
             {
-                if (CaughtInEntity < 65535)
+                if (CaughtInEntity < CountTickCaughtMax)
                 {
                     CaughtInEntity++;
                     AwakenPhysics();

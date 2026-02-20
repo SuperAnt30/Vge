@@ -27,7 +27,7 @@
         public PacketC03UseEntity(int id, float x, float y, float z)
         {
             Index = id;
-            Action = EnumAction.Inpulse;
+            Action = EnumAction.Impulse;
             X = x;
             Y = y;
             Z = z;
@@ -65,7 +65,7 @@
             /// <summary>
             /// Импульс
             /// </summary>
-            Inpulse = 1,
+            Impulse = 1,
             /// <summary>
             /// Пробудить
             /// </summary>

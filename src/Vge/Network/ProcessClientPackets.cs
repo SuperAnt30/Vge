@@ -209,13 +209,13 @@ namespace Vge.Network
         /// </summary>
         private void _Handle08PlayerPosLook(PacketS08PlayerPosLook packet)
         {
-            if (packet.Impulse)
+            if (packet.Action == PacketS08PlayerPosLook.EnumAction.Impulse)
             {
                 Game.Player.Physics.ImpulseX = packet.X;
                 Game.Player.Physics.ImpulseY = packet.Y;
                 Game.Player.Physics.ImpulseZ = packet.Z;
             }
-            else
+            else if (packet.Action == PacketS08PlayerPosLook.EnumAction.Moving)
             {
                 Game.Player.PosX = packet.X;
                 Game.Player.PosY = packet.Y;

@@ -12,7 +12,17 @@
         public float Z { get; private set; }
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
-        public bool Impulse { get; private set; }
+        public EnumAction Action { get; private set; }
+
+        /// <summary>
+        /// Задать импульс игроку
+        /// </summary>
+        public PacketS08PlayerPosLook(EnumAction action)
+        {
+            Action = action;
+            X = Y = Z = 0;
+            Yaw = Pitch = 0;
+        }
 
         /// <summary>
         /// Задать импульс игроку
@@ -23,7 +33,7 @@
             Y = y;
             Z = z;
             Yaw = Pitch = 0;
-            Impulse = true;
+            Action = EnumAction.Impulse;
         }
 
         /// <summary>
@@ -36,33 +46,58 @@
             Z = z;
             Yaw = yaw;
             Pitch = pitch;
-            Impulse = false;
+            Action = EnumAction.Moving;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            X = stream.Float();
-            Y = stream.Float();
-            Z = stream.Float();
-            Impulse = stream.Bool();
-            if (!Impulse)
+            Action = (EnumAction)stream.Byte();
+            if (Action != EnumAction.Impulse)
             {
-                Yaw = stream.Float();
-                Pitch = stream.Float();
+                X = stream.Float();
+                Y = stream.Float();
+                Z = stream.Float();
+                if (Action == EnumAction.Moving)
+                {
+                    Yaw = stream.Float();
+                    Pitch = stream.Float();
+                }
             }
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Float(X);
-            stream.Float(Y);
-            stream.Float(Z);
-            stream.Bool(Impulse);
-            if (!Impulse)
+            stream.Byte((byte)Action);
+            if (Action != EnumAction.Impulse)
             {
-                stream.Float(Yaw);
-                stream.Float(Pitch);
+                stream.Float(X);
+                stream.Float(Y);
+                stream.Float(Z);
+                if (Action == EnumAction.Moving)
+                {
+                    stream.Float(Yaw);
+                    stream.Float(Pitch);
+                }
             }
+        }
+
+        /// <summary>
+        /// Варианты действия
+        /// </summary>
+        public enum EnumAction
+        {
+            /// <summary>
+            /// Перемещение
+            /// </summary>
+            Moving = 0,
+            /// <summary>
+            /// Импульс
+            /// </summary>
+            Impulse = 1,
+            /// <summary>
+            /// Пробудить
+            /// </summary>
+            Awaken = 2
         }
     }
 }

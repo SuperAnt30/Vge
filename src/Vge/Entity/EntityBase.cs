@@ -414,7 +414,7 @@ namespace Vge.Entity
         /// Пробудить физику
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AwakenPhysicSleep() => Physics?.AwakenPhysics();
+        public virtual void AwakenPhysicSleep() => Physics?.AwakenPhysics();
 
         /// <summary>
         /// Пробудить физику выбранной сущности.
@@ -424,13 +424,13 @@ namespace Vge.Entity
         public void AwakenPhysicSleep(EntityBase entity)
         {
             entity.AwakenPhysicSleep();
-            _SetAwakenPhysicSleep(entity.Id);
+            _AwakenPhysicSleep(entity.Id);
         }
 
         /// <summary>
-        /// Задать выбранной сущности импульс
+        /// Пробудить сущность с ID
         /// </summary>
-        protected virtual void _SetAwakenPhysicSleep(int id) { }
+        protected virtual void _AwakenPhysicSleep(int id) { }
 
         /// <summary>
         /// Спит ли физика, если физики нет, не спит (false)
@@ -468,7 +468,7 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Задать выбранной сущности импульс
+        /// Задать импульс сущности с ID
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _SetEntityPhysicsImpulse(int id, float x, float y, float z) { }

@@ -146,7 +146,7 @@ namespace Vge.Entity.Player
             Login = game.ToLoginPlayer();
             Token = game.ToTokenPlayer();
             Chat = new ChatList(Ce.ChatLineTimeLife, _game.Render.FontMain);
-            Fov = new SmoothFrame(1.43f);
+            Fov = new SmoothFrame(Options.FovFloat);
             _eyeFrame = SizeLiving.GetEye();
             Eye = new SmoothFrame(_eyeFrame);
             
@@ -178,9 +178,15 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override float GetEyeHeight() => _eyeFrame;
 
+        /// <summary>
+        /// Получить время в милисекундах
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override long _Time() => _game.Time();
+
         #endregion
 
-        #region Inputs (Mouse Key)
+        #region Control (Mouse Key)
 
         /// <summary>
         /// Нажат или отпущен контрол
@@ -268,8 +274,7 @@ namespace Vge.Entity.Player
                 // Определяем углы смещения
                 RotationPitchBiasInput -= centerBiasY / (float)Gi.Height * speedMouse;
                 RotationYawBiasInput += centerBiasX / (float)Gi.Width * speedMouse;
-                // Пробуждаем физику
-                Physics.AwakenPhysics();
+                // Пробуждать физику не надо! Cмещение Hitbox-а не было
             }
         }
 
@@ -679,25 +684,13 @@ namespace Vge.Entity.Player
                 if (Physics.IsPoseChange)
                 {
                     Eye.Set(SizeLiving.GetEye(), 6);
-                    Fov.Set(IsSprinting() ? 1.62f : 1.43f, 6); // TODO::2025-06-23 в конфиг обзора!
+                    Fov.Set(IsSprinting() ? Options.FovFloat * 1.2f : Options.FovFloat, 10);
                 }
 
                 // Для отправки
                 if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
                 {
-                    RotationPrevYaw = RotationYaw;
-                    RotationPrevPitch = RotationPitch;
-
-                    RotationPitch += RotationPitchBiasInput;
-                    if (RotationPitch < -Pi89) RotationPitch = -Pi89;
-                    else if (RotationPitch > Pi89) RotationPitch = Pi89;
-
-                    RotationYaw += RotationYawBiasInput;
-                    if (RotationYaw > Glm.Pi) RotationYaw -= Glm.Pi360;
-                    else if (RotationYaw < -Glm.Pi) RotationYaw += Glm.Pi360;
-
-                    // Обнуляем смещение вращения
-                    RotationYawBiasInput = RotationPitchBiasInput = 0;
+                    _RotationUpdate();
 
                     if (Physics.IsMotionChange)
                     {
@@ -725,6 +718,17 @@ namespace Vge.Entity.Player
                     // Смена позы
                     _game.TrancivePacket(new PacketC04PlayerPosition(IsSneaking(), IsSprinting(), OnGround));
                     Physics.ResetPose();
+                }
+            }
+            else
+            {
+                // Если физика спит, проверяем вращение, из-за вращения физику не пробуждаем. Так-как положение hitboxa не меняется
+                if (IsRotationChange() || RotationYawBiasInput != 0 || RotationPitchBiasInput != 0)
+                {
+                    _RotationUpdate();
+                    // Только вращение
+                    _game.TrancivePacket(new PacketC04PlayerPosition(RotationYaw, RotationPitch,
+                        IsSneaking(), IsSprinting(), OnGround));
                 }
             }
 
@@ -768,6 +772,27 @@ namespace Vge.Entity.Player
             _SyncCurrentPlayItem();
 
             Render.UpdateClient(world, deltaTime);
+        }
+
+        /// <summary>
+        /// Изминения вращения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _RotationUpdate()
+        {
+            RotationPrevYaw = RotationYaw;
+            RotationPrevPitch = RotationPitch;
+
+            RotationPitch += RotationPitchBiasInput;
+            if (RotationPitch < -Pi89) RotationPitch = -Pi89;
+            else if (RotationPitch > Pi89) RotationPitch = Pi89;
+
+            RotationYaw += RotationYawBiasInput;
+            if (RotationYaw > Glm.Pi) RotationYaw -= Glm.Pi360;
+            else if (RotationYaw < -Glm.Pi) RotationYaw += Glm.Pi360;
+
+            // Обнуляем смещение вращения
+            RotationYawBiasInput = RotationPitchBiasInput = 0;
         }
 
         /// <summary>
@@ -908,28 +933,6 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
-        /// Для определения параметров блока чанк и локальные координаты блока
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual string _ToBlockInfo(ChunkBase chunk, Vector3i pos) => "";
-
-        #endregion
-
-        /// <summary>
-        /// Задать выбранной сущности импульс
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _SetEntityPhysicsImpulse(int id, float x, float y, float z)
-            => _game.TrancivePacket(new PacketC03UseEntity(id, x, y, z));
-
-        /// <summary>
-        /// Задать выбранной сущности импульс
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void _SetAwakenPhysicSleep(int id)
-            => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
-
-        /// <summary>
         /// Проверить изменение слота если изменён, отправить на сервер
         /// </summary>
         private void _SyncCurrentPlayItem()
@@ -940,10 +943,30 @@ namespace Vge.Entity.Player
                 _currentPlayerItem = currentItem;
                 _game.TrancivePacket(new PacketC09HeldItemChange(_currentPlayerItem));
                 // Отмена разрушения блока если было смена предмета в руке
-               // ClientMain.TrancivePacket(new PacketC07PlayerDigging(itemInWorldManager.BlockPosDestroy, PacketC07PlayerDigging.EnumDigging.About));
-               // ItemInWorldManagerDestroyAbout();
+                // ClientMain.TrancivePacket(new PacketC07PlayerDigging(itemInWorldManager.BlockPosDestroy, PacketC07PlayerDigging.EnumDigging.About));
+                // ItemInWorldManagerDestroyAbout();
             }
         }
+
+        #endregion
+
+        #region Physic
+
+        /// <summary>
+        /// Задать импульс сущности с ID
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _SetEntityPhysicsImpulse(int id, float x, float y, float z)
+            => _game.TrancivePacket(new PacketC03UseEntity(id, x, y, z));
+
+        /// <summary>
+        /// Пробудить сущность с ID
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _AwakenPhysicSleep(int id)
+            => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
+
+        #endregion
 
         #region Packet
 
@@ -1030,6 +1053,12 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Для определения параметров блока чанк и локальные координаты блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual string _ToBlockInfo(ChunkBase chunk, Vector3i pos) => "";
+
+        /// <summary>
         /// Задать обзор чанков у клиента
         /// </summary>
         public void SetOverviewChunk(byte overviewChunk, bool isSaveOptions)
@@ -1054,12 +1083,6 @@ namespace Vge.Entity.Player
             }
         }
 
-        /// <summary>
-        /// Получить время в милисекундах
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override long _Time() => _game.Time();
-
         public override string ToString()
         {
             if (Physics == null) return "null";
@@ -1076,11 +1099,15 @@ namespace Vge.Entity.Player
                 + Movement + "\r\n" + motion;
         }
 
+        #region Events
+
         /// <summary>
         /// Событие любого объекта с сервера для отладки
         /// </summary>
         public event StringEventHandler TagDebug;
         public void OnTagDebug(string title, object tag)
             => TagDebug?.Invoke(this, new StringEventArgs(title, tag));
+
+        #endregion
     }
 }

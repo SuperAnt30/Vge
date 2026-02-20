@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using System;
+using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
@@ -177,7 +178,7 @@ namespace Vge.Network
                 EntityBase entity = playerServer.GetWorld().LoadedEntityList.Get(packet.Index);
                 if (entity != null)
                 {
-                    if (packet.Action == PacketC03UseEntity.EnumAction.Inpulse)
+                    if (packet.Action == PacketC03UseEntity.EnumAction.Impulse)
                     {
                         entity.SetPhysicsImpulse(packet.X, packet.Y, packet.Z);
                     }
