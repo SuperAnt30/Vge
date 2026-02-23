@@ -4,6 +4,7 @@ namespace Vge.Network.Packets.Client
 {
     /// <summary>
     /// Пакет Игрок копает / ломает
+    /// Swing - взмах
     /// </summary>
     public struct PacketC07PlayerDigging : IPacket
     {

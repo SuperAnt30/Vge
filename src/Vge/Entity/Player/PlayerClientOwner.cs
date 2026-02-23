@@ -132,14 +132,11 @@ namespace Vge.Entity.Player
         /// Обновить матрицы камеры
         /// </summary>
         private bool _updateCamera = true;
+        
         /// <summary>
-        /// Зажат ли контрол активной рукки
+        /// Менеджер действий рук игрока 
         /// </summary>
-        private bool _controlHandAction;
-        /// <summary>
-        /// Зажат ли контрол использование предмета
-        /// </summary>
-        private bool _controlItemUse;
+        protected HandManager _handManager;
 
         public PlayerClientOwner(GameBase game) : base(game) // IndexEntity ещё не определён
         {
@@ -149,7 +146,10 @@ namespace Vge.Entity.Player
             Fov = new SmoothFrame(Options.FovFloat);
             _eyeFrame = SizeLiving.GetEye();
             Eye = new SmoothFrame(_eyeFrame);
-            
+
+            //_handAction = new HandActionQueue(this);
+            //_handActionSecond = new HandActionQueue(this);
+
             _UpdateMatrixCamera();
         }
 
@@ -232,13 +232,11 @@ namespace Vge.Entity.Player
             }
             else if (Options.ControlHandAction == index)
             {
-                if (down) _HandAction();
-                else _UndoHandAction();
+                _handManager.SetAction(down);
             }
-            else if (Options.ControlItemUse == index)
+            else if (Options.ControlHandSecond == index)
             {
-                if (down) _ItemUse();
-                else _StoppedUsingItem();
+                _handManager.SetSecond(down);
             }
         }
         
@@ -284,14 +282,7 @@ namespace Vge.Entity.Player
         public void ActionStop()
         {
             Movement.SetStop();
-            if (_controlHandAction)
-            {
-                _UndoHandAction();
-            }
-            if (_controlItemUse)
-            {
-                _StoppedUsingItem();
-            }
+            _handManager.SetStop();
 
             Physics.AwakenPhysics();
             if (!_game.IsRunNet())
@@ -314,68 +305,6 @@ namespace Vge.Entity.Player
 
         // TODO::2025-08-07 Временый тест, убрать...
         public bool TestHandAction;
-
-        /// <summary>
-        /// Основное действие правой рукой. Левый клик мыши
-        /// (old HandAction)
-        /// </summary>
-        private void _HandAction()
-        {
-            if (!IsSpectator() && true)
-            {
-                _controlHandAction = true;
-                if (MovingObject.IsBlock())
-                {
-                    TestHandAction = true;
-
-                    _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
-                }
-                else
-                {
-                    // Типа броска
-                    _game.TrancivePacket(new PacketC07PlayerDigging(new BlockPos(), PacketC07PlayerDigging.EnumDigging.About));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Отмена действия правой рукой
-        /// (old UndoHandAction)
-        /// </summary>
-        private void _UndoHandAction()
-        {
-            _controlHandAction = false;
-            // _game.TrancivePacket(new PacketC07PlayerDigging(MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.About));
-        }
-
-        /// <summary>
-        /// Использовать предмет (ставим блок, кушаем). Правый клик мыши
-        /// (old HandActionRight)
-        /// </summary>
-        private void _ItemUse()
-        {
-            _controlItemUse = true;
-            TestHandAction = true;
-            if (MovingObject.IsEntity())
-            {
-                _game.TrancivePacket(new PacketC03UseEntity(MovingObject.Entity.Id,
-                    PacketC03UseEntity.EnumAction.Interact));
-            }
-            else if (MovingObject.IsBlock())
-            {
-                _game.TrancivePacket(new PacketC08PlayerBlockPlacement(MovingObject.BlockPosition,
-                    MovingObject.Side, MovingObject.Facing));
-            }
-        }
-
-        /// <summary>
-        /// Остановить использование предмета
-        /// (old OnStoppedUsingItem)
-        /// </summary>
-        private void _StoppedUsingItem()
-        {
-            _controlItemUse = false;
-        }
 
         #endregion
 
@@ -668,6 +597,9 @@ namespace Vge.Entity.Player
             // Должны быть до base.Update()
             Eye.Update();
             Fov.Update();
+
+            // Обновить активное действие рук
+            _handManager.Update();
 
             if (IsPositionChange())
             {

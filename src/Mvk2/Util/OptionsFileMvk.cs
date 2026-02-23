@@ -71,7 +71,7 @@ namespace Mvk2.Util
             file.WriteLine("ControlSneak: " + Options.ControlSneak.ToString());
             file.WriteLine("ControlSprinting: " + Options.ControlSprinting.ToString());
             file.WriteLine("ControlHandAction: " + Options.ControlHandAction.ToString());
-            file.WriteLine("ControlItemUse: " + Options.ControlItemUse.ToString());
+            file.WriteLine("ControlHandSecond: " + Options.ControlHandSecond.ToString());
             file.WriteLine("ControlInventory: " + OptionsMvk.ControlInventory.ToString());
             file.WriteLine("\r\n# Game");
             file.WriteLine("OverviewChunk: " + Options.OverviewChunk.ToString());

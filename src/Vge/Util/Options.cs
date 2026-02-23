@@ -176,13 +176,13 @@ namespace Vge.Util
         /// </summary>
         public static int ControlSprinting = (int)Keys.ControlKey;
         /// <summary>
-        /// Контрол активного действия руки
+        /// Контрол активного действия руки (ЛКМ)
         /// </summary>
         public static int ControlHandAction = (int)MouseButton.Left << 20;
         /// <summary>
-        /// Контрол вспомогательного действия руки
+        /// Контрол вспомогательного действия руки (ПКМ)
         /// </summary>
-        public static int ControlItemUse = (int)MouseButton.Right << 20;
+        public static int ControlHandSecond = (int)MouseButton.Right << 20;
 
         #endregion
 

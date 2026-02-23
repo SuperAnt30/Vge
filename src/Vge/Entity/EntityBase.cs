@@ -169,7 +169,7 @@ namespace Vge.Entity
         /// <summary>
         /// Объект сетевого мира, существует только у сущностей на сервере
         /// </summary>
-        protected WorldServer _world;
+        protected WorldServer _worldServer;
 
         #region Init
 
@@ -231,7 +231,7 @@ namespace Vge.Entity
             _InitSize();
             _InitPhysics(worldServer.Collision);
             _CreateInventory();
-            _world = worldServer;
+            _worldServer = worldServer;
         }
 
         /// <summary>
@@ -576,7 +576,7 @@ namespace Vge.Entity
         /// Объект сетевого мира, существует только у сущностей на сервере
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual WorldServer GetWorld() => _world;
+        public virtual WorldServer GetWorld() => _worldServer;
 
         /// <summary>
         /// Вызывается в момент спавна на клиенте

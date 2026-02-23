@@ -393,14 +393,16 @@ namespace Vge.Entity.Player
         /// </summary>
         public void PacketPlayerDigging(PacketC07PlayerDigging packet)
         {
+            Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos());
             // Временно!
             // Уничтожение блока
             WorldServer worldServer = GetWorld();
             BlockState blockState = worldServer.GetBlockState(packet.GetBlockPos());
             if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
             {
-                BlockBase block = blockState.GetBlock();
-                worldServer.SetBlockToAir(packet.GetBlockPos(), worldServer.IsRemote ? 46 : 63);
+               // BlockBase block = blockState.GetBlock();
+                worldServer.SetBlockToAir(packet.GetBlockPos(), 63);
+                //worldServer.MarkBlockForUpdate(packet.GetBlockPos().X, packet.GetBlockPos().Y, packet.GetBlockPos().Z);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }
             else
@@ -610,11 +612,11 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override WorldServer GetWorld()
         {
-            if (_world == null)
+            if (_worldServer == null)
             {
-                _world = _server.Worlds.GetWorld(IdWorld);
+                _worldServer = _server.Worlds.GetWorld(IdWorld);
             }
-            return _world;
+            return _worldServer;
         }
 
         /// <summary>
@@ -625,7 +627,7 @@ namespace Vge.Entity.Player
             GetWorld().RemovePlayerInWorldForNextWorld(this);
             // Смена id мира
             IdWorld = newIdWorld;
-            _world = _server.Worlds.GetWorld(IdWorld);
+            _worldServer = _server.Worlds.GetWorld(IdWorld);
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorld().Settings));
             // Вносим в менеджер фрагментов игрока
             IsDead = false;

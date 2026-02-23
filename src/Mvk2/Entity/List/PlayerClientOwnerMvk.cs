@@ -19,7 +19,10 @@ namespace Mvk2.Entity.List
         /// </summary>
         public InventoryPlayerMvk InvPlayer { get; private set; }
 
-        public PlayerClientOwnerMvk(GameBase game) : base(game) { }
+        public PlayerClientOwnerMvk(GameBase game) : base(game)
+        {
+            _handManager = new HandManagerClient(game, this);
+        }
 
         /// <summary>
         /// Инициализация инвенторя

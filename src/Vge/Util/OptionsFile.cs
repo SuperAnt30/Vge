@@ -97,7 +97,7 @@ namespace Vge.Util
                 case "ControlSneak": Options.ControlSneak = int.Parse(value); return true;
                 case "ControlSprinting": Options.ControlSprinting = int.Parse(value); return true;
                 case "ControlHandAction": Options.ControlHandAction = int.Parse(value); return true;
-                case "ControlItemUse": Options.ControlItemUse = int.Parse(value); return true;
+                case "ControlHandSecond": Options.ControlHandSecond = int.Parse(value); return true;
             }
             return false;
         }
