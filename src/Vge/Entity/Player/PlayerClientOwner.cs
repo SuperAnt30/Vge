@@ -1025,10 +1025,18 @@ namespace Vge.Entity.Player
                 Physics.ToDebugString()
                 );
 
+            string chunkStorage = "";
+            ChunkBase chunk = _game.World.GetChunk(ChunkPositionX, ChunkPositionZ);
+            if (chunk != null)
+            {
+                chunkStorage = "\r\n" + chunk.StorageArrays[ChunkPositionY].ToStringCount();
+            }
+
             return Login + " " + ToStringPositionRotation() + " O:" + OverviewChunk
                 + (OnGround ? " OnGround" : "")
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
-                + Movement + "\r\n" + motion;
+                + Movement + "\r\n" + motion  
+                + chunkStorage;
         }
 
         #region Events

@@ -38,5 +38,8 @@ namespace Vge.World
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAnimation() => CountHeight > 1 && CountHeight != CountWidth;
+
+        public override string ToString()
+            => Index + " [" + CountWidth + ":" + CountHeight + "]";
     }
 }

@@ -16,7 +16,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Псевдоним обязательного блока барьер
         /// </summary>
-       // public const string Barrier = "Barrier";
+        // public const string Barrier = "Barrier";
 
         /// <summary>
         /// Таблица блоков для регистрации

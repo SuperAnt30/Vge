@@ -180,6 +180,10 @@ public sealed class Gi
     /// Объект рендера жидкого блока с альфа прозрачностью
     /// </summary>
     public readonly static BlockRenderLiquid BlockLiquidAlphaRendFull = new BlockRenderLiquid(VertexAlpha);
+    /// <summary>
+    /// Объект процесса разруцшения блока
+    /// </summary>
+    public readonly static DestroyBlockProgress DestroyBlock = new DestroyBlockProgress();
 
     /// <summary>
     /// Какой радиус для рендера псевдо чанков альфа блоков, при смещении больше 16 блоков

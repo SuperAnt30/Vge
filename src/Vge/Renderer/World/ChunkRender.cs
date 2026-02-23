@@ -250,6 +250,14 @@ namespace Vge.Renderer.World
                                         {
                                             // Определяем met блока
                                             Gi.Block.BlockRender.Light = chunkStorage.Light[index];
+                                            if (chunkStorage.Destroy.ContainsKey(index))
+                                            {
+                                                Gi.Block.BlockRender.Destroy = chunkStorage.Destroy[index];
+                                            }
+                                            else if (Gi.Block.BlockRender.Destroy != 255)
+                                            {
+                                                Gi.Block.BlockRender.Destroy = 255;
+                                            }
                                             Gi.Block.BlockRender.RenderSide();
 
                                             // Тут можно Gi.Block залить в метод чек Gi.Block.BlockRender.Met для понимания имеется ли жидкость
@@ -374,6 +382,14 @@ namespace Vge.Renderer.World
                                         if (Gi.Block.BlockRender.CheckSide())
                                         {
                                             Gi.Block.BlockRender.Light = chunkStorage.Light[index];
+                                            if (chunkStorage.Destroy.ContainsKey(index))
+                                            {
+                                                Gi.Block.BlockRender.Destroy = chunkStorage.Destroy[index];
+                                            }
+                                            else if (Gi.Block.BlockRender.Destroy != 255)
+                                            {
+                                                Gi.Block.BlockRender.Destroy = 255;
+                                            }
                                             Gi.Block.BlockRender.RenderSide();
                                             _listAlphaBuffer.Add(new BlockBufferDistance()
                                             {

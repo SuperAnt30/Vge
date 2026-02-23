@@ -33,7 +33,7 @@ namespace Vge.Command
             }
 
             string param = commandParams[0].ToLower();
-            WorldServer worldServer = player.GetWorld();
+            WorldServer worldServer = player.GetWorldServer();
             int speed = worldServer.Settings.Calendar.GetSpeedDay();
             if (speed == 0)
             {

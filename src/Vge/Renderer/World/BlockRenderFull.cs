@@ -14,6 +14,11 @@ namespace Vge.Renderer.World
         public readonly static Vector3 ColorWhite = new Vector3(1);
 
         /// <summary>
+        /// Статическая переменная всех 255
+        /// </summary>
+        private static byte[] _colorsFF = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF };
+
+        /// <summary>
         /// Построение стороны блока
         /// </summary>
         public BlockSide blockUV = new BlockSide();
@@ -30,6 +35,10 @@ namespace Vge.Renderer.World
         /// Метданные текущего блока
         /// </summary>
         public int Met;
+        /// <summary>
+        /// Процесс разружения блока 0-254, 255 - нет разрушения
+        /// </summary>
+        public byte Destroy;
 
         /// <summary>
         /// Позиция блока в чанке 0..15
@@ -292,19 +301,25 @@ namespace Vge.Renderer.World
                         blockUV.BuildingWind(_rectangularSide.Wind);
                     }
 
-
-                    //if (damagedBlocksValue != -1)
-                    //{
-                    //    int i1 = i + 1;
-                    //    if ((i1 < count && rectangularSides[i1].side != side) || i1 == count)
-                    //    {
-                    //        // Разрушение блока
-                    //        blockUV.colorsr = colorsFF;
-                    //        blockUV.colorsg = colorsFF;
-                    //        blockUV.colorsb = colorsFF;
-                    //        blockUV.BuildingDamaged((block.IsDamagedBlockBlack ? 3840 : 3968) + damagedBlocksValue * 2);
-                    //    }
-                    //}
+                    // Разрушение блока, если имеется
+                    if (Destroy != 255)
+                    {
+                        blockUV.ColorsR = _colorsFF;
+                        blockUV.ColorsG = _colorsFF;
+                        blockUV.ColorsB = _colorsFF;
+                        blockUV.AnimationFrame = 0;
+                        blockUV.AnimationPause = 0;
+                        blockUV.Sharpness = 4;
+                        blockUV.Vertex = Gi.DestroyBlock.GetVertices(Destroy, blockUV.Vertex);
+                        if (_rectangularSide.Wind == 0)
+                        {
+                            blockUV.Building();
+                        }
+                        else
+                        {
+                            blockUV.BuildingWind(_rectangularSide.Wind);
+                        }
+                    }
                 }
             }
         }

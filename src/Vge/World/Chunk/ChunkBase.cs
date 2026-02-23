@@ -238,6 +238,41 @@ namespace Vge.World.Chunk
         public BlockState GetBlockStateNotCheckLight(int x, int y, int z)
             => GetBlockStateNotCheckLight(z << 4 | x, y);
 
+
+        /// <summary>
+        /// Задать процес разрушения блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetBlockDestroy(BlockPos blockPos, byte process)
+        {
+            if (blockPos.IsValid(Settings))
+            {
+                int yc = blockPos.Y >> 4;
+                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                if (StorageArrays[yc].Destroy.ContainsKey(index))
+                {
+                    StorageArrays[yc].Destroy[index] = process;
+                }
+                else
+                {
+                    StorageArrays[yc].Destroy.Add(index, process);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Удалить разрушения блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveBlockDestroy(BlockPos blockPos)
+        {
+            if (blockPos.IsValid(Settings))
+            {
+                StorageArrays[blockPos.Y >> 4].Destroy.Remove((blockPos.Y & 15) << 8 
+                    | (blockPos.Z & 15) << 4 | (blockPos.X & 15));
+            }
+        }
+
         /// <summary>
         /// Изменить метданные блока, без изменения для клиента
         /// </summary>

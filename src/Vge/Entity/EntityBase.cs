@@ -576,7 +576,7 @@ namespace Vge.Entity
         /// Объект сетевого мира, существует только у сущностей на сервере
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual WorldServer GetWorld() => _worldServer;
+        public virtual WorldServer GetWorldServer() => _worldServer;
 
         /// <summary>
         /// Вызывается в момент спавна на клиенте

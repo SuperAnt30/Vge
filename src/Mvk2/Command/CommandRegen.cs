@@ -28,7 +28,7 @@ namespace Mvk2.Command
                 return ChatStyle.Red + L.S("CommandsRegenNotPlayer");
             }
             //string[] commandParams = sender.GetCommandParams();
-            WorldServer worldServer = player.GetWorld();
+            WorldServer worldServer = player.GetWorldServer();
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             worldServer.GetChunkServer(player.ChunkPositionX, player.ChunkPositionZ).Regen();

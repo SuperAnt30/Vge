@@ -27,6 +27,13 @@ namespace Vge.Util
 
         public Vertex3d Copy() => new Vertex3d(X, Y, Z, U, V);
 
+        public void SetPosition(Vertex3d vertex)
+        {
+            X = vertex.X;
+            Y = vertex.Y;
+            Z = vertex.Z;
+        }
+
         public override string ToString() 
             => string.Format("{0:0.00}; {1:0.00}; {2:0.00} u{3:0.00} v{4:0.00}]", X, Y, Z, U, V);
     }

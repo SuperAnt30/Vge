@@ -130,7 +130,7 @@ namespace Mvk2.Entity.List
             // Определяем на какую сторону смотрит игрок
             Pole pole = PoleConvert.FromAngle(RotationYaw);
 
-            WorldServer worldServer = GetWorld();
+            WorldServer worldServer = GetWorldServer();
             BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
             BlockBase block = blockState.GetBlock();
 
@@ -166,7 +166,7 @@ namespace Mvk2.Entity.List
             switch (action)
             {
                 case EnumActionClickWindow.OpenBoxDebug:
-                    if (GetWorld().Settings is WorldSettingsIsland worldIsland)
+                    if (GetWorldServer().Settings is WorldSettingsIsland worldIsland)
                     {
                         InvPlayer.ServerOpenInventory(worldIsland.StorageHole);
                     }

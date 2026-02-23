@@ -1,4 +1,8 @@
-﻿using Mvk2.World.Block.List;
+﻿using Mvk2.Util;
+using Mvk2.World.Block.List;
+using System.IO;
+using Vge.Util;
+using Vge.World;
 using Vge.World.Block;
 using Vge.World.Block.List;
 
@@ -268,7 +272,11 @@ namespace Mvk2.World.Block
             
             Lava = BlocksReg.RegisterBlockClassLiquid("Lava", materials.Lava, false);
             Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
-            
+
+            // Регистрация текстуры разрушения блока
+            Gi.DestroyBlock.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "Destroy");
+
+            return;
             //for (int i = 0; i < 500; i++)
             //{
             //    BlocksReg.RegisterBlockClass("Clay" + i, new BlockUniSolid(70));

@@ -113,6 +113,48 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Получить процес разрушения блока, где 255 это нет разрушения
+        /// </summary>
+        public byte GetBlockDestroy(BlockPos blockPos)
+        {
+            if (blockPos.IsValid(ChunkPr.Settings))
+            {
+                ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
+                if (chunk == null) return 255;
+                int yc = blockPos.Y >> 4;
+                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                if (chunk.StorageArrays[yc].Destroy.ContainsKey(index))
+                {
+                    return chunk.StorageArrays[yc].Destroy[index];
+                }
+            }
+            return 255;
+        }
+
+        /// <summary>
+        /// Задать процес разрушения блока
+        /// </summary>
+        public void SetBlockDestroy(BlockPos blockPos, byte process, bool isMarkUpdate = true)
+        {
+            if (blockPos.IsValid(ChunkPr.Settings))
+            {
+                ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
+                if (chunk == null) return;
+                int yc = blockPos.Y >> 4;
+                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                if (chunk.StorageArrays[yc].Destroy.ContainsKey(index))
+                {
+                    chunk.StorageArrays[yc].Destroy[index] = process;
+                }
+                else
+                {
+                    chunk.StorageArrays[yc].Destroy.Add(index, process);
+                }
+                if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+            }
+        }
+
+        /// <summary>
         /// Изменить метданные блока
         /// </summary>
         public void SetBlockStateMet(BlockPos blockPos, int met, bool isMarkUpdate = true)

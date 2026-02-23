@@ -9,6 +9,7 @@ using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets.Client;
 using Vge.World.Block;
+using Vge.World.Chunk;
 
 namespace Mvk2.Entity
 {
@@ -47,15 +48,29 @@ namespace Mvk2.Entity
                 if (_player.MovingObject.IsBlock())
                 {
                     _player.TestHandAction = true;
-                    _game.TrancivePacket(new PacketC07PlayerDigging(_player.MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
-                    _game.World.SetBlockToAir(_player.MovingObject.BlockPosition, 46);
+                    
+
+                    byte destroy = _game.World.GetBlockDestroy(_player.MovingObject.BlockPosition);
+                    if (destroy == 255) destroy = 0;
+                    else destroy++;
+
+                    if (destroy == 8)
+                    {
+                        _game.TrancivePacket(new PacketC07PlayerDigging(_player.MovingObject.BlockPosition, PacketC07PlayerDigging.EnumDigging.Destroy));
+                        _game.World.SetBlockToAir(_player.MovingObject.BlockPosition, 46);
+                    }
+                    else
+                    {
+                        _game.World.SetBlockDestroy(_player.MovingObject.BlockPosition, destroy);
+                        //_game.World.Set
+                    }
                 }
                 else
                 {
                     // Типа броска
                     _game.TrancivePacket(new PacketC07PlayerDigging(new BlockPos(), PacketC07PlayerDigging.EnumDigging.About));
                 }
-                _pauseAction = 15;
+                _pauseAction = 7;
             }
             else
             {
@@ -93,7 +108,7 @@ namespace Mvk2.Entity
                     //_game.TrancivePacket(new PacketC08PlayerBlockPlacement(_player.MovingObject.BlockPosition,
                     //    _player.MovingObject.Side, _player.MovingObject.Facing));
                     _game.World.SetBlockState(_player.MovingObject.BlockPosition.Offset(_player.MovingObject.Side),
-                        new BlockState(BlocksRegMvk.Stone.IndexBlock), 46);
+                        new BlockState(BlocksRegMvk.GlassBlue.IndexBlock), 46);
                 }
                 _pauseSecond = 8;
             }

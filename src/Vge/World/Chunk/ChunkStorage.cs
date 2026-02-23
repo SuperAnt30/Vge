@@ -50,6 +50,10 @@ namespace Vge.World.Chunk
         /// Количество блоков не воздуха
         /// </summary>
         public int CountBlock { get; private set; }
+        /// <summary>
+        /// Карта всех разрушающих блоков
+        /// </summary>
+        public Dictionary<int, byte> Destroy = new Dictionary<int, byte>();
 
         /// <summary>
         /// Количество блоков которым нужен тик
@@ -98,6 +102,7 @@ namespace Vge.World.Chunk
             Data = null;
             CountBlock = 0;
             _countTickBlock = 0;
+            Destroy.Clear();
         }
 
         /// <summary>
@@ -179,6 +184,7 @@ namespace Vge.World.Chunk
                 else if (rold && !rnew) _countTickBlock--;
                 Data[index] = id & 0xFFF | met << 12;
             }
+            Destroy.Remove(index);
         }
 
         /// <summary>
@@ -314,9 +320,9 @@ namespace Vge.World.Chunk
         #endregion
 
         /// <summary>
-        /// Вернуть количество блоков не воздуха и количество тикающих блоков
+        /// Вернуть количество блоков не воздуха, количество тикающих блоков и разрушающих блоков
         /// </summary>
-        public string ToStringCount() => CountBlock + "|" + _countTickBlock;
+        public string ToStringCount() => "СhunkCount block:" + CountBlock + " tick:" + _countTickBlock + " destroy:" + Destroy.Count;
 
         public override string ToString() => " yB:" + YBase + " body:" + CountBlock + " ";
     }

@@ -175,7 +175,7 @@ namespace Vge.Network
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             if (playerServer != null)
             {
-                EntityBase entity = playerServer.GetWorld().LoadedEntityList.Get(packet.Index);
+                EntityBase entity = playerServer.GetWorldServer().LoadedEntityList.Get(packet.Index);
                 if (entity != null)
                 {
                     if (packet.Action == PacketC03UseEntity.EnumAction.Impulse)
