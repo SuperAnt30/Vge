@@ -158,7 +158,11 @@ namespace Vge.World
                         chunkStorage.Destroy.Add(index, process);
                     }
                 }
-                if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                if (isMarkUpdate)
+                {
+                    MarkBlockForModified(blockPos.X, blockPos.Y, blockPos.Z);
+                    MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                }
             }
         }
 
@@ -246,14 +250,22 @@ namespace Vge.World
         /// <summary>
         /// Отметить блок для обновления
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void MarkBlockForUpdate(int x, int y, int z) { }
         /// <summary>
         /// Отметить блоки для обновления
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void MarkBlockRangeForUpdate(int x0, int y0, int z0, int x1, int y1, int z1) { }
+        /// <summary>
+        /// Отметить блок для изминения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void MarkBlockForModified(int x, int y, int z) { }
         /// <summary>
         /// Отметить блоки для изминения
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void MarkBlockRangeForModified(int x0, int z0, int x1, int z1) { }
 
         #endregion

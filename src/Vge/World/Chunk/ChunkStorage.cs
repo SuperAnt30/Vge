@@ -258,6 +258,18 @@ namespace Vge.World.Chunk
             {
                 tagCompound.SetIntArray("BlockStates", Data);
             }
+            if (Destroy.Count > 0)
+            {
+                buffer = new byte[Destroy.Count * 3];
+                count = 0;
+                foreach (KeyValuePair<int, byte> entry in Destroy)
+                {
+                    buffer[count++] = (byte)(entry.Key & 0xFF);
+                    buffer[count++] = (byte)(entry.Key >> 8);
+                    buffer[count++] = (byte)(entry.Value);
+                }
+                tagCompound.SetByteArray("BlockDestroy", buffer);
+            }
             if (!emptyLB)
             {
                 buffer = new byte[2048];
@@ -303,9 +315,17 @@ namespace Vge.World.Chunk
                     SetData(i, idMet & 0xFFF, idMet >> 12);
                 }
             }
+            byte[] buffer = nbt.GetByteArray("BlockDestroy");
+            Destroy.Clear();
+            count = 0;
+            int countDestroy = buffer.Length / 3;
+            for (i = 0; i < countDestroy; i++)
+            {
+                Destroy.Add(buffer[count++] | buffer[count++] << 8,(byte)(buffer[count++]));
+            }
 
             Array.Clear(Light, 0, Light.Length);
-            byte[] buffer = nbt.GetByteArray("BlockLight");
+            buffer = nbt.GetByteArray("BlockLight");
             // нету блоков освещения блока
             if (buffer.Length == 2048)
             {

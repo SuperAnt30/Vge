@@ -92,7 +92,7 @@ namespace Vge.Network.Packets.Server
                         {
                             _bufferWrite.Add((byte)(entry.Key & 0xFF));
                             _bufferWrite.Add((byte)(entry.Key >> 8));
-                            _bufferWrite.Add((byte)(entry.Value));
+                            _bufferWrite.Add((byte)(entry.Value & 15));
                         }
                     }
                 }

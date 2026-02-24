@@ -24,7 +24,7 @@ public sealed class Ce
     /// <summary>
     /// Сохраняем ли мир. Для отладки, по умолчанию true
     /// </summary>
-    public static bool SaveWorld = false;
+    public static bool SaveWorld = true;
 
     #region Debug
 

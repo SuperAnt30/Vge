@@ -216,8 +216,16 @@ namespace Vge.World
         /// <summary>
         /// Отметить блок для обновления 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void MarkBlockForUpdate(int x, int y, int z)
             => Fragment.FlagBlockForUpdate(x, y, z);
+
+        /// <summary>
+        /// Отметить блок для изминения
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void MarkBlockForModified(int x, int y, int z)
+            => GetChunkServer(x >> 4, z >> 4)?.Modified();
 
         /// <summary>
         /// Отметить блоки для изминения

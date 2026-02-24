@@ -440,7 +440,10 @@ namespace Vge.World.Chunk
                     {
                         World.Light.ClearDebugString();
                     }
-                    //if (isModify) Modified();
+                    if (isModify)
+                    {
+                        World.MarkBlockForModified(blockPos.X, blockPos.Y, blockPos.Z);
+                    }
                 }
 
                 if (isModifyRender)
