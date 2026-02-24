@@ -409,6 +409,21 @@ namespace Vge.World.Chunk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetBlockEntityCount() => _mapBlocksEntity.Count;
+        
+        /// <summary>
+        /// Количество блоков для разрушения в чанке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetDestroyCount()
+        {
+            int count = 0;
+            for (int i = 0; i < NumberSections; i++)
+            {
+                count += StorageArrays[i].Destroy.Count;
+            }
+            return count;
+        }
+            
 
         /// <summary>
         /// Получить блок сущности по глобальным координатам блока

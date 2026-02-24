@@ -67,7 +67,7 @@ namespace Vge.World.Block
         /// Блок не прозрачный
         /// Для рендера и RayCast
         /// </summary>
-        public bool IsNotTransparent { get; protected set; }
+        public bool IsNotTransparent { get; private set; }
         /// <summary>
         /// Индекс картинки частички
         /// </summary>
@@ -90,7 +90,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Может ли блок сталкиваться
         /// </summary>
-        public bool IsCollidable { get; protected set; } = true;
+        public bool IsCollidable { get; private set; } = true;
         /// <summary>
         /// Ограничительная рамка занимает весь блок, для оптимизации, без проверки AABB блока.
         /// Жидкости будут false
@@ -145,7 +145,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Может ли быть тень сущности на блоке, только для целых блоков
         /// </summary>
-        public bool Shadow { get; protected set; } = true;
+        public bool Shadow { get; private set; } = true;
 
         /// <summary>
         /// Отбраковка всех сторон во всех вариантах
@@ -176,6 +176,45 @@ namespace Vge.World.Block
         /// Принудительное рисование не крайней стороны 
         /// </summary>
         protected bool[][] _forceDrawNotExtremeFaces;
+
+        #endregion
+
+        #region Физические и химические Свойства блока
+
+        /// <summary>
+        /// Устойчивость блоков к взрывам.
+        /// 10 камень, 5 дерево, руда, 0.6 стекло, 0.5 земля, песок, 0.2 листва, 0.0 трава, саженцы 
+        /// </summary>
+        public float Resistance { get; private set; }
+        /// <summary>
+        /// Скользкость
+        /// 0.6 стандартная
+        /// 0.8 медленее, типа по песку
+        /// 0.98 по льду, скользко
+        /// </summary>
+        public float Slipperiness { get; private set; } = .6f;
+        /// <summary>
+        /// Горючесть материала
+        /// </summary>
+        public bool Combustibility { get; private set; } = false;
+        /// <summary>
+        /// Увеличить шансы загорания 0-100 %
+        /// 100 мгновенно загарается без рандома
+        /// 99 уже через рандом, не так быстро загорается но шанс очень большой
+        /// Из-за долго жизни огня, 30 как правило загорится если вверх, рядом 1/1
+        /// </summary>
+        public byte IgniteOddsSunbathing { get; private set; }
+        /// <summary>
+        /// Шансы на сжигание 0-100 %
+        /// 100 мгновенно згарает без рандома
+        /// 99 уже через рандом, не так быстро сгорит но шанс очень большой
+        /// Из-за долго жизни огня, 60 как правило сгорит
+        /// </summary>
+        public byte BurnOdds { get; private set; }
+        /// <summary>
+        /// Сколько ударов требуется, чтобы сломать блок в ударах
+        /// </summary>
+        public int Hardness { get; private set; }
 
         #endregion
 
@@ -257,6 +296,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
                     if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
+                    if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.Color))
                     {
                         float[] ar = json.GetArray().ToArrayFloat();
@@ -338,7 +378,6 @@ namespace Vge.World.Block
 
         #endregion
 
-
         #region Методы для физики
 
         /// <summary>
@@ -354,7 +393,7 @@ namespace Vge.World.Block
         public virtual bool IsPassableOnIt(uint met) => !IsPassable(met);
 
         /// <summary>
-        /// Проверить колизию блока на пересечение луча
+        /// Проверить коллизию блока на пересечение луча
         /// </summary>
         /// <param name="pos">позиция блока</param>
         /// <param name="a">точка от куда идёт лучь</param>
@@ -527,6 +566,8 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool CanBlockStay(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, int met = 0) => true;
+
+
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

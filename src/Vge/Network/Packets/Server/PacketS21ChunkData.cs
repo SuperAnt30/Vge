@@ -66,7 +66,6 @@ namespace Vge.Network.Packets.Server
             BufferRead = null;
 
             int y, count;
-            uint value;
             ChunkStorage chunkStorage;
             _bufferWrite.Clear();
             for (y = 0; y < chunk.NumberSections; y++)
@@ -85,6 +84,16 @@ namespace Vge.Network.Packets.Server
                     {
                         _bufferWrite.Add(1);
                         _bufferWrite.AddRange(chunkStorage.Data);
+
+                        count = chunkStorage.Destroy.Count;
+                        _bufferWrite.Add((byte)(count & 0xFF));
+                        _bufferWrite.Add((byte)(count >> 8));
+                        foreach (KeyValuePair<int, byte> entry in chunkStorage.Destroy)
+                        {
+                            _bufferWrite.Add((byte)(entry.Key & 0xFF));
+                            _bufferWrite.Add((byte)(entry.Key >> 8));
+                            _bufferWrite.Add((byte)(entry.Value));
+                        }
                     }
                 }
             }

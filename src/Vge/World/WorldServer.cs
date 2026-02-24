@@ -443,9 +443,10 @@ namespace Vge.World
             if (count > 0)
             {
                 // Случайная скорость тика, для случайных обновлений блока в чанке, параметр из майна 1.8
-                int randomTickSpeed = 3;
+                int randomTickSpeed = 30;// 3;
                 ulong index;
                 int yc, i, j, x, y, z, k;
+                byte destroy;
                 ChunkServer chunk;
                 ChunkStorage chunkStorage;
                 BlockPos blockPos = new BlockPos();
@@ -480,13 +481,24 @@ namespace Vge.World
                                     blockPos.Y = y + chunkStorage.YBase;
                                     blockPos.Z = z + chunk.BlockZ;
                                     blockState = chunkStorage.GetBlockState(x, y, z);
-                                    block = blockState.GetBlock();
-                                    if (block.NeedsRandomTick)
+                                    destroy = chunkStorage.GetDestroy(x, y, z);
+                                    if (destroy != 0 && destroy != 255)
                                     {
-                                        block.RandomTick(this, chunk, blockPos, blockState, Rnd);
-                                        if (chunkStorage.IsEmptyData() || !chunkStorage.GetNeedsRandomTick())
+                                        // Залатываем разрушение
+                                        --destroy;
+                                        if (destroy == 0) destroy = 255;
+                                        SetBlockDestroy(blockPos, destroy);
+                                    }
+                                    else
+                                    {
+                                        block = blockState.GetBlock();
+                                        if (block.NeedsRandomTick)
                                         {
-                                            break;
+                                            block.RandomTick(this, chunk, blockPos, blockState, Rnd);
+                                            if (chunkStorage.IsEmptyData() || !chunkStorage.GetNeedsRandomTick())
+                                            {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -588,16 +600,20 @@ namespace Vge.World
         {
             int chBt = 0;
             int chBe = 0;
+            int chDestroy = 0;
             if (Server.Players.PlayerOwner != null &&
                 Server.Players.PlayerOwner.IdWorld == IdWorld)
             {
                 ChunkServer chunk = GetChunkServer(Server.Players.PlayerOwner.GetChunkPosition());
                 chBt = chunk.GetTickBlockCount();
                 chBe = chunk.GetBlockEntityCount();
+                chDestroy = chunk.GetDestroyCount();
             }
             return "World-" + IdWorld
                 + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
-                + "\r\n" + Tracker + " ChBt: " + chBt + " ChBe: " + chBe + " " + Settings.Calendar;
+                + "\r\n" + Tracker + " ChBt:" + chBt 
+                + " ChBe:" + chBe 
+                + " Desreoy:" + chDestroy + " " + Settings.Calendar;
         }
         
     }

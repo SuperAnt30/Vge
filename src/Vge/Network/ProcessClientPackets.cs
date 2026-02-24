@@ -400,6 +400,19 @@ namespace Vge.Network
         private void _Handle23BlockChange(PacketS23BlockChange packet)
         {
             Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
+            if (packet.Progress != 0)
+            {
+                if (packet.Progress == 255)
+                {
+                    // Удаление
+                    Game.World.SetBlockDestroy(packet.GetBlockPos(), 0);
+                }
+                else
+                {
+                    Game.World.SetBlockDestroy(packet.GetBlockPos(), packet.Progress);
+                }
+            }
+            
             Debug.BlockChange = "BlockChange";
         }
 

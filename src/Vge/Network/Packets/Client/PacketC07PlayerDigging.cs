@@ -11,26 +11,47 @@ namespace Vge.Network.Packets.Client
         public byte Id => 0x07;
 
         private BlockPos _blockPos;
+
         public EnumDigging Digging { get; private set; }
+        /// <summary>
+        /// Процесс разрушения блока
+        /// </summary>
+        public byte Process { get; private set; }
 
         public BlockPos GetBlockPos() => _blockPos;
 
-        public PacketC07PlayerDigging(BlockPos blockPos, EnumDigging digging)
+        public PacketC07PlayerDigging(BlockPos blockPos, byte process)
         {
             _blockPos = blockPos;
-            Digging = digging;
+            Digging =  EnumDigging.ProcessDestroy;
+            Process = process;
+        }
+
+        public PacketC07PlayerDigging(BlockPos blockPos)
+        {
+            _blockPos = blockPos;
+            Digging = EnumDigging.Destroy;
+            Process = 0;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
             _blockPos.ReadStream(stream);
             Digging = (EnumDigging)stream.Byte();
+            if (Digging == EnumDigging.ProcessDestroy)
+            {
+                Process = stream.Byte();
+            }
         }
 
         public void WritePacket(WritePacket stream)
         {
             _blockPos.WriteStream(stream);
             stream.Byte((byte)Digging);
+            if (Digging == EnumDigging.ProcessDestroy)
+            {
+                stream.Byte(Process);
+            }
         }
 
         /// <summary>
@@ -39,25 +60,17 @@ namespace Vge.Network.Packets.Client
         public enum EnumDigging
         {
             /// <summary>
-            /// Начали разрушать блок
+            /// Просто удар, никуда не попадая, взмах
             /// </summary>
-            Start = 0,
+            None = 0,
             /// <summary>
-            /// Отмена разрушения блока
+            /// Разрушен блок
             /// </summary>
-            About = 1,
+            Destroy = 1,
             /// <summary>
-            /// Блок разрушен
+            /// Процесс разрушения блока
             /// </summary>
-            Stop = 2,
-            /// <summary>
-            /// Мгновенное разрушение
-            /// </summary>
-            Destroy = 3,
-            /// <summary>
-            /// Удар перед разрушениями, и может быть в холостую
-            /// </summary>
-            Hit = 4
+            ProcessDestroy = 2
         }
     }
 }

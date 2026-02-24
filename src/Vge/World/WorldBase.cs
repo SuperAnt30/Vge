@@ -113,14 +113,15 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Получить процес разрушения блока, где 255 это нет разрушения
+        /// Получить процес разрушения блока, 
+        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
         /// </summary>
         public byte GetBlockDestroy(BlockPos blockPos)
         {
             if (blockPos.IsValid(ChunkPr.Settings))
             {
                 ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
-                if (chunk == null) return 255;
+                if (chunk == null) return 0;
                 int yc = blockPos.Y >> 4;
                 int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
                 if (chunk.StorageArrays[yc].Destroy.ContainsKey(index))
@@ -128,7 +129,7 @@ namespace Vge.World
                     return chunk.StorageArrays[yc].Destroy[index];
                 }
             }
-            return 255;
+            return 0;
         }
 
         /// <summary>
@@ -140,15 +141,23 @@ namespace Vge.World
             {
                 ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
                 if (chunk == null) return;
-                int yc = blockPos.Y >> 4;
+                ChunkStorage chunkStorage = chunk.StorageArrays[blockPos.Y >> 4];
                 int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
-                if (chunk.StorageArrays[yc].Destroy.ContainsKey(index))
+                if (process == 0)
                 {
-                    chunk.StorageArrays[yc].Destroy[index] = process;
+                    // Удалить разрушения блока
+                    chunkStorage.Destroy.Remove(index);
                 }
                 else
                 {
-                    chunk.StorageArrays[yc].Destroy.Add(index, process);
+                    if (chunkStorage.Destroy.ContainsKey(index))
+                    {
+                        chunkStorage.Destroy[index] = process;
+                    }
+                    else
+                    {
+                        chunkStorage.Destroy.Add(index, process);
+                    }
                 }
                 if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
             }

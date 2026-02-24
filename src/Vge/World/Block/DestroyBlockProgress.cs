@@ -35,7 +35,7 @@ namespace Vge.World.Block
         /// </summary>
         public Vertex3d[] GetVertices(int progress, Vertex3d[] vertices)
         {
-            Vertex3d[] ds = _vertices[progress];
+            Vertex3d[] ds = _vertices[progress - 1];
             ds[0].SetPosition(vertices[0]);
             ds[1].SetPosition(vertices[1]);
             ds[2].SetPosition(vertices[2]);

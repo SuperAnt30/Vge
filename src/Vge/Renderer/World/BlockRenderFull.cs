@@ -36,7 +36,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public int Met;
         /// <summary>
-        /// Процесс разружения блока 0-254, 255 - нет разрушения
+        /// Процесс разружения блока 1-255, 0 - нет разрушения
         /// </summary>
         public byte Destroy;
 
@@ -302,7 +302,7 @@ namespace Vge.Renderer.World
                     }
 
                     // Разрушение блока, если имеется
-                    if (Destroy != 255)
+                    if (Destroy != 0)
                     {
                         blockUV.ColorsR = _colorsFF;
                         blockUV.ColorsG = _colorsFF;

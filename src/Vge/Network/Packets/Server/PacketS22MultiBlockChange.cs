@@ -28,6 +28,7 @@ namespace Vge.Network.Packets.Server
             CurrentChunkY = chunk.CurrentChunkY;
             _blocks = new BlockUpdateData[count];
             int x, y, z, index;
+            byte process;
             for (int i = 0; i < count; i++)
             {
                 index = blocksLocalPos[i];
@@ -35,11 +36,18 @@ namespace Vge.Network.Packets.Server
                 y = index >> 8;
                 z = index & 15;
 
+                process = chunk.GetBlockDestroyNotCheck(x, y, z);
+
                 _blocks[i] = new BlockUpdateData()
                 {
                     Index = index,
-                    State = chunk.GetBlockStateNotCheck(x, y, z)
+                    State = chunk.GetBlockStateNotCheck(x, y, z),
+                    Process = process
                 };
+                if (process == 255)
+                {
+                    chunk.SetBlockDestroy(x, y, z, 0);
+                }
             }
         }
 
@@ -60,13 +68,27 @@ namespace Vge.Network.Packets.Server
                 int chx = CurrentChunkX << 4;
                 int chz = CurrentChunkY << 4;
                 int index;
+                byte process;
                 for (int i = 0; i < _blocks.Length; i++)
                 {
                     index = _blocks[i].Index;
                     blockPos.X = chx + ((index >> 4) & 15);
                     blockPos.Y = index >> 8;
                     blockPos.Z = chz + (index & 15);
-                    chunk.SetBlockState(blockPos, _blocks[i].State, 20);
+                    chunk.SetBlockState(blockPos, _blocks[i].State, 4);
+                    process = _blocks[i].Process;
+                    if (process != 0)
+                    {
+                        if (process == 255)
+                        {
+                            // Удаление
+                            world.SetBlockDestroy(blockPos, 0);
+                        }
+                        else
+                        {
+                            world.SetBlockDestroy(blockPos, process);
+                        }
+                    }
                 }
             }
         }
@@ -81,7 +103,8 @@ namespace Vge.Network.Packets.Server
             {
                 _blocks[i] = new BlockUpdateData()
                 {
-                    Index = stream.Int()
+                    Index = stream.Int(),
+                    Process = stream.Byte()
                 };
                 _blocks[i].State.ReadStream(stream);
             }
@@ -95,6 +118,7 @@ namespace Vge.Network.Packets.Server
             for (int i = 0; i < _blocks.Length; i++)
             {
                 stream.Int(_blocks[i].Index);
+                stream.Byte(_blocks[i].Process);
                 _blocks[i].State.WriteStream(stream);
             }
         }
@@ -103,6 +127,7 @@ namespace Vge.Network.Packets.Server
         {
             public int Index;
             public BlockState State;
+            public byte Process;
         }
     }
 }

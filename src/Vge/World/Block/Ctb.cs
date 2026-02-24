@@ -47,6 +47,11 @@
         /// Блок без коллизии
         /// </summary>
         public const string NoCollision = "NoCollision";
+        /// <summary>
+        /// Сколько ударов требуется, чтобы сломать блок в ударах. (int)
+        /// </summary>
+        public const string Hardness = "Hardness";
+        
 
         #endregion
 

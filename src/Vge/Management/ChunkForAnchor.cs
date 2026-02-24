@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Security;
 using Vge.Entity.Player;
 using Vge.Network;
 using Vge.Network.Packets.Server;
@@ -177,10 +178,10 @@ namespace Vge.Management
             if (NumBlocksToUpdate != 0)
             {
                 IPacket packet;
-                if (NumBlocksToUpdate >= _CountMultyBlocks)
+                ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
+                if (chunk != null && chunk.IsSendChunk)
                 {
-                    ChunkBase chunk = World.GetChunk(CurrentChunkX, CurrentChunkY);
-                    if (chunk != null && chunk.IsSendChunk)
+                    if (NumBlocksToUpdate >= _CountMultyBlocks)
                     {
                         packet = new PacketS21ChunkData(chunk, false, _flagsYAreasToUpdate);
                         for (int i = 0; i < _players.Count; i++)
@@ -191,27 +192,26 @@ namespace Vge.Management
                             }
                         }
                     }
-                }
-                else
-                {
-                    if (NumBlocksToUpdate == 1)
-                    {
-                        int index = _locationOfBlockChange[0];
-                        packet = new PacketS23BlockChange(World, new BlockPos(
-                            CurrentChunkX << 4 | ((index >> 4) & 15),
-                            index >> 8,
-                            CurrentChunkY << 4 | (index & 15)
-                        ));
-                    }
                     else
                     {
-                        packet = new PacketS22MultiBlockChange(NumBlocksToUpdate,
-                                _locationOfBlockChange, World.GetChunk(CurrentChunkX, CurrentChunkY));
-                    }
+                        if (NumBlocksToUpdate == 1)
+                        {
+                            int index = _locationOfBlockChange[0];
+                            packet = new PacketS23BlockChange(chunk, new BlockPos(
+                                CurrentChunkX << 4 | ((index >> 4) & 15),
+                                index >> 8,
+                                CurrentChunkY << 4 | (index & 15)));
+                        }
+                        else
+                        {
+                            packet = new PacketS22MultiBlockChange(NumBlocksToUpdate,
+                                    _locationOfBlockChange, World.GetChunk(CurrentChunkX, CurrentChunkY));
+                        }
 
-                    for (int i = 0; i < _players.Count; i++)
-                    {
-                        _players[i].SendPacket(packet);
+                        for (int i = 0; i < _players.Count; i++)
+                        {
+                            _players[i].SendPacket(packet);
+                        }
                     }
                 }
                 NumBlocksToUpdate = 0;

@@ -238,38 +238,68 @@ namespace Vge.World.Chunk
         public BlockState GetBlockStateNotCheckLight(int x, int y, int z)
             => GetBlockStateNotCheckLight(z << 4 | x, y);
 
+        /// <summary>
+        /// Получить процес разрушения блока,
+        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
+        /// </summary>
+        public byte GetBlockDestroy(BlockPos blockPos)
+        {
+            if (blockPos.IsValid(Settings))
+            {
+                return GetBlockDestroyNotCheck(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Получить процес разрушения блока, без проверки валидности координат, XZ 0..15, Y 0..255
+        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
+        /// </summary>
+        public byte GetBlockDestroyNotCheck(int x, int y, int z)
+        {
+            ChunkStorage chunkStorage = StorageArrays[y >> 4];
+            int index = (y & 15) << 8 | z << 4 | x;
+            if (chunkStorage.Destroy.ContainsKey(index))
+            {
+                return chunkStorage.Destroy[index];
+            }
+            return 0;
+        }
 
         /// <summary>
         /// Задать процес разрушения блока
+        /// 
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBlockDestroy(BlockPos blockPos, byte process)
         {
             if (blockPos.IsValid(Settings))
             {
-                int yc = blockPos.Y >> 4;
-                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
-                if (StorageArrays[yc].Destroy.ContainsKey(index))
-                {
-                    StorageArrays[yc].Destroy[index] = process;
-                }
-                else
-                {
-                    StorageArrays[yc].Destroy.Add(index, process);
-                }
+                SetBlockDestroy(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, process);
             }
         }
 
         /// <summary>
-        /// Удалить разрушения блока
+        /// Задать процес разрушения блока,  XZ 0..15, Y 0..255
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveBlockDestroy(BlockPos blockPos)
+        public void SetBlockDestroy(int x, int y, int z, byte process)
         {
-            if (blockPos.IsValid(Settings))
+            ChunkStorage chunkStorage = StorageArrays[y >> 4];
+            int index = (y & 15) << 8 | z << 4 | x;
+            if (process == 0)
             {
-                StorageArrays[blockPos.Y >> 4].Destroy.Remove((blockPos.Y & 15) << 8 
-                    | (blockPos.Z & 15) << 4 | (blockPos.X & 15));
+                // Удалить разрушения блока
+                chunkStorage.Destroy.Remove(index);
+            }
+            else
+            {
+                if (chunkStorage.Destroy.ContainsKey(index))
+                {
+                    chunkStorage.Destroy[index] = process;
+                }
+                else
+                {
+                    chunkStorage.Destroy.Add(index, process);
+                }
             }
         }
 
@@ -389,6 +419,8 @@ namespace Vge.World.Chunk
 
             if (blockOld != block) // Блоки разные
             {
+                // Удалить разрушение
+                storage.Destroy.Remove(index);
                 // Отмена тик блока
                 _RemoveBlockTick(bx, by, bz, false);
 
@@ -672,11 +704,13 @@ namespace Vge.World.Chunk
                 _bigStreamOut.Position = 0;
                 bigStream.CopyTo(_bigStreamOut);
                 _bigStreamOut.Position = 0;
+                int count, i , key;
                 for (int sy = 0; sy < NumberSections; sy++)
                 {
                     if ((flagsYAreas & 1 << sy) != 0)
                     {
                         ChunkStorage storage = StorageArrays[sy];
+                        storage.Destroy.Clear();
                         _bigStreamOut.Read(storage.Light, 0, 4096);
 
                         if (_bigStreamOut.ReadByte() == 0)
@@ -690,6 +724,12 @@ namespace Vge.World.Chunk
                             _bigStreamOut.Read(b, 0, 16384);
                             Buffer.BlockCopy(b, 0, storage.Data, 0, 16384);
                             storage.UpCountBlock();
+                            count = _bigStreamOut.ReadByte() | _bigStreamOut.ReadByte() << 8;
+                            for (i = 0; i < count; i++)
+                            {
+                                key = _bigStreamOut.ReadByte() | _bigStreamOut.ReadByte() << 8;
+                                storage.Destroy.Add(key, (byte)_bigStreamOut.ReadByte());
+                            }
                         }
                     }
                 }

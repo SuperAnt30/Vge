@@ -184,7 +184,6 @@ namespace Vge.World.Chunk
                 else if (rold && !rnew) _countTickBlock--;
                 Data[index] = id & 0xFFF | met << 12;
             }
-            Destroy.Remove(index);
         }
 
         /// <summary>
@@ -204,7 +203,21 @@ namespace Vge.World.Chunk
         /// Имеются ли блоки которым нужен случайный тик
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool GetNeedsRandomTick() => _countTickBlock > 0;
+        public bool GetNeedsRandomTick() => _countTickBlock > 0 || Destroy.Count > 0;
+
+        /// <summary>
+        /// Получить процесс разрушения, XYZ 0..15 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte GetDestroy(int x, int y, int z)
+        {
+            int index = (y & 15) << 8 | z << 4 | x;
+            if (Destroy.ContainsKey(index))
+            {
+                return Destroy[index];
+            }
+            return 0;
+        }
 
         #region NBT
 

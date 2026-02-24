@@ -393,7 +393,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public void PacketPlayerDigging(PacketC07PlayerDigging packet)
         {
-            Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos());
+            Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos() + " Pr:" + packet.Process);
             // Временно!
             // Уничтожение блока
             WorldServer worldServer = GetWorldServer();
@@ -405,6 +405,10 @@ namespace Vge.Entity.Player
                 //worldServer.MarkBlockForUpdate(packet.GetBlockPos().X, packet.GetBlockPos().Y, packet.GetBlockPos().Z);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }
+            else if (packet.Digging == PacketC07PlayerDigging.EnumDigging.ProcessDestroy)
+            {
+                worldServer.SetBlockDestroy(packet.GetBlockPos(), packet.Process, true);
+            }
             else
             {
                 ItemStack itemStack = Inventory.GetCurrentItem();
@@ -413,7 +417,7 @@ namespace Vge.Entity.Player
                     int id = Ce.Entities.IndexItem;
                     if (id > 0)
                     {
-                       // for (int i = 0; i < 10; i++)
+                        // for (int i = 0; i < 10; i++)
                         {
                             EntityBase entity = Ce.Entities.CreateEntityServer((ushort)id, worldServer);
                             if (entity is EntityItem entityItem)

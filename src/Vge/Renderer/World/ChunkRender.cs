@@ -254,9 +254,9 @@ namespace Vge.Renderer.World
                                             {
                                                 Gi.Block.BlockRender.Destroy = chunkStorage.Destroy[index];
                                             }
-                                            else if (Gi.Block.BlockRender.Destroy != 255)
+                                            else if (Gi.Block.BlockRender.Destroy != 0)
                                             {
-                                                Gi.Block.BlockRender.Destroy = 255;
+                                                Gi.Block.BlockRender.Destroy = 0;
                                             }
                                             Gi.Block.BlockRender.RenderSide();
 
@@ -386,9 +386,9 @@ namespace Vge.Renderer.World
                                             {
                                                 Gi.Block.BlockRender.Destroy = chunkStorage.Destroy[index];
                                             }
-                                            else if (Gi.Block.BlockRender.Destroy != 255)
+                                            else if (Gi.Block.BlockRender.Destroy != 0)
                                             {
-                                                Gi.Block.BlockRender.Destroy = 255;
+                                                Gi.Block.BlockRender.Destroy = 0;
                                             }
                                             Gi.Block.BlockRender.RenderSide();
                                             _listAlphaBuffer.Add(new BlockBufferDistance()
