@@ -310,7 +310,7 @@ namespace Vge.Renderer.World
                         blockUV.AnimationFrame = 0;
                         blockUV.AnimationPause = 0;
                         blockUV.Sharpness = 4;
-                        blockUV.Vertex = Gi.DestroyBlock.GetVertices(Destroy, blockUV.Vertex);
+                        blockUV.Vertex = Gi.GetDestroyVertices(Destroy, blockUV.Vertex);
                         if (_rectangularSide.Wind == 0)
                         {
                             blockUV.Building();

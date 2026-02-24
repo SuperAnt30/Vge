@@ -40,6 +40,11 @@
         /// </summary>
         public const string Shadow = "Shadow";
         /// <summary>
+        /// Вторая текстура трещины разрушения, альфа. (bool)
+        /// </summary>
+        public const string IsDestorySecond = "IsDestorySecond";
+        
+        /// <summary>
         /// Цвет блока, используется при BiomeColor = true. ([red, green, blue]), цвет указывается 0-1.0
         /// </summary>
         public const string Color = "Color";

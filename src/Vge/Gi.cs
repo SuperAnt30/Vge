@@ -1,4 +1,5 @@
-﻿using Vge.Renderer.World;
+﻿using System.Runtime.CompilerServices;
+using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World.Block;
 using WinGL.Util;
@@ -184,6 +185,11 @@ public sealed class Gi
     /// Объект процесса разруцшения блока
     /// </summary>
     public readonly static DestroyBlockProgress DestroyBlock = new DestroyBlockProgress();
+    /// <summary>
+    /// Второй объект процесса разруцшения блока, альфа
+    /// </summary>
+    public readonly static DestroyBlockProgress DestroyBlockSecond = new DestroyBlockProgress();
+
 
     /// <summary>
     /// Какой радиус для рендера псевдо чанков альфа блоков, при смещении больше 16 блоков
@@ -222,6 +228,15 @@ public sealed class Gi
     /// <summary>
     /// Обновить ортогональную проекцию
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void UpOrtho()
         => Glm.Ortho(0, Width, Height, 0, -100 * Si, 100 * Si).ConvArray(Ortho);
+
+    /// <summary>
+    /// Получить сетку разрушения блока, согласно выбранного блока
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vertex3d[] GetDestroyVertices(int progress, Vertex3d[] vertices)
+        => Block.IsDestorySecond ? DestroyBlockSecond.GetVertices(progress, vertices)
+            : DestroyBlock.GetVertices(progress, vertices);
 }

@@ -1,4 +1,5 @@
 {
+    IsDestorySecond: true,
     Hardness: 32,
     Variants: [
         { Shape: "Stone" }

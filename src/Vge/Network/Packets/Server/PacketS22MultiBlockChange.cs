@@ -37,17 +37,20 @@ namespace Vge.Network.Packets.Server
                 z = index & 15;
 
                 process = chunk.GetBlockDestroyNotCheck(x, y, z);
-
+                if ((process & 1 << 7) != 0)
+                {
+                    chunk.SetBlockDestroy(x, y, z, 0);
+                }
+                else
+                {
+                    process = (byte)(process & 15);
+                }
                 _blocks[i] = new BlockUpdateData()
                 {
                     Index = index,
                     State = chunk.GetBlockStateNotCheck(x, y, z),
                     Process = process
                 };
-                if (process == 255)
-                {
-                    chunk.SetBlockDestroy(x, y, z, 0);
-                }
             }
         }
 
@@ -77,17 +80,14 @@ namespace Vge.Network.Packets.Server
                     blockPos.Z = chz + (index & 15);
                     chunk.SetBlockState(blockPos, _blocks[i].State, 4);
                     process = _blocks[i].Process;
-                    if (process != 0)
+                    if ((process & 1 << 7) != 0)
                     {
-                        if (process == 255)
-                        {
-                            // Удаление
-                            world.SetBlockDestroy(blockPos, 0);
-                        }
-                        else
-                        {
-                            world.SetBlockDestroy(blockPos, process);
-                        }
+                        // Удаление
+                        world.SetBlockDestroy(blockPos, 0);
+                    }
+                    else if (process != 0)
+                    {
+                        world.SetBlockDestroy(blockPos, process);
                     }
                 }
             }

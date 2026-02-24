@@ -407,7 +407,7 @@ namespace Vge.Entity.Player
             }
             else if (packet.Digging == PacketC07PlayerDigging.EnumDigging.ProcessDestroy)
             {
-                worldServer.SetBlockDestroy(packet.GetBlockPos(), packet.Process, true);
+                worldServer.SetBlockDestroy(packet.GetBlockPos(), (byte)((packet.Process & 15) | 96), true);
             }
             else
             {

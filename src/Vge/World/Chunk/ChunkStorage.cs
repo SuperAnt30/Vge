@@ -52,6 +52,10 @@ namespace Vge.World.Chunk
         public int CountBlock { get; private set; }
         /// <summary>
         /// Карта всех разрушающих блоков
+        /// rtt0 dddd
+        /// r - флаг для удаления, клиенту
+        /// t - пауза для тика
+        /// d - процесс разрушения
         /// </summary>
         public Dictionary<int, byte> Destroy = new Dictionary<int, byte>();
 
@@ -203,7 +207,7 @@ namespace Vge.World.Chunk
         /// Имеются ли блоки которым нужен случайный тик
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool GetNeedsRandomTick() => _countTickBlock > 0 || Destroy.Count > 0;
+        public bool GetNeedsRandomTick() => _countTickBlock > 0;
 
         /// <summary>
         /// Получить процесс разрушения, XYZ 0..15 

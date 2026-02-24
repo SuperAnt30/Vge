@@ -146,6 +146,10 @@ namespace Vge.World.Block
         /// Может ли быть тень сущности на блоке, только для целых блоков
         /// </summary>
         public bool Shadow { get; private set; } = true;
+        /// <summary>
+        /// Вторая текстура трещины разрушения, альфа
+        /// </summary>
+        public bool IsDestorySecond;
 
         /// <summary>
         /// Отбраковка всех сторон во всех вариантах
@@ -295,6 +299,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
                     if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
                     if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
+                    if (json.IsKey(Ctb.IsDestorySecond)) IsDestorySecond = json.GetBool();
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
                     if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.Color))

@@ -26,10 +26,14 @@ namespace Vge.Network.Packets.Server
             _blockPos = blockPos;
             _blockState = chunk.GetBlockState(blockPos);
             Progress = chunk.GetBlockDestroy(blockPos);
-            if (Progress == 255)
+            if ((Progress & 1 << 7) != 0)
             {
                 // Был флаг удаления, чтоб клиентам отправить
                 chunk.SetBlockDestroy(blockPos, 0);
+            }
+            else
+            {
+                Progress = (byte)(Progress & 15);
             }
         }
 

@@ -275,6 +275,7 @@ namespace Mvk2.World.Block
 
             // Регистрация текстуры разрушения блока
             Gi.DestroyBlock.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "Destroy");
+            Gi.DestroyBlockSecond.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "DestroySecond");
 
             return;
             //for (int i = 0; i < 500; i++)

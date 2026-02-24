@@ -113,8 +113,7 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Получить процес разрушения блока, 
-        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
+        /// Получить процес разрушения блока
         /// </summary>
         public byte GetBlockDestroy(BlockPos blockPos)
         {
@@ -122,11 +121,11 @@ namespace Vge.World
             {
                 ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
                 if (chunk == null) return 0;
-                int yc = blockPos.Y >> 4;
+                ChunkStorage chunkStorage = chunk.StorageArrays[blockPos.Y >> 4];
                 int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
-                if (chunk.StorageArrays[yc].Destroy.ContainsKey(index))
+                if (chunkStorage.Destroy.ContainsKey(index))
                 {
-                    return chunk.StorageArrays[yc].Destroy[index];
+                    return chunkStorage.Destroy[index];
                 }
             }
             return 0;

@@ -443,7 +443,9 @@ namespace Vge.World
             if (count > 0)
             {
                 // Случайная скорость тика, для случайных обновлений блока в чанке, параметр из майна 1.8
-                int randomTickSpeed = 30;// 3;
+                int randomTickSpeed = 3;
+                // Эта скорость восстановления разрушенных блоков
+                int destroyTickSpeed = 15;
                 ulong index;
                 int yc, i, j, x, y, z, k;
                 byte destroy;
@@ -464,33 +466,57 @@ namespace Vge.World
                         chunk.UpdateServer();
                         Filer.EndSection();
 
-                        // Тикаем рандом блоки
+                        // Тикаем рандом и разрушенные блоки
                         for (yc = 0; yc < chunk.NumberSections; yc++)
                         {
                             chunkStorage = chunk.StorageArrays[yc];
-                            if (!chunkStorage.IsEmptyData() && chunkStorage.GetNeedsRandomTick())
+                            if (!chunkStorage.IsEmptyData())
                             {
-                                for (j = 0; j < randomTickSpeed; j++)
+                                // Разрушение
+                                if (chunkStorage.Destroy.Count > 0)
                                 {
-                                    _updateLCG = _updateLCG * 3 + 1013904223;
-                                    k = _updateLCG >> 2;
-                                    x = k & 15;
-                                    z = k >> 8 & 15;
-                                    y = k >> 16 & 15;
-                                    blockPos.X = x + chunk.BlockX;
-                                    blockPos.Y = y + chunkStorage.YBase;
-                                    blockPos.Z = z + chunk.BlockZ;
-                                    blockState = chunkStorage.GetBlockState(x, y, z);
-                                    destroy = chunkStorage.GetDestroy(x, y, z);
-                                    if (destroy != 0 && destroy != 255)
+                                    for (j = 0; j < destroyTickSpeed; j++)
                                     {
-                                        // Залатываем разрушение
-                                        --destroy;
-                                        if (destroy == 0) destroy = 255;
-                                        SetBlockDestroy(blockPos, destroy);
+                                        _updateLCG = _updateLCG * 3 + 1013904223;
+                                        k = _updateLCG >> 2;
+                                        x = k & 15;
+                                        z = k >> 8 & 15;
+                                        y = k >> 16 & 15;
+                                        blockPos.X = x + chunk.BlockX;
+                                        blockPos.Y = y + chunkStorage.YBase;
+                                        blockPos.Z = z + chunk.BlockZ;
+                                        destroy = chunkStorage.GetDestroy(x, y, z);
+                                        if (destroy != 0 && (destroy & 127) != 0)
+                                        {
+                                            if (destroy >> 5 == 0)
+                                            {
+                                                // Залатываем разрушение
+                                                --destroy;
+                                                if (destroy == 0) destroy = 128;
+                                                SetBlockDestroy(blockPos, destroy);
+                                            }
+                                            else
+                                            {
+                                                // Пауза в 4 тика после изменения
+                                                SetBlockDestroy(blockPos, (byte)(((destroy >> 5) - 1) << 5 | (destroy & 15)), false);
+                                            }
+                                        }
                                     }
-                                    else
+                                }
+                                // Рандом
+                                if (chunkStorage.GetNeedsRandomTick())
+                                {
+                                    for (j = 0; j < randomTickSpeed; j++)
                                     {
+                                        _updateLCG = _updateLCG * 3 + 1013904223;
+                                        k = _updateLCG >> 2;
+                                        x = k & 15;
+                                        z = k >> 8 & 15;
+                                        y = k >> 16 & 15;
+                                        blockPos.X = x + chunk.BlockX;
+                                        blockPos.Y = y + chunkStorage.YBase;
+                                        blockPos.Z = z + chunk.BlockZ;
+                                        blockState = chunkStorage.GetBlockState(x, y, z);
                                         block = blockState.GetBlock();
                                         if (block.NeedsRandomTick)
                                         {

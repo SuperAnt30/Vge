@@ -239,8 +239,7 @@ namespace Vge.World.Chunk
             => GetBlockStateNotCheckLight(z << 4 | x, y);
 
         /// <summary>
-        /// Получить процес разрушения блока,
-        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
+        /// Получить процес разрушения блока
         /// </summary>
         public byte GetBlockDestroy(BlockPos blockPos)
         {
@@ -253,7 +252,6 @@ namespace Vge.World.Chunk
 
         /// <summary>
         /// Получить процес разрушения блока, без проверки валидности координат, XZ 0..15, Y 0..255
-        /// где 0 это нет разрушения, 255 флаг для удаления, только на сервере
         /// </summary>
         public byte GetBlockDestroyNotCheck(int x, int y, int z)
         {
@@ -268,7 +266,6 @@ namespace Vge.World.Chunk
 
         /// <summary>
         /// Задать процес разрушения блока
-        /// 
         /// </summary>
         public void SetBlockDestroy(BlockPos blockPos, byte process)
         {
