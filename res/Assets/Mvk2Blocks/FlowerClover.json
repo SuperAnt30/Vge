@@ -4,6 +4,7 @@
     NoCollision: true,
     LightOpacity: 0,
     Translucent: true,
+    IsReplaceable: true,
     Variants: [
         { Shape: "FlowerClover" },
         { Shape: "FlowerClover", Offset: [ 0, 0, 4 ] },

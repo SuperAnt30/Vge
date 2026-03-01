@@ -26,7 +26,7 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
             base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
-            if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
+            if (!CanBlockStay(world, blockPos, blockState.Met))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
                 world.SetBlockToAir(blockPos, 47); // 1 2 4 8 32 без звука но с частичками
@@ -36,11 +36,14 @@ namespace Mvk2.World.Block.List
         /// <summary> 
         /// Проверка установи блока, можно ли его установить тут
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool CanBlockStay(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, int met = 0)
+        public override bool CanBlockStay(WorldBase world, BlockPos blockPos, int met = 0)
         {
-            return chunk.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;
+            ChunkBase chunk = world.GetChunk(blockPos);
+            if (chunk != null)
+            {
+                return chunk.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;
+            }
+            return false;
         }
 
         /// <summary>

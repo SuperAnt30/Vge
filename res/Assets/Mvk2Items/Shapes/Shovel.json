@@ -1,0 +1,59 @@
+{
+    Texture: {
+        T0: "Items/ShovelIron",
+        T1: "Items/ShovelHandleBirch"
+    },
+    Elements: [
+        {   From: [-1, 0, -1],
+            To: [1, 12, 1],
+            Faces: [
+                { Texture:"T1", Side:"North", Uv:[2, 4, 4, 16]},
+                { Texture:"T1", Side:"East", Uv:[0, 4, 2, 16]},
+                { Texture:"T1", Side:"South", Uv:[2, 4, 4, 16]},
+                { Texture:"T1", Side:"West", Uv:[0, 4, 2, 16]},
+                { Texture:"T1", Side:"Down", Uv:[0, 2, 2, 4]}
+            ]
+        },
+        {   From: [-1, 12, -1],
+            To: [1, 22, 1],
+            Faces: [
+                { Texture:"T1", Side:"North", Uv:[6, 6, 8, 16]},
+                { Texture:"T1", Side:"East", Uv:[4, 6, 6, 16]},
+                { Texture:"T1", Side:"South", Uv:[10, 6, 12, 16]},
+                { Texture:"T1", Side:"West", Uv:[8, 6, 10, 16]},
+                { Texture:"T1", Side:"Up", Uv:[8, 6, 6, 4]}
+            ]
+        },
+        {   From: [-3, 27, -0.5],
+            To: [3, 28, 0.5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[7, 11, 1, 12]},
+                { Texture:"T0", Side:"East", Uv:[6, 11, 7, 12]},
+                { Texture:"T0", Side:"South", Uv:[1, 11, 7, 12]},
+                { Texture:"T0", Side:"West", Uv:[1, 11, 2, 12]},
+                { Texture:"T0", Side:"Up", Uv:[1, 11, 7, 12]},
+                { Texture:"T0", Side:"Down", Uv:[14, 11, 15, 8.5]}
+            ]
+        },
+        {   From: [-4, 17, -0.5],
+            To: [4, 27, 0.5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[8, 1, 0, 11]},
+                { Texture:"T0", Side:"East", Uv:[7, 1, 8, 11]},
+                { Texture:"T0", Side:"South", Uv:[0, 1, 8, 11]},
+                { Texture:"T0", Side:"West", Uv:[0, 1, 1, 11]},
+                { Texture:"T0", Side:"Up", Uv:[0, 0, 8, 1]},
+                { Texture:"T0", Side:"Down", Uv:[0, 10, 8, 11]}
+            ]
+        },
+        {   From: [-1, 17, 0],
+            To: [1, 22, 1],
+            Faces: [
+                { Texture:"T0", Side:"East", Uv:[11, 1, 12, 6]},
+                { Texture:"T0", Side:"South", Uv:[9, 1, 11, 6]},
+                { Texture:"T0", Side:"West", Uv:[8, 1, 9, 6]},
+                { Texture:"T0", Side:"Up", Uv:[9, 0, 11, 1]}
+            ]
+        }
+    ]
+}

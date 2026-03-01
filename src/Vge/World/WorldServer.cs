@@ -451,9 +451,9 @@ namespace Vge.World
             if (count > 0)
             {
                 // Случайная скорость тика, для случайных обновлений блока в чанке, параметр из майна 1.8
-                int randomTickSpeed = 3;
+                int randomTickSpeed = Settings.RandomTickSpeed;
                 // Эта скорость восстановления разрушенных блоков
-                int destroyTickSpeed = 15;
+                int destroyTickSpeed = Settings.DestroyTickSpeed;
                 ulong index;
                 int yc, i, j, x, y, z, k;
                 byte destroy;

@@ -29,6 +29,17 @@ namespace Vge.World
         /// </summary>
         public byte NumberChunkSections { get; protected set; } = 8;
         /// <summary>
+        /// Частота случайных обновлений блоков (рост растений) за один игровой тик
+        /// RandomTick
+        /// Случайная скорость тика, для случайных обновлений блока в чанке, параметр из майна 1.8, = 3
+        /// </summary>
+        public byte RandomTickSpeed { get; protected set; } = 3;
+        /// <summary>
+        /// Частота случайных обновлений блоков восстановления разрушенных блоков за один игровой тик
+        /// BlockDestroy
+        /// </summary>
+        public byte DestroyTickSpeed { get; protected set; } = 15;
+        /// <summary>
         /// Календарь
         /// </summary>
         public IСalendar Calendar { get; protected set; }

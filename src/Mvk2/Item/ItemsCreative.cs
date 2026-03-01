@@ -9,7 +9,7 @@ using Vge.World.BlockEntity;
 namespace Mvk2.Item
 {
     /// <summary>
-    /// Объект регистрации и данных креативногоинвентаря
+    /// Объект регистрации и данных креативного инвентаря
     /// </summary>
     public sealed class ItemsCreative : IBlockStorage
     {
@@ -32,20 +32,28 @@ namespace Mvk2.Item
 
         private ItemStack[][][] _stacks;
 
+        /// <summary>
+        /// Объект регистрации и данных креативного инвентаря
+        /// </summary>
         public ItemsCreative()
         {
             // Раздел блоки
             List<ItemStack> tabBlocks = new List<ItemStack>();
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));
 
             // Раздел крафтовые предметы 
             List<ItemStack> tabCraft = new List<ItemStack>();
-            tabCraft.Add(new ItemStack(ItemsRegMvk.FlowerClover));
+            tabCraft.Add(new ItemStack(ItemsRegMvk.PieceStone));
+            tabCraft.Add(new ItemStack(ItemsRegMvk.PieceDirt));
+            tabCraft.Add(new ItemStack(ItemsRegMvk.DryGrass));
+            
 
             // Раздел инструменты и оружие
             List<ItemStack> tabTools = new List<ItemStack>();
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
+            tabTools.Add(new ItemStack(ItemsRegMvk.ShovelIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
 
             // Раздел одежда
             List<ItemStack> tabCloth = new List<ItemStack>();
@@ -63,7 +71,8 @@ namespace Mvk2.Item
 
             // Раздел еда
             List<ItemStack> tabFood = new List<ItemStack>();
-           // tabFood.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
+            // tabFood.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
+            tabFood.Add(new ItemStack(ItemsRegMvk.CannedFood));
 
             // Раздел всего
             List<ItemStack> tabAll = new List<ItemStack>();

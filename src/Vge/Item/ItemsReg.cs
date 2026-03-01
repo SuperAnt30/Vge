@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Vge.Item.List;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Block;

@@ -1,0 +1,7 @@
+{
+    MaxStackSize: 50,
+    Width: 0.5625,
+    Height: 0.1875,
+    Sprite: "Items/PieceStone",
+    SpriteGui: "Items/PieceStone",
+}

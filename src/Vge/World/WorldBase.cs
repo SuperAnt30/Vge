@@ -91,6 +91,12 @@ namespace Vge.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChunkBase GetChunk(Vector2i chunkPos)
             => ChunkPr.GetChunk(chunkPos);
+        /// <summary>
+        /// Получить чанк по координатам блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ChunkBase GetChunk(BlockPos blockPos)
+            => ChunkPr.GetChunk(blockPos.GetPositionChunkX(), blockPos.GetPositionChunkZ());
 
         #endregion
 

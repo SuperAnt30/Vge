@@ -43,7 +43,12 @@
         /// Вторая текстура трещины разрушения, альфа. (bool)
         /// </summary>
         public const string IsDestorySecond = "IsDestorySecond";
+        /// <summary>
+        /// Может на этот блок поставить другой, к примеру трава. (bool)
+        /// </summary>
+        public const string IsReplaceable = "IsReplaceable";
         
+
         /// <summary>
         /// Цвет блока, используется при BiomeColor = true. ([red, green, blue]), цвет указывается 0-1.0
         /// </summary>

@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
 using Vge.Json;
+using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
+using WinGL.Util;
 
 namespace Vge.Item
 {
@@ -130,6 +135,72 @@ namespace Vge.Item
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ushort IndexReplaceItemDueAir() => 0;
+
+        #region Дейстыия рук, ЛКМ и ПКМ
+
+        /// <summary>
+        /// Проверка, может ли блок устанавливаться в этом месте
+        /// </summary>
+        /// <param name="blockPos">Координата блока, по которому щелкают правой кнопкой мыши</param>
+        /// <param name="block">Объект блока который хотим установить</param>
+        /// <param name="side">Сторона, по которой щелкнули правой кнопкой мыши</param>
+        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        protected virtual bool _CanPlaceBlockOnSide(ItemStack stack, PlayerBase player, WorldBase world, 
+            BlockPos blockPos, BlockBase block, Pole side, Vector3 facing)
+        {
+            //if (world.IsRemote) return true;
+
+            BlockState blockState = world.GetBlockState(blockPos);
+            BlockBase blockOld = blockState.GetBlock();
+            // Проверка ставить блоки, на те которые можно, к примеру на траву
+            if (!blockOld.IsReplaceable) return false;
+            // Если устанавливаемый блок такой же как стоит
+            if (blockOld == block) return false;
+            // Если стак пуст
+            if (stack == null || stack.Amount == 0) return false;
+
+            //if (world.IsRemote) return true;
+            bool isCheckCollision = !block.IsCollidable;
+            if (!isCheckCollision)
+            {
+                AxisAlignedBB axisBlock = block.GetCollisionOne(blockPos, blockState.Met);
+                // Проверка коллизии сущностей и блока
+                isCheckCollision = !player.Size.IntersectsWith(axisBlock);
+                    //world.GetEntitiesWithinAABB(ChunkBase.EnumEntityClassAABB.EntityLiving, axisBlock, player.Id).Count == 0;
+            }
+
+            return isCheckCollision;
+        }
+
+        /// <summary>
+        /// Вызывается, когда щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
+        /// </summary>
+        public virtual bool OnItemUse(ItemStack stack, PlayerBase player) => false;
+
+        /// <summary>
+        /// Вызывается, когда блок щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
+        /// </summary>
+        /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
+        /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
+        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        public virtual bool OnItemOnBlockUse(ItemStack stack, PlayerBase player,
+            BlockPos blockPos, Pole side, Vector3 facing) => false;
+
+        /// <summary>
+        /// Вызывается, когда щелкают ПКМ с этим элементом, возвращает true если действие состоялось
+        /// </summary>
+        public virtual bool OnItemUseSecond(ItemStack stack, PlayerBase player) => false;
+
+        /// <summary>
+        /// Вызывается, когда блок щелкают ПКМ с этим элементом, возвращает true если действие состоялось
+        /// </summary>
+        /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
+        /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
+        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        public virtual bool OnItemOnBlockUseSecond(ItemStack stack, PlayerBase player,
+            BlockPos blockPos, Pole side, Vector3 facing) => false;
+
+        #endregion
 
         #region Методы для импорта данных с json
 

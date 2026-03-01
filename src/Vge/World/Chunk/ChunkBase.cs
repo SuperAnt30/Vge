@@ -460,7 +460,7 @@ namespace Vge.World.Chunk
                 else if ((flag & 64) == 0) // проверку сломаного
                 {
                     // Действие блока после его удаления
-                    blockOld.OnBreakBlock((WorldServer)World, (ChunkServer)this, blockPos, blockStateOld, blockState);
+                    blockOld.OnBreakBlock(World, (ChunkServer)this, blockPos, blockStateOld, blockState);
                 }
             }
             else if (blockState.Met != blockStateOld.Met) // Метданные разные

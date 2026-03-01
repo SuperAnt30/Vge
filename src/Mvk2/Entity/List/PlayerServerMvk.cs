@@ -3,6 +3,7 @@ using Mvk2.Item;
 using Mvk2.Packets;
 using Mvk2.World;
 using Mvk2.World.Block;
+using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
@@ -111,43 +112,62 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Пакет: Установки или взаимодействия с блоком
         /// </summary>
-        public override void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
-        {
-            // Временно устанваливаем блок
-            byte currentIndex = Inventory.GetCurrentIndex();
+        //public override void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
+        //{
+        //    ItemStack itemStack = InvPlayer.GetCurrentItem();
+        //    if (itemStack != null)
+        //    {
+        //        BlockPos blockPos = packet.GetBlockPos();
+        //        if (!_worldServer.GetBlockState(blockPos).GetBlock().IsReplaceable)
+        //        {
+        //            blockPos = blockPos.Offset(packet.Side);
+        //        }
 
-            int idBlock = BlocksRegMvk.Debug.IndexBlock;
-            if (currentIndex == 0) idBlock = BlocksRegMvk.Stone.IndexBlock;
-            else if (currentIndex == 1) idBlock = BlocksRegMvk.Water.IndexBlock;
-            else if (currentIndex == 2) idBlock = BlocksRegMvk.Lava.IndexBlock;
-            else if (currentIndex == 3) idBlock = BlocksRegMvk.FlowerDandelion.IndexBlock;// | (1 << 28) | (4 << 24);
-            else if (currentIndex == 4) idBlock = BlocksRegMvk.Glass.IndexBlock;
-            else if (currentIndex == 5) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
-            else if (currentIndex == 6) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
-            else if (currentIndex == 7) idBlock = BlocksRegMvk.SaplingBirch.IndexBlock;
-            else if (currentIndex == 8) idBlock = BlocksRegMvk.SaplingOak.IndexBlock;
+        //        if (!itemStack.OnItemOnBlockUseSecond(this, blockPos,
+        //            packet.Side, packet.Facing))
+        //        {
+        //            // Если ты не можешь его установить, надо отправить текущему клиенту откат блока
+        //            Console.WriteLine("Откат блока");
+        //            SendPacket(new PacketS23BlockChange(_worldServer.GetChunk(blockPos), blockPos));
+        //        }
+        //    }
+        //    /*
+        //    // Временно устанваливаем блок
+        //    byte currentIndex = Inventory.GetCurrentIndex();
 
-            // Определяем на какую сторону смотрит игрок
-            Pole pole = PoleConvert.FromAngle(RotationYaw);
+        //    int idBlock = BlocksRegMvk.Debug.IndexBlock;
+        //    if (currentIndex == 0) idBlock = BlocksRegMvk.Stone.IndexBlock;
+        //    else if (currentIndex == 1) idBlock = BlocksRegMvk.Water.IndexBlock;
+        //    else if (currentIndex == 2) idBlock = BlocksRegMvk.Lava.IndexBlock;
+        //    else if (currentIndex == 3) idBlock = BlocksRegMvk.FlowerDandelion.IndexBlock;// | (1 << 28) | (4 << 24);
+        //    else if (currentIndex == 4) idBlock = BlocksRegMvk.Glass.IndexBlock;
+        //    else if (currentIndex == 5) idBlock = BlocksRegMvk.GlassBlue.IndexBlock;
+        //    else if (currentIndex == 6) idBlock = BlocksRegMvk.GlassRed.IndexBlock;
+        //    else if (currentIndex == 7) idBlock = BlocksRegMvk.SaplingBirch.IndexBlock;
+        //    else if (currentIndex == 8) idBlock = BlocksRegMvk.SaplingOak.IndexBlock;
 
-            WorldServer worldServer = GetWorldServer();
-            BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
-            BlockBase block = blockState.GetBlock();
+        //    // Определяем на какую сторону смотрит игрок
+        //    Pole pole = PoleConvert.FromAngle(RotationYaw);
 
-            BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
-            // TODO::ВРЕМЕННО!!!
-            blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
-            //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
-            worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 46 : 63);
-            if (idBlock == BlocksRegMvk.Water.IndexBlock || idBlock == BlocksRegMvk.Lava.IndexBlock)
-            {
-                worldServer.SetBlockTick(blockPos, 10);
-            }
-            //else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock || idBlock == BlocksRegMvk.SaplingOak.IndexBlock)
-            //{
-            //    worldServer.SetBlockTick(blockPos, 45); // 1.5 sec
-            //}
-        }
+        //    WorldServer worldServer = GetWorldServer();
+        //    BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
+        //    BlockBase block = blockState.GetBlock();
+
+        //    BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
+        //    // TODO::ВРЕМЕННО!!!
+        //    blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
+        //    //block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
+        //    worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 46 : 63);
+        //    if (idBlock == BlocksRegMvk.Water.IndexBlock || idBlock == BlocksRegMvk.Lava.IndexBlock)
+        //    {
+        //        worldServer.SetBlockTick(blockPos, 10);
+        //    }
+        //    //else if (idBlock == BlocksRegMvk.SaplingBirch.IndexBlock || idBlock == BlocksRegMvk.SaplingOak.IndexBlock)
+        //    //{
+        //    //    worldServer.SetBlockTick(blockPos, 45); // 1.5 sec
+        //    //}
+        //    */
+        //}
 
         /// <summary>
         /// Пакет: кликов по окну и контролам

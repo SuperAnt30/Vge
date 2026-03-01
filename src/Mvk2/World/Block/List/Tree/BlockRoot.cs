@@ -31,7 +31,7 @@ namespace Mvk2.World.Block.List
         /// Действие блока после его удаления
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
+        public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
             if (stateOld.Met < 256) // только для сгенерированных блоков

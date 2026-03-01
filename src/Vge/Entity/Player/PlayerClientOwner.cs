@@ -985,6 +985,12 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Получить объект мира
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override WorldBase GetWorld() => _game.World;
+
+        /// <summary>
         /// Для определения параметров блока чанк и локальные координаты блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

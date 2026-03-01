@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Json;
 
-namespace Vge.Item
+namespace Vge.Item.List
 {
     /// <summary>
     /// Предмет одежды, либо то что может одеть сущность

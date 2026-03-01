@@ -6,6 +6,7 @@ using Vge.Entity.Layer;
 using Vge.Entity.Player;
 using Vge.Entity.Shape;
 using Vge.Item;
+using Vge.Item.List;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;

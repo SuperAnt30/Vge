@@ -389,9 +389,32 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Пакет: Взаимодействие с сущностью
+        /// </summary>
+        public virtual void PacketUseEntity(PacketC03UseEntity packet)
+        {
+            EntityBase entity = GetWorldServer().LoadedEntityList.Get(packet.Index);
+            if (entity != null)
+            {
+                if (packet.Action == PacketC03UseEntity.EnumAction.Impulse)
+                {
+                    entity.SetPhysicsImpulse(packet.X, packet.Y, packet.Z);
+                }
+                else if (packet.Action == PacketC03UseEntity.EnumAction.Awaken)
+                {
+                    entity.AwakenPhysicSleep();
+                }
+                else if (packet.Action == PacketC03UseEntity.EnumAction.Interact)
+                {
+                    entity.OnInteract(this);
+                }
+            }
+        }
+
+        /// <summary>
         /// Пакет: Игрок копает / ломает
         /// </summary>
-        public void PacketPlayerDigging(PacketC07PlayerDigging packet)
+        public virtual void PacketPlayerDigging(PacketC07PlayerDigging packet)
         {
             Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos() + " Pr:" + packet.Process);
             // Временно!
@@ -475,29 +498,30 @@ namespace Vge.Entity.Player
         /// </summary>
         public virtual void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
         {
-            // Временно устанваливаем блок
-            //ushort idBlock = 0;
-            //for (ushort i = 0; i < Ce.Blocks.BlockAlias.Length; i++)
-            //{
-            //    if (Ce.Blocks.BlockAlias[i] == "Debug") //Debug GlassBlue
-            //    {
-            //        idBlock = i;
-            //        break;
-            //    }
-            //}
+            if (packet.Action == PacketC08PlayerBlockPlacement.EnumAction.UseBlock)
+            {
+                // Взаимодействие выбранного блока
 
-            //// Определяем на какую сторону смотрит игрок
-            //Pole pole = PoleConvert.FromAngle(RotationYaw);
+            }
+            else
+            {
+                // Нам нужен предмет
+                ItemStack itemStack = Inventory.GetCurrentItem();
+                if (itemStack != null)
+                {
+                    BlockPos blockPos = packet.GetBlockPos();
+                    if (!itemStack.OnItemOnBlockUseSecond(this, blockPos, packet.Side, packet.Facing))
+                    {
+                        if (!_worldServer.GetBlockState(blockPos).GetBlock().IsReplaceable)
+                        {
+                            blockPos = blockPos.Offset(packet.Side);
+                        }
 
-            //WorldServer worldServer = GetWorld();
-            //BlockState blockState = new BlockState(idBlock);// world.GetBlockState(packet.GetBlockPos());
-            //BlockBase block = blockState.GetBlock();
-
-            //BlockPos blockPos = packet.GetBlockPos().Offset(packet.Side);
-            //// TODO::ВРЕМЕННО!!!
-            //blockState = block.OnBlockPlaced(worldServer, packet.GetBlockPos(), blockState, pole, packet.Facing);
-            ////block.OnBlockPlaced(world, packet.GetBlockPos(), blockState, packet.Side, packet.Facing);
-            //worldServer.SetBlockState(blockPos, blockState, worldServer.IsRemote ? 14 : 31);
+                        // Если ты не можешь его установить, надо отправить текущему клиенту откат блока
+                        SendPacket(new PacketS23BlockChange(_worldServer.GetChunk(blockPos), blockPos));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -898,6 +922,12 @@ namespace Vge.Entity.Player
         /// Получить время в милисекундах с сервера
         /// </summary>
         protected override long _Time() => _server.Time();
+
+        /// <summary>
+        /// Получить объект мира
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override WorldBase GetWorld() => _worldServer;
 
         /// <summary>
         /// Получить хэш по строке

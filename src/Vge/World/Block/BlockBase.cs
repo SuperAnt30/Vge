@@ -302,6 +302,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.IsDestorySecond)) IsDestorySecond = json.GetBool();
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
                     if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
+                    if (json.IsKey(Ctb.IsReplaceable)) IsReplaceable = json.GetBool();
                     if (json.IsKey(Ctb.Color))
                     {
                         float[] ar = json.GetArray().ToArrayFloat();
@@ -430,6 +431,26 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
             => new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
+
+        /// <summary>
+        /// Получить одну большую рамку блока, если их несколько они объеденяться, используется для установки блока
+        /// TODO:: 2026-02-26 надо коллизию рассчитать в начале при инициализации
+        /// </summary>
+        public AxisAlignedBB GetCollisionOne(BlockPos pos, int met)
+        {
+            AxisAlignedBB[] axes = GetCollisionBoxesToList(pos, met);
+            if (axes.Length > 0)
+            {
+                AxisAlignedBB aabb = axes[0];
+                for (int i = 1; i < axes.Length; i++)
+                {
+                    aabb = aabb.AddCoord(axes[i].Min).AddCoord(axes[i].Max);
+                }
+                return aabb;
+            }
+            Vector3 min = pos.ToVector3();
+            return new AxisAlignedBB(min, min + 1f);
+        }
 
         #endregion
 
@@ -569,23 +590,20 @@ namespace Vge.World.Block
         /// Проверка установка блока, можно ли его установить тут
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool CanBlockStay(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, int met = 0) => true;
-
-
+        public virtual bool CanBlockStay(WorldBase world, BlockPos blockPos, int met = 0) => true;
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual BlockState OnBlockPlaced(WorldServer world, BlockPos blockPos, 
+        public virtual BlockState OnBlockPlaced(WorldBase world, BlockPos blockPos, 
             BlockState blockState, Pole side, Vector3 facing) => blockState;
 
         /// <summary>
         /// Действие блока после его удаления
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
+        public virtual void OnBreakBlock(WorldBase world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew) { }
 
         ///// <summary>

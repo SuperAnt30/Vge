@@ -32,7 +32,7 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
             base.NeighborBlockChange(world, chunk,blockPos, blockState, neighborBlock);
-            if (!CanBlockStay(world, chunk, blockPos))
+            if (!CanBlockStay(world, blockPos))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
                 world.SetBlockToAir(blockPos);
@@ -42,12 +42,15 @@ namespace Mvk2.World.Block.List
         /// <summary> 
         /// Проверка установи блока, можно ли его установить тут
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool CanBlockStay(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, int met = 0)
+        public override bool CanBlockStay(WorldBase world, BlockPos blockPos, int met = 0)
         {
-            BlockBase block = chunk.GetBlockState(blockPos.OffsetDown()).GetBlock();
-            return block.IndexBlock == BlocksRegMvk.TurfLoam.IndexBlock;
+            ChunkBase chunk = world.GetChunk(blockPos);
+            if (chunk != null)
+            {
+                BlockBase block = chunk.GetBlockState(blockPos.OffsetDown()).GetBlock();
+                return block.IndexBlock == BlocksRegMvk.TurfLoam.IndexBlock;
+            }
+            return false;
         }
 
         /*

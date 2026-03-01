@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vge.Entity.Player;
 using Vge.Item;
+using Vge.Item.List;
 using Vge.World.BlockEntity;
 
 namespace Vge.Entity.Inventory

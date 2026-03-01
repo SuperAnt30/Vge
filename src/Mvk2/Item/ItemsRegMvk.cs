@@ -1,4 +1,6 @@
-﻿using Vge.Item;
+﻿using Mvk2.World.Block;
+using Vge.Item;
+using Vge.Item.List;
 
 namespace Mvk2.Item
 {
@@ -40,7 +42,34 @@ namespace Mvk2.Item
         #endregion
 
 
+        /// <summary>
+        /// Железный топор
+        /// </summary>
         public static ItemBase AxeIron { get; private set; }
+        /// <summary>
+        /// Железная лопата
+        /// </summary>
+        public static ItemBase ShovelIron { get; private set; }
+
+        /// <summary>
+        /// Консерва
+        /// </summary>
+        public static ItemBase CannedFood { get; private set; }
+        /// <summary>
+        /// Сухая трава
+        /// </summary>
+        public static ItemBase DryGrass { get; private set; }
+        /// <summary>
+        /// Земляной кусочек
+        /// </summary>
+        public static ItemBase PieceDirt { get; private set; }
+        /// <summary>
+        /// Каменный кусочек
+        /// </summary>
+        public static ItemBase PieceStone { get; private set; }
+        /// <summary>
+        /// Цветок клевер белый
+        /// </summary>
         public static ItemBase FlowerClover { get; private set; }
         public static ItemBase Cobblestone { get; private set; }
         public static ItemBase Brol { get; private set; }
@@ -126,9 +155,17 @@ namespace Mvk2.Item
             // 
 
             ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemBase());
-            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBase());
-            ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBase());
-            ItemsReg.RegisterItemClass("Brol", Brol = new ItemBase());
+            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemBase());
+
+            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemBase());
+            ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
+            ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemBase());
+            ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemBase());
+
+            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.FlowerClover));
+
+            ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
+            ItemsReg.RegisterItemClass("Brol", Brol = new ItemBlock(BlocksRegMvk.Brol));
 
             
             StrawHat = ItemsReg.RegisterItemClothClass("StrawHat");
@@ -142,6 +179,7 @@ namespace Mvk2.Item
             Tie = ItemsReg.RegisterItemClothClass("Tie");
             CapDark = ItemsReg.RegisterItemClothClass("CapDark");
 
+            // Объект регистрации и данных креативного инвентаря
             Creative = new ItemsCreative();
         }
     }

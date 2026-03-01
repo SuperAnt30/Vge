@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
+using Vge.World;
 
 namespace Vge.Entity.Player
 {
@@ -140,5 +141,10 @@ namespace Vge.Entity.Player
                                        //=> Size = SizeLiving = new SizeEntityLiving(this, .3f, 1.49f, 1.38f, 80);
             => Size = SizeLiving = new SizeEntityLiving(this, .6f, 2.98f, 2.76f, 80); // 50 см 
 
+        /// <summary>
+        /// Получить объект мира
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual WorldBase GetWorld() => null;
     }
 }

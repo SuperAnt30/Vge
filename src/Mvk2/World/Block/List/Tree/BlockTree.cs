@@ -110,13 +110,14 @@ namespace Mvk2.World.Block.List
         /// Действие блока после его удаления
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
+        public override void OnBreakBlock(WorldBase world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
-            if (Type == TypeTree.Log || Type == TypeTree.Branch)
+            if (!world.IsRemote && (Type == TypeTree.Log || Type == TypeTree.Branch)
+                && world is WorldServer worldServer)
             {
                 // Список всех блок сущностей в квадрате 3*3 чанка
-                List<BlockEntityBase> blocksEntity = world.GetBlocksEntity3x3(chunk);
+                List<BlockEntityBase> blocksEntity = worldServer.GetBlocksEntity3x3(chunk);
 
                 // Пробегаемся и производим удаление
                 foreach(BlockEntityBase blockEntity in blocksEntity)
@@ -125,7 +126,7 @@ namespace Mvk2.World.Block.List
                         && blockEntityTree.IsAABB(blockPos))
                     {
                         // Это блок возможно принадлежит этому дереву. Откусить
-                        blockEntityTree.RemoveBlock(world, chunk, blockPos);
+                        blockEntityTree.RemoveBlock(worldServer, chunk, blockPos);
                     }
                 }
 

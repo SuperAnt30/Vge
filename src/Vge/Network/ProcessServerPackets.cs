@@ -173,25 +173,7 @@ namespace Vge.Network
         private void _Handle03UseEntity(SocketSide socketSide, PacketC03UseEntity packet)
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            if (playerServer != null)
-            {
-                EntityBase entity = playerServer.GetWorldServer().LoadedEntityList.Get(packet.Index);
-                if (entity != null)
-                {
-                    if (packet.Action == PacketC03UseEntity.EnumAction.Impulse)
-                    {
-                        entity.SetPhysicsImpulse(packet.X, packet.Y, packet.Z);
-                    }
-                    else if (packet.Action == PacketC03UseEntity.EnumAction.Awaken)
-                    {
-                        entity.AwakenPhysicSleep();
-                    }
-                    else if (packet.Action == PacketC03UseEntity.EnumAction.Interact)
-                    {
-                        entity.OnInteract(playerServer);
-                    }
-                }
-            }
+            playerServer?.PacketUseEntity(packet);
         }
         
         /// <summary>
