@@ -97,6 +97,7 @@ namespace Vge.Network
                     case 0x02: _Handle02LoginStart(sp.Side, (PacketC02LoginStart)sp.Packet); break;
                     case 0x03: _Handle03UseEntity(sp.Side, (PacketC03UseEntity)sp.Packet); break;
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
+                    case 0x05: _Handle05UseItem(sp.Side, (PacketC05UseItem)sp.Packet); break;
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
                     case 0x09: _Handle09HeldItemChange(sp.Side, (PacketC09HeldItemChange)sp.Packet); break;
@@ -183,6 +184,15 @@ namespace Vge.Network
         {
             PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
             playerServer?.PacketPlayerPosition(packet);
+        }
+
+        /// <summary>
+        /// Пакет взаимодействие с выбранным предметом в руке без RayCast блока
+        /// </summary>
+        private void _Handle05UseItem(SocketSide socketSide, PacketC05UseItem packet)
+        {
+            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
+            playerServer?.PacketUseItem(packet);
         }
 
         /// <summary>

@@ -408,6 +408,34 @@ namespace Vge.Entity.Player
                 {
                     entity.OnInteract(this);
                 }
+                else if (packet.Action == PacketC03UseEntity.EnumAction.Attack)
+                {
+                    // Тут проверка силы урона!
+                  //  entity.OnAttack(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Пакет взаимодействие с выбранным предметом в руке без RayCast блока
+        /// </summary>
+        public virtual void PacketUseItem(PacketC05UseItem packet)
+        {
+            // Нам нужен предмет
+            ItemStack itemStack = Inventory.GetCurrentItem();
+            if (itemStack != null)
+            {
+                if (packet.IsSecond)
+                {
+                    // Вспомогательное взаимодействие предмета
+                    itemStack.Item.OnUseSecond(itemStack, this, packet.Number);
+                    
+                }
+                else
+                {
+                    // Взаимодействие предмета
+                    itemStack.Item.OnUseAction(itemStack, this);
+                }
             }
         }
 
@@ -416,7 +444,7 @@ namespace Vge.Entity.Player
         /// </summary>
         public virtual void PacketPlayerDigging(PacketC07PlayerDigging packet)
         {
-            Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos() + " Pr:" + packet.Process);
+            //Console.WriteLine("Digging " + packet.Digging + " " + packet.GetBlockPos() + " Pr:" + packet.Process);
             // Временно!
             // Уничтожение блока
             WorldServer worldServer = GetWorldServer();
@@ -498,29 +526,32 @@ namespace Vge.Entity.Player
         /// </summary>
         public virtual void PacketPlayerBlockPlacement(PacketC08PlayerBlockPlacement packet)
         {
-            if (packet.Action == PacketC08PlayerBlockPlacement.EnumAction.UseBlock)
-            {
-                // Взаимодействие выбранного блока
-
-            }
-            else
+            if (packet.Put)
             {
                 // Нам нужен предмет
                 ItemStack itemStack = Inventory.GetCurrentItem();
                 if (itemStack != null)
                 {
                     BlockPos blockPos = packet.GetBlockPos();
-                    if (!itemStack.OnItemOnBlockUseSecond(this, blockPos, packet.Side, packet.Facing))
+                    // Установить блок который в руке
+                    if (!itemStack.Item.OnItemOnBlockPlacement(itemStack, this, blockPos, packet.Side,
+                        packet.Facing, packet.Replaceable))
                     {
-                        if (!_worldServer.GetBlockState(blockPos).GetBlock().IsReplaceable)
+                        // Если ты не можешь его установить, надо отправить текущему клиенту откат блока
+                        if (packet.Replaceable && !_worldServer.GetBlockState(blockPos).GetBlock().IsReplaceable)
                         {
                             blockPos = blockPos.Offset(packet.Side);
                         }
-
-                        // Если ты не можешь его установить, надо отправить текущему клиенту откат блока
                         SendPacket(new PacketS23BlockChange(_worldServer.GetChunk(blockPos), blockPos));
                     }
                 }
+            }
+            else
+            {
+                // Активация выбранного блока
+                BlockPos blockPos = packet.GetBlockPos();
+                _worldServer.GetBlockState(blockPos).GetBlock()
+                    .OnBlockActivated(this, blockPos, packet.Side, packet.Facing);
             }
         }
 

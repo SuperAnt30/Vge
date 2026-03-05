@@ -173,32 +173,79 @@ namespace Vge.Item
         }
 
         /// <summary>
-        /// Вызывается, когда щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
+        /// Действие предмета ЛКМ.
+        /// Для клиента.
         /// </summary>
-        public virtual bool OnItemUse(ItemStack stack, PlayerBase player) => false;
+        /// <param name="begin">Первый клик, без паузы</param>
+        public virtual ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        {
+            MovingObjectPosition moving = player.MovingObject;
+            if (moving.IsEntity())
+            {
+                // Урон для сущности
+                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity);
+            }
+            if (moving.IsBlock() && player.CanDestroyedBlock(moving.Block.GetBlock()))
+            {
+                // Можно разрушить блок без предмета
+                return new ResultHandAction(8, 1);
+            }
+            return new ResultHandAction(ResultHandAction.ActionType.None);
+        }
 
         /// <summary>
-        /// Вызывается, когда блок щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
+        /// Действие текущего предмета.
+        /// Для сервера
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void OnUseAction(ItemStack stack, PlayerServer player) { }
+
+        /// <summary>
+        /// Вспомогательное действие предмета ПКМ.
+        /// Для клиента.
+        /// </summary>
+        /// <param name="begin">Первый клик, без паузы</param>
+        /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
+        public virtual ResultHandSecond OnSecond(bool begin, ItemStack stack, 
+            PlayerClientOwner player, int counter)
+        {
+            MovingObjectPosition moving = player.MovingObject;
+            if (moving.IsEntity())
+            {
+                return new ResultHandSecond(ResultHandSecond.ActionType.InteractEntity);
+            }
+            return new ResultHandSecond(ResultHandSecond.ActionType.None);
+        }
+
+        /// <summary>
+        /// Окончание вспомогательного действия предмета ПКМ, вызывается после отпущения клавиши или смены предмета.
+        /// Для клиента.
+        /// Возвращает Дополнительный цифровой параметр, если -1 нет действий
+        /// </summary>
+        /// <param name="abort">Бало ли астановка из-за отмены</param>
+        /// <param name="counter">счётчик тактов от нажатия</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual int OnSecondEnd(ItemStack stack, PlayerClientOwner player, 
+            bool abort, int counter) => -1;
+
+        /// <summary>
+        /// Вспомогательное действие текущего предмета.
+        /// Для сервера
+        /// </summary>
+        /// <param name="number">Дополнительный цифровой параметр</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void OnUseSecond(ItemStack stack, PlayerServer player, int number) { }
+
+        /// <summary>
+        /// Вызывается, когда текущий предмет пробуюет установить на блок,
+        /// возвращает true если действие состоялось
         /// </summary>
         /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
-        public virtual bool OnItemOnBlockUse(ItemStack stack, PlayerBase player,
-            BlockPos blockPos, Pole side, Vector3 facing) => false;
-
-        /// <summary>
-        /// Вызывается, когда щелкают ПКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        public virtual bool OnItemUseSecond(ItemStack stack, PlayerBase player) => false;
-
-        /// <summary>
-        /// Вызывается, когда блок щелкают ПКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
-        /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
-        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
-        public virtual bool OnItemOnBlockUseSecond(ItemStack stack, PlayerBase player,
-            BlockPos blockPos, Pole side, Vector3 facing) => false;
+        /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
+        public virtual bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
+            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable) => false;
 
         #endregion
 

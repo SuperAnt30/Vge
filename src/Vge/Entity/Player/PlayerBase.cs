@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
 using Vge.World;
+using Vge.World.Block;
 
 namespace Vge.Entity.Player
 {
@@ -107,6 +108,18 @@ namespace Vge.Entity.Player
         /// Проверка времени игрока без пинга, если игрок не отвечал больше 30 секунд
         /// </summary>
         public bool TimeOut() => (_Time() - _lastTimeServer) > 30000;
+
+        #endregion
+
+        #region Действия с блоком
+
+        /// <summary>
+        /// Может ли блок быть разрушен кулаком
+        /// </summary>
+        /// <param name="block">блок который разрушаем</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanDestroyedBlock(BlockBase block)
+            => CreativeMode || block.Material.RequiresNoTool;
 
         #endregion
 

@@ -50,6 +50,10 @@ namespace Vge.Item
         /// Копия стака
         /// </summary>
         public ItemStack Copy() => new ItemStack(Item, Amount, ItemDamage);
+        /// <summary>
+        /// Копия стака с заданным количеством
+        /// </summary>
+        public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamage);
 
         /// <summary>
         /// Добавить к количеству
@@ -192,72 +196,6 @@ namespace Vge.Item
             }
             return null;
         }
-
-        #region Дейстыия рук, ЛКМ и ПКМ
-
-        /// <summary>
-        /// Вызывается, когда щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool OnItemUse(PlayerBase player)
-        {
-            if (Item.OnItemUse(this, player))
-            {
-                // Статистика юза
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Вызывается, когда блок щелкают ЛКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
-        /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
-        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool OnItemOnBlockUse(PlayerBase player, BlockPos blockPos, Pole side, Vector3 facing)
-        {
-            if (Item.OnItemOnBlockUse(this, player, blockPos, side, facing))
-            {
-                // Статистика юза
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Вызывается, когда щелкают ПКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool OnItemUseSecond(PlayerBase player)
-        {
-            if (Item.OnItemUseSecond(this, player))
-            {
-                // Статистика юза
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Вызывается, когда блок щелкают ПКМ с этим элементом, возвращает true если действие состоялось
-        /// </summary>
-        /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
-        /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
-        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool OnItemOnBlockUseSecond(PlayerBase player, BlockPos blockPos, Pole side, Vector3 facing)
-        {
-            if (Item.OnItemOnBlockUseSecond(this, player, blockPos, side, facing))
-            {
-                // Статистика юза
-                return true;
-            }
-            return false;
-        }
-
-        #endregion
 
         /// <summary>
         /// Записать стак в NBT

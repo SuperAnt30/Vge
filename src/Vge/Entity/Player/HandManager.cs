@@ -37,12 +37,21 @@ namespace Vge.Entity.Player
         /// Пауза для вспомогательное действие ПКМ
         /// </summary>
         protected int _pauseSecond;
+        /// <summary>
+        /// Была ли остановка с отменой, флаг для вспомогательного действия
+        /// </summary>
+        protected bool _flagAbort;
 
+        /// <summary>
+        /// Счётчик тактов от нажатия вспомогательное действия ПКМ
+        /// </summary>
+        protected int _counterSecond { get; private set; }
 
         public void SetStop()
         {
             _action = false;
             _second = false;
+            _flagAbort = true;
         }
 
         /// <summary>
@@ -70,6 +79,11 @@ namespace Vge.Entity.Player
             }
             if (_second)
             {
+                if (!_secondPrev)
+                {
+                    _counterSecond = 0;
+                    _flagAbort = false;
+                }
                 _Second(!_secondPrev);
             }
             else if (_secondPrev)
@@ -78,6 +92,7 @@ namespace Vge.Entity.Player
             }
             _actionPrev = _action;
             _secondPrev = _second;
+            _counterSecond++;
         }
 
         /// <summary>

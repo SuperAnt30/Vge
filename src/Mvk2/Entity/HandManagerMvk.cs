@@ -16,7 +16,7 @@ using Vge.World.Chunk;
 namespace Mvk2.Entity
 {
     /// <summary>
-    /// Менеджер действий руки, на клиенте для Малювек
+    /// Менеджер действий рук, на клиенте для Малювек
     /// ЛКМ и ПКМ
     /// </summary>
     public class HandManagerMvk : HandManager
@@ -43,6 +43,10 @@ namespace Mvk2.Entity
         /// Разрушаем ли мы блок
         /// </summary>
         private bool _isBlockDestroy;
+        /// <summary>
+        /// Флаг запуска вспомогательного предмета
+        /// </summary>
+        private bool _flagBeginUseSecond;
 
         public HandManagerMvk(GameBase game, PlayerClientOwnerMvk player)
         {
@@ -61,149 +65,81 @@ namespace Mvk2.Entity
 
             if (_pauseAction == 0)
             {
-                // == 1 OnItemUse
-                // == 2 OnItemOnBlockUse
-                // == 3 OnBlockUse
-                // == 4 OnEntityUse
+                _player.TestHandAction = true;
 
                 MovingObjectPosition moving = _player.MovingObject;
-
                 // Стак предмета в руке
                 ItemStack itemStack = _player.InvPlayer.GetCurrentItem();
 
                 if (itemStack != null)
                 {
-                    if (itemStack.OnItemUse(_player))
+                    ResultHandAction resultAction = itemStack.Item.OnAction(begin, itemStack, _player);
+                    if (resultAction.Action == ResultHandAction.ActionType.DestroyBlock)
                     {
-                        // 1. Действие предмета, независимо от выбранного блока или сущности
-                        _pauseAction = 8;
-                        return;
+                        // Разрушение блока с предметом
+                        Console.WriteLine("BlockDiggingItem");
+                        _BlockDigging(begin, moving.BlockPosition, resultAction.Acceleration);
                     }
-                    if (moving.IsBlock())
+                    else if (resultAction.Action == ResultHandAction.ActionType.AttackEntity)
                     {
-                        if (itemStack.OnItemOnBlockUse(_player, moving.BlockPosition, moving.Side, moving.Facing))
-                        {
-                            // 2. Действие предмета зависит от выбранного блока
-                            _pauseAction = 8;
-                            return;
-                        }
+                        // Атака на сущность, с предметом
+                        Console.WriteLine("AttackItem");
+                        _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
+                            PacketC03UseEntity.EnumAction.Attack));
                     }
-                    else if (moving.IsEntity())
+                    else if (resultAction.Action == ResultHandAction.ActionType.ItemOnBlock)
                     {
-                        // 4. Действие на сущность, с предметом
-                        _pauseAction = 8;
-                        return;
+                        // Размещение блока (Взаимодействие предмета на выбранный блок)
+                        Console.WriteLine("BlockPlacement " + resultAction.Pause);
+                        _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
+                                moving.Side, moving.Facing, resultAction.Replaceable, true));
                     }
+                    else if (resultAction.Action == ResultHandAction.ActionType.UseItem)
+                    {
+                        // Взаимодействия предмета, ЛКМ без блока
+                        Console.WriteLine("UseItem");
+                        _game.TrancivePacket(new PacketC05UseItem());
+                    }
+                    else
+                    {
+                        // Нет действий с предметом
+                        Console.WriteLine("Нет действий с предметом");
+                    }
+                    _pauseAction = resultAction.Pause;
                 }
-
-                if (moving.IsBlock())
+                else if(moving.IsBlock())
                 {
-                    // 3. Действие на блок без предмета
-                    _player.TestHandAction = true;
-                    _BlockDigging(begin, moving.BlockPosition);
-                    _pauseAction = 8;
-                    return;
+                    if (_player.CanDestroyedBlock(moving.Block.GetBlock()))
+                    {
+                        // Разрушение блока без предмета
+                        _BlockDigging(begin, moving.BlockPosition);
+                        Console.WriteLine("BlockDigging");
+                        _pauseAction = 8;
+                    }
+                    else
+                    {
+                        _pauseAction = -1;
+                    }
                 }
                 else if (moving.IsEntity())
                 {
-                    // 4. Действие на сущность, без предметом
-                    _pauseAction = 8;
-                    return;
-                }
-
-                return;
-
-                if (_player.MovingObject.IsBlock())
-                {
-                    _player.TestHandAction = true; // TODO:: 2026-02-27 Убрать, для анимации отладка
-
-                    // Удар по блоку
-
-                    BlockPos blockPos = _player.MovingObject.BlockPosition;
-                    if (!_isBlockDestroy || !blockPos.Equals(_blockPos))
-                    {
-                        begin = true;
-                        _blockPos = blockPos;
-                        _isBlockDestroy = true;
-                    }
-                    else
-                    {
-                        // Если блок тот же самый, то отменяем началку, удары могут быть кликами
-                        begin = false;
-                    }
-
-                    BlockState blockState = _game.World.GetBlockState(_blockPos);
-                    BlockBase block = blockState.GetBlock();
-
-                    if (block.Hardness > 0)
-                    {
-                        if (begin)
-                        {
-                            _hardness = block.Hardness;
-                        }
-
-                        // Определяем текущее фиксированное состояние разрушения блока, для старта и если кто-то тоже ломает
-                        int destroyFix = _game.World.GetBlockDestroy(_blockPos);
-                        // Получить предположительное значение если разрушать
-                        int destroy = destroyFix * _hardness / 8;
-
-                        if (begin || destroy > _destroy)
-                        {
-                            // Если первый клик или значение больше, .т.е. разрушили больше, мы меняем, кто-то помогает
-                            _destroy = destroy;
-                        }
-                        _destroy++;
-
-                        if (_destroy > _hardness)
-                        {
-                            // Разрушили
-                            _BlockDestroyed();
-                        }
-                        else
-                        {
-                            // Разрушаем, расчитываем значение для фиксации разрушения
-                            destroy = _destroy * 8 / _hardness;
-                            if (destroy != destroyFix)
-                            {
-                                _game.World.SetBlockDestroy(_blockPos, (byte)destroy);
-                                _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos, (byte)destroy));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Разрушили
-                        _BlockDestroyed();
-                    }
-                }
-                else if (_player.MovingObject.IsEntity())
-                {
-                    // Сущность
-                    _isBlockDestroy = false;
+                    // Атака на сущность, без предмета
+                    Console.WriteLine("Attack");
+                    _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
+                        PacketC03UseEntity.EnumAction.Attack));
+                    _pauseAction = -1;
                 }
                 else
                 {
-                    // Воздух, ни в кого
-                    _isBlockDestroy = false;
-
-                    // Типа броска
-                    // _game.TrancivePacket(new PacketC07PlayerDigging(new BlockPos(), PacketC07PlayerDigging.EnumDigging.About));
+                    // Нет действий без предмета
+                    Console.WriteLine("Нет действий без предмета");
+                    _pauseAction = -1;
                 }
-                _pauseAction = 7;
             }
             else if(_pauseAction > 0)
             {
                 _pauseAction--;
             }
-        }
-
-        /// <summary>
-        /// Конец действия
-        /// </summary>
-        protected override void _ActionEnd()
-        {
-            //Console.WriteLine("HandAction-End");
-
         }
 
         /// <summary>
@@ -217,52 +153,76 @@ namespace Mvk2.Entity
 
             if (_pauseSecond == 0)
             {
-                //if (!IsSpectator() && true)
-               // Console.WriteLine(begin ? "HandnSecond-Begin" : "HandSecond");
-
+                _flagBeginUseSecond = false;
                 MovingObjectPosition moving = _player.MovingObject;
-                if (moving.IsEntity())
-                {
-                    _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
-                        PacketC03UseEntity.EnumAction.Interact));
 
-                }
-                else if (moving.IsBlock())
+                if (!_player.IsKeyShift() && moving.IsBlock() && moving.Block.GetBlock().OnBlockActivated(
+                    _player, moving.BlockPosition, moving.Side, moving.Facing))
                 {
-                    ItemStack itemStack = _player.InvPlayer.GetCurrentItem();
-                    if (itemStack != null)
-                    {
-                        // Действие предмета в руке
-                        BlockPos blockPos = moving.BlockPosition;
-                        //if (!_game.World.GetBlockState(blockPos).GetBlock().IsReplaceable)
-                        //{
-                        //    blockPos = blockPos.Offset(moving.Side);
-                        //}
-                        if (itemStack.Item.OnItemOnBlockUseSecond(itemStack, _player, blockPos,
-                             moving.Side, moving.Facing))
-                        {
-                            _game.TrancivePacket(new PacketC08PlayerBlockPlacement(blockPos,
-                                moving.Side, moving.Facing));
-                            _pauseSecond = 8;
-                        }
-                    }
-                    else
-                    {
-                        // пип, нет предмета. или какието действия голой рукой
-                        Console.WriteLine("PipBlock");
-                        _pauseSecond = -1;
-                    }
-                    //    _game.World.SetBlockState(moving.BlockPosition.Offset(moving.Side),
-                    //        new BlockState(BlocksRegMvk.GlassBlue.IndexBlock), 46);
-                    //_game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
-                    //    moving.Side, moving.Facing));
+                    // Активация блока
+                    _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
+                                    moving.Side, moving.Facing, false, false));
+                    _pauseSecond = -1;
                 }
                 else
                 {
-                    Console.WriteLine("PipNull");
-                    _pauseSecond = -1;
+                    // Стак предмета в руке
+                    ItemStack itemStack = _player.InvPlayer.GetCurrentItem();
+
+                    if (itemStack != null)
+                    {
+                        ResultHandSecond resultSecond = itemStack.Item.OnSecond(begin, 
+                            itemStack, _player, _counterSecond);
+                        if (resultSecond.Action == ResultHandSecond.ActionType.BlockPlacement)
+                        {
+                            // Размещение блока (Взаимодействие предмета на выбранный блок)
+                            Console.WriteLine("BlockPlacement " + resultSecond.Pause);
+                            _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
+                                    moving.Side, moving.Facing, resultSecond.Replaceable, true));
+                        }
+                        else if (resultSecond.Action == ResultHandSecond.ActionType.InteractEntity)
+                        {
+                            // Взаимодействие на сущность, с предметом
+                            Console.WriteLine("InteractItem");
+                            _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
+                                PacketC03UseEntity.EnumAction.Interact));
+                        }
+                        else if (resultSecond.Action == ResultHandSecond.ActionType.UseItem)
+                        {
+                            // Взаимодействия предмета, ПКМ без блока
+                            _flagBeginUseSecond = true;
+                            Console.WriteLine("UseItem");
+                            _game.TrancivePacket(new PacketC05UseItem(resultSecond.Number));
+                        }
+                        else
+                        {
+                            // Нет вспомогательного действий с предметом
+                            Console.WriteLine("Нет вспомогательного действий с предметом");
+                        }
+                        _pauseSecond = resultSecond.Pause;
+                    }
+                    else if (moving.IsBlock())
+                    {
+                        //OnBlockActivated
+                        // Клик ПКМ на блок без предмета
+                        Console.WriteLine("Click RightMouse");
+                        _pauseSecond = 8;
+                    }
+                    else if (moving.IsEntity())
+                    {
+                        // Взаимодействие на сущность, без предмета
+                        Console.WriteLine("Interact");
+                        _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
+                            PacketC03UseEntity.EnumAction.Interact));
+                        _pauseSecond = -1;
+                    }
+                    else
+                    {
+                        // Нет вспомогательного действий без предмета
+                        Console.WriteLine("Нет вспомогательного действий без предмета");
+                        _pauseSecond = -1;
+                    }
                 }
-                
             }
             else if (_pauseSecond > 0)
             {
@@ -275,13 +235,26 @@ namespace Mvk2.Entity
         /// </summary>
         protected override void _SecondEnd()
         {
-          //  Console.WriteLine("HandSecond-End");
+            if (_player.IsSpectator()) return;
+            if (_flagBeginUseSecond)
+            {
+                ItemStack itemStack = _player.InvPlayer.GetCurrentItem();
+                if (itemStack != null)
+                {
+                    int number = itemStack.Item.OnSecondEnd(itemStack, _player, 
+                        _flagAbort, _counterSecond);
+                    if (number >= 0)
+                    {
+                        _game.TrancivePacket(new PacketC05UseItem(number));
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Разрушение блока
         /// </summary>
-        private void _BlockDigging(bool begin, BlockPos blockPos)
+        private void _BlockDigging(bool begin, BlockPos blockPos, float power = 1)
         {
             if (!_isBlockDestroy || !blockPos.Equals(_blockPos))
             {
@@ -302,7 +275,7 @@ namespace Mvk2.Entity
             {
                 if (begin)
                 {
-                    _hardness = block.Hardness;
+                    _hardness = (int)(block.Hardness * power);
                 }
 
                 // Определяем текущее фиксированное состояние разрушения блока, для старта и если кто-то тоже ломает

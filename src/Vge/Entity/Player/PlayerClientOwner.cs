@@ -259,6 +259,12 @@ namespace Vge.Entity.Player
         }
 
         /// <summary>
+        /// Нажата ли клавиша шифт
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsKeyShift() => _game.Key.KeyShift;
+
+        /// <summary>
         /// Изменение мыши
         /// </summary>
         /// <param name="centerBiasX">растояние по X от центра</param>

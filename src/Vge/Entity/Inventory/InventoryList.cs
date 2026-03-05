@@ -76,7 +76,6 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Обновление на сервере каждый тик
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UpdateServer(EntityBase entity, WorldServer worldServer)
         {
             if (_flagsChanged != 0)
@@ -130,7 +129,6 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Задать в текущий стак правой руки
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetCurrentItem(ItemStack stack)
         {
             if (_pocketCount > 0)
@@ -161,7 +159,6 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Устанавливает данный стак предметов в указанный слот в инвентаре
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetInventorySlotContents(int slotIn, ItemStack stack)
         {
             if (slotIn < _allCount)
@@ -202,7 +199,6 @@ namespace Vge.Entity.Inventory
         /// Получить список стаков для внешности (что в руках и одежда)
         /// для передачи по сети
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override ItemStack[] GetOutside()
         {
             ItemStack[] stacks;
@@ -224,7 +220,6 @@ namespace Vge.Entity.Inventory
         /// Задать список стаков для внешности (что в руках и одежда)
         /// У данного персонажа должно быть _pocketCount=0 || _pocketCount=1 и _allCount == stacks.Length
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetOutside(ItemStack[] stacks)
         {
             if (stacks.Length > 0 && _allCount == stacks.Length)
@@ -265,7 +260,6 @@ namespace Vge.Entity.Inventory
         /// Задать полный список всего инвентаря
         /// Mvk было SetMainAndCloth
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetAll(ItemStack[] stacks)
         {
             if (stacks.Length == _items.Length)
@@ -275,6 +269,24 @@ namespace Vge.Entity.Inventory
                     _items[i] = stacks[i];
                 }
                 _OnOutsideChanged(-1);
+            }
+        }
+
+        /// <summary>
+        /// Уменьшить количество предметом в текущей руке
+        /// </summary>
+        public override void DecrCurrentItem(byte amount)
+        {
+            if (_items[_currentIndex] != null)
+            {
+                if (_items[_currentIndex].Amount <= amount)
+                {
+                    SetCurrentItem(null);
+                }
+                else
+                {
+                    SetCurrentItem(_items[_currentIndex].ReduceAmount(amount));
+                }
             }
         }
 

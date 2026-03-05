@@ -144,6 +144,12 @@ namespace Vge.Entity.Inventory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual IBlockStorage GetBlockStorage() => null;
 
+        /// <summary>
+        /// Уменьшить количество предметом в текущей руке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void DecrCurrentItem(byte amount) { }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _Clear() { }
 

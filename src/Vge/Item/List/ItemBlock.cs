@@ -26,17 +26,49 @@ namespace Vge.Item.List
         #region Дейстыия рук, ЛКМ и ПКМ
 
         /// <summary>
-        /// Вызывается, когда блок щелкают ПКМ с этим элементом, возвращает true если действие состоялось
+        /// Вспомогательное действие предмета ПКМ.
+        /// Для клиента.
+        /// </summary>
+        /// <param name="begin">Первый клик, без паузы</param>
+        /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
+        public override ResultHandSecond OnSecond(bool begin, ItemStack stack, 
+            PlayerClientOwner player, int counter)
+        {
+            ResultHandSecond result = base.OnSecond(begin, stack, player, counter);
+            if (result.Action != ResultHandSecond.ActionType.None)
+            {
+                return result;
+            }
+
+            MovingObjectPosition moving = player.MovingObject;
+            if (moving.IsBlock())
+            {
+                if (OnItemOnBlockPlacement(stack, player, moving.BlockPosition, moving.Side, 
+                    moving.Facing, true))
+                {
+                    return new ResultHandSecond(begin ? 10 : 5, true);
+                }
+                return new ResultHandSecond(ResultHandSecond.ActionType.None, begin ? 10 : 5);
+            }
+            return new ResultHandSecond(ResultHandSecond.ActionType.None);
+        }
+
+        /// <summary>
+        /// Вызывается, когда текущий предмет пробуюет установить на блок,
+        /// возвращает true если действие состоялось
         /// </summary>
         /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
-        /// <param name="facing"></param>
-        public override bool OnItemOnBlockUseSecond(ItemStack stack, PlayerBase player,
-            BlockPos blockPos, Pole side, Vector3 facing)
+        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
+        public override bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
+            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable)
         {
             WorldBase world = player.GetWorld();
 
-            if (!world.GetBlockState(blockPos).GetBlock().IsReplaceable)
+            //if (!world.IsRemote) return false;
+
+            if (flagReplaceable && !world.GetBlockState(blockPos).GetBlock().IsReplaceable)
             {
                 blockPos = blockPos.Offset(side);
             }
@@ -51,17 +83,12 @@ namespace Vge.Item.List
                     bool result = world.SetBlockState(blockPos, blockState, 15);
                     if (result)
                     {
-                    //InstallAdditionalBlocks(worldIn, blockPos);
-                    //if (!playerIn.IsCreativeMode)
-                    //{
-                    //    blockStateOld.GetBlock().DropBlockAsItem(world, blockPos, blockStateOld);
-                    //}
-                    //if (!playerIn.IsCreativeMode)
-                   // {
-                      //  pla
-//                        playerIn.Inventory.DecrStackSize(playerIn.Inventory.GetCurrentItem(), 1);
-                  //  }
-                   // Block.DecrStackSize(stack, playerIn);
+                        //InstallAdditionalBlocks(worldIn, blockPos);
+                        if (!player.CreativeMode)
+                        {
+                        //    blockStateOld.GetBlock().DropBlockAsItem(world, blockPos, blockStateOld);
+                            player.Inventory.DecrCurrentItem(1);
+                        }
                       //  world.PlaySound(playerIn, Block.SamplePut(worldIn), blockPos.ToVec3(), 1f, 1f);
                     }
                     return result;

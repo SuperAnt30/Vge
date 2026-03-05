@@ -32,6 +32,15 @@ namespace Mvk2.Entity.List
         {
             Inventory = InvPlayer = new InventoryPlayerMvk(null);
             Inventory.OutsideChanged += (sender, e) => Render.OutsideItemChanged();
+            InvPlayer.CurrentIndexChanged += _InvPlayer_CurrentIndexChanged;
+        }
+
+        /// <summary>
+        /// Событие изменён индекс выбраного слота правой руки
+        /// </summary>
+        private void _InvPlayer_CurrentIndexChanged(object sender, EventArgs e)
+        {
+            _handManager.SetStop();
         }
 
         /// <summary>

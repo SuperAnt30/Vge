@@ -271,7 +271,10 @@ namespace Mvk2.World.Block
             GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple", materials.Glass);
             
             Lava = BlocksReg.RegisterBlockClassLiquid("Lava", materials.Lava, false);
-            Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
+            //Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
+
+            BlocksReg.RegisterBlockClass("Brol", Brol = new BlockBrol(materials.Ore));
+            
 
             // Регистрация текстуры разрушения блока
             Gi.DestroyBlock.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "Destroy");

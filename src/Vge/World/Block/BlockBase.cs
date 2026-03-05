@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
 using Vge.Json;
 using Vge.Realms;
 using Vge.Renderer.World;
@@ -619,6 +620,14 @@ namespace Vge.World.Block
         /// Спавн предмета при разрушении этого блока
         /// </summary>
         public virtual void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state) { }
+
+        /// <summary>
+        /// Активация блока, true - был клик, false - нет такой возможности
+        /// </summary>
+        /// <param name="pos">Позиция блока, по которому щелкают</param>
+        /// <param name="side">Сторона, по которой щелкнули</param>
+        /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        public virtual bool OnBlockActivated(PlayerBase player, BlockPos blockPos, Pole side, Vector3 facing) => false;
 
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using Mvk2.World.Block;
+﻿using Mvk2.Item.List;
+using Mvk2.World.Block;
 using Vge.Item;
 using Vge.Item.List;
 
@@ -155,12 +156,12 @@ namespace Mvk2.Item
             // 
 
             ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemBase());
-            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemBase());
+            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel());
 
-            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemBase());
+            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
             ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemBase());
-            ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemBase());
+            ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
 
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.FlowerClover));
 
