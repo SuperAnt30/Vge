@@ -517,7 +517,7 @@ namespace Vge.World
                 }
             }
 
-            if (isLiquid)
+            if (liquid)
             {
                 MovingObject.SetLiquid(idBlockLiquid, blockPosLiquid);
             }

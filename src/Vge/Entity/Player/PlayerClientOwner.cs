@@ -983,7 +983,7 @@ namespace Vge.Entity.Player
         /// </summary>
         private void _UpRayCast()//bool collidable = false, bool isLiquid = false)
         {
-            _game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, false, Id);
+            _game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, false, Id, true);
             MovingObject.Copy(_game.World.Collision.MovingObject);
 
             // максимальная дистанция луча

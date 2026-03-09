@@ -85,6 +85,12 @@ namespace Vge.Util
                     Norm = movingObject.Norm;
                 }
             }
+            IsLiquid = movingObject.IsLiquid;
+            if (IsLiquid)
+            {
+                IdBlockLiquid = movingObject.IdBlockLiquid;
+                BlockLiquidPosition = movingObject.BlockLiquidPosition;
+            }
         }
 
         /// <summary>
@@ -98,6 +104,7 @@ namespace Vge.Util
                 Entity = null;
             }
             _type = MovingObjectType.None;
+            IsLiquid = false;
         }
 
         /// <summary>
