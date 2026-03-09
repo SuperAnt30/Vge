@@ -15,6 +15,7 @@ using Vge.World.Block;
 using Vge.Entity;
 using Vge.Item;
 using Vge.World.BlockEntity;
+using System.Runtime.CompilerServices;
 
 namespace Vge
 {
@@ -729,10 +730,12 @@ namespace Vge
         /// <summary>
         /// Получить время в милисекундах с момента запуска проекта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long Time() => ticker.Time();
         /// <summary>
         /// Получить время в тактах с момента запуска проекта
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long TimeTicks() => ticker.TimeTicks();
 
         #endregion
@@ -740,8 +743,16 @@ namespace Vge
         #region Sound
 
         /// <summary>
+        /// Проиграть звуковой эффект
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void PlaySound(int key, float posX, float posY, float posZ, float volume, float pitch) 
+            => audio.PlaySound(key, posX, posY, posZ, volume, pitch);
+
+        /// <summary>
         /// Звук клика
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SoundClick(float volume) { }
 
         #endregion

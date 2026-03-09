@@ -110,6 +110,8 @@ namespace Vge.Network
                 case 0x21: _Handle21ChunkData((PacketS21ChunkData)packet); break;
                 case 0x22: _Handle22MultiBlockChange((PacketS22MultiBlockChange)packet); break;
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
+                case 0x29: _Handle29SoundEffect((PacketS29SoundEffect)packet); break;
+                case 0x2A: _Handle2AParticles((PacketS2AParticles)packet); break;
                 case 0x2F: _Handle2FSetSlot((PacketS2FSetSlot)packet); break;
                 case 0x30: _Handle30WindowItems((PacketS30WindowItems)packet); break;
                 case 0x3A: _Handle3AMessage((PacketS3AMessage)packet); break;
@@ -410,6 +412,21 @@ namespace Vge.Network
                 Game.World.SetBlockDestroy(packet.GetBlockPos(), packet.Progress);
             }
             Debug.BlockChange = "BlockChange";
+        }
+
+        /// <summary>
+        /// Пакет звукового эффекта в глобальных координатах мира
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Handle29SoundEffect(PacketS29SoundEffect packet)
+            => Game.PlaySound(packet.SoundId, packet.X, packet.Y, packet.Z, packet.Volume, packet.Pitch);
+
+        /// <summary>
+        /// Пакет эффектов частички
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Handle2AParticles(PacketS2AParticles packet)
+        {//   => Game.SpawnParticle(packet);
         }
 
         /// <summary>

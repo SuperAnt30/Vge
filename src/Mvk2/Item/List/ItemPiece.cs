@@ -98,13 +98,13 @@ namespace Mvk2.Item.List
             if (number == 255)
             {
                 // Отмена броска
-                Console.WriteLine("Отмена броска");
+                //Console.WriteLine("Отмена броска");
             }
             else if (number >= 100)
             {
                 // Бросок
                 number -= 100;
-                Console.WriteLine("Бросок " + number);
+                //Console.WriteLine("Бросок " + number);
                 player.DropItem(stack.Copy(1), true, number > 1);
                 if (!player.CreativeMode)
                 {
@@ -114,7 +114,7 @@ namespace Mvk2.Item.List
             else
             {
                 // Замах
-                Console.WriteLine("Замах " + number);
+                //Console.WriteLine("Замах " + number);
             }
         }
     }

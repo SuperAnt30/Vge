@@ -611,6 +611,24 @@ namespace Vge.World
 
         #endregion
 
+        #region Sound
+
+        /// <summary>
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId)
+            => Tracker.SendToAllTrackingEntity(entityId, new PacketS29SoundEffect(key, pos, volume, pitch));
+
+        /// <summary>
+        /// Проиграть звуковой эффект, по дистанции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 48)
+            => Tracker.SendToAllEntityDistance(pos, distance, new PacketS29SoundEffect(key, pos, volume, pitch));
+
+        #endregion
+
         #region WriteRead
 
         /// <summary>

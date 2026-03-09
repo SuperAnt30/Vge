@@ -433,6 +433,22 @@ namespace Vge.World
 
         #endregion
 
+        #region Sound
+
+        /// <summary>
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId) { }
+
+        /// <summary>
+        /// Проиграть звуковой эффект, по дистанции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0) { }
+
+        #endregion
+
         /// <summary>
         /// Для отладки
         /// </summary>

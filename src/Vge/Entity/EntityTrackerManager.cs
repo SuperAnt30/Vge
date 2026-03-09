@@ -52,7 +52,7 @@ namespace Vge.Entity
         {
             if (entity is PlayerServer playerServer)
             {
-                _AddEntityToTracker(entity, 64);// 256);
+                _AddEntityToTracker(entity, 256);
 
                 // Fix, это нельзя, так-как вблизи не видны были игроки
                 //EntityTracker trackerEntry;
@@ -155,11 +155,11 @@ namespace Vge.Entity
         /// <summary>
         /// Отправить всем отслеживаемым игрока пакет, кроме тикущей
         /// </summary>
-        /// <param name="entity">сущность</param>
+        /// <param name="entityId">Индекс сущности</param>
         /// <param name="packet">пакет</param>
-        public void SendToAllTrackingEntity(EntityBase entity, IPacket packet)
+        public void SendToAllTrackingEntity(int entityId, IPacket packet)
         {
-            EntityTracker entityTracker = _trackedEntities.Get(entity.Id);
+            EntityTracker entityTracker = _trackedEntities.Get(entityId);
             if (entityTracker != null)
             {
                 entityTracker.SendPacketPlayers(packet);

@@ -66,12 +66,12 @@ namespace Mvk2.Item.List
             if (number == 0)
             {
                 // Персонаж начинает кушать, надо включить анимацию!
-                Console.WriteLine("Кушаем");
+                //Console.WriteLine("Кушаем");
             }
             else if (number == 1)
             {
                 // Персонаж прервал трапезу, выключить анимацию!
-                Console.WriteLine("Стоп кушать");
+                //Console.WriteLine("Стоп кушать");
             }
             else
             {

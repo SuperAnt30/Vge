@@ -6,6 +6,7 @@ using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World.Chunk;
+using WinGL.Util;
 
 namespace Vge.World
 {
@@ -193,6 +194,24 @@ namespace Vge.World
             base._OnEntityRemoved(entity);
             entity.Dispose();
         }
+
+        #endregion
+
+        #region Sound
+
+        /// <summary>
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId = 0)
+            => Game.PlaySound(key, pos.X, pos.Y, pos.Z, volume, pitch);
+
+        /// <summary>
+        /// Проиграть звуковой эффект, по дистанции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0f)
+            => Game.PlaySound(key, pos.X, pos.Y, pos.Z, volume, pitch);  
 
         #endregion
 

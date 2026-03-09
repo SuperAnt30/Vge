@@ -77,33 +77,33 @@ namespace Mvk2.Entity
                     if (resultAction.Action == ResultHandAction.ActionType.DestroyBlock)
                     {
                         // Разрушение блока с предметом
-                        Console.WriteLine("BlockDiggingItem");
+                        //Console.WriteLine("BlockDiggingItem");
                         _BlockDigging(begin, moving.BlockPosition, resultAction.Acceleration);
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.AttackEntity)
                     {
                         // Атака на сущность, с предметом
-                        Console.WriteLine("AttackItem");
+                        //Console.WriteLine("AttackItem");
                         _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                             PacketC03UseEntity.EnumAction.Attack));
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.ItemOnBlock)
                     {
                         // Размещение блока (Взаимодействие предмета на выбранный блок)
-                        Console.WriteLine("BlockPlacement " + resultAction.Pause);
+                        //Console.WriteLine("BlockPlacement " + resultAction.Pause);
                         _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
                                 moving.Side, moving.Facing, resultAction.Replaceable, true));
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.UseItem)
                     {
                         // Взаимодействия предмета, ЛКМ без блока
-                        Console.WriteLine("UseItem");
+                        //Console.WriteLine("UseItem");
                         _game.TrancivePacket(new PacketC05UseItem());
                     }
                     else
                     {
                         // Нет действий с предметом
-                        Console.WriteLine("Нет действий с предметом");
+                        //Console.WriteLine("Нет действий с предметом");
                     }
                     _pauseAction = resultAction.Pause;
                 }
@@ -113,18 +113,18 @@ namespace Mvk2.Entity
                     {
                         // Разрушение блока без предмета
                         _BlockDigging(begin, moving.BlockPosition);
-                        Console.WriteLine("BlockDigging");
+                        //Console.WriteLine("BlockDigging");
                         _pauseAction = 8;
                     }
                     else
                     {
-                        _pauseAction = -1;
+                        _pauseAction = -1; // Но тут если не begin нет анимации
                     }
                 }
                 else if (moving.IsEntity())
                 {
                     // Атака на сущность, без предмета
-                    Console.WriteLine("Attack");
+                    //Console.WriteLine("Attack");
                     _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                         PacketC03UseEntity.EnumAction.Attack));
                     _pauseAction = -1;
@@ -132,13 +132,18 @@ namespace Mvk2.Entity
                 else
                 {
                     // Нет действий без предмета
-                    Console.WriteLine("Нет действий без предмета");
+                    //Console.WriteLine("Нет действий без предмета");
                     _pauseAction = -1;
                 }
             }
             else if(_pauseAction > 0)
             {
                 _pauseAction--;
+            }
+
+            if (_pauseAction == -1)
+            {
+                _pauseAction = 16;
             }
         }
 
@@ -176,14 +181,14 @@ namespace Mvk2.Entity
                         if (resultSecond.Action == ResultHandSecond.ActionType.BlockPlacement)
                         {
                             // Размещение блока (Взаимодействие предмета на выбранный блок)
-                            Console.WriteLine("BlockPlacement " + resultSecond.Pause);
+                            //Console.WriteLine("BlockPlacement " + resultSecond.Pause);
                             _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
                                     moving.Side, moving.Facing, resultSecond.Replaceable, true));
                         }
                         else if (resultSecond.Action == ResultHandSecond.ActionType.InteractEntity)
                         {
                             // Взаимодействие на сущность, с предметом
-                            Console.WriteLine("InteractItem");
+                            //Console.WriteLine("InteractItem");
                             _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                                 PacketC03UseEntity.EnumAction.Interact));
                         }
@@ -191,13 +196,13 @@ namespace Mvk2.Entity
                         {
                             // Взаимодействия предмета, ПКМ без блока
                             _flagBeginUseSecond = true;
-                            Console.WriteLine("UseItem");
+                           // Console.WriteLine("UseItem");
                             _game.TrancivePacket(new PacketC05UseItem(resultSecond.Number));
                         }
                         else
                         {
                             // Нет вспомогательного действий с предметом
-                            Console.WriteLine("Нет вспомогательного действий с предметом");
+                            //Console.WriteLine("Нет вспомогательного действий с предметом");
                         }
                         _pauseSecond = resultSecond.Pause;
                     }
@@ -205,13 +210,13 @@ namespace Mvk2.Entity
                     {
                         //OnBlockActivated
                         // Клик ПКМ на блок без предмета
-                        Console.WriteLine("Click RightMouse");
+                        //Console.WriteLine("Click RightMouse");
                         _pauseSecond = 8;
                     }
                     else if (moving.IsEntity())
                     {
                         // Взаимодействие на сущность, без предмета
-                        Console.WriteLine("Interact");
+                        //Console.WriteLine("Interact");
                         _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                             PacketC03UseEntity.EnumAction.Interact));
                         _pauseSecond = -1;
@@ -219,7 +224,7 @@ namespace Mvk2.Entity
                     else
                     {
                         // Нет вспомогательного действий без предмета
-                        Console.WriteLine("Нет вспомогательного действий без предмета");
+                        //Console.WriteLine("Нет вспомогательного действий без предмета");
                         _pauseSecond = -1;
                     }
                 }
@@ -304,6 +309,8 @@ namespace Mvk2.Entity
                         _game.World.SetBlockDestroy(_blockPos, (byte)destroy);
                         _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos, (byte)destroy));
                     }
+                    _game.World.PlaySound(2, _blockPos.ToVector3Center(), 1, 
+                        .8f + _game.World.Rnd.NextFloat() * .4f);
                 }
             }
             else

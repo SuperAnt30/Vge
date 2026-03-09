@@ -459,6 +459,7 @@ namespace Vge.Entity.Player
             else if (packet.Digging == PacketC07PlayerDigging.EnumDigging.ProcessDestroy)
             {
                 worldServer.SetBlockDestroy(packet.GetBlockPos(), (byte)((packet.Process & 15) | 96));
+               // worldServer.PlaySound(2, packet.GetBlockPos().ToVector3Center(), 1, 1, Id);
             }
             else
             {
@@ -578,7 +579,7 @@ namespace Vge.Entity.Player
         /// Пакет: анимации игрока
         /// </summary>
         public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
-            => GetWorldServer().Tracker.SendToAllTrackingEntity(this, new PacketS0BAnimation(Id, packet.Animation));
+            => GetWorldServer().Tracker.SendToAllTrackingEntity(Id, new PacketS0BAnimation(Id, packet.Animation));
 
         /// <summary>
         /// Пакет: кликов по окну и контролам

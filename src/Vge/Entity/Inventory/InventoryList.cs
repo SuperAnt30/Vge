@@ -85,7 +85,7 @@ namespace Vge.Entity.Inventory
                     if (_flagsChanged == -1 || (_flagsChanged & (1 << i)) != 0)
                     {
                         // Слот менялся
-                        worldServer.Tracker.SendToAllTrackingEntity(entity, 
+                        worldServer.Tracker.SendToAllTrackingEntity(entity.Id, 
                             new PacketS10EntityEquipment(entity.Id, i,
                             _pocketCount > 0
                                 ? _items[i == 0 ? _currentIndex : _pocketCount + i - 1] 

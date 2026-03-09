@@ -659,7 +659,7 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private void _DamageCaregory(int category, int amount)
         {
-            Console.WriteLine("Damage [" + category + "] " + amount);
+            //Console.WriteLine("Damage [" + category + "] " + amount);
             //if (clothInventory[ID_SLOT_BACKPACK] != null)
             //{
             //    // Урон рюкзаку

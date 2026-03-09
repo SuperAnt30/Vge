@@ -17,6 +17,7 @@ using Mvk2.Games;
 using Mvk2.Item;
 using Vge.Item;
 using Mvk2.World.BlockEntity;
+using System.Runtime.CompilerServices;
 
 namespace Mvk2
 {
@@ -257,11 +258,13 @@ namespace Mvk2
         /// <summary>
         /// Получить объект звука
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AudioMvk GetAudio() => (AudioMvk)audio;
 
         /// <summary>
         /// Звук клика
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SoundClick(float volume) => audio.PlaySound(1, 0, 0, 0, volume, 1);
 
         #endregion

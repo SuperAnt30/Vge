@@ -11,11 +11,11 @@ namespace Vge.Audio
         /// <summary>
         /// Массив всех семплов
         /// </summary>
-        protected AudioSample[] items;
+        protected AudioSample[] _items;
         /// <summary>
         /// Объект источников звука
         /// </summary>
-        private readonly AudioSources sources = new AudioSources();
+        private readonly AudioSources _sources = new AudioSources();
         /// <summary>
         /// Строка для дэбага сколько источников и занятых
         /// </summary>
@@ -33,10 +33,10 @@ namespace Vge.Audio
             Al.alcMakeContextCurrent(pContext);
 
             // Инициализация источников звука
-            sources.Initialize();
+            _sources.Initialize();
 
             // Указываем количество звуков
-            items = new AudioSample[count];
+            _items = new AudioSample[count];
         }
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace Vge.Audio
         /// </summary>
         public void Tick()
         {
-            sources.AudioTick();
-            StrDebug = string.Format("{0}/{1}", sources.CountProcessing, sources.CountAll);
+            _sources.AudioTick();
+            StrDebug = string.Format("{0}/{1}", _sources.CountProcessing, _sources.CountAll);
         }
 
         /// <summary>
@@ -60,10 +60,10 @@ namespace Vge.Audio
         {
             if (Options.SoundVolume > 0)
             {
-                AudioSample sample = items[key];
+                AudioSample sample = _items[key];
                 if (sample != null && sample.Size > 0)
                 {
-                    AudioSource source = sources.GetAudio();
+                    AudioSource source = _sources.GetAudio();
                     if (source != null)
                     {
                         source.Sample(sample);
@@ -78,9 +78,9 @@ namespace Vge.Audio
         /// </summary>
         public void Clear()
         {
-            if (items != null)
+            if (_items != null)
             {
-                foreach (AudioSample audio in items)
+                foreach (AudioSample audio in _items)
                 {
                     audio?.Clear();
                 }

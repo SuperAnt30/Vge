@@ -54,7 +54,8 @@
         /// <summary>
         /// Проиграть звук, указав расположение и громкость
         /// </summary>
-        public void Play(float posX, float posY, float posZ, float volume) => Play(posX, posY, posZ, volume, 1f);
+        public void Play(float posX, float posY, float posZ, float volume) 
+            => Play(posX, posZ, posY, volume, 1f); // Y Z на оборот
         /// <summary>
         /// Проиграть звук, указав громкость и тональность
         /// </summary>

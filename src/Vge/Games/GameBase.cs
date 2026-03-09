@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Actions;
 using Vge.Entity.Player;
@@ -13,6 +14,7 @@ using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
 using WinGL.Actions;
+using WinGL.Util;
 
 namespace Vge.Games
 {
@@ -461,6 +463,74 @@ namespace Vge.Games
             if (Ce.IsDebugDrawChunks)
             {
                 Debug.DrawChunks(window);
+            }
+        }
+
+        #endregion
+
+        #region Effect, sound particles
+        
+        /// <summary>
+        /// Проиграть звуковой эффект в глобальных координатах мира
+        /// </summary>
+        public virtual void PlaySound(int key, float posX, float posY, float posZ, float volume, float pitch)
+        {
+            posX -= Player.PosX;
+            posY -= Player.PosY + Player.GetEyeHeight();
+            posZ -= Player.PosZ;
+
+            float c = Glm.Cos(Player.RotationYaw);
+            float s = Glm.Sin(Player.RotationYaw);
+            float x2 = posX * c + posZ * s;
+            posZ = posZ * c - posX * s;
+            posX = x2;
+
+            if (volume > 3)
+            {
+                // Слышимость в 4 раза лучше
+                posX *= .25f;
+                posY *= .25f;
+                posZ *= .25f;
+            }
+            else
+            {
+                // Слышимость в 2 раза лучше кроме высоты
+                posX *= .5f;
+                posZ *= .5f;
+            }
+            Console.WriteLine(posX + " " + posY + " " + posZ + " v:" + volume);
+            window.PlaySound(key, posX, posY, posZ, volume, pitch);
+        }
+
+        /// <summary>
+        /// Заспавнить частицу
+        /// </summary>
+        public virtual void SpawnParticle(int key, int count, 
+            Vector3 pos, Vector3 offset, float motion, int parameter)
+        {
+            if (count == 1)
+            {
+               // ClientMain.EffectRender.SpawnParticle(particle, pos, offset * motion, items);
+            }
+            else
+            {
+                Vector3 of;
+                Vector3 m = new Vector3(0);
+                for (int i = 0; i < count; i++)
+                {
+                    of = new Vector3(
+                        (World.Rnd.NextFloat() - .5f) * offset.X,
+                        (World.Rnd.NextFloat() - .5f) * offset.Y,
+                        (World.Rnd.NextFloat() - .5f) * offset.Z);
+                    if (motion > 0)
+                    {
+                        m = new Vector3(
+                            (World.Rnd.NextFloat() - .5f) * motion,
+                            (World.Rnd.NextFloat() - .5f) * motion,
+                            (World.Rnd.NextFloat() - .5f) * motion);
+                    }
+                   // ClientMain.EffectRender.SpawnParticle(particle, pos + of, m, parameter);
+                }
             }
         }
 
