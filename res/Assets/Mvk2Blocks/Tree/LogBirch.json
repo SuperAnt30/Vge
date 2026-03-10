@@ -1,5 +1,5 @@
 {
-    NeedsRandomTick: true,
+    Parent: "Tree/_Log",
     Variants: [ 
         { Shape: "Tree/LogBirch" },
         { Shape: "Tree/LogBirch", IsRotateX90: true, RotateY: 90 },

@@ -1,0 +1,6 @@
+{
+    АmbientOcclusion: false,
+    LightOpacity: 1,
+    NeedsRandomTick: true,
+    Hardness: 12
+}

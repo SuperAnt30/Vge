@@ -265,7 +265,7 @@ namespace Mvk2
         /// Звук клика
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SoundClick(float volume) => audio.PlaySound(1, 0, 0, 0, volume, 1);
+        public override void SoundClick(float volume) => audio.PlaySound(AudioIndexs.Click, 0, 0, 0, volume, 1);
 
         #endregion
     }

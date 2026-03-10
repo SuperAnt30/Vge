@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Block
+﻿using Vge.Util;
+
+namespace Vge.World.Block
 {
     /// <summary>
     /// Объект материала блока
@@ -33,6 +35,19 @@
         /// Растёт корень
         /// </summary>
         public bool RootGrowing { get; private set; }
+
+        /// <summary>
+        /// Индексы семплов сломоного блока
+        /// </summary>
+        private int[] _samplesBreak;
+        /// <summary>
+        /// Индексы семплов установленного блока
+        /// </summary>
+        private int[] _samplesPut;
+        /// <summary>
+        /// Индексы семплов хотьбы по блоку
+        /// </summary>
+        private int[] _samplesStep;
 
         public MaterialBase(int index) => IndexMaterial = index;
 
@@ -89,6 +104,33 @@
             RootGrowing = true;
             return this;
         }
+
+        #region Sound
+
+        /// <summary>
+        /// Задать индексы семплов
+        /// </summary>
+        public void SetSamples(int[] breaks, int[] puts, int[] steps)
+        {
+            _samplesBreak = breaks;
+            _samplesPut = puts;
+            _samplesStep = steps;
+        }
+
+        /// <summary>
+        /// Получить индекс семпла разрушения блока
+        /// </summary>
+        public int SampleBreak(Rand rand) => _samplesBreak[rand.Next(_samplesBreak.Length)];
+        /// <summary>
+        /// Получить индекс семпла установки блока
+        /// </summary>
+        public int SamplePut(Rand rand) => _samplesPut[rand.Next(_samplesPut.Length)];
+        /// <summary>
+        /// Получить индекс семпла ходьбы по блоку
+        /// </summary>
+        public int SampleStep(Rand rand)=> _samplesStep[rand.Next(_samplesStep.Length)];
+
+        #endregion
 
         /// <summary>
         /// Строка

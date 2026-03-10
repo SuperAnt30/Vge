@@ -155,7 +155,7 @@ namespace Mvk2.Item
             // Маска + Акваланг ?!
             // 
 
-            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemBase());
+            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe());
             ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel());
 
             ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());

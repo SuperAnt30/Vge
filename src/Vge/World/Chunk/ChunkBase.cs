@@ -481,9 +481,8 @@ namespace Vge.World.Chunk
             // Звуковое сопровождение сломанного блока
             if (isSound && !World.IsRemote && World is WorldServer worldServer)
             {
-                //vec3 pos = blockPos.ToVec3();
-                //worldServer.Tracker.SendToAllEntityDistance(pos, 32f,
-                //    new PacketS29SoundEffect(blockOld.SampleBreak(worldServer), pos, 1f, blockOld.SampleBreakPitch(worldServer.Rnd)));
+                worldServer.PlaySoundDistance(blockOld.Material.SampleBreak(worldServer.Rnd),
+                    blockPos.ToVector3Center(), 1, 1);
             }
 
             // Эта строка не понятна мне, зачем это я делал?! 2024-12-04

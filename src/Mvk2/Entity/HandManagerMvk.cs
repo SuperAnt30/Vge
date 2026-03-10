@@ -309,8 +309,8 @@ namespace Mvk2.Entity
                         _game.World.SetBlockDestroy(_blockPos, (byte)destroy);
                         _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos, (byte)destroy));
                     }
-                    _game.World.PlaySound(2, _blockPos.ToVector3Center(), 1, 
-                        .8f + _game.World.Rnd.NextFloat() * .4f);
+                    _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
+                        _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
                 }
             }
             else

@@ -488,15 +488,15 @@ namespace Vge.Games
             if (volume > 3)
             {
                 // Слышимость в 4 раза лучше
-                posX *= .25f;
-                posY *= .25f;
-                posZ *= .25f;
+                posX *= .1f;
+                posY *= .1f;
+                posZ *= .1f;
             }
             else
             {
                 // Слышимость в 2 раза лучше кроме высоты
-                posX *= .5f;
-                posZ *= .5f;
+                posX *= .2f;
+                posZ *= .2f;
             }
             Console.WriteLine(posX + " " + posY + " " + posZ + " v:" + volume);
             window.PlaySound(key, posX, posY, posZ, volume, pitch);

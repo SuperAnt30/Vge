@@ -33,7 +33,7 @@ namespace Mvk2.Item.List
                     || block.Material.IndexMaterial == (int)EnumMaterial.Loose
                     || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {
-                    return new ResultHandAction(6, .5f);
+                    return new ResultHandAction(6, .75f);
                 }
             }
 

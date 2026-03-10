@@ -1,4 +1,6 @@
-﻿namespace Vge.World.Block
+﻿using Vge.Util;
+
+namespace Vge.World.Block
 {
     /// <summary>
     /// Интерфейс материала
@@ -34,5 +36,23 @@
         /// Растёт корень
         /// </summary>
         bool RootGrowing { get; }
+
+        /// <summary>
+        /// Задать индексы семплов
+        /// </summary>
+        void SetSamples(int[] breaks, int[] puts, int[] steps);
+
+        /// <summary>
+        /// Получить индекс семпла разрушения блока
+        /// </summary>
+        int SampleBreak(Rand rand);
+        /// <summary>
+        /// Получить индекс семпла установки блока
+        /// </summary>
+        int SamplePut(Rand rand);
+        /// <summary>
+        /// Получить индекс семпла ходьбы по блоку
+        /// </summary>
+        int SampleStep(Rand rand);
     }
 }

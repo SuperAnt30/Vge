@@ -1,4 +1,5 @@
-﻿using Mvk2.Renderer;
+﻿using Mvk2.Audio;
+using Mvk2.Renderer;
 using System;
 using Vge.Realms;
 using Vge.Util;
@@ -26,6 +27,7 @@ namespace Mvk2.Realms
         public LoadingMvk(WindowMvk window) : base(window)
         {
             _window = window;
+            AudioIndexs.Initialization(true);
             _countSample = window.GetAudio().GetCountStep();
         }
 
