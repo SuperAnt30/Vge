@@ -710,6 +710,9 @@ namespace Vge.Entity.Player
             _SyncCurrentPlayItem();
 
             Render.UpdateClient(world, deltaTime);
+
+            // Обновить звуки шагов
+            if (!IsSpectator()) _UpdateSoundSteps(world);
         }
 
         /// <summary>
@@ -1039,7 +1042,7 @@ namespace Vge.Entity.Player
 
             string chunkStorage = "";
             ChunkBase chunk = _game.World.GetChunk(ChunkPositionX, ChunkPositionZ);
-            if (chunk != null)
+            if (chunk != null && ChunkPositionY >= 0)
             {
                 chunkStorage = "\r\n" + chunk.StorageArrays[ChunkPositionY].ToStringCount();
             }

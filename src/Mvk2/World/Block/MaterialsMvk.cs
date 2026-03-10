@@ -67,7 +67,7 @@ namespace Mvk2.World.Block
             Debug = new MaterialBase((int)EnumMaterial.Debug);
             _SampleDefault(Debug);
             Water = new MaterialBase((int)EnumMaterial.Water).SetRootGrowing().Liquid();
-            _SampleDefault(Water);
+            //_SampleDefault(Water);
             Bedrock = new MaterialBase((int)EnumMaterial.Bedrock);
             _SampleDefault(Bedrock);
             Solid = new MaterialMvk((int)EnumMaterial.Solid).SetSimpleCraft();
@@ -97,7 +97,7 @@ namespace Mvk2.World.Block
             Glass = new MaterialBase((int)EnumMaterial.Glass).SetGlass();
             _SampleDefault(Glass);
             Lava = new MaterialBase((int)EnumMaterial.Lava).Liquid().SetIgnites();
-            _SampleDefault(Lava);
+            //_SampleDefault(Lava);
         }
 
         private void _SampleDefault(IMaterial material)

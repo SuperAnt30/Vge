@@ -498,7 +498,7 @@ namespace Vge.Games
                 posX *= .2f;
                 posZ *= .2f;
             }
-            Console.WriteLine(posX + " " + posY + " " + posZ + " v:" + volume);
+            //Console.WriteLine(posX + " " + posY + " " + posZ + " v:" + volume);
             window.PlaySound(key, posX, posY, posZ, volume, pitch);
         }
 

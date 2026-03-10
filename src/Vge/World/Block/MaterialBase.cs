@@ -118,6 +118,11 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Есть ли звуковой эффект шага
+        /// </summary>
+        public bool IsSampleStep() => _samplesStep != null;
+
+        /// <summary>
         /// Получить индекс семпла разрушения блока
         /// </summary>
         public int SampleBreak(Rand rand) => _samplesBreak[rand.Next(_samplesBreak.Length)];

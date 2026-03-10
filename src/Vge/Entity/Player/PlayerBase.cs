@@ -123,19 +123,40 @@ namespace Vge.Entity.Player
 
         #endregion
 
+        #region Sound
+
+        /// <summary>
+        /// Есть ли звуковой эффект шага
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsSampleStep(BlockBase blockDown) 
+            => IsSpectator() ? false : blockDown.Material.IsSampleStep();
+
+        /// <summary>
+        /// Получить индекс семпла хотьбы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int SampleStep(WorldBase world, BlockBase blockDown)
+            => blockDown.Material.SampleStep(world.Rnd);
+
+        #endregion
+
         /// <summary>
         /// Получить название для рендеринга
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string GetName() => Login;
 
         /// <summary>
         /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool CanBeCollidedWith() => true;
 
         /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize() => Standing();
 
         /// <summary>

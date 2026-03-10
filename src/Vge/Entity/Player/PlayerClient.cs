@@ -72,6 +72,9 @@ namespace Vge.Entity.Player
             _RotationBody();
 
             Render.UpdateClient(world, deltaTime);
+
+            // Обновить звуки шагов
+            if (!IsSpectator()) _UpdateSoundSteps(world);
         }
     }
 }

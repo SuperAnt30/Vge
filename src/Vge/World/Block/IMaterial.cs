@@ -43,6 +43,11 @@ namespace Vge.World.Block
         void SetSamples(int[] breaks, int[] puts, int[] steps);
 
         /// <summary>
+        /// Есть ли звуковой эффект шага
+        /// </summary>
+        bool IsSampleStep();
+
+        /// <summary>
         /// Получить индекс семпла разрушения блока
         /// </summary>
         int SampleBreak(Rand rand);

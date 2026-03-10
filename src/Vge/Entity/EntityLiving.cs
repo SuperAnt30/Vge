@@ -7,6 +7,7 @@ using Vge.NBT;
 using Vge.Realms;
 using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Entity
@@ -71,6 +72,19 @@ namespace Vge.Entity
         /// Объект инвенторя
         /// </summary>
         public InventoryBase Inventory { get; protected set; }
+
+        /// <summary>
+        /// Семплы хотьбы
+        /// </summary>
+        protected int[] _samplesStep = new int[0];
+        /// <summary>
+        /// Накопленное расстояние, которое необходимо преодолеть, чтобы вызвать новый звук шага
+        /// </summary>
+        private float _nextStepDistance = 1;
+        /// <summary>
+        /// Пройденное расстояние, для звукового эффекта
+        /// </summary>
+        private float _distanceWalkedOnStepModified = 0;
 
         #region Методы для Position и Rotation
 
@@ -369,6 +383,68 @@ namespace Vge.Entity
         /// <param name="longAway">Далеко бросить от себя</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway) { }
+
+        #endregion
+
+        #region Sound
+
+        /// <summary>
+        /// Шаг дистанции перемещения, для звука
+        /// </summary>
+        protected virtual float _StepDistance() => IsSprinting() ? 2.6f : 2.8f;
+
+        /// <summary>
+        /// Обновить звуки шагов
+        /// </summary>
+        protected void _UpdateSoundSteps(WorldClient world)
+        {
+            // Расчёт перемещения
+            float xx = PosX - PosPrevX;
+            float zz = PosZ - PosPrevZ;
+            _distanceWalkedOnStepModified += Mth.Sqrt(xx * xx + zz * zz);
+            if (_distanceWalkedOnStepModified > _nextStepDistance)
+            {
+                BlockBase blockDown = world.GetBlockState(new BlockPos(PosX, PosY - 0.20002f, PosZ)).GetBlock();
+                if (!blockDown.IsAir)
+                {
+                    _nextStepDistance = _distanceWalkedOnStepModified + _StepDistance();
+                    //if (IsSoundStep())
+                    {
+                        _SoundStep(world, blockDown);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Есть ли звуковой эффект шага
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool IsSampleStep(BlockBase blockDown) => _samplesStep.Length > 0;
+        /// <summary>
+        /// Получить индекс семпла хотьбы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual int SampleStep(WorldBase world, BlockBase blockDown) 
+            => _samplesStep[world.Rnd.Next(_samplesStep.Length)];
+
+        /// <summary>
+        /// Звуковой эффект шага
+        /// </summary>
+        protected void _SoundStep(WorldBase world, BlockBase blockDown)
+        {
+            //if (IsInWater())
+            //{
+            //    // Звук в воде
+            //    SoundEffectWater(World.SampleSoundInTheWater(), .35f);
+            //}
+            //else
+            if (!IsSneaking() && IsSampleStep(blockDown))
+            {
+                // Звук шага
+                world.PlaySound(SampleStep(world, blockDown), GetPositionVec(), .25f, 1f, Id);
+            }
+        }
 
         #endregion
 
