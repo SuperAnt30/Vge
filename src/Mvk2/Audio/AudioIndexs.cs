@@ -41,7 +41,10 @@ namespace Mvk2.Audio
             // Для GUI клик
             samples.Add(new Sample("Click")); Click = 0;
 
-
+            samples.Add(new Sample("DigGrass1", dig));
+            samples.Add(new Sample("DigGrass2", dig));
+            samples.Add(new Sample("DigGrass3", dig));
+            samples.Add(new Sample("DigGrass4", dig));
             samples.Add(new Sample("DigSand1", dig));
             samples.Add(new Sample("DigSand2", dig));
             samples.Add(new Sample("DigSand3", dig));
@@ -54,7 +57,11 @@ namespace Mvk2.Audio
             samples.Add(new Sample("DigWood2", dig));
             samples.Add(new Sample("DigWood3", dig));
             samples.Add(new Sample("DigWood4", dig));
-
+            
+            samples.Add(new Sample("StepGrass1", step));
+            samples.Add(new Sample("StepGrass2", step));
+            samples.Add(new Sample("StepGrass3", step));
+            samples.Add(new Sample("StepGrass4", step));
             samples.Add(new Sample("StepSand1", step));
             samples.Add(new Sample("StepSand2", step));
             samples.Add(new Sample("StepSand3", step));

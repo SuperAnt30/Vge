@@ -79,7 +79,9 @@ namespace Mvk2.World.Block
             Ore = new MaterialBase((int)EnumMaterial.Ore);
             _SampleDefault(Ore);
             Plant = new MaterialBase((int)EnumMaterial.Plant).SetRequiresNoTool().SetTurfDoesNotDry();
-            _SampleDefault(Plant);
+            Plant.SetSamples(AudioIndexs.GetKeys("DigGrass1", "DigGrass2", "DigGrass3", "DigGrass4"),
+                AudioIndexs.GetKeys("DigGrass1", "DigGrass2", "DigGrass3", "DigGrass4"),
+                AudioIndexs.GetKeys("StepGrass1", "StepGrass2", "StepGrass3", "StepGrass4"));
             Wood = new MaterialMvk((int)EnumMaterial.Wood).SetSimpleCraft();
             Wood.SetSamples(AudioIndexs.GetKeys("DigWood1", "DigWood2", "DigWood3", "DigWood4"),
                 AudioIndexs.GetKeys("DigWood1", "DigWood2", "DigWood3", "DigWood4"),
@@ -89,7 +91,9 @@ namespace Mvk2.World.Block
                 AudioIndexs.GetKeys("DigWood1", "DigWood2", "DigWood3", "DigWood4"),
                 AudioIndexs.GetKeys("StepWood1", "StepWood2", "StepWood3", "StepWood4"));
             Leaves = new MaterialBase((int)EnumMaterial.Leaves).SetRequiresNoTool().SetTurfDoesNotDry();
-            _SampleDefault(Leaves);
+            Leaves.SetSamples(AudioIndexs.GetKeys("DigGrass1", "DigGrass2", "DigGrass3", "DigGrass4"),
+                AudioIndexs.GetKeys("DigGrass1", "DigGrass2", "DigGrass3", "DigGrass4"),
+                AudioIndexs.GetKeys("StepGrass1", "StepGrass2", "StepGrass3", "StepGrass4"));
             Glass = new MaterialBase((int)EnumMaterial.Glass).SetGlass();
             _SampleDefault(Glass);
             Lava = new MaterialBase((int)EnumMaterial.Lava).Liquid().SetIgnites();
