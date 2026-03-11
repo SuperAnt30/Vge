@@ -1,6 +1,6 @@
-﻿using Mvk2.Audio;
-using Mvk2.Renderer;
+﻿using Mvk2.Renderer;
 using System;
+using Vge.Audio;
 using Vge.Realms;
 using Vge.Util;
 
@@ -28,7 +28,7 @@ namespace Mvk2.Realms
         {
             _window = window;
             AudioReg.Initialization(true);
-            _countSample = window.GetAudio().GetCountStep();
+            _countSample = AudioIndexs.Count();
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace Mvk2.Realms
         /// </summary>
         private void _StepsSample()
         {
-            _window.GetAudio().Initialize(_countSample);
-            _window.GetAudio().Step += (sender, e) => OnStep();
-            _window.GetAudio().InitializeSample();
+            _window.Audio.Initialize(_countSample);
+            _window.Audio.Step += (sender, e) => OnStep();
+            _window.Audio.InitializeSample();
         }
     }
 }

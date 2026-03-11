@@ -73,6 +73,10 @@ namespace Vge
         /// Объект экрана
         /// </summary>
         public ScreenBase Screen { get; private set; }
+        /// <summary>
+        /// Объект звуков
+        /// </summary>
+        public AudioBase Audio { get; protected set; }
 
         #endregion
 
@@ -82,11 +86,6 @@ namespace Vge
         /// Объект создающий последовательные кадры и тики
         /// </summary>
         protected Ticker ticker;
-        /// <summary>
-        /// Объект звуков
-        /// </summary>
-        protected AudioBase audio;
-
         /// <summary>
         /// Флаг на удаление, ждём когда закроется сервер
         /// </summary>
@@ -133,6 +132,8 @@ namespace Vge
             ticker.Tick += Ticker_Tick;
             ticker.Frame += Ticker_Frame;
             ticker.SetWishFrame(Ce.FpsOffside);
+
+            Audio = new AudioBase();
         }
 
         protected virtual void Initialized()
@@ -154,7 +155,7 @@ namespace Vge
             if (Screen != null) Screen.Dispose();
             if (Game != null) Game.Dispose();
             if (Render != null) Render.Dispose();
-            if (audio != null) audio.Clear();
+            if (Audio != null) Audio.Clear();
         }
 
         /// <summary>
@@ -708,8 +709,8 @@ namespace Vge
         /// </summary>
         protected virtual void OnTick()
         {
-            audio.Tick();
-            debug.Audio = audio.StrDebug;
+            Audio.Tick();
+            debug.Audio = Audio.StrDebug;
             
             if (Screen != null)
             {
@@ -747,7 +748,7 @@ namespace Vge
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void PlaySound(int key, float posX, float posY, float posZ, float volume, float pitch) 
-            => audio.PlaySound(key, posX, posY, posZ, volume, pitch);
+            => Audio.PlaySound(key, posX, posY, posZ, volume, pitch);
 
         /// <summary>
         /// Звук клика

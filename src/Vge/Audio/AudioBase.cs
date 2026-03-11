@@ -6,7 +6,7 @@ namespace Vge.Audio
     /// <summary>
     /// Базовый класс звуков
     /// </summary>
-    public abstract class AudioBase
+    public class AudioBase
     {
         /// <summary>
         /// Массив всех семплов
@@ -42,7 +42,20 @@ namespace Vge.Audio
         /// <summary>
         /// Загрузка сэмпла
         /// </summary>
-        public virtual void InitializeSample() { }
+        public void InitializeSample()
+        {
+            AudioSample sample;
+            int count = AudioIndexs.Count();
+            for (int i = 0; i < count; i++)
+            {
+                sample = new AudioSample();
+                sample.LoadOgg(Options.PathSounds + AudioIndexs.GetPath(i));
+                _items[i] = sample;
+                OnStep();
+            }
+
+            AudioIndexs.ClearPath();
+        }
 
         /// <summary>
         /// Такт
@@ -86,5 +99,18 @@ namespace Vge.Audio
                 }
             }
         }
+
+        #region Event
+
+        /// <summary>
+        /// Событие шаг
+        /// </summary>
+        public event EventHandler Step;
+        /// <summary>
+        /// Событие шаг
+        /// </summary>
+        protected void OnStep() => Step?.Invoke(this, new EventArgs());
+
+        #endregion
     }
 }

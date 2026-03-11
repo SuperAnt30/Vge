@@ -1,0 +1,43 @@
+{
+    Samples: [
+    "Click",
+    
+    "Dig/DigGlass1",
+    "Dig/DigGlass2",
+    "Dig/DigGlass3",
+    "Dig/DigGrass1",
+    "Dig/DigGrass2",
+    "Dig/DigGrass3",
+    "Dig/DigGrass4",
+    "Dig/DigSand1",
+    "Dig/DigSand2",
+    "Dig/DigSand3",
+    "Dig/DigSand4",
+    "Dig/DigStone1",
+    "Dig/DigStone2",
+    "Dig/DigStone3",
+    "Dig/DigStone4",
+    "Dig/DigWood1",
+    "Dig/DigWood2",
+    "Dig/DigWood3",
+    "Dig/DigWood4",
+    
+    "Step/StepGrass1",
+    "Step/StepGrass2",
+    "Step/StepGrass3",
+    "Step/StepGrass4",
+    "Step/StepSand1",
+    "Step/StepSand2",
+    "Step/StepSand3",
+    "Step/StepSand4",
+    "Step/StepStone1",
+    "Step/StepStone2",
+    "Step/StepStone3",
+    "Step/StepStone4",
+    "Step/StepWood1",
+    "Step/StepWood2",
+    "Step/StepWood3",
+    "Step/StepWood4"
+    
+    ]
+}

@@ -2,7 +2,6 @@
 using System.Reflection;
 using Vge;
 using Mvk2.Util;
-using Mvk2.Audio;
 using Mvk2.Renderer;
 using Mvk2.Gui.Screens;
 using Vge.Renderer.Font;
@@ -18,6 +17,7 @@ using Mvk2.Item;
 using Vge.Item;
 using Mvk2.World.BlockEntity;
 using System.Runtime.CompilerServices;
+using Vge.Audio;
 
 namespace Mvk2
 {
@@ -51,8 +51,6 @@ namespace Mvk2
 
             // Загружаем опции
             OptionsLoad();
-            // Объявление объекта звуков, загрузка семплов в loadinge
-            audio = new AudioMvk();
         }
 
         /// <summary>
@@ -256,16 +254,10 @@ namespace Mvk2
         #region Sound
 
         /// <summary>
-        /// Получить объект звука
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AudioMvk GetAudio() => (AudioMvk)audio;
-
-        /// <summary>
         /// Звук клика
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void SoundClick(float volume) => audio.PlaySound(AudioReg.Click, 0, 0, 0, volume, 1);
+        public override void SoundClick(float volume) => Audio.PlaySound(AudioReg.Click, 0, 0, 0, volume, 1);
 
         #endregion
     }
