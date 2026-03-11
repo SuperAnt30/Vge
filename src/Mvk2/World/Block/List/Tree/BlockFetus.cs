@@ -12,7 +12,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockFetus : BlockBase
     {
-        public BlockFetus(IMaterial material) : base(material) { }
+        public BlockFetus(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// ID блок листвы текущего дерева

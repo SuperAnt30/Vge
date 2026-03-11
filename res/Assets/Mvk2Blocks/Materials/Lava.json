@@ -1,0 +1,5 @@
+{
+    Parent: "_Stone",
+    Ignites: true,
+    Liquid: true
+}

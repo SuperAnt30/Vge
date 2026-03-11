@@ -7,7 +7,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockFetusOak : BlockFetus
     {
-        public BlockFetusOak(IMaterial material) : base(material) { }
+        public BlockFetusOak(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков

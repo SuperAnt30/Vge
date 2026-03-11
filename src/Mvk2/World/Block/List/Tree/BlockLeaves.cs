@@ -38,7 +38,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         protected int _idFetus;
 
-        public BlockLeaves(IMaterial material) : base(material) { }
+        public BlockLeaves(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера

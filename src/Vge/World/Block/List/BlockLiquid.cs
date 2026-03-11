@@ -17,7 +17,7 @@ namespace Vge.World.Block.List
         /// </summary>
         protected SideLiquid[] _sideLiquids;
 
-        public BlockLiquid(IMaterial material, bool alphaSort) : base(material)
+        public BlockLiquid(MaterialBase material, bool alphaSort) : base(material)
         {
             Alpha = true;
             AlphaSort = alphaSort;

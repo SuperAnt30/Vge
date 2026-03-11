@@ -13,7 +13,7 @@ namespace Mvk2.World.Block.List
 {
     public class BlockBrol : BlockBase
     {
-        public BlockBrol(IMaterial material) : base(material) { }
+        public BlockBrol(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// Активация блока, true - был клик, false - нет такой возможности

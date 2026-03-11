@@ -1,0 +1,5 @@
+{
+    Glass: true,
+    SamplesBreak: [ "DigGlass1", "DigGlass2", "DigGlass3" ],
+    SamplesStep: [ "StepStone1", "StepStone2", "StepStone3", "StepStone4" ]
+}

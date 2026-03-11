@@ -1,0 +1,4 @@
+{
+    SamplesBreak: [ "DigStone1", "DigStone2", "DigStone3", "DigStone4" ],
+    SamplesStep: [ "StepStone1", "StepStone2", "StepStone3", "StepStone4" ]
+}

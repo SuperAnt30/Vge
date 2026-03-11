@@ -27,7 +27,7 @@ namespace Mvk2.Realms
         public LoadingMvk(WindowMvk window) : base(window)
         {
             _window = window;
-            AudioIndexs.Initialization(true);
+            AudioReg.Initialization(true);
             _countSample = window.GetAudio().GetCountStep();
         }
 

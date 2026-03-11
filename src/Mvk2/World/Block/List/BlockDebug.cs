@@ -10,7 +10,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockDebug : BlockBase
     {
-        public BlockDebug(IMaterial material) : base(material)
+        public BlockDebug(MaterialBase material) : base(material)
         {
             //Particle = numberTexture;
             //_InitQuads(numberTexture);

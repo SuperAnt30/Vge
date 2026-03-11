@@ -1,0 +1,6 @@
+{
+    SimpleCraft: true,
+    RootGrowing: true,
+    SamplesBreak: [ "DigSand1", "DigSand2", "DigSand3", "DigSand4" ],
+    SamplesStep: [ "StepSand1", "StepSand2", "StepSand3", "StepSand4" ]
+}

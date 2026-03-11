@@ -32,7 +32,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Объект материала
         /// </summary>
-        public readonly IMaterial Material;
+        public readonly MaterialBase Material;
 
         /// <summary>
         /// Явлыется ли блок небом
@@ -223,7 +223,7 @@ namespace Vge.World.Block
 
         #endregion
 
-        public BlockBase(IMaterial material) => Material = material;
+        public BlockBase(MaterialBase material) => Material = material;
 
         #region Init
 

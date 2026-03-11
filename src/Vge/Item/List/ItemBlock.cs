@@ -89,7 +89,7 @@ namespace Vge.Item.List
                         //    blockStateOld.GetBlock().DropBlockAsItem(world, blockPos, blockStateOld);
                             player.Inventory.DecrCurrentItem(1);
                         }
-                        world.PlaySound(Block.Material.SamplePut(world.Rnd),
+                        world.PlaySound(Block.Material.SamplePlace(world.Rnd),
                             blockPos.ToVector3Center(), 1, 1, player.Id);
                     }
                     return result;

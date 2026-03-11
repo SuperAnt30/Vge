@@ -7,7 +7,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockLeavesBirch : BlockLeaves
     {
-        public BlockLeavesBirch(IMaterial material) : base(material) { }
+        public BlockLeavesBirch(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// Дополнительная инициализация блока после инициализации предметов и корректировки id блоков

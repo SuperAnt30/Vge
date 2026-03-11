@@ -1,26 +1,32 @@
-﻿using Vge.World.Block;
+﻿using System;
+using Vge.Json;
+using Vge.World.Block;
 
 namespace Mvk2.World.Block
 {
     /// <summary>
-    /// Объект материала блока
+    /// Объект материала блока для Малювек
     /// </summary>
-    public class MaterialMvk : MaterialBase, IMaterialMvk
+    public class MaterialMvk : MaterialBase
     {
         /// <summary>
         /// На каких блоках можно делать простой крафт
         /// </summary>
         public bool SimpleCraft { get; private set; }
 
-        public MaterialMvk(int index) : base(index) { }
+        public MaterialMvk(EnumMaterial material) 
+            : base((int)material, material.ToString()) { }
 
         /// <summary>
-        /// Задать на каких блоках можно делать простой крафт
+        /// Прочесть состояние блока из Json формы
         /// </summary>
-        public MaterialMvk SetSimpleCraft()
+        public override void ReadStateFromJson(JsonCompound state)
         {
-            SimpleCraft = true;
-            return this;
+            base.ReadStateFromJson(state);
+            foreach (JsonKeyValue json in state.Items)
+            {
+                if (json.IsKey("SimpleCraft")) SimpleCraft = json.GetBool();
+            }
         }
     }
 }

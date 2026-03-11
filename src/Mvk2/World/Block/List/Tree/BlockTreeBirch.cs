@@ -11,7 +11,7 @@ namespace Mvk2.World.Block.List
     /// </summary>
     public class BlockTreeBirch : BlockTree
     {
-        public BlockTreeBirch(IMaterial material, TypeTree type)  : base(material, type) { }
+        public BlockTreeBirch(MaterialBase material, TypeTree type)  : base(material, type) { }
 
         /// <summary>
         /// Получить объект генерации дерева

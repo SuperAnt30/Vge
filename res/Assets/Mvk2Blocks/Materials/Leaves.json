@@ -1,0 +1,6 @@
+{
+    RequiresNoTool: true,
+    TurfDoesNotDry: true,
+    SamplesBreak: [ "DigGrass1", "DigGrass2", "DigGrass3", "DigGrass4" ],
+    SamplesStep: [ "StepGrass1", "StepGrass2", "StepGrass3", "StepGrass4" ]
+}

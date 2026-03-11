@@ -19,7 +19,7 @@ namespace Mvk2.World.Block.List
          * +256 - игрок
          */
 
-        public BlockRoot(IMaterial material) : base(material) { }
+        public BlockRoot(MaterialBase material) : base(material) { }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера

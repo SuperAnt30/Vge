@@ -98,7 +98,7 @@ namespace Vge.World.Block
         /// Зарегистрировать блок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockBase RegisterBlockClass(string alias, IMaterial material, string path = "")
+        public static BlockBase RegisterBlockClass(string alias, MaterialBase material, string path = "")
         {
             BlockBase block = new BlockBase(material);
             RegisterBlockClass(alias, block, path);
@@ -109,7 +109,7 @@ namespace Vge.World.Block
         /// Зарегистрировать полупрозрачными блок
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockAlpha RegisterBlockClassAlpha(string alias, IMaterial material)
+        public static BlockAlpha RegisterBlockClassAlpha(string alias, MaterialBase material)
         {
             BlockAlpha block = new BlockAlpha(material);
             RegisterBlockClass(alias, block);
@@ -120,7 +120,7 @@ namespace Vge.World.Block
         /// Зарегистрировать блок жидкости
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BlockLiquid RegisterBlockClassLiquid(string alias, IMaterial material, bool alphaSort)
+        public static BlockLiquid RegisterBlockClassLiquid(string alias, MaterialBase material, bool alphaSort)
         {
             BlockLiquid block = new BlockLiquid(material, alphaSort);
             RegisterBlockClass(alias, block);
