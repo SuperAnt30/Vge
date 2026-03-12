@@ -289,8 +289,10 @@ namespace Vge.Renderer.World
                 _DrawVoxelDenseDepthMap(timeIndex);
                // gl.CullFace(GL.GL_BACK);
                 // Сущности
-                
                 Entities.DrawDepthMap(timeIndex);
+                // Частички, нужны ли в тени ?
+                //Particles.DrawDepthMap(timeIndex);
+
                 // Облака
                 //_DrawClouds(timeIndex);
 
@@ -318,6 +320,8 @@ namespace Vge.Renderer.World
             _cursorRender.RenderDraw();
             // Прорисовка вид не с руки, а видим себя
             Entities.DrawOwner(timeIndex);
+            // Частички
+            Particles.Draw(timeIndex);
             // Облака
             //_DrawClouds(timeIndex);
 

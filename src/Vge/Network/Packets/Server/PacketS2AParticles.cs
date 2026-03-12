@@ -1,6 +1,4 @@
-﻿using System.IO;
-using Vge.Item;
-using WinGL.Util;
+﻿using WinGL.Util;
 
 namespace Vge.Network.Packets.Server
 {

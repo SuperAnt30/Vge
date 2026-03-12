@@ -81,7 +81,7 @@ namespace Vge.Games
         /// <summary>
         /// Счётчик тиков без синхронизации с сервером, отсчёт от запуска программы
         /// </summary>
-        protected uint _tickCounterClient = 0;
+        public uint TickCounterClient { get; private set; }
         /// <summary>
         /// Оповещение остановки, если "" её ещё не было
         /// </summary>
@@ -371,7 +371,7 @@ namespace Vge.Games
             //Filer.EndSection(10);
             if (_flagTick && !IsGamePaused)
             {
-                _tickCounterClient++;
+                TickCounterClient++;
                 //TickCounter++;
                 //Filer.StartSection("Player.Update");
                 // Обновить игрока
@@ -390,18 +390,15 @@ namespace Vge.Games
                 // Filer.EndSection(5);
 
                 // Тут индикация если имеется
-                if (Hud != null)
-                {
-                    Hud.OnTick(deltaTime);
-                }
+                Hud?.OnTick(deltaTime);
 
                 // Прошла минута, или 1800 тактов
-                if (_tickCounterClient % 1800 == 0)
+                if (TickCounterClient % 1800 == 0)
                 {
                     Log.Save();
                 }
 
-                if (_tickCounterClient % 150 == 0)
+                if (TickCounterClient % 150 == 0)
                 {
                     // Раз в 5 секунды перепинговка
                     TrancivePacket(new Packet00PingPong(Time()));

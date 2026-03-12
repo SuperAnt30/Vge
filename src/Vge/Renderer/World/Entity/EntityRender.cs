@@ -8,7 +8,7 @@ namespace Vge.Renderer.World.Entity
     /// <summary>
     /// Объект рисует сущности
     /// </summary>
-    public class EntityRender : IDisposable
+    public class EntityRender : IEntityRender, IDisposable
     {
         /// <summary>
         /// Сетка сущности

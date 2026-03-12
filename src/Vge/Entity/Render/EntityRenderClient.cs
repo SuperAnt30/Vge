@@ -9,6 +9,11 @@ namespace Vge.Entity.Render
     public class EntityRenderClient : EntityRenderAbstract
     {
         /// <summary>
+        /// Объект рендера всех сущностей
+        /// </summary>
+        protected readonly EntitiesRenderer _entities;
+
+        /// <summary>
         /// Объект для рендера слоёв (предметов или одежды) на сущности
         /// </summary>
         protected readonly EntityLayerRender _entityLayerRender;
@@ -19,8 +24,9 @@ namespace Vge.Entity.Render
         protected readonly ResourcesEntity _resourcesEntity;
 
         public EntityRenderClient(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity)
-            : base(entity, entities)
+            : base(entity)
         {
+            _entities = entities;
             _resourcesEntity = resourcesEntity;
 
             // Если имеется инвентарь, то создаём объект слоёв
@@ -40,7 +46,7 @@ namespace Vge.Entity.Render
         {
             if (_entityRender == null)
             {
-                _entityRender = Entities.GetEntityRender(Entity.IndexEntity);
+                _entityRender = _entities.GetEntityRender(Entity.IndexEntity);
             }
         }
 
@@ -51,15 +57,11 @@ namespace Vge.Entity.Render
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
         public override void Draw(float timeIndex, float deltaTime)
         {
-            float ppfx = Entities.Player.PosFrameX;
-            float ppfy = Entities.Player.PosFrameY;
-            float ppfz = Entities.Player.PosFrameZ;
-
             // Заносим в шейдор
-            Entities.ShsEntity.UniformData(
-                Entity.GetPosFrameX(timeIndex) - ppfx,
-                Entity.GetPosFrameY(timeIndex) - ppfy,
-                Entity.GetPosFrameZ(timeIndex) - ppfz,
+            _entities.ShsEntity.UniformData(
+                Entity.GetPosFrameX(timeIndex) - _entities.Player.PosFrameX,
+                Entity.GetPosFrameY(timeIndex) - _entities.Player.PosFrameY,
+                Entity.GetPosFrameZ(timeIndex) - _entities.Player.PosFrameZ,
                 _lightBlock, _lightSky,
                 _resourcesEntity.GetDepthTextureAndSmall(),
                 _resourcesEntity.GetIsAnimation(), 0

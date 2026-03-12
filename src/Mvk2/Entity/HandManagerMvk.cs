@@ -1,17 +1,11 @@
 ﻿using Mvk2.Entity.List;
-using Mvk2.World.Block;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Util;
 using Vge.World.Block;
-using Vge.World.Chunk;
+using WinGL.Util;
 
 namespace Mvk2.Entity
 {
@@ -311,6 +305,9 @@ namespace Mvk2.Entity
                     }
                     _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
                         _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
+
+                    _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
+                        new Vector3(.25f), 1, 0);
                 }
             }
             else
@@ -328,6 +325,9 @@ namespace Mvk2.Entity
             _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos));
             _game.World.SetBlockToAir(_blockPos, 46);
             _isBlockDestroy = false;
+
+            _game.World.SpawnParticle(0, 25, _blockPos.ToVector3Center(),
+                        new Vector3(1), 1, 0);
         }
 
         

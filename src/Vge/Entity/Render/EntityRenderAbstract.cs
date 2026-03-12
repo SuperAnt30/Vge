@@ -11,20 +11,14 @@ namespace Vge.Entity.Render
     public abstract class EntityRenderAbstract : EntityRenderBase
     {
         /// <summary>
-        /// Статичный объект сетки типа сущности, не меняется
-        /// </summary>
-        protected EntityRender _entityRender;
-
-        /// <summary>
         /// Сущность к которой прекреплена физика
         /// </summary>
         public readonly EntityBase Entity;
 
         /// <summary>
-        /// Объект рендера всех сущностей
+        /// Статичный объект сетки типа сущности, не меняется
         /// </summary>
-        public readonly EntitiesRenderer Entities;
-
+        protected IEntityRender _entityRender;
         /// <summary>
         /// Освещёность блочного света
         /// </summary>
@@ -34,12 +28,7 @@ namespace Vge.Entity.Render
         /// </summary>
         protected float _lightSky;
 
-
-        public EntityRenderAbstract(EntityBase entity, EntitiesRenderer entities)
-        {
-            Entity = entity;
-            Entities = entities;
-        }
+        public EntityRenderAbstract(EntityBase entity) => Entity = entity;
 
         /// <summary>
         /// Игровой такт на клиенте

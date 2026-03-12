@@ -433,6 +433,17 @@ namespace Vge.World
 
         #endregion
 
+        #region Entity Particle
+
+        /// <summary>
+        /// Заспавнить частицы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SpawnParticle(int particleId, 
+            int count, Vector3 pos, Vector3 offset, float motion, int parameter) { }
+
+        #endregion
+
         #region Sound
 
         /// <summary>
@@ -448,6 +459,8 @@ namespace Vge.World
         public virtual void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0) { }
 
         #endregion
+
+        
 
         /// <summary>
         /// Для отладки

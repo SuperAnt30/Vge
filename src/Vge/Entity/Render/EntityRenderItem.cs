@@ -10,8 +10,13 @@ namespace Vge.Entity.Render
     /// </summary>
     public class EntityRenderItem : EntityRenderAbstract
     {
+        /// <summary>
+        /// Объект рендера всех сущностей
+        /// </summary>
+        protected readonly EntitiesRenderer _entities;
+
         public EntityRenderItem(EntityBase entity, EntitiesRenderer entities)
-            : base(entity, entities) { }
+            : base(entity) => _entities = entities;
 
         /// <summary>
         /// Обновить рассчитать матрицы для кадра
@@ -26,7 +31,7 @@ namespace Vge.Entity.Render
                 ItemStack itemStack = entityItem.GetEntityItemStack();
                 if (itemStack != null)
                 {
-                    _entityRender = Entities.GetItemRender(itemStack.Item.IndexItem);
+                    _entityRender = _entities.GetItemRender(itemStack.Item.IndexItem);
                 }
             }
         }
@@ -40,15 +45,11 @@ namespace Vge.Entity.Render
         {
             if (_entityRender != null) // Может быть случай, когда пакет данных стака ещё не пришёл
             {
-                float ppfx = Entities.Player.PosFrameX;
-                float ppfy = Entities.Player.PosFrameY;
-                float ppfz = Entities.Player.PosFrameZ;
-
                 // Заносим в шейдор
-                Entities.ShsEntity.UniformData(
-                    Entity.GetPosFrameX(timeIndex) - ppfx,
-                    Entity.GetPosFrameY(timeIndex) - ppfy,
-                    Entity.GetPosFrameZ(timeIndex) - ppfz,
+                _entities.ShsEntity.UniformData(
+                    Entity.GetPosFrameX(timeIndex) - _entities.Player.PosFrameX,
+                    Entity.GetPosFrameY(timeIndex) - _entities.Player.PosFrameY,
+                    Entity.GetPosFrameZ(timeIndex) - _entities.Player.PosFrameZ,
                     _lightBlock, _lightSky);
 
                 // Рисуем основную сетку сущности

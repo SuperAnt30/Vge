@@ -337,9 +337,9 @@ namespace Vge.Entity.Render
                 }
                 else
                 {
-                    float x = Entity.PosX - Entities.Player.PosFrameX;
-                    float y = Entity.PosY - Entities.Player.PosFrameY;
-                    float z = Entity.PosZ - Entities.Player.PosFrameZ;
+                    float x = Entity.PosX - _entities.Player.PosFrameX;
+                    float y = Entity.PosY - _entities.Player.PosFrameY;
+                    float z = Entity.PosZ - _entities.Player.PosFrameZ;
                     yawBody = yaw = Glm.Atan2(z, x) - Glm.Pi90;
                     pitch = -Glm.Atan2(y, Mth.Sqrt(x * x + z * z));
                     //pitch = 0;
@@ -369,21 +369,17 @@ namespace Vge.Entity.Render
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
         public override void Draw(float timeIndex, float deltaTime)
         {
-            float ppfx = Entities.Player.PosFrameX;
-            float ppfy = Entities.Player.PosFrameY;
-            float ppfz = Entities.Player.PosFrameZ;
-
             // Заносим в шейдор
-            Entities.ShsEntity.UniformData(
-                Entity.GetPosFrameX(timeIndex) - ppfx,
-                Entity.GetPosFrameY(timeIndex) - ppfy,
-                Entity.GetPosFrameZ(timeIndex) - ppfz,
+            _entities.ShsEntity.UniformData(
+                Entity.GetPosFrameX(timeIndex) - _entities.Player.PosFrameX,
+                Entity.GetPosFrameY(timeIndex) - _entities.Player.PosFrameY,
+                Entity.GetPosFrameZ(timeIndex) - _entities.Player.PosFrameZ,
                 _lightBlock, _lightSky,
                 _resourcesEntity.GetDepthTextureAndSmall(),
                 _resourcesEntity.GetIsAnimation(), GetEyeMouth()
                 );
 
-            Entities.ShsEntity.UniformData(_bufferBonesTransforms);
+            _entities.ShsEntity.UniformData(_bufferBonesTransforms);
             // Рисуем основную сетку сущности
             _entityRender?.MeshDraw();
 
@@ -411,20 +407,20 @@ namespace Vge.Entity.Render
             // Собираем конечные матрицы
             _GetMatrixPalette(yaw, yaw, pitch);
 
-            Entities.ShsEntity.BindUniformAnimationGui(posX, posY, scale,
+            _entities.ShsEntity.BindUniformAnimationGui(posX, posY, scale,
                 _resourcesEntity.GetDepthTextureAndSmall(),
                 _resourcesEntity.GetIsAnimation(), GetEyeMouth());
 
-            Entities.ShsEntity.UniformData(_bufferBonesTransforms);
+            _entities.ShsEntity.UniformData(_bufferBonesTransforms);
 
-            Entities.Render.DepthOn();
+            _entities.Render.DepthOn();
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
 
             // Если имеются слои, рисуем сетку слоёв
             _entityLayerRender?.MeshDraw();
 
-            Entities.Render.DepthOff();
+            _entities.Render.DepthOff();
         }
 
         /// <summary>

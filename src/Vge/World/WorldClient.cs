@@ -197,6 +197,44 @@ namespace Vge.World
 
         #endregion
 
+        #region Entity Particle
+
+        /// <summary>
+        /// Заспавнить частицы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SpawnParticle(int particleId,
+            int count, Vector3 pos, Vector3 offset, float motion, int parameter)
+        {
+            ParticlesRenderer particles = Game.WorldRender.Particles;
+            if (count == 1)
+            {
+                particles.Spawn(particleId, pos, offset * motion, parameter);
+            }
+            else
+            {
+                Vector3 of;
+                Vector3 m = new Vector3(0);
+                for (int i = 0; i < count; i++)
+                {
+                    of = new Vector3(
+                        (Rnd.NextFloat() - .5f) * offset.X,
+                        (Rnd.NextFloat() - .5f) * offset.Y,
+                        (Rnd.NextFloat() - .5f) * offset.Z);
+                    if (motion > 0)
+                    {
+                        m = new Vector3(
+                            (Rnd.NextFloat() - .5f) * motion,
+                            (Rnd.NextFloat() - .5f) * motion,
+                            (Rnd.NextFloat() - .5f) * motion);
+                    }
+                    particles.Spawn(particleId, pos + of, m, parameter);
+                }
+            }
+        }
+
+        #endregion
+
         #region Sound
 
         /// <summary>
