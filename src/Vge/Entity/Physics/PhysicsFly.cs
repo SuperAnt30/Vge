@@ -36,7 +36,7 @@ namespace Vge.Entity.Physics
             MotionZ *= .98f;
 
             // Если мелочь убираем
-            _ResetMinimumMotion();
+            ResetMinimumMotion();
 
             float speed = .1f;
 

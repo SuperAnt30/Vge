@@ -103,7 +103,7 @@ namespace Vge.Entity.Physics
 
             
             // Если мелочь убираем
-            _ResetMinimumMotion();
+            ResetMinimumMotion();
             // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
             float motionX0 = MotionX;
             float motionZ0 = MotionZ;
@@ -123,7 +123,7 @@ namespace Vge.Entity.Physics
             }
 
             // Если мелочь убираем
-            _ResetMinimumMotion();
+            ResetMinimumMotion();
 
             // Фиксируем перемещение
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;
@@ -174,7 +174,7 @@ namespace Vge.Entity.Physics
             }
 
             // Параметр падение 
-            MotionY -= Cp.Gravity; // minecraft .08f
+            MotionY -= _gravity; // minecraft .08f
 
             // Инерция
             MotionX *= inertia;

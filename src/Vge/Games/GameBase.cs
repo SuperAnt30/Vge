@@ -385,7 +385,7 @@ namespace Vge.Games
                 //Filer.EndStartSection("WorldRender.Update", 10);
                
                 // Обновить рендоровский мир
-                WorldRender.Update();
+                WorldRender.OnTick(deltaTime);
                 
                 // Filer.EndSection(5);
 

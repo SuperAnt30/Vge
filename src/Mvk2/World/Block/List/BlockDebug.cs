@@ -33,6 +33,5 @@ namespace Mvk2.World.Block.List
             if (side == Pole.North) return state.NewMet(3);
             return state.NewMet(0);
         }
-
     }
 }

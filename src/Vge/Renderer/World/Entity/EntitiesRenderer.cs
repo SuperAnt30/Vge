@@ -18,10 +18,6 @@ namespace Vge.Renderer.World.Entity
     public class EntitiesRenderer : WarpRenderer
     {
         /// <summary>
-        /// Количество сущностей которые попали в FrustumCulling чанка, т.е. видимых для прорисовки
-        /// </summary>
-        public int CountEntitiesFC { get; private set; }
-        /// <summary>
         /// Видем ли мы хитбокс сущности
         /// </summary>
         public bool IsHitBox = false;
@@ -36,6 +32,14 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly GL gl;
         /// <summary>
+        /// Количество сущностей которые попали в FrustumCulling чанка, т.е. видимых для прорисовки
+        /// </summary>
+        private int _countEntitiesFC;
+        /// <summary>
+        /// Количество предметов которые попали в FrustumCulling чанка, т.е. видимых для прорисовки
+        /// </summary>
+        private int _countItemsFC;
+        /// <summary>
         /// Метод чанков для прорисовки
         /// </summary>
         private readonly ArrayFast<ChunkRender> _arrayChunkRender;
@@ -43,7 +47,7 @@ namespace Vge.Renderer.World.Entity
         /// Объект для отладки хитбокса сущности
         /// </summary>
         private readonly HitboxEntityRender _hitbox;
-        
+
         /// <summary>
         /// Массив всех типов сущностей
         /// </summary>
@@ -105,7 +109,7 @@ namespace Vge.Renderer.World.Entity
             _idTextureBig = Render.Texture.CreateTexture2dArray(
                 EntitiesReg.TextureManager.WidthBig,
                 EntitiesReg.TextureManager.HeightBig,
-                EntitiesReg.TextureManager.DepthBig, 
+                EntitiesReg.TextureManager.DepthBig,
                 (uint)Gi.ActiveTextureSamplerBig);
 
             // Заносим все текстуры сущностей
@@ -146,7 +150,8 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            CountEntitiesFC = 0;
+            _countEntitiesFC = 0;
+            _countItemsFC = 0;
             int count = _arrayChunkRender.Count;
             int countEntity;
             ChunkRender chunkRender;
@@ -173,7 +178,7 @@ namespace Vge.Renderer.World.Entity
                         {
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
-                            CountEntitiesFC++;
+                            _countEntitiesFC++;
                         }
                     }
                 }
@@ -194,7 +199,7 @@ namespace Vge.Renderer.World.Entity
                         {
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
-                            CountEntitiesFC++;
+                            _countItemsFC++;
                         }
                     }
                 }
@@ -376,5 +381,8 @@ namespace Vge.Renderer.World.Entity
                 }
             }
         }
+
+        public override string ToString() 
+            => "El:" + _countEntitiesFC + " Ei:" + _countItemsFC;
     }
 }

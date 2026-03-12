@@ -96,6 +96,15 @@ namespace Vge.Entity.Physics
         protected byte _indexSleep;
 
         /// <summary>
+        /// Гравитация
+        /// </summary>
+        protected float _gravity = Cp.Gravity;
+        /// <summary>
+        /// Отскок от гравитации горизонта
+        /// </summary>
+        protected float _gravityRebound = Cp.GravityRebound;
+
+        /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
         /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
@@ -128,6 +137,15 @@ namespace Vge.Entity.Physics
         {
             _rebound = rebound;
             _isRebound = _rebound != 0;
+        }
+
+        /// <summary>
+        /// Изменить гравитацию, 1 это норма, 0 нет гравитации
+        /// </summary>
+        public void SetGravity(float gravity)
+        {
+            _gravity = Cp.Gravity * gravity;
+            _gravityRebound = Cp.GravityRebound * gravity;
         }
 
         /// <summary>
@@ -235,7 +253,7 @@ namespace Vge.Entity.Physics
         /// Если мелочь убираем
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void _ResetMinimumMotion()
+        public void ResetMinimumMotion()
         {
             if (Mth.Abs(MotionX) < .005f) MotionX = 0;
             if (Mth.Abs(MotionY) < .005f) MotionY = 0;
@@ -267,9 +285,9 @@ namespace Vge.Entity.Physics
                     // Находим смещение по Y
                     for (int i = 0; i < count; i++) y = aabbs[i].CalculateYOffset(aabbEntity, y);
                     // Рикошет от препятствия
-                    if (_isRebound && MotionY != y && MotionY < Cp.GravityRebound)
+                    if (_isRebound && MotionY != y && MotionY < _gravityRebound)
                     {
-                        float y0 = -(MotionY + Cp.GravityRebound) * _rebound;
+                        float y0 = -(MotionY + _gravityRebound) * _rebound;
                         if (y0 > y) y = y0;
                     }
                     /*if (MotionY != y)*/ aabbEntity = aabbEntity.Offset(0, y, 0);
@@ -430,7 +448,7 @@ namespace Vge.Entity.Physics
                     if ((x != 0 || z != 0) && y0 != y) y += .02f;
 
                     // Рикошет от сущности через импульс
-                    if (_isRebound && y0 != y) ImpulseY -= (y0 + Cp.GravityRebound) * _rebound;
+                    if (_isRebound && y0 != y) ImpulseY -= (y0 + _gravityRebound) * _rebound;
                     aabbEntity = aabbEntity.Offset(0, y, 0);
                 }
                 else

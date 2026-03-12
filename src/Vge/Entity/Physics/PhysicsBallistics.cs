@@ -26,7 +26,7 @@ namespace Vge.Entity.Physics
             _CheckMoveCollidingPoint();
 
             // Если мелочь убираем
-            _ResetMinimumMotion();
+            ResetMinimumMotion();
 
             // Фиксируем перемещение
             IsMotionChange = MotionX != 0 || MotionY != 0 || MotionZ != 0;
@@ -39,7 +39,7 @@ namespace Vge.Entity.Physics
             }
 
             // Параметр падение 
-            MotionY -= Cp.Gravity;
+            MotionY -= _gravity;
 
             // Инерция
             MotionX *= Cp.AirDrag;

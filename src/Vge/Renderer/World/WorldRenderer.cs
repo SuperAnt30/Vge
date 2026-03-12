@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
+using Vge.Realms;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World.Block;
@@ -22,6 +21,10 @@ namespace Vge.Renderer.World
         /// Объект рендера всех сущностей
         /// </summary>
         public readonly EntitiesRenderer Entities;
+        /// <summary>
+        /// Объект рендера всех частичек
+        /// </summary>
+        public readonly ParticlesRenderer Particles;
         /// <summary>
         /// Объект отвечает за всенаправленных карт теней
         /// </summary>
@@ -90,6 +93,7 @@ namespace Vge.Renderer.World
             _arrayChunkRender = new ArrayFast<ChunkRender>(Ce.OverviewCircles.Length);
             _cursorRender = new CursorRender(game.Player, this);
             Entities = new EntitiesRenderer(game, _arrayChunkRender);
+            Particles = new ParticlesRenderer(game);
             Shadow = new ShadowMapping(gl);
         }
 
@@ -234,9 +238,10 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Такт выполнения
+        /// Игровой такт
         /// </summary>
-        public void Update()
+        /// <param name="deltaTime">Дельта последнего тика в mc</param>
+        public override void OnTick(float deltaTime)
         {
             //Render.LightMap.Update(_game.World.Settings.HasNoSky, Glm.Cos(_game.TickCounter * .01f), .24f );
             //0.5f, .1f); // sunLight, MvkStatic.LightMoonPhase[World.GetIndexMoonPhase()]);
@@ -244,6 +249,9 @@ namespace Vge.Renderer.World
             {
                 Render.LightMap.Update(_game.World.Settings);
             }
+
+            // Физика частичек, и их жизнь
+            Particles.OnTick(deltaTime);
 
             // Считаем вектор, матрицы и прочее из календаря
             _GenVectorLightСalendar(0);
@@ -529,8 +537,8 @@ namespace Vge.Renderer.World
             Shadow.Dispose();
         }
 
-        public override string ToString()
-            => "WR E:" + Entities.CountEntitiesFC 
-            + "  dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
+        public override string ToString() => ChatStyle.Gray + ChatStyle.Bolb + "WorldRenderer " + ChatStyle.Reset
+            + Entities.ToString() + " " + Particles.ToString()
+            + " dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
     }
 }
