@@ -1,4 +1,5 @@
 ﻿using Vge.Renderer.World;
+using WinGL.Util;
 
 namespace Vge.Entity.Render
 {
@@ -28,13 +29,20 @@ namespace Vge.Entity.Render
             }
 
             // Заносим в шейдор
-            _particles.Render.ShLine.SetUniform3("pos",
+            _particles.Render.ShsEntity.UniformPosParticle(
+                Entity.IndexEntity == 0 ? new Vector3(1, .5f, 0) : new Vector3(0, .5f, 1),
+                Entity.IndexEntity == 0 ? 0 : 1,
                 Entity.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX,
                 Entity.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY,
                 Entity.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ);
 
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
+        }
+
+        public override void Dispose()
+        {
+            _entityRender?.Dispose();
         }
     }
 }

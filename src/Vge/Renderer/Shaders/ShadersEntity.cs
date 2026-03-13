@@ -28,6 +28,10 @@ namespace Vge.Renderer.Shaders
         /// Шейдоры карты глубины
         /// </summary>
         private readonly ShaderEntity _shaderDepthMap;
+        /// <summary>
+        /// Шейдоры для частичек
+        /// </summary>
+        private readonly ShaderParticle _shaderParticle;
 
         /// <summary>
         /// Активный шейдор, обычный или для теней
@@ -49,6 +53,7 @@ namespace Vge.Renderer.Shaders
             _shaderLow = new ShaderEntity(gl, nameLow);
             _shaderHigh = new ShaderEntity(gl, nameHigh);
             _shaderDepthMap = new ShaderEntity(gl, nameDepthMap);
+            _shaderParticle = new ShaderParticle(gl);
             _qualitatively = Options.Shadow;
         }
 
@@ -70,6 +75,11 @@ namespace Vge.Renderer.Shaders
             gl.Uniform1(_shaderDepthMap.GetUniformLocation("sampler_big"),
                 Gi.ActiveTextureSamplerBig);
             gl.Uniform1(_shaderDepthMap.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
+
+            // Для частичек
+            _shaderParticle.Bind();
+            gl.Uniform1(_shaderParticle.GetUniformLocation("atlas"),
                 Gi.ActiveTextureAatlasSharpness);
 
             // Для максимального качества
@@ -245,6 +255,33 @@ namespace Vge.Renderer.Shaders
             _shderAction.SetUniform2("light", .96875f, .96875f);
         }
 
+        /// <summary>
+        /// Занести начальные юниформы для частичек
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformParticle(float yaw, float pitch)
+        {
+            _shaderParticle.Bind();
+            Mat4 mat = Mat4.Identity();
+            mat.RotateY(-yaw);
+            mat.RotateX(pitch);
+            _shaderParticle.SetUniformMatrix4("view", Gi.MatrixView);
+            _shaderParticle.SetUniformMatrix4("rotateMatrix", mat.ToArray());
+            
+            //_shaderParticle.SetUniform1("scale", 3);
+        }
+
+        /// <summary>
+        /// Внести позицию для претмета Gui
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformPosParticle(Vector3 color, int param, float x, float y, float z)
+        {
+            _shaderParticle.SetUniform1("param", param);
+            _shaderParticle.SetUniform3("pos", x, y, z);
+            _shaderParticle.SetUniform3("color", color.X, color.Y, color.Z);
+        }
+
         #endregion
 
         public void Dispose()
@@ -253,6 +290,7 @@ namespace Vge.Renderer.Shaders
             _shaderLow.Delete();
             _shaderHigh.Delete();
             _shaderDepthMap.Delete();
+            _shaderParticle.Delete();
         }
     }
 }

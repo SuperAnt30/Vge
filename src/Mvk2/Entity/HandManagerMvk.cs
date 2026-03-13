@@ -306,7 +306,7 @@ namespace Mvk2.Entity
                     _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
                         _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
 
-                    _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
+                    _game.World.SpawnParticle(1, 5, _player.MovingObject.RayHit,
                         new Vector3(.25f), 1, 0);
                 }
             }

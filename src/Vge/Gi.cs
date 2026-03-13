@@ -148,10 +148,25 @@ public sealed class Gi
     public readonly static float[] ColorBlue = new float[] { 0, .67f, 0, .67f, 0, .67f, 0, .67f, .33f, 1, .33f, 1, .33f, 1, .33f, 1 };
 
     /// <summary>
+    /// Затемнение стороны куба, низ
+    /// </summary>
+    public static float DarkeningSideDown = .6f;
+    /// <summary>
+    /// Затемнение стороны куба, сторона А
+    /// </summary>
+    public static float DarkeningSideA = .7f;
+    /// <summary>
+    /// Затемнение стороны куба, сторона B
+    /// </summary>
+    public static float DarkeningSideB = .85f;
+    /// <summary>
     /// Затемнение стороны от стороны блока
     /// </summary>
     //public readonly static float[] LightPoles = new float[] { 1, .5f, .6f, .6f, .8f, .8f }; //  без Diffuse
-    public readonly static float[] LightPoles = new float[] { 1, .6f, .7f, .7f, .85f, .85f }; // С Diffuse
+    public readonly static float[] LightPoles = new float[] { 
+        1, DarkeningSideDown,
+        DarkeningSideA, DarkeningSideA,
+        DarkeningSideB, DarkeningSideB }; // С Diffuse
     //public readonly static float[] LightPoles = new float[] { 1, 1, 1, 1, 1, 1 }; // Как сущность
 
     /// <summary>

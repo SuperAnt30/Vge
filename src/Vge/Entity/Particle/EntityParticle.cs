@@ -23,13 +23,14 @@ namespace Vge.Entity.Particle
         /// <summary>
         /// Инициализация для клиента
         /// </summary>
-        public void Init(ParticlesRenderer particles, CollisionBase collision)
+        public void Init(ushort index, ParticlesRenderer particles, CollisionBase collision)
         {
             Render = new EntityRenderParticle(this, particles);
             Size = new SizeEntityPoint(this, 1);
             Physics = new PhysicsBallistics(collision, this);
             NoClip = true;
             Physics.SetGravity(.25f);
+            IndexEntity = index;
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Vge.Entity.Particle
         public override void Update()
         {
             
-            if (_age > 45)
+            if (_age > 4005)
             {
                 SetDead();
                 return;
