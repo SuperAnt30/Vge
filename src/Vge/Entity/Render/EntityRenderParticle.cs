@@ -30,7 +30,10 @@ namespace Vge.Entity.Render
 
             // Заносим в шейдор
             _particles.Render.ShsEntity.UniformPosParticle(
-                Entity.IndexEntity == 0 ? new Vector3(1, .5f, 0) : new Vector3(0, .5f, 1),
+                _lightBlock, _lightSky,
+                Entity.IndexEntity == 0 ? 1 : 0,
+                .5f,
+                Entity.IndexEntity == 0 ? 0 : 1,
                 Entity.IndexEntity == 0 ? 0 : 1,
                 Entity.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX,
                 Entity.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY,

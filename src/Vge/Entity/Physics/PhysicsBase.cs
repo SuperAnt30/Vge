@@ -560,6 +560,14 @@ namespace Vge.Entity.Physics
                 if (Collision.MovingObject.IsCollision())
                 {
                     Entity.OnImpact(Collision.World, Collision.MovingObject);
+                    if (Collision.MovingObject.IsBlock()
+                        && Collision.MovingObject.BlockPosition.Y == (int)Entity.PosY)
+                    {
+                        if (CaughtInBlock < CountTickCaughtMax)
+                        {
+                            CaughtInBlock++;
+                        }
+                    }
                 }
             }
         }

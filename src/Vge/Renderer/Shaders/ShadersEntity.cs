@@ -81,6 +81,9 @@ namespace Vge.Renderer.Shaders
             _shaderParticle.Bind();
             gl.Uniform1(_shaderParticle.GetUniformLocation("atlas"),
                 Gi.ActiveTextureAatlasSharpness);
+            // Активация текстуры карты света
+            gl.Uniform1(_shaderParticle.GetUniformLocation("light_map"),
+                Gi.ActiveTextureLightMap);
 
             // Для максимального качества
             _shaderHigh.Bind();
@@ -275,11 +278,14 @@ namespace Vge.Renderer.Shaders
         /// Внести позицию для претмета Gui
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UniformPosParticle(Vector3 color, int param, float x, float y, float z)
+        public void UniformPosParticle(float lightBlock, float lightSky,
+            float red, float green, float blue, int param, float x, float y, float z)
         {
             _shaderParticle.SetUniform1("param", param);
             _shaderParticle.SetUniform3("pos", x, y, z);
-            _shaderParticle.SetUniform3("color", color.X, color.Y, color.Z);
+            _shaderParticle.SetUniform3("color", red, green, blue);
+            // Свет для карты теней не нужен
+            _shaderParticle.SetUniform2("light", lightBlock, lightSky);
         }
 
         #endregion

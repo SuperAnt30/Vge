@@ -4,15 +4,18 @@ layout (location = 0) in vec3 v_position;
 layout (location = 1) in vec4 v_color;
 
 out vec4 a_color;
+out vec2 a_light;
 
 uniform mat4 view;
 uniform mat4 rotateMatrix;
 uniform vec3 pos;
+uniform vec2 light;
 uniform int param;
 uniform vec3 color;
 
 void main()
 {
+    a_light = light;
     //a_color = v_color;
     //mat4 modelMatrix = mat4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, pos.x, pos.y, pos.z, 1);
     

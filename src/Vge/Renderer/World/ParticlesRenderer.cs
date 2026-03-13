@@ -52,7 +52,7 @@ namespace Vge.Renderer.World
         private float[] _Rectangle(float x1, float y1, float x2, float y2, 
             float r, float g, float b, float a)
         {
-            return new float[] // North
+            return new float[] 
             {
                 x1, y1, 0, r, g, b, a,
                 x2, y1, 0, r, g, b, a,
@@ -160,11 +160,11 @@ namespace Vge.Renderer.World
             {
                 if (_list[i].IsDead)
                 {
-                    _list[i].Dispose();
                     _list.RemoveAt(i);
                 }
                 else
                 {
+                    _list[i].UpdateClient(_game.World, deltaTime);
                     _list[i].Update();
                 }
             }

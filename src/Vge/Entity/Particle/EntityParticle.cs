@@ -94,12 +94,12 @@ namespace Vge.Entity.Particle
         /// </summary>
         public override void Update()
         {
-            
-            if (_age > 4005)
+            if (_age > 400)
             {
                 SetDead();
                 return;
             }
+            
             _age++;
             if (_age == 10)
             {
@@ -113,6 +113,10 @@ namespace Vge.Entity.Particle
             }
             // Расчитать перемещение в объекте физика
             Physics.LivingUpdate();
+            if (Physics.CaughtInBlock > 0 || Physics.CaughtInEntity > 2)
+            {
+                SetDead();
+            }
         }
 
         /// <summary>

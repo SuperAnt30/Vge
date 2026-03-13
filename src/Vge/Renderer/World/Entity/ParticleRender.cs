@@ -15,10 +15,7 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly MeshParticle _mesh;
 
-        public ParticleRender(GL gl)
-        {
-            _mesh = new MeshParticle(gl, GL.GL_STATIC_DRAW);
-        }
+        public ParticleRender(GL gl) => _mesh = new MeshParticle(gl);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reload(float[] buffer) => _mesh.Reload(buffer);
