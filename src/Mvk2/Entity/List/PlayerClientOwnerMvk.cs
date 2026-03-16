@@ -21,7 +21,7 @@ namespace Mvk2.Entity.List
 
         public PlayerClientOwnerMvk(GameBase game) : base(game)
         {
-            _handManager = new HandManagerMvk(game, this);
+            _handManager = new HandManager(game, this);
         }
 
         /// <summary>
