@@ -12,8 +12,14 @@ uniform sampler2D u_texture0;
 
 void main()
 {
-    vec4 light_color = texture(light_map, light);
-    if (param == 1) {
+    vec4 light_color;
+    if (param >> 1 == 1) {
+        light_color = vec4(1);
+    }
+    else {
+        light_color = texture(light_map, light);
+    }
+    if ((param & 1) == 1) {
         // Имеется ли текстура
         vec4 tex_color = texture(u_texture0, a_texCoord);
         if (tex_color.a < 0.05) discard;

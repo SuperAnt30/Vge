@@ -39,6 +39,12 @@ namespace Vge.Entity.Particle
         /// Смещение спрайта
         /// </summary>
         public Vector2 OffsetUv { get; protected set; }
+        /// <summary>
+        /// Параметр для шейдора, bit флагов
+        /// 1 bit - текстура для 2д
+        /// 2 bit - свет не меняется от яркости блоков
+        /// </summary>
+        public int Param { get; protected set; }
 
         /// <summary>
         /// Сколько тиков жизни
@@ -54,6 +60,7 @@ namespace Vge.Entity.Particle
             TypeDraw = typeDraw;
             IsCube = typeDraw == EnumParticleDraw.Cube;
             IsSprite = typeDraw == EnumParticleDraw.Sprite;
+            Param = IsSprite ? 1 : 0;
         }
 
         /// <summary>
@@ -99,6 +106,12 @@ namespace Vge.Entity.Particle
         }
 
         /// <summary>
+        /// Задать светится ли частичка в темноте
+        /// </summary>
+        public void SetLight(bool light)
+            => Param = (IsSprite ? 1 : 0) + (light ? 2 : 0);
+
+        /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,6 +145,7 @@ namespace Vge.Entity.Particle
             //}
 
             //Scale *= .95f;
+          //  SetLight(Param >> 1 == 0);
 
             _age++;
             if (_age == 10)

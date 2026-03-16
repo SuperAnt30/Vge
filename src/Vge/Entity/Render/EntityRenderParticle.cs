@@ -41,10 +41,7 @@ namespace Vge.Entity.Render
                 _entityParticle.Color.Z, _entityParticle.Color.W);
             _shader.SetUniform2("light", _lightBlock, _lightSky);
             _shader.SetUniform1("scale", _entityParticle.Scale);
-            if (!_entityParticle.IsCube)
-            {
-                _shader.SetUniform1("param", _entityParticle.IsSprite ? 1 : 0);
-            }
+            _shader.SetUniform1("param", _entityParticle.Param);
         }
 
         /// <summary>

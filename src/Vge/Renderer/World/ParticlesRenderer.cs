@@ -136,7 +136,7 @@ namespace Vge.Renderer.World
             EntityParticle entity; // = new EntityParticle();
 
             if (particleId == 1) entity = new EntityParticle(EnumParticleDraw.Cube);
-            else entity = new EntityParticle(EnumParticleDraw.Color);
+            else entity = new EntityParticle(EnumParticleDraw.Sprite);
 
             entity.Init(particleId, this, _game.World.Collision);
             entity.InitRun(_game.World.Rnd, pos, motion);
