@@ -220,7 +220,13 @@ namespace Vge.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureWidgets() => Texture.BindTexture(_textureIndex.Widgets);
-        
+
+        /// <summary>
+        /// Запустить текстуру частичек
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureParticles() => Texture.BindTexture(_textureIndex.Particles);
+
         /// <summary>
         /// Создать текстуру основного шрифта
         /// </summary>
@@ -242,6 +248,10 @@ namespace Vge.Renderer
             if (buffereds.ContainsKey(EnumTexture.Widgets.ToString()))
             {
                 _textureIndex.Widgets = Texture.SetTexture(buffereds[EnumTexture.Widgets.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTexture.Particles.ToString()))
+            {
+                _textureIndex.Particles = Texture.SetTexture(buffereds[EnumTexture.Particles.ToString()]);
             }
         }
 

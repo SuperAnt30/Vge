@@ -3,7 +3,6 @@ using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Renderer.World;
-using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -11,26 +10,63 @@ using WinGL.Util;
 namespace Vge.Entity.Particle
 {
     /// <summary>
-    /// Сущность эффектов частиц
+    /// Абстрактный объект сущность частицы
     /// </summary>
-    public /*abstract*/ class EntityParticle : EntityBase
+    public class EntityParticle : EntityBase
     {
+        /// <summary>
+        /// Тип прорисовки частички
+        /// </summary>
+        public readonly EnumParticleDraw TypeDraw;
+        /// <summary>
+        /// Является ли частичка объёмной 3д
+        /// </summary>
+        public readonly bool IsCube;
+        /// <summary>
+        /// Имеется ли текстура, только для 2д спрайта
+        /// </summary>
+        public readonly bool IsSprite;
+
+        /// <summary>
+        /// Цвет частички
+        /// </summary>
+        public Vector4 Color { get; protected set; } = new Vector4(1);
+        /// <summary>
+        /// Масштаб частички
+        /// </summary>
+        public float Scale { get; protected set; } = 1f;
+        /// <summary>
+        /// Смещение спрайта
+        /// </summary>
+        public Vector2 OffsetUv { get; protected set; }
+
         /// <summary>
         /// Сколько тиков жизни
         /// </summary>
         protected int _age = 0;
+        /// <summary>
+        /// Объект генератора случайх чисел
+        /// </summary>
+        protected Rand _rand;
+
+        public EntityParticle(EnumParticleDraw typeDraw)
+        {
+            TypeDraw = typeDraw;
+            IsCube = typeDraw == EnumParticleDraw.Cube;
+            IsSprite = typeDraw == EnumParticleDraw.Sprite;
+        }
 
         /// <summary>
         /// Инициализация для клиента
         /// </summary>
         public void Init(ushort index, ParticlesRenderer particles, CollisionBase collision)
         {
-            Render = new EntityRenderParticle(this, particles);
+            IndexEntity = index;
             Size = new SizeEntityPoint(this, 1);
             Physics = new PhysicsBallistics(collision, this);
             NoClip = true;
             Physics.SetGravity(.25f);
-            IndexEntity = index;
+            Render = new EntityRenderParticle(this, particles);
         }
 
         /// <summary>
@@ -38,6 +74,7 @@ namespace Vge.Entity.Particle
         /// </summary>
         public virtual void InitRun(Rand rand, Vector3 pos, Vector3 motion)
         {
+            _rand = rand;
             PosPrevX = PosX = pos.X;
             PosPrevY = PosY = pos.Y;
             PosPrevZ = PosZ = pos.Z;
@@ -53,23 +90,12 @@ namespace Vge.Entity.Particle
             Physics.MotionY = motion.Y;
             Physics.MotionZ = motion.Z;
 
-            //// ВРЕМЕННО, бросок сущности!
-            //float speedThrower = .49f;
-            //// спереди
-            //float f3 = (int)(i / 100) * 1.54f;
-            //i = i % 100;
-            //float f = (i & 15) * 1.54f + 1;
-            //float f2 = (i >> 4) * 1.3f;
-            //PosX = entityThrower.PosX + Glm.Sin(entityThrower.RotationYaw) * f
-            //    - Glm.Cos(entityThrower.RotationYaw) * f3;
-            //PosZ = entityThrower.PosZ - Glm.Cos(entityThrower.RotationYaw) * f
-            //    + Glm.Sin(entityThrower.RotationYaw) * f3;
-            //PosY = entityThrower.PosY + entityThrower.SizeLiving.GetEye() - .2f + f2;
+            if (IsCube)
+            {
+                Scale = .25f + rand.NextFloat() * .25f;
+            }
 
-            //float pitchxz = Glm.Cos(entityThrower.RotationPitch);
-            //Physics.MotionX = Glm.Sin(entityThrower.RotationYaw) * pitchxz * speedThrower;
-            //Physics.MotionY = Glm.Sin(entityThrower.RotationPitch) * speedThrower;
-            //Physics.MotionZ = -Glm.Cos(entityThrower.RotationYaw) * pitchxz * speedThrower;
+         
         }
 
         /// <summary>
@@ -99,7 +125,14 @@ namespace Vge.Entity.Particle
                 SetDead();
                 return;
             }
-            
+
+            //if (!IsVolumetricForm())
+            //{
+            //    Color = new Vector4(_rand.NextFloat(), _rand.NextFloat(), _rand.NextFloat(), 1);
+            //}
+
+            //Scale *= .95f;
+
             _age++;
             if (_age == 10)
             {

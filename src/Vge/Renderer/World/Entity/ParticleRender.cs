@@ -6,16 +6,26 @@ using WinGL.OpenGL;
 namespace Vge.Renderer.World.Entity
 {
     /// <summary>
-    /// Объект рисует объёмную частичку
+    /// Объект рисует частичку
     /// </summary>
     public class ParticleRender : IEntityRender, IDisposable
     {
         /// <summary>
-        /// Сетка частички покуда линии
+        /// Сетка частички
         /// </summary>
-        private readonly MeshParticle _mesh;
+        private readonly Mesh _mesh;
 
-        public ParticleRender(GL gl) => _mesh = new MeshParticle(gl);
+        public ParticleRender(GL gl, bool texture)
+        {
+            if (texture)
+            {
+                _mesh = new MeshParticleTexture(gl);
+            }
+            else
+            {
+                _mesh = new MeshParticle(gl);
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reload(float[] buffer) => _mesh.Reload(buffer);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Particle;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -29,9 +30,13 @@ namespace Vge.Renderer.Shaders
         /// </summary>
         private readonly ShaderEntity _shaderDepthMap;
         /// <summary>
-        /// Шейдоры для частичек
+        /// Шейдоры для спрайтов частичек
         /// </summary>
-        private readonly ShaderParticle _shaderParticle;
+        private readonly ShaderParticle2d _shaderParticle2d;
+        /// <summary>
+        /// Шейдоры для объёмных частичек
+        /// </summary>
+        private readonly ShaderParticle3d _shaderParticle3d;
 
         /// <summary>
         /// Активный шейдор, обычный или для теней
@@ -53,7 +58,8 @@ namespace Vge.Renderer.Shaders
             _shaderLow = new ShaderEntity(gl, nameLow);
             _shaderHigh = new ShaderEntity(gl, nameHigh);
             _shaderDepthMap = new ShaderEntity(gl, nameDepthMap);
-            _shaderParticle = new ShaderParticle(gl);
+            _shaderParticle2d = new ShaderParticle2d(gl);
+            _shaderParticle3d = new ShaderParticle3d(gl);
             _qualitatively = Options.Shadow;
         }
 
@@ -77,12 +83,16 @@ namespace Vge.Renderer.Shaders
             gl.Uniform1(_shaderDepthMap.GetUniformLocation("atlas"),
                 Gi.ActiveTextureAatlasSharpness);
 
-            // Для частичек
-            _shaderParticle.Bind();
-            gl.Uniform1(_shaderParticle.GetUniformLocation("atlas"),
-                Gi.ActiveTextureAatlasSharpness);
+            // Для частичек 2d
+            _shaderParticle2d.Bind();
             // Активация текстуры карты света
-            gl.Uniform1(_shaderParticle.GetUniformLocation("light_map"),
+            gl.Uniform1(_shaderParticle2d.GetUniformLocation("light_map"),
+                Gi.ActiveTextureLightMap);
+
+            // Для частичек 3d
+            _shaderParticle3d.Bind();
+            // Активация текстуры карты света
+            gl.Uniform1(_shaderParticle3d.GetUniformLocation("light_map"),
                 Gi.ActiveTextureLightMap);
 
             // Для максимального качества
@@ -262,30 +272,34 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы для частичек
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformParticle(float yaw, float pitch)
+        public void BindUniformParticle2d(float yaw, float pitch)
         {
-            _shaderParticle.Bind();
+            _shaderParticle2d.Bind();
             Mat4 mat = Mat4.Identity();
             mat.RotateY(-yaw);
             mat.RotateX(pitch);
-            _shaderParticle.SetUniformMatrix4("view", Gi.MatrixView);
-            _shaderParticle.SetUniformMatrix4("rotateMatrix", mat.ToArray());
-            
-            //_shaderParticle.SetUniform1("scale", 3);
+            _shaderParticle2d.SetUniformMatrix4("view", Gi.MatrixView);
+            _shaderParticle2d.SetUniformMatrix4("rotateMatrix", mat.ToArray());
         }
 
         /// <summary>
-        /// Внести позицию для претмета Gui
+        /// Занести начальные юниформы для частичек
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UniformPosParticle(float lightBlock, float lightSky,
-            float red, float green, float blue, int param, float x, float y, float z)
+        public void BindUniformParticle3d()
         {
-            _shaderParticle.SetUniform1("param", param);
-            _shaderParticle.SetUniform3("pos", x, y, z);
-            _shaderParticle.SetUniform3("color", red, green, blue);
-            // Свет для карты теней не нужен
-            _shaderParticle.SetUniform2("light", lightBlock, lightSky);
+            _shaderParticle3d.Bind();
+            _shaderParticle3d.SetUniformMatrix4("view", Gi.MatrixView);
+        }
+
+        /// <summary>
+        /// Получить объект шейдеров к частичкам
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ShaderProgram GetShaderParticle(EntityParticle entity)
+        {
+            if (entity.IsCube) return _shaderParticle3d;
+            return _shaderParticle2d;
         }
 
         #endregion
@@ -296,7 +310,8 @@ namespace Vge.Renderer.Shaders
             _shaderLow.Delete();
             _shaderHigh.Delete();
             _shaderDepthMap.Delete();
-            _shaderParticle.Delete();
+            _shaderParticle2d.Delete();
+            _shaderParticle3d.Delete();
         }
     }
 }

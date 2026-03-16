@@ -41,7 +41,7 @@ namespace Vge.Realms
         /// <summary>
         /// Максимальное количество шагов
         /// </summary>
-        public virtual int GetMaxCountSteps() => 2;
+        public virtual int GetMaxCountSteps() => 3;
 
         /// <summary>
         /// Этот метод как раз и реализует список загрузок
@@ -56,6 +56,10 @@ namespace Vge.Realms
             // Виджет Gui
             _FileToBufferedImage(EnumTexture.Widgets.ToString(), 
                 Options.PathTextures + EnumTexture.Widgets.ToString() + ".png");
+            OnStep();
+            // Виджет Gui
+            _FileToBufferedImage(EnumTexture.Particles.ToString(),
+                Options.PathTextures + EnumTexture.Particles.ToString() + ".png");
             OnStep();
         }
 

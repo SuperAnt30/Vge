@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Entity.Render;
@@ -18,100 +17,109 @@ namespace Vge.Renderer.World
     public class ParticlesRenderer : WarpRenderer
     {
         /// <summary>
+        /// Максимальное количество частичек для 3д
+        /// </summary>
+        private const int _MaxAmount3d = 1000;
+        /// <summary>
+        /// Максимальное количество частичек для 2д
+        /// </summary>
+        private const int _MaxAmount2d = 4000;
+
+        /// <summary>
         /// Объект OpenGL для элемента управления
         /// </summary>
         private readonly GL gl;
 
-        private readonly List<EntityParticle> _list = new List<EntityParticle>(4000);
+        /// <summary>
+        /// Объёмные частички
+        /// </summary>
+        private readonly List<EntityParticle> _list3d = new List<EntityParticle>(_MaxAmount3d);
+        /// <summary>
+        /// Двухмерные частички
+        /// </summary>
+        private readonly List<EntityParticle> _list2d = new List<EntityParticle>(_MaxAmount2d);
 
         /// <summary>
         /// Объект для отладки хитбокса сущности
         /// </summary>
         private readonly HitboxEntityRender _hitbox;
 
-        // TODO::!!!!!!!!
-        private ParticleRender _ddddd;
-        private ParticleRender _ddddd2;
+        /// <summary>
+        /// Рендер частички 2д просто цвет
+        /// </summary>
+        private readonly ParticleRender _particleRender;
+        /// <summary>
+        /// Рендер частички 2д с текстурой
+        /// </summary>
+        private readonly ParticleRender _particleRenderSprite;
+        /// <summary>
+        /// Рендер частики 3д, куб
+        /// </summary>
+        private readonly ParticleRender _particleRenderCube;
 
         public ParticlesRenderer(GameBase game) : base(game)
         {
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
 
-            _ddddd = new ParticleRender(gl);
-            float width = 0.125f;
-            //width = 0.0625f;
-            _ddddd.Reload(_Cube(-width, 0, -width, width, width + width, width, 1, 1, 1, 1));
-
-            _ddddd2 = new ParticleRender(gl);
-            //width = 0.03125f;
-            width = 0.125f;
-            _ddddd2.Reload(_Rectangle(-width, -width, width, width, 1, 0, 0, .5f));
+            _particleRender = new ParticleRender(gl, false);
+            _particleRender.Reload(_Rectangle(-.25f, .25f));
+            _particleRenderSprite = new ParticleRender(gl, true);
+            _particleRenderSprite.Reload(_Rectangle(-.25f, .25f));
+            _particleRenderCube = new ParticleRender(gl, false);
+            _particleRenderCube.Reload(_Cube(-.25f, 0, .25f, .5f));
         }
 
-        private float[] _Rectangle(float x1, float y1, float x2, float y2, 
-            float r, float g, float b, float a)
-        {
-            return new float[] 
-            {
-                x1, y1, 0, r, g, b, a,
-                x2, y1, 0, r, g, b, a,
-                x2, y2, 0, r, g, b, a,
-                x1, y2, 0, r, g, b, a,
+        #region Figure
+
+        private float[] _Rectangle(float f1, float f2) => new float[] {
+                f1, f1, 0, 0,
+                f2, f1, 1, 0,
+                f2, f2, 1, 1,
+                f1, f2, 0, 1
             };
-        }
 
-        private float[] _Cube(float x1, float y1, float z1, float x2, float y2, float z2,
-           float r, float g, float b, float a)
+        private float[] _Cube(float w1, float h1, float w2, float h2)
         {
-            float r1 = r * Gi.DarkeningSideB;
-            float g1 = g * Gi.DarkeningSideB;
-            float b1 = b * Gi.DarkeningSideB;
-
-            float r2 = r * Gi.DarkeningSideA;
-            float g2 = g * Gi.DarkeningSideA;
-            float b2 = b * Gi.DarkeningSideA;
-
-            float r3 = r * Gi.DarkeningSideDown;
-            float g3 = g * Gi.DarkeningSideDown;
-            float b3 = b * Gi.DarkeningSideDown;
+            float s1 = Gi.DarkeningSideB;
+            float s2 = Gi.DarkeningSideA;
+            float s3 = Gi.DarkeningSideDown;
 
             return new float[]
             {
-                //
-                x1, y2, z2, r, g, b, a,
-                x2, y2, z2, r, g, b, a,
-                x2, y2, z1, r, g, b, a,
-                x1, y2, z1, r, g, b, a,
-                //
-                x1, y1, z1, r3, g3, b3, a,
-                x2, y1, z1, r3, g3, b3, a,
-                x2, y1, z2, r3, g3, b3, a,
-                x1, y1, z2, r3, g3, b3, a,
+                w1, h2, w2, 1,
+                w2, h2, w2, 1,
+                w2, h2, w1, 1,
+                w1, h2, w1, 1,
 
-                //
-                x1, y1, z2, r1, g1, b1, a,
-                x2, y1, z2, r1, g1, b1, a,
-                x2, y2, z2, r1, g1, b1, a,
-                x1, y2, z2, r1, g1, b1, a,
-                //
-                x2, y1, z1, r1, g1, b1, a,
-                x1, y1, z1, r1, g1, b1, a,
-                x1, y2, z1, r1, g1, b1, a,
-                x2, y2, z1, r1, g1, b1, a,
-                
-                //
-                x2, y1, z2, r2, g2, b2, a,
-                x2, y1, z1, r2, g2, b2, a,
-                x2, y2, z1, r2, g2, b2, a,
-                x2, y2, z2, r2, g2, b2, a,
-                //
-                x1, y1, z1, r2, g2, b2, a,
-                x1, y1, z2, r2, g2, b2, a,
-                x1, y2, z2, r2, g2, b2, a,
-                x1, y2, z1, r2, g2, b2, a
+                w1, h1, w1, s3,
+                w2, h1, w1, s3,
+                w2, h1, w2, s3,
+                w1, h1, w2, s3,
+
+                w1, h1, w2, s1,
+                w2, h1, w2, s1,
+                w2, h2, w2, s1,
+                w1, h2, w2, s1,
+
+                w2, h1, w1, s1,
+                w1, h1, w1, s1,
+                w1, h2, w1, s1,
+                w2, h2, w1, s1,
+
+                w2, h1, w2, s2,
+                w2, h1, w1, s2,
+                w2, h2, w1, s2,
+                w2, h2, w2, s2,
+
+                w1, h1, w1, s2,
+                w1, h1, w2, s2,
+                w1, h2, w2, s2,
+                w1, h2, w1, s2
             };
         }
+
+        #endregion
 
         /// <summary>
         /// Объект игрока для клиента
@@ -123,13 +131,25 @@ namespace Vge.Renderer.World
         }
 
         public void Spawn(ushort particleId, Vector3 pos, Vector3 motion, int parameter)
-        { 
-            while (_list.Count >= 12000) _list.RemoveAt(0);
+        {
+            // TODO::2026-03-16 отсюда где-то надо вытаскивать регистрацию частички
+            EntityParticle entity; // = new EntityParticle();
 
-            EntityParticle entity = new EntityParticle();
+            if (particleId == 1) entity = new EntityParticle(EnumParticleDraw.Cube);
+            else entity = new EntityParticle(EnumParticleDraw.Color);
+
             entity.Init(particleId, this, _game.World.Collision);
             entity.InitRun(_game.World.Rnd, pos, motion);
-            _list.Add(entity);
+            if (entity.IsCube)
+            {
+                while (_list3d.Count >= _MaxAmount3d) _list3d.RemoveAt(0);
+                _list3d.Add(entity);
+            }
+            else
+            {
+                while (_list2d.Count >= _MaxAmount2d) _list2d.RemoveAt(0);
+                _list2d.Add(entity);
+            }
         }
 
         /// <summary>
@@ -138,13 +158,23 @@ namespace Vge.Renderer.World
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            Render.ShsEntity.BindUniformParticle(
-                _game.Player.RotationFrameYaw,
-                _game.Player.RotationFramePitch);
-            int count = _list.Count;
+            Render.ShsEntity.BindUniformParticle3d();
+            
+            int count = _list3d.Count;
             for (int i = 0; i < count; i++)
             {
-                _list[i].Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                _list3d[i].Render.Draw(timeIndex, _game.DeltaTimeFrame);
+            }
+
+            Render.BindTextureParticles();
+            Render.ShsEntity.BindUniformParticle2d(
+                _game.Player.RotationFrameYaw,
+                _game.Player.RotationFramePitch);
+
+            count = _list2d.Count;
+            for (int i = 0; i < count; i++)
+            {
+                _list2d[i].Render.Draw(timeIndex, _game.DeltaTimeFrame);
             }
         }
 
@@ -154,18 +184,23 @@ namespace Vge.Renderer.World
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void OnTick(float deltaTime)
         {
-            // Нужно для эффектов (частичек)
-            int count = _list.Count - 1;
+            _Update(_list3d, deltaTime);
+            _Update(_list2d, deltaTime);
+        }
+
+        private void _Update(List<EntityParticle> list, float deltaTime)
+        {
+            int count = list.Count - 1;
             for (int i = count; i >= 0; i--)
             {
-                if (_list[i].IsDead)
+                if (list[i].IsDead)
                 {
-                    _list.RemoveAt(i);
+                    list.RemoveAt(i);
                 }
                 else
                 {
-                    _list[i].UpdateClient(_game.World, deltaTime);
-                    _list[i].Update();
+                    list[i].UpdateClient(_game.World, deltaTime);
+                    list[i].Update();
                 }
             }
         }
@@ -174,25 +209,33 @@ namespace Vge.Renderer.World
         /// Получить объект рендера частички по индексу
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEntityRender GetParticleRender(int indexEntity)
+        public IEntityRender GetParticleRender(EnumParticleDraw enumParticle)
         {
-            if (indexEntity == 0) return _ddddd;
-            return _ddddd2;
+            if (enumParticle == EnumParticleDraw.Cube) return _particleRenderCube;
+            if (enumParticle == EnumParticleDraw.Sprite) return _particleRenderSprite;
+            return _particleRender;
         }
 
         public override void Dispose()
         {
             _hitbox.Dispose();
-            _ddddd.Dispose();
-            _ddddd2.Dispose();
-            int count = _list.Count;
+            _particleRender.Dispose();
+            _particleRenderSprite.Dispose();
+            _particleRenderCube.Dispose();
+            int count = _list3d.Count;
             for (int i = 0; i < count; i++)
             {
-                _list[i].Dispose();
+                _list3d[i].Dispose();
             }
-            _list.Clear();
+            _list3d.Clear();
+            count = _list2d.Count;
+            for (int i = 0; i < count; i++)
+            {
+                _list2d[i].Dispose();
+            }
+            _list2d.Clear();
         }
 
-        public override string ToString() => "Fx:" + _list.Count;
+        public override string ToString() => "Fx2d:" + _list2d.Count + " Fx3d:" + _list3d.Count;
     }
 }

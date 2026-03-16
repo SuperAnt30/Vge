@@ -1,5 +1,6 @@
-﻿using Vge.Renderer.World;
-using WinGL.Util;
+﻿using Vge.Entity.Particle;
+using Vge.Renderer.World;
+using WinGL.OpenGL;
 
 namespace Vge.Entity.Render
 {
@@ -12,9 +13,39 @@ namespace Vge.Entity.Render
         /// Объект рендера всех частичек
         /// </summary>
         protected readonly ParticlesRenderer _particles;
+        /// <summary>
+        /// Объект сузности частички
+        /// </summary>
+        private readonly EntityParticle _entityParticle;
+        /// <summary>
+        /// Шейдер для частичек
+        /// </summary>
+        private readonly ShaderProgram _shader;
 
-        public EntityRenderParticle(EntityBase entity, ParticlesRenderer particles)
-            : base(entity) => _particles = particles;
+        public EntityRenderParticle(EntityParticle entityParticle, ParticlesRenderer particles)
+            : base(entityParticle)
+        {
+            _entityParticle = entityParticle;
+            _particles = particles;
+            _shader = _particles.Render.ShsEntity.GetShaderParticle(entityParticle);
+        }
+
+        private void _Uniform(float timeIndex)
+        {
+            _shader.SetUniform3("pos",
+                _entityParticle.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX,
+                _entityParticle.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY,
+                _entityParticle.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ);
+            _shader.SetUniform4("color", 
+                _entityParticle.Color.X, _entityParticle.Color.Y,
+                _entityParticle.Color.Z, _entityParticle.Color.W);
+            _shader.SetUniform2("light", _lightBlock, _lightSky);
+            _shader.SetUniform1("scale", _entityParticle.Scale);
+            if (!_entityParticle.IsCube)
+            {
+                _shader.SetUniform1("param", _entityParticle.IsSprite ? 1 : 0);
+            }
+        }
 
         /// <summary>
         /// Метод для прорисовки
@@ -25,27 +56,14 @@ namespace Vge.Entity.Render
         {
             if (_entityRender == null)
             {
-                _entityRender = _particles.GetParticleRender(Entity.IndexEntity);
+                _entityRender = _particles.GetParticleRender(_entityParticle.TypeDraw);
             }
-
-            // Заносим в шейдор
-            _particles.Render.ShsEntity.UniformPosParticle(
-                _lightBlock, _lightSky,
-                Entity.IndexEntity == 0 ? 1 : 0,
-                .5f,
-                Entity.IndexEntity == 0 ? 0 : 1,
-                Entity.IndexEntity == 0 ? 0 : 1,
-                Entity.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX,
-                Entity.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY,
-                Entity.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ);
-
+            // шейдор
+            _Uniform(timeIndex);
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
         }
 
-        public override void Dispose()
-        {
-            _entityRender?.Dispose();
-        }
+        public override void Dispose() => _entityRender?.Dispose();
     }
 }

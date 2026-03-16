@@ -13,6 +13,10 @@
         /// Текстура основного виджета
         /// </summary>
         public uint Widgets;
+        /// <summary>
+        /// Текстура частичек
+        /// </summary>
+        public uint Particles;
     }
 
     /// <summary>
@@ -27,6 +31,10 @@
         /// <summary>
         /// Основной виджет
         /// </summary>
-        Widgets
+        Widgets,
+        /// <summary>
+        /// Текстура частичек
+        /// </summary>
+        Particles
     }
 }
