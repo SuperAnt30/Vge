@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
@@ -33,11 +32,11 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Объёмные частички
         /// </summary>
-        private readonly List<EntityParticle> _list3d = new List<EntityParticle>(_MaxAmount3d);
+        private readonly List<EntityFX> _list3d = new List<EntityFX>(_MaxAmount3d);
         /// <summary>
         /// Двухмерные частички
         /// </summary>
-        private readonly List<EntityParticle> _list2d = new List<EntityParticle>(_MaxAmount2d);
+        private readonly List<EntityFX> _list2d = new List<EntityFX>(_MaxAmount2d);
 
         /// <summary>
         /// Объект для отладки хитбокса сущности
@@ -45,9 +44,9 @@ namespace Vge.Renderer.World
         private readonly HitboxEntityRender _hitbox;
 
         /// <summary>
-        /// Рендер частички 2д просто цвет
+        /// Рендер частички 2д квадрат просто цвет
         /// </summary>
-        private readonly ParticleRender _particleRender;
+        private readonly ParticleRender _particleRenderQuad;
         /// <summary>
         /// Рендер частички 2д с текстурой
         /// </summary>
@@ -62,12 +61,9 @@ namespace Vge.Renderer.World
             gl = GetOpenGL();
             _hitbox = new HitboxEntityRender(gl);
 
-            _particleRender = new ParticleRender(gl, false);
-            _particleRender.Reload(_Rectangle(-.25f, .25f));
-            _particleRenderSprite = new ParticleRender(gl, true);
-            _particleRenderSprite.Reload(_Rectangle(-.25f, .25f));
-            _particleRenderCube = new ParticleRender(gl, false);
-            _particleRenderCube.Reload(_Cube(-.25f, 0, .25f, .5f));
+            _particleRenderQuad = new ParticleRender(gl, false, _Rectangle(-.125f, .125f));
+            _particleRenderSprite = new ParticleRender(gl, true, _Rectangle(-.125f, .125f));
+            _particleRenderCube = new ParticleRender(gl, false, _Cube(-.125f, 0, .125f, .25f));
         }
 
         #region Figure
@@ -133,13 +129,13 @@ namespace Vge.Renderer.World
         public void Spawn(ushort particleId, Vector3 pos, Vector3 motion, int parameter)
         {
             // TODO::2026-03-16 отсюда где-то надо вытаскивать регистрацию частички
-            EntityParticle entity; // = new EntityParticle();
+            EntityFX entity; // = new EntityParticle();
 
-            if (particleId == 1) entity = new EntityParticle(EnumParticleDraw.Cube);
-            else entity = new EntityParticle(EnumParticleDraw.Sprite);
+            if (particleId == 1) entity = new EntitySmokeFX(_game.World.Rnd);
+            else entity = new EntityPartFX(_game.World.Rnd, parameter);
 
             entity.Init(particleId, this, _game.World.Collision);
-            entity.InitRun(_game.World.Rnd, pos, motion);
+            entity.InitRun(pos, motion);
             if (entity.IsCube)
             {
                 while (_list3d.Count >= _MaxAmount3d) _list3d.RemoveAt(0);
@@ -188,7 +184,7 @@ namespace Vge.Renderer.World
             _Update(_list2d, deltaTime);
         }
 
-        private void _Update(List<EntityParticle> list, float deltaTime)
+        private void _Update(List<EntityFX> list, float deltaTime)
         {
             int count = list.Count - 1;
             for (int i = count; i >= 0; i--)
@@ -213,26 +209,16 @@ namespace Vge.Renderer.World
         {
             if (enumParticle == EnumParticleDraw.Cube) return _particleRenderCube;
             if (enumParticle == EnumParticleDraw.Sprite) return _particleRenderSprite;
-            return _particleRender;
+            return _particleRenderQuad;
         }
 
         public override void Dispose()
         {
             _hitbox.Dispose();
-            _particleRender.Dispose();
+            _particleRenderQuad.Dispose();
             _particleRenderSprite.Dispose();
             _particleRenderCube.Dispose();
-            int count = _list3d.Count;
-            for (int i = 0; i < count; i++)
-            {
-                _list3d[i].Dispose();
-            }
             _list3d.Clear();
-            count = _list2d.Count;
-            for (int i = 0; i < count; i++)
-            {
-                _list2d[i].Dispose();
-            }
             _list2d.Clear();
         }
 

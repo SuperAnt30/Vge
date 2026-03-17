@@ -296,7 +296,7 @@ namespace Vge.Renderer.Shaders
         /// Получить объект шейдеров к частичкам
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ShaderProgram GetShaderParticle(EntityParticle entity)
+        public ShaderProgram GetShaderParticle(EntityFX entity)
         {
             if (entity.IsCube) return _shaderParticle3d;
             return _shaderParticle2d;

@@ -16,13 +16,13 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Объект сузности частички
         /// </summary>
-        private readonly EntityParticle _entityParticle;
+        private readonly EntityFX _entityParticle;
         /// <summary>
         /// Шейдер для частичек
         /// </summary>
         private readonly ShaderProgram _shader;
 
-        public EntityRenderParticle(EntityParticle entityParticle, ParticlesRenderer particles)
+        public EntityRenderParticle(EntityFX entityParticle, ParticlesRenderer particles)
             : base(entityParticle)
         {
             _entityParticle = entityParticle;
@@ -42,6 +42,12 @@ namespace Vge.Entity.Render
             _shader.SetUniform2("light", _lightBlock, _lightSky);
             _shader.SetUniform1("scale", _entityParticle.Scale);
             _shader.SetUniform1("param", _entityParticle.Param);
+            if (_entityParticle.IsSprite)
+            {
+                _shader.SetUniform4("uv",
+                    _entityParticle.Uv.X, _entityParticle.Uv.Y,
+                    _entityParticle.Uv.Z, _entityParticle.Uv.W);
+            }
         }
 
         /// <summary>
@@ -60,7 +66,5 @@ namespace Vge.Entity.Render
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
         }
-
-        public override void Dispose() => _entityRender?.Dispose();
     }
 }

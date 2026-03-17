@@ -358,7 +358,7 @@ namespace Vge.Entity.Player
             BlockState blockState = _game.World.GetBlockState(_blockPos);
             BlockBase block = blockState.GetBlock();
 
-            if (block.Hardness > 0)
+            if (block.Hardness > 0 && !_player.CreativeMode)
             {
                 if (begin)
                 {
@@ -380,7 +380,7 @@ namespace Vge.Entity.Player
                 if (_destroy > _hardness)
                 {
                     // Разрушили
-                    _BlockDestroyed();
+                    _BlockDestroyed(block);
                 }
                 else
                 {
@@ -394,28 +394,34 @@ namespace Vge.Entity.Player
                     _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
                         _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
 
-                    _game.World.SpawnParticle(1, 5, _player.MovingObject.RayHit,
-                        new Vector3(.25f), 1, 0);
+                    if (block.IsParticle)
+                    {
+                        _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
+                            new Vector3(.25f), 1, block.IndexBlock);
+                    }
                 }
             }
             else
             {
                 // Разрушили
-                _BlockDestroyed();
+                _BlockDestroyed(block);
             }
         }
 
         /// <summary>
         /// Разрушили выбранный блок
         /// </summary>
-        private void _BlockDestroyed()
+        private void _BlockDestroyed(BlockBase block)
         {
             _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos));
             _game.World.SetBlockToAir(_blockPos, 46);
             _isBlockDestroy = false;
 
-            _game.World.SpawnParticle(0, 25, _blockPos.ToVector3Center(),
-                        new Vector3(1), 1, 0);
+            if (block.IsParticle)
+            {
+                _game.World.SpawnParticle(0, 25, _blockPos.ToVector3Center(),
+                    new Vector3(1), 1, block.IndexBlock);
+            }
         }
     }
 }

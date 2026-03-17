@@ -12,7 +12,7 @@ namespace Vge.Entity.Particle
     /// <summary>
     /// Абстрактный объект сущность частицы
     /// </summary>
-    public class EntityParticle : EntityBase
+    public abstract class EntityFX : EntityBase
     {
         /// <summary>
         /// Тип прорисовки частички
@@ -36,9 +36,9 @@ namespace Vge.Entity.Particle
         /// </summary>
         public float Scale { get; protected set; } = 1f;
         /// <summary>
-        /// Смещение спрайта
+        /// Расположение спрайта текстуры x-u1 y-v1 z-u2 w-v2
         /// </summary>
-        public Vector2 OffsetUv { get; protected set; }
+        public Vector4 Uv { get; protected set; }
         /// <summary>
         /// Параметр для шейдора, bit флагов
         /// 1 bit - текстура для 2д
@@ -47,20 +47,31 @@ namespace Vge.Entity.Particle
         public int Param { get; protected set; }
 
         /// <summary>
-        /// Сколько тиков жизни
+        /// Текущее состояние, сколько прожила частица в тактах
         /// </summary>
         protected int _age = 0;
         /// <summary>
+        /// Максимальная жизнь частицы в тактах
+        /// </summary>
+        protected int _maxAge;
+        /// <summary>
+        /// Гравитация частицы
+        /// </summary>
+        protected float _gravity;
+        /// <summary>
         /// Объект генератора случайх чисел
         /// </summary>
-        protected Rand _rand;
+        protected readonly Rand _rand;
 
-        public EntityParticle(EnumParticleDraw typeDraw)
+        public EntityFX(EnumParticleDraw typeDraw, Rand rand)
         {
             TypeDraw = typeDraw;
             IsCube = typeDraw == EnumParticleDraw.Cube;
             IsSprite = typeDraw == EnumParticleDraw.Sprite;
             Param = IsSprite ? 1 : 0;
+            _rand = rand;
+            Scale = (100 + _rand.Next(100)) / 100f;
+            _maxAge = 4 + _rand.Next(36);
         }
 
         /// <summary>
@@ -72,24 +83,23 @@ namespace Vge.Entity.Particle
             Size = new SizeEntityPoint(this, 1);
             Physics = new PhysicsBallistics(collision, this);
             NoClip = true;
-            Physics.SetGravity(.25f);
+            Physics.SetGravity(_gravity);
             Render = new EntityRenderParticle(this, particles);
         }
 
         /// <summary>
         /// Запуск сущности после всех инициализаций, как правило только на сервере
         /// </summary>
-        public virtual void InitRun(Rand rand, Vector3 pos, Vector3 motion)
+        public virtual void InitRun(Vector3 pos, Vector3 motion)
         {
-            _rand = rand;
             PosPrevX = PosX = pos.X;
             PosPrevY = PosY = pos.Y;
             PosPrevZ = PosZ = pos.Z;
 
-            motion.X += (rand.Next(200) - 100) * .004f;
-            motion.Y += (rand.Next(200) - 100) * .004f;
-            motion.Z += (rand.Next(200) - 100) * .004f;
-            float r = (rand.NextFloat() + rand.NextFloat() + 1f) * .036f;
+            motion.X += (_rand.Next(200) - 100) * .004f;
+            motion.Y += (_rand.Next(200) - 100) * .004f;
+            motion.Z += (_rand.Next(200) - 100) * .004f;
+            float r = (_rand.NextFloat() + _rand.NextFloat() + 1f) * .036f;
             motion = motion / Glm.Distance(motion) * r;
             motion.Y += .1f;
 
@@ -99,10 +109,8 @@ namespace Vge.Entity.Particle
 
             if (IsCube)
             {
-                Scale = .25f + rand.NextFloat() * .25f;
+                Scale = .25f + _rand.NextFloat() * .25f;
             }
-
-         
         }
 
         /// <summary>
@@ -133,36 +141,40 @@ namespace Vge.Entity.Particle
         /// </summary>
         public override void Update()
         {
-            if (_age > 400)
+            if (_age++ > _maxAge)
             {
                 SetDead();
-                return;
             }
 
-            //if (!IsVolumetricForm())
-            //{
-            //    Color = new Vector4(_rand.NextFloat(), _rand.NextFloat(), _rand.NextFloat(), 1);
-            //}
+            else
+            {
 
-            //Scale *= .95f;
-          //  SetLight(Param >> 1 == 0);
 
-            _age++;
-            if (_age == 10)
-            {
-                NoClip = false;
-            }
-            if (IsPositionChange())
-            {
-                PosPrevX = PosX;
-                PosPrevY = PosY;
-                PosPrevZ = PosZ;
-            }
-            // Расчитать перемещение в объекте физика
-            Physics.LivingUpdate();
-            if (Physics.CaughtInBlock > 0 || Physics.CaughtInEntity > 2)
-            {
-                SetDead();
+
+                //if (!IsVolumetricForm())
+                //{
+                //    Color = new Vector4(_rand.NextFloat(), _rand.NextFloat(), _rand.NextFloat(), 1);
+                //}
+
+                //Scale *= .95f;
+                //  SetLight(Param >> 1 == 0);
+
+                if (_age == 3)
+                {
+                    NoClip = false;
+                }
+                if (IsPositionChange())
+                {
+                    PosPrevX = PosX;
+                    PosPrevY = PosY;
+                    PosPrevZ = PosZ;
+                }
+                // Расчитать перемещение в объекте физика
+                Physics.LivingUpdate();
+                if (Physics.CaughtInBlock > 0 || Physics.CaughtInEntity > 2)
+                {
+                    SetDead();
+                }
             }
         }
 
@@ -171,8 +183,6 @@ namespace Vge.Entity.Particle
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         public override void UpdateClient(WorldClient world, float deltaTime)
-        {
-            Render.UpdateClient(world, deltaTime);
-        }
+            => Render.UpdateClient(world, deltaTime);
     }
 }

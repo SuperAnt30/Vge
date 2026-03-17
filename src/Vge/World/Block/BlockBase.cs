@@ -70,13 +70,13 @@ namespace Vge.World.Block
         /// </summary>
         public bool IsNotTransparent { get; private set; }
         /// <summary>
-        /// Индекс картинки частички
-        /// </summary>
-        public int Particle { get; protected set; } = 0;
-        /// <summary>
         /// Имеется ли у блока частичка
         /// </summary>
-        public bool IsParticle { get; protected set; } = true;
+        public bool IsParticle { get; protected set; } = false;
+        /// <summary>
+        /// Массив различных цветов частичек блока
+        /// </summary>
+        public Vector3[] ParticleColors { get; protected set; }
         /// <summary>
         /// Индекс сокрощённого списка блоков жидкостей, нужен для оптимизации
         /// </summary>
@@ -308,6 +308,25 @@ namespace Vge.World.Block
                     {
                         float[] ar = json.GetArray().ToArrayFloat();
                         Color = new Vector3(ar[0], ar[1], ar[2]);
+                    }
+                    if (json.IsKey(Ctb.ParticleColors))
+                    {
+                        string[] ar = json.GetArray().ToArrayString();
+                        IsParticle = true;
+                        ParticleColors = new Vector3[ar.Length];
+                        string s;
+                        for (int i = 0; i < ar.Length; i++)
+                        {
+                            s = ar[i];
+                            if (s.Length != 6)
+                            {
+                                throw new Exception(Sr.GetString(Sr.ErrorReadJsonBlockStat, Alias));
+                            }
+                            ParticleColors[i] = new Vector3(
+                                Convert.ToInt32(s.Substring(0, 2), 16) / 255f,
+                                Convert.ToInt32(s.Substring(2, 2), 16) / 255f,
+                                Convert.ToInt32(s.Substring(4, 2), 16) / 255f);
+                        }
                     }
                 }
             }

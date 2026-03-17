@@ -15,20 +15,17 @@ namespace Vge.Renderer.World.Entity
         /// </summary>
         private readonly Mesh _mesh;
 
-        public ParticleRender(GL gl, bool texture)
+        public ParticleRender(GL gl, bool texture, float[] buffer)
         {
             if (texture)
             {
-                _mesh = new MeshParticleTexture(gl);
+                _mesh = new MeshParticleTexture(gl, buffer);
             }
             else
             {
-                _mesh = new MeshParticle(gl);
+                _mesh = new MeshParticle(gl, buffer);
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Reload(float[] buffer) => _mesh.Reload(buffer);
 
         /// <summary>
         /// Прорисовать сетку

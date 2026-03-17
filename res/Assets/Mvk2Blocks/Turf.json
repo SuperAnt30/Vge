@@ -1,4 +1,5 @@
 {
     Hardness: 12,
+    ParticleColors: [ "3A2C23", "4B372B", "15100D", "424223" ],
     Variants: [ { Shape: "Turf" } ]
 }

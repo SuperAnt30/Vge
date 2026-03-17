@@ -61,6 +61,10 @@
         /// Сколько ударов требуется, чтобы сломать блок в ударах. (int)
         /// </summary>
         public const string Hardness = "Hardness";
+        /// <summary>
+        /// Массив различных цветов частичек блока, если нет параметра не будет и частичек ([int]) int format hex RGB (FFFFFF)
+        /// </summary>
+        public const string ParticleColors = "ParticleColors";
         
 
         #endregion

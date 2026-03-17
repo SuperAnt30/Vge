@@ -6,11 +6,11 @@
     public enum EnumParticleDraw
     {
         /// <summary>
-        /// Частичка 2д одного цвета
+        /// Частичка 2д квадрат одного цвета
         /// </summary>
-        Color,
+        Quad,
         /// <summary>
-        /// Частичка 2д с текстурой
+        /// Частичка 2д квадрат с текстурой
         /// </summary>
         Sprite,
         /// <summary>
