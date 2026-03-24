@@ -394,11 +394,12 @@ namespace Vge.Entity.Player
                     _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
                         _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
 
-                    if (block.IsParticle)
-                    {
-                        _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
-                            new Vector3(.25f), 1, block.IndexBlock);
-                    }
+                    _game.World.ParticleDiggingBlock(block, _player.MovingObject.RayHit, 5, true);
+                    //if (block.IsParticle)
+                    //{
+                    //    _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
+                    //        new Vector3(.25f), 1, block.IndexBlock);
+                    //}
                 }
             }
             else
@@ -417,11 +418,11 @@ namespace Vge.Entity.Player
             _game.World.SetBlockToAir(_blockPos, 46);
             _isBlockDestroy = false;
 
-            if (block.IsParticle)
-            {
-                _game.World.SpawnParticle(0, 25, _blockPos.ToVector3Center(),
-                    new Vector3(1), 1, block.IndexBlock);
-            }
+            //if (block.IsParticle)
+            //{
+            //    _game.World.SpawnParticle(0, 20, _blockPos.ToVector3Center(),
+            //        new Vector3(1), 1, block.IndexBlock);
+            //}
         }
     }
 }

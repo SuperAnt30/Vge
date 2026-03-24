@@ -78,6 +78,10 @@ namespace Vge.World.Block
         /// </summary>
         public Vector3[] ParticleColors { get; protected set; }
         /// <summary>
+        /// Количесто частичек при разрушении блока
+        /// </summary>
+        public byte ParticleCount { get; protected set; } = 20;
+        /// <summary>
         /// Индекс сокрощённого списка блоков жидкостей, нужен для оптимизации
         /// </summary>
         public byte IndexLiquid { get; protected set; }
@@ -304,6 +308,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
                     if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.IsReplaceable)) IsReplaceable = json.GetBool();
+                    if (json.IsKey(Ctb.ParticleCount)) ParticleCount = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Color))
                     {
                         float[] ar = json.GetArray().ToArrayFloat();

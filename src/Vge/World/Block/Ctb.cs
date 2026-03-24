@@ -65,6 +65,10 @@
         /// Массив различных цветов частичек блока, если нет параметра не будет и частичек ([int]) int format hex RGB (FFFFFF)
         /// </summary>
         public const string ParticleColors = "ParticleColors";
+        /// <summary>
+        /// Сколько требуется частичек при разрушении блока. (int)
+        /// </summary>
+        public const string ParticleCount = "ParticleCount";
         
 
         #endregion

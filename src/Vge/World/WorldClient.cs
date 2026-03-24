@@ -202,7 +202,6 @@ namespace Vge.World
         /// <summary>
         /// Заспавнить частицы
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SpawnParticle(ushort particleId,
             int count, Vector3 pos, Vector3 offset, float motion, int parameter)
         {

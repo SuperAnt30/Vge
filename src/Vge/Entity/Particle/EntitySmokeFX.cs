@@ -11,7 +11,7 @@ namespace Vge.Entity.Particle
         public EntitySmokeFX(Rand rand) : base(EnumParticleDraw.Sprite, rand)
         {
             _gravity = -.004f;
-            _maxAge = 120 + _rand.Next(90);
+            _maxAge = 200 + _rand.Next(90);
         }
 
         /// <summary>
@@ -42,10 +42,18 @@ namespace Vge.Entity.Particle
             Physics.MotionY = motion.Y;
             Physics.MotionZ = motion.Z;
 
-            Scale = .25f + _rand.NextFloat() * .5f;
+            //Scale = .5f + _rand.NextFloat() * 1.5f;
+            Scale = 1f + _rand.NextFloat() * 2f;
             float c = .5f + _rand.NextFloat() * .5f;
             Color = new Vector4(c, c, c, 1);
-            Uv = new Vector4(0.4375f, 0, .5f, 0.0625f);
+            //Uv = new Vector4(0.4375f, 0, .5f, 0.0625f);
+            Uv = new Vector4(0, 0, .0625f, .0625f);
+        }
+
+        protected override void _Update()
+        {
+            float v = (7 - _age * 8 / _maxAge) * .0625f;
+            Uv = new Vector4(v, 0, v + .0625f, .0625f);
         }
     }
 }

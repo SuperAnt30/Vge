@@ -5,6 +5,8 @@
     LightOpacity: 0,
     Translucent: true,
     IsReplaceable: true,
+    ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],
+    ParticleCount: 8,
     Variants: [
         { Shape: "Grass" },
         { Shape: "Grass", Offset: [ 0, 0, 4 ] },

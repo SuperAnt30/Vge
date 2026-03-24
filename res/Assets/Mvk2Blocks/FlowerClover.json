@@ -5,6 +5,8 @@
     LightOpacity: 0,
     Translucent: true,
     IsReplaceable: true,
+    ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "c9c9c9", "ffdd0f", "b5b5b5" ],
+    ParticleCount: 8,
     Variants: [
         { Shape: "FlowerClover" },
         { Shape: "FlowerClover", Offset: [ 0, 0, 4 ] },

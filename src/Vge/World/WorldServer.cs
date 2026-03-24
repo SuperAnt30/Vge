@@ -629,6 +629,18 @@ namespace Vge.World
 
         #endregion
 
+        #region Entity Particle
+
+        /// <summary>
+        /// Заспавнить частицы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SpawnParticle(ushort particleId, int count, Vector3 pos, Vector3 offset, 
+            float motion, int parameter) => Tracker.SendToAllEntityDistance(pos, 32f, 
+                new PacketS2AParticles(particleId, count, pos, offset, motion, parameter));
+
+        #endregion
+
         #region WriteRead
 
         /// <summary>

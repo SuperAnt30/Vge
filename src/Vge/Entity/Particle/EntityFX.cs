@@ -175,8 +175,15 @@ namespace Vge.Entity.Particle
                 {
                     SetDead();
                 }
+                else
+                {
+                    _Update();
+                }
             }
         }
+
+        protected virtual void _Update() { }
+             
 
         /// <summary>
         /// Игровой такт на клиенте

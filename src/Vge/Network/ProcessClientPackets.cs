@@ -426,8 +426,8 @@ namespace Vge.Network
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle2AParticles(PacketS2AParticles packet)
-        {//   => Game.SpawnParticle(packet);
-        }
+            => Game.World.SpawnParticle(packet.PacketId, packet.Count, packet.GetPosition(), 
+                packet.GetOffset(), packet.Motion, packet.Parameter);
 
         /// <summary>
         /// Пакет управления передвежением и изменением слота

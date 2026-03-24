@@ -235,8 +235,8 @@ namespace Vge.World
 
             if (!IsRemote)
             {
-                //    // Частички блока, только на сервере чтоб всем разослать
-                //    if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos, 50);
+                // Частички блока, только на сервере чтоб всем разослать
+                if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos.ToVector3Center());
                 // Уведомление соседей только на сервере!
                 if ((flag & 2) != 0) _NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
             }
@@ -441,6 +441,22 @@ namespace Vge.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SpawnParticle(ushort particleId, 
             int count, Vector3 pos, Vector3 offset, float motion, int parameter) { }
+
+        /// <summary>
+        /// Частички блока
+        /// </summary>
+        /// <param name="pos">Позиция где рассыпаются частички</param>
+        /// <param name="count">Количество частичек</param>
+        /// <param name="closely">Кучно, частички стартуют</param>
+        public void ParticleDiggingBlock(BlockBase block, Vector3 pos, int count = -1, bool closely = false)
+        {
+            if (block != null && block.IsParticle)
+            {
+                if (count == -1) count = block.ParticleCount;
+                SpawnParticle(0, count, pos, closely ? new Vector3(.5f) : new Vector3(1f, .75f, 1f), 
+                    1, block.IndexBlock);
+            }
+        }
 
         #endregion
 
