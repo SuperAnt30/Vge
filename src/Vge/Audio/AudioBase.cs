@@ -25,11 +25,14 @@ namespace Vge.Audio
         /// Инициализация звукового драйвера
         /// </summary>
         /// <param name="count">указываем количество звуков, ключи начинаются с 0</param>
-        public void Initialize(int count)
+        public void Initialize(int count, int monoSourcesLimit, int stereoSourcesLimit)
         {
             // Инициализация звука
             IntPtr pDevice = Al.alcOpenDevice(null);
-            IntPtr pContext = Al.alcCreateContext(pDevice, null);
+            //IntPtr pContext = Al.alcCreateContext(pDevice, null);
+            IntPtr pContext = Al.alcCreateContext(pDevice, new int[]
+                { Al.ALC_MONO_SOURCES, monoSourcesLimit, 
+                    Al.ALC_STEREO_SOURCES, stereoSourcesLimit });
             Al.alcMakeContextCurrent(pContext);
 
             // Инициализация источников звука

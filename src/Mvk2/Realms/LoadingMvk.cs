@@ -78,7 +78,7 @@ namespace Mvk2.Realms
         /// </summary>
         private void _StepsSample()
         {
-            _window.Audio.Initialize(_countSample);
+            _window.Audio.Initialize(_countSample, 512, 8);
             _window.Audio.Step += (sender, e) => OnStep();
             _window.Audio.InitializeSample();
         }

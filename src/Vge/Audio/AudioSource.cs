@@ -99,5 +99,7 @@
             Al.alBufferData(bufferId, audio.AlFormat, audio.Buffer, audio.Size, audio.SamplesPerSecond);
             Al.alSourcei(sourceId, Al.AL_BUFFER, (int)bufferId);
         }
+
+        public override string ToString() => sourceId + " " + bufferId;
     }
 }
