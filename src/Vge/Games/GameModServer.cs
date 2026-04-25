@@ -1,5 +1,6 @@
 ﻿using Vge.Command;
 using Vge.Entity;
+using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Network;
@@ -42,6 +43,7 @@ namespace Vge.Games
         /// </summary>
         public virtual void CorrectObjects()
         {
+            EntitiesFXReg.Correct(Server.Settings.TableEntitiesFX);
             BlocksReg.Correct(Server.Settings.TableBlocks);
             ItemsReg.Correct(Server.Settings.TableItems);
             EntitiesReg.Correct(Server.Settings.TableEntities);

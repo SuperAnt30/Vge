@@ -1,4 +1,6 @@
 {
+    NeedsRandomTick: true,
+    RequiredRandomTick: true,
     АmbientOcclusion: false,
     LightValue: 15,
     Variants: [

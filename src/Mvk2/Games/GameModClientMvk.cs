@@ -1,6 +1,7 @@
 ﻿using Mvk2.Entity;
 using Mvk2.Entity.List;
 using Mvk2.Gui;
+using Mvk2.Particle;
 using Mvk2.World;
 using Mvk2.World.Biome;
 using Mvk2.World.BlockEntity;
@@ -46,6 +47,7 @@ namespace Mvk2.Games
             // Присвоение корректных ID
             EntitiesRegMvk.InitId();
             BlocksEntityRegMvk.InitId();
+            EntitiesFXRegMvk.InitId();
         }
 
         /// <summary>

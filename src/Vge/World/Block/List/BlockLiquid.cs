@@ -136,7 +136,7 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Случайный эффект частички и/или звука на блоке только для клиента
         /// </summary>
-        public override void RandomDisplayTick(WorldBase world, BlockPos blockPos, BlockState blockState, Rand random) { }
+        public override void RandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState) { }
 
         /// <summary>
         /// Обновить блок в такте

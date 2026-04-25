@@ -1,4 +1,5 @@
-﻿using Vge.Games;
+﻿using Vge.Entity.Particle;
+using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Util;
@@ -397,8 +398,8 @@ namespace Vge.Entity.Player
                     _game.World.ParticleDiggingBlock(block, _player.MovingObject.RayHit, 5, true);
                     //if (block.IsParticle)
                     //{
-                    //    _game.World.SpawnParticle(0, 5, _player.MovingObject.RayHit,
-                    //        new Vector3(.25f), 1, block.IndexBlock);
+                        //_game.World.SpawnParticle((ushort)EnumParticles.Smoke, 5, _player.MovingObject.RayHit,
+                        //    new Vector3(.25f), 1, block.IndexBlock);
                     //}
                 }
             }

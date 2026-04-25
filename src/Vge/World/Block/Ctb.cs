@@ -12,6 +12,10 @@
         /// </summary>
         public const string NeedsRandomTick = "NeedsRandomTick";
         /// <summary>
+        /// Отмечает, относится ли этот блок к типу, требующему случайный тик частичек, не зависимо от дистанции игрока. (bool)
+        /// </summary>
+        public const string RequiredRandomTick = "RequiredRandomTick";
+        /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0. (0-15)
         /// </summary>
         public const string LightOpacity = "LightOpacity";

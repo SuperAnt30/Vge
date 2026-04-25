@@ -1,4 +1,5 @@
 ﻿using Vge.Entity;
+using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Gui.Huds;
 using Vge.Gui.Screens;
@@ -53,6 +54,7 @@ namespace Vge.Games
         public virtual void CorrectObjects(PacketS02LoadingGame packet)
         {
             // В начальном запуске сразу передаём массивы таблиц 
+            EntitiesFXReg.Correct(new CorrectTable(packet.EntitiesFX));
             BlocksReg.Correct(new CorrectTable(packet.Blocks));
             ItemsReg.Correct(new CorrectTable(packet.Items));
             EntitiesReg.Correct(new CorrectTable(packet.Entities));

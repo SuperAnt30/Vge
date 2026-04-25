@@ -5,6 +5,7 @@ using Vge.Games;
 using Vge.Network.Packets.Server;
 using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -32,6 +33,13 @@ namespace Vge.World
         /// Флаг на изминение количество чанков
         /// </summary>
         private bool _flagDebugChunkMappingChanged;
+
+        /// <summary>
+        /// Содержит текущее начальное число линейного конгруэнтного генератора для эффектов блоков. 
+        /// Используется со значением A, равным 3, и значением C, равным 0x3c6ef35f, 
+        /// создавая очень плоский ряд значений, плохо подходящих для выбора случайных блоков в поле 16x128x16.
+        /// </summary>
+        private int _updateLCG;
 
         public WorldClient(GameBase game) : base(512)
         {
@@ -79,6 +87,9 @@ namespace Vge.World
             Filer.StartSection("Entities");
             _UpdateEntities();
             Filer.EndSection();
+
+            _DoVoidFogParticles();
+
 
             if (Ce.IsDebugDrawChunks && _flagDebugChunkMappingChanged)
             {
@@ -230,6 +241,67 @@ namespace Vge.World
                     particles.Spawn(particleId, pos + of, m, parameter);
                 }
             }
+        }
+
+        
+
+        /// <summary>
+        /// Обработка ближайших блоков для эффектов звуков и анимации, только у клиента
+        /// </summary>
+        public void _DoVoidFogParticles()
+        {
+            int y = (int)Game.Player.PosY;
+            long timeBegin = Game.ElapsedTicks();
+
+            BlockPos blockPos = new BlockPos();
+            BlockState blockState;
+            ChunkRender chunkRender;
+            int k, x1, y1, z1, i, j, count2;
+
+            int count0 = Game.Player.OverviewCircles.Count;
+            int count = count0 > 45 ? 45 : count0;
+            count2 = 20;
+            for (i = 0; i < count; i++)
+            {
+                if (i == 9) count2 = 4;
+                else if (i == 25) count2 = 1;
+
+                for (j = 0; j < count2; j++)
+                {
+                    chunkRender = Game.Player.OverviewCircles[i];
+                    if (chunkRender != null && chunkRender.IsChunkPresent)
+                    {
+                        _updateLCG = _updateLCG * 3 + 1013904223;
+                        k = _updateLCG >> 2;
+                        y1 = k >> 16 & 15;
+                        blockPos.Y = y + y1 - 8;
+
+                        if (blockPos.Y >= 0)
+                        {
+                            x1 = k & 15;
+                            z1 = k >> 8 & 15;
+
+                            blockPos.X = chunkRender.BlockX + x1;
+                            blockPos.Z = chunkRender.BlockZ + z1;
+                            blockState = chunkRender.GetBlockState(x1, blockPos.Y, z1);
+                            blockState.GetBlock().RandomDisplayTick(this, blockPos, blockState);
+                        }
+                    }
+                }
+            }
+            // Обязательные, до 12 чанков
+            count = count0 > 481 ? 481 : count0;
+            for (i = 0; i < count; i++)
+            {
+                chunkRender = Game.Player.OverviewCircles[i];
+                if (chunkRender != null && chunkRender.IsChunkPresent)
+                {
+                    chunkRender.RequiredRandomDisplayTick();
+                }    
+            }
+            float time = (Game.ElapsedTicks() - timeBegin) / (float)Ticker.TimerFrequency;
+
+            Debug.ParticlesTime = (Debug.ParticlesTime * 15f + time) / 16f;
         }
 
         #endregion

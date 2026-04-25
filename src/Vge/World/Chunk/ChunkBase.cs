@@ -420,6 +420,8 @@ namespace Vge.World.Chunk
                 storage.Destroy.Remove(index);
                 // Отмена тик блока
                 _RemoveBlockTick(bx, by, bz, false);
+                // Для клиента дальние частички
+                _SetRequiredRandomTick(bx, by, bz, blockOld, block);
 
                 bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
                 if (differenceOpacity || block.LightValue != blockOld.LightValue)
@@ -492,8 +494,21 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Изменить состояние обязательного случайного тика
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _SetRequiredRandomTick(int x, int y, int z, BlockBase blockOld, BlockBase blockNew) { }
+
+        /// <summary>
+        /// Обновить в секции блоки состояния обязательного случайного тика
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _UpSectionRequiredRandomTick(int sy) { }
+
+        /// <summary>
         /// Отменить мгновенный тик блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _RemoveBlockTick(int x, int y, int z, bool liquid) { }
 
         #endregion
@@ -730,8 +745,13 @@ namespace Vge.World.Chunk
                                 storage.Destroy.Add(key, (byte)_bigStreamOut.ReadByte());
                             }
                         }
+                        _UpSectionRequiredRandomTick(sy);
                     }
                 }
+                // Надо подумать оптимизацию, но по факту пробегаю весь чанк
+
+
+
                 // биом
                 if (biom)
                 {

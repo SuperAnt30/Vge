@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Entity.Sizes;
 using Vge.Util;
@@ -453,8 +454,8 @@ namespace Vge.World
             if (block != null && block.IsParticle)
             {
                 if (count == -1) count = block.ParticleCount;
-                SpawnParticle(0, count, pos, closely ? new Vector3(.5f) : new Vector3(1f, .75f, 1f), 
-                    1, block.IndexBlock);
+                SpawnParticle(EntitiesFXReg.PartId, count, pos, 
+                    closely ? new Vector3(.5f) : new Vector3(1f, .75f, 1f), 1, block.IndexBlock);
             }
         }
 

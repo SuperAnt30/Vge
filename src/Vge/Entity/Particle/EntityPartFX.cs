@@ -1,5 +1,4 @@
-﻿using Vge.Util;
-using Vge.World.Block;
+﻿using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Entity.Particle
@@ -9,12 +8,18 @@ namespace Vge.Entity.Particle
     /// </summary>
     public class EntityPartFX : EntityFX
     {
-        private readonly int _blockId;
+        private int _blockId;
 
-        public EntityPartFX(Rand rand, int blockId) : base(EnumParticleDraw.Cube, rand)
+        public EntityPartFX() : base(EnumParticleDraw.Cube)
+            => _gravity = .25f;
+
+        /// <summary>
+        /// Инизциализация размера жизни и прочего, индивидуально для типа сущности частички
+        /// </summary>
+        protected override void _Init(int parameter)
         {
-            _gravity = .25f;
-            _blockId = blockId;
+            base._Init(parameter);
+            _blockId = parameter;
         }
 
         /// <summary>

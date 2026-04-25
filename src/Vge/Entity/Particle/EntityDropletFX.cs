@@ -3,11 +3,11 @@
 namespace Vge.Entity.Particle
 {
     /// <summary>
-    /// Сущность частички, дым
+    /// Сущность частички, капельки
     /// </summary>
-    public class EntitySmokeFX : EntityFX
+    public class EntityDropletFX : EntityFX
     {
-        public EntitySmokeFX() : base(EnumParticleDraw.Sprite)
+        public EntityDropletFX() : base(EnumParticleDraw.Quad)
             => _gravity = -.004f;
 
         /// <summary>
@@ -47,21 +47,9 @@ namespace Vge.Entity.Particle
             Physics.MotionY = motion.Y;
             Physics.MotionZ = motion.Z;
 
-            //Scale = .25f + _rand.NextFloat() * .5f; // Для маленький квадов без текстуры
-            Scale = 1f + _rand.NextFloat() * 2f; // Для дыма спрайта
+            Scale = .25f + _rand.NextFloat() * .5f; // Для маленький квадов без текстуры
             float c = .5f + _rand.NextFloat() * .5f;
             Color = new Vector4(c, c, c, 1);
-            //Uv = new Vector4(0.4375f, 0, .5f, 0.0625f);
-            Uv = new Vector4(0, 0, .0625f, .0625f);
-        }
-
-        protected override void _Update()
-        {
-            //int i = 8 * _age  / _maxAge;
-            //float v = (8 - _age * 8 / _maxAge) * .0625f;
-            float v = (_age * 12 / _maxAge) * .0625f;
-            //Console.WriteLine(i + " " + v);
-            Uv = new Vector4(v, 0, v + .0625f, .0625f);
         }
     }
 }

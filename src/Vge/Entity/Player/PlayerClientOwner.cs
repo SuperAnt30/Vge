@@ -35,6 +35,10 @@ namespace Vge.Entity.Player
         /// Массив всех видимых чанков 
         /// </summary>
         public readonly ListFast<ChunkRender> FrustumCulling = new ListFast<ChunkRender>();
+        /// <summary>
+        /// Массив всех чанков в дистанции
+        /// </summary>
+        public readonly ListFast<ChunkRender> OverviewCircles = new ListFast<ChunkRender>();
 
         /// <summary>
         /// Смещения вращение по оси Y в радианах, мышью до такта
@@ -447,6 +451,7 @@ namespace Vge.Entity.Player
             Vector3i vec;
             ListFast<Vector2i> debug = Ce.IsDebugDrawChunks ? new ListFast<Vector2i>() : null;
             FrustumCulling.Clear();
+            OverviewCircles.Clear();
             int countOC = Ce.OverviewCircles.Length;
             _countUnusedFrustumCulling = 0;
             _countTickLastFrustumCulling = 0;
@@ -455,6 +460,7 @@ namespace Vge.Entity.Player
                 vec = Ce.OverviewCircles[i];
                 xc = vec.X;
                 zc = vec.Y;
+               
                 xb = xc << 4;
                 zb = zc << 4;
 
@@ -472,6 +478,7 @@ namespace Vge.Entity.Player
                     {
                         chunk.Distance = vec.Z;
                         FrustumCulling.Add(chunk);
+                        OverviewCircles.Add(chunk);
                     }
                     else
                     {
@@ -480,6 +487,15 @@ namespace Vge.Entity.Player
                     if (Ce.IsDebugDrawChunks)
                     {
                         debug.Add(new Vector2i(xc + chunkPosX, zc + chunkPosZ));
+                    }
+                }
+                else
+                {
+                    chunk = _game.World.ChunkPrClient.GetChunkRender(xc + chunkPosX, zc + chunkPosZ);
+                    if (chunk != null)
+                    {
+                        chunk.Distance = vec.Z;
+                        OverviewCircles.Add(chunk);
                     }
                 }
             }

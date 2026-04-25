@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -64,6 +65,15 @@ namespace Vge.Renderer.World
         /// Двойной флаг нужен, для того, что рендер идёт в другом потоке! (первый флаг в _sectionsBuffer.IsModifiedRender)
         /// </summary>
         private readonly bool[] _isRenderingSection;
+        /// <summary>
+        /// Список всех блоков которым нужен принудительные частички в любых местах
+        /// Координаты в битах 0000 yyyy zzzz xxxx
+        /// </summary>
+        private readonly ListMessy<ushort>[] _listRequiredParticles;
+        /// <summary>
+        /// Количество блоков для принудительных частичек, во всём чанке
+        /// </summary>
+        private int _countRequiredParticles;
 
         public ChunkRender(WorldClient worldClient, int chunkPosX, int chunkPosY) 
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
@@ -72,6 +82,7 @@ namespace Vge.Renderer.World
 
             _worldClient = worldClient;
             _listAlphaBlock = new List<ushort>[NumberSections];
+            _listRequiredParticles = new ListMessy<ushort>[NumberSections];
             _sectionsBuffer = new ChunkSectionBuffer[NumberSections];
             _isRenderingSection = new bool[NumberSections];
             _sectionsCountAlphaSort = new ushort[NumberSections];
@@ -80,6 +91,7 @@ namespace Vge.Renderer.World
             {
                 _sectionsBuffer[index] = new ChunkSectionBuffer();
                 _listAlphaBlock[index] = new List<ushort>();
+                _listRequiredParticles[index] = new ListMessy<ushort>();
             }
         }
 
@@ -136,6 +148,8 @@ namespace Vge.Renderer.World
         }
 
         #endregion
+
+        #region Render
 
         /// <summary>
         /// Прорисовка сплошных блоков чанка
@@ -493,6 +507,8 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindBufferAlpha() => _meshAlpha.BindBuffer();
 
+        #endregion
+
         #region BufferChunks
 
         /// <summary>
@@ -573,6 +589,89 @@ namespace Vge.Renderer.World
             if (typeColor == 3) return _worldClient.Game.ModClient.Colors.Water(Biome[bz << 4 | bx]);
 
             return BlockRenderFull.ColorWhite;
+        }
+
+        /// <summary>
+        /// Обязательные блоки случайных частичек в тиках
+        /// </summary>
+        public void RequiredRandomDisplayTick()
+        {
+            if (_countRequiredParticles > 0)
+            {
+                int cbY, i, x, y, z, key, count;
+                BlockPos blockPos = new BlockPos();
+                BlockState blockState;
+
+                for (cbY = 0; cbY < NumberSections; cbY++)
+                {
+                    count = _listRequiredParticles[cbY].Count;
+                    for (i = 0; i < count; i++)
+                    {
+                        if (_worldClient.Rnd.Next(10) == 0)
+                        {
+                            key = _listRequiredParticles[cbY][i];
+                            x = key & 15;
+                            z = (key >> 4) & 15;
+                            y = key >> 8;
+
+                            blockPos.X = BlockX + x;
+                            blockPos.Y = cbY << 4 | y;
+                            blockPos.Z = BlockZ + z;
+                            blockState = GetBlockState(x, blockPos.Y, z);
+                            blockState.GetBlock().RequiredRandomDisplayTick(_worldClient, blockPos, blockState);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Изменить состояние обязательного случайного тика
+        /// </summary>
+        protected override void _SetRequiredRandomTick(int x, int y, int z, BlockBase blockOld, BlockBase blockNew)
+        {
+            if (blockOld.RequiredRandomTick != blockNew.RequiredRandomTick)
+            {
+                int sy = y >> 4;
+                ushort key = (ushort)((y & 15) << 8 | z << 4 | x);
+                if (blockOld.RequiredRandomTick)
+                {
+                    // Удалить
+                    _listRequiredParticles[sy].Remove(key);
+                    _countRequiredParticles--;
+                }
+                else
+                {
+                    // Добавить
+                    _listRequiredParticles[sy].Add(key);
+                    _countRequiredParticles++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Обновить в секции блоки состояния обязательного случайного тика
+        /// </summary>
+        protected override void _UpSectionRequiredRandomTick(int sy)
+        {
+            _listRequiredParticles[sy].Clear();
+            // Боль, надо пробежаться по всем 4096 блокам и внести в список
+            ChunkStorage storage = StorageArrays[sy];
+            if (storage.CountBlock > 0)
+            {
+                for (ushort i = 0; i < 4096; i++)
+                {
+                    if (Ce.Blocks.BlocksRequiredRandomTick[storage.Data[i] & 0xFFF])
+                    {
+                        _listRequiredParticles[sy].Add(i);
+                    }
+                }
+            }
+            _countRequiredParticles = 0;
+            for (sy = 0; sy < NumberSections; sy++)
+            {
+                _countRequiredParticles += _listRequiredParticles[sy].Count;
+            }
         }
 
         public override string ToString()

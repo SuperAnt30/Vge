@@ -26,6 +26,10 @@ namespace Vge.World.Block
         /// </summary>
         public readonly bool[] BlocksRandomTick;
         /// <summary>
+        /// Массив нужности обязательного случайного блока для частичек
+        /// </summary>
+        public readonly bool[] BlocksRequiredRandomTick;
+        /// <summary>
         /// Количество всех блоков
         /// </summary>
         public readonly int Count;
@@ -56,6 +60,7 @@ namespace Vge.World.Block
             _blocksOpacityMet = new bool[Count];
             _blocksLightMet = new bool[Count];
             BlocksRandomTick = new bool[Count];
+            BlocksRequiredRandomTick = new bool[Count];
             _blockIndexLiquid = new int[8];
 
             int countShape = 0;
@@ -69,6 +74,7 @@ namespace Vge.World.Block
                 BlockObjects[id] = block;
                 _blocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
                 BlocksRandomTick[id] = block.NeedsRandomTick;
+                BlocksRequiredRandomTick[id] = block.RequiredRandomTick;
                 if (block.Liquid && indexLiquid < 8)
                 {
                     _blockIndexLiquid[++indexLiquid] = block.IndexBlock;

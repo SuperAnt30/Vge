@@ -61,30 +61,39 @@ namespace Vge.Entity.Particle
         /// <summary>
         /// Объект генератора случайх чисел
         /// </summary>
-        protected readonly Rand _rand;
+        protected Rand _rand;
 
-        public EntityFX(EnumParticleDraw typeDraw, Rand rand)
+        public EntityFX(EnumParticleDraw typeDraw)
         {
             TypeDraw = typeDraw;
             IsCube = typeDraw == EnumParticleDraw.Cube;
             IsSprite = typeDraw == EnumParticleDraw.Sprite;
             Param = IsSprite ? 1 : 0;
-            _rand = rand;
-            Scale = (100 + _rand.Next(100)) / 100f;
-            _maxAge = 4 + _rand.Next(36);
         }
 
         /// <summary>
         /// Инициализация для клиента
         /// </summary>
-        public void Init(ushort index, ParticlesRenderer particles, CollisionBase collision)
+        public void Init(ushort index, WorldClient world, ParticlesRenderer particles, int parameter)
         {
             IndexEntity = index;
+            _rand = world.Rnd;
             Size = new SizeEntityPoint(this, 1);
-            Physics = new PhysicsBallistics(collision, this);
+            Physics = new PhysicsBallistics(world.Collision, this);
             NoClip = true;
             Physics.SetGravity(_gravity);
             Render = new EntityRenderParticle(this, particles);
+
+            _Init(parameter);
+        }
+
+        /// <summary>
+        /// Инизциализация размера жизни и прочего, индивидуально для типа сущности частички
+        /// </summary>
+        protected virtual void _Init(int parameter)
+        {
+            Scale = (100 + _rand.Next(100)) / 100f;
+            _maxAge = 4 + _rand.Next(36);
         }
 
         /// <summary>

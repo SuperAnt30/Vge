@@ -41,6 +41,10 @@ namespace Vge
         /// </summary>
         public static float RenderChunckTime8 = 0;
         public static float RenderChunckTimeAlpha8 = 0;
+        /// <summary>
+        /// Время обработки частичек в мс
+        /// </summary>
+        public static float ParticlesTime = 0;
 
         public static int dct = 0;
         public static float[] RenderChunckTime = new float[32];
@@ -71,6 +75,7 @@ namespace Vge
                     + " RCh: " + RenderChunckTime8.ToString("0.000")
                     + " a:" + RenderChunckTimeAlpha8.ToString("0.000")
                     + " rch: " + Mth.Average(RenderChunckTime)
+                + "\r\nParticles: " + ParticlesTime.ToString("0.000")
                 + "\r\n" + Server
                 + ChatStyle.Bolb + "[Client]: " + ChatStyle.Reset + Client
                 + "\r\nDS: " + DebugString + " " + BlockChange

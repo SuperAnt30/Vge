@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Json;
 using Vge.Realms;
@@ -57,6 +58,11 @@ namespace Vge.World.Block
         /// случайного списка обновлений фрагментов.
         /// </summary>
         public bool NeedsRandomTick { get; protected set; }
+        /// <summary>
+        /// Блок отмечен, что требуется обязательный случайный тик частичек, не зависимо от дистанции игрока.
+        /// Только для клиента
+        /// </summary>
+        public bool RequiredRandomTick { get; protected set; }
         /// <summary>
         /// Может на этот блок поставить другой, к примеру трава
         /// </summary>
@@ -297,6 +303,7 @@ namespace Vge.World.Block
                 foreach (JsonKeyValue json in state.Items)
                 {
                     if (json.IsKey(Ctb.NeedsRandomTick)) NeedsRandomTick = json.GetBool();
+                    if (json.IsKey(Ctb.RequiredRandomTick)) RequiredRandomTick = json.GetBool();
                     if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
                     if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
@@ -578,7 +585,23 @@ namespace Vge.World.Block
         /// <summary>
         /// Случайный эффект частички и/или звука на блоке только для клиента
         /// </summary>
-        public virtual void RandomDisplayTick(WorldBase world, BlockPos blockPos, BlockState blockState, Rand random) { }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void RandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState) 
+        {
+            // TODO::2026-04-26 Временно!
+            if (!IsAir)
+            {
+                Vector3 pos = blockPos.ToVector3Center();
+                pos.Y += .75f;
+                world.SpawnParticle(EntitiesFXReg.DropletId, 1, pos, new Vector3(.5f), 1, 0);
+            }
+        }
+
+        /// <summary>
+        /// Обязательный случайный эффект частички и/или звука на блоке только для клиента
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void RequiredRandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState) { }
 
         /// <summary>
         /// Случайный эффект блока, для сервера

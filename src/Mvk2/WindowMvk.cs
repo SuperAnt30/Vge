@@ -18,6 +18,7 @@ using Vge.Item;
 using Mvk2.World.BlockEntity;
 using System.Runtime.CompilerServices;
 using Vge.Audio;
+using Mvk2.Particle;
 
 namespace Mvk2
 {
@@ -237,6 +238,15 @@ namespace Mvk2
         {
             base._InitializationBlocksEntity();
             BlocksEntityRegMvk.Initialization();
+        }
+
+        /// <summary>
+        /// Инициализация сущностей эффектов
+        /// </summary> 
+        protected override void _InitializationEntitiesFX()
+        {
+            base._InitializationEntitiesFX();
+            EntitiesFXRegMvk.Initialization();
         }
 
         /// <summary>

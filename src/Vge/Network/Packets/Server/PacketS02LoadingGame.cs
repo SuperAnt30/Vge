@@ -26,31 +26,36 @@
         /// Массив блоков сущности
         /// </summary>
         public string[] BlocksEntity { get; private set; }
+        /// <summary>
+        /// Массив сущностей эффектов
+        /// </summary>
+        public string[] EntitiesFX { get; private set; }
 
         /// <summary>
         /// Передать таблицу блоков
         /// </summary>
         public PacketS02LoadingGame(string[] blocks, string[] items, 
-            string[] entities, string[] blocksEntity)
+            string[] entities, string[] blocksEntity, string[] entitiesFX)
         {
             Status = EnumStatus.BeginNet;
             Blocks = blocks;
             Items = items;
             Entities = entities;
             BlocksEntity = blocksEntity;
+            EntitiesFX = entitiesFX;
             Value = 0;
         }
 
         public PacketS02LoadingGame(EnumStatus status)
         {
-            BlocksEntity = Entities = Items = Blocks = new string[0];
+            EntitiesFX = BlocksEntity = Entities = Items = Blocks = new string[0];
             Status = status;
             Value = 0;
         }
 
         public PacketS02LoadingGame(ushort value)
         {
-            BlocksEntity = Entities = Items = Blocks = new string[0];
+            EntitiesFX = BlocksEntity = Entities = Items = Blocks = new string[0];
             Status = EnumStatus.Begin;
             Value = value;
         }
@@ -88,6 +93,12 @@
                 {
                     BlocksEntity[i] = stream.String();
                 }
+                count = stream.UShort();
+                EntitiesFX = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    EntitiesFX[i] = stream.String();
+                }
             }
         }
 
@@ -123,6 +134,12 @@
                 for (int i = 0; i < count; i++)
                 {
                     stream.String(BlocksEntity[i]);
+                }
+                count = (ushort)EntitiesFX.Length;
+                stream.UShort(count);
+                for (int i = 0; i < count; i++)
+                {
+                    stream.String(EntitiesFX[i]);
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
@@ -128,14 +129,9 @@ namespace Vge.Renderer.World
 
         public void Spawn(ushort particleId, Vector3 pos, Vector3 motion, int parameter)
         {
-            // TODO::2026-03-16 отсюда где-то надо вытаскивать регистрацию частички
-            EntityFX entity; // = new EntityParticle();
-
-            if (particleId == 1) entity = new EntitySmokeFX(_game.World.Rnd);
-            else entity = new EntityPartFX(_game.World.Rnd, parameter);
-
-            entity.Init(particleId, this, _game.World.Collision);
+            EntityFX entity = Ce.EntitiesFX.CreateEntityClient(particleId, _game.World, this, parameter);
             entity.InitRun(pos, motion);
+
             if (entity.IsCube)
             {
                 while (_list3d.Count >= _MaxAmount3d) _list3d.RemoveAt(0);

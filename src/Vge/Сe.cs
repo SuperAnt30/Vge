@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Vge.Entity;
+using Vge.Entity.Particle;
 using Vge.Item;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
@@ -62,6 +63,10 @@ public sealed class Ce
     /// Различные массивы предметов
     /// </summary>
     public static ItemArrays Items;
+    /// <summary>
+    /// Различные массивы частичек
+    /// </summary>
+    public static EntityFXArrays EntitiesFX;
 
     /// <summary>
     /// Какой FPS вне игры, для уменьшения нагрузки на комп
@@ -166,7 +171,7 @@ public sealed class Ce
      **/
 
     /// <summary>
-    /// Обзор в виде круга, z дистанция
+    /// Обзор в виде круга, z дистанцияsphere
     /// </summary>
     public static Vector3i[] OverviewCircles = new Vector3i[] { new Vector3i(0) };
     /// <summary>
