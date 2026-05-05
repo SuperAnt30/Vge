@@ -12,10 +12,6 @@ namespace Vge.Entity.Particle
         /// Индекс частички блока
         /// </summary>
         public static ushort PartId { get; private set; }
-        /// <summary>
-        /// Индекс частички капельки
-        /// </summary>
-        public static ushort DropletId { get; private set; }
 
         /// <summary>
         /// Таблица предметов для регистрации
@@ -81,17 +77,7 @@ namespace Vge.Entity.Particle
             {
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
                 if (alias == "Part") PartId = i;
-                else if (alias == "Droplet") DropletId = i;
             }
-
-            //for (ushort i = 0; i < Ce.EntitiesFX.Count; i++)
-            //{
-            //    if (Ce.EntitiesFX.EntitiesFXAlias[i] == "Part")
-            //    {
-            //        PartId = i;
-            //        break;
-            //    }
-            //}
         }
     }
 }

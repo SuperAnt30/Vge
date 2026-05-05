@@ -11,10 +11,10 @@ namespace Mvk2.Particle
         /// Индекс частички дыма
         /// </summary>
         public static ushort SmokeId { get; private set; }
-        ///// <summary>
-        ///// Индекс частички капельки
-        ///// </summary>
-        //public static ushort DropletId { get; private set; }
+        /// <summary>
+        /// Индекс частички капельки
+        /// </summary>
+        public static ushort DropletId { get; private set; }
 
         public static void Initialization()
         {
@@ -34,7 +34,7 @@ namespace Mvk2.Particle
             {
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
                 if (alias == "Smoke") SmokeId = i;
-             //   else if (alias == "Droplet") DropletId = i;
+                else if (alias == "Droplet") DropletId = i;
             }
         }
     }

@@ -159,9 +159,10 @@ namespace Vge.Renderer.World
             }
 
             Render.BindTextureParticles();
-            Render.ShsEntity.BindUniformParticle2d(
-                _game.Player.RotationFrameYaw,
-                _game.Player.RotationFramePitch);
+            float pitch = _game.Player.RotationFramePitch;
+            if (_game.Player.ViewCamera == EnumViewCamera.Front) pitch += Glm.Pi;
+
+            Render.ShsEntity.BindUniformParticle2d(_game.Player.RotationFrameYaw, pitch);
 
             count = _list2d.Count;
             for (int i = 0; i < count; i++)

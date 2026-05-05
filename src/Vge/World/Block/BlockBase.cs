@@ -589,12 +589,15 @@ namespace Vge.World.Block
         public virtual void RandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState) 
         {
             // TODO::2026-04-26 Временно!
-            if (!IsAir)
-            {
-                Vector3 pos = blockPos.ToVector3Center();
-                pos.Y += .75f;
-                world.SpawnParticle(EntitiesFXReg.DropletId, 1, pos, new Vector3(.5f), 1, 0);
-            }
+            //if (!IsAir && world.Rnd.Next(10) == 0)
+            //{
+            //    if (world.GetBlockState(blockPos.OffsetUp()).Id == 0)
+            //    {
+            //        Vector3 pos = blockPos.ToVector3Center();
+            //        pos.Y += .75f;
+            //        world.SpawnParticle(EntitiesFXReg.DropletId, 1, pos, new Vector3(.5f), 1, 0);
+            //    }
+            //}
         }
 
         /// <summary>
