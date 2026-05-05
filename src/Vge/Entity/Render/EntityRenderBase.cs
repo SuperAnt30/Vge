@@ -26,6 +26,13 @@ namespace Vge.Entity.Render
         public virtual void UpdateMatrix(float timeIndex, float deltaTime) { }
 
         /// <summary>
+        /// Обновить рассчитать матрицы для кадра основного игрока с глаз
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void UpdateMatrixOwnerEye(float timeIndex) { }
+
+        /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>

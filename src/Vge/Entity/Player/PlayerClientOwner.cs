@@ -71,7 +71,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Вид камеры
         /// </summary>
-        public EnumViewCamera ViewCamera { get; private set; } = EnumViewCamera.Eye;
+        public EnumViewCamera ViewCamera { get; private set; }
 
         /// <summary>
         /// Обект перемещений
@@ -150,9 +150,9 @@ namespace Vge.Entity.Player
             Fov = new SmoothFrame(Options.FovFloat);
             _eyeFrame = SizeLiving.GetEye();
             Eye = new SmoothFrame(_eyeFrame);
-
             //_handAction = new HandActionQueue(this);
             //_handActionSecond = new HandActionQueue(this);
+            _SetViewCamera(EnumViewCamera.Eye);
 
             _UpdateMatrixCamera();
         }
@@ -326,8 +326,8 @@ namespace Vge.Entity.Player
         public void DebugOrtoNext()
         {
             Gi.DebugOrtoNext();
-            ViewCamera = Gi.IsDrawOrto ? EnumViewCamera.Back : EnumViewCamera.Eye;
-            _updateCamera = true;
+            _SetViewCamera(Gi.IsDrawOrto ? EnumViewCamera.Back : EnumViewCamera.Eye);
+            
         }
 
         /// <summary>
@@ -339,7 +339,17 @@ namespace Vge.Entity.Player
             int value = (int)ViewCamera;
             value++;
             if (value > count) value = 0;
-            ViewCamera = (EnumViewCamera)value;
+            _SetViewCamera((EnumViewCamera)value);
+        }
+
+        /// <summary>
+        /// Задать вид камеры игрока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetViewCamera(EnumViewCamera enumView)
+        {
+            ViewCamera = enumView;
+            SolidHeadWithBody = ViewCamera == EnumViewCamera.Eye;
             _updateCamera = true;
         }
 
@@ -358,7 +368,7 @@ namespace Vge.Entity.Player
         private void _UpdateMatrixCamera()
         {
             Vector3 front = Glm.Ray(RotationFrameYaw, RotationFramePitch);
-            Vector3 up = new Vector3(0, 1, 0);
+            //Vector3 up = new Vector3(0, 1, 0);
             Vector3 pos = new Vector3(0, _eyeFrame, 0);
             _rayLook = front;
 
@@ -373,12 +383,12 @@ namespace Vge.Entity.Player
                 pos = _GetPositionCamera(pos, front, 8); // 8
                 front *= -1f;
             }
-            //else
-            //{
-            //    Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
-            //    pos += front2 * .3f;
-            //    pos -= up * .1f;
-            //}
+            else
+            {
+                Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
+                pos += front2 * .4f;
+               // pos -= up * .5f;
+            }
 
             //if (!ViewCameraEye)
             //{

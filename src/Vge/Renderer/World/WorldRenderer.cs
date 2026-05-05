@@ -282,6 +282,8 @@ namespace Vge.Renderer.World
             {
                 // --- Начало сцены ТЕНЕЙ
 
+
+
                 // Рисуем воксели сплошных и уникальных блоков
                // gl.Enable(GL.GL_CULL_FACE);
                 //gl.Disable(GL.GL_CULL_FACE);
@@ -328,6 +330,7 @@ namespace Vge.Renderer.World
             // Рисуем воксели альфа
             _DrawVoxelAlpha();
             // Прорисовка руки
+            Entities.DrawOwnerEye(timeIndex);
 
             // --- Конец сцены
 

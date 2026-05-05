@@ -315,7 +315,6 @@ namespace Vge.Entity.Render
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         /// <param name="deltaTime">Дельта последнего кадра в mc</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void UpdateMatrix(float timeIndex, float deltaTime)
         {
             base.UpdateMatrix(timeIndex, deltaTime);
@@ -358,7 +357,37 @@ namespace Vge.Entity.Render
                 // Генерируем кости текущих поз из анимации
                 _GenBoneCurrentPoses();
                 // Собираем конечные матрицы
-                _GetMatrixPalette(yaw, yawBody, pitch);
+                _GetMatrixPalette(yaw, yawBody, pitch, true);
+            }
+        }
+
+        /// <summary>
+        /// Обновить рассчитать матрицы для кадра основного игрока с глаз
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public override void UpdateMatrixOwnerEye(float timeIndex)
+        {
+            if (_resourcesEntity.IsAnimation && Entity is EntityLiving entityLiving)
+            {
+                float yaw = entityLiving.GetRotationFrameYaw(timeIndex);
+                float yawBody = entityLiving.SolidHeadWithBody
+                    ? yaw : entityLiving.GetRotationFrameYawBody(timeIndex);
+                float pitch = entityLiving.GetRotationFramePitch(timeIndex);
+
+                // Возвращаем значения костей в исходное положение, Оригинал
+                for (byte i = 0; i < _countBones; i++)
+                {
+                    if (_bonesFlagModify[i])
+                    {
+                        _resourcesEntity.Bones[i].SetBonePose(ref _bones[i]);
+                        _bonesFlagModify[i] = false;
+                    }
+                }
+
+                // Генерируем кости текущих поз из анимации
+                _GenBoneCurrentPoses();
+                // Собираем конечные матрицы
+                _GetMatrixPalette(yaw, yawBody, pitch, false);
             }
         }
 
@@ -405,7 +434,7 @@ namespace Vge.Entity.Render
             // Генерируем кости текущих поз из анимации
             _GenBoneCurrentPoses();
             // Собираем конечные матрицы
-            _GetMatrixPalette(yaw, yaw, pitch);
+            _GetMatrixPalette(yaw, yaw, pitch, true);
 
             _entities.ShsEntity.BindUniformAnimationGui(posX, posY, scale,
                 _resourcesEntity.GetDepthTextureAndSmall(),
@@ -522,10 +551,20 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Получение матричной палитры для позы
         /// </summary>
-        private void _GetMatrixPalette(float yaw, float yawBody, float pitch)
+        private void _GetMatrixPalette(float yaw, float yawBody, float pitch, bool flagIsHead)
         {
             // Корневая кость
             _bonesTransforms[0].Clear();
+            if (!flagIsHead)
+            {
+                // Если головы нет, мы её перемещаем далеко вниз, чтоб не мешала игры с глаз
+                //_bonesTransforms[0].Translate(0, .25f, 0);
+                //_bonesTransforms[0].Scale(1, 1.125f, 1);
+
+                // Подгонка размеров для визуализации с глаз
+                _bonesTransforms[0].Translate(0, .125f, 0);
+                _bonesTransforms[0].Scale(1, 1.0625f, 1);
+            }
             if (yawBody != 0)
             {
                 _bonesTransforms[0].RotateY(-yawBody);
@@ -542,13 +581,17 @@ namespace Vge.Entity.Render
                 // Перемножаем матрицы в положение как выставленно в Blockbench
                 bone = _resourcesEntity.Bones[i];
 
-
                 _bonesTransforms[bone.ParentIndex].Copy(_bonesTransforms[i]);
                 _bonesTransforms[i].Multiply(_bones[i].GetBoneMatrix());
 
                 // Если надо вращаем Pitch, голова
                 if (bone.IsHead)
                 {
+                    if (!flagIsHead)
+                    {
+                        // Если головы нет, мы её перемещаем далеко вниз, чтоб не мешала игры с глаз
+                        _bonesTransforms[i].Translate(0, -1000, 0);
+                    }
                     yaw -= yawBody;
                     if (yaw != 0)
                     {

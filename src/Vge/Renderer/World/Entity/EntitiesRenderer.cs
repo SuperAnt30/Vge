@@ -345,6 +345,22 @@ namespace Vge.Renderer.World.Entity
             }
         }
 
+        /// <summary>
+        /// Метод для прорисовки основного игрока с глаз
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        public void DrawOwnerEye(float timeIndex)
+        {
+            if (_game.Player.ViewCamera == EnumViewCamera.Eye)
+            {
+                // Перерасчёт матрицы игрока, без головы и с изменениями
+                _game.Player.Render.UpdateMatrixOwnerEye(timeIndex);
+                // Параметры шейдоров
+                ShsEntity.BindUniformBegin();
+                _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+            }
+        }
+
         public override void Dispose()
         {
             _hitbox.Dispose();

@@ -179,6 +179,17 @@ namespace WinGL.Util
         #region Transform
 
         /// <summary>
+        /// Задать масштаб текущей матрицы
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Scale(float x, float y, float z)
+        {
+            _cols[0].X = x;
+            _cols[1].Y = y;
+            _cols[2].Z = z;
+        }
+
+        /// <summary>
         /// Вращение матрицы по кватерниону
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
