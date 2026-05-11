@@ -383,12 +383,6 @@ namespace Vge.Entity.Player
                 pos = _GetPositionCamera(pos, front, 8); // 8
                 front *= -1f;
             }
-            else
-            {
-                Vector3 front2 = Glm.Ray(RotationFrameYaw, 0);
-                pos += front2 * .4f;
-               // pos -= up * .5f;
-            }
 
             //if (!ViewCameraEye)
             //{

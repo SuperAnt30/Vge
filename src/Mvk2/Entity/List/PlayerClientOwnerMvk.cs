@@ -1,9 +1,12 @@
 ﻿using Mvk2.Entity.Inventory;
+using Mvk2.Entity.Render;
 using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.World.Entity;
 using Vge.World.Chunk;
 using WinGL.Util;
 
@@ -22,6 +25,27 @@ namespace Mvk2.Entity.List
         public PlayerClientOwnerMvk(GameBase game) : base(game)
         {
             _handManager = new HandManager(game, this);
+        }
+
+        /// <summary>
+        /// Инициализация для клиента
+        /// </summary>
+        public override void InitRender(ushort index, EntitiesRenderer entitiesRenderer)
+        {
+            IndexEntity = index;
+            if (Ce.Entities.GetResourcesEntity(IndexEntity) is ResourcesEntity resourcesEntity)
+            {
+                Render = new EntityRenderOwner(this, entitiesRenderer, resourcesEntity);
+            }
+            else
+            {
+                // Отсутствует файл json, сущности
+                throw new Exception(Sr.GetString(Sr.FileMissingJsonEntity, GetType().Name));
+            }
+
+            _InitMetaData();
+            _InitSize();
+            _CreateInventory();
         }
 
         /// <summary>

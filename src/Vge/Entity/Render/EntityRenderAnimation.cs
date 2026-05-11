@@ -41,7 +41,7 @@ namespace Vge.Entity.Render
         /// Буфер для шейдера матриц скелетной анимации, на 24 кости (матрица 4*3 и 24 кости)
         /// struct AnimationMatrixPalette - https://habr.com/ru/articles/501212/
         /// </summary>
-        private float[] _bufferBonesTransforms = new float[12 * Ce.MaxAnimatedBones];
+        protected float[] _bufferBonesTransforms = new float[12 * Ce.MaxAnimatedBones];
 
         /// <summary>
         /// Массив отдельных анимационных клипов
@@ -58,19 +58,19 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Массив костей в заданный момент времени
         /// </summary>
-        private readonly BonePose[] _bones;
+        protected readonly BonePose[] _bones;
         /// <summary>
         /// Массив костей которые менялись
         /// </summary>
-        private readonly bool[] _bonesFlagModify;
+        protected readonly bool[] _bonesFlagModify;
         /// <summary>
         /// Матрицы трансформации кости
         /// </summary>
-        private readonly Mat4[] _bonesTransforms;
+        protected readonly Mat4[] _bonesTransforms;
         /// <summary>
         /// Количество костей
         /// </summary>
-        private readonly byte _countBones;
+        protected readonly byte _countBones;
         /// <summary>
         /// Анимационный триггер для сущности
         /// </summary>
@@ -357,37 +357,7 @@ namespace Vge.Entity.Render
                 // Генерируем кости текущих поз из анимации
                 _GenBoneCurrentPoses();
                 // Собираем конечные матрицы
-                _GetMatrixPalette(yaw, yawBody, pitch, true);
-            }
-        }
-
-        /// <summary>
-        /// Обновить рассчитать матрицы для кадра основного игрока с глаз
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        public override void UpdateMatrixOwnerEye(float timeIndex)
-        {
-            if (_resourcesEntity.IsAnimation && Entity is EntityLiving entityLiving)
-            {
-                float yaw = entityLiving.GetRotationFrameYaw(timeIndex);
-                float yawBody = entityLiving.SolidHeadWithBody
-                    ? yaw : entityLiving.GetRotationFrameYawBody(timeIndex);
-                float pitch = entityLiving.GetRotationFramePitch(timeIndex);
-
-                // Возвращаем значения костей в исходное положение, Оригинал
-                for (byte i = 0; i < _countBones; i++)
-                {
-                    if (_bonesFlagModify[i])
-                    {
-                        _resourcesEntity.Bones[i].SetBonePose(ref _bones[i]);
-                        _bonesFlagModify[i] = false;
-                    }
-                }
-
-                // Генерируем кости текущих поз из анимации
-                _GenBoneCurrentPoses();
-                // Собираем конечные матрицы
-                _GetMatrixPalette(yaw, yawBody, pitch, false);
+                _GetMatrixPalette(yaw, yawBody, pitch);
             }
         }
 
@@ -434,7 +404,7 @@ namespace Vge.Entity.Render
             // Генерируем кости текущих поз из анимации
             _GenBoneCurrentPoses();
             // Собираем конечные матрицы
-            _GetMatrixPalette(yaw, yaw, pitch, true);
+            _GetMatrixPalette(yaw, yaw, pitch);
 
             _entities.ShsEntity.BindUniformAnimationGui(posX, posY, scale,
                 _resourcesEntity.GetDepthTextureAndSmall(),
@@ -476,7 +446,7 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Генерируем кости текущих поз
         /// </summary>
-        private void _GenBoneCurrentPoses()
+        protected void _GenBoneCurrentPoses()
         {
             int ai;
             int count = _animationClips.Count;
@@ -551,24 +521,15 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Получение матричной палитры для позы
         /// </summary>
-        private void _GetMatrixPalette(float yaw, float yawBody, float pitch, bool flagIsHead)
+        private void _GetMatrixPalette(float yaw, float yawBody, float pitch)
         {
             // Корневая кость
             _bonesTransforms[0].Clear();
-            if (!flagIsHead)
-            {
-                // Если головы нет, мы её перемещаем далеко вниз, чтоб не мешала игры с глаз
-                //_bonesTransforms[0].Translate(0, .25f, 0);
-                //_bonesTransforms[0].Scale(1, 1.125f, 1);
-
-                // Подгонка размеров для визуализации с глаз
-                _bonesTransforms[0].Translate(0, .125f, 0);
-                _bonesTransforms[0].Scale(1, 1.0625f, 1);
-            }
             if (yawBody != 0)
             {
                 _bonesTransforms[0].RotateY(-yawBody);
             }
+            
             // У корневой кости нет родительской матрицы, поэтому заносим в матричную палитру матрицу перехода как есть
             _bonesTransforms[0].Multiply(_bones[0].GetBoneMatrix());
             _bonesTransforms[0].Multiply(_resourcesEntity.Bones[0].MatrixInverse);
@@ -587,11 +548,6 @@ namespace Vge.Entity.Render
                 // Если надо вращаем Pitch, голова
                 if (bone.IsHead)
                 {
-                    if (!flagIsHead)
-                    {
-                        // Если головы нет, мы её перемещаем далеко вниз, чтоб не мешала игры с глаз
-                        _bonesTransforms[i].Translate(0, -1000, 0);
-                    }
                     yaw -= yawBody;
                     if (yaw != 0)
                     {

@@ -2,9 +2,9 @@
 /// StringsResource 
 /// Строки ресурсов, на которые ссылается код
 /// </summary>
-internal sealed class Sr
+public sealed class Sr
 {
-    internal static string GetString(string name, params object[] args)
+    public static string GetString(string name, params object[] args)
         => string.Format(name, args);
 
     #region Audio
@@ -67,7 +67,7 @@ internal sealed class Sr
     internal const string ErrorReadJsonSoundStat = "Ошибка чтения из json, параметров звука {0}";
     internal const string FileMissingJsonBlock = "Отсутствует файл json, блока {0}";
     internal const string ErrorReadJsonEntityStat = "Ошибка чтения из json, параметров сущности {0}";
-    internal const string FileMissingJsonEntity = "Отсутствует файл json, сущности {0}";
+    public const string FileMissingJsonEntity = "Отсутствует файл json, сущности {0}";
     internal const string FileMissingLayersJsonEntity = "Отсутствует файл json, слоёв для сущности {0}";
     internal const string FileMissingModelJsonEntity = "Отсутствует модель в файле json сущности {0}";
     internal const string FileMissingModelEntity = "Отсутствует файл модели сущности {0}";
