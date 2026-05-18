@@ -938,8 +938,7 @@ namespace Vge.Entity.Player
             WorldServer worldServer = GetWorldServer();
             if (worldServer != null)
             {
-                ushort id = Ce.Entities.IndexItem;
-                EntityBase entity = Ce.Entities.CreateEntityServer(id, worldServer);
+                EntityBase entity = Ce.Entities.CreateEntityServer(Ce.Entities.IndexItem, worldServer);
                 if (entity is EntityItem entityItem)
                 {
                     entityItem.SetEntityItemStack(itemStack);

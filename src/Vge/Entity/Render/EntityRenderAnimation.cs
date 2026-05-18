@@ -92,6 +92,14 @@ namespace Vge.Entity.Render
         /// Объект слоёв одежды
         /// </summary>
         private readonly ShapeLayers _shapeLayers;
+        /// <summary>
+        /// Счётчик левитации, запрет на мгновеную левитацию, включатся будет через определённое количество тактов
+        /// </summary>
+        private int _countLevitate = 0;
+        /// <summary>
+        /// Задержка левитации, через сколько таков включится когда нет земли под ногами
+        /// </summary>
+        protected readonly int _deleayLevitate = 5;
 
         public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
@@ -247,15 +255,27 @@ namespace Vge.Entity.Render
         private void _AnimationByMotion()
         {
             // Сразу определяем смену доп параметров сущности
-            if (!_trigger.Levitate)
+            if (_trigger.Levitate)
             {
-                if (!Entity.OnGround) _trigger.SetLevitate(true);
+                if (Entity.OnGround)
+                {
+                    _trigger.SetLevitate(false);
+                    _countLevitate = 0;
+                }
             }
             else
             {
                 if (Entity.OnGround)
                 {
-                    _trigger.SetLevitate(false);
+                    _countLevitate = 0;
+                }
+                else
+                {
+                    _countLevitate++;
+                    if (_countLevitate > _deleayLevitate)
+                    {
+                        _trigger.SetLevitate(true);
+                    }
                 }
             }
 

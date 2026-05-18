@@ -1,15 +1,12 @@
 {
-    #Scale: 1.9375,
-    Scale: 0.96,
-    #Scale: 0.976,
+    Scale: 1,
     #Model: "Robinson",
-    #Model: "Player",
-    Model: "Humanoid",
-    #Model: "Chicken",
+    Model: "Chicken",
+    #Model: "Humanoid",
     TextureId: 1,
-    OnlyMove: true,
-    BlinkEye: 70,
-    NameShapeLayers: "Base",
+    #OnlyMove: true,
+    #BlinkEye: 70,
+    #NameShapeLayers: "Base",
     #NameShapeLayers: "BaseOld",
     Animations: [
         { 

@@ -160,7 +160,7 @@ namespace Mvk2.Item
 
             ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
-            ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemBase());
+            ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
             ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
 
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.FlowerClover));
