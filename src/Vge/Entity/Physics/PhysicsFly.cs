@@ -20,7 +20,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
         public PhysicsFly(CollisionBase collision, EntityLiving entity) 
-            : base(collision, entity)
+            : base(collision, entity, true)
         {
             _entityLiving = entity;
         }

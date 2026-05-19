@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
@@ -29,6 +28,10 @@ namespace Vge.Entity.Physics
         /// Объект проверки коллизии
         /// </summary>
         public readonly CollisionBase Collision;
+        /// <summary>
+        /// Физика которая летает или плавает
+        /// </summary>
+        public readonly bool IsFlying;
 
         /// <summary>
         /// Перемещение за текущий такт по координте X
@@ -108,11 +111,12 @@ namespace Vge.Entity.Physics
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
         /// <param name="inputMovement">Используется ли у сущности силы действия перемещения</param>
-        public PhysicsBase(CollisionBase collision, EntityBase entity)
+        public PhysicsBase(CollisionBase collision, EntityBase entity, bool isFlying = false)
         {
             Collision = collision;
             Entity = entity;
             Movement = new MovementInput();
+            IsFlying = isFlying;
             AwakenPhysics();
         }
 

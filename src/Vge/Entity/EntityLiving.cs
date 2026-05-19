@@ -222,12 +222,12 @@ namespace Vge.Entity
 
                 float xDis = PosX - PosPrevX;
                 float zDis = PosZ - PosPrevZ;
-                if (xDis * xDis + zDis * zDis > .0025f)
+                if (xDis * xDis + zDis * zDis > .00025f)
                 {
                     // Движение, высчитываем угол направления
                     if (Render.IsMovingStrafe())
                     {
-                        // Этот вариант, если тело при твещении стремится к голове, для анимации
+                        // Этот вариант, если тело при движении стремится к голове, для анимации
                         yawOffset = RotationYaw;
                     }
                     else
@@ -268,24 +268,29 @@ namespace Vge.Entity
             _RotationBody(true);
         }
 
-        /// <summary>
-        /// Задать вращение для сущностей с AI
-        /// </summary>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public void SetRotationAI(float yaw, float pitch)
-        //{
-        //    RotationYaw = yaw;
-        //    RotationPitch = pitch;
-        //    _RotationBody();
-        //}
-
         #endregion
+
+        #region Gets
 
         /// <summary>
         /// Высота глаз
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual float GetEyeHeight() => SizeLiving.GetEye();
+
+        /// <summary>
+        /// Максимальное значение здоровья сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual float _GetHelathMax() => 10;
+
+        /// <summary>
+        /// Мертвые и спящие существа не могут двигаться
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _IsMovementBlocked() => GetHealth() <= 0f;
+
+        #endregion
 
         #region MetaData
 
@@ -294,9 +299,10 @@ namespace Vge.Entity
         /// </summary>
         protected override void _InitMetaData()
         {
-            MetaData = new DataWatcher(1);
+            MetaData = new DataWatcher(2);
             // флаги 0-горит; 1-крадется; 2-едет на чем-то; 3-бегает; 4-ест; 5-невидимый
             MetaData.Set(0, (byte)0);
+            MetaData.Set(1, _GetHelathMax()); // здоровье
         }
 
         /// <summary>
@@ -364,6 +370,17 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Sitting() { }
+
+        /// <summary>
+        /// Уровень здоровья
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetHealth() => MetaData.GetFloat(1);
+
+        /// <summary>
+        /// Задать уровень здоровья
+        /// </summary>
+        public void SetHealth(float health) => MetaData.UpdateObject(6, Mth.Clamp(health, 0, _GetHelathMax()));
 
         #endregion
 

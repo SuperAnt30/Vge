@@ -29,28 +29,19 @@ namespace WinGL.Util
         /// Округляем до ближайшего целого
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int Round(float d)
-        {
-            return (int)Math.Round(d);
-        }
+        public static int Round(float d) => (int)Math.Round(d);
 
         /// <summary>
         /// Округляем до ближайшего целого
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Round(float d, int decimals)
-        {
-            return (float)Math.Round(d, decimals);
-        }
+        public static float Round(float d, int decimals) => (float)Math.Round(d, decimals);
 
         /// <summary>
         /// Квадратный корень
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Sqrt(float d)
-        {
-            return (float)Math.Sqrt(d);
-        }
+        public static float Sqrt(float d) => (float)Math.Sqrt(d);
 
         /// <summary>
         /// Вернуть обсалютное значение

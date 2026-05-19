@@ -1,4 +1,5 @@
-﻿using Vge.Entity;
+﻿using Mvk2.Entity.List;
+using Vge.Entity;
 using Vge.Entity.List;
 
 namespace Mvk2.Entity
@@ -31,7 +32,7 @@ namespace Mvk2.Entity
         {
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");
             //EntitiesReg.RegisterEntityClass("Robinson", typeof(EntityThrowable));
-            EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityThrowableSmall));
+            EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityChicken));
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson");
             //ModelEntitiesReg.RegisterModelEntityClass("Skeleton");
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson2");

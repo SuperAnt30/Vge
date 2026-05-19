@@ -71,18 +71,13 @@ namespace Mvk2.Item.List
             if (worldServer != null)
             {
                 EntityBase entity = Ce.Entities.CreateEntityServer(EntitiesRegMvk.ChickenId, worldServer);
-                //if (entity is EntityItem entityItem)
-                //{
-                //    entityItem.SetEntityItemStack(itemStack);
-                //}
                 worldServer.EntityDropsEntityInWorld(player, entity, true, false);
             }
 
-            //player.DropItem(stack.Copy(1), true, false);
-            //if (!player.CreativeMode)
-            //{
-            //    player.Inventory.DecrCurrentItem(1);
-            //}
+            if (!player.CreativeMode)
+            {
+                player.Inventory.DecrCurrentItem(1);
+            }
         }
     }
 }

@@ -975,7 +975,7 @@ namespace Vge.Entity.Player
             Chat.AddMessage(packet.Message, Gi.WindowsChatWidthMessage,  Gi.Si);
         }
 
-        // <summary>
+        /// <summary>
         /// Задать атрибуты игроку
         /// </summary>
         public void PacketPlayerAbilities(PacketS39PlayerAbilities packet)
