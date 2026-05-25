@@ -137,7 +137,7 @@ public sealed class Gi
     /// <summary>
     /// Перечень 16-ти цветов Красного как в майне
     /// </summary>
-    public readonly static float[] ColorReg = new float[] { 0, 0, 0, 0, .67f, .67f, 1, .67f, .33f, .33f, .33f, .33f, 1, 1, 1, 1 };
+    public readonly static float[] ColorRed = new float[] { 0, 0, 0, 0, .67f, .67f, 1, .67f, .33f, .33f, .33f, .33f, 1, 1, 1, 1 };
     /// <summary>
     /// Перечень 16-ти цветов Зелёного как в майне
     /// </summary>

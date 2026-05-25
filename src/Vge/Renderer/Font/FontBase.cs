@@ -481,7 +481,7 @@ namespace Vge.Renderer.Font
             if (_style.IsColor())
             {
                 int index = _style.GetColor();
-                r = Gi.ColorReg[index];
+                r = Gi.ColorRed[index];
                 g = Gi.ColorGreen[index];
                 b = Gi.ColorBlue[index];
             }

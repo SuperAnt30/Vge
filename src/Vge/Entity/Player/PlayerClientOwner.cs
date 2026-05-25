@@ -160,7 +160,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Запуск мира
         /// </summary>
-        public void WorldStarting()
+        public virtual void WorldStarting()
         {
             // Нельзя в конструкторе, так-как ещё сервер не подал таблицы id типов сущностей
             _InitIndexPlayer();
@@ -636,6 +636,9 @@ namespace Vge.Entity.Player
             
             if (!Physics.IsPhysicSleep())
             {
+                // Обновить наличие блоков в каких находится игрок
+                UpdatePresenceBlocks();
+
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 

@@ -30,9 +30,12 @@ namespace Mvk2.Entity
 
         public static void Initialization()
         {
+            EntitiesReg.RegisterEntityClass("Item", typeof(EntityItemMvk), true);
+            EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityChicken));
+
             //ModelEntitiesReg.RegisterModelEntityClass("Chick");
             //EntitiesReg.RegisterEntityClass("Robinson", typeof(EntityThrowable));
-            EntitiesReg.RegisterEntityClass("Chicken", typeof(EntityChicken));
+
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson");
             //ModelEntitiesReg.RegisterModelEntityClass("Skeleton");
             //ModelEntitiesReg.RegisterModelEntityClass("Robinson2");

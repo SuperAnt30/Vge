@@ -133,6 +133,10 @@ namespace Vge.Entity
         /// Объект Размер, вес и прочее сущностей которая работает с физикой
         /// </summary>
         public ISizeEntity Size { get; protected set; }
+        /// <summary>
+        /// Объект наличия блоков в которой находится сущность
+        /// </summary>
+        public IPresenceBlocks PresenceBlocks { get; protected set; }
 
         /// <summary>
         /// Уровень перемещение. Только для сервера 2 - 0 чтоб передвавать клиентам перемещение.
@@ -232,6 +236,7 @@ namespace Vge.Entity
             _InitPhysics(worldServer.Collision);
             _CreateInventory();
             _worldServer = worldServer;
+            _InitServer();
         }
 
         /// <summary>
@@ -251,6 +256,12 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
+
+        /// <summary>
+        /// Инициализация на сервере, после всех инициализаций
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _InitServer() { }
 
         /// <summary>
         /// Создания инвенторя
@@ -591,6 +602,7 @@ namespace Vge.Entity
         /// <summary>
         /// Игровой такт на сервере
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Update() { }
         /// <summary>
         /// Игровой такт на клиенте
@@ -598,6 +610,13 @@ namespace Vge.Entity
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void UpdateClient(WorldClient world, float deltaTime) { }
+
+        /// <summary>
+        /// Обновить наличие блоков в каких находится сущность
+        /// Вода, огонь, лава, и прочее
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UpdatePresenceBlocks() => PresenceBlocks?.Update();
 
         /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.

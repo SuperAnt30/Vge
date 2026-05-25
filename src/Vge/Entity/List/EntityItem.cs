@@ -144,6 +144,8 @@ namespace Vge.Entity.List
                 //Console.Write(" ");
                 //Console.WriteLine(PosZ);
 
+                // Обновить наличие блоков в каких находится игрок
+                UpdatePresenceBlocks();
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 

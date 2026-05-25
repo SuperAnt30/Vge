@@ -250,6 +250,12 @@ namespace Vge.World
         /// </summary>
         protected virtual void _NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block) { }
 
+        /// <summary>
+        /// Видит ли данный блок небо
+        /// </summary>
+        public bool IsAgainstSky(BlockPos blockPos) 
+            => GetChunk(blockPos).Light.IsAgainstSky(blockPos.X, blockPos.Y, blockPos.Z);
+
         #endregion
 
         #region Mark

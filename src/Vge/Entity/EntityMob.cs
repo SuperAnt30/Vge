@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.AI;
-using Vge.Entity.Player;
-using Vge.Network.Packets.Server;
+using Vge.Entity.AI.PathFinding;
+using Vge.World;
 
 namespace Vge.Entity
 {
@@ -17,31 +17,44 @@ namespace Vge.Entity
         public int EntityAge { get; protected set; } = 0;
 
         /// <summary>
+        /// Максимальная высота, с которой объекту разрешено прыгать (используется в навигаторе)
+        /// </summary>
+        public int MaxFallHeight { get; protected set; } = 1;
+
+        /// <summary>
         /// Объект для вращения сущности AI
         /// </summary>
-        public readonly EntityLookHelper LookHelper;
+        public EntityLookHelper LookHelper { get; protected set; }
         /// <summary>
         /// Объект для перемещения сущности до координаты AI
         /// </summary>
-        private readonly EntityMoveHelper MoveHelper;
+        public EntityMoveHelper MoveHelper { get; protected set; }
         /// <summary>
         /// Объект навигации сущности
         /// </summary>
-        //protected PathNavigate _navigator;
+        public PathNavigate Navigator { get; protected set; }
         /// <summary>
         /// Пасивные задачи (бродить, смотреть, бездельничать, ...)
         /// </summary>
         //protected EntityAITasks _tasks;
 
-        public EntityMob()
+        /// <summary>
+        /// Инициализация навигации
+        /// </summary>
+        protected virtual PathNavigate _InitNavigate(WorldServer world) => null;
+
+        /// <summary>
+        /// Инициализация на сервере, после всех инициализаций
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _InitServer()
         {
-            //Standing();
             //tasks = new EntityAITasks(world);
             //targetTasks = new EntityAITasks(world);
             LookHelper = new EntityLookHelper(this);
             MoveHelper = new EntityMoveHelper(this);
-            //navigator = InitNavigate(World);
-            ////SpeedSurvival();
+            Navigator = _InitNavigate(GetWorldServer());
+            //SpeedSurvival();
         }
 
         /// <summary>
@@ -74,7 +87,7 @@ namespace Vge.Entity
                 // Определение цели
                 //tasks.OnUpdateTasks();
                 // Навигация. Расчёт следующего шага до точки прибытия в навигации
-                //navigator.OnUpdateNavigation();
+                Navigator.OnUpdateNavigation();
                 // Задачи моба. 
                 //UpdateAITasks();
                 // Перемещение. Вращение моба по вектору перемещения, и определяется длинна шага
@@ -88,6 +101,8 @@ namespace Vge.Entity
 
             if (!Physics.IsPhysicSleep())
             {
+                // Обновить наличие блоков в каких находится игрок
+                UpdatePresenceBlocks();
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
@@ -110,59 +125,9 @@ namespace Vge.Entity
                     LevelMotionChange = 2;
                 }
             }
-
-            ttt++;
-
-            if (ttt == 45)
-            {
-                //MoveHelper.SetJumping();
-                //ttt = 0;
-            }
-            if (ttt < 60)
-            {
-                // Пробегаем по всем сущностям и обрабатываеи их такт
-                for (int i = 0; i < _worldServer.LoadedEntityList.Count; i++)
-                {
-                    EntityBase entity = _worldServer.LoadedEntityList.GetAt(i);
-
-                    if (entity != null && entity is PlayerServer playerServer)
-                    {
-                        //LookHelper.SetLookPositionWithEntity(playerServer, .125f, .075f);
-                        MoveHelper.SetMoveTo(playerServer.PosX, playerServer.PosY, playerServer.PosZ, 0.25f);
-                        GetWorldServer().Tracker.SendToAllTrackingEntity(Id,
-                            new PacketS0BAnimation(Id, Physics.Movement.Flags));
-
-                        break;
-                    }
-                }
-                // ttt = 0;
-            }
-            else if (ttt == 61)
-            {
-                GetWorldServer().Tracker.SendToAllTrackingEntity(Id,
-                            new PacketS0BAnimation(Id, Physics.Movement.Flags));
-            }
-            else if (ttt > 120)
-            {
-                ttt = 0;
-                //GetWorldServer().Tracker.SendToAllTrackingEntity(Id,
-                //            new PacketS0BAnimation(Id, Physics.Movement.Flags));
-            }
-
-
-            //if (ttt == 30)
-            //{
-            //    RotationYaw += .4f;
-            //   // Physics.AwakenPhysics();
-            //}
-            //else if (ttt == 60)
-            //{
-            //    RotationYaw -= .8f;
-            // //   Physics.AwakenPhysics();
-            //    ttt = 0;
-            //}
+            _UpdateTest();
         }
 
-        private int ttt = 0;
+        protected virtual void _UpdateTest() { }
     }
 }

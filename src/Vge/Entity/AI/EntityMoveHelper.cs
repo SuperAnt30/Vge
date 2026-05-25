@@ -1,4 +1,5 @@
-﻿using WinGL.Util;
+﻿using System.Runtime.CompilerServices;
+using WinGL.Util;
 
 namespace Vge.Entity.AI
 {
@@ -46,10 +47,12 @@ namespace Vge.Entity.AI
         /// <summary>
         /// Устанавливает скорость и место для перемещения
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetMoveTo(Vector3 pos, float speed) => SetMoveTo(pos.X, pos.Y, pos.Z, speed);
         /// <summary>
         /// Устанавливает скорость и место для перемещения
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetMoveTo(float x, float y, float z, float speed)
         {
             _posX = x;
@@ -62,16 +65,19 @@ namespace Vge.Entity.AI
         /// <summary>
         /// Задать прыжок
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetJumping() => _updateJump = true;
 
         /// <summary>
         /// Задать ускорение
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetSprinting() => _updateSprinting = true;
 
         /// <summary>
         /// Задать крастся
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetSneak() => _updateSneak = true;
 
         public void OnUpdateMove()

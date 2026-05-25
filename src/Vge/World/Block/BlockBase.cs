@@ -422,13 +422,13 @@ namespace Vge.World.Block
         /// Является ли блок проходимым, т.е. можно ли ходить через него
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsPassable(uint met) => false;
+        public virtual bool IsPassable(int met) => false;
 
         /// <summary>
         /// Является ли блок проходимым на нём, т.е. можно ли ходить по нему
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsPassableOnIt(uint met) => !IsPassable(met);
+        public virtual bool IsPassableOnIt(int met) => !IsPassable(met);
 
         /// <summary>
         /// Проверить коллизию блока на пересечение луча

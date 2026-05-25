@@ -2,8 +2,6 @@
 using Mvk2.Item;
 using Mvk2.Packets;
 using Mvk2.World;
-using Mvk2.World.Block;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.Player;
@@ -13,9 +11,6 @@ using Vge.NBT;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
-using Vge.Util;
-using Vge.World;
-using Vge.World.Block;
 
 namespace Mvk2.Entity.List
 {
@@ -30,7 +25,10 @@ namespace Mvk2.Entity.List
         public InventoryPlayerMvk InvPlayer { get; private set; }
 
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
-            : base(login, token, socket, server) { }
+            : base(login, token, socket, server)
+        {
+            PresenceBlocks = new PresenceBlocksMvk();
+        }
 
         /// <summary>
         /// Создать игрока, тут первый спавн игрока

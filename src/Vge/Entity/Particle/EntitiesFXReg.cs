@@ -9,6 +9,10 @@ namespace Vge.Entity.Particle
     public sealed class EntitiesFXReg
     {
         /// <summary>
+        /// Индекс частички отладки
+        /// </summary>
+        public static ushort DebugId { get; private set; }
+        /// <summary>
         /// Индекс частички блока
         /// </summary>
         public static ushort PartId { get; private set; }
@@ -41,6 +45,7 @@ namespace Vge.Entity.Particle
             _Clear();
 
             // Регистрация обязательных предметов
+            RegisterEntityFXClass("Debug", typeof(EntityDebugFX));
             RegisterEntityFXClass("Part", typeof(EntityPartFX));
         }
 
@@ -76,7 +81,8 @@ namespace Vge.Entity.Particle
             for (ushort i = 0; i < Ce.EntitiesFX.Count; i++)
             {
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
-                if (alias == "Part") PartId = i;
+                if (alias == "Debug") DebugId = i;
+                else if (alias == "Part") PartId = i;
             }
         }
     }

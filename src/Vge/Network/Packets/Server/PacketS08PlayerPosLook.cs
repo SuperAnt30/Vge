@@ -52,7 +52,7 @@
         public void ReadPacket(ReadPacket stream)
         {
             Action = (EnumAction)stream.Byte();
-            if (Action != EnumAction.Impulse)
+            if (Action != EnumAction.Awaken)
             {
                 X = stream.Float();
                 Y = stream.Float();
@@ -68,7 +68,7 @@
         public void WritePacket(WritePacket stream)
         {
             stream.Byte((byte)Action);
-            if (Action != EnumAction.Impulse)
+            if (Action != EnumAction.Awaken)
             {
                 stream.Float(X);
                 stream.Float(Y);

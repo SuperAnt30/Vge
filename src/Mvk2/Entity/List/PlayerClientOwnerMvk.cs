@@ -28,6 +28,15 @@ namespace Mvk2.Entity.List
         }
 
         /// <summary>
+        /// Запуск мира
+        /// </summary>
+        public override void WorldStarting()
+        {
+            base.WorldStarting();
+            PresenceBlocks = new PresenceBlocksMvk();
+        }
+
+        /// <summary>
         /// Инициализация для клиента
         /// </summary>
         public override void InitRender(ushort index, EntitiesRenderer entitiesRenderer)

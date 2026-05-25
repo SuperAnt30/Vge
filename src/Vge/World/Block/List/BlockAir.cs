@@ -16,7 +16,7 @@ namespace Vge.World.Block.List
         /// Является ли блок проходимым, т.е. можно ли ходить через него
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsPassable(uint met) => true;
+        public override bool IsPassable(int met) => true;
 
         /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта

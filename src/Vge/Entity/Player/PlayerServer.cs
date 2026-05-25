@@ -234,6 +234,9 @@ namespace Vge.Entity.Player
                 SendPacket(new PacketS04TickUpdate(tick));
             }
 
+            // Обновить наличие блоков в каких находится игрок
+            UpdatePresenceBlocks();
+
             // Тут надо анализ сделать было ли перемещение
             if (IsPositionChange() || IsChangeOverview())
             {

@@ -87,7 +87,6 @@ namespace Vge.Entity
 
             // Регистрация обязательных сущностей
             RegisterEntityClass(EntityArrays.AliasPlayer, typeof(PlayerClient));
-            RegisterEntityClass("Item", typeof(EntityItem), true);
         }
 
         /// <summary>

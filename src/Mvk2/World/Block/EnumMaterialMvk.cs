@@ -57,18 +57,20 @@
         /// Лава
         /// </summary>
         Lava = 13,
-        /*
         /// <summary>
         /// Нефть
         /// </summary>
-        Oil = 7,
+        Oil = 14,
         /// <summary>
         /// Огонь
         /// </summary>
-        Fire = 8,
-        
-        
-        
+        Fire = 15,
+        /// <summary>
+        /// Дверь
+        /// </summary>
+        Door = 16
+            
+        /*
         /// <summary>
         /// Растительный белок 
         /// </summary>
