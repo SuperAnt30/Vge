@@ -218,7 +218,7 @@ namespace Mvk2.Entity.AI.PathFinding
                             // TODO::2024-02-14 Зачем block.IsCollidable, вроде неиспользуется.
                             // if ((isCollision && block.IsCollidable) || (!isCollision && !block.IsPassable(blockState.met))) 
                             if (((ThroughDdoor && eMaterial != EnumMaterial.Door) || !ThroughDdoor)
-                                && !block.IsPassable(blockState.Met))
+                                && !block.Passable)
                             {
                                 // столкновении с любым сплошным блоком и дверь если надо
                                 return true;
@@ -293,7 +293,7 @@ namespace Mvk2.Entity.AI.PathFinding
                             // столкновении с лавой или огнём
                             isLavaOrFile = true;
                         }
-                        else if (block.IsPassableOnIt(blockState.Met))
+                        else if (!block.Passable)
                         {
                             // Можно ходить
                             return 0;

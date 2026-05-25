@@ -3,6 +3,7 @@
     UseNeighborBrightness: true,
     NoCollision: true,
     LightOpacity: 0,
+    Passable: true,
     Translucent: true,
     IsReplaceable: true,
     ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],

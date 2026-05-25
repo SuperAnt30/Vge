@@ -2,6 +2,7 @@
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
     NoCollision: true,
+    Passable: true,
     LightOpacity: 0,
     Translucent: true,
     IsReplaceable: true,

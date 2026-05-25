@@ -13,12 +13,6 @@ namespace Vge.World.Block.List
         public BlockAir(MaterialBase material) : base(material) => _SetAir();
 
         /// <summary>
-        /// Является ли блок проходимым, т.е. можно ли ходить через него
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool IsPassable(int met) => true;
-
-        /// <summary>
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

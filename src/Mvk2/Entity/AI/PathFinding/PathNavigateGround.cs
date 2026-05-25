@@ -217,7 +217,7 @@ namespace Mvk2.Entity.AI.PathFinding
                 if (x2 * vecX + z2 * vecZ >= 0f)
                 {
                     blockState = _world.GetBlockState(blockPos);
-                    if (!blockState.GetBlock().IsPassableOnIt(blockState.Met))
+                    if (blockState.GetBlock().Passable)
                     {
                         return false;
                     }

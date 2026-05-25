@@ -197,6 +197,10 @@ namespace Vge.World.Block
         #region Физические и химические Свойства блока
 
         /// <summary>
+        /// Является ли блок проходимым, т.е. можно ли ходить через него
+        /// </summary>
+        public bool Passable { get; private set; }
+        /// <summary>
         /// Устойчивость блоков к взрывам.
         /// 10 камень, 5 дерево, руда, 0.6 стекло, 0.5 земля, песок, 0.2 листва, 0.0 трава, саженцы 
         /// </summary>
@@ -314,6 +318,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.IsDestorySecond)) IsDestorySecond = json.GetBool();
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
                     if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
+                    if (json.IsKey(Ctb.Passable)) Passable = json.GetBool();
                     if (json.IsKey(Ctb.IsReplaceable)) IsReplaceable = json.GetBool();
                     if (json.IsKey(Ctb.ParticleCount)) ParticleCount = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Color))
@@ -419,18 +424,6 @@ namespace Vge.World.Block
         #region Методы для физики
 
         /// <summary>
-        /// Является ли блок проходимым, т.е. можно ли ходить через него
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsPassable(int met) => false;
-
-        /// <summary>
-        /// Является ли блок проходимым на нём, т.е. можно ли ходить по нему
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsPassableOnIt(int met) => !IsPassable(met);
-
-        /// <summary>
         /// Проверить коллизию блока на пересечение луча
         /// </summary>
         /// <param name="pos">позиция блока</param>
@@ -504,6 +497,7 @@ namespace Vge.World.Block
             Translucent = true;
             IsCollidable = false;
             FullBlock = false;
+            Passable = true;
 
             _quads = new QuadSide[][] { new QuadSide[] { new QuadSide(0) } };
         }

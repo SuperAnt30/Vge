@@ -52,7 +52,7 @@ public sealed class Sr
 
     internal const string IndexOutsideEntityType = "Индекс [{0}] за пределами типа сущностей [{1}]. Не верно зарегистрированы сущности!";
     internal const string EntityClothingLayersObjectIsMissing = "Отсутствует объект слоёв одежды [{0}] у сущности [{1}].";
-    internal const string IndexOutsideEntityType = "Индекс тут должен быть = -1";
+    internal const string ThereShouldBeAnIndexHere = "Индекс тут должен быть = -1";
 
     #endregion
 

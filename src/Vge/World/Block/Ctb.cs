@@ -62,6 +62,10 @@
         /// </summary>
         public const string NoCollision = "NoCollision";
         /// <summary>
+        /// Является ли блок проходимым, т.е. можно ли ходить через него (bool)
+        /// </summary>
+        public const string Passable = "Passable";
+        /// <summary>
         /// Сколько ударов требуется, чтобы сломать блок в ударах. (int)
         /// </summary>
         public const string Hardness = "Hardness";
