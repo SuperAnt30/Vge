@@ -118,7 +118,7 @@ namespace Vge.Entity.Physics
                 // Фиксируем перемещение
                 if (MotionX != 0 || MotionY != 0 || MotionZ != 0)
                 {
-                    _CheckMoveCollidingPoint();
+                    _CheckMoveCollidingPoint(true);
                 }
             }
 

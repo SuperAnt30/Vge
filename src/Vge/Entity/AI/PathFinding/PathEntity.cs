@@ -138,8 +138,9 @@ namespace Vge.Entity.AI.PathFinding
         {
             for (int i = 0; i < _points.Length; i++)
             {
-                world.SpawnParticle(EntitiesFXReg.DebugId, 1, 
-                    new Vector3(_points[i].CoordX + .5f, _points[i].CoordY, _points[i].CoordZ + .5f), new Vector3(0), 0, 6);
+                world.SpawnParticle(EntitiesFXReg.CubeId, 1, 
+                    new Vector3(_points[i].CoordX + .5f, _points[i].CoordY, _points[i].CoordZ + .5f), 
+                    new Vector3(0), 0, 0x4A006);
             }
         }
 
@@ -147,7 +148,8 @@ namespace Vge.Entity.AI.PathFinding
         /// Отладка, последняя точка куда идти PathFinder.CreateEntityPath
         /// </summary>
         public static void DebugEnd(WorldBase world, PathPoint pointEnd)
-            => world.SpawnParticle(EntitiesFXReg.DebugId, 1, 
-                new Vector3(pointEnd.CoordX + .5f, pointEnd.CoordY, pointEnd.CoordZ + .5f), new Vector3(0), 0, 12);
+            => world.SpawnParticle(EntitiesFXReg.CubeId, 1, 
+                new Vector3(pointEnd.CoordX + .5f, pointEnd.CoordY, pointEnd.CoordZ + .5f), 
+                new Vector3(0), 0, 0x4F06C);
     }
 }

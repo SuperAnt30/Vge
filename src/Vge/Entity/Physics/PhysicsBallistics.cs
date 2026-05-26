@@ -9,10 +9,16 @@ namespace Vge.Entity.Physics
     public class PhysicsBallistics : PhysicsBase
     {
         /// <summary>
+        /// false - учитываем все блоки, без атрибуты NoCollision
+        /// </summary>
+        private readonly bool _collidable;
+
+        /// <summary>
         /// Физика для предмета которые не имеет силы для перемещения но может имет отскок от предметов
         /// </summary>
-        public PhysicsBallistics(CollisionBase collision, EntityBase entity)
-            : base(collision, entity, 0) { }
+        /// <param name = "collidable" > false - учитываем все блоки, без атрибуты NoCollision</param>
+        public PhysicsBallistics(CollisionBase collision, EntityBase entity, bool collidable)
+            : base(collision, entity, 0) => _collidable = collidable;
 
         /// <summary>
         /// Обновить данные в такте игры
@@ -23,7 +29,7 @@ namespace Vge.Entity.Physics
             _ImpulseLimit();
 
             // Проверка каллизии
-            _CheckMoveCollidingPoint();
+            _CheckMoveCollidingPoint(_collidable);
 
             // Если мелочь убираем
             ResetMinimumMotion();

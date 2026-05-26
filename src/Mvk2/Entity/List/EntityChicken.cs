@@ -123,8 +123,7 @@ namespace Mvk2.Entity.List
 //Navigator Length:31 ms: 0,1161
 
                             //MoveHelper.SetMoveTo(playerServer.PosX, playerServer.PosY, playerServer.PosZ, 0.25f);
-                            GetWorldServer().Tracker.SendToAllTrackingEntity(Id,
-                                new PacketS0BAnimation(Id, Physics.Movement.Flags));
+
                         }
 
                         break;

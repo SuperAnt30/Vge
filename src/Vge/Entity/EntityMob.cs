@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.AI;
 using Vge.Entity.AI.PathFinding;
+using Vge.Network.Packets.Server;
 using Vge.World;
 
 namespace Vge.Entity
@@ -42,6 +43,12 @@ namespace Vge.Entity
         /// Инициализация навигации
         /// </summary>
         protected virtual PathNavigate _InitNavigate(WorldServer world) => null;
+
+        /// <summary>
+        /// Флаг данных общего перемещения прошлого такта
+        /// FBLRSnJSp
+        /// </summary>
+        private byte _flagMovement;
 
         /// <summary>
         /// Инициализация на сервере, после всех инициализаций
@@ -97,6 +104,14 @@ namespace Vge.Entity
 
                 // _UpdateEntityActionState();
                 _worldServer.Filer.EndSection();
+
+                // Анимация движения
+                if (_flagMovement != Physics.Movement.Flags)
+                {
+                    GetWorldServer().Tracker.SendToAllTrackingEntity(Id,
+                        new PacketS0BAnimation(Id, Physics.Movement.Flags));
+                    _flagMovement = Physics.Movement.Flags;
+                }
             }
 
             if (!Physics.IsPhysicSleep())

@@ -9,9 +9,9 @@ namespace Vge.Entity.Particle
     public sealed class EntitiesFXReg
     {
         /// <summary>
-        /// Индекс частички отладки
+        /// Индекс частички куба без гравитации
         /// </summary>
-        public static ushort DebugId { get; private set; }
+        public static ushort CubeId { get; private set; }
         /// <summary>
         /// Индекс частички блока
         /// </summary>
@@ -45,7 +45,7 @@ namespace Vge.Entity.Particle
             _Clear();
 
             // Регистрация обязательных предметов
-            RegisterEntityFXClass("Debug", typeof(EntityDebugFX));
+            RegisterEntityFXClass("Cube", typeof(EntityCubeFX));
             RegisterEntityFXClass("Part", typeof(EntityPartFX));
         }
 
@@ -81,7 +81,7 @@ namespace Vge.Entity.Particle
             for (ushort i = 0; i < Ce.EntitiesFX.Count; i++)
             {
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
-                if (alias == "Debug") DebugId = i;
+                if (alias == "Cube") CubeId = i;
                 else if (alias == "Part") PartId = i;
             }
         }

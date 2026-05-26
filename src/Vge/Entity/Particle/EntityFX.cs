@@ -79,7 +79,7 @@ namespace Vge.Entity.Particle
             IndexEntity = index;
             _rand = world.Rnd;
             Size = new SizeEntityPoint(this, 1);
-            Physics = new PhysicsBallistics(world.Collision, this);
+            Physics = new PhysicsBallistics(world.Collision, this, true);
             NoClip = true;
             Physics.SetGravity(_gravity);
             Render = new EntityRenderParticle(this, particles);

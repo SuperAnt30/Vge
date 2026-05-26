@@ -553,13 +553,14 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Проверка перемещения со столкновением для быстрых сущностей точек, балистики
         /// </summary>
-        protected void _CheckMoveCollidingPoint()
+        /// <param name="collidable">false - учитываем все блоки, без атрибуты NoCollision</param>
+        protected void _CheckMoveCollidingPoint(bool collidable)
         {
             if (!Entity.NoClip)
             {
                 Vector3 dir = new Vector3(MotionX, MotionY, MotionZ);
                 Collision.RayCast(Entity.PosX, Entity.PosY, Entity.PosZ,
-                    dir.Normalize(), Glm.Distance(dir), false, Entity.Id);
+                    dir.Normalize(), Glm.Distance(dir), collidable, Entity.Id);
 
                 if (Collision.MovingObject.IsCollision())
                 {
