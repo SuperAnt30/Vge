@@ -17,7 +17,7 @@ namespace Mvk2.Entity.List
         protected override void _InitPhysics(CollisionBase collision)
         {
             Physics = new PhysicsGround(collision, this, .5f);
-            PresenceBlocks = new PresenceBlocksMvk();
+            PresenceBlocks = new PresenceBlocksMvk(this);
         }
     }
 }

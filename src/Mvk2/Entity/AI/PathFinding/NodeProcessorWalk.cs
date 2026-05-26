@@ -66,7 +66,7 @@ namespace Mvk2.Entity.AI.PathFinding
         {
             int y;
 
-            if (CanSwim && entity.PresenceBlocks.IsInWater())
+            if (CanSwim && entity.PresenceBlocks.IsInWater)
             {
                 // если в воде и избегает воды, выплываем вверх, и помечаем, что не избегаем воды
                 y = (int)entity.PosY;

@@ -72,7 +72,7 @@ namespace Mvk2.Entity.AI.PathFinding
         /// </summary>
         private int _GetPositionHeight()
         {
-            if (_entity.PresenceBlocks.IsInWater() && nodeProcessor.CanSwim)
+            if (_entity.PresenceBlocks.IsInWater && nodeProcessor.CanSwim)
             {
                 int y = (int)_entity.PosY;
                 BlockBase block = _world.GetBlockState(new BlockPos(
@@ -237,7 +237,7 @@ namespace Mvk2.Entity.AI.PathFinding
                             new BlockPos(x, posY - 1, z)).GetBlock().Material.IndexMaterial;
 
                         if (material == EnumMaterial.Air
-                            || (material == EnumMaterial.Water && !_entity.PresenceBlocks.IsInWater())
+                            || (material == EnumMaterial.Water && !_entity.PresenceBlocks.IsInWater)
                             || material == EnumMaterial.Lava || material == EnumMaterial.Oil)
                         {
                             return false;

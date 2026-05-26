@@ -327,10 +327,12 @@ namespace Vge.Renderer.World
             // Облака
             //_DrawClouds(timeIndex);
 
-            // Рисуем воксели альфа
-            _DrawVoxelAlpha();
             // Прорисовка руки
             Entities.DrawOwnerEye(timeIndex);
+
+            // Рисуем воксели альфа
+            _DrawVoxelAlpha();
+            
 
             // --- Конец сцены
 

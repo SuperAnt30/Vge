@@ -27,7 +27,7 @@ namespace Mvk2.Entity.List
         public PlayerServerMvk(string login, string token, SocketSide socket, GameServer server) 
             : base(login, token, socket, server)
         {
-            PresenceBlocks = new PresenceBlocksMvk();
+            PresenceBlocks = new PresenceBlocksMvk(this);
         }
 
         /// <summary>

@@ -73,13 +73,18 @@ namespace Vge.Entity.Physics
 
             // Ускорение
             float acceleration;
-            // Параметр инерции
-            float inertia;
-            // Трение с блоком
-            if (Entity.OnGround)
+            // Параметр инерции (сопративление) XZ
+            float inertiaXZ;
+            // Параметр инерции (сопративление) Y
+            float inertiaY = Cp.AirDrag;
+            // Гравитация
+            float gravity = _gravity;
+
+            // Находимся в воздухе
+            if (Entity.OnGround && Entity.IsSpeed​​Limit())
             {
                 // трение блока под ногами
-                inertia = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
+                inertiaXZ = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
 
                 // корректировка скорости, с трением
                 //friction = GetAIMoveSpeed(strafe, forward) * param;
@@ -88,14 +93,23 @@ namespace Vge.Entity.Physics
                 float speed = _LivingUpdateSpeed();
 
                 // Ускорение
-                acceleration = speed * 0.16277136f / (inertia * inertia * inertia);
+                acceleration = speed * 0.16277136f / (inertiaXZ * inertiaXZ * inertiaXZ);
             }
             else
             {
                 // трение блока в воздухе
-                inertia = _airborneInertia;
+                inertiaXZ = _airborneInertia;
                 // Ускорение
                 acceleration = _LivingUpdateSprinting();
+            }
+
+            // Трение с блоком
+            if (Entity.IsSpeed​​Limit() && Entity.PresenceBlocks.IsInLiquid)
+            {
+                // Находимся в жидкости
+                inertiaXZ *= Entity.PresenceBlocks.FactorInertiaInLiquid;
+                inertiaY *= Entity.PresenceBlocks.FactorInertiaInLiquid;
+                gravity *= Entity.PresenceBlocks.FactorGravityInLiquid;
             }
 
             // Если имеется сила для движения, задаём вектор передвижения
@@ -174,12 +188,12 @@ namespace Vge.Entity.Physics
             }
 
             // Параметр падение 
-            MotionY -= _gravity; // minecraft .08f
+            MotionY -= gravity; // minecraft .08f
 
             // Инерция
-            MotionX *= inertia;
-            MotionY *= Cp.AirDrag;
-            MotionZ *= inertia;
+            MotionX *= inertiaXZ;
+            MotionY *= inertiaY;
+            MotionZ *= inertiaXZ;
         }
 
         /// <summary>

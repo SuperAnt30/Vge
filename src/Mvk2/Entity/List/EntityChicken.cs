@@ -1,13 +1,9 @@
 ﻿using Mvk2.Entity.AI.PathFinding;
-using System;
-using System.Diagnostics;
 using Vge.Entity;
 using Vge.Entity.AI.PathFinding;
-using Vge.Entity.Particle;
 using Vge.Entity.Physics;
 using Vge.Entity.Player;
 using Vge.Entity.Sizes;
-using Vge.Network.Packets.Server;
 using Vge.World;
 
 namespace Mvk2.Entity.List
@@ -38,7 +34,7 @@ namespace Mvk2.Entity.List
             PhysicsGroundLiving physicsGround = new PhysicsGroundLiving(collision, this);
             physicsGround.SetHeightAutoJump(1f);
             Physics = physicsGround;
-            PresenceBlocks = new PresenceBlocksMvk();
+            PresenceBlocks = new PresenceBlocksMvk(this);
         }
 
         /// <summary>

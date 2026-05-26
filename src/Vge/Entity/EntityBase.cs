@@ -550,6 +550,12 @@ namespace Vge.Entity
             return weightAnother / (float)weightSum;
         }
 
+        /// <summary>
+        /// Имеются ли ограничения по скорости, в воде и на блоках
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool IsSpeed​​Limit() => true;
+
         #endregion
 
         #region Tracker
@@ -616,7 +622,7 @@ namespace Vge.Entity
         /// Вода, огонь, лава, и прочее
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdatePresenceBlocks() => PresenceBlocks?.Update();
+        public void UpdatePresenceBlocks(WorldBase world) => PresenceBlocks?.Update(world);
 
         /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.

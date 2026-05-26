@@ -56,19 +56,27 @@ namespace Vge.Entity.Physics
 
             if (Movement.Jump)
             {
-                if (Entity.OnGround && _jumpTicks == 0)
+                if (Entity.PresenceBlocks.IsInLiquid)
                 {
-                    //jump = true;
-                    //Console.WriteLine("Jump");
-                    //jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
-                    _jumpTicks = Cp.ReJump;
-                    MotionY = Cp.AirborneJumpInHeight;
-
-                    if (isSprintingPrev)
+                    // Находимся в жидкости
+                    MotionY += Entity.PresenceBlocks.AccelerationAscentInLiquid;
+                }
+                else
+                {
+                    if (Entity.OnGround && _jumpTicks == 0)
                     {
-                        // Если прыжок с бегом, то скорость увеличивается
-                        MotionX += Glm.Sin(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
-                        MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                        //jump = true;
+                        //Console.WriteLine("Jump");
+                        //jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
+                        _jumpTicks = Cp.ReJump;
+                        MotionY = Cp.AirborneJumpInHeight;
+
+                        if (isSprintingPrev)
+                        {
+                            // Если прыжок с бегом, то скорость увеличивается
+                            MotionX += Glm.Sin(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                            MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                        }
                     }
                 }
             }
@@ -156,8 +164,25 @@ namespace Vge.Entity.Physics
                     Movement.MoveStrafe * .98f,
                     Movement.MoveForward * .98f,
                     acceleration, _entityLiving.RotationYaw);
+
+            if (Entity.PresenceBlocks.IsImpulse)
+            {
+                // Импульсь от течения жидкостей блоков
+                ImpulseX += Entity.PresenceBlocks.ImpulseX;
+                ImpulseY += Entity.PresenceBlocks.ImpulseY;
+                ImpulseZ += Entity.PresenceBlocks.ImpulseZ;
+                if (IsPhysicSleep()) AwakenPhysics();
+            }
             MotionX += motion.X;
             MotionZ += motion.Y;
+
+            if (Entity.PresenceBlocks.IsSlow)
+            {
+                // Имеется замедление
+                MotionX *= Entity.PresenceBlocks.FactorSlowXZ;
+                MotionY *= Entity.PresenceBlocks.FactorSlowY;
+                MotionZ *= Entity.PresenceBlocks.FactorSlowXZ;
+            }
         }
 
         /// <summary>

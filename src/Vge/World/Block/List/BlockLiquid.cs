@@ -87,6 +87,62 @@ namespace Vge.World.Block.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override SideLiquid GetSideLiquid(int index) => _sideLiquids[index];
 
+        #region Static
+
+        /// <summary>
+        /// Получить вектор течения, нормализованный
+        /// </summary>
+        public static Vector3 GetVectorFlow(WorldBase world, BlockPos blockPos)
+        {
+            Vector3 vec = new Vector3(0);
+            int indexBlock = world.GetBlockState(blockPos).Id;
+            int metLevel = _GetLevelLiquid(indexBlock, world, blockPos);
+            if (metLevel <= 0) return vec;
+            if (metLevel == 15) return new Vector3(0, -1, 0);
+
+            BlockPos blockPos2;
+            int metLevel2;
+            int j;
+            for (int i = 2; i < 6; i++)
+            {
+                blockPos2 = blockPos.Offset(i);
+                metLevel2 = _GetLevelLiquid(indexBlock, world, blockPos2);
+
+                if (metLevel2 > 0 && metLevel2 < 16)
+                {
+                    j = metLevel - metLevel2;
+                    vec.X += (blockPos2.X - blockPos.X) * j;
+                    vec.Z += (blockPos2.Z - blockPos.Z) * j;
+                }
+            }
+            if (vec.X == 0 && vec.Z == 0) return vec;
+            return vec.Normalize();
+        }
+
+        /// <summary>
+        /// Получиь уровень жидкости с этой позиции где, 15 макс, 0 воды нет.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int _GetLevelLiquid(int indexBlock, WorldBase world, BlockPos pos)
+        {
+            BlockState blockState = world.GetBlockState(pos);
+            int met = blockState.Met;
+            if (blockState.Id == indexBlock)
+            {
+                // Блок такой же жидкости
+                return met == 0 ? 15 : met;
+            }
+
+            BlockBase block = blockState.GetBlock();
+            if (Ce.Blocks.GetAddLiquidIndex(met) == indexBlock)
+            {
+                // Блок с доп жидкостью
+                met = block.GetAddLiquidMet(met);
+                return met == 0 ? 14 : met;
+            }
+            return 0;
+        }
+
         /// <summary>
         /// Получить угол течения
         /// </summary>
@@ -123,6 +179,8 @@ namespace Vge.World.Block.List
 
             return (vec.X == 0f && vec.Z == 0f) ? -1000f : Glm.Atan2(vec.Z, vec.X) - Glm.Pi90;
         }
+
+        #endregion
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

@@ -70,7 +70,7 @@ namespace Vge.Entity.AI.PathFinding
             EntityLiving entityGoal, float distance)
         {
             float y = entityGoal.PosY;
-            // TODO:: 2026-05-25 AI Path
+            // TODO::2026-05-25 AI Path
             //if (entity.IsFlying && _nodeProcessor is SwimOrFlyNodeProcessor)
             //{
             //    y += entityGoal.GetEyeHeight();
@@ -181,8 +181,7 @@ namespace Vge.Entity.AI.PathFinding
         private PathEntity CreateEntityPath(PathPoint pointBegin, PathPoint pointEnd, bool isDestinationSame)
         {
             // Отладка, последняя точка куда идти
-            PathEntity.DebugEnd(_world, pointEnd);
-            // TODO:: 2026-05-25 AI Path
+            //PathEntity.DebugEnd(_world, pointEnd);
 
             int step = 1;
             PathPoint point;

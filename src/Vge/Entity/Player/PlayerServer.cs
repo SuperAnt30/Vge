@@ -235,7 +235,7 @@ namespace Vge.Entity.Player
             }
 
             // Обновить наличие блоков в каких находится игрок
-            UpdatePresenceBlocks();
+            UpdatePresenceBlocks(GetWorldServer());
 
             // Тут надо анализ сделать было ли перемещение
             if (IsPositionChange() || IsChangeOverview())

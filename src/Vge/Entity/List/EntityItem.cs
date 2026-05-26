@@ -62,6 +62,7 @@ namespace Vge.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize()
             => Size = new SizeEntityBox(this, .4375f, .125f, 2);
+            //=> Size = new SizeEntityPoint(this, 2);
 
         /// <summary>
         /// Инициализация физики
@@ -112,6 +113,7 @@ namespace Vge.Entity.List
             ItemStack itemStack = GetEntityItemStack();
             if (itemStack != null)
             {
+                //Size = new SizeEntityPoint(this, 2);
                 Size = new SizeEntityBox(this, itemStack.Item.Width,
                     itemStack.Item.Height, itemStack.Item.Weight);
                 Physics.SetRebound(itemStack.Item.Rebound);
@@ -145,7 +147,7 @@ namespace Vge.Entity.List
                 //Console.WriteLine(PosZ);
 
                 // Обновить наличие блоков в каких находится игрок
-                UpdatePresenceBlocks();
+                UpdatePresenceBlocks(_worldServer);
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 

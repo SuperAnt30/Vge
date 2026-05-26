@@ -71,7 +71,7 @@ namespace Vge.Entity.AI.PathFinding
         /// Возвращает true, если объект находится в воде, лаве или нефте, иначе false
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected bool _IsInLiquid() => _entity.PresenceBlocks.IsInLiquid();
+        protected bool _IsInLiquid() => _entity.PresenceBlocks.IsInLiquid;
 
         /// <summary>
         /// Возвращает путь к заданным координатам
@@ -139,8 +139,7 @@ namespace Vge.Entity.AI.PathFinding
             }
 
             // Отладка, визуализация перемещения
-            // TODO:: 2026-05-25 AI Path
-            path.DebugPath(_world);
+            //path.DebugPath(_world);
 
             _RemoveSunnyPath();
 

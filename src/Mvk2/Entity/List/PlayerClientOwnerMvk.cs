@@ -33,7 +33,7 @@ namespace Mvk2.Entity.List
         public override void WorldStarting()
         {
             base.WorldStarting();
-            PresenceBlocks = new PresenceBlocksMvk();
+            PresenceBlocks = new PresenceBlocksMvk(this);
         }
 
         /// <summary>

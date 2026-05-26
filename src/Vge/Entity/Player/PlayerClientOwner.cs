@@ -637,7 +637,7 @@ namespace Vge.Entity.Player
             if (!Physics.IsPhysicSleep())
             {
                 // Обновить наличие блоков в каких находится игрок
-                UpdatePresenceBlocks();
+                UpdatePresenceBlocks(world);
 
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
@@ -930,6 +930,12 @@ namespace Vge.Entity.Player
         protected override void _AwakenPhysicSleep(int id)
             => _game.TrancivePacket(new PacketC03UseEntity(id, PacketC03UseEntity.EnumAction.Awaken));
 
+        /// <summary>
+        /// Имеются ли ограничения по скорости, в воде и на блоках
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsSpeed​​Limit() => Physics is PhysicsPlayer;
+
         #endregion
 
         #region Packet
@@ -1073,7 +1079,7 @@ namespace Vge.Entity.Player
             return Login + " " + ToStringPositionRotation() + " O:" + OverviewChunk
                 + (OnGround ? " OnGround" : "")
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
-                + Movement + "\r\n" + motion  
+                + Movement + PresenceBlocks + "\r\n" + motion  
                 + chunkStorage;
         }
 

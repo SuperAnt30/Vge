@@ -117,7 +117,7 @@ namespace Vge.Entity
             if (!Physics.IsPhysicSleep())
             {
                 // Обновить наличие блоков в каких находится игрок
-                UpdatePresenceBlocks();
+                UpdatePresenceBlocks(_worldServer);
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
