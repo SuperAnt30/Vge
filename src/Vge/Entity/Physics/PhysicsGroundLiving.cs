@@ -58,7 +58,7 @@ namespace Vge.Entity.Physics
             {
                 if (Entity.PresenceBlocks.IsInLiquid)
                 {
-                    // Находимся в жидкости
+                    // Находимся в жидкости, всплываем
                     MotionY += Entity.PresenceBlocks.AccelerationAscentInLiquid;
                 }
                 else
@@ -93,6 +93,12 @@ namespace Vge.Entity.Physics
                 _entityLiving.SetSneaking(true);
                 _entityLiving.Sitting();
                 IsPoseChange = true;
+            }
+            // Для воды свои правила, плыть вниз
+            else if (Movement.Sneak && Entity.PresenceBlocks.IsInLiquid)
+            {
+                // Находимся в жидкости, погружаемся
+                MotionY += Entity.PresenceBlocks.AccelerationToDiveInLiquid;
             }
             // Если хотим встать
             else if (!Movement.Sneak && isSneaking)
@@ -133,6 +139,11 @@ namespace Vge.Entity.Physics
                 // Если ускорение
                 speed += speed * Cp.SprintSpeed;
             }
+            if (Movement.Sneak)
+            {
+                // Если крадёмся 
+                speed *= Cp.SneakSpeed;
+            }
             return speed;
         }
 
@@ -155,14 +166,9 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected override void _LivingUpdateMotion(float acceleration)
         {
-            if (Movement.Sneak)
-            {
-                // Если крадёмся 
-                acceleration *= Cp.SneakSpeed;
-            }
             Vector2 motion = Sundry.MotionAngle(
-                    Movement.MoveStrafe * .98f,
-                    Movement.MoveForward * .98f,
+                    Movement.MoveStrafe * Cp.AirDrag,
+                    Movement.MoveForward * Cp.AirDrag,
                     acceleration, _entityLiving.RotationYaw);
 
             if (Entity.PresenceBlocks.IsImpulse)

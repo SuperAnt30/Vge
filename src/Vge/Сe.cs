@@ -316,7 +316,7 @@ public sealed class Ce
     /// <summary>
     /// Количество тактов в секунду, в minecraft 20
     /// </summary>
-    public const int Tps = 30;
+    public const int Tps = 20;// 30;
     /// <summary>
     /// Время в мс на такт, в minecraft 50
     /// </summary>

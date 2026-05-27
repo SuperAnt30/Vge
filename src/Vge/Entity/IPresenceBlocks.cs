@@ -17,9 +17,17 @@ namespace Vge.Entity
         /// </summary>
         bool IsInLiquid { get; }
         /// <summary>
+        /// Можно ли совершить авто прыжок
+        /// </summary>
+        bool IsInLiquidAutoJump { get; }
+        /// <summary>
         /// Ускорение всплытия в жидкости
         /// </summary>
         float AccelerationAscentInLiquid { get; }
+        /// <summary>
+        /// Ускорение для погружения в жидкости
+        /// </summary>
+        float AccelerationToDiveInLiquid { get; }
         /// <summary>
         /// Коэффициент трения в жидкости
         /// </summary>

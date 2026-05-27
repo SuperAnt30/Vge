@@ -1,5 +1,6 @@
 ﻿//#define TPS20
-#define TPS30sm50
+#define TPS20sm50
+//#define TPS30sm50
 
 namespace Vge.Entity.Physics
 {
@@ -45,7 +46,50 @@ namespace Vge.Entity.Physics
         /// </summary>
         public const float DebugKoef = Ce.Tps; // =20;
 
-#endregion
+        #endregion
+
+#elif TPS20sm50
+
+#region TPS 20 50 см блок как в Малювекi 1
+
+    /// <summary>
+    /// Параметр падения
+    /// </summary>
+    public const float Gravity = .16f;
+    /// <summary>
+    /// Сопротивление воздуха
+    /// </summary>
+    public const float AirDrag = .98f;
+    /// <summary>
+    /// Ускорение в воздухе
+    /// </summary>
+    public const float AirborneAcceleration = .03f;
+    /// <summary>
+    /// Скорость
+    /// </summary>
+    public const float Speed = .2f;
+    /// <summary>
+    /// Коэффициент скорости полёта
+    /// </summary>
+    public const float FactorSpeedFly = .5951f;
+    /// <summary>
+    /// Ускорение при прыжке в высоту
+    /// </summary>
+    public const float AirborneJumpInHeight = .84f;
+    /// <summary>
+    /// Повторный прыжок через количество тиков
+    /// </summary>
+    public const byte ReJump = 10;
+    /// <summary>
+    /// Ускорение при прыжке с бегом в длину
+    /// </summary>
+    public const float AirborneJumpInLength = .4f;//
+    /// <summary>
+    /// Коэффициент для отладки перемещения скорости в м/с
+    /// </summary>
+    public const float DebugKoef = Ce.Tps *.5f; // 20 *.5 = 10;
+
+        #endregion
 
 #elif TPS30sm50
 
@@ -67,6 +111,10 @@ namespace Vge.Entity.Physics
         /// Скорость
         /// </summary>
         public const float Speed = .1333f;
+        /// <summary>
+        /// Коэффициент скорости полёта
+        /// </summary>
+        public const float FactorSpeedFly = .39673f;
         /// <summary>
         /// Ускорение при прыжке в высоту
         /// </summary>
@@ -123,7 +171,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         public const float DebugKoef = Ce.Tps; // =30;
 
-#endregion 
+#endregion
 
 #endif
 
@@ -131,6 +179,10 @@ namespace Vge.Entity.Physics
         /// Сопротивление воздуха с силой, кто может перемещаться самостоятельно
         /// </summary>
         public const float AirDragWithForce = .91f;
+        /// <summary>
+        /// Сопротивление воздуха с силой, кто может перемещаться самостоятельно по вертикали в момент полёта
+        /// </summary>
+        public const float AirDragWithForceVerticlFly = .6f;
         /// <summary>
         /// Отскок от гравитации горизонта
         /// </summary>
@@ -144,6 +196,10 @@ namespace Vge.Entity.Physics
         /// </summary>
         public const float SprintSpeed = .3f;
         /// <summary>
+        /// Скорость ускоренного полёта
+        /// </summary>
+        public const float SprintSpeedFly = 5f;
+        /// <summary>
         /// Скорость подкрадывания
         /// </summary>
         public const float SneakSpeed = .3f;
@@ -155,5 +211,11 @@ namespace Vge.Entity.Physics
         /// Скорость назад, по умолчанию 1.0, перед корнем в физике
         /// </summary>
         public const float BackSpeed = .8f;
+        /// <summary>
+        /// Скорость вертикального полёта
+        /// </summary>
+        public const float VerticlSpeedFly = 1.5f;
+
+
     }
 }

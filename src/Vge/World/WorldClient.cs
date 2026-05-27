@@ -276,7 +276,7 @@ namespace Vge.World
                         y1 = k >> 16 & 15;
                         blockPos.Y = y + y1 - 8;
 
-                        if (blockPos.Y >= 0)
+                        if (blockPos.Y >= 0 && blockPos.Y < chunkRender.Settings.NumberBlocks)
                         {
                             x1 = k & 15;
                             z1 = k >> 8 & 15;

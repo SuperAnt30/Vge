@@ -31,10 +31,17 @@ namespace Mvk2.Entity
         /// </summary>
         public bool IsInLiquid { get; private set; }
         /// <summary>
+        /// Можно ли совершить авто прыжок
+        /// </summary>
+        public bool IsInLiquidAutoJump { get; private set; }
+        /// <summary>
         /// Ускорение всплытия в жидкости
         /// </summary>
-        public float AccelerationAscentInLiquid { get; private set; } 
-            = Cp.AirborneAcceleration * 2;
+        public float AccelerationAscentInLiquid { get; private set; } = .048f;
+        /// <summary>
+        /// Ускорение для погружения в жидкости
+        /// </summary>
+        public float AccelerationToDiveInLiquid { get; private set; } = -.032f;
         /// <summary>
         /// Коэффициент трения в жидкости
         /// </summary>
@@ -42,7 +49,7 @@ namespace Mvk2.Entity
         /// <summary>
         /// Коэффициент гравитации в жидкости
         /// </summary>
-        public float FactorGravityInLiquid { get; private set; } = .6f;
+        public float FactorGravityInLiquid { get; private set; } = .01f;
 
         /// <summary>
         /// Имеются ли замедления
@@ -73,6 +80,10 @@ namespace Mvk2.Entity
         /// Импульс по координате X
         /// </summary>
         public float ImpulseZ { get; private set; }
+        /// <summary>
+        /// Счётчик для авто прыжка из воды
+        /// </summary>
+        private int _numberAutoJump;
 
         /// <summary>
         /// Обновление перерасчёта в такте
@@ -143,10 +154,6 @@ namespace Mvk2.Entity
                 BlockPos blockPos = new BlockPos(Entity.PosX, Entity.PosY, Entity.PosZ);
                 _CheckBlock(world, blockPos, world.GetBlockState(blockPos));
             }
-            //Entity.Size
-            //size.
-            //size.IntersectsWith()
-            //bool i
         }
 
         private void _EmptyBlocks()
@@ -154,6 +161,14 @@ namespace Mvk2.Entity
             IsInLiquid = false;
             IsImpulse = false;
             IsSlow = false;
+            if (_numberAutoJump > 0)
+            {
+                _numberAutoJump--;
+                if (_numberAutoJump == 0)
+                {
+                    IsInLiquidAutoJump = false;
+                }
+            }
         }
 
         private void _CheckBlock(WorldBase world, BlockPos blockPos, BlockState blockState)
@@ -165,12 +180,14 @@ namespace Mvk2.Entity
                 if (blockState.Met != 0)
                 {
                     Vector3 vec = BlockLiquid.GetVectorFlow(world, blockPos);
-                    ImpulseX = vec.X * .036f;// .028f;
-                    ImpulseY = vec.Y * .036f;//.028f;
-                    ImpulseZ = vec.Z * .036f;//.028f;
+                    ImpulseX = vec.X * .026f;
+                    ImpulseY = vec.Y * .026f;
+                    ImpulseZ = vec.Z * .026f;
                     IsImpulse = true;
                 }
                 IsInLiquid = true;
+                IsInLiquidAutoJump = true;
+                _numberAutoJump = 5;
             }
             else if (block.Material.IndexMaterial == (int)EnumMaterial.Plant)
             {
@@ -184,7 +201,8 @@ namespace Mvk2.Entity
         {
             return (IsInLiquid ? " Liquid" : "") 
                 + (IsSlow ? " Slow" : "")
-                + (IsImpulse ? " Impulse" : "");
+                + (IsImpulse ? " Impulse" : "")
+                + (IsInLiquidAutoJump ? " AutoJump" : "");
         }
     }
 }

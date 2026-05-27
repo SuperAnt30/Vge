@@ -1071,7 +1071,7 @@ namespace Vge.Entity.Player
 
             string chunkStorage = "";
             ChunkBase chunk = _game.World.GetChunk(ChunkPositionX, ChunkPositionZ);
-            if (chunk != null && ChunkPositionY >= 0)
+            if (chunk != null && ChunkPositionY >= 0 && ChunkPositionY < chunk.Settings.NumberSections)
             {
                 chunkStorage = "\r\n" + chunk.StorageArrays[ChunkPositionY].ToStringCount();
             }

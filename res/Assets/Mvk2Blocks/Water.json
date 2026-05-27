@@ -4,7 +4,7 @@
     LightOpacity: 1,
     NoCollision: true,
     Translucent: true,
-    
+    IsReplaceable: true,
     Color: [ 1, 1, 1 ],
     Liquid: "Water"
 }

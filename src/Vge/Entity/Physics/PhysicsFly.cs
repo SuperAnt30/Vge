@@ -32,30 +32,25 @@ namespace Vge.Entity.Physics
         public override void LivingUpdate()
         {
             // Если нет перемещения по тактам, запускаем трение воздуха
-            MotionX *= .98f;
-            MotionZ *= .98f;
+            MotionX *= Cp.AirDrag;
+            MotionZ *= Cp.AirDrag;
 
             // Если мелочь убираем
             ResetMinimumMotion();
 
-            float speed = .1f;
+            float speed = Cp.Speed;
 
-            Vector2 motion = Sundry.MotionAngle(
-               Movement.MoveStrafe, Movement.MoveForward,
-               //.5951f 
-               .39673f
-               * speed * (Movement.Sprinting ? 5f : 1f),
-               _entityLiving.RotationYaw);
+            MotionY += Movement.MoveVertical * speed * Cp.VerticlSpeedFly;
+
+            speed *= Cp.FactorSpeedFly;
+
+            if (Movement.Sprinting) speed *= Cp.SprintSpeedFly;
+
+            Vector2 motion = Sundry.MotionAngle(Movement.MoveStrafe, Movement.MoveForward, 
+                speed, _entityLiving.RotationYaw);
 
             // Временно меняем перемещение если это надо
             MotionX += motion.X;
-            MotionY += Movement.MoveVertical * speed * 1.0f;
-            //if (Movement.Jump)
-            //{
-            //    MotionY += .84f;
-            //}
-            
-            // * 1.5f;
             MotionZ += motion.Y;
 
             // Проверка кализии
@@ -84,21 +79,10 @@ namespace Vge.Entity.Physics
 
             // Корректируем для следующего тика
 
-            // трение воздуха
-            float study = .91f;
-            // Трение с блоком
-            //study = (.6f) * .91f;
-            // float param = 0.16277136f / (study * study * study);
-
-            // Параметр падение 
-            //MotionY -= .16f; // minecraft .08f
-
             // Трение воздуха
-            MotionX *= study;
-            //MotionY *= .98f;
-            MotionY *= .6f;
-            MotionZ *= study;
+            MotionX *= Cp.AirDragWithForce;
+            MotionY *= Cp.AirDragWithForceVerticlFly;
+            MotionZ *= Cp.AirDragWithForce;
         }
-
     }
 }

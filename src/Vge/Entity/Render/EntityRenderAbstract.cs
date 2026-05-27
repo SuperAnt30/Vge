@@ -59,15 +59,15 @@ namespace Vge.Entity.Render
                 else
                 {
                     // Если блок не определён
-                    _lightBlock = 0;
-                    _lightSky = 1;
+                    _lightBlock = .03125f;
+                    _lightSky = .96875f;
                 }
             }
             else
             {
                 // Если блок не определён
-                _lightBlock = 0;
-                _lightSky = 1;
+                _lightBlock = .03125f;
+                _lightSky = .96875f;
             }
         }
     }

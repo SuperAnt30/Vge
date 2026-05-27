@@ -80,14 +80,32 @@ namespace Vge.Entity.Physics
             // Гравитация
             float gravity = _gravity;
 
-            // Находимся в воздухе
-            if (Entity.OnGround && Entity.IsSpeed​​Limit())
+            if (Entity.IsSpeed​​Limit() && Entity.PresenceBlocks.IsInLiquid)
             {
+                // Находимся в жидкости
+
+                // Скоростной делитель, для ускорения хождения по блокам в жидкости
+                float speedEnch = 1f; // Тут нужно добавить чару на воду, которая не превышает 3.
+
+                if (!Entity.OnGround) speedEnch *= .5f;
+                speedEnch /= 3f;
+
+                // Трение
+                inertiaY = inertiaXZ = Entity.PresenceBlocks.FactorInertiaInLiquid;
+                inertiaXZ += (.546f - inertiaXZ) * speedEnch;
+                
+                // Графитация в жидкости
+                gravity = Entity.PresenceBlocks.FactorGravityInLiquid;
+
+                // Ускорение
+                acceleration = .02f + (_LivingUpdateSpeed() - .02f) * speedEnch;
+            }
+            else if (Entity.OnGround && Entity.IsSpeed​​Limit())
+            {
+                // Находимся в воздухе
+
                 // трение блока под ногами
                 inertiaXZ = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
-
-                // корректировка скорости, с трением
-                //friction = GetAIMoveSpeed(strafe, forward) * param;
 
                 // Если имеется сила для движения, тогда корректируем наличие скорости
                 float speed = _LivingUpdateSpeed();
@@ -102,16 +120,7 @@ namespace Vge.Entity.Physics
                 // Ускорение
                 acceleration = _LivingUpdateSprinting();
             }
-
-            // Трение с блоком
-            if (Entity.IsSpeed​​Limit() && Entity.PresenceBlocks.IsInLiquid)
-            {
-                // Находимся в жидкости
-                inertiaXZ *= Entity.PresenceBlocks.FactorInertiaInLiquid;
-                inertiaY *= Entity.PresenceBlocks.FactorInertiaInLiquid;
-                gravity *= Entity.PresenceBlocks.FactorGravityInLiquid;
-            }
-
+            
             // Если имеется сила для движения, задаём вектор передвижения
             _LivingUpdateMotion(acceleration);
 
@@ -204,7 +213,9 @@ namespace Vge.Entity.Physics
             if (_isAutoJump)
             {
                 // Не прыгаем (момент взлёта)
-                _isNotJump = Entity.OnGround || MotionY != y && MotionY < 0f;
+                _isNotJump = Entity.OnGround 
+                    || MotionY != y && MotionY < 0f
+                    || Entity.PresenceBlocks.IsInLiquidAutoJump;
             }
         }
         /// <summary>
