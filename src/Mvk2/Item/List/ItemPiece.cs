@@ -74,7 +74,7 @@ namespace Mvk2.Item.List
             {
                 player.Inventory.DecrCurrentItem(1);
             }
-            Console.WriteLine(counter);
+            //Console.WriteLine(counter);
             if (counter > 20) counter = 20;
 
             return counter / 4 + 100;

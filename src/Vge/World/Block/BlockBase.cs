@@ -435,17 +435,18 @@ namespace Vge.World.Block
         {
             if (IsAction)
             {
-                //if (FullBlock)
-                if (!Liquid)
-                    return true;
-
-                //// Если блок не полный, обрабатываем хитбокс блока
-                //AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
-                //Vector3 pos2 = a + dir * maxDist;
-                //foreach (AxisAlignedBB aabb in aabbs)
-                //{
-                //    if (aabb.CalculateIntercept(a, pos2) != null) return true;
-                //}
+                if (FullBlock) return true;
+                if (IsCollidable)
+                {
+                    // Если блок не полный, обрабатываем хитбокс блока
+                    Vector3 a = new Vector3(px, py, pz);
+                    AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
+                    Vector3 pos2 = a + dir * maxDist;
+                    foreach (AxisAlignedBB aabb in aabbs)
+                    {
+                        if (aabb.CalculateIntercept(a, pos2).Intersection) return true;
+                    }
+                }
             }
             return false;
         }
@@ -459,12 +460,15 @@ namespace Vge.World.Block
 
         /// <summary>
         /// Получить одну большую рамку блока, если их несколько они объеденяться, используется для установки блока
-        /// TODO::2026-02-26 надо коллизию рассчитать в начале при инициализации
         /// </summary>
         public AxisAlignedBB GetCollisionOne(BlockPos pos, int met)
         {
             AxisAlignedBB[] axes = GetCollisionBoxesToList(pos, met);
-            if (axes.Length > 0)
+            if (axes.Length == 1)
+            {
+                return axes[0];
+            }
+            if (axes.Length > 1)
             {
                 AxisAlignedBB aabb = axes[0];
                 for (int i = 1; i < axes.Length; i++)

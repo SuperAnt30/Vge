@@ -56,7 +56,25 @@ namespace Vge.World.Chunk
             WorldServ = worldServer;
             _tickBlocksCache = WorldServ.TickBlocksCache;
         }
-        
+
+        /// <summary>
+        /// Выгрузили чанк
+        /// </summary>
+        public override void OnChunkUnload()
+        {
+            base.OnChunkUnload();
+
+            int countEntity = ListEntities.Count;
+            if (countEntity > 0)
+            {
+                for (int i = 0; i < countEntity; i++)
+                {
+                    EntityBase entity = ListEntities.GetAt(i);
+                    World.UnloadedEntityList.Add(entity);
+                }
+            }
+        }
+
         /// <summary>
         /// Задать совокупное количество тактов, которые якоря провели в этом чанке 
         /// </summary>

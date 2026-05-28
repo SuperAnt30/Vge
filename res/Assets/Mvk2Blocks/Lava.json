@@ -2,6 +2,8 @@
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
     Translucent: true,
+    NoCollision: true,
+    IsReplaceable: true,
     LightValue: 8,
     Liquid: "Lava"
 }

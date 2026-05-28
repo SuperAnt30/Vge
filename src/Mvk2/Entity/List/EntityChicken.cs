@@ -1,4 +1,6 @@
 ﻿using Mvk2.Entity.AI.PathFinding;
+using System;
+using System.Diagnostics;
 using Vge.Entity;
 using Vge.Entity.AI.PathFinding;
 using Vge.Entity.Physics;
@@ -106,18 +108,30 @@ namespace Mvk2.Entity.List
                             //Console.WriteLine("Navigator Length:" +
                             //    Navigator.CurrentPath.GetCurrentPathLength()
                             //    + " ms:" + (stopwatch.ElapsedTicks / (float)(Stopwatch.Frequency / 1000f)));
-//Navigator Length:18 ms: 0,1035
-//Navigator Length:27 ms: 0,1309
-//Navigator Length:14 ms: 0,071
-//Navigator Length:6 ms: 0,0407
-//Navigator Length:11 ms: 0,0652
-//Navigator Length:20 ms: 0,0912
-//Navigator Length:16 ms: 0,116
-//Navigator Length:18 ms: 0,083
-//Navigator Length:18 ms: 0,0838
-//Navigator Length:31 ms: 0,1444
-//Navigator Length:31 ms: 0,1161
+                            
+                            // Debug
+                            //Navigator Length:18 ms: 0,1035
+                            //Navigator Length:27 ms: 0,1309
+                            //Navigator Length:14 ms: 0,071
+                            //Navigator Length:6 ms: 0,0407
+                            //Navigator Length:11 ms: 0,0652
+                            //Navigator Length:20 ms: 0,0912
+                            //Navigator Length:16 ms: 0,116
+                            //Navigator Length:18 ms: 0,083
+                            //Navigator Length:18 ms: 0,0838
+                            //Navigator Length:31 ms: 0,1444
+                            //Navigator Length:31 ms: 0,1161
 
+                            // Release
+                            //Navigator Length:22 ms: 0,0412
+                            //Navigator Length:14 ms: 0,0256
+                            //Navigator Length:21 ms: 0,0345
+                            //Navigator Length:7 ms: 0,0179
+                            //Navigator Length:18 ms: 0,0299
+                            //Navigator Length:10 ms: 0,0195
+                            //Navigator Length:12 ms: 0,0388
+                            //Navigator Length:10 ms: 0,0348
+                            //Navigator Length:14 ms: 0,0361
                             //MoveHelper.SetMoveTo(playerServer.PosX, playerServer.PosY, playerServer.PosZ, 0.25f);
 
                         }

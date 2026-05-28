@@ -325,18 +325,7 @@ namespace Vge.World
         /// </summary>
         protected virtual void _UpdateEntities()
         {
-            // колекция для удаления
-            //  MapListEntity entityRemove = new MapListEntity();
-
-            //profiler.StartSection("EntitiesUnloadedList");
-
-            //// Выгружаем сущности которые имеются в списке выгрузки
-            //LoadedEntityList.RemoveRange(UnloadedEntityList);
-            //entityRemove.AddRange(UnloadedEntityList);
-            //UnloadedEntityList.Clear();
-
             Filer.EndStartSection("EntityTick");
-
 
             // Пробегаем по всем сущностям и обрабатываеи их такт
             for (int i = 0; i < LoadedEntityList.Count; i++)
@@ -366,10 +355,8 @@ namespace Vge.World
                 if (entity.AddedToChunk)
                 {
                     ChunkBase chunk = GetChunk(entity.ChunkPositionX, entity.ChunkPositionZ);
-                    if (chunk != null)
-                    {
-                        chunk.RemoveEntity(entity);
-                    }
+                    chunk?.RemoveEntity(entity);
+
                     // Для пробуждения сущностей сверху
                     if (entity.Size is ISizeEntityBox size)
                     {
