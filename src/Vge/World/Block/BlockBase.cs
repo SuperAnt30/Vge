@@ -107,6 +107,24 @@ namespace Vge.World.Block
         /// Жидкости будут false
         /// </summary>
         public bool FullBlock { get; protected set; } = true;
+        /// <summary>
+        /// Имеются ли замедления
+        /// </summary>
+        public bool IsSlow { get; private set; }
+        /// <summary>
+        /// Коэффициент замедления по X и Z,
+        /// 1 нет замедления, 0 максимальное, больше 1 ускорение
+        /// </summary>
+        public float FactorSlowXZ { get; private set; }
+        /// <summary>
+        /// Коэффициент замедления по Y,
+        /// 1 нет замедления, 0 максимальное, больше 1 ускорение
+        /// </summary>
+        public float FactorSlowY { get; private set; }
+        /// <summary>
+        /// Импульс для жидкостей, для течения
+        /// </summary>
+        public float LiquidImpulse { get; private set; }
 
         #endregion
 
@@ -317,6 +335,14 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.Shadow)) Shadow = json.GetBool();
                     if (json.IsKey(Ctb.IsDestorySecond)) IsDestorySecond = json.GetBool();
                     if (json.IsKey(Ctb.NoCollision)) IsCollidable = !json.GetBool();
+                    if (json.IsKey(Ctb.FactorSlow))
+                    {
+                        float[] ar = json.GetArray().ToArrayFloat();
+                        IsSlow = true;
+                        FactorSlowXZ = ar[0];
+                        FactorSlowY = ar[1];
+                    }
+                    if (json.IsKey(Ctb.LiquidImpulse)) LiquidImpulse = json.GetFloat();
                     if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.Passable)) Passable = json.GetBool();
                     if (json.IsKey(Ctb.IsReplaceable)) IsReplaceable = json.GetBool();
@@ -436,16 +462,13 @@ namespace Vge.World.Block
             if (IsAction)
             {
                 if (FullBlock) return true;
-                if (IsCollidable)
+                // Если блок не полный, обрабатываем хитбокс блока
+                Vector3 a = new Vector3(px, py, pz);
+                AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
+                Vector3 pos2 = a + dir * maxDist;
+                foreach (AxisAlignedBB aabb in aabbs)
                 {
-                    // Если блок не полный, обрабатываем хитбокс блока
-                    Vector3 a = new Vector3(px, py, pz);
-                    AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
-                    Vector3 pos2 = a + dir * maxDist;
-                    foreach (AxisAlignedBB aabb in aabbs)
-                    {
-                        if (aabb.CalculateIntercept(a, pos2).Intersection) return true;
-                    }
+                    if (aabb.CalculateIntercept(a, pos2).Intersection) return true;
                 }
             }
             return false;

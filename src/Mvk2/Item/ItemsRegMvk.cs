@@ -163,7 +163,7 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
             ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
 
-            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.FlowerClover));
+            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak));
 
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
             ItemsReg.RegisterItemClass("Brol", Brol = new ItemBlock(BlocksRegMvk.Brol));

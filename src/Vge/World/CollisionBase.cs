@@ -455,7 +455,9 @@ namespace Vge.World
                     idBlockLiquid = idBlock;
                 }
 
-                if ((isLight && block.IsNotTransparent) || (!isLight && ((!collidable) || (collidable && block.IsCollidable))
+                if ((isLight && block.IsNotTransparent) 
+                    || (!isLight && ((!collidable) 
+                    || (collidable && block.IsCollidable))
                     && block.CollisionRayTrace(blockPos, blockState.Met, px, py, pz, dir, maxDist)))
                 {
                     end.X = px + t * dx;

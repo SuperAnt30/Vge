@@ -58,9 +58,18 @@
         /// </summary>
         public const string Color = "Color";
         /// <summary>
-        /// Блок без коллизии
+        /// Блок без коллизии (bool)
         /// </summary>
         public const string NoCollision = "NoCollision";
+        /// <summary>
+        /// Коэффициент замедления по X и Z ([float-XZ, float-Y ])
+        /// </summary>
+        public const string FactorSlow = "FactorSlow";
+        /// <summary>
+        /// Импульс для жидкостей, для течения (float)
+        /// </summary>
+        public const string LiquidImpulse = "LiquidImpulse";
+
         /// <summary>
         /// Является ли блок проходимым, т.е. можно ли ходить через него (bool)
         /// </summary>

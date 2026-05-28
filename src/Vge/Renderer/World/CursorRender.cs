@@ -137,12 +137,31 @@ namespace Vge.Renderer.World
                     float dis = Glm.Distance(pos, blockCenter) * .01f;
                     dis *= dis;
                     dis += .001f;
-                    pos = blockCenter - pos;
-                    Vector3 from = pos - .5f - dis;// b moving.BlockPosition.ToVector3() +  - 0.02f;
-                    Vector3 to = pos + .5f + dis;
+                    //pos = blockCenter - pos;
+                    //Vector3 from = pos - .5f - dis;// b moving.BlockPosition.ToVector3() +  - 0.02f;
+                    //Vector3 to = pos + .5f + dis;
+                    //_meshBlock.Reload(MeshLine.CubeLine(from.X, from.Y, from.Z,
+                    //    to.X, to.Y, to.Z, 1, 1, 0, 1));
 
-                    _meshBlock.Reload(MeshLine.CubeLine(from.X, from.Y, from.Z,
-                        to.X, to.Y, to.Z, 1, 1, 0, 1));
+                    //TODO::2026-05-29 Возможно надо не GetCollisionOne
+                    AxisAlignedBB aabb = moving.Block.GetBlock().GetCollisionOne(
+                        moving.BlockPosition, moving.Block.Met);
+                    _meshBlock.Reload(MeshLine.CubeLine(
+                            aabb.Min.X - pos.X - dis, aabb.Min.Y - pos.Y - dis, aabb.Min.Z - pos.Z - dis,
+                            aabb.Max.X - pos.X + dis, aabb.Max.Y - pos.Y + dis, aabb.Max.Z - pos.Z + dis,
+                            1, 1, 0, 1));
+
+                    //AxisAlignedBB[] axes = moving.Block.GetBlock().GetCollisionBoxesToList(
+                    //    moving.BlockPosition, moving.Block.Met);
+                    //List<float> floats = new List<float>();
+                    //for (int i = 0; i < axes.Length; i++)
+                    //{
+                    //    floats.AddRange(MeshLine.CubeLine(
+                    //        axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
+                    //        axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
+                    //        1, 1, 0, 1));
+                    //}
+                    //_meshBlock.Reload(floats.ToArray());
                 }
             }
             else

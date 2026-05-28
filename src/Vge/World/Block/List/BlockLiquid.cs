@@ -19,6 +19,7 @@ namespace Vge.World.Block.List
 
         public BlockLiquid(MaterialBase material, bool alphaSort) : base(material)
         {
+            IsAction = false;
             Alpha = true;
             AlphaSort = alphaSort;
             Liquid = true;

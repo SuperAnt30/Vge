@@ -1,6 +1,7 @@
 ﻿using Mvk2.Item;
 using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
+using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -74,7 +75,16 @@ namespace Mvk2.World.Block.List
         /// </summary>
         public readonly TypeTree Type;
 
-        public BlockTree(MaterialBase material, TypeTree type) : base(material) => Type = type;
+        /// <summary>
+        /// Mvk2.World.Gen.GenTree 0 = Берёза, 1 = Дуб
+        /// </summary>
+        private readonly int _indexGen;
+
+        public BlockTree(MaterialBase material, TypeTree type, int indexGen) : base(material)
+        {
+            Type = type;
+            _indexGen = indexGen;
+        }
 
         /// <summary>
         /// Массив сторон прямоугольных форм для рендера
@@ -104,7 +114,8 @@ namespace Mvk2.World.Block.List
         /// Получить объект генерации дерева
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual FeatureTree _GetFeatureTree(WorldServer world) => null;
+        protected virtual FeatureTree _GetFeatureTree(WorldServer world) 
+            => world.ChunkPrServ.ChunkGenerate is IGenTree genTree ? genTree.Tree.FeatureTrees[_indexGen] : null;
 
         /// <summary>
         /// Действие блока после его удаления

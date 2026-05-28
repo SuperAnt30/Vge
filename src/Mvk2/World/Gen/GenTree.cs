@@ -20,23 +20,21 @@ namespace Mvk2.World.Gen
         public readonly ArrayFast<BlockCache> BlockUpCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
-        /// Берёза в обновлении
+        /// 0 = Берёза, 1 = Дуб
         /// </summary>
-        public FeatureTreeBirch BirchUp { get; set; }
-        /// <summary>
-        /// Дуб в обновлении
-        /// </summary>
-        public FeatureTreeOak OakUp { get; set; }
+        public readonly FeatureTree[] FeatureTrees;
 
         private readonly IChunkPrimer _chunkPrimer;
 
         public GenTree(IChunkPrimer chunkPrimer)
         {
             _chunkPrimer = chunkPrimer;
-            // Берёза
-            BirchUp = new FeatureTreeBirch(BlockUpCaches);
-            // Дуб
-            OakUp = new FeatureTreeOak(BlockUpCaches);
+            FeatureTrees = new FeatureTree[] {
+                // Берёза
+                new FeatureTreeBirch(BlockUpCaches),
+                // Дуб
+                new FeatureTreeOak(BlockUpCaches)
+            };
         }
 
         /// <summary>

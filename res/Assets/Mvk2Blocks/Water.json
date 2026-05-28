@@ -1,10 +1,11 @@
 {
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
-    LightOpacity: 1,
-    NoCollision: true,
     Translucent: true,
+    NoCollision: true,
     IsReplaceable: true,
+    LightOpacity: 1,
+    LiquidImpulse: 0.026,
     Color: [ 1, 1, 1 ],
     Liquid: "Water"
 }

@@ -152,12 +152,14 @@ namespace Vge.Item
         /// </summary>
         private static void _SpawnAsEntityPos(WorldServer world, Vector3 pos, ItemStack itemStack)
         {
-            EntityItem entity = new EntityItem();
-            entity.InitServer(Ce.Entities.IndexItem, world);
+            EntityBase entity = Ce.Entities.CreateEntityServer(Ce.Entities.IndexItem, world);
             entity.PosX = pos.X;
             entity.PosY = pos.Y;
             entity.PosZ = pos.Z;
-            entity.SetEntityItemStack(itemStack);
+            if (entity is EntityItem entityItem)
+            {
+                entityItem.SetEntityItemStack(itemStack);
+            }
             //entity.SetDefaultPickupDelay();
             world.SpawnEntityInWorld(entity);
         }

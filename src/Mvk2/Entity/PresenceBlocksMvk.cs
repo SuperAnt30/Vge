@@ -180,19 +180,19 @@ namespace Mvk2.Entity
                 if (blockState.Met != 0)
                 {
                     Vector3 vec = BlockLiquid.GetVectorFlow(world, blockPos);
-                    ImpulseX = vec.X * .026f;
-                    ImpulseY = vec.Y * .026f;
-                    ImpulseZ = vec.Z * .026f;
+                    ImpulseX = vec.X * block.LiquidImpulse;// .026f;
+                    ImpulseY = vec.Y * block.LiquidImpulse;
+                    ImpulseZ = vec.Z * block.LiquidImpulse;
                     IsImpulse = true;
                 }
                 IsInLiquid = true;
                 IsInLiquidAutoJump = true;
                 _numberAutoJump = 5;
             }
-            else if (block.Material.IndexMaterial == (int)EnumMaterial.Plant)
+            else if (block.IsSlow)
             {
-                FactorSlowXZ = .67f;
-                FactorSlowY = .85f;
+                FactorSlowXZ = block.FactorSlowXZ;
+                FactorSlowY = block.FactorSlowY;
                 IsSlow = true;
             }
         }
