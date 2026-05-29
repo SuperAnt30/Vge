@@ -936,6 +936,32 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsSpeed​​Limit() => Physics is PhysicsPlayer;
 
+        /// <summary>
+        /// Падение, соприкосновение с земёй
+        /// </summary>
+        /// <param name="distance">Расстояние падения в блоках</param>
+        /// <param name="motionY">Скорость падения, отрицательное значение</param>
+        public override void Fall(float distance, float motionY)
+        {
+            // 4 блока = -1,033896
+            // 5 блока = -1,170018
+            // 6 блока = -1,303418
+            // 7-8 блока = -1,434149
+            // 9 блока = -1,562266
+            // 10-11 блока = -1,687821
+            // 12-13 блока = -1,810864
+            // 14-15 блока = -1,931447
+            // 16 блока = -2,049618
+            Console.WriteLine("FallDetection " + distance + " " + motionY);
+
+            //ClientWorld.ClientMain.TrancivePacket(new PacketC0CPlayerAction(PacketC0CPlayerAction.EnumAction.Fall, fallDistanceResult));
+            _game.World.ParticleDiggingBlock(_game.World.GetBlockState(
+                new BlockPos(PosX, PosY - .125f, PosZ)).GetBlock(),
+                new Vector3(PosX, PosY + .25f, PosZ), (int)(distance * 3), false);
+
+
+        }
+
         #endregion
 
         #region Packet

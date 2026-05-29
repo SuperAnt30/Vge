@@ -32,6 +32,10 @@ namespace Vge.Entity.Physics
         /// Имеет силу передвижения
         /// </summary>
         private readonly bool _hasPowerMove;
+        /// <summary>
+        /// Счётчик дистанции падения
+        /// </summary>
+        private float _fallDistance;
 
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
@@ -120,7 +124,9 @@ namespace Vge.Entity.Physics
                 // Ускорение
                 acceleration = _LivingUpdateSprinting();
             }
-            
+
+            //float motionY0 = MotionY;
+
             // Если имеется сила для движения, задаём вектор передвижения
             _LivingUpdateMotion(acceleration);
 
@@ -129,7 +135,9 @@ namespace Vge.Entity.Physics
             ResetMinimumMotion();
             // Фиксируем перемещение до колизии и всяких ограничений, чтоб эту силу сохранить
             float motionX0 = MotionX;
+            float motionY0 = MotionY;
             float motionZ0 = MotionZ;
+            bool onGround = Entity.OnGround;
 
             // Проверка каллизии
             if (Entity.Size is ISizeEntityBox sizeEntityBox)
@@ -162,6 +170,8 @@ namespace Vge.Entity.Physics
                 MotionVertical = Mth.Abs(MotionY);
                 AwakenPhysics();
 
+                
+
                 //Debug.Player = Entity.GetChunkPosition();
 
                 //if (Entity.Type == EnumEntity.Stone)
@@ -189,6 +199,19 @@ namespace Vge.Entity.Physics
                 }
             }
 
+            // Фиксация падения
+            if (!onGround && Entity.OnGround && motionY0 < -.1f)
+            {
+                if (MotionY < 0) _fallDistance += MotionVertical;
+                Entity.Fall(_fallDistance, motionY0);
+                _fallDistance = 0;
+            }
+            else
+            {
+                if (MotionY < 0) _fallDistance += MotionVertical;
+                else if (_fallDistance != 0) _fallDistance = 0;
+            }
+
             if (_hasPowerMove)
             {
                 // Только если имеет силу передвижения
@@ -204,6 +227,8 @@ namespace Vge.Entity.Physics
             MotionY *= inertiaY;
             MotionZ *= inertiaXZ;
         }
+
+        
 
         /// <summary>
         /// Фиксация возможен ли авто прыжок

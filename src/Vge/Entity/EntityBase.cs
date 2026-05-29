@@ -556,6 +556,14 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool IsSpeed​​Limit() => true;
 
+        /// <summary>
+        /// Падение, соприкосновение с земёй
+        /// </summary>
+        /// <param name="distance">Расстояние падения в блоках</param>
+        /// <param name="motionY">Скорость падения, отрицательное значение</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Fall(float distance, float motionY) { }
+
         #endregion
 
         #region Tracker
