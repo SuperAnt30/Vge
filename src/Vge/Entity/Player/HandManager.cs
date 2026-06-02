@@ -1,4 +1,5 @@
-﻿using Vge.Entity.Particle;
+﻿using System;
+using Vge.Entity.Particle;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
@@ -125,9 +126,9 @@ namespace Vge.Entity.Player
             else if (_secondPrev)
             {
                 _SecondEnd();
+                _secondPrev = _second;
             }
             _actionPrev = _action;
-            _secondPrev = _second;
             _counterSecond++;
         }
 
@@ -191,7 +192,7 @@ namespace Vge.Entity.Player
                         // Разрушение блока без предмета
                         _BlockDigging(moving.BlockPosition);
                         //Console.WriteLine("BlockDigging");
-                        _pauseAction = 8;
+                        _pauseAction = 6; //TODO::2026-05-30 Тут надо Интструмент!!! entityPlayer.PauseTimeBetweenBlockDestruction
                     }
                     else
                     {
@@ -236,7 +237,11 @@ namespace Vge.Entity.Player
         {
             if (_player.IsSpectator()) return;
 
-            if (begin) _pauseSecond = 0;
+            if (begin)
+            {
+                _pauseSecond = 0;
+                _secondPrev = true;
+            }
 
             if (_pauseSecond == 0)
             {
@@ -266,6 +271,7 @@ namespace Vge.Entity.Player
                             //Console.WriteLine("BlockPlacement " + resultSecond.Pause);
                             _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
                                     moving.Side, moving.Facing, resultSecond.Replaceable, true));
+                            _pauseSecond = resultSecond.Pause;
                         }
                         else if (resultSecond.Action == ResultHandSecond.ActionType.InteractEntity)
                         {
@@ -273,20 +279,23 @@ namespace Vge.Entity.Player
                             //Console.WriteLine("InteractItem");
                             _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                                 PacketC03UseEntity.EnumAction.Interact));
+                            _pauseSecond = resultSecond.Pause;
                         }
                         else if (resultSecond.Action == ResultHandSecond.ActionType.UseItem)
                         {
                             // Взаимодействия предмета, ПКМ без блока
                             _flagBeginUseSecond = true;
-                            // Console.WriteLine("UseItem");
+                             //Console.WriteLine("UseItem");
                             _game.TrancivePacket(new PacketC05UseItem(resultSecond.Number));
+                            _pauseSecond = resultSecond.Pause;
                         }
                         else
                         {
                             // Нет вспомогательного действий с предметом
                             //Console.WriteLine("Нет вспомогательного действий с предметом");
+                            if (begin) _secondPrev = false;
                         }
-                        _pauseSecond = resultSecond.Pause;
+                        //Console.WriteLine(_pauseSecond);
                     }
                     else if (moving.IsBlock())
                     {

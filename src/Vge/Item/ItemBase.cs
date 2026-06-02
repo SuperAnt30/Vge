@@ -244,8 +244,9 @@ namespace Vge.Item
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
+        /// <param name="playerYaw">Угол Yaw игрока в момент установки блока</param>
         public virtual bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
-            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable) => false;
+            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw) => false;
 
         #endregion
 

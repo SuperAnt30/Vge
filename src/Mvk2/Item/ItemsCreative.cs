@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
-using Vge.Network.Packets.Server;
 using Vge.World.BlockEntity;
 
 namespace Mvk2.Item
@@ -39,6 +37,7 @@ namespace Mvk2.Item
         {
             // Раздел блоки
             List<ItemStack> tabBlocks = new List<ItemStack>();
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Debug));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));

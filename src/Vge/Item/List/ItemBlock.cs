@@ -44,11 +44,11 @@ namespace Vge.Item.List
             if (moving.IsBlock())
             {
                 if (OnItemOnBlockPlacement(stack, player, moving.BlockPosition, moving.Side, 
-                    moving.Facing, true))
+                    moving.Facing, true, player.RotationYaw))
                 {
-                    return new ResultHandSecond(begin ? 10 : 5, true);
+                    return new ResultHandSecond(begin ? 8 : 4, true);
                 }
-                return new ResultHandSecond(ResultHandSecond.ActionType.None, begin ? 10 : 5);
+                return new ResultHandSecond(ResultHandSecond.ActionType.None, begin ? 8 : 4);
             }
             return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
@@ -61,8 +61,9 @@ namespace Vge.Item.List
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
+        /// <param name="playerYaw">Угол Yaw игрока в момент установки блока</param>
         public override bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
-            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable)
+            BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw)
         {
             WorldBase world = player.GetWorld();
 
@@ -76,7 +77,7 @@ namespace Vge.Item.List
             if (_CanPlaceBlockOnSide(stack, player, world, blockPos, Block, side, facing))
             {
                 BlockState blockState = Block.OnBlockPlaced(world, blockPos, 
-                    new BlockState(Block.IndexBlock), side, facing);
+                    new BlockState(Block.IndexBlock), side, facing, playerYaw);
                 if (Block.CanBlockStay(world, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);

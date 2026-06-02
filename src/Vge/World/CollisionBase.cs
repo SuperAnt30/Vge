@@ -532,7 +532,16 @@ namespace Vge.World
         /// <param name="id">исключение ID сущности</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsBoundingBoxes(AxisAlignedBB aabb, int id)
-            => IsStaticBoundingBoxes(aabb) || IsEntityBoundingBoxesFromSector(aabb, id);
+        {
+            StaticBoundingBoxes(aabb);
+            ListFast<AxisAlignedBB> aabbs = ListBlock;
+            int count = aabbs.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (aabbs[i].IntersectsWith(aabb)) return true;
+            }
+            return IsEntityBoundingBoxesFromSector(aabb, id);
+        }
 
         #region Old
         /*

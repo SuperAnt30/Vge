@@ -173,7 +173,6 @@ namespace Mvk2.Entity
 
         private void _CheckBlock(WorldBase world, BlockPos blockPos, BlockState blockState)
         {
-            // TODO::2026-05-26 тут определение в каких блоках находится сущность для изменения движения
             BlockBase block = blockState.GetBlock();
             if (block.Material.Liquid)
             {

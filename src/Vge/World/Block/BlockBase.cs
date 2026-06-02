@@ -669,7 +669,7 @@ namespace Vge.World.Block
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual BlockState OnBlockPlaced(WorldBase world, BlockPos blockPos, 
-            BlockState blockState, Pole side, Vector3 facing) => blockState;
+            BlockState blockState, Pole side, Vector3 facing, float playerYaw) => blockState;
 
         /// <summary>
         /// Действие блока после его удаления

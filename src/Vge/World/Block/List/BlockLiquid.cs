@@ -187,7 +187,8 @@ namespace Vge.World.Block.List
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, BlockState state, Pole side, Vector3 facing)
+        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, 
+            BlockState state, Pole side, Vector3 facing, float playerYaw)
             => state.NewMet(7);
 
         #region Методы для тиков

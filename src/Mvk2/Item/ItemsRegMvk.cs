@@ -74,7 +74,8 @@ namespace Mvk2.Item
         public static ItemBase FlowerClover { get; private set; }
         public static ItemBase Cobblestone { get; private set; }
         public static ItemBase Brol { get; private set; }
-        
+        public static ItemBase Debug { get; private set; }
+
         public static ItemCloth StrawHat { get; private set; }
         public static ItemCloth CamouflageJacket { get; private set; }
 
@@ -167,8 +168,8 @@ namespace Mvk2.Item
 
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
             ItemsReg.RegisterItemClass("Brol", Brol = new ItemBlock(BlocksRegMvk.Brol));
+            ItemsReg.RegisterItemClass("Debug", Debug = new ItemBlock(BlocksRegMvk.Debug));
 
-            
             StrawHat = ItemsReg.RegisterItemClothClass("StrawHat");
             CamouflageJacket = ItemsReg.RegisterItemClothClass("CamouflageJacket");
 

@@ -952,7 +952,7 @@ namespace Vge.Entity.Player
             // 12-13 блока = -1,810864
             // 14-15 блока = -1,931447
             // 16 блока = -2,049618
-            Console.WriteLine("FallDetection " + distance + " " + motionY);
+            //Console.WriteLine("FallDetection " + distance + " " + motionY);
 
             //ClientWorld.ClientMain.TrancivePacket(new PacketC0CPlayerAction(PacketC0CPlayerAction.EnumAction.Fall, fallDistanceResult));
             _game.World.ParticleDiggingBlock(_game.World.GetBlockState(
