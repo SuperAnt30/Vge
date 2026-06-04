@@ -1,0 +1,9 @@
+{
+    Parent: "Tree/_Log",
+    Variants: [ 
+        { Shape: "Tree/LogFruit" },
+        { Shape: "Tree/LogFruit", IsRotateX90: true, RotateY: 90 },
+        { Shape: "Tree/LogFruit", IsRotateX90: true },
+        { Shape: "Tree/LogLowerFruit" }
+    ]
+}

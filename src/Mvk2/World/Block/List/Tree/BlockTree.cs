@@ -76,7 +76,7 @@ namespace Mvk2.World.Block.List
         public readonly TypeTree Type;
 
         /// <summary>
-        /// Mvk2.World.Gen.GenTree 0 = Берёза, 1 = Дуб
+        /// Mvk2.World.Gen.GenTree 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево
         /// </summary>
         private readonly int _indexGen;
 

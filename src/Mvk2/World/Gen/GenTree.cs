@@ -20,7 +20,7 @@ namespace Mvk2.World.Gen
         public readonly ArrayFast<BlockCache> BlockUpCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
-        /// 0 = Берёза, 1 = Дуб
+        /// 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево
         /// </summary>
         public readonly FeatureTree[] FeatureTrees;
 
@@ -33,7 +33,9 @@ namespace Mvk2.World.Gen
                 // Берёза
                 new FeatureTreeBirch(BlockUpCaches),
                 // Дуб
-                new FeatureTreeOak(BlockUpCaches)
+                new FeatureTreeOak(BlockUpCaches),
+                // Фруктовое дерева
+                new FeatureTreeFruit(BlockUpCaches)
             };
         }
 
@@ -60,6 +62,18 @@ namespace Mvk2.World.Gen
         /// </summary>
         public FeatureTreeOak CreateOakGen(byte probabilityOne)
             => new FeatureTreeOak(BlockGenCaches, probabilityOne, _chunkPrimer);
+
+        /// <summary>
+        /// Создать объект генерации фруктового дерева в одном чанке, много от minRandom до maxRandom
+        /// </summary>
+        public FeatureTreeFruit CreateFruitGen(byte minRandom, byte maxRandom)
+            => new FeatureTreeFruit(BlockGenCaches, minRandom, maxRandom, _chunkPrimer);
+
+        /// <summary>
+        /// Создать объект генерации фруктового дерева в одном чанке, с вероятностью probabilityOne
+        /// </summary>
+        public FeatureTreeFruit CreateFruitGen(byte probabilityOne)
+            => new FeatureTreeFruit(BlockGenCaches, probabilityOne, _chunkPrimer);
 
     }
 }

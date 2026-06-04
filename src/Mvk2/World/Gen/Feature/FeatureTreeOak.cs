@@ -57,6 +57,6 @@ namespace Mvk2.World.Gen.Feature
         /// Сгенерировать стартовое положение в чанке
         /// </summary>
         protected override Vector2i _GetRandomPosBegin(Rand rand)
-            => new Vector2i(rand.Next(8) * 2 + 1, rand.Next(16));
+            => new Vector2i(rand.Next(8) * 2 + 1, rand.Next(8) * 2);
     }
 }

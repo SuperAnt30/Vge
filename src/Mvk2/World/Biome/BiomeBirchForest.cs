@@ -15,7 +15,9 @@ namespace Mvk2.World.Biome
             _featureAreas = new IFeatureGeneratorArea[]
             {
                 // Берёза
-                chunkProvider.Tree.CreateBirrchGen(2, 6)
+                chunkProvider.Tree.CreateBirrchGen(2, 6) // 2 6
+                //chunkProvider.Tree.CreateFruitGen(1, 3) // 2 6
+                //FeatureTreeFruit
             };
         }
 

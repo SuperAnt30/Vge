@@ -1,0 +1,22 @@
+{
+    UseNeighborBrightness: true,
+    АmbientOcclusion: false,
+    LightOpacity: 2,
+    NoCollision: true,
+    Translucent: true,
+    NeedsRandomTick: true,
+    Variants: [ 
+        { Shape: "Tree/Leaves/LeavesUpFruit", Offset: [ 0, -4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesDownFruit", Offset: [ 0, 4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideFruit", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideFruit", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Tree/Leaves/LeavesSideFruit", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Tree/Leaves/LeavesSideFruit", Offset: [ 0, 0, -4 ], RotateY: 270 },
+        { Shape: "Tree/Leaves/LeavesUpFruit2", Offset: [ 0, -4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesDownFruit2", Offset: [ 0, 4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideFruit2", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideFruit2", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Tree/Leaves/LeavesSideFruit2", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Tree/Leaves/LeavesSideFruit2", Offset: [ 0, 0, -4 ], RotateY: 270 }
+    ]
+}
