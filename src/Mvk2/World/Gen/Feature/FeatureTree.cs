@@ -27,11 +27,11 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Индекс блока бревна
         /// </summary>
-        private readonly int _blockLogId;
+        protected readonly int _blockLogId;
         /// <summary>
         /// Индекс блока ветки
         /// </summary>
-        private readonly int _blockBranchId;
+        protected readonly int _blockBranchId;
         /// <summary>
         /// Индекс блока листвы
         /// </summary>
@@ -90,7 +90,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Массив кеш блоков для генерации структур текущего мира в потоке генерации
         /// </summary>
-        private readonly ArrayFast<BlockCache> _blockCaches;
+        protected readonly ArrayFast<BlockCache> _blockCaches;
         /// <summary>
         /// Массив всех стартующих в этом чанке деревев.
         /// Защита от рандома в том же месте, если в чанке много однотипных дервеьев, типа лесов
@@ -272,7 +272,7 @@ namespace Mvk2.World.Gen.Feature
         protected void _LeavesTop(int x, int y, int z)
         {
             // Up
-            AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
+            _AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
             // Бок
             _LeavesTrunk(x, y, z);
         }
@@ -283,13 +283,13 @@ namespace Mvk2.World.Gen.Feature
         protected void _LeavesTrunk(int x, int y, int z)
         {
             // East
-            AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
+            _AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
             // West
-            AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
+            _AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
             // North
-            AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
+            _AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
             // South
-            AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
+            _AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
         }
 
         /// <summary>
@@ -299,49 +299,49 @@ namespace Mvk2.World.Gen.Feature
         protected virtual void _LeavesBranch(int x, int y, int z, int side)
         {
             // Up
-            AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
+            _AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
             // Down
-            AddBlockLeaves(x, y - 1, z, 1 + _NextInt(2) * 6);
+            _AddBlockLeaves(x, y - 1, z, 1 + _NextInt(2) * 6);
 
             if (side == 0) // South
             {
                 // Все кроме North
                 // East
-                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
+                _AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // West
-                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
+                _AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // South
-                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
             else if (side == 1) // East
             {
                 // Все кроме West
                 // East
-                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
+                _AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // North
-                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
                 // South
-                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
             else if (side == 2) // North
             {
                 // Все кроме South
                 // East
-                AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
+                _AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
                 // West
-                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
+                _AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // North
-                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
             }
             else // West
             {
                 // Все кроме East
                 // West
-                AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
+                _AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
                 // North
-                AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
                 // South
-                AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
+                _AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
             }
         }
 
@@ -353,35 +353,35 @@ namespace Mvk2.World.Gen.Feature
         /// Добавить блок в кеш ствол, без мет
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockTrunk(int x, int y, int z, int id, int parent)
+        protected void _AddBlockTrunk(int x, int y, int z, int id, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, id) { ParentIndex = parent });
 
         /// <summary>
         /// Добавить блок в кеш с мет данными, ветки или начальный блок (пень) молодого дерева
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockMet(int x, int y, int z, int id, int met, int parent)
+        protected void _AddBlockMet(int x, int y, int z, int id, int met, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, id, met) { ParentIndex = parent });
 
         /// <summary>
         /// Добавить блок в кеш пняь с мет данными и пометкой что можно ломать блоки как корень
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockStump(int x, int y, int z, int met, int parent)
+        protected void _AddBlockStump(int x, int y, int z, int met, int parent)
             => _blockCaches.Add(new BlockCache(x, y, z, _blockLogId, met) { ParentIndex = parent, Flag = 3 });
 
         /// <summary>
         /// Добавить блок в кеш пняь с мет данными и пометкой что можно ломать блоки как корень
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _AddBlockRoot(int x, int y, int z, int met)
+        protected void _AddBlockRoot(int x, int y, int z, int met)
             => _blockCaches.Add(new BlockCache(x, y, z, _blockRootId, met) { ParentIndex = -2 });
 
         /// <summary>
         /// Добавить блок в кеш листву с мет данных и пометкой нет привязки к древу
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddBlockLeaves(int x, int y, int z, int met)
+        protected void _AddBlockLeaves(int x, int y, int z, int met)
             => _blockCaches.Add(new BlockCache(x, y, z, _blockLeavesId, met) { ParentIndex = -3, Flag = 2 });
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Сгенерировать взрослое древо в кеш блоки из локальных координат чанка
         /// </summary>
-        private void _GenerationMature(int bx, int by, int bz)
+        protected virtual void _GenerationMature(int bx, int by, int bz)
         {
             _blockCaches.Clear();
             // Значения где формируется ствол, чтоб ствол не уходил далеко
@@ -563,7 +563,14 @@ namespace Mvk2.World.Gen.Feature
                 // Ствол, если нижний то параметр для пенька
                 if (iUp != 0)
                 {
-                    _AddBlockTrunk(bx, y, bz, _blockLogId, parentTrunk);
+                    if (iUp <= _trunkWithoutBranches)
+                    {
+                        _AddBlockStump(bx, y, bz, 3, parentTrunk);
+                    }
+                    else
+                    {
+                        _AddBlockTrunk(bx, y, bz, _blockLogId, parentTrunk);
+                    }
                     parentTrunk = ++parentAmount;
                 }
 

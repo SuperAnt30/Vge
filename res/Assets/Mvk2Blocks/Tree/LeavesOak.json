@@ -1,10 +1,5 @@
 {
-    UseNeighborBrightness: true,
-    АmbientOcclusion: false,
-    LightOpacity: 2,
-    NoCollision: true,
-    Translucent: true,
-    NeedsRandomTick: true,
+    Parent: "Tree/_Leaves",
     Variants: [ 
         { Shape: "Tree/Leaves/LeavesUpOak", Offset: [ 0, -4, 0 ] },
         { Shape: "Tree/Leaves/LeavesDownOak", Offset: [ 0, 4, 0 ] },

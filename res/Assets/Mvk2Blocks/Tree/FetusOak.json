@@ -1,9 +1,4 @@
 {
-    АmbientOcclusion: false,
-    UseNeighborBrightness: true,
-    NoCollision: true,
-    LightOpacity: 0,
-    Translucent: true,
-    NeedsRandomTick: true,
+    Parent: "Tree/_Fetus",
     Variants: [ { Shape: "Tree/FetusOak" } ]
 }

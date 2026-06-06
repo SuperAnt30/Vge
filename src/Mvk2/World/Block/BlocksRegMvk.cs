@@ -305,11 +305,17 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("SaplingOak", SaplingOak = new BlockTree(materials.Plant, BlockTree.TypeTree.Sapling, 1), "Tree");
             BlocksReg.RegisterBlockClass("FetusOak", FetusOak = new BlockFetusOak(materials.Plant), "Tree");
 
-            BlocksReg.RegisterBlockClass("LogFruit", LogFruit = new BlockTree(materials.Wood, BlockTree.TypeTree.Log, 0), "Tree");
-            BlocksReg.RegisterBlockClass("BranchFruit", BranchFruit = new BlockBranch(materials.Branch, BlockTree.TypeTree.Branch, 0), "Tree");
+            BlocksReg.RegisterBlockClass("LogFruit", LogFruit = new BlockTree(materials.Wood, BlockTree.TypeTree.Log, 2), "Tree");
+            BlocksReg.RegisterBlockClass("BranchFruit", BranchFruit = new BlockBranch(materials.Branch, BlockTree.TypeTree.Branch, 2), "Tree");
             BlocksReg.RegisterBlockClass("LeavesFruit", LeavesFruit = new BlockLeavesFruit(materials.Leaves), "Tree");
-            BlocksReg.RegisterBlockClass("SaplingFruit", SaplingFruit = new BlockTree(materials.Plant, BlockTree.TypeTree.Sapling, 0), "Tree");
+            BlocksReg.RegisterBlockClass("SaplingFruit", SaplingFruit = new BlockTree(materials.Plant, BlockTree.TypeTree.Sapling, 2), "Tree");
             BlocksReg.RegisterBlockClass("FetusFruit", FetusFruit = new BlockFetusFruit(materials.Plant), "Tree");
+
+            BlocksReg.RegisterBlockClass("LogConifer", LogConifer = new BlockTree(materials.Wood, BlockTree.TypeTree.Log, 3), "Tree");
+            BlocksReg.RegisterBlockClass("BranchConifer", BranchConifer = new BlockBranch(materials.Branch, BlockTree.TypeTree.Branch, 3), "Tree");
+            BlocksReg.RegisterBlockClass("LeavesConifer", LeavesConifer = new BlockLeavesConifer(materials.Leaves), "Tree");
+            BlocksReg.RegisterBlockClass("SaplingConifer", SaplingConifer = new BlockTree(materials.Plant, BlockTree.TypeTree.Sapling, 3), "Tree");
+            BlocksReg.RegisterBlockClass("FetusConifer", FetusConifer = new BlockFetusConifer(materials.Plant), "Tree");
 
             Glass = BlocksReg.RegisterBlockClass("Glass", materials.Glass);
             GlassRed = BlocksReg.RegisterBlockClassAlpha("GlassRed", materials.Glass);

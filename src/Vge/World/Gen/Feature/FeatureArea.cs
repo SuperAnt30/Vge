@@ -60,6 +60,7 @@ namespace Vge.World.Gen.Feature
         {
             _chunkPrimer = chunkPrimer;
             _minRandom = minRandom;
+            maxRandom++;
             _countRandom = (byte)(maxRandom - minRandom);
             _blockId = blockId;
         }

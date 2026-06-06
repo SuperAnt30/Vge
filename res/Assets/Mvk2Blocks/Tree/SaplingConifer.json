@@ -1,5 +1,5 @@
 {
     Parent: "Tree/_Sapling",
     NeedsRandomTick: true,
-    Variants: [ { Shape: "Tree/SaplingFruit" } ]
+    Variants: [ { Shape: "Tree/SaplingConifer" } ]
 }

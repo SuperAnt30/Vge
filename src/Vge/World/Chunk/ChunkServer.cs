@@ -645,7 +645,7 @@ namespace Vge.World.Chunk
             Light.HeightMapMax = nbt.GetShort("HeightMapMax");
             TagByteArray.ConvToUShort(nbt.GetByteArray("HeightMap"), Light.HeightMap);
             TagByteArray.ConvToUShort(nbt.GetByteArray("HeightMapGen"), HeightMapGen);
-            Buffer.BlockCopy(Biome, 0, nbt.GetByteArray("Biomes"), 0, Biome.Length);
+            Buffer.BlockCopy(nbt.GetByteArray("Biomes"), 0, Biome, 0, Biome.Length);
 
             // ---Sections
 

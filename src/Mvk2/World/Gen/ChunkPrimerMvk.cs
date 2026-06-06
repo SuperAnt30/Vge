@@ -85,6 +85,7 @@ namespace Mvk2.World.Gen
             int index = y << 8 | xz;
             Id[index] = id;
             Flag[index] = flag;
+            Met[index] = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

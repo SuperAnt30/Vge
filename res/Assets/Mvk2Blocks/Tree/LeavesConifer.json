@@ -1,0 +1,17 @@
+{
+    Parent: "Tree/_Leaves",
+    Variants: [ 
+        { Shape: "Tree/Leaves/LeavesUpConifer", Offset: [ 0, -4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesDownConifer", Offset: [ 0, 4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideConifer", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideConifer", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Tree/Leaves/LeavesSideConifer", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Tree/Leaves/LeavesSideConifer", Offset: [ 0, 0, -4 ], RotateY: 270 },
+        { Shape: "Tree/Leaves/LeavesUpConifer2", Offset: [ 0, -4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesDownConifer2", Offset: [ 0, 4, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideConifer2", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/Leaves/LeavesSideConifer2", Offset: [ -4, 0, 0 ], RotateY: 180 },
+        { Shape: "Tree/Leaves/LeavesSideConifer2", Offset: [ 0, 0, -4 ], RotateY: 90 },
+        { Shape: "Tree/Leaves/LeavesSideConifer2", Offset: [ 0, 0, -4 ], RotateY: 270 }
+    ]
+}

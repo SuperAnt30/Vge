@@ -16,7 +16,9 @@ namespace Mvk2.World.Biome
             _featureAreas = new IFeatureGeneratorArea[]
             {
                 new FeatureMinable(_chunkPrimer, 10, _blockIdStone, 33, 6), // Валун ок
-                new FeatureValun(_chunkPrimer, 20, _blockIdStone, 4, 1, 2, 1, 0)
+                new FeatureValun(_chunkPrimer, 20, _blockIdStone, 4, 1, 2, 1, 0),
+                // Деревья ниже валуна, так-как если валун заменит ствол, будет бага по TileEntity
+                chunkProvider.Tree.CreateConiferGen(1, 5), // Хвойное
             };
         }
 

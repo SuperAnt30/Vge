@@ -1,8 +1,4 @@
 {
-    АmbientOcclusion: false,
-    UseNeighborBrightness: true,
-    NoCollision: true,
-    LightOpacity: 0,
-    Translucent: true,
+    Parent: "Tree/_Sapling",
     Variants: [ { Shape: "Tree/SaplingDry" } ]
 }

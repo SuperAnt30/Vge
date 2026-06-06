@@ -1,0 +1,8 @@
+{
+    UseNeighborBrightness: true,
+    АmbientOcclusion: false,
+    LightOpacity: 2,
+    NoCollision: true,
+    Translucent: true,
+    NeedsRandomTick: true
+}

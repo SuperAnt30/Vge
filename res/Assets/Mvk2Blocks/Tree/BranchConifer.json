@@ -1,0 +1,12 @@
+{
+    Parent: "Tree/_Branch",
+    Variants: [ 
+        { Shape: "Tree/BranchConifer" },
+        { Shape: "Tree/BranchConifer", IsRotateX90: true, RotateY: 90 },
+        { Shape: "Tree/BranchConifer", IsRotateX90: true },
+        { Shape: "Tree/BranchConifer", Offset: [ 4, 0, 0 ] },
+        { Shape: "Tree/BranchConifer", Offset: [ -4, 0, 0 ] },
+        { Shape: "Tree/BranchConifer", Offset: [ 0, 0, -4 ] },
+        { Shape: "Tree/BranchConifer", Offset: [ 0, 0, 4 ] }
+    ]
+}

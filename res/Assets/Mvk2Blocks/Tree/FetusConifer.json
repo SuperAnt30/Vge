@@ -1,0 +1,4 @@
+{
+    Parent: "Tree/_Fetus",
+    Variants: [ { Shape: "Tree/FetusConifer" } ]
+}

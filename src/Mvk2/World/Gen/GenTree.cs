@@ -20,7 +20,7 @@ namespace Mvk2.World.Gen
         public readonly ArrayFast<BlockCache> BlockUpCaches = new ArrayFast<BlockCache>(16384);
 
         /// <summary>
-        /// 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево
+        /// 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево, 3 = Хвойные (Ель или сосна)
         /// </summary>
         public readonly FeatureTree[] FeatureTrees;
 
@@ -35,14 +35,16 @@ namespace Mvk2.World.Gen
                 // Дуб
                 new FeatureTreeOak(BlockUpCaches),
                 // Фруктовое дерева
-                new FeatureTreeFruit(BlockUpCaches)
+                new FeatureTreeFruit(BlockUpCaches),
+                // Хвойные
+                new FeatureTreeConifer(BlockUpCaches)
             };
         }
 
         /// <summary>
         /// Создать объект генерации берёзы в одном чанке, много от minRandom до maxRandom
         /// </summary>
-        public FeatureTreeBirch CreateBirrchGen( byte minRandom, byte maxRandom)
+        public FeatureTreeBirch CreateBirrchGen(byte minRandom, byte maxRandom)
             => new FeatureTreeBirch(BlockGenCaches, minRandom, maxRandom, _chunkPrimer);
 
         /// <summary>
@@ -74,6 +76,18 @@ namespace Mvk2.World.Gen
         /// </summary>
         public FeatureTreeFruit CreateFruitGen(byte probabilityOne)
             => new FeatureTreeFruit(BlockGenCaches, probabilityOne, _chunkPrimer);
+
+        /// <summary>
+        /// Создать объект генерации хвойного дерева в одном чанке, много от minRandom до maxRandom
+        /// </summary>
+        public FeatureTreeConifer CreateConiferGen(byte minRandom, byte maxRandom)
+            => new FeatureTreeConifer(BlockGenCaches, minRandom, maxRandom, _chunkPrimer);
+
+        /// <summary>
+        /// Создать объект генерации хвойного дерева в одном чанке, с вероятностью probabilityOne
+        /// </summary>
+        public FeatureTreeConifer CreateConiferGen(byte probabilityOne)
+            => new FeatureTreeConifer(BlockGenCaches, probabilityOne, _chunkPrimer);
 
     }
 }
