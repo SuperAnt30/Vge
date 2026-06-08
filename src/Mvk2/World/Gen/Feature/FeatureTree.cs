@@ -1,7 +1,6 @@
 ﻿using Mvk2.World.Block;
 using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
@@ -37,6 +36,16 @@ namespace Mvk2.World.Gen.Feature
         /// </summary>
         private readonly int _blockLeavesId;
 
+        /// <summary>
+        /// Удача роста, для саженца и второй фазы.
+        /// В первой часте была 14, где random.Next(14)
+        /// </summary>
+        protected int _fartuneGrowth = 10;
+        /// <summary>
+        /// Удача роста листвы.
+        /// В первой часте была 16, где random.Next(16)
+        /// </summary>
+        protected int _fartuneGrowthLeaves = 16;
         /// <summary>
         /// Высота ствола дерева
         /// </summary>
@@ -265,6 +274,25 @@ namespace Mvk2.World.Gen.Feature
         #endregion
 
         #region Листва
+
+        /// <summary>
+        ///Листва на стволе
+        /// </summary>
+        protected void _LeavesAll(int x, int y, int z)
+        {
+            // Up
+            _AddBlockLeaves(x, y + 1, z, _NextInt(2) * 6);
+            // Down
+            _AddBlockLeaves(x, y - 1, z, 1 + _NextInt(2) * 6);
+            // East
+            _AddBlockLeaves(x + 1, y, z, 2 + _NextInt(2) * 6);
+            // West
+            _AddBlockLeaves(x - 1, y, z, 3 + _NextInt(2) * 6);
+            // North
+            _AddBlockLeaves(x, y, z - 1, 4 + _NextInt(2) * 6);
+            // South
+            _AddBlockLeaves(x, y, z + 1, 5 + _NextInt(2) * 6);
+        }
 
         /// <summary>
         ///Листва на мокушке
@@ -854,86 +882,103 @@ namespace Mvk2.World.Gen.Feature
         /// <summary>
         /// Шаг первый, саженец
         /// </summary>
-        public void StepSapling(WorldServer world, ChunkServer chunk, BlockPos blockPos, Rand rand)
+        public void StepSapling(WorldServer world, ChunkServer chunk, BlockPos blockPos, 
+            BlockState blockState, Rand rand)
         {
-            _SetRand(rand);
-            // Для роста надо вытащить блок сущности
-            _blocks = new BlockPosLoc[] { new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, _blockBranchId, -1) };
-            // Генерация древа
-            _GenerationYoung(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
-
-            // Проверка кто мешает
-            if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
+            if (blockState.LightSky < 10)
             {
-                // Дерево вырасло
-
-                // Создаём Блок сущности
-                BlockEntityTree blockEntity = _CreateBlockEntity();
-                blockEntity.SetBlockPosition(chunk, new BlockState(_blockLogId | 3 << 12), blockPos);
-                blockEntity.SetArrayLocal(_blockCaches);
-                chunk.SetBlockEntity(blockEntity);
-
-                _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
-            }
-            else if(_NextInt(5) == 0)
-            {
-                // Саженец засох
+                // Саженец засох из-за отсутствии неба
                 world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), 44);
             }
-            _blocks = null;
+            else
+            {
+                if (rand.Next(_fartuneGrowth) == 0)
+                {
+                    _SetRand(rand);
+                    // Для роста надо вытащить блок сущности
+                    _blocks = new BlockPosLoc[] { new BlockPosLoc(blockPos.X & 15, blockPos.Y, blockPos.Z & 15, _blockBranchId, -1) };
+                    // Генерация древа
+                    _GenerationYoung(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+
+                    // Проверка кто мешает
+                    if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
+                    {
+                        // Дерево вырасло
+
+                        // Создаём Блок сущности
+                        BlockEntityTree blockEntity = _CreateBlockEntity();
+                        blockEntity.SetBlockPosition(chunk, new BlockState(_blockLogId | 3 << 12), blockPos);
+                        blockEntity.SetArrayLocal(_blockCaches);
+                        chunk.SetBlockEntity(blockEntity);
+
+                        _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
+                    }
+                    else if (_NextInt(5) == 0)
+                    {
+                        // Саженец засох
+                        world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), 44);
+                    }
+                    _blocks = null;
+                }
+            }
         }
 
         /// <summary>
         /// Другие шаги, когда уже имеется блок сущности, не саженец
         /// </summary>
-        public void StepsOther(WorldServer world, ChunkServer chunk, BlockPos blockPos, Rand rand)
+        public void StepsOther(WorldServer world, ChunkServer chunk, BlockPos blockPos, BlockState blockState, Rand rand)
         {
+            //TODO::2026-06-08 Тут нужны рандомы взрослого, листвы и прочего
+
             if (chunk.GetBlockEntity(blockPos) is BlockEntityTree blockEntity)
             {
                 if (blockEntity.Step == BlockEntityTree.TypeStep.Young)
                 {
-                    // Пробуем рост с молодого в нормальное дерево
-                    _SetRand(rand);
-
-                    // Генерация древа
-                    if (blockEntity.GetHeight() < _trunkHeight / 5)
+                    if (rand.Next(_fartuneGrowth) == 0)
                     {
-                        // Засохло, скорее всего срубленное
-                        _DriedUp(world, blockEntity);
-                    }
-                    else
-                    {
-                        // Для роста надо вытащить блок сущности
-                        _blocks = blockEntity.CopyArrayBlocks();
+                        // Пробуем рост с молодого в нормальное дерево
+                        _SetRand(rand);
 
-                        // Взрослое
-                        _GenerationMature(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
-
-                        // Проверка кто мешает
-                        if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
+                        // Генерация древа
+                        if (blockEntity.GetHeight() < _trunkHeight / 5)
                         {
-                            // Удаляем все блоки прошлого дерева в мире
-                            blockEntity.RemoveAll(world);
-                            // Меняем шаг
-                            blockEntity.StepMature(_rootLenght);
-                            // Вносим новый массив дерева
-                            blockEntity.SetArrayLocal(_blockCaches);
-                            // Экспорт
-                            _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
-
-                            chunk.RemoveBlockEntity(blockPos);
-
-                            blockPos = blockPos.OffsetDown();
-                            blockEntity.SetBlockPosition(chunk, chunk.GetBlockState(blockPos), blockPos);
-                            chunk.SetBlockEntity(blockEntity);
-                        }
-                        // Если не смоглы выростить из-за вписать модель, генерируем высыхание
-                        else if (_NextInt(5) == 0)
-                        {
-                            // Удалить листву и перестаём тикать
+                            // Засохло, скорее всего срубленное
                             _DriedUp(world, blockEntity);
                         }
-                        _blocks = null;
+                        else
+                        {
+                            // Для роста надо вытащить блок сущности
+                            _blocks = blockEntity.CopyArrayBlocks();
+
+                            // Взрослое
+                            _GenerationMature(blockPos.X & 15, blockPos.Y, blockPos.Z & 15);
+
+                            // Проверка кто мешает
+                            if (_CheckBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ))
+                            {
+                                // Удаляем все блоки прошлого дерева в мире
+                                blockEntity.RemoveAll(world);
+                                // Меняем шаг
+                                blockEntity.StepMature(_rootLenght);
+                                // Вносим новый массив дерева
+                                blockEntity.SetArrayLocal(_blockCaches);
+                                // Экспорт
+                                _ExportBlockCachesInWorld(world, chunk.BlockX, chunk.BlockZ);
+
+                                chunk.RemoveBlockEntity(blockPos);
+
+                                blockPos = blockPos.OffsetDown();
+                                blockEntity.SetBlockPosition(chunk, chunk.GetBlockState(blockPos), blockPos);
+                                chunk.SetBlockEntity(blockEntity);
+                            }
+                            // Если не смоглы выростить из-за вписать модель, генерируем высыхание
+                            else if (_NextInt(5) == 0)
+                            {
+                                // Удалить листву и перестаём тикать
+                                _DriedUp(world, blockEntity);
+                            }
+                            _blocks = null;
+                        }
                     }
                 }
                 else if (blockEntity.Step == BlockEntityTree.TypeStep.Mature)
@@ -955,6 +1000,42 @@ namespace Mvk2.World.Gen.Feature
                         _CancelFetus(world, blockEntity);
                     }
                 }
+            }
+            else
+            {
+                // Это просто бревно или ветка и мы не знаем о блок сущности
+                if (rand.Next(_fartuneGrowthLeaves) == 0)
+                {
+                    EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+                    if (timeYear == EnumTimeYear.Spring || timeYear == EnumTimeYear.Summer)
+                    {
+                        _LeavesGrowth(world, blockPos, blockState, rand);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Рост листвы
+        /// </summary>
+        protected virtual void _LeavesGrowth(WorldServer world, BlockPos blockPos, BlockState blockState, Rand rand)
+        {
+            if (blockState.Met >= 512)
+            {
+                _blockCaches.Clear();
+                _LeavesAll(blockPos.X, blockPos.Y, blockPos.Z);
+                BlockState blockStateSide;
+                for (int i = 0; i < _blockCaches.Count; i++)
+                {
+                    BlockCache blockCache = _blockCaches[i];
+                    blockStateSide = world.GetBlockState(blockCache.Position);
+                    if (blockStateSide.IsAir() && blockStateSide.LightSky > 10)
+                    {
+                        // Листва
+                        world.SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
+                    }
+                }
+                world.SetBlockStateMet(blockPos, blockState.Met - 512, true);
             }
         }
 

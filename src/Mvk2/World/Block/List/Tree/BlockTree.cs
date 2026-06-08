@@ -101,12 +101,12 @@ namespace Mvk2.World.Block.List
             if (Type == TypeTree.Sapling)
             {
                 // Саженец
-                _GetFeatureTree(world)?.StepSapling(world, chunk, blockPos, rand);
+                _GetFeatureTree(world)?.StepSapling(world, chunk, blockPos, blockState, rand);
             }
             else if (blockState.Met >= 512)
             {
                 // Другие шаги дерева
-                _GetFeatureTree(world)?.StepsOther(world, chunk, blockPos, rand);
+                _GetFeatureTree(world)?.StepsOther(world, chunk, blockPos, blockState, rand);
             }
         }
 

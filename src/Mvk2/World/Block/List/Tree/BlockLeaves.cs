@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -12,7 +13,7 @@ namespace Mvk2.World.Block.List
     public class BlockLeaves : BlockBase
     {
         /***
-         * Met 0001 0000 1111
+         * Met 0011 0000 1111
          * Для Leaves листва 4 bit форма 1 bit молодой?
          * 0 - вверх
          * 1 - низ
@@ -110,6 +111,34 @@ namespace Mvk2.World.Block.List
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Действие блока после его удаления
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
+            BlockPos blockPos, BlockState stateOld, BlockState stateNew)
+        {
+            if (!world.IsRemote) {
+                if ((stateOld.Met & 1 << 9) == 0) // 512
+                {
+                    // Просто удалена листва, надо пометить ствол для регенерации листвы
+                    int met = stateOld.Met & 15;
+                    if (met > 5) met -= 6;
+                    if (met < 6)
+                    {
+                        BlockPos blockPosSide = blockPos.OffsetReversal(met);
+                        BlockState blockState = world.GetBlockState(blockPosSide);
+                        if (blockState.Met < 512 &&
+                            (blockState.Id == _idBranch || blockState.Id == _idLog))
+                        {
+                            // Верно, помечаем
+                            world.SetBlockStateMet(blockPosSide, blockState.Met + 512, true);
+                        }
+                    }
+                }
+            }
         }
     }
 }
