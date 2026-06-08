@@ -52,8 +52,8 @@ namespace Mvk2.World.Gen.Feature
                 _branchLengthMin = 5;
                 // Случайная дополнительная длинна ветки к обязательной
                 _branchLengthRand = 3;
-                // Длинна корня, у дуба достаточно длинный
-                _rootLenght = _trunkHeight / 3 - 1;
+                // Длинна корня, у дуба достаточно длинный (6 - 9)
+                _rootLenght = _trunkHeight / 3;
             }
             else
             {
@@ -65,8 +65,8 @@ namespace Mvk2.World.Gen.Feature
                 _branchLengthMin = _trunkHeight / 4;
                 // Случайная дополнительная длинна ветки к обязательной
                 _branchLengthRand = _trunkHeight / 6;
-                // Длинна корня, у дуба достаточно длинный
-                _rootLenght = _trunkHeight / 3 - 1;
+                // Длинна корня, у дуба достаточно длинный (2 - 4)
+                _rootLenght = _trunkHeight / 4;
             }
         }
 

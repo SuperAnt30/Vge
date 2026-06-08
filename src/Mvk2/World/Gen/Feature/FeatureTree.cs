@@ -948,7 +948,7 @@ namespace Mvk2.World.Gen.Feature
                     else if (state == BlockEntityTree.StateVariant.Fetus)
                     {
                         _SetRand(rand, false);
-                        _PlaceFetus(world, blockEntity);
+                        _PlaceFetus(world, blockEntity, _FortuneFetus(blockEntity));
                     }
                     else if (state == BlockEntityTree.StateVariant.Cancel)
                     {
@@ -957,6 +957,14 @@ namespace Mvk2.World.Gen.Feature
                 }
             }
         }
+
+        /// <summary>
+        /// Получить удачу для плодов, от корня и/или от почвы.
+        /// Удача, чем меньше число, тем больше фруктов _NextBool(fortune)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual int _FortuneFetus(BlockEntityTree blockEntity)
+            => 25 - blockEntity.RootLenght * 2;
 
         #endregion
 
@@ -1007,19 +1015,16 @@ namespace Mvk2.World.Gen.Feature
         }
 
         /// <summary>
-        /// Дерево готовится к урожаю плотов, надо пометить часть листвы на урожай
+        /// Дерево готовится к урожаю плодов, надо пометить часть листвы на урожай
         /// </summary>
-        private void _PlaceFetus(WorldServer world, BlockEntityTree blockEntity)
+        /// <param name="fortune">Удача для плодов, от корня и/или от почвы. Удача, чем меньше число, тем больше фруктов</param>
+        private void _PlaceFetus(WorldServer world, BlockEntityTree blockEntity, int fortune)
         {
             int count = blockEntity.Blocks.Length;
             if (count > 0)
             {
                 int biasX = (blockEntity.Position.X >> 4) << 4;
                 int biasZ = (blockEntity.Position.Z >> 4) << 4;
-
-                // Удача, чем меньше число, тем больше фруктов
-                // TODO::2026-02-10 удача для плодов, от корня можно или почвы
-                int fortune = 10;
 
                 BlockPosLoc posLoc;
                 BlockPos pos = new BlockPos();

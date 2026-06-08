@@ -86,6 +86,9 @@ namespace Mvk2.World.BlockEntity.List
 
         #region Методы изменения
 
+        //public static int min = int.MaxValue;
+        //public static int max = int.MinValue;
+
         /// <summary>
         /// Задать взрослое дерево, с длинной корня
         /// </summary>
@@ -93,6 +96,18 @@ namespace Mvk2.World.BlockEntity.List
         {
             Step = TypeStep.Mature;
             RootLenght = rootLenght;
+
+            // RootLenght определили диапазон глубины корня для каждого типа деревьев
+            // Общее  2 - 10
+            // Берёза 3 - 6
+            // Дуб    5 - 10
+            // Яблони 4 - 7
+            // Сосна  6 - 9
+            // Ель    2 - 4
+
+            //if (RootLenght > max) max = RootLenght;
+            //if (RootLenght < min) min = RootLenght;
+            //Console.WriteLine(min + " " + max);
         }
 
         /// <summary>

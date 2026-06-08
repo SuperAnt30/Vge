@@ -19,6 +19,7 @@ namespace Mvk2.World.Biome
                 new FeatureValun(_chunkPrimer, 20, _blockIdStone, 4, 1, 2, 1, 0),
                 // Деревья ниже валуна, так-как если валун заменит ствол, будет бага по TileEntity
                 chunkProvider.Tree.CreateConiferGen(1, 5), // Хвойное
+                //chunkProvider.Tree.CreateFruitGen(1, 3) // 2 6
             };
         }
 

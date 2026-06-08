@@ -51,6 +51,7 @@ namespace Mvk2.Item
 
             // Раздел инструменты и оружие
             List<ItemStack> tabTools = new List<ItemStack>();
+            tabTools.Add(new ItemStack(ItemsRegMvk.StickTechnical, 1, ItemsRegMvk.StickTechnical.MaxDamage));
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
             tabTools.Add(new ItemStack(ItemsRegMvk.ShovelIron, 1, ItemsRegMvk.AxeIron.MaxDamage));
 

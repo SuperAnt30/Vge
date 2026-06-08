@@ -28,7 +28,7 @@ namespace Mvk2.World.Gen.Feature
         protected override void _RandSize()
         {
             // Высота ствола дерева до кроны
-            _trunkHeight = _NextInt(8) + 6;
+            _trunkHeight = _NextInt(8) + 10;
             // Ствол снизу без веток 
             _trunkWithoutBranches = _NextInt(3) + 2;
             // смещение, через какое ствол может смещаться
@@ -49,8 +49,8 @@ namespace Mvk2.World.Gen.Feature
             _branchLengthRand = 3;
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = 64;
-            // Длинна корня, у фруктовых короткий
-            _rootLenght = _trunkHeight / 3 - 1;
+            // Длинна корня, у фруктовых короткий (4 - 7)
+            _rootLenght = _trunkHeight / 2 - 1;
         }
 
         /// <summary>

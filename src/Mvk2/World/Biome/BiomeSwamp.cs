@@ -1,12 +1,22 @@
 ﻿using Mvk2.World.Gen;
 using System.Runtime.CompilerServices;
+using Vge.World.Gen;
 
 namespace Mvk2.World.Biome
 {
     public class BiomeSwamp : BiomeIsland
     {
         public BiomeSwamp(ChunkProviderGenerateIsland chunkProvider)
-            : base(chunkProvider) { }
+            : base(chunkProvider)
+        {
+            _featureAreas = new IFeatureGeneratorArea[]
+            {
+                // Фруктовое дерева
+                chunkProvider.Tree.CreateFruitGen(10),
+                // Дуб
+                chunkProvider.Tree.CreateOakGen(10),
+            };
+        }
 
         /// <summary>
         /// Получить смещение первого уровня от уровня моря

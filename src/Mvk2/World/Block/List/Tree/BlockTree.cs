@@ -1,8 +1,8 @@
 ﻿using Mvk2.Item;
-using Mvk2.World.BlockEntity;
 using Mvk2.World.BlockEntity.List;
 using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Item;
@@ -76,7 +76,7 @@ namespace Mvk2.World.Block.List
         public readonly TypeTree Type;
 
         /// <summary>
-        /// Mvk2.World.Gen.GenTree 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево
+        /// Mvk2.World.Gen.GenTree 0 = Берёза, 1 = Дуб, 2 = Фруктовое дерево, 3 = Хыойное
         /// </summary>
         private readonly int _indexGen;
 
@@ -120,7 +120,6 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Действие блока после его удаления
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OnBreakBlock(WorldBase world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld, BlockState stateNew)
         {
@@ -147,11 +146,37 @@ namespace Mvk2.World.Block.List
         }
 
         /// <summary>
+        /// Действие блока после его удаления
+        /// </summary>
+        public void Find(WorldBase world, ChunkServer chunk, BlockPos blockPos)
+        {
+            if (!world.IsRemote && (Type == TypeTree.Log || Type == TypeTree.Branch)
+                && world is WorldServer worldServer)
+            {
+                // Список всех блок сущностей в квадрате 3*3 чанка
+                List<BlockEntityBase> blocksEntity = worldServer.GetBlocksEntity3x3(chunk);
+
+                // Пробегаемся и производим удаление
+                foreach (BlockEntityBase blockEntity in blocksEntity)
+                {
+                    if (blockEntity is BlockEntityTree blockEntityTree
+                        && blockEntityTree.IsAABB(blockPos)
+                        && blockEntityTree.FindBlock(blockPos))
+                    {
+                        // Это блок возможно принадлежит этому дереву. Откусить
+                        Console.WriteLine(blockEntity.Position);
+                        //blockEntityTree.RemoveBlock(worldServer, chunk, blockPos);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
         public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state)
         {
-            ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
+            //ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
         }
     }
 }

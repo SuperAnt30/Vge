@@ -49,7 +49,7 @@ namespace Mvk2.World.Gen.Feature
             _branchLengthRand = 2;
             // Насыщенность листвы на ветке, меньше 1 не допустимо, чем больше тем веток меньше
             _foliageBranch = 64;
-            // Длинна корня, у берёзы короткий
+            // Длинна корня, у берёзы короткий (3 - 6)
             _rootLenght = _trunkHeight / 3 - 1;
         }
 

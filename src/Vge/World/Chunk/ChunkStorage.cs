@@ -359,7 +359,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Вернуть количество блоков не воздуха, количество тикающих блоков и разрушающих блоков
         /// </summary>
-        public string ToStringCount() => "СhunkCount block:" + CountBlock + " tick:" + _countTickBlock + " destroy:" + Destroy.Count;
+        public string ToStringCount() => "ChunkCount block:" + CountBlock + " tick:" + _countTickBlock + " destroy:" + Destroy.Count;
 
         public override string ToString() => " yB:" + YBase + " body:" + CountBlock + " ";
     }

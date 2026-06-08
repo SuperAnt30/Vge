@@ -176,6 +176,7 @@ namespace Vge.World
         /// <summary>
         /// Изменить метданные блока
         /// </summary>
+        /// <param name="isMarkUpdate">Отметить блок для обновления</param>
         public void SetBlockStateMet(BlockPos blockPos, int met, bool isMarkUpdate = true)
         {
             if (blockPos.IsValid(ChunkPr.Settings))

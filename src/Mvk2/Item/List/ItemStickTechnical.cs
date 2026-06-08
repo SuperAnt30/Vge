@@ -1,32 +1,27 @@
-﻿using Vge.Entity.Player;
+﻿using Mvk2.World.Block;
+using Mvk2.World.Block.List;
+using Vge.Entity.Player;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
+using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Vge.Item.List
+namespace Mvk2.Item.List
 {
     /// <summary>
-    /// Предмет который ставится как блок
+    /// Предмет техническая палочка, для отладки
     /// </summary>
-    public class ItemBlock : ItemBase
+    public class ItemStickTechnical : ItemBase
     {
-        /// <summary>
-        /// Объект блока который устанавливается этим предметом
-        /// </summary>
-        public readonly BlockBase Block;
-
-        public ItemBlock(BlockBase block) => Block = block;
-
-        #region Дейстыия рук, ЛКМ и ПКМ
-
         /// <summary>
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
         /// <param name="begin">Первый клик, без паузы</param>
         /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
-        public override ResultHandSecond OnSecond(bool begin, ItemStack stack, 
+        public override ResultHandSecond OnSecond(bool begin, ItemStack stack,
             PlayerClientOwner player, int counter)
         {
             ResultHandSecond result = base.OnSecond(begin, stack, player, counter);
@@ -38,15 +33,20 @@ namespace Vge.Item.List
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsBlock())
             {
-                if (OnItemOnBlockPlacement(stack, player, moving.BlockPosition, moving.Side, 
-                    moving.Facing, true, player.RotationYaw))
-                {
-                    return new ResultHandSecond(begin ? 8 : 4, true);
-                }
-                return new ResultHandSecond(ResultHandSecond.ActionType.None, begin ? 8 : 4);
+                return new ResultHandSecond(ResultHandSecond.ActionType.BlockPlacement);
             }
             return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
+
+        /// <summary>
+        /// Действие предмета ЛКМ.
+        /// Для клиента.
+        /// </summary>
+        /// <param name="begin">Первый клик, без паузы</param>
+        //public override ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        //    => new ResultHandAction(player.MovingObject.IsBlock() 
+        //        ? ResultHandAction.ActionType.ItemOnBlock
+        //        : ResultHandAction.ActionType.None);
 
         /// <summary>
         /// Вызывается, когда текущий предмет пробуюет установить на блок,
@@ -62,38 +62,34 @@ namespace Vge.Item.List
         {
             WorldBase world = player.GetWorld();
 
-            //if (!world.IsRemote) return false;
-
-            if (flagReplaceable && !world.GetBlockState(blockPos).GetBlock().IsReplaceable)
+            if (!world.IsRemote && world is WorldServer worldServer)
             {
-                blockPos = blockPos.Offset(side);
-            }
+                ChunkServer chunk = worldServer.GetChunkServer(blockPos);
+                BlockState blockState = chunk.GetBlockState(blockPos);
+                BlockBase block = blockState.GetBlock();
 
-            if (_CanPlaceBlockOnSide(stack, player, world, blockPos, Block, side, facing))
-            {
-                BlockState blockState = Block.OnBlockPlaced(world, blockPos, 
-                    new BlockState(Block.IndexBlock), side, facing, playerYaw);
-                if (Block.CanBlockStay(world, blockPos, blockState.Met))
+                if (block is BlockLeaves blockLeaves)
                 {
-                    BlockState blockStateOld = world.GetBlockState(blockPos);
-                    bool result = world.SetBlockState(blockPos, blockState, 15);
-                    if (result)
+                    // Клик по листве, вешаем снизу плод
+                    blockLeaves.HangTheFetus(chunk, blockPos);
+                }
+                else if (block is BlockTree blockTree)
+                {
+                    if (blockTree.Type == BlockTree.TypeTree.Sapling)
                     {
-                        //InstallAdditionalBlocks(worldIn, blockPos);
-                        if (!player.CreativeMode)
-                        {
-                        //    blockStateOld.GetBlock().DropBlockAsItem(world, blockPos, blockStateOld);
-                            player.Inventory.DecrCurrentItem(1);
-                        }
-                        world.PlaySound(Block.Material.SamplePlace(world.Rnd),
-                            blockPos.ToVector3Center(), 1, 1, player.Id);
+                        // Клик по саженцу дерева
+                        blockTree.UpdateTick(worldServer, chunk, blockPos, blockState, world.Rnd);
                     }
-                    return result;
+                    else if (blockTree.Type == BlockTree.TypeTree.Branch
+                        || blockTree.Type == BlockTree.TypeTree.Log)
+                    {
+                        // Клик по саженцу дерева
+                        blockTree.Find(worldServer, chunk, blockPos);
+                    }
                 }
             }
+
             return false;
         }
-
-        #endregion
     }
 }

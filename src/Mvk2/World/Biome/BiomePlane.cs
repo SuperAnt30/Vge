@@ -20,11 +20,11 @@ namespace Mvk2.World.Biome
                 new FeatureMinable(_chunkPrimer, 5, _blockIdWater, 33, 24, 44), // Пресная вода
                 //new FeatureTree(_chunkPrimer, 1, 2, _blockIdLogBirch), // Дерево
                 // Фруктовое дерева
-                chunkProvider.Tree.CreateFruitGen(25),
+                chunkProvider.Tree.CreateFruitGen(40),
                 // Берёза,
-                chunkProvider.Tree.CreateBirrchGen(100),
+                chunkProvider.Tree.CreateBirrchGen(50),
                 // Дуб
-                chunkProvider.Tree.CreateOakGen(40),
+                chunkProvider.Tree.CreateOakGen(30),
                // new FeatureTreeBirch(chunkProvider.BlockCaches, _chunkPrimer), // Дерево
                 // Дуб
                 //new FeatureTreeOak(chunkProvider.BlockCaches,_chunkPrimer), // Дерево

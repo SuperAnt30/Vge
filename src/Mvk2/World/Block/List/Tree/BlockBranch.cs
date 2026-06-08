@@ -39,7 +39,7 @@ namespace Mvk2.World.Block.List
                     pos.X + .75f, pos.Y + .75f, pos.Z + 1) };
 
             if (met == 3) return new AxisAlignedBB[] { new AxisAlignedBB(pos.X + .5f, pos.Y, pos.Z + .25f,
-                pos.X + .1f, pos.Y + 1, pos.Z + .75f) };
+                pos.X + 1, pos.Y + 1, pos.Z + .75f) };
             if (met == 4) return new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z + .25f,
                 pos.X + .5f, pos.Y + 1, pos.Z + .75f) };
             if (met == 5) return new AxisAlignedBB[] { new AxisAlignedBB(pos.X + .25f, pos.Y, pos.Z,

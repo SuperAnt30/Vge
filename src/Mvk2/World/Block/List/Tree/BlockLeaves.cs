@@ -92,13 +92,24 @@ namespace Mvk2.World.Block.List
                 if (random.Next(10) == 0)
                 {
                     // Вешаем плод
-                    if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
-                    {
-                        chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 44);
-                    }
+                    HangTheFetus(chunk, blockPos);
                     chunk.SetBlockStateMet(blockPos, met - 256);
                 }
             }
+        }
+
+        /// <summary>
+        /// Установить плод если мет данные об этом разрешают
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool HangTheFetus(ChunkServer chunk, BlockPos blockPos)
+        {
+            if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
+            {
+                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 44);
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -44,6 +44,10 @@ namespace Mvk2.Item
 
 
         /// <summary>
+        /// Техническая палочка, для отладки
+        /// </summary>
+        public static ItemStickTechnical StickTechnical { get; private set; }
+        /// <summary>
         /// Железный топор
         /// </summary>
         public static ItemBase AxeIron { get; private set; }
@@ -156,6 +160,8 @@ namespace Mvk2.Item
             // Маска + Акваланг ?!
             // 
 
+            ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical());
+            
             ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe());
             ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel());
 
