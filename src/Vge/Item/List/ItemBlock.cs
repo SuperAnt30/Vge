@@ -73,7 +73,7 @@ namespace Vge.Item.List
             {
                 BlockState blockState = Block.OnBlockPlaced(world, blockPos, 
                     new BlockState(Block.IndexBlock), side, facing, playerYaw);
-                if (Block.CanBlockStay(world, blockPos, blockState.Met))
+                if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);
                     bool result = world.SetBlockState(blockPos, blockState, 15);

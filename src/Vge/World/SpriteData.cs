@@ -20,26 +20,31 @@ namespace Vge.World
         /// </summary>
         public int CountHeight;
 
-        public SpriteData(int index, int countWidth, int countHeight)
+        private readonly bool _animation;
+
+        public SpriteData(int index, int countWidth, int countHeight, bool animation)
         {
             Index = index;
             CountWidth = countWidth;
             CountHeight = countHeight;
+            _animation = animation;
         }
         public SpriteData(int index)
         {
             Index = index;
             CountWidth = 1;
             CountHeight = 1;
+            _animation = false;
         }
 
         /// <summary>
         /// Имеется ли анимация
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAnimation() => CountHeight > 1 && CountHeight != CountWidth;
+        public bool IsAnimation() => _animation;
+            //CountHeight > 1 && CountHeight != CountWidth;
 
         public override string ToString()
-            => Index + " [" + CountWidth + ":" + CountHeight + "]";
+            => Index + " [" + CountWidth + ":" + CountHeight + "]" + (_animation ? " A" : "");
     }
 }

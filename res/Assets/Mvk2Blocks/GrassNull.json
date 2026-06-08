@@ -1,0 +1,14 @@
+{
+    АmbientOcclusion: false,
+    UseNeighborBrightness: true,
+    NoCollision: true,
+    LightOpacity: 0,
+    Passable: true,
+    Translucent: true,
+    FactorSlow: [ 0.67, 0.5 ],
+    ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],
+    ParticleCount: 8,
+    Variants: [
+        { Shape: "_Null" }
+    ]
+}

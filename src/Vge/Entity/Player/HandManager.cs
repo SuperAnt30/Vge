@@ -387,7 +387,7 @@ namespace Vge.Entity.Player
                 }
                 _destroy++;
 
-                if (_destroy > _hardness)
+                if (_destroy >= _hardness)
                 {
                     // Разрушили
                     _BlockDestroyed(block);

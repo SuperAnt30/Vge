@@ -134,46 +134,56 @@ namespace Vge.World
 
         public SpriteData AddSprite(string name)
         {
-            if (_textures.ContainsKey(name))
+            if (name != "")
             {
-                // Такая текстура сгенерированна ранее, возвращаем просто ID
-                return _textures[name];
-            }
+                bool animation = name[0] == '@';
+                if (animation)
+                {
+                    name = name.Substring(1);
+                }
 
-            string fileName = Options.PathTextures + name + ".png";
-            if (File.Exists(fileName))
-            {
-                //_profiler.StartSection(name);
-                int size = Ce.TextureSpriteBlockSize; // 16
-                int sizeRGBA = size * 4; // 64
-                BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
-                int index = -1;
-                int w = 1;
-                if (buffered.Width == size && buffered.Height >= size)
+                if (_textures.ContainsKey(name))
                 {
-                    index = buffered.Height > size
-                        ? _GenIndexAnim(buffered.Height / size)
-                        : _GenIndexOne();
+                    // Такая текстура сгенерированна ранее, возвращаем просто ID
+                    return _textures[name];
                 }
-                else if(buffered.Width > size && buffered.Height > size)
+
+                string fileName = Options.PathTextures + name + ".png";
+                if (File.Exists(fileName))
                 {
-                    w = buffered.Width / size;
-                    if (buffered.Width == w * size)
+                    //_profiler.StartSection(name);
+                    int size = Ce.TextureSpriteBlockSize; // 16
+                    int sizeRGBA = size * 4; // 64
+                    BufferedImage buffered = BufferedFileImage.FileToBufferedImage(fileName);
+                    int index = -1;
+                    int w = 1;
+                    if (buffered.Width == size && buffered.Height >= size)
                     {
-                        index = _GenIndexAnim2d(buffered.Height / size, w);
+                        index = buffered.Height > size
+                            ? _GenIndexAnim(buffered.Height / size)
+                            : _GenIndexOne();
                     }
-                    else
+                    else if (buffered.Width > size && buffered.Height > size)
                     {
-                        throw new Exception(Sr.GetString(Sr.SpriteErrorWidthIsIncorrect, fileName, size));
+                        w = buffered.Width / size;
+                        if (buffered.Width == w * size)
+                        {
+                            index = _GenIndexAnim2d(buffered.Height / size, w);
+                        }
+                        else
+                        {
+                            throw new Exception(Sr.GetString(Sr.SpriteErrorWidthIsIncorrect, fileName, size));
+                        }
                     }
+                    if (index != -1)
+                    {
+                        SpriteData res = new SpriteData(index, w, 
+                            _BufferCopy(index, w, buffered, name), animation);
+                        _textures.Add(name, res);
+                        return res;
+                    }
+                    //_profiler.EndSectionLog();
                 }
-                if (index != -1)
-                {
-                    SpriteData res = new SpriteData(index, w, _BufferCopy(index, w, buffered, name));
-                    _textures.Add(name, res);
-                    return res;
-                }
-                //_profiler.EndSectionLog();
             }
             return new SpriteData(-1);
         }

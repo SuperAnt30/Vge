@@ -134,7 +134,11 @@ namespace Mvk2.World.Block
         /// <summary>
         /// Блок высокой травы
         /// </summary>
-        public static BlockBase TallGrass { get; private set; }
+        public static BlockTallGrass TallGrass { get; private set; }
+        /// <summary>
+        /// Блок пустой травы, эмитация для взаимодействия без прорисовки
+        /// </summary>
+        public static BlockGrassNull GrassNull { get; private set; }
         /// <summary>
         /// Блок тины
         /// </summary>
@@ -281,6 +285,7 @@ namespace Mvk2.World.Block
 
             BlocksReg.RegisterBlockClass("Grass", Grass = new BlockGrass(materials.Plant));
             BlocksReg.RegisterBlockClass("TallGrass", TallGrass = new BlockTallGrass(materials.Plant));
+            BlocksReg.RegisterBlockClass("GrassNull", GrassNull = new BlockGrassNull(materials.Plant));
 
             Tina = BlocksReg.RegisterBlockClass("Tina", materials.Plant);
 

@@ -1,7 +1,7 @@
 {
     Texture: { 
         All: "Blocks/Debug",
-        Up: "Blocks/DebugAnim",
+        Up: "@Blocks/DebugAnim",
         Add: "Blocks/FlowerClover"
     },
     Elements: [

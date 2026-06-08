@@ -26,7 +26,7 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
         {
             base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
-            if (!CanBlockStay(world, blockPos, blockState.Met))
+            if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
                 world.SetBlockToAir(blockPos, 47); // 1 2 4 8 32 без звука но с частичками
@@ -36,9 +36,9 @@ namespace Mvk2.World.Block.List
         /// <summary> 
         /// Проверка установи блока, можно ли его установить тут
         /// </summary>
-        public override bool CanBlockStay(WorldBase world, BlockPos blockPos, int met = 0)
+        public override bool CanBlockStay(WorldBase world, ChunkBase chunk, BlockPos blockPos, int met = 0)
         {
-            ChunkBase chunk = world.GetChunk(blockPos);
+            if (chunk == null) chunk = world.GetChunk(blockPos);
             if (chunk != null)
             {
                 return chunk.GetBlockState(blockPos.OffsetUp()).Id == _idLeaves;

@@ -87,6 +87,11 @@ namespace Mvk2.Item.List
                         blockTree.Find(worldServer, chunk, blockPos);
                     }
                 }
+                else if (block is BlockTallGrass tallGrass)
+                {
+                    // Клик по высокой траве, чтоб выросла
+                    tallGrass.GrassGrowth(worldServer, chunk, blockState, blockPos);
+                }
             }
 
             return false;

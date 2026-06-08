@@ -662,7 +662,7 @@ namespace Vge.World.Block
         /// Проверка установка блока, можно ли его установить тут
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool CanBlockStay(WorldBase world, BlockPos blockPos, int met = 0) => true;
+        public virtual bool CanBlockStay(WorldBase world, ChunkBase chunk, BlockPos blockPos, int met = 0) => true;
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

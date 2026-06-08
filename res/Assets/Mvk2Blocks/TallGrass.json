@@ -1,11 +1,11 @@
 {
+    NeedsRandomTick: true,
     АmbientOcclusion: false,
     UseNeighborBrightness: true,
     NoCollision: true,
     LightOpacity: 0,
     Passable: true,
     Translucent: true,
-    FactorSlow: [ 0.67, 0.5 ],
     ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],
     ParticleCount: 8,
     Variants: [
@@ -14,10 +14,25 @@
         { Shape: "TallGrass", Offset: [ 4, 0, 0 ] },
         { Shape: "TallGrass", Offset: [ 0, 0, -4 ] },
         { Shape: "TallGrass", Offset: [ -4, 0, 0 ] },
-        { Shape: "TallGrassUp" },
-        { Shape: "TallGrassUp", Offset: [ 0, 0, 4 ] },
-        { Shape: "TallGrassUp", Offset: [ 4, 0, 0 ] },
-        { Shape: "TallGrassUp", Offset: [ 0, 0, -4 ] },
-        { Shape: "TallGrassUp", Offset: [ -4, 0, 0 ] }
+        { Shape: "TallGrass2" },
+        { Shape: "TallGrass2", Offset: [ 0, 0, 4 ] },
+        { Shape: "TallGrass2", Offset: [ 4, 0, 0 ] },
+        { Shape: "TallGrass2", Offset: [ 0, 0, -4 ] },
+        { Shape: "TallGrass2", Offset: [ -4, 0, 0 ] },
+        { Shape: "TallGrass3" },
+        { Shape: "TallGrass3", Offset: [ 0, 0, 4 ] },
+        { Shape: "TallGrass3", Offset: [ 4, 0, 0 ] },
+        { Shape: "TallGrass3", Offset: [ 0, 0, -4 ] },
+        { Shape: "TallGrass3", Offset: [ -4, 0, 0 ] },
+        { Shape: "TallGrass4" },
+        { Shape: "TallGrass4", Offset: [ 0, 0, 4 ] },
+        { Shape: "TallGrass4", Offset: [ 4, 0, 0 ] },
+        { Shape: "TallGrass4", Offset: [ 0, 0, -4 ] },
+        { Shape: "TallGrass4", Offset: [ -4, 0, 0 ] },
+        { Shape: "TallGrass5" },
+        { Shape: "TallGrass5", Offset: [ 0, 0, 4 ] },
+        { Shape: "TallGrass5", Offset: [ 4, 0, 0 ] },
+        { Shape: "TallGrass5", Offset: [ 0, 0, -4 ] },
+        { Shape: "TallGrass5", Offset: [ -4, 0, 0 ] }
     ]
 }

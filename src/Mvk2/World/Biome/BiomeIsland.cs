@@ -91,6 +91,7 @@ namespace Mvk2.World.Biome
         protected readonly ushort _blockIdFlowerDandelion = BlocksRegMvk.FlowerDandelion.IndexBlock;
         protected readonly ushort _blockIdFlowerClover = BlocksRegMvk.FlowerClover.IndexBlock;
         protected readonly ushort _blockIdTallGrass = BlocksRegMvk.TallGrass.IndexBlock;
+        protected readonly ushort _blockIdGrassNull = BlocksRegMvk.GrassNull.IndexBlock;
         protected readonly ushort _blockIdTina = BlocksRegMvk.Tina.IndexBlock;
         protected readonly ushort _blockIdSaplingDry = BlocksRegMvk.SaplingDry.IndexBlock;
 
@@ -548,14 +549,22 @@ namespace Mvk2.World.Biome
             int height = _rand.Next(maxHeight) + yh;
             for (int y = yh; y <= height; y++)
             {
-                if (y == height)
+                if (y == yh)
                 {
-                    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass, 1);
+                    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass, height - yh);
                 }
                 else
                 {
-                    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass);
+                    _chunkPrimer.SetBlockState(xz, y, _blockIdGrassNull);
                 }
+                //if (y == height)
+                //{
+                //    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass, 1);
+                //}
+                //else
+                //{
+                //    _chunkPrimer.SetBlockState(xz, y, _blockIdTallGrass);
+                //}
             }
         }
 

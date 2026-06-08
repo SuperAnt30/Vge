@@ -37,6 +37,8 @@ namespace Vge.World.Block
         /// </summary>
         public SpriteData GetResult(string name)
         {
+            if (name[0] == '@') name = name.Substring(1);
+
             if (_textures.ContainsKey(name))
             {
                 return _textures[name];
