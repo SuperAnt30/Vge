@@ -1,5 +1,6 @@
 ﻿using Mvk2.World.Block;
 using Mvk2.World.Block.List;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Util;
@@ -95,6 +96,15 @@ namespace Mvk2.Item.List
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Текст в подсказке для GUI
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override string GetToolTip()
+        {
+            return string.Format(_toolTip, IndexItem);
         }
     }
 }

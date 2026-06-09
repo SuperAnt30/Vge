@@ -22,7 +22,7 @@ namespace Mvk2.World.Block.List
             if (!CanBlockStay(world, chunk, blockPos))
             {
                 // Снизу не подходящий блок
-                world.SetBlockToAir(blockPos);
+                world.SetBlockToAir(blockPos, 47);
             }
         }
 

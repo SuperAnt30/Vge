@@ -1,0 +1,66 @@
+#09.06.2026 в целом всё не обходимое на дату
+
+Chat:Чат
+Inventory:Инвентарь
+Creative:Творческий
+Hole:Дыра
+All:Все
+Blocks:Блоки
+Craft:Ремесло
+Tools:Инструменты
+Cloth:Одежда
+Food:Еда
+GameDifferentVersion:Игра разной версии
+GameBroken:Сломанная игра
+PlayerNameMustNotBeEmpty:Имя игрока не должно быть пустым
+ErrorWhileLoadingFile:Ошибка при загрузке файла
+Saving:Сохранение
+Leaving:Завершение
+VersionAnother:Друная версия
+LoginDuplicate:Повторный пснвдоним
+LoginIncorrect:Не верный псевдоним
+InvalidToken:Недействительный токен
+GameEmpty:Пустая игра
+GameKicked:Игра удалена
+BackGame:Назад в игру
+ExitGame:Выход из игры
+Single:Одиночный
+Multiplayer:Многопользовательский
+Options:Опции
+Exit:Выход
+Seed:Зерно
+Create:Создать
+Cancel:Отмена
+IpAddress:IP адрес
+Connect:Соединять
+Menu:Меню
+Notification:Уведомление
+Language:Язык
+English:Английский
+Russian:Русский
+Sound:Звук
+Graphics:Графика
+Done:Готово
+Nikname:Псевдоним
+MaxFps:Максимальный fps
+SoundVolume:Громкость звука
+SoundVolumeOff:Звук отключен
+SoundVolumeMax:Максимальный звук
+MusicVolume:Громкость музыки
+MusicVolumeOff:Музыка отключена
+MusicVolumeMax:Максимальная музыка
+MouseSensitivity:Чувствительность мыши
+OverviewChunk:Обзор чанков
+BigInterface:Большой интерфейс
+FullScreen:Полноэкранный
+Shadow:Эффект тени
+NetOn:Сеть включена
+Net:Сеть
+Singleplayer:Одиночная игра
+SingleCreateSlot{0}:Создать {0} слот
+GameDeleteSlot{0}:Удалить {0} слот игры?
+Yes:Да
+No:Нет
+Warning:Предупреждение
+Connection:Соединение
+LoadingTheWorld:Загрузка мира

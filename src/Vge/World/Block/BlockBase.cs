@@ -690,7 +690,9 @@ namespace Vge.World.Block
         /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
-        public virtual void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state) { }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void DropBlockAsItem(WorldServer world, BlockPos blockPos, 
+            BlockState state, PlayerServer player) { }
 
         /// <summary>
         /// Активация блока, true - был клик, false - нет такой возможности

@@ -45,6 +45,7 @@ public sealed class Sr
     internal const string InvalidEndJsonReadTag = "Некорректный тег чтения Json, отсутствует завершение {0} файла: {1}";
     internal const string InvalidJsonReadTag = "Некорректный тег чтения Json, символ {0} файла: {1}";
     internal const string ThereIsNoSuchSide = "Не существует [{0}] стороны";
+    internal const string TheTextFileIsMissing = "Отсутствует файл текста [{0}]";
 
     #endregion
 

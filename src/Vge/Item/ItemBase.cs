@@ -28,6 +28,10 @@ namespace Vge.Item
         /// </summary>
         public string CurentName { get; protected set; } = "";
         /// <summary>
+        /// Текст в подсказке для GUI
+        /// </summary>
+        protected string _toolTip = "";
+        /// <summary>
         /// Описание предмета на текущем языке
         /// </summary>
         public string Description { get; protected set; } = "";
@@ -106,6 +110,17 @@ namespace Vge.Item
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetAlias(string alias) => Alias = alias;
 
+        /// <summary>
+        /// Задать название и описание
+        /// </summary>
+        public void SetNameLang(string name, string toolTip, string des)
+        {
+            CurentName = name;
+            _toolTip = (toolTip.Length > 3 && toolTip.Substring(toolTip.Length - 4) == ".tip")
+                ? CurentName : toolTip;
+            Description = des;
+        }
+
         #endregion
 
         /// <summary>
@@ -135,6 +150,12 @@ namespace Vge.Item
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ushort IndexReplaceItemDueAir() => 0;
+
+        /// <summary>
+        /// Текст в подсказке для GUI
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual string GetToolTip() => _toolTip;
 
         #region Дейстыия рук, ЛКМ и ПКМ
 

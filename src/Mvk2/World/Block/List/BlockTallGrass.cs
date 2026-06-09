@@ -51,7 +51,7 @@ namespace Mvk2.World.Block.List
             {
                 // Снизу не подходящий блок для травы
                 //DropBlockAsItem(worldIn, blockPos, state);
-                world.SetBlockToAir(blockPos);
+                world.SetBlockToAir(blockPos, 47);
             }
             else
             {

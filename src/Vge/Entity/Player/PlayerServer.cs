@@ -454,7 +454,8 @@ namespace Vge.Entity.Player
             BlockState blockState = worldServer.GetBlockState(packet.GetBlockPos());
             if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
             {
-               // BlockBase block = blockState.GetBlock();
+                BlockBase block = blockState.GetBlock();
+                block.DropBlockAsItem(worldServer, packet.GetBlockPos(), blockState, this);
                 worldServer.SetBlockToAir(packet.GetBlockPos(), 63);
                 //worldServer.MarkBlockForUpdate(packet.GetBlockPos().X, packet.GetBlockPos().Y, packet.GetBlockPos().Z);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();

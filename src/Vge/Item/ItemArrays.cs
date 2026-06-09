@@ -33,5 +33,18 @@
                 ItemObjects[id] = item;
             }
         }
+
+        /// <summary>
+        /// Проинициализировать язык для предметов
+        /// </summary>
+        public void InitLanguages()
+        {
+            string key;
+            for (int i = 0; i < Count; i++)
+            {
+                key = ItemObjects[i].Alias;
+                ItemObjects[i].SetNameLang(L.I(key), L.I(key + ".tip"), L.I(key + ".des"));
+            }
+        }
     }
 }

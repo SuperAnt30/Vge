@@ -29,6 +29,9 @@ namespace Mvk2.World
 
             // Дополнительная инициализация блоков после инициализации миров и корректировки id блоков
             Ce.Blocks.InitializationAfterItems();
+
+            // Предметам присвоение языка
+            Ce.Items.InitLanguages();
         }
     }
 }

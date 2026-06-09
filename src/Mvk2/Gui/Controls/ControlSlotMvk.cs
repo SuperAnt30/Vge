@@ -113,6 +113,7 @@ namespace Mvk2.Gui.Controls
         {
             if (Stack != null)
             {
+                return Stack.Item.GetToolTip();
                 return "!!!!Testing" + ChatStyle.Blue + "Stak\r\n" + ChatStyle.Reset + ChatStyle.Bolb + Stack.ToString();
             }
             return "";

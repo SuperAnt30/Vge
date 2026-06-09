@@ -23,6 +23,7 @@ namespace Vge.Gui.Screens
         /// </summary>
         private readonly bool _isGameLocal;
 
+        protected readonly Slider _sliderLanguage;
         protected readonly Label _labelSound;
         protected readonly Label _labelGraphics;
         protected readonly LineHorizontal _lineSound;
@@ -54,6 +55,9 @@ namespace Vge.Gui.Screens
             
             FontBase font = window.Render.FontMain;
 
+            _sliderLanguage = new Slider(window, font, 200, 0, 1, 1, L.T("Language"));
+            _sliderLanguage.SetValue(Options.GetLanguageIndex())
+                .AddParam(0, L.T("English")).AddParam(1, L.T("Russian"));
             _labelSound = new Label(window, font, 400, 16, ChatStyle.Bolb + L.T("Sound"));
             _labelSound.SetTextAlight(EnumAlight.Left, EnumAlightVert.Top);
             _labelGraphics = new Label(window, font, 400, 16, ChatStyle.Bolb + L.T("Graphics"));
@@ -83,8 +87,7 @@ namespace Vge.Gui.Screens
             _sliderMusicVolume.SetEnable(false);
 
             _sliderMouseSensitivity = new Slider(window, font, 200, 0, 100, 1, L.T("MouseSensitivity"));
-            _sliderMouseSensitivity.SetValue(Options.MouseSensitivity)
-                .AddParam(0, L.T("SensitivityMin")).AddParam(100, L.T("SensitivityMax"));
+            _sliderMouseSensitivity.SetValue(Options.MouseSensitivity);
 
             _sliderOverviewChunk = new Slider(window, font, 200, 2, 64, 1, L.T("OverviewChunk"));
             _sliderOverviewChunk.SetValue(Options.OverviewChunk);
@@ -93,7 +96,7 @@ namespace Vge.Gui.Screens
             _checkBoxBigInterface.SetChecked(Options.SizeInterface != 1);
             _checkBoxVSinc = new CheckBox(window, font, 200, L.T("VSync"));
             _checkBoxVSinc.SetChecked(Options.VSync);
-            _checkBoxFullScreen = new CheckBox(window, font, 200, L.T("FullScreenReset"));
+            _checkBoxFullScreen = new CheckBox(window, font, 200, L.T("FullScreen"));
             _checkBoxFullScreen.SetChecked(Options.FullScreen);
             _checkBoxAmbientOcclusion = new CheckBox(window, font, 200, L.T("AmbientOcclusion"));
             _checkBoxAmbientOcclusion.SetChecked(Options.AmbientOcclusion);
@@ -165,6 +168,7 @@ namespace Vge.Gui.Screens
             bool isOverviewChunk = Options.OverviewChunk != _sliderOverviewChunk.Value;
             bool isAmbientOcclusion = Options.AmbientOcclusion != _checkBoxAmbientOcclusion.Checked;
             bool isShadow = Options.Shadow != _checkBoxShadow.Checked;
+            bool isLanguage = Options.GetLanguageIndex() != _sliderLanguage.Value;
             if (Options.VSync != _checkBoxVSinc.Checked)
             {
                 window.SetVSync(_checkBoxVSinc.Checked);
@@ -173,6 +177,7 @@ namespace Vge.Gui.Screens
             {
                 window.SetWishFrame(_sliderFps.Value);
             }
+            Options.SetLanguageIndex(_sliderLanguage.Value);
             Options.Fps = _sliderFps.Value;
             Options.SoundVolume = _sliderSoundVolume.Value;
             Options.MusicVolume = _sliderMusicVolume.Value;
@@ -215,6 +220,10 @@ namespace Vge.Gui.Screens
             {
                 window.Game.WorldRender.ModifyShadow();
             }
+            if (isLanguage)
+            {
+                L.UpdateLanguage();
+            }
         }
 
         /// <summary>
@@ -228,6 +237,7 @@ namespace Vge.Gui.Screens
             _AddControls(_labelSound);
             _AddControls(_labelGraphics);
 
+            _AddControls(_sliderLanguage);
             _AddControls(_buttonDone);
             _AddControls(_buttonCancel);
 
@@ -258,6 +268,8 @@ namespace Vge.Gui.Screens
             PosY = (Height - HeightWindow) / 2;
             base._OnResized();
 
+            _sliderLanguage.SetPosition(PosX + 36, PosY + 32);
+
             _labelNikname.SetPosition(PosX + 274, PosY + 32);
             _textBoxNikname.SetPosition(PosX + 348, PosY + 32);
             _sliderMouseSensitivity.SetPosition(PosX + 36, PosY + 62);
@@ -281,7 +293,7 @@ namespace Vge.Gui.Screens
             _checkBoxShadow.SetPosition(PosX + 36, PosY + 292);
 
             _buttonNet.SetPosition(PosX + 192, PosY + 332);
-
+            
             _buttonDone.SetPosition(PosX + 122, PosY + 372);
             _buttonCancel.SetPosition(PosX + 262, PosY + 372);
         }

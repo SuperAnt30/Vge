@@ -5,6 +5,7 @@ using Mvk2.World.Gen.Feature;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Util;
 using Vge.World;
@@ -174,7 +175,8 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
-        public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, BlockState state)
+        public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, 
+            BlockState state, PlayerServer player)
         {
             //ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
         }

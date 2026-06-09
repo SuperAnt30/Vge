@@ -136,7 +136,7 @@ namespace Vge.Gui.Screens
         private void _ButtonSlotsDel_Click(object sender, EventArgs e)
         {
             _slot = (int)((ButtonRemove)sender).Tag;
-            window.LScreen.YesNo(this, string.Format(L.T("GameDeleteSlot{0}"), _slot + 1));
+            window.LScreen.YesNo(this, L.T("GameDeleteSlot{0}", _slot + 1));
         }
 
         /// <summary>

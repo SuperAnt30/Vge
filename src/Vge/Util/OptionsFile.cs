@@ -88,6 +88,7 @@ namespace Vge.Util
                 case "SoundVolume": Options.SoundVolume = int.Parse(value); return true;
                 case "MusicVolume": Options.MusicVolume = int.Parse(value); return true;
                 case "MouseSensitivity": Options.MouseSensitivity = int.Parse(value); return true;
+                case "Language": Options.Language = value; return true;
                 case "OverviewChunk": Options.OverviewChunk = byte.Parse(value); return true;
                 case "ControlForward": Options.ControlForward = int.Parse(value); return true;
                 case "ControlStrafeLeft": Options.ControlStrafeLeft = int.Parse(value); return true;

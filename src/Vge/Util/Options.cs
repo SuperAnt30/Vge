@@ -68,6 +68,10 @@ namespace Vge.Util
         /// Путь к папке моделей сущностей
         /// </summary>
         public static string PathModelEntities { get; private set; }
+        /// <summary>
+        /// Путь к папке с текстами
+        /// </summary>
+        public static string PathTexts { get; private set; }
 
         #endregion
 
@@ -149,6 +153,11 @@ namespace Vge.Util
         /// </summary>
         public static string IpAddress = "127.0.0.1";
 
+        /// <summary>
+        /// Префик языка
+        /// </summary>
+        public static string Language = "Ru";
+
         #region Controls
 
         /// <summary>
@@ -191,6 +200,23 @@ namespace Vge.Util
         #endregion
 
         /// <summary>
+        /// Получить индекс языка
+        /// </summary>
+        public static int GetLanguageIndex()
+        {
+            if (Language == "Ru") return 1;
+            return 0;
+        }
+        /// <summary>
+        /// Задать индекс языка
+        /// </summary>
+        public static void SetLanguageIndex(int index)
+        {
+            if (index == 1) Language = "Ru";
+            else Language = "En";
+        }
+
+        /// <summary>
         /// Обновить данные переменных
         /// </summary>
         public static void UpData()
@@ -219,9 +245,12 @@ namespace Vge.Util
             PathEntities = PathAssets + PrefixPath + "Entities" + Path.DirectorySeparatorChar;
             PathLayerEntities = PathEntities + "Layers" + Path.DirectorySeparatorChar;
             PathModelEntities = PathEntities + "Models" + Path.DirectorySeparatorChar;
+            PathTexts = PathAssets + PrefixPath + "Texts" + Path.DirectorySeparatorChar;
 
             // Gi.UpdateSizeInterface() тут не надо, так-как при загрузке после опции, 
             // будет OnResized(), и там вызывается Gi.UpdateSizeInterface()
+
+            L.UpdateLanguage();
         }
     }
 }

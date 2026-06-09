@@ -1,12 +1,9 @@
 ﻿using Mvk2.Gui.Controls;
 using Mvk2.Item;
 using Mvk2.Packets;
-using Mvk2.World.BlockEntity.List;
 using System;
 using System.Runtime.CompilerServices;
 using Vge.Gui.Controls;
-using Vge.Gui.Screens;
-using Vge.Item;
 using Vge.Network;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
@@ -178,7 +175,7 @@ namespace Mvk2.Gui.Screens
 
             for (i = 0; i < _countTab; i++)
             {
-                _buttonTab[i].SetPosition(PosX + 92 + i * 26, PosY + 4);
+                _buttonTab[i].SetPosition(PosX + 108 + i * 26, PosY + 4);
             }
 
             _buttonBack.SetPosition(PosX + 340, PosY + 4);

@@ -50,6 +50,7 @@ namespace Mvk2.Util
             file.WriteLine("Nickname: " + Options.Nickname);
             file.WriteLine("Token: " + Options.Token);
             file.WriteLine("IpAddress: " + Options.IpAddress.ToString());
+            file.WriteLine("Language: " + Options.Language.ToString());
             file.WriteLine("\r\n# Graphics");
             file.WriteLine("AmbientOcclusion: " + (Options.AmbientOcclusion ? "1" : "0"));
             file.WriteLine("Shadow: " + (Options.Shadow ? "1" : "0"));

@@ -98,7 +98,7 @@ namespace Vge.Management
                 }
                 else
                 {
-                    SendToAllMessage(ChatStyle.Red + string.Format(L.S("PlayerRemove{0}{1}"), 
+                    SendToAllMessage(ChatStyle.Red + L.S("PlayerRemove{0}{1}", 
                         playerServer.Login, cause));
                 }
             }
@@ -413,7 +413,7 @@ namespace Vge.Management
                 {
                     // Если это не владелец то добавляем в массив сетевых игроков
                     Server.Log.Server(Srl.ServerLoginStart, player.Login, player.Socket);
-                    SendToAllMessage(ChatStyle.Yellow + string.Format(L.S("PlayerEntry{0}"), player.Login));
+                    SendToAllMessage(ChatStyle.Yellow + L.S("PlayerEntry{0}", player.Login));
                     // Отправить всем игрокам, чтоб добавить в чат
                     SendToAll(new PacketS06PlayerEntryRemove(player.Id, player.Login));
                     _players.Add(player);
