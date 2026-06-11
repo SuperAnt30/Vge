@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Vge.Item
+﻿namespace Vge.Item
 {
     /// <summary>
     /// Структура результата действий рук

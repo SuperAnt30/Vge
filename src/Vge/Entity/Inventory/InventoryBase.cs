@@ -61,6 +61,18 @@ namespace Vge.Entity.Inventory
         public virtual void SetCurrentItem(ItemStack stack) { }
 
         /// <summary>
+        /// Получить текущий стак левой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual ItemStack GetCurrentLeftItem() => null;
+
+        /// <summary>
+        /// Задать в текущий стак левой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void SetCurrentLeftItem(ItemStack stack) { }
+
+        /// <summary>
         /// Возвращает стaк в слоте slotIn
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

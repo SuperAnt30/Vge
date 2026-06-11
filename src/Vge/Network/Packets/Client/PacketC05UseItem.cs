@@ -1,8 +1,4 @@
-﻿using Vge.Util;
-using Vge.World.Block;
-using WinGL.Util;
-
-namespace Vge.Network.Packets.Client
+﻿namespace Vge.Network.Packets.Client
 {
     /// <summary>
     /// Отправляем на сервер взаимодействие с выбранным предметом в руке без RayCast блока

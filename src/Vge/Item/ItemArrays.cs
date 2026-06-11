@@ -43,7 +43,8 @@
             for (int i = 0; i < Count; i++)
             {
                 key = ItemObjects[i].Alias;
-                ItemObjects[i].SetNameLang(L.I(key), L.I(key + ".tip"), L.I(key + ".des"));
+                ItemObjects[i].SetNameLang(L.I(key), L.I(key + ".des"));
+                ItemObjects[i].SetToolTipLang(L.I(key + ".tip"));
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Json;
+using Vge.Realms;
 
 namespace Vge.Item.List
 {
@@ -90,5 +91,27 @@ namespace Vge.Item.List
                 }
             }
         }
+
+
+        /// <summary>
+        /// Задать подсказку
+        /// </summary>
+        public override void SetToolTipLang(string toolTip)
+        {
+            base.SetToolTipLang(toolTip);
+            _toolTip = _toolTip + ChatStyle.Br + "-" + ChatStyle.Br
+                + L.T("Cloth" + PutOnBody) + ChatStyle.Br
+                + "CellsPocket {0}" + ChatStyle.Br
+                + "CellsBackpack {1}" + ChatStyle.Br
+                + "Damage {2}";
+        }
+
+        /// <summary>
+        /// Текст в подсказке для GUI
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override string GetToolTip(ItemStack stack) 
+            => string.Format(_toolTip, 
+            CellsPocket, CellsBackpack, stack.ToStringDamage());
     }
 }

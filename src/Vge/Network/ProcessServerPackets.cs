@@ -98,6 +98,7 @@ namespace Vge.Network
                     case 0x03: _Handle03UseEntity(sp.Side, (PacketC03UseEntity)sp.Packet); break;
                     case 0x04: _Handle04PlayerPosition(sp.Side, (PacketC04PlayerPosition)sp.Packet); break;
                     case 0x05: _Handle05UseItem(sp.Side, (PacketC05UseItem)sp.Packet); break;
+                    case 0x06: _Handle06DamageItem(sp.Side, (PacketC06DamageItem)sp.Packet); break;
                     case 0x07: _Handle07PlayerDigging(sp.Side, (PacketC07PlayerDigging)sp.Packet); break;
                     case 0x08: _Handle08PlayerBlockPlacement(sp.Side, (PacketC08PlayerBlockPlacement)sp.Packet); break;
                     case 0x09: _Handle09HeldItemChange(sp.Side, (PacketC09HeldItemChange)sp.Packet); break;
@@ -172,73 +173,55 @@ namespace Vge.Network
         /// Пакет взаимодействие с сущностью
         /// </summary>
         private void _Handle03UseEntity(SocketSide socketSide, PacketC03UseEntity packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketUseEntity(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketUseEntity(packet);
         
         /// <summary>
         /// Пакет позиции игрока
         /// </summary>
         private void _Handle04PlayerPosition(SocketSide socketSide, PacketC04PlayerPosition packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketPlayerPosition(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketPlayerPosition(packet);
 
         /// <summary>
         /// Пакет взаимодействие с выбранным предметом в руке без RayCast блока
         /// </summary>
         private void _Handle05UseItem(SocketSide socketSide, PacketC05UseItem packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketUseItem(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketUseItem(packet);
+
+        /// <summary>
+        /// Пакет урона предмета в руке
+        /// </summary>
+        private void _Handle06DamageItem(SocketSide socketSide, PacketC06DamageItem packet)
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketDamageItem(packet);
 
         /// <summary>
         /// Пакет игрок копает / ломает
         /// </summary>
         private void _Handle07PlayerDigging(SocketSide socketSide, PacketC07PlayerDigging packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketPlayerDigging(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketPlayerDigging(packet);
 
         /// <summary>
         /// Пакет игрок устанавливает или взаимодействует с блоком
         /// </summary>
         private void _Handle08PlayerBlockPlacement(SocketSide socketSide, PacketC08PlayerBlockPlacement packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketPlayerBlockPlacement(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketPlayerBlockPlacement(packet);
 
         /// <summary>
         /// Пакет игрок отправляем на сервер выбранный слот
         /// </summary>
         private void _Handle09HeldItemChange(SocketSide socketSide, PacketC09HeldItemChange packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketHeldItemChange(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketHeldItemChange(packet);
 
         /// <summary>
         /// Пакет анимации игрока
         /// </summary>
         private void _Handle0APlayerAnimation(SocketSide socketSide, PacketC0APlayerAnimation packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketPlayerAnimation(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketPlayerAnimation(packet);
 
         /// <summary>
         /// Пакет кликов по окну и контролам
         /// </summary>
         private void _Handle0EClickWindow(SocketSide socketSide, PacketC0EClickWindow packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketClickWindow(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketClickWindow(packet);
 
         /// <summary>
         /// Пакет передачии сообщения или команды
@@ -250,19 +233,13 @@ namespace Vge.Network
         /// Пакет настроек клиента
         /// </summary>
         private void _Handle15PlayerSetting(SocketSide socketSide, PacketC15PlayerSetting packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketPlayerSetting(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketPlayerSetting(packet);
 
         /// <summary>
         /// Пакет подтверждение фрагментов
         /// </summary>
         private void _Handle20AcknowledgeChunks(SocketSide socketSide, PacketC20AcknowledgeChunks packet)
-        {
-            PlayerServer playerServer = _server.Players.FindPlayerBySocket(socketSide);
-            playerServer?.PacketAcknowledgeChunks(packet);
-        }
+            => _server.Players.FindPlayerBySocket(socketSide)?.PacketAcknowledgeChunks(packet);
 
         #endregion
     }

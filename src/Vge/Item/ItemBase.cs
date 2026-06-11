@@ -113,12 +113,19 @@ namespace Vge.Item
         /// <summary>
         /// Задать название и описание
         /// </summary>
-        public void SetNameLang(string name, string toolTip, string des)
+        public void SetNameLang(string name, string des)
         {
             CurentName = name;
+            Description = des;
+        }
+
+        /// <summary>
+        /// Задать подсказку
+        /// </summary>
+        public virtual void SetToolTipLang(string toolTip)
+        {
             _toolTip = (toolTip.Length > 3 && toolTip.Substring(toolTip.Length - 4) == ".tip")
                 ? CurentName : toolTip;
-            Description = des;
         }
 
         #endregion
@@ -155,7 +162,7 @@ namespace Vge.Item
         /// Текст в подсказке для GUI
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual string GetToolTip() => _toolTip;
+        public virtual string GetToolTip(ItemStack stack) => _toolTip;
 
         #region Дейстыия рук, ЛКМ и ПКМ
 

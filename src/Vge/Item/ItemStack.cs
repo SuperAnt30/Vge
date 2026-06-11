@@ -1,10 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.NBT;
 using Vge.Network;
-using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using WinGL.Util;
@@ -166,6 +166,89 @@ namespace Vge.Item
 
         #endregion
 
+
+        /// <summary>
+        /// Попытки повредить ItemStack с количеством повреждений damage. 
+        /// Вернёт урон
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int AttemptDamageItem(PlayerBase entityPlayer, int damage)
+        {
+            if (!IsItemStackDamageable())
+            {
+                return 0;
+            }
+            else
+            {
+                // Тут можно отнять урон магии или прочих защит
+
+                return damage;
+            }
+        }
+
+        /// <summary>
+        /// Наносим урон предмету (инструменту), вернёт новый урон
+        /// </summary>
+        /// <param name="damage">Сила урона</param>
+        /// <param name="isLeft">Левая ли рука</param>
+        public int DamageItemTool(PlayerBase entityPlayer, int damage, bool isLeft)
+        {
+            damage = AttemptDamageItem(entityPlayer, damage);
+            if (damage > 0)
+            {
+                DamageItemToolNotAttempt(entityPlayer, damage, isLeft);
+            }
+            return damage;
+        }
+
+
+        /// <summary>
+        /// Наносим урон предмету (инструменту) без попытки проверки магии и прочего
+        /// </summary>
+        /// <param name="damage">Сила урона</param>
+        /// <param name="isLeft">Левая ли рука</param>
+        public void DamageItemToolNotAttempt(PlayerBase entityPlayer, int damage, bool isLeft)
+        {
+            ItemDamage += damage;
+            if (ItemDamage >= Item.MaxDamage)
+            {
+                // Сломался
+                ItemDamage = 0;
+                Zero();
+                if (isLeft)
+                {
+                    entityPlayer.Inventory.SetCurrentLeftItem(null);
+                }
+                else
+                {
+                    entityPlayer.Inventory.SetCurrentItem(null);
+                }
+
+                if (!entityPlayer.GetWorld().IsRemote 
+                    && entityPlayer.GetWorld() is WorldServer worldServer)
+                {
+                    // TODO::2026-06-11 Звук ломаного инструмента
+                    // всем звуковой эффект поломки из сервера, так-как на клиенте этот метод работает через тик,
+                    // и сервер раньше может обнулить и звука не будет
+                    //worldServer.Tracker.SendToAllTrackingEntityCurrent(entityPlayer, new PacketS29SoundEffect(
+                    //    AssetsSample.Break, position, 1, world.Rnd.NextFloat() * .4f + .8f));
+                }
+            }
+            else
+            {
+                if (isLeft)
+                {
+                    entityPlayer.Inventory.SetCurrentLeftItem(this);
+                }
+                else
+                {
+                    entityPlayer.Inventory.SetCurrentItem(this);
+                }
+                //Console.WriteLine((entityPlayer.GetWorld().IsRemote ? "Client" : "Server") 
+                //    + " ItemDamage:" + ItemDamage);
+            }
+        }
+
         /// <summary>
         /// Записать стак в буффер пакета
         /// </summary>
@@ -222,6 +305,16 @@ namespace Vge.Item
                     nbt.GetByte("Amount"), nbt.GetShort("Damage"));
             }
             return null;
+        }
+
+        /// <summary>
+        /// Получить строку повреждения предмета
+        /// </summary>
+        public string ToStringDamage()
+        {
+            if (Item == null) return "";
+            int max = Item.MaxDamage;
+            return (max - ItemDamage).ToString() + "/" + max.ToString();
         }
 
         public override string ToString() => Item.ToString() + " (" + Amount + ")";

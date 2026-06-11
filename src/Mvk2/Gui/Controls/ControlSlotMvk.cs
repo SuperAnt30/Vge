@@ -113,9 +113,14 @@ namespace Mvk2.Gui.Controls
         {
             if (Stack != null)
             {
-                return Stack.Item.GetToolTip();
-                return "!!!!Testing" + ChatStyle.Blue + "Stak\r\n" + ChatStyle.Reset + ChatStyle.Bolb + Stack.ToString();
+                return Stack.Item.GetToolTip(Stack);
+                //return "!!!!Testing" + ChatStyle.Blue + "Stak\r\n" + ChatStyle.Reset + ChatStyle.Bolb + Stack.ToString();
             }
+            if (_cloth != EnumCloth.None)
+            {
+                return L.T("Slot" + _cloth.ToString());
+            }
+
             return "";
         }
 

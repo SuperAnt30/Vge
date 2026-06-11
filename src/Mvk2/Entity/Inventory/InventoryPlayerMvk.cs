@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.List;
 using Mvk2.Item;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Item;
 
@@ -52,6 +53,22 @@ namespace Mvk2.Entity.Inventory
             }
             // слот у игрока
             return GetStackInSlot(slotIn);
+        }
+
+        /// <summary>
+        /// Получить текущий стак левой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override ItemStack GetCurrentLeftItem() 
+            => GetStackInSlot(PocketCount);
+
+        /// <summary>
+        /// Задать в текущий стак левой руки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetCurrentLeftItem(ItemStack stack)
+        {
+            if (PocketCount < _allCount) _items[PocketCount] = stack;
         }
     }
 }

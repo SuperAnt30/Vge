@@ -132,7 +132,7 @@ namespace Mvk2.Gui
             int y = Gi.Height / Gi.Si - 53;
 
             // Левая рука
-            ItemStack itemStack = _inventoryPlayer.GetStackInSlot(InventoryPlayerMvk.PocketCount);
+            ItemStack itemStack = _inventoryPlayer.GetCurrentLeftItem();
             _RenderItemStack(itemStack, x - 50, y);
 
             // Список правой руки
@@ -194,7 +194,7 @@ namespace Mvk2.Gui
                 }
             }
             // Левая рука
-            itemStack = _inventoryPlayer.GetStackInSlot(InventoryPlayerMvk.PocketCount);
+            itemStack = _inventoryPlayer.GetCurrentLeftItem();
             if (itemStack != null)
             {
                 _game.WorldRender.Entities.GetItemGuiRender(itemStack.Item.IndexItem).MeshDraw(x - 56 * Gi.Si, y);

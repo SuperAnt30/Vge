@@ -129,8 +129,8 @@ namespace Mvk2.Gui
 
         public void DamageRender(ItemStack itemStack, int x, int y)
         {
-            if (itemStack.Item.MaxDamage != 0)
-            //if (itemStack.Amount != 1)
+            if (itemStack.Item.MaxDamage != 0 
+                && itemStack.ItemDamage != 0)
             {
                 // Ренедер урона
                 int line = itemStack.ItemDamage * 30 / itemStack.Item.MaxDamage;
@@ -141,9 +141,9 @@ namespace Mvk2.Gui
                     (x + 2) * Gi.Si, (y + 30) * Gi.Si, (x + 34) * Gi.Si, (y + 34) * Gi.Si, .16f, .16f, .16f));
 
                 ListBuffer.AddRange(RenderFigure.Rectangle(
-                    (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 3 + line) * Gi.Si, (y + 33) * Gi.Si,
-                    line > 15 ? (30 - line) / 15f : 1,
+                    (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 33 - line) * Gi.Si, (y + 33) * Gi.Si,
                     line < 15 ? line / 15f : 1,
+                    line > 15 ? (30 - line) / 15f : 1,
                     .16f));
 
                 _isDamage = true;

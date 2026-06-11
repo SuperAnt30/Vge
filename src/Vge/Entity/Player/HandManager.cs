@@ -1,6 +1,4 @@
-﻿using System;
-using Vge.Entity.Particle;
-using Vge.Games;
+﻿using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Util;
@@ -15,24 +13,28 @@ namespace Vge.Entity.Player
     /// </summary>
     public class HandManager
     {
-        protected readonly PlayerClientOwner _player;
+        private readonly PlayerClientOwner _player;
         /// <summary>
         /// Класс игры
         /// </summary>
-        protected readonly GameBase _game;
+        private readonly GameBase _game;
 
         /// <summary>
         /// Пауза для активного действия (ЛКМ)
         /// </summary>
-        protected int _pauseAction;
+        private int _pauseAction;
+        /// <summary>
+        /// Имеется ли холостой выстрел для активного действия в промежутке, не первый!
+        /// </summary>
+        private bool _blankShotAction = false;
         /// <summary>
         /// Пауза для вспомогательное действие ПКМ
         /// </summary>
-        protected int _pauseSecond;
+        private int _pauseSecond;
         /// <summary>
         /// Была ли остановка с отменой, флаг для вспомогательного действия
         /// </summary>
-        protected bool _flagAbort;
+        private bool _flagAbort;
 
         /// <summary>
         /// Счётчик тактов от нажатия вспомогательное действия ПКМ
@@ -132,6 +134,8 @@ namespace Vge.Entity.Player
             _counterSecond++;
         }
 
+        
+
         /// <summary>
         /// Такт действия
         /// </summary>
@@ -139,11 +143,18 @@ namespace Vge.Entity.Player
         {
             if (_player.IsSpectator()) return;
 
-            if (begin) _pauseAction = 0;
+            if (begin)
+            {
+                _pauseAction = 0;
+                _blankShotAction = false;
+            }
 
             if (_pauseAction == 0)
             {
-                _player.TestHandAction = true;
+                if (!_blankShotAction)
+                {
+                    _player.TestHandAction = true;
+                }
 
                 MovingObjectPosition moving = _player.MovingObject;
                 // Стак предмета в руке
@@ -182,8 +193,10 @@ namespace Vge.Entity.Player
                     {
                         // Нет действий с предметом
                         //Console.WriteLine("Нет действий с предметом");
+                        _blankShotAction = true;
                     }
                     _pauseAction = resultAction.Pause;
+                    //Console.Write(_pauseAction + " ");
                 }
                 else if (moving.IsBlock())
                 {
@@ -212,7 +225,9 @@ namespace Vge.Entity.Player
                     // Нет действий без предмета
                     //Console.WriteLine("Нет действий без предмета");
                     _pauseAction = -1;
+                    _blankShotAction = true;
                 }
+                //Console.WriteLine(_pauseAction);
             }
             else if (_pauseAction > 0)
             {
@@ -221,8 +236,9 @@ namespace Vge.Entity.Player
 
             if (_pauseAction == -1)
             {
-                _pauseAction = 16;
+                _pauseAction = _blankShotAction ? 0 : 10;
             }
+            //Console.WriteLine(_pauseAction);
         }
 
         /// <summary>
@@ -417,6 +433,9 @@ namespace Vge.Entity.Player
                 // Разрушили
                 _BlockDestroyed(block);
             }
+
+            // Инструмент ламаем
+            DamageItemTool(1);
         }
 
         /// <summary>
@@ -433,6 +452,29 @@ namespace Vge.Entity.Player
             //    _game.World.SpawnParticle(0, 20, _blockPos.ToVector3Center(),
             //        new Vector3(1), 1, block.IndexBlock);
             //}
+        }
+
+        /// <summary>
+        /// Наносим урон предмету (инструменту)
+        /// </summary>
+        /// <param name="damage">Сила урона</param>
+        /// <param name="isLeft">Левая ли рука</param>
+        public void DamageItemTool(int damage, bool isLeft = false)
+        {
+            if (!_player.CreativeMode)
+            {
+                ItemStack stack = isLeft ? _player.Inventory.GetCurrentLeftItem()
+                    : _player.Inventory.GetCurrentItem(); 
+
+                if (stack != null)
+                {
+                    damage = stack.DamageItemTool(_player, damage, isLeft);
+                    if (damage > 0)
+                    {
+                        _game.TrancivePacket(new PacketC06DamageItem((byte)damage, isLeft));
+                    }
+                }
+            }
         }
     }
 }

@@ -64,3 +64,19 @@ No:Нет
 Warning:Предупреждение
 Connection:Соединение
 LoadingTheWorld:Загрузка мира
+
+SlotHandLeft:Слот для левой руки
+SlotHat:Слот для головного убора
+SlotNeck:Слот для шеи
+SlotJacket:Слот для куртки
+SlotBackpack:Слот для рюкзака
+SlotPants:Слот для штанов
+SlotBelt:Слот для пояса
+SlotShoes:Слот для обуви
+ClothHat:Головной убор
+ClothNeck:На шею
+ClothJacket:Куртки
+ClothBackpack:Рюкзак
+ClothPants:Штаны
+ClothBelt:Пояс
+ClothShoes:Обувь

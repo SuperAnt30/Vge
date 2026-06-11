@@ -442,6 +442,18 @@ namespace Vge.Entity.Player
             }
         }
 
+
+        /// <summary>
+        /// Пакет урона предмета в руке
+        /// </summary>
+        public virtual void PacketDamageItem(PacketC06DamageItem packet)
+        {
+            ItemStack stack = packet.IsLeft ? Inventory.GetCurrentLeftItem()
+                   : Inventory.GetCurrentItem();
+            stack?.DamageItemToolNotAttempt(this, packet.Damage, packet.IsLeft);
+        }
+
+
         /// <summary>
         /// Пакет: Игрок копает / ломает
         /// </summary>
