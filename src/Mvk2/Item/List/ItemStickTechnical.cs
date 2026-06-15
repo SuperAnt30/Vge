@@ -1,5 +1,4 @@
-﻿using Mvk2.World.Block;
-using Mvk2.World.Block.List;
+﻿using Mvk2.World.Block.List;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
@@ -15,7 +14,7 @@ namespace Mvk2.Item.List
     /// <summary>
     /// Предмет техническая палочка, для отладки
     /// </summary>
-    public class ItemStickTechnical : ItemBase
+    public class ItemStickTechnical : ItemAbTool
     {
         /// <summary>
         /// Вспомогательное действие предмета ПКМ.
@@ -102,17 +101,18 @@ namespace Mvk2.Item.List
         /// <summary>
         /// Задать подсказку
         /// </summary>
-        public override void SetToolTipLang(string toolTip)
-        {
-            base.SetToolTipLang(toolTip);
-            _toolTip = _toolTip + ChatStyle.Br + "---" + ChatStyle.Br
-                + "#{0} " + L.T("InTable");
-        }
+        //public override void SetToolTipLang(string toolTip)
+        //{
+        //    base.SetToolTipLang(toolTip);
+        //    _toolTip = _toolTip + ChatStyle.Br + "---" + ChatStyle.Br
+        //        + "#{0} " + L.T("InTable");
+        //}
 
         /// <summary>
         /// Текст в подсказке для GUI
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override string GetToolTip(ItemStack stack) => string.Format(_toolTip, IndexItem);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public override string GetToolTip(ItemStack stack) 
+        //    => string.Format(_toolTip, IndexItem);
     }
 }

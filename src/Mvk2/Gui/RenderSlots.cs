@@ -130,10 +130,10 @@ namespace Mvk2.Gui
         public void DamageRender(ItemStack itemStack, int x, int y)
         {
             if (itemStack.Item.MaxDamage != 0 
-                && itemStack.ItemDamage != 0)
+                && itemStack.ItemDamaged != 0)
             {
                 // Ренедер урона
-                int line = itemStack.ItemDamage * 30 / itemStack.Item.MaxDamage;
+                int line = itemStack.ItemDamaged * 30 / itemStack.Item.MaxDamage;
                 //int line = itemStack.Amount * 30 / itemStack.Item.MaxStackSize;
                 if (line > 30) line = 30;
 

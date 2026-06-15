@@ -1,22 +1,14 @@
 ﻿using Mvk2.World.Block;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vge.Entity.Player;
 using Vge.Item;
-using Vge.Util;
-using Vge.World;
 using Vge.World.Block;
-using WinGL.Util;
 
 namespace Mvk2.Item.List
 {
     /// <summary>
     /// Предмет лопата
     /// </summary>
-    public class ItemShovel : ItemBase
+    public class ItemShovel : ItemAbTool
     {
         /// <summary>
         /// Действие предмета ЛКМ.

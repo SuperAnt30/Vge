@@ -23,17 +23,17 @@ namespace Vge.Item
         /// <summary>
         /// Урон или износ
         /// </summary>
-        public int ItemDamage { get; private set; }
+        public int ItemDamaged { get; private set; }
         /// <summary>
         /// Количество вещей в стаке
         /// </summary>
         public byte Amount { get; private set; }
 
-        public ItemStack(ItemBase item, byte amount, int itemDamage)
+        public ItemStack(ItemBase item, byte amount, int itemDamaged)
         {
             Item = item;
             Amount = amount;
-            ItemDamage = itemDamage;
+            ItemDamaged = itemDamaged;
         }
         public ItemStack(ItemBase item, byte amount)
         {
@@ -49,11 +49,11 @@ namespace Vge.Item
         /// <summary>
         /// Копия стака
         /// </summary>
-        public ItemStack Copy() => new ItemStack(Item, Amount, ItemDamage);
+        public ItemStack Copy() => new ItemStack(Item, Amount, ItemDamaged);
         /// <summary>
         /// Копия стака с заданным количеством
         /// </summary>
-        public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamage);
+        public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamaged);
 
         /// <summary>
         /// Добавить к количеству
@@ -109,7 +109,7 @@ namespace Vge.Item
         /// Возвращает true, когда повреждаемый элемент поврежден
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsItemDamaged() => IsItemStackDamageable() && ItemDamage > 0;
+        public bool IsItemDamaged() => IsItemStackDamageable() && ItemDamaged > 0;
 
         /// <summary>
         /// true, если этот стек предметов можно повредить
@@ -128,7 +128,7 @@ namespace Vge.Item
         /// Сравнить предмет (стак без учёта количества)
         /// </summary>
         public bool IsItemEqual(ItemStack other) => other != null 
-            && Item.IndexItem == other.Item.IndexItem && ItemDamage == other.ItemDamage;
+            && Item.IndexItem == other.Item.IndexItem && ItemDamaged == other.ItemDamaged;
 
         #endregion
 
@@ -209,11 +209,11 @@ namespace Vge.Item
         /// <param name="isLeft">Левая ли рука</param>
         public void DamageItemToolNotAttempt(PlayerBase entityPlayer, int damage, bool isLeft)
         {
-            ItemDamage += damage;
-            if (ItemDamage >= Item.MaxDamage)
+            ItemDamaged += damage;
+            if (ItemDamaged >= Item.MaxDamage)
             {
                 // Сломался
-                ItemDamage = 0;
+                ItemDamaged = 0;
                 Zero();
                 if (isLeft)
                 {
@@ -262,7 +262,7 @@ namespace Vge.Item
             {
                 stream.Short((short)itemStack.Item.IndexItem);
                 stream.Byte(itemStack.Amount);
-                stream.Short((short)itemStack.ItemDamage);
+                stream.Short((short)itemStack.ItemDamaged);
             }
         }
 
@@ -289,7 +289,7 @@ namespace Vge.Item
         {
             nbt.SetShort("Id", (short)Item.IndexItem);
             nbt.SetByte("Amount", Amount);
-            nbt.SetShort("Damage", (short)ItemDamage);
+            nbt.SetShort("Damaged", (short)ItemDamaged);
             return nbt;
         }
 
@@ -302,7 +302,7 @@ namespace Vge.Item
             if (nbt.HasKey("Id"))
             { 
                 return new ItemStack(Ce.Items.ItemObjects[nbt.GetShort("Id")], 
-                    nbt.GetByte("Amount"), nbt.GetShort("Damage"));
+                    nbt.GetByte("Amount"), nbt.GetShort("Damaged"));
             }
             return null;
         }
@@ -310,11 +310,11 @@ namespace Vge.Item
         /// <summary>
         /// Получить строку повреждения предмета
         /// </summary>
-        public string ToStringDamage()
+        public string ToStringDamaged()
         {
             if (Item == null) return "";
             int max = Item.MaxDamage;
-            return (max - ItemDamage).ToString() + "/" + max.ToString();
+            return (max - ItemDamaged).ToString() + "/" + max.ToString();
         }
 
         public override string ToString() => Item.ToString() + " (" + Amount + ")";

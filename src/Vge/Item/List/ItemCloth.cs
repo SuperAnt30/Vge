@@ -112,6 +112,6 @@ namespace Vge.Item.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string GetToolTip(ItemStack stack) 
             => string.Format(_toolTip, 
-            CellsPocket, CellsBackpack, stack.ToStringDamage());
+            CellsPocket, CellsBackpack, stack.ToStringDamaged());
     }
 }

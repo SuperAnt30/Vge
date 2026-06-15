@@ -1,8 +1,6 @@
 ﻿using Mvk2.World.Block;
-using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
-using Vge.Realms;
 using Vge.World.Block;
 
 namespace Mvk2.Item.List
@@ -10,7 +8,7 @@ namespace Mvk2.Item.List
     /// <summary>
     /// Предмет топор
     /// </summary>
-    public class ItemAxe : ItemBase
+    public class ItemAxe : ItemAbTool
     {
         /// <summary>
         /// Действие предмета ЛКМ.
@@ -34,21 +32,6 @@ namespace Mvk2.Item.List
             return base.OnAction(begin, stack, player);
         }
 
-        /// <summary>
-        /// Задать подсказку
-        /// </summary>
-        public override void SetToolTipLang(string toolTip)
-        {
-            base.SetToolTipLang(toolTip);
-            _toolTip = _toolTip + ChatStyle.Br + "-" + ChatStyle.Br
-                + "Damage {0}";
-        }
-
-        /// <summary>
-        /// Текст в подсказке для GUI
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override string GetToolTip(ItemStack stack)
-            => string.Format(_toolTip, stack.ToStringDamage());
+        
     }
 }

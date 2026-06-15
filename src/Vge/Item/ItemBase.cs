@@ -39,11 +39,11 @@ namespace Vge.Item
         /// <summary>
         /// Максимальное количество однотипный вещей в одной ячейке
         /// </summary>
-        public byte MaxStackSize { get; protected set; }
+        public byte MaxStackSize { get; private set; }
         /// <summary>
         /// Максимальное количество урона, при 0, нет учёта урона
         /// </summary>
-        public int MaxDamage { get; protected set; }
+        public int MaxDamage { get; private set; }
 
         /// <summary>
         /// Пол ширина предмета
@@ -326,8 +326,6 @@ namespace Vge.Item
         }
 
         #endregion
-
-
 
         public override string ToString() => IndexItem.ToString() + " " + Alias;
     }

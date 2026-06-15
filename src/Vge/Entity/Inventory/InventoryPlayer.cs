@@ -354,7 +354,7 @@ namespace Vge.Entity.Inventory
                         if (_CanPutItemStack(slotIn, stackAir))
                         {
                             // В воздухе имеется и в ячейке имеется
-                            if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamage == stackAir.ItemDamage)
+                            if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamaged == stackAir.ItemDamaged)
                             {
                                 // Если предметы одинаковые
                                 if (slotIn >= 100 && _isCreative)

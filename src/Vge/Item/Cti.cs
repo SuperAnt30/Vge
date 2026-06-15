@@ -94,5 +94,18 @@
         /// Имя анимации как держать предмет. (string)
         /// </summary>
         public const string Hold = "Hold";
+
+        #region Tool
+
+        /// <summary>
+        /// Имя cилы урона для атаки. (float)
+        /// </summary>
+        public const string Damage = "Damage";
+        /// <summary>
+        /// Имя уровня инструмента, для качества дропа
+        /// </summary>
+        public const string Level = "Level";
+
+        #endregion
     }
 }

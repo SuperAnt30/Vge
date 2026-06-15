@@ -155,7 +155,7 @@ namespace Vge.Entity.Inventory
             {
                 if (stacks[slot] == null)
                 {
-                    stacks[slot] = new ItemStack(item, 0, itemStack.ItemDamage);
+                    stacks[slot] = new ItemStack(item, 0, itemStack.ItemDamaged);
                 }
 
                 int amount2 = amount;
@@ -195,7 +195,7 @@ namespace Vge.Entity.Inventory
                 if (stack != null && stack.Item.IndexItem == itemStack.Item.IndexItem
                     && stack.IsStackable() && stack.Amount < stack.Item.MaxStackSize
                     && stack.Amount < _inventoryStackLimit
-                    && stack.ItemDamage == itemStack.ItemDamage
+                    && stack.ItemDamaged == itemStack.ItemDamaged
                     && stack.IsItemEqual(itemStack))
                 {
                     return i;

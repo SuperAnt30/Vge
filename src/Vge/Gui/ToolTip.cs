@@ -90,6 +90,13 @@ namespace Vge.Gui
         {
             _mouseX = x + _biasX * Gi.Si;
             _mouseY = y + _biasY * Gi.Si;
+
+            // Проверка, чтоб вниз за окно не выходило
+            int height = _sizeText.Y + 8 * Gi.Si;
+            if (height + _mouseY > Gi.Height)
+            {
+                _mouseY = Gi.Height - height;
+            }
         }
 
         #region Draw
@@ -117,6 +124,7 @@ namespace Vge.Gui
         /// </summary>
         protected virtual void _Draw()
         {
+            
             _window.Render.ShaderBindGuiColor(_mouseX, _mouseY);
             _font.BindTexture();
             _meshTxt.Draw();
