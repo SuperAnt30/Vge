@@ -1,7 +1,9 @@
 {
     MaxStackSize: 1,
-    MaxDamage: 500,
+    MaxDamage: 1500,
     SlotClothIndex: 1,
+    Damage: 3.5,
+    Level: 2,
     Width: 0.5625,
     Height: 0.1875,
     Shape: "Axe",
