@@ -1,4 +1,6 @@
-﻿using Vge.Games;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Util;
@@ -13,6 +15,15 @@ namespace Vge.Entity.Player
     /// </summary>
     public class HandManager
     {
+        /// <summary>
+        /// Импульс отскока при атаке на XZ
+        /// </summary>
+        private static float _impulsAttackXZ = .9f;
+        /// <summary>
+        /// Импульс отскока при атаке на Y
+        /// </summary>
+        private static float _impulsAttackY = .18f;
+
         private readonly PlayerClientOwner _player;
         /// <summary>
         /// Класс игры
@@ -172,9 +183,7 @@ namespace Vge.Entity.Player
                     else if (resultAction.Action == ResultHandAction.ActionType.AttackEntity)
                     {
                         // Атака на сущность, с предметом
-                        //Console.WriteLine("AttackItem");
-                        _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
-                            PacketC03UseEntity.EnumAction.Attack));
+                        _Attack(moving);
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.ItemOnBlock)
                     {
@@ -209,21 +218,21 @@ namespace Vge.Entity.Player
                     }
                     else
                     {
+                        //Console.WriteLine("Нет действий без предмета [block]");
                         _pauseAction = -1; // Но тут если не begin нет анимации
+                        _blankShotAction = true;
                     }
                 }
                 else if (moving.IsEntity())
                 {
                     // Атака на сущность, без предмета
-                    //Console.WriteLine("Attack");
-                    _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
-                        PacketC03UseEntity.EnumAction.Attack));
+                    _Attack(moving);
                     _pauseAction = -1;
                 }
                 else
                 {
                     // Нет действий без предмета
-                    //Console.WriteLine("Нет действий без предмета");
+                    //Console.WriteLine("Нет действий без предмета [null]");
                     _pauseAction = -1;
                     _blankShotAction = true;
                 }
@@ -239,6 +248,18 @@ namespace Vge.Entity.Player
                 _pauseAction = _blankShotAction ? 0 : 10;
             }
             //Console.WriteLine(_pauseAction);
+        }
+
+        /// <summary>
+        /// Атака сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Attack(MovingObjectPosition moving)
+        {
+            //Console.WriteLine("Attack");
+            Vector3 vec = (moving.Entity.GetPositionVec() - _player.GetPositionVec()).Normalize();
+            _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id, moving.RayHit.Y,
+                vec.X * _impulsAttackXZ, vec.Y * _impulsAttackY, vec.Z * _impulsAttackXZ));
         }
 
         /// <summary>

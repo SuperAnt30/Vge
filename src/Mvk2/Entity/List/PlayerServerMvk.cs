@@ -1,4 +1,5 @@
-﻿using Mvk2.Entity.Inventory;
+﻿using Mvk2.Entity.Damage;
+using Mvk2.Entity.Inventory;
 using Mvk2.Item;
 using Mvk2.Packets;
 using Mvk2.World;
@@ -28,6 +29,7 @@ namespace Mvk2.Entity.List
             : base(login, token, socket, server)
         {
             PresenceBlocks = new PresenceBlocksMvk(this);
+            Damage = new DamageLiving(this);
         }
 
         /// <summary>

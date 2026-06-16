@@ -242,22 +242,22 @@ namespace Vge.Entity.MetaData
                     switch (enumType)
                     {
                         case EnumTypeWatcher.Byte:
-                            watchables[index] = new WatchableObject(enumType, index, stream.Byte()); break;
+                            watchables[i] = new WatchableObject(enumType, index, stream.Byte()); break;
                         case EnumTypeWatcher.Short:
-                            watchables[index] = new WatchableObject(enumType, index, stream.Short()); break;
+                            watchables[i] = new WatchableObject(enumType, index, stream.Short()); break;
                         case EnumTypeWatcher.Int:
-                            watchables[index] = new WatchableObject(enumType, index, stream.Int()); break;
+                            watchables[i] = new WatchableObject(enumType, index, stream.Int()); break;
                         case EnumTypeWatcher.Float:
-                            watchables[index] = new WatchableObject(enumType, index, stream.Float()); break;
+                            watchables[i] = new WatchableObject(enumType, index, stream.Float()); break;
                         case EnumTypeWatcher.String:
-                            watchables[index] = new WatchableObject(enumType, index, stream.String()); break;
+                            watchables[i] = new WatchableObject(enumType, index, stream.String()); break;
                         case EnumTypeWatcher.ItemStack:
-                            watchables[index] = new WatchableObject(enumType, index, ItemStack.ReadStream(stream)); break;
+                            watchables[i] = new WatchableObject(enumType, index, ItemStack.ReadStream(stream)); break;
                         case EnumTypeWatcher.Vector3i:
-                            watchables[index] = new WatchableObject(enumType, index,
+                            watchables[i] = new WatchableObject(enumType, index,
                                 new Vector3i(stream.Int(), stream.Int(), stream.Int())); break;
                         case EnumTypeWatcher.Vector3:
-                            watchables[index] = new WatchableObject(enumType, index,
+                            watchables[i] = new WatchableObject(enumType, index,
                                 new Vector3(stream.Float(), stream.Float(), stream.Float())); break;
                     }
                 }

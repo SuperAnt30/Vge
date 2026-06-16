@@ -15,19 +15,49 @@
         public float X { get; private set; }
         public float Y { get; private set; }
         public float Z { get; private set; }
+        /// <summary>
+        /// Высота удара, при атаке
+        /// </summary>
+        public float HitY { get; private set; }
 
-        public PacketC03UseEntity(int id, EnumAction action, float x, float y, float z)
+        /// <summary>
+        /// Взаимодействие сущности, Атаки!
+        /// </summary>
+        /// <param name="hitY">Высота удара, 0 до высоты size.Y</param>
+        /// <param name="x">Импульс</param>
+        /// <param name="y">Импульс</param>
+        /// <param name="z">Импульс</param>
+        public PacketC03UseEntity(int id, float hitY, float x, float y, float z)
         {
             Index = id;
-            Action = action;
+            Action = EnumAction.Attack;
+            HitY = hitY;
             X = x;
             Y = y;
             Z = z;
         }
+
+        //public PacketC03UseEntity(int id, EnumAction action, float x, float y, float z)
+        //{
+        //    Index = id;
+        //    Action = action;
+        //    HitY = 0;
+        //    X = x;
+        //    Y = y;
+        //    Z = z;
+        //}
+
+        /// <summary>
+        /// Взаимодействие сущности, Импульс
+        /// </summary>
+        /// <param name="x">Импульс</param>
+        /// <param name="y">Импульс</param>
+        /// <param name="z">Импульс</param>
         public PacketC03UseEntity(int id, float x, float y, float z)
         {
             Index = id;
             Action = EnumAction.Impulse;
+            HitY = 0;
             X = x;
             Y = y;
             Z = z;
@@ -36,7 +66,7 @@
         {
             Index = id;
             Action = action;
-            X = Y = Z = 0;
+            HitY = X = Y = Z = 0;
         }
 
         public void ReadPacket(ReadPacket stream)
@@ -46,6 +76,10 @@
             X = stream.Float();
             Y = stream.Float();
             Z = stream.Float();
+            if (Action == EnumAction.Attack)
+            {
+                HitY = stream.Float();
+            }
         }
 
         public void WritePacket(WritePacket stream)
@@ -55,6 +89,10 @@
             stream.Float(X);
             stream.Float(Y);
             stream.Float(Z);
+            if (Action == EnumAction.Attack)
+            {
+                stream.Float(HitY);
+            }
         }
 
         /// <summary>

@@ -137,6 +137,10 @@ namespace Vge.Entity
         /// Объект наличия блоков в которой находится сущность
         /// </summary>
         public IPresenceBlocks PresenceBlocks { get; protected set; }
+        /// <summary>
+        /// Объект урона
+        /// </summary>
+        public DamageBase Damage { get; protected set; }
 
         /// <summary>
         /// Уровень перемещение. Только для сервера 2 - 0 чтоб передвавать клиентам перемещение.
@@ -591,6 +595,7 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetDead() => IsDead = true;
+
         /// <summary>
         /// Получить название для рендеринга
         /// </summary>
@@ -643,6 +648,8 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void OnInteract(PlayerServer player) { }
+
+       
 
         #region Get
 

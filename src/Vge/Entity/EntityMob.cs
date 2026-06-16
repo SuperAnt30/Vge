@@ -15,7 +15,7 @@ namespace Vge.Entity
         /// Специфический возраст этой сущности, чем ближе к игроку возраст обнуляется, 
         /// чем дальше растёт, для вероятности диспавна
         /// </summary>
-        public int EntityAge { get; protected set; } = 0;
+        public int EntityAge = 0;
 
         /// <summary>
         /// Максимальная высота, с которой объекту разрешено прыгать (используется в навигаторе)
@@ -77,10 +77,20 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Возвращает true, если другие Сущности не должны проходить через эту Сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool CanBeCollidedWith() => true;
+
+        /// <summary>
         /// Игровой такт на сервере
         /// </summary>
         public override void Update()
         {
+            // если нет хп обновлям смертельную картинку
+            //if (GetHealth() <= 0f && DeathTime != -1) DeathUpdate();
+            if (GetHealth() <= 0) SetDead();
+
             if (!_IsMovementBlocked())
             {
                 // ИИ

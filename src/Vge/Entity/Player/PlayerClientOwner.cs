@@ -882,10 +882,15 @@ namespace Vge.Entity.Player
                 }
                 else if (MovingObject.IsEntity())
                 {
-                    Debug.BlockFocus = "Entity: " + MovingObject.Entity.GetName();
+                    Debug.BlockFocus =
+                        MovingObject.Entity.GetType()
+                        //"Entity[" + MovingObject.Entity.GetType() + "]:" 
+                        + MovingObject.Entity.GetName() + " " 
+                        + MovingObject.RayHit.Y + " ";
+                    
                     if (MovingObject.Entity is EntityLiving entityLiving)
                     {
-                        Debug.BlockFocus += " [" + "entityLiving.GetHealth()" + "]";
+                        Debug.BlockFocus += "[" + entityLiving.GetHealth() + "] ";
                     }
                     Debug.BlockFocus += MovingObject.Entity.GetPositionVec().ToString() + "\r\n";
                 }
@@ -952,7 +957,7 @@ namespace Vge.Entity.Player
             // 12-13 блока = -1,810864
             // 14-15 блока = -1,931447
             // 16 блока = -2,049618
-            //Console.WriteLine("FallDetection " + distance + " " + motionY);
+            Console.WriteLine("FallDetection " + distance + " " + motionY);
 
             //ClientWorld.ClientMain.TrancivePacket(new PacketC0CPlayerAction(PacketC0CPlayerAction.EnumAction.Fall, fallDistanceResult));
             _game.World.ParticleDiggingBlock(_game.World.GetBlockState(
@@ -1042,7 +1047,8 @@ namespace Vge.Entity.Player
         private void _UpRayCast()//bool collidable = false, bool isLiquid = false)
         {
             //_game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, false, Id, true);
-            _game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, false, Id, true);
+            _game.World.Collision.RayCast(PosX, PosY + _eyeFrame, PosZ, _rayLook, 8, 
+                false, Id, true);
             MovingObject.Copy(_game.World.Collision.MovingObject);
 
             // максимальная дистанция луча

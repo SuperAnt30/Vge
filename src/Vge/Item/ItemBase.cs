@@ -164,6 +164,12 @@ namespace Vge.Item
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual string GetToolTip(ItemStack stack) => _toolTip;
 
+        /// <summary>
+        /// Получить урон для атаки предметом который в руке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual float GetDamageToAttack() => 1;
+
         #region Дейстыия рук, ЛКМ и ПКМ
 
         /// <summary>

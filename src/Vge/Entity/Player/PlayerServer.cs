@@ -413,8 +413,20 @@ namespace Vge.Entity.Player
                 }
                 else if (packet.Action == PacketC03UseEntity.EnumAction.Attack)
                 {
-                    // Тут проверка силы урона!
-                  //  entity.OnAttack(this);
+                    if (entity.Damage != null)
+                    {
+                        ItemStack stack = Inventory.GetCurrentItem();
+                        float damage = stack != null ? stack.Item.GetDamageToAttack() : 1;
+                        if (PresenceBlocks.IsInLiquid) damage *= .75f;
+                        else if (!OnGround) damage *= 1.1f;
+
+                        if (entity.Damage.OnAttack((byte)EnumDamageSource.Player, 
+                            packet.HitY, damage, this))
+                        {
+                            // Если урон сработал добавляем импулс
+                            entity.SetPhysicsImpulse(packet.X, packet.Y, packet.Z);
+                        }
+                    }
                 }
             }
         }

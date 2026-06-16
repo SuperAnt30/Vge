@@ -1,6 +1,5 @@
 ﻿using Mvk2.Entity.AI.PathFinding;
-using System;
-using System.Diagnostics;
+using Mvk2.Entity.Damage;
 using Vge.Entity;
 using Vge.Entity.AI.PathFinding;
 using Vge.Entity.Physics;
@@ -18,6 +17,7 @@ namespace Mvk2.Entity.List
 
         public EntityChicken() : base()
         {
+            Damage = new DamageLiving(this);
             SolidHeadWithBody = false;
             _persistenceRequired = true;
         }
@@ -56,6 +56,8 @@ namespace Mvk2.Entity.List
             _RotationBody();
             Render.UpdateClient(world, deltaTime);
         }
+
+        
 
         protected override void _UpdateTest()
         {

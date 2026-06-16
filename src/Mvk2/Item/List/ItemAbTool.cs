@@ -22,7 +22,7 @@ namespace Mvk2.Item.List
         /// <summary>
         /// Сила урона для атаки
         /// </summary>
-        public float Damage { get; protected set; } = 1;
+        private float _damage = 1;
 
 
         #region Методы для импорта данных с json
@@ -40,7 +40,7 @@ namespace Mvk2.Item.List
                     // Статы
                     foreach (JsonKeyValue json in state.Items)
                     {
-                        if (json.IsKey(Cti.Damage)) Damage = json.GetFloat();
+                        if (json.IsKey(Cti.Damage)) _damage = json.GetFloat();
                         else if (json.IsKey(Cti.Level)) Level = json.GetInt();
                     }
                 }
@@ -71,7 +71,13 @@ namespace Mvk2.Item.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string GetToolTip(ItemStack stack)
             => string.Format(_toolTip, 
-                Level, Damage,
+                Level, _damage,
                 stack.ToStringDamaged());
+
+        /// <summary>
+        /// Получить урон для атаки предметом который в руке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override float GetDamageToAttack() => _damage;
     }
 }

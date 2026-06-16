@@ -380,7 +380,7 @@ namespace Vge.Entity
         /// <summary>
         /// Задать уровень здоровья
         /// </summary>
-        public void SetHealth(float health) => MetaData.UpdateObject(6, Mth.Clamp(health, 0, _GetHelathMax()));
+        public void SetHealth(float health) => MetaData.UpdateObject(1, Mth.Clamp(health, 0, _GetHelathMax()));
 
         #endregion
 
@@ -472,6 +472,7 @@ namespace Vge.Entity
             base._WriteToNBT(nbt);
             nbt.SetFloat("Yaw", RotationYaw);
             nbt.SetFloat("Pitch", RotationPitch);
+            nbt.SetShort("Health", (short)(GetHealth() * 10));
             Inventory?.WriteToNBT(nbt);
         }
 
@@ -480,6 +481,7 @@ namespace Vge.Entity
             base.ReadFromNBT(nbt);
             RotationPrevYaw = RotationYaw = nbt.GetFloat("Yaw");
             RotationPrevPitch = RotationPitch = nbt.GetFloat("Pitch");
+           // SetHealth(nbt.GetShort("Health") / 10f);
             Inventory?.ReadFromNBT(nbt);
         }
 

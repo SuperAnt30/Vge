@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Mvk2.Entity.Damage;
+using System.Runtime.CompilerServices;
 using Vge.Entity.List;
 using Vge.Entity.Physics;
 using Vge.World;
@@ -18,6 +19,7 @@ namespace Mvk2.Entity.List
         {
             Physics = new PhysicsGround(collision, this, .5f);
             PresenceBlocks = new PresenceBlocksMvk(this);
+            Damage = new DamageItem(this);
         }
     }
 }

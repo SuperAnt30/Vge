@@ -43,6 +43,10 @@ namespace Vge.Util
         /// </summary>
         public Vector3 RayHit { get; private set; }
         /// <summary>
+        /// Координата куда попал луч в глобальных координатах по блоку
+        /// </summary>
+        //public Vector3 RayHit { get; private set; }
+        /// <summary>
         /// Точка куда устанавливаем блок (параметр с RayCast)
         /// значение в пределах 0..1, образно фиксируем пиксел клика на стороне
         /// </summary>
@@ -116,7 +120,8 @@ namespace Vge.Util
         public void ObjectEntity(EntityBase entity, PointIntersection intersection)
         {
             Entity = entity;
-            RayHit = intersection.RayHit;
+            RayHit = new Vector3(0, intersection.RayHit.Y - entity.PosY, 0);
+                     //intersection.RayHit;
             Side = intersection.Side;
             _type = MovingObjectType.Entity;
         }
