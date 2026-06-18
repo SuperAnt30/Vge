@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.Entity.Particle;
+using Vge.World;
+using WinGL.Util;
 
 namespace Mvk2.Entity.Damage
 {
@@ -12,10 +16,47 @@ namespace Mvk2.Entity.Damage
         /// Сущность к которой прекреплена физика
         /// </summary>
         protected readonly EntityLiving _entity;
+        /// <summary>
+        /// Мир сервера где находится сущность
+        /// </summary>
+        protected readonly WorldServer _worldServer;
+
+        /// <summary>
+        /// Оставшееся время эта сущность должна вести себя как «мертвая», то есть иметь в мире труп.
+        /// </summary>
+        public int DeathTime { get; protected set; } = 0;
 
         public DamageLiving(EntityLiving entity)
         {
             _entity = entity;
+            _worldServer = entity.GetWorldServer();
+        }
+
+        /// <summary>
+        /// Обновление в игровом такте
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void Update()
+        {
+            // если нет хп обновлям смертельную картинку
+            if (DeathTime != -1 && _entity.GetHealth() <= 0)
+            {
+                DeathTime++;
+                if (DeathTime >= 20)
+                {
+                    // Исчизновение сущности после смерти
+                    _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
+                        _entity.GetPositionCenterVec(), new Vector3(1), 25, 0x882222);
+                    _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
+                        _entity.GetPositionCenterVec(), new Vector3(1), 25, 0x1000000);
+
+                    //World.SpawnParticle(EnumParticle.Test, 100, Position, new vec3(Width, .25f, Width), 0);
+                    DeathTime = -1;
+                    _entity.SetDead();
+                }
+
+                //DeathUpdate();
+            }
         }
 
         /// <summary>
@@ -43,13 +84,15 @@ namespace Mvk2.Entity.Damage
 
             Console.WriteLine("GetHealth" + _entity.GetHealth());
             // Анимация урона
+            _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 5, 
+                _entity.GetPositionCenterVec(), new Vector3(.5f), 1, 0x1000000);
             //worldServer.Tracker.SendToAllTrackingEntityCurrent(this, new PacketS0BAnimation(Id,
             //        PacketS0BAnimation.EnumAnimation.Hurt, (byte)enumBody));
 
             if (health <= 0)
             {
-                //_entity.SetDead();
                 // Звук смерти
+               // _worldServer.PlaySound
                 //World.PlaySound(GetDeathSound(), Position, 1, (rand.NextFloat() - rand.NextFloat()) * .2f + 1f);
                 //_entity.OnDeath(source);
 

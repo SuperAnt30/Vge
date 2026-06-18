@@ -1,6 +1,7 @@
-﻿using WinGL.Util;
+﻿using Vge.Entity.Particle;
+using WinGL.Util;
 
-namespace Vge.Entity.Particle
+namespace Mvk2.Entity.Particle
 {
     /// <summary>
     /// Сущность частички, дым

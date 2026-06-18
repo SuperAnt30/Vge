@@ -16,6 +16,10 @@ namespace Vge.Entity.Particle
         /// Индекс частички блока
         /// </summary>
         public static ushort PartId { get; private set; }
+        /// <summary>
+        /// Индекс сцветной частички с гравитацией
+        /// </summary>
+        public static ushort PartColorId { get; private set; }
 
         /// <summary>
         /// Таблица предметов для регистрации
@@ -47,6 +51,7 @@ namespace Vge.Entity.Particle
             // Регистрация обязательных предметов
             RegisterEntityFXClass("Cube", typeof(EntityCubeFX));
             RegisterEntityFXClass("Part", typeof(EntityPartFX));
+            RegisterEntityFXClass("PartColor", typeof(EntityPartColorFX));
         }
 
         /// <summary>
@@ -83,6 +88,7 @@ namespace Vge.Entity.Particle
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
                 if (alias == "Cube") CubeId = i;
                 else if (alias == "Part") PartId = i;
+                else if (alias == "PartColor") PartColorId = i;
             }
         }
     }

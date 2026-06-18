@@ -1,7 +1,7 @@
 ﻿using Mvk2.Command;
 using Mvk2.Entity;
 using Mvk2.Entity.List;
-using Mvk2.Particle;
+using Mvk2.Entity.Particle;
 using Mvk2.World.BlockEntity;
 using Vge.Command;
 using Vge.Entity.Player;

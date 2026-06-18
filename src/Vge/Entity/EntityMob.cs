@@ -87,9 +87,8 @@ namespace Vge.Entity
         /// </summary>
         public override void Update()
         {
-            // если нет хп обновлям смертельную картинку
-            //if (GetHealth() <= 0f && DeathTime != -1) DeathUpdate();
-            if (GetHealth() <= 0) SetDead();
+            // Обновление урона
+            Damage?.Update();
 
             if (!_IsMovementBlocked())
             {

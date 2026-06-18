@@ -19,6 +19,15 @@ namespace Mvk2.Entity.List
         {
             Physics = new PhysicsGround(collision, this, .5f);
             PresenceBlocks = new PresenceBlocksMvk(this);
+            
+        }
+
+        /// <summary>
+        /// Инициализация на сервере, после всех инициализаций
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _InitServer()
+        {
             Damage = new DamageItem(this);
         }
     }

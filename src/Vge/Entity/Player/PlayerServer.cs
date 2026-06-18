@@ -234,6 +234,9 @@ namespace Vge.Entity.Player
                 SendPacket(new PacketS04TickUpdate(tick));
             }
 
+            // Обновление урона
+            Damage?.Update();
+
             // Обновить наличие блоков в каких находится игрок
             UpdatePresenceBlocks(GetWorldServer());
 

@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.AI.PathFinding;
 using Mvk2.Entity.Damage;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.AI.PathFinding;
 using Vge.Entity.Physics;
@@ -14,10 +15,8 @@ namespace Mvk2.Entity.List
     /// </summary>
     public class EntityChicken : EntityMob
     {
-
         public EntityChicken() : base()
         {
-            Damage = new DamageLiving(this);
             SolidHeadWithBody = false;
             _persistenceRequired = true;
         }
@@ -25,6 +24,7 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize()
             => Size = new SizeEntityLiving(this, .3f, .99f, .85f, 6);
 
@@ -42,8 +42,19 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Инициализация навигации
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override PathNavigate _InitNavigate(WorldServer world) 
             => new PathNavigateGround(this, world);
+
+        /// <summary>
+        /// Инициализация на сервере, после всех инициализаций
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void _InitServer()
+        {
+            base._InitServer();
+            Damage = new DamageLiving(this);
+        }
 
         /// <summary>
         /// Игровой такт на клиенте

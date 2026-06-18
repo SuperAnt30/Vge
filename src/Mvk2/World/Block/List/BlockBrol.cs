@@ -1,4 +1,4 @@
-﻿using Mvk2.Particle;
+﻿using Mvk2.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Util;
 using Vge.World;

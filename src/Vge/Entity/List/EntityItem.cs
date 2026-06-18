@@ -138,6 +138,9 @@ namespace Vge.Entity.List
             }
             _age++;
 
+            // Обновление урона
+            Damage?.Update();
+
             if (!Physics.IsPhysicSleep())
             {
                 //Console.Write(PosX);

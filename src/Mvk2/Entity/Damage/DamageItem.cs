@@ -1,6 +1,8 @@
 ﻿using Mvk2.Entity.List;
 using System;
 using Vge.Entity;
+using Vge.Entity.Particle;
+using WinGL.Util;
 
 namespace Mvk2.Entity.Damage
 {
@@ -44,11 +46,21 @@ namespace Mvk2.Entity.Damage
         protected override void _OnAttack(byte source, float damage, EntityLiving entityAttack)
         {
             _health -= damage;
+            int count;
 
             if (_health <= 0)
             {
                 _entity.SetDead();
+                count = 25;
             }
+            else
+            {
+                count = 5;
+            }
+
+            // Анимация урона
+            _entity.GetWorldServer().SpawnParticle(EntitiesFXReg.PartColorId, count,
+                _entity.GetPositionCenterVec(), new Vector3(.5f), 1, 0x1000000);
         }
     }
 }

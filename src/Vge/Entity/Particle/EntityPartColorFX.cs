@@ -3,12 +3,18 @@
 namespace Vge.Entity.Particle
 {
     /// <summary>
-    /// Сущность частички, капельки
+    /// Сущность частички, цветной кубик с гравитацией
     /// </summary>
-    public class EntityDropletFX : EntityFX
+    public class EntityPartColorFX : EntityFX
     {
-        public EntityDropletFX() : base(EnumParticleDraw.Quad)
-            => _gravity = -.004f;
+        /// <summary>
+        /// Цвет в битах хRBG
+        /// (0x1000000) x = 1 цвет рандом
+        /// </summary>
+        private int _color;
+
+        public EntityPartColorFX() : base(EnumParticleDraw.Cube)
+            => _gravity = .25f;
 
         /// <summary>
         /// Инизциализация размера жизни и прочего, индивидуально для типа сущности частички
@@ -16,7 +22,7 @@ namespace Vge.Entity.Particle
         protected override void _Init(int parameter)
         {
             base._Init(parameter);
-            _maxAge = 200 + _rand.Next(90);
+            _color = parameter;
         }
 
         /// <summary>
@@ -31,25 +37,29 @@ namespace Vge.Entity.Particle
             motion.X += (_rand.Next(200) - 100) * .004f;
             motion.Y += (_rand.Next(200) - 100) * .004f;
             motion.Z += (_rand.Next(200) - 100) * .004f;
-            float r = (_rand.NextFloat() + _rand.NextFloat() + 1f) * .06f;
+            float r = (_rand.NextFloat() + _rand.NextFloat() + 1f) * .036f;
             motion = motion / Glm.Distance(motion) * r;
-            motion.Y += 1f;
-
-            
-            //motion = motion * .1f + motion;
-            //motion.Y += _ageAdd / 1000f;
-
-            motion.X = motion.X * .1f;
-            motion.Z = motion.Z * .1f;
-            motion.Y = motion.Y * .025f;// + motion * .1f;
-
+            motion.Y += .1f;
+            motion *= .5f;
             Physics.MotionX = motion.X;
             Physics.MotionY = motion.Y;
             Physics.MotionZ = motion.Z;
 
-            Scale = .25f + _rand.NextFloat() * .5f; // Для маленький квадов без текстуры
-            float c = .5f + _rand.NextFloat() * .5f;
-            Color = new Vector4(c, c, c, 1);
+            Scale = .25f + _rand.NextFloat() * .125f;
+
+            if (_color >> 24 == 0)
+            {
+                Color = new Vector4(
+                    (_color >> 16) / 255f,
+                    ((_color >> 8) & 255) / 255f,
+                    (_color & 255) / 255f,
+                    1);
+            }
+            else
+            {
+                // Тут мы не должны появится!
+                Color = new Vector4(_rand.NextFloat(), _rand.NextFloat(), _rand.NextFloat(), 1);
+            }
         }
     }
 }

@@ -8,16 +8,6 @@ namespace Vge.Entity
     /// </summary>
     public abstract class DamageBase
     {
-        ///// <summary>
-        ///// Сущность к которой прекреплена физика
-        ///// </summary>
-        //private readonly EntityBase _entity;
-
-        //public DamageBase(EntityBase entity)
-        //{
-        //    _entity = entity;
-        //}
-
         /// <summary>
         /// Имеется ли у сущности иммунитет от горения в огне и лаве
         /// </summary>
@@ -38,6 +28,12 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual bool _IsImmuneToAll() => false;
+
+        /// <summary>
+        /// Обновление в игровом такте
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Update() { }
 
         /// <summary>
         /// Сущность получает урон, только на сервере.

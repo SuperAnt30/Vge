@@ -229,7 +229,7 @@ namespace Vge.Entity
             => new EntityRenderAnimation(this, entities, resourcesEntity);
 
         /// <summary>
-        /// Инициализация для сервера
+        /// Инициализация для сервера кроме игроков
         /// </summary>
         public void InitServer(ushort index, WorldServer worldServer)
         {
@@ -262,7 +262,7 @@ namespace Vge.Entity
         protected virtual void _InitMetaData() => MetaData = new DataWatcher(0);
 
         /// <summary>
-        /// Инициализация на сервере, после всех инициализаций
+        /// Инициализация на сервере кроме игроков, после всех инициализаций
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _InitServer() { }
@@ -303,6 +303,13 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetPositionVec() => new Vector3(PosX, PosY, PosZ);
+
+        /// <summary>
+        /// Получить вектор позиции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 GetPositionCenterVec() 
+            => new Vector3(PosX, PosY + Size.GetHeight() / 2f, PosZ);
 
         /// <summary>
         /// Изменена ли позиция

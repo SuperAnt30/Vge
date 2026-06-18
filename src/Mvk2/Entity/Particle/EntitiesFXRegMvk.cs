@@ -1,6 +1,6 @@
 ﻿using Vge.Entity.Particle;
 
-namespace Mvk2.Particle
+namespace Mvk2.Entity.Particle
 {
     /// <summary>
     /// Регистрация моделей сущностей эффектов для Малювеки 2
