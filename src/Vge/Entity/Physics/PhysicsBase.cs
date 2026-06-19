@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Sizes;
 using Vge.Util;
 using Vge.World;
@@ -13,9 +14,9 @@ namespace Vge.Entity.Physics
     {
         /// <summary>
         /// Максимальный предел зажаточти сущности в тактах, после этого перестанет работать физика
-        /// 1 мин = 1800
+        /// 1 мин = 1200
         /// </summary>
-        private const ushort CountTickCaughtMax = 1800;
+        private const ushort CountTickCaughtMax = 1200;
         /// <summary>
         /// Обект перемещений
         /// </summary>
@@ -430,7 +431,7 @@ namespace Vge.Entity.Physics
                         Entity.AwakenPhysicSleep(entity);
                     }
                 }
-                if (y < -.005f)
+                if (y < -.002f) // -.005f при 30 тик
                 {
                     // Проверяем что снизу
                     // +-----+
