@@ -46,13 +46,14 @@
                 { Texture:"T0", Side:"Down", Uv:[0, 10, 8, 11]}
             ]
         },
-        {   From: [-1, 17, 0],
+        {   From: [-1, 17, -1],
             To: [1, 22, 1],
             Faces: [
-                { Texture:"T0", Side:"East", Uv:[11, 1, 12, 6]},
-                { Texture:"T0", Side:"South", Uv:[9, 1, 11, 6]},
-                { Texture:"T0", Side:"West", Uv:[8, 1, 9, 6]},
-                { Texture:"T0", Side:"Up", Uv:[9, 0, 11, 1]}
+                { Texture:"T0", Side:"North", Uv:[14, 2, 16, 7]},
+                { Texture:"T0", Side:"East", Uv:[12, 2, 14, 7]},
+                { Texture:"T0", Side:"South", Uv:[10, 2, 12, 7]},
+                { Texture:"T0", Side:"West", Uv:[8, 2, 10, 7]},
+                { Texture:"T0", Side:"Up", Uv:[10, 0, 12, 2]}
             ]
         }
     ]

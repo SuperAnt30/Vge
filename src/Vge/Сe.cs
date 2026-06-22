@@ -45,7 +45,7 @@ public sealed class Ce
     /// <summary>
     /// Время жизни строки чата, в тиках (25 секунд)
     /// </summary>
-    public const int ChatLineTimeLife = 750;
+    public const int ChatLineTimeLife = 500;
 
     /// <summary>
     /// Различные массивы блоков

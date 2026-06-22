@@ -8,6 +8,6 @@
     #ShapeGui: "Shovel",
     SpriteGui: "Items/Shovel",
     View: { Rotate:[-90, 0, -45], Offset:[-5, 1, 5] },
-    ViewGui: { Rotate:[-90, -45, -90], Offset:[-6, -5, 0], Scale: 0.75 },
+    #ViewGui: { Rotate:[0, -180, 45], Offset:[-7.5, -11.5, 0], Scale: 0.75 },
     ViewHold: { Offset:[0, 4, 0] }
 }

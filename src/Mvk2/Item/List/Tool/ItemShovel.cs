@@ -3,7 +3,7 @@ using Vge.Entity.Player;
 using Vge.Item;
 using Vge.World.Block;
 
-namespace Mvk2.Item.List
+namespace Mvk2.Item.List.Tool
 {
     /// <summary>
     /// Предмет лопата

@@ -1,4 +1,5 @@
 ﻿using Mvk2.Item.List;
+using Mvk2.Item.List.Tool;
 using Mvk2.World.Block;
 using Vge.Item;
 using Vge.Item.List;
@@ -42,6 +43,7 @@ namespace Mvk2.Item
 
         #endregion
 
+        #region Tools
 
         /// <summary>
         /// Техническая палочка, для отладки
@@ -55,6 +57,8 @@ namespace Mvk2.Item
         /// Железная лопата
         /// </summary>
         public static ItemBase ShovelIron { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// Консерва

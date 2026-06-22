@@ -1,15 +1,13 @@
 ﻿using Mvk2.World.Block.List;
-using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
-using Vge.Realms;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Mvk2.Item.List
+namespace Mvk2.Item.List.Tool
 {
     /// <summary>
     /// Предмет техническая палочка, для отладки

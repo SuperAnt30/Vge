@@ -4,7 +4,7 @@ using Vge.Item;
 using Vge.Json;
 using Vge.Realms;
 
-namespace Mvk2.Item.List
+namespace Mvk2.Item.List.Tool
 {
     /// <summary>
     /// Абстрактный класс предмета инструмент
