@@ -16,12 +16,18 @@ namespace Vge.Entity.Shape
         /// Буфер сетки формы, для рендера
         /// </summary>
         private readonly VertexEntityBuffer _bufferMesh;
-        
+
+        /// <summary>
+        /// Массив названий всех текстур
+        /// </summary>
+        private readonly string[] _nameTextures = new string[0];
+
         public ShapeEntity(ushort index, string alias, JsonCompound jsonModel)
             : base(index)
         {
             _definition = new ModelEntityDefinition(alias);
             _definition.RunModelFromJson(jsonModel, false);
+            _nameTextures = _definition.GenNameTextures();
             Textures = _definition.GenTextures();
             DepthTextures = new int[Textures.Length];
 
@@ -65,5 +71,20 @@ namespace Vge.Entity.Shape
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public VertexEntityBuffer CopyBufferFloatMesh(float scale = 1)
             => _bufferMesh.CopyBufferMesh(scale);
+
+        /// <summary>
+        /// Найти индекс текстуры по названию
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int FindIndexTexture(string name)
+        {
+            for (int i = 0; i < _nameTextures.Length; i++)
+            {
+                if (_nameTextures[i] == name) return i;
+            }
+
+            return -1;
+        }
+
     }
 }

@@ -27,11 +27,11 @@ namespace Vge.Entity.Model
         /// <summary>
         /// Создать текстуру, если имя не пустое, то это слой
         /// </summary>
-        public ModelTexture(string name, BufferedImage image)
+        public ModelTexture(string name, BufferedImage image, bool isLayer)
         {
             Name = name;
             Image = image;
-            IsLayer = name != "";
+            IsLayer = isLayer;
         }
 
         public override string ToString() => (IsLayer ? "Layer " : "") + Name;

@@ -82,6 +82,12 @@ namespace Vge.Entity.Shape
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SizeAdjustmentTextureHeight(float coef) { }
 
+        /// <summary>
+        /// Найти индекс текстуры по названию
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual int FindIndexTexture(string name) => -1;
+
         public override string ToString() => Index + " " + (TextureSmall ? "Small" : "Big");
     }
 }

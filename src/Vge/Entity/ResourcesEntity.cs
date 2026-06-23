@@ -119,7 +119,7 @@ namespace Vge.Entity
         /// <summary>
         /// Прочесть состояние для клиента из Json формы
         /// </summary>
-        public void ReadStateClientFromJson(JsonCompound state)
+        public void ReadStateClientFromJson(JsonCompound state, ShapeEntity shape)
         {
             Scale = 1;
             // Массив данных анимации
@@ -166,7 +166,16 @@ namespace Vge.Entity
                             Scale = json.GetFloat();
                             if (Scale == 0) Scale = 1;
                         }
-                        else if (json.IsKey(Cte.TextureId)) _indexTexture = (ushort)json.GetInt();
+                        else if (json.IsKey(Cte.Texture) && shape != null)
+                        {
+                            int index = shape.FindIndexTexture(json.GetString());
+                            if (index == -1)
+                            {
+                                // Ошибка, нет текстуры с названием
+                                throw new Exception(Sr.GetString(Sr.ErrorThereIsNoTextureWithTheName, json.GetString()));
+                            }
+                            _indexTexture = (ushort)index;
+                        }
                         else if (json.IsKey(Cte.OnlyMove)) OnlyMove = json.GetBool();
                         else if (json.IsKey(Cte.BlinkEye)) BlinkEye = json.GetInt();
                         else if (json.IsKey(Cte.NameShapeLayers)) NameShapeLayers = json.GetString();
@@ -174,7 +183,8 @@ namespace Vge.Entity
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonEntityStat, Alias));
+                    throw new Exception(Sr.GetString(Sr.ErrorReadJsonEntityStat, Alias) 
+                        + "\r\n" + ex.Message);
                 }
             }
 

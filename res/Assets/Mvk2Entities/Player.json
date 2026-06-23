@@ -6,7 +6,7 @@
     #Model: "Player",
     Model: "Humanoid",
     #Model: "Chicken",
-    TextureId: 1,
+    Texture: "Robinson",
     OnlyMove: true,
     BlinkEye: 70,
     NameShapeLayers: "Base",

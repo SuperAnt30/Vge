@@ -271,7 +271,7 @@ namespace Vge.Entity
                     modelEntity.ReadStateFromJson(jsonRead.Compound);
                     if (FlagRender)
                     {
-                        modelEntity.ReadStateClientFromJson(jsonRead.Compound);
+                        modelEntity.ReadStateClientFromJson(jsonRead.Compound, shape);
                     }
 
                     Table.Add(alias, modelEntity);

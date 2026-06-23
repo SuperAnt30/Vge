@@ -38,6 +38,22 @@ namespace Vge.Entity.Model
         /// Название куба улыбка
         /// </summary>
         public const string NameCubeMouthSmile = "mouthSmile";
+        /// <summary>
+        /// Название префикса текстуры слоя
+        /// </summary>
+        public const string NamePrefixTextureLayer = "Layer";
+        /// <summary>
+        /// Длинна префикса текстуры слоя
+        /// </summary>
+        public static int LengthPrefixTextureLayer = NamePrefixTextureLayer.Length;
+        /// <summary>
+        /// Название постфикса текстуры
+        /// </summary>
+        public const string NamePostfixTexture = ".png";
+        /// <summary>
+        /// Длинна постфикса текстуры
+        /// </summary>
+        public static int LengthPostfixTexture = NamePostfixTexture.Length;
 
         /// <summary>
         /// Псевдоним
@@ -182,7 +198,9 @@ namespace Vge.Entity.Model
             // Определяем наличие слоёв в текстурах
             foreach(JsonCompound texture in textures)
             {
-                if (texture.IsKey(Cte.Layers))
+                string name = texture.GetString(Cte.Name);
+                if (name.Length >= LengthPrefixTextureLayer
+                    && name.Substring(0, LengthPrefixTextureLayer) == NamePrefixTextureLayer)
                 {
                     _textureLayer = isLayer ? EnumTextureLayer.ForLayer : EnumTextureLayer.ThereAreLayers;
                     break;
@@ -191,29 +209,34 @@ namespace Vge.Entity.Model
 
             for (int i = 0; i < textures.Length; i++)
             {
-                if (textures[i].IsKey(Cte.Layers))
+                string name = textures[i].GetString(Cte.Name);
+
+                // Убираем постфикс (.png)
+                if (name.Length >= LengthPostfixTexture)
                 {
-                    // Имеются слои
-                    _log = Cte.Layers;
-                    JsonCompound[] layers = textures[i].GetArray(Cte.Layers).ToArrayObject();
-                    foreach (JsonCompound layer in layers)
-                    {
-                        _TextureImage(layer.GetString(Cte.Name), layer.GetString(Cte.DataUrl));
-                    }
+                    name = name.Substring(0, name.Length - LengthPostfixTexture);
+                }
+
+                if (name.Length >= LengthPrefixTextureLayer + LengthPostfixTexture
+                    && name.Substring(0, LengthPrefixTextureLayer) == NamePrefixTextureLayer)
+                {
+                    // Это слой
+                    name = name.Substring(LengthPostfixTexture + 1);
+                    _log = NamePrefixTextureLayer;
+                    _TextureImage(name, textures[i].GetString(Cte.Source), true);
                 }
                 else
                 {
                     _log = Cte.Source;
-                    _TextureImage("", textures[i].GetString(Cte.Source));
+                    _TextureImage(name, textures[i].GetString(Cte.Source), false);
                 }
             }
-            return;
         }
 
         /// <summary>
         /// Внести текстуру
         /// </summary>
-        private void _TextureImage(string name, string source)
+        private void _TextureImage(string name, string source, bool isLayer)
         {
             if (source.Length > 22 && source.Substring(0, 22) == "data:image/png;base64,")
             {
@@ -228,7 +251,7 @@ namespace Vge.Entity.Model
                 {
                     bufferedImage = BufferedFileImage.LeaveHalfOnBottom(bufferedImage);
                 }
-                _textures.Add(new ModelTexture(name, bufferedImage));
+                _textures.Add(new ModelTexture(name, bufferedImage, isLayer));
             }
             else
             {
@@ -251,6 +274,19 @@ namespace Vge.Entity.Model
                 images[i] = _textures[i].Image;
             }
             return images;
+        }
+
+        /// <summary>
+        /// Сгенерировать массив названий текстур
+        /// </summary>
+        public string[] GenNameTextures()
+        {
+            string[] names = new string[_textures.Count];
+            for (int i = 0; i < names.Length; i++)
+            {
+                names[i] = _textures[i].Name;
+            }
+            return names;
         }
 
         /// <summary>

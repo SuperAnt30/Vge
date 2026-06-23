@@ -69,6 +69,7 @@ public sealed class Sr
     internal const string ErrorReadJsonSoundStat = "Ошибка чтения из json, параметров звука {0}";
     internal const string FileMissingJsonBlock = "Отсутствует файл json, блока {0}";
     internal const string ErrorReadJsonEntityStat = "Ошибка чтения из json, параметров сущности {0}";
+    internal const string ErrorThereIsNoTextureWithTheName = "Ошибка, нет текстуры с названием [{0}]";
     public const string FileMissingJsonEntity = "Отсутствует файл json, сущности {0}";
     internal const string FileMissingLayersJsonEntity = "Отсутствует файл json, слоёв для сущности {0}";
     internal const string FileMissingModelJsonEntity = "Отсутствует модель в файле json сущности {0}";
