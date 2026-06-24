@@ -167,7 +167,7 @@ namespace Vge.World.Block
             // Заполняем квады
             for (i = 0; i < elements.Length; i++)
             {
-                _Element(elements[i]);
+                _Element(elements[i], false);
             }
         }
 

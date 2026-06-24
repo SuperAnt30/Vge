@@ -71,7 +71,7 @@ namespace Vge.Item
                 // Заполняем квады
                 for (i = 0; i < elements.Length; i++)
                 {
-                    _Element(elements[i]);
+                    _Element(elements[i], true);
                 }
                 return _quads;
             }
@@ -81,7 +81,7 @@ namespace Vge.Item
             }
         }
 
-        protected void _Element(JsonCompound element)
+        protected void _Element(JsonCompound element, bool isItem)
         {
             JsonCompound[] faces;
             ShapeFace shapeFace = new ShapeFace(_shapeAdd, _shapeTexture);
@@ -122,7 +122,7 @@ namespace Vge.Item
             faces = element.GetArray(Ctb.Faces).ToArrayObject();
             for (int i = 0; i < faces.Length; i++)
             {
-                shapeFace.RunShape(faces[i]);
+                shapeFace.RunShape(faces[i], isItem);
                 _ElementAdd(shapeFace);
             }
         }

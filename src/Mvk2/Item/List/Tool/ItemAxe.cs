@@ -25,13 +25,11 @@ namespace Mvk2.Item.List.Tool
                     || block.Material.IndexMaterial == (int)EnumMaterial.Wood
                     || block.Material.IndexMaterial == (int)EnumMaterial.Branch)
                 {
-                    return new ResultHandAction(6, .5f);
+                    return new ResultHandAction(_pause, _acceleration);
                 }
             }
 
             return base.OnAction(begin, stack, player);
         }
-
-        
     }
 }

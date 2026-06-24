@@ -1,0 +1,10 @@
+{
+    Parent: "Tools/AxeIron",
+    MaxDamage: 8000,
+    Damage: 5.0,
+    Pause: 5,
+    Acceleration: 0.5,
+    Level: 3,
+    Shape: "Tools/AxeSteel",
+    SpriteGui: "Items/Tools/SpriteAxeSteel"
+}

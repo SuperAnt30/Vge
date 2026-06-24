@@ -55,6 +55,10 @@ namespace Mvk2.Item
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron));
             tabTools.Add(new ItemStack(ItemsRegMvk.ShovelIron));
             tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeIron));
+            tabTools.Add(new ItemStack(ItemsRegMvk.AxeSteel));
+            tabTools.Add(new ItemStack(ItemsRegMvk.ShovelSteel));
+            tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeSteel));
+            tabTools.Add(new ItemStack(ItemsRegMvk.AxeRed));
             
 
             // Раздел одежда

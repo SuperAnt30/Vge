@@ -102,9 +102,17 @@
         /// </summary>
         public const string Damage = "Damage";
         /// <summary>
-        /// Имя уровня инструмента, для качества дропа
+        /// Имя уровня инструмента, для качества дропа (int)
         /// </summary>
         public const string Level = "Level";
+        /// <summary>
+        /// Имя паузы между ударами в тактах (int)
+        /// </summary>
+        public const string Pause = "Pause";
+        /// <summary>
+        /// Имя ускорения разрушении блока, по умолчанию 1, при 0 ломает за один удар. (float)
+        /// </summary>
+        public const string Acceleration = "Acceleration";
 
         #endregion
     }

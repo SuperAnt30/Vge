@@ -1,0 +1,7 @@
+{
+    Parent: "Tools/Shovel",
+    Texture: {
+        T0: "Items/Tools/ShovelIron",
+        T1: "Items/Tools/ShovelHandleBirch"
+    }
+}

@@ -87,7 +87,7 @@ namespace Vge.World.Block
             _yR = _xR = _zR = 0;
         }
 
-        public void RunShape(JsonCompound face)
+        public void RunShape(JsonCompound face, bool isItem)
         {
             _quad = new QuadSide((byte)face.GetInt(Ctb.TypeColor));
 
@@ -122,6 +122,12 @@ namespace Vge.World.Block
                 _quad.SetTranslate(_shapeAdd.Offset[0], _shapeAdd.Offset[1], _shapeAdd.Offset[2]);
             }
 
+            
+            // Вращение текстуры 0 || 90 || 180 || 270
+            int uvRotate = face.GetInt(Ctb.UvRotate);
+
+            SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+
             // Размеры текстуры
             float u1, v1, u2, v2;
 
@@ -138,10 +144,16 @@ namespace Vge.World.Block
                 u1 = v1 = 0;
                 u2 = v2 = 16;
             }
-            // Вращение текстуры 0 || 90 || 180 || 270
-            int uvRotate = face.GetInt(Ctb.UvRotate);
 
-            SpriteData resTexture = _shapeTexture.GetResult(face.GetString(Ctb.TextureFace));
+            if (isItem && !resTexture.IsAnimation() && resTexture.CountWidth > 1)
+            {
+                float f = resTexture.CountWidth;
+                u1 *= f;
+                u2 *= f;
+                v1 *= f;
+                v2 *= f;
+            }
+
             _quad.SetTexture(resTexture.Index, u1, v1, u2, v2, uvRotate);
 
             if (_shapeAdd.IsRotateX90)

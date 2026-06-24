@@ -1,0 +1,7 @@
+{
+    Parent: "Tools/Pickaxe",
+    Texture: {
+        T0: "Items/Tools/PickaxeIron",
+        T1: "Items/Tools/PickaxeHandleBirch"
+    }
+}
