@@ -6,9 +6,9 @@ using Vge.World.Block;
 namespace Mvk2.Item.List.Tool
 {
     /// <summary>
-    /// Предмет лопата
+    /// Предмет кирка
     /// </summary>
-    public class ItemShovel : ItemAbTool
+    public class ItemPickaxe : ItemAbTool
     {
         /// <summary>
         /// Действие предмета ЛКМ.
@@ -22,7 +22,7 @@ namespace Mvk2.Item.List.Tool
                 // Опции для возможности копать, можно проверить типа блока player.MovingObject.Block
                 BlockBase block = player.MovingObject.Block.GetBlock();
                 if (player.CanDestroyedBlock(block) 
-                    || block.Material.IndexMaterial == (int)EnumMaterial.Loose)
+                    || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {
                     return new ResultHandAction(6, .75f);
                 }

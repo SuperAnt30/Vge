@@ -1,7 +1,7 @@
 {
     Texture: {
-        T0: "Items/ShovelIron",
-        T1: "Items/ShovelHandleBirch"
+        T0: "Items/Tools/ShovelIron",
+        T1: "Items/Tools/ShovelHandleBirch"
     },
     Elements: [
         {   From: [-1, 0, -1],

@@ -4,9 +4,9 @@
     SlotClothIndex: 1,
     Width: 0.5625,
     Height: 0.1875,
-    Shape: "Shovel",
+    Shape: "Tools/Shovel",
     #ShapeGui: "Shovel",
-    SpriteGui: "Items/Shovel",
+    SpriteGui: "Items/Tools/SpriteShovel",
     View: { Rotate:[-90, 0, -45], Offset:[-5, 1, 5] },
     #ViewGui: { Rotate:[0, -180, 45], Offset:[-7.5, -11.5, 0], Scale: 0.75 },
     ViewHold: { Offset:[0, 4, 0] }

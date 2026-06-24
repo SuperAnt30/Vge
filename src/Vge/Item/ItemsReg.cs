@@ -98,7 +98,7 @@ namespace Vge.Item
         public static ItemCloth RegisterItemClothClass(string alias)
         {
             ItemCloth itemCloth = new ItemCloth();
-            RegisterItemClass(alias, itemCloth, "Cloth" + Path.DirectorySeparatorChar);
+            RegisterItemClass(alias, itemCloth, "Cloth");
             return itemCloth;
         }
 
@@ -107,6 +107,8 @@ namespace Vge.Item
         /// </summary>
         public static void RegisterItemClass(string alias, ItemBase itemObject, string path = "")
         {
+            if (path != "") path += Path.DirectorySeparatorChar;
+
             JsonRead jsonRead = new JsonRead(Options.PathItems + path + alias + ".json");
 
             if (jsonRead.IsThereFile)

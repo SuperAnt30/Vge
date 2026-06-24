@@ -52,11 +52,15 @@ namespace Mvk2.Item
         /// <summary>
         /// Железный топор
         /// </summary>
-        public static ItemBase AxeIron { get; private set; }
+        public static ItemAbTool AxeIron { get; private set; }
         /// <summary>
         /// Железная лопата
         /// </summary>
-        public static ItemBase ShovelIron { get; private set; }
+        public static ItemAbTool ShovelIron { get; private set; }
+        /// <summary>
+        /// Железная кирка
+        /// </summary>
+        public static ItemAbTool PickaxeIron { get; private set; }
 
         #endregion
 
@@ -164,12 +168,15 @@ namespace Mvk2.Item
             // Маска + Акваланг ?!
             // 
 
-            ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical());
+            ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical(), "Tools");
             
-            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe());
-            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel());
+            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe(), "Tools");
+            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel(), "Tools");
+            ItemsReg.RegisterItemClass("PickaxeIron", PickaxeIron = new ItemPickaxe(), "Tools");
 
-            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
+
+
+        ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
             ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
             ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
