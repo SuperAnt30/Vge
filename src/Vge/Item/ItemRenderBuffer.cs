@@ -49,7 +49,6 @@ namespace Vge.Item
         /// </summary>
         public void InitAndSprite(string alias, JsonCompound state)
         {
-            // TODO::2025-09-13 продумать View для Sprite
             ItemShapeSprite shapeSprite = new ItemShapeSprite(alias, state.GetString(Cti.Sprite));
             _buffer = shapeSprite.GenBuffer();
             _bufferHold = _buffer.CopyBufferMesh();

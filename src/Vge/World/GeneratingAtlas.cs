@@ -124,12 +124,54 @@ namespace Vge.World
         }
 
         /// <summary>
+        /// Отладка спрайт вытаскиваем с атласа и пишем его в png
+        /// </summary>
+        public void DebugSpritePng(string alias, SpriteData sprite)
+        {
+            int width = sprite.CountWidth * Ce.TextureSpriteBlockSize;
+            int height = sprite.CountHeight * Ce.TextureSpriteBlockSize;
+            byte[] buffer = GetSprite(sprite);
+
+            IntPtr ptr = Marshal.AllocHGlobal(buffer.Length);
+            Marshal.Copy(buffer, 0, ptr, buffer.Length);
+            Bitmap bitmap = new Bitmap(width, height, height * 4, PixelFormat.Format32bppArgb, ptr);
+            bitmap.Save(alias + ".png", ImageFormat.Png);
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        /// <summary>
         /// Очистить буфер и справочник
         /// </summary>
         public void Clear()
         {
             _textures.Clear();
             _buffer = new byte[0];
+        }
+
+        /// <summary>
+        /// Получить буфер спрайт из буфера атласа
+        /// Пиксели идут друг за другом построчно, сверху вниз и слева направо, формата RGBA
+        /// </summary>
+        public byte[] GetSprite(SpriteData sprite)
+        {
+            int size = Ce.TextureSpriteBlockSize; // 16
+            int sizeRGBA = size * 4; // 64
+            int width = sprite.CountWidth * size;
+            int height = sprite.CountHeight * size;
+            byte[] buffer = new byte[width * height * 4];
+
+            int sizeRGBAw = sizeRGBA * sprite.CountWidth;
+
+            int index2 = sprite.Index / _textureAtlasBlockCount * _stride * size
+                + sprite.Index % _textureAtlasBlockCount * sizeRGBA;
+
+            for (int y = 0; y < height; y++)
+            {
+                Buffer.BlockCopy(_buffer, index2 + (_stride * y),
+                    buffer, y * sizeRGBAw, sizeRGBAw);
+            }
+
+            return buffer;
         }
 
         public SpriteData AddSprite(string name)

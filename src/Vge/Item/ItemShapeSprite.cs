@@ -35,11 +35,12 @@ namespace Vge.Item
         /// <summary>
         /// Сгенерировать буфер
         /// </summary>
-        public VertexEntityBuffer GenBuffer()
+        public VertexEntityBuffer GenBufferOld()
         {
             QuadSide[] quads = new QuadSide[2];
             int min = -8;
             int max = 8;
+            int h = 2;
             // Закоменченно из-за разности предмета спрайта 32 к блокам и моделям 16. Ибо в 2 раза больше был. 15.11.2025
             //if (_res.CountWidth > 1)
             //{
@@ -47,13 +48,103 @@ namespace Vge.Item
             //    max *= _res.CountWidth;
             //}
             quads[0] = new QuadSide();
-            quads[0].SetSide(Pole.Up, false, min, 0, min, max, 2, max).SetTexture(_res.Index, 
-                0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight);
-            quads[1] = new QuadSide();
-            quads[1].SetSide(Pole.Down, false, min, 2, min, max, 2, max).SetTexture(_res.Index, 
+            quads[0].SetSide(Pole.Up, false, min, h, min, max, h, max).SetTexture(_res.Index, 
                 0, 0, 16 * _res.CountWidth, 16 * _res.CountHeight);
 
+            quads[1] = new QuadSide();
+            quads[1].SetSide(Pole.Down, false, min, 0, min, max, 0, max).SetTexture(_res.Index, 
+                0, 16 * _res.CountHeight, 16 * _res.CountWidth, 0);
+
             return Convert(quads);
+        }
+
+        /// <summary>
+        /// Сгенерировать буфер
+        /// </summary>
+        public VertexEntityBuffer GenBuffer()
+        {
+            int size = Ce.TextureSpriteBlockSize;
+            int width = _res.CountWidth * size; 
+            int heigth = _res.CountHeight * size;
+
+            QuadSide quad;
+            List<QuadSide> quads = new List<QuadSide>();
+            int min = -8;
+            int max = 8;
+            float xf, yf;
+            int h = 1;
+
+            // Из-за разности предмета спрайта 32 к блокам и моделям 16.
+            int cw = _res.CountWidth / 2;
+            if (cw > 1)
+            {
+                min *= cw;
+                max *= cw;
+            }
+
+            byte[] buffer = BlocksReg.BlockItemAtlas.GetSprite(_res);
+            byte b;
+            for (int y = 0; y < heigth; y++)
+            {
+                yf = min + y * .5f;
+                for (int x = 0; x < width; x++)
+                {
+                    xf = min + x * .5f;
+                    b = buffer[(y * heigth + x) * 4 + 3];
+                    if (b > 250)
+                    {
+                        if (y == 0 || buffer[((y - 1) * heigth + x) * 4 + 3] < 249)
+                        {
+                            // Топ
+                            quad = new QuadSide();
+                            quad.SetSide(Pole.North, false, xf, 0, yf, xf + .5f, h, yf + .5f)
+                                .SetTexture(_res.Index, x, y, x + 1, y + 1);
+                            quads.Add(quad);
+                        }
+                        if (y == heigth - 1 || buffer[((y + 1) * heigth + x) * 4 + 3] < 249)
+                        {
+                            // Низ
+                            quad = new QuadSide();
+                            quad.SetSide(Pole.South, false, xf, 0, yf, xf + .5f, h, yf + .5f)
+                                .SetTexture(_res.Index, x, y, x + 1, y + 1);
+                            quads.Add(quad);
+                        }
+                        if (x == 0 || buffer[(y * heigth + x - 1) * 4 + 3] < 249)
+                        {
+                            // Лево
+                            quad = new QuadSide();
+                            quad.SetSide(Pole.West, false, xf, 0, yf, xf + .5f, h, yf + .5f)
+                                .SetTexture(_res.Index, x, y, x + 1, y + 1);
+                            quads.Add(quad);
+                        }
+                        if (x == width - 1 || buffer[(y * heigth + x + 1) * 4 + 3] < 249)
+                        {
+                            // Лево
+                            quad = new QuadSide();
+                            quad.SetSide(Pole.East, false, xf, 0, yf, xf + .5f, h, yf + .5f)
+                                .SetTexture(_res.Index, x, y, x + 1, y + 1);
+                            quads.Add(quad);
+                        }
+                    }
+                }
+            }
+
+            // Вверх
+            quad = new QuadSide();
+            quad.SetSide(Pole.Up, false, min, h, min, max, h, max).SetTexture(_res.Index,
+                0, 0, width, heigth);
+            quads.Add(quad);
+
+            // Низ
+            quad = new QuadSide();
+            quad.SetSide(Pole.Down, false, min, 0, min, max, 0, max).SetTexture(_res.Index,
+                0, heigth, width, 0);
+            quads.Add(quad);
+
+            // Количество квадов на модели в мире
+            //Console.WriteLine(_alias + " " + quads.Count);
+
+            return Convert(quads.ToArray());
         }
 
         /// <summary>
