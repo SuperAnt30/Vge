@@ -1,0 +1,40 @@
+{
+    Texture: {
+        T0: "Items/Tools/AxeStone"
+    },
+    Elements: [
+        {   From: [-1, 0, -1],
+            To: [1, 22, 1],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0, 0, 2, 16]},
+                { Texture:"T0", Side:"East", Uv:[0, 0, 2, 16]},
+                { Texture:"T0", Side:"South", Uv:[0, 0, 2, 16]},
+                { Texture:"T0", Side:"West", Uv:[0, 0, 2, 16]},
+                { Texture:"T0", Side:"Up", Uv:[2, 0, 4, 2]},
+                { Texture:"T0", Side:"Down", Uv:[2, 0, 4, 2]}
+            ]
+        },
+        {   From: [1, 15.5, -3.5],
+            To: [4, 21, 3.5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[6, 5, 9, 10.5]},
+                { Texture:"T0", Side:"East", Uv:[3, 10.5, 10, 16]},
+                { Texture:"T0", Side:"South", Uv:[6, 5, 9, 10.5]},
+                { Texture:"T0", Side:"West", Uv:[3, 10.5, 10, 16]},
+                { Texture:"T0", Side:"Up", Uv:[3, 3.5, 6, 10.5]},
+                { Texture:"T0", Side:"Down", Uv:[3, 3.5, 6, 10.5]}
+            ]
+        },
+        {   From: [-1.5, 15, -2],
+            To: [4.5, 21.5, 2],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[10, 9.5, 16, 16]},
+                { Texture:"T0", Side:"East", Uv:[12, 3, 16, 9.5]},
+                { Texture:"T0", Side:"South", Uv:[16, 9.5, 10, 16]},
+                { Texture:"T0", Side:"West", Uv:[12, 3, 16, 9.5]},
+                { Texture:"T0", Side:"Up", Uv:[6, 0, 12, 4]},
+                { Texture:"T0", Side:"Down", Uv:[6, 0, 12, 4]}
+            ]
+        }
+    ]
+}

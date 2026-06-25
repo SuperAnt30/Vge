@@ -49,6 +49,12 @@ namespace Mvk2.Item
         /// Техническая палочка, для отладки
         /// </summary>
         public static ItemStickTechnical StickTechnical { get; private set; }
+
+
+        /// <summary>
+        /// Каменный топор
+        /// </summary>
+        public static ItemAbTool AxeStone { get; private set; }
         /// <summary>
         /// Железный топор
         /// </summary>
@@ -187,7 +193,9 @@ namespace Mvk2.Item
 
             // Tools
             ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical(), "Tools");
+
             
+            ItemsReg.RegisterItemClass("AxeStone", AxeStone = new ItemAxe(), "Tools");
             ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe(), "Tools");
             ItemsReg.RegisterItemClass("AxeSteel", AxeSteel = new ItemAxe(), "Tools");
             ItemsReg.RegisterItemClass("AxeRed", AxeRed = new ItemAxe(), "Tools");
