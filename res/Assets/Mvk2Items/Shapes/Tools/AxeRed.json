@@ -1,7 +1,6 @@
 {
     Parent: "Tools/AxeIron",
     Texture: {
-        T0: "Items/Tools/AxeSteel",
-        T1: "Items/Tools/AxeHandleRed"
+        T0: "Items/Tools/AxeRed"
     }
 }
