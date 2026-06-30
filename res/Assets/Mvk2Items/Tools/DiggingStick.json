@@ -1,0 +1,10 @@
+{
+    Parent: "Tools/ShovelIron",
+    MaxDamage: 1000,
+    Damage: 1.5,
+    Pause: 6,
+    Acceleration: 1.0,
+    Level: 1,
+    Shape: "Tools/DiggingStick",
+    SpriteGui: "Items/Tools/SpriteDiggingStick"
+}

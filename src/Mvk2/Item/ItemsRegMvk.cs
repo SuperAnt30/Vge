@@ -50,11 +50,15 @@ namespace Mvk2.Item
         /// </summary>
         public static ItemStickTechnical StickTechnical { get; private set; }
 
-
         /// <summary>
         /// Каменный топор
         /// </summary>
         public static ItemAbTool AxeStone { get; private set; }
+        /// <summary>
+        /// Палка-копалка
+        /// </summary>
+        public static ItemAbTool DiggingStick { get; private set; }
+        
         /// <summary>
         /// Железный топор
         /// </summary>
@@ -67,6 +71,7 @@ namespace Mvk2.Item
         /// Железная кирка
         /// </summary>
         public static ItemAbTool PickaxeIron { get; private set; }
+
         /// <summary>
         /// Стальной топор
         /// </summary>
@@ -79,10 +84,20 @@ namespace Mvk2.Item
         /// Стальная кирка
         /// </summary>
         public static ItemAbTool PickaxeSteel { get; private set; }
+
         /// <summary>
         /// Красный фирменный топор
         /// </summary>
         public static ItemAbTool AxeRed { get; private set; }
+        /// <summary>
+        /// Красная фирменная лопата
+        /// </summary>
+        public static ItemAbTool ShovelRed { get; private set; }
+        /// <summary>
+        /// Красная фирменная кирка
+        /// </summary>
+        public static ItemAbTool PickaxeRed { get; private set; }
+
 
         #endregion
 
@@ -194,18 +209,19 @@ namespace Mvk2.Item
             // Tools
             ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical(), "Tools");
 
-            
-            ItemsReg.RegisterItemClass("AxeStone", AxeStone = new ItemAxe(), "Tools");
+            ItemsReg.RegisterItemClass("AxeStone", AxeStone = new ItemAxeStone(), "Tools");
             ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe(), "Tools");
             ItemsReg.RegisterItemClass("AxeSteel", AxeSteel = new ItemAxe(), "Tools");
             ItemsReg.RegisterItemClass("AxeRed", AxeRed = new ItemAxe(), "Tools");
 
+            ItemsReg.RegisterItemClass("DiggingStick", DiggingStick = new ItemShovel(), "Tools");
             ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel(), "Tools");
             ItemsReg.RegisterItemClass("ShovelSteel", ShovelSteel = new ItemShovel(), "Tools");
+            ItemsReg.RegisterItemClass("ShovelRed", ShovelRed = new ItemShovel(), "Tools");
 
             ItemsReg.RegisterItemClass("PickaxeIron", PickaxeIron = new ItemPickaxe(), "Tools");
             ItemsReg.RegisterItemClass("PickaxeSteel", PickaxeSteel = new ItemPickaxe(), "Tools");
-            
+            ItemsReg.RegisterItemClass("PickaxeRed", PickaxeRed = new ItemPickaxe(), "Tools");
 
             ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());

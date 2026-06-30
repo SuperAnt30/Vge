@@ -6,9 +6,9 @@ using Vge.World.Block;
 namespace Mvk2.Item.List.Tool
 {
     /// <summary>
-    /// Предмет кирка
+    /// Предмет каменный топор, он же имеет смесь как кирка
     /// </summary>
-    public class ItemPickaxe : ItemAbTool
+    public class ItemAxeStone : ItemAbTool
     {
         /// <summary>
         /// Действие предмета ЛКМ.
@@ -22,6 +22,8 @@ namespace Mvk2.Item.List.Tool
                 // Опции для возможности копать, можно проверить типа блока player.MovingObject.Block
                 BlockBase block = player.MovingObject.Block.GetBlock();
                 if (player.CanDestroyedBlock(block) 
+                    || block.Material.IndexMaterial == (int)EnumMaterial.Wood
+                    || block.Material.IndexMaterial == (int)EnumMaterial.Branch
                     || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {
                     return new ResultHandAction(_pause, _acceleration);

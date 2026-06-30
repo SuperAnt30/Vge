@@ -1,6 +1,6 @@
 {
     Parent: "Tools/PickaxeIron",
     Texture: {
-        T0: "Items/Tools/PickaxeSteel"
+        T0: "Items/Tools/PickaxeRed"
     }
 }

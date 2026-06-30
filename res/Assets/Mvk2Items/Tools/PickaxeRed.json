@@ -1,0 +1,10 @@
+{
+    Parent: "Tools/PickaxeIron",
+    MaxDamage: 10000,
+    Damage: 4.5,
+    Pause: 4,
+    Acceleration: 0.5,
+    Level: 4,
+    Shape: "Tools/PickaxeRed",
+    SpriteGui: "Items/Tools/SpritePickaxeRed"
+}

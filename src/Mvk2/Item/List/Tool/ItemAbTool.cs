@@ -73,7 +73,7 @@ namespace Mvk2.Item.List.Tool
             _toolTip = _toolTip + ChatStyle.Br + "-" + ChatStyle.Br
                 + "Level {0}" + ChatStyle.Br
                 + "Damage {1}" + ChatStyle.Br
-                + "{2}";
+                + "{2} [{3} {4}]";
         }
 
         /// <summary>
@@ -83,7 +83,8 @@ namespace Mvk2.Item.List.Tool
         public override string GetToolTip(ItemStack stack)
             => string.Format(_toolTip, 
                 Level, _damage,
-                stack.ToStringDamaged());
+                stack.ToStringDamaged(),
+                _pause, _acceleration);
 
         /// <summary>
         /// Получить урон для атаки предметом который в руке

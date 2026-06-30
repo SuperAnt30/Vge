@@ -53,6 +53,7 @@ namespace Mvk2.Item
             List<ItemStack> tabTools = new List<ItemStack>();
             tabTools.Add(new ItemStack(ItemsRegMvk.StickTechnical));
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeStone));
+            tabTools.Add(new ItemStack(ItemsRegMvk.DiggingStick));
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron));
             tabTools.Add(new ItemStack(ItemsRegMvk.ShovelIron));
             tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeIron));
@@ -60,7 +61,9 @@ namespace Mvk2.Item
             tabTools.Add(new ItemStack(ItemsRegMvk.ShovelSteel));
             tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeSteel));
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeRed));
-            
+            tabTools.Add(new ItemStack(ItemsRegMvk.ShovelRed));
+            tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeRed));
+
 
             // Раздел одежда
             List<ItemStack> tabCloth = new List<ItemStack>();

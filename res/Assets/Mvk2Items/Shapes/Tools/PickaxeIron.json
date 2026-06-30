@@ -1,0 +1,62 @@
+{
+    Texture: {
+        T0: "Items/Tools/PickaxeIron"
+    },
+    Elements: [
+        {   From: [-1, 0, -1.5],
+            To: [1, 16.5, 1.5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[3, 0.5, 5, 16]},
+                { Texture:"T0", Side:"East", Uv:[0, 0.5, 3, 16]},
+                { Texture:"T0", Side:"South", Uv:[3, 0.5, 5, 16]},
+                { Texture:"T0", Side:"West", Uv:[0, 0.5, 3, 16]},
+                { Texture:"T0", Side:"Down", Uv:[7, 0, 5, 3]}
+            ]
+        },
+        {   From: [-1, 21.5, -1.8],
+            To: [1, 22, 1.8],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[3, 0, 5, 0.5]},
+                { Texture:"T0", Side:"East", Uv:[0, 0, 3.5, 0.5]},
+                { Texture:"T0", Side:"South", Uv:[3, 0, 5, 0.5]},
+                { Texture:"T0", Side:"West", Uv:[0, 0, 3.5, 0.5]},
+                { Texture:"T0", Side:"Up", Uv:[7, 6.5, 5, 3]}
+            ]
+        },
+        {   From: [-2, 16.5, -2.5],
+            To: [2, 21.5, 2.5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[12, 0, 16, 5]},
+                { Texture:"T0", Side:"East", Uv:[7, 0, 12, 5]},
+                { Texture:"T0", Side:"South", Uv:[12, 0, 16, 5]},
+                { Texture:"T0", Side:"West", Uv:[7, 0, 12, 5]},
+                { Texture:"T0", Side:"Up", Uv:[11, 10, 7, 5]},
+                { Texture:"T0", Side:"Down", Uv:[11, 5, 7, 10]}
+            ]
+        },
+        {   From: [-1.5, 18, 1.5],
+            To: [1.5, 20, 10.5],
+            Rotate: [15, 0, 0],
+            Origin: [0, 19, 2],
+            Faces: [
+                { Texture:"T0", Side:"East", Uv:[7, 14, 16, 16]},
+                { Texture:"T0", Side:"South", Uv:[7, 12, 10, 14]},
+                { Texture:"T0", Side:"West", Uv:[16, 14, 7, 16]},
+                { Texture:"T0", Side:"Up", Uv:[16, 5, 13, 14]},
+                { Texture:"T0", Side:"Down", Uv:[16, 14, 13, 5]}
+            ]
+        },
+        {   From: [-1.5, 16, -10.5],
+            To: [1.5, 18, -1.5],
+            Rotate: [-15, 0, 0],
+            Origin: [0, 16, -10],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[7, 12, 10, 14]},
+                { Texture:"T0", Side:"East", Uv:[16, 14, 7, 16]},
+                { Texture:"T0", Side:"West", Uv:[7, 14, 16, 16]},
+                { Texture:"T0", Side:"Up", Uv:[16, 14, 13, 5]},
+                { Texture:"T0", Side:"Down", Uv:[16, 5, 13, 14]}
+            ]
+        }
+    ]
+}

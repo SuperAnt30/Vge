@@ -1,6 +1,6 @@
 {
     Parent: "Tools/ShovelIron",
     Texture: {
-        T0: "Items/Tools/ShovelSteel"
+        T0: "Items/Tools/ShovelRed"
     }
 }

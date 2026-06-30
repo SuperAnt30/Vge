@@ -1,13 +1,10 @@
 {
-    MaxStackSize: 1,
-    MaxDamage: 500,
-    SlotClothIndex: 1,
-    Width: 0.5625,
-    Height: 0.1875,
+    Parent: "Tools/ShovelIron",
+    MaxDamage: 8000,
+    Damage: 3.5,
+    Pause: 5,
+    Acceleration: 0.5,
+    Level: 3,
     Shape: "Tools/ShovelSteel",
-    #ShapeGui: "Shovel",
-    SpriteGui: "Items/Tools/SpriteShovel",
-    View: { Rotate:[-90, 0, -45], Offset:[-5, 1, 5] },
-    #ViewGui: { Rotate:[0, -180, 45], Offset:[-7.5, -11.5, 0], Scale: 0.75 },
-    ViewHold: { Offset:[0, 4, 0] }
+    SpriteGui: "Items/Tools/SpriteShovelSteel"
 }
