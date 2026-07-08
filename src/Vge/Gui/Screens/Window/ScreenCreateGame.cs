@@ -23,9 +23,9 @@ namespace Vge.Gui.Screens
             _InitTitle(); // Обновить заголовок
             FontBase font = window.Render.FontMain;
 
-            _labelSeed = new Label(window, font, 128, 24, L.T("Seed"));
+            _labelSeed = new Label(window, font, 64, 24, L.T("Seed"));
             _labelSeed.SetTextAlight(EnumAlight.Right, EnumAlightVert.Middle);
-            _textBoxSeed = new TextBox(window, font, 128, "", TextBox.EnumRestrictions.Number);
+            _textBoxSeed = new TextBox(window, font, 192, "", TextBox.EnumRestrictions.Number);
 
             _buttonCreate = new ButtonThin(window, font, 128, L.T("Create"));
             _buttonCreate.Click += ButtonCreate_Click;
@@ -89,7 +89,7 @@ namespace Vge.Gui.Screens
             base._OnResized();
 
             _labelSeed.SetPosition(PosX + 26, PosY + 66);
-            _textBoxSeed.SetPosition(PosX + 166, PosY + 66);
+            _textBoxSeed.SetPosition(PosX + 102, PosY + 66);
 
             _buttonCreate.SetPosition(PosX + 26, PosY + 156);
             _buttonCancel.SetPosition(PosX + 166, PosY + 156);
