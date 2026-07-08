@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Vge.Util
 {
@@ -22,7 +23,7 @@ namespace Vge.Util
         /// <summary>
         /// Получает частоту таймера в виде количества тактов в милисекунду
         /// </summary>
-        private readonly long _timerFrequency;
+        private static readonly long _timerFrequency = Stopwatch.Frequency / 1000;
         /// <summary>
         /// Оглавление перед сообщением
         /// </summary>
@@ -36,7 +37,6 @@ namespace Vge.Util
         {
             Log = log;
             _prefix = prefix;
-            _timerFrequency = Stopwatch.Frequency / 1000;
             _stopwatch.Start();
         }
 
@@ -89,5 +89,23 @@ namespace Vge.Util
             EndSection(stepTime);
             StartSection(name);
         }
+
+
+        // ====== Static Console =======
+
+
+        private static readonly Stopwatch _stopwatchStatic = new Stopwatch();
+
+        public static void StartConsole()
+        {
+            _stopwatchStatic.Restart();
+        }
+
+        public static void StopConsole(string name)
+        {
+            _stopwatchStatic.Stop();
+            Console.WriteLine(name + " " + _stopwatchStatic.ElapsedTicks / (float)_timerFrequency);
+        }
+
     }
 }

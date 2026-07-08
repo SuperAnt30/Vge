@@ -588,6 +588,36 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Заполнить список сущностей конкретного типа, которые могут находится в секторах чанка
+        /// </summary>
+        /// <param name="id">исключение ID сущности</param>
+        /// <param name="indexEntity">Индекс тип сущности, полученый на сервере из таблицы</param>
+        public void FillInEntityBoundingBoxesFromSectorType(ListFast<EntityBase> list,
+            AxisAlignedBB aabb, int minY, int maxY, int id, int indexEntity)
+        {
+            EntityBase entity;
+            MapEntity<EntityBase> entityMap;
+            int count;
+            for (int cy = minY; cy <= maxY; cy++)
+            {
+                entityMap = ListEntitiesSection[cy];
+                count = entityMap.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    entity = entityMap.GetAt(i);
+                    if (entity.IndexEntity == indexEntity && entity.Id != id && !entity.IsDead)
+                    {
+                        if (entity.Size.IntersectsWith(aabb))
+                        {
+                            // Если пересекается вносим в список
+                            list.Add(entity);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Имеется ли сущность, которые могут находится в секторах чанка
         /// </summary>
         /// <param name="id">исключение ID сущности</param>

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Vge.Entity.AI;
 using Vge.Entity.AI.PathFinding;
+using Vge.Entity.Player;
 using Vge.Network.Packets.Server;
 using Vge.World;
 
@@ -23,6 +24,10 @@ namespace Vge.Entity
         public int MaxFallHeight { get; protected set; } = 1;
 
         /// <summary>
+        /// Сколько тиков эта сущность прожила
+        /// </summary>
+        public int TicksExisted { get; protected set; } = 0;
+        /// <summary>
         /// Объект для вращения сущности AI
         /// </summary>
         public EntityLookHelper LookHelper { get; protected set; }
@@ -37,7 +42,20 @@ namespace Vge.Entity
         /// <summary>
         /// Пасивные задачи (бродить, смотреть, бездельничать, ...)
         /// </summary>
-        //protected EntityAITasks _tasks;
+        protected EntityAITasks _tasks;
+
+        /// <summary>
+        /// Получает активную цель, которую система задач использует для отслеживания
+        /// </summary>
+        public EntityLiving AttackTarget;
+        /// <summary>
+        /// Последний атакующий
+        /// </summary>
+        private EntityLiving _lastAttacker;
+        /// <summary>
+        /// Содержит значение TicksExisted при последнем вызове SetLastAttacker
+        /// </summary>
+        private int _lastAttackerTime;
 
         /// <summary>
         /// Инициализация навигации
@@ -56,8 +74,7 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitServer()
         {
-            //tasks = new EntityAITasks(world);
-            //targetTasks = new EntityAITasks(world);
+            _tasks = new EntityAITasks();
             LookHelper = new EntityLookHelper(this);
             MoveHelper = new EntityMoveHelper(this);
             Navigator = _InitNavigate(GetWorldServer());
@@ -83,25 +100,33 @@ namespace Vge.Entity
         public override bool CanBeCollidedWith() => true;
 
         /// <summary>
+        /// Определяет, может ли объект исчезнуть, использовать его на бездействующих удаленных объектах.
+        /// К примеру монстр с предметом уже не исчезнет
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _CanDespawn() => true;
+
+        /// <summary>
         /// Игровой такт на сервере
         /// </summary>
         public override void Update()
         {
+            TicksExisted++;
             // Обновление урона
             Damage?.Update();
 
             if (!_IsMovementBlocked())
             {
                 // ИИ
-                _worldServer.Filer.StartSection("Ai");
+                _worldServer.Filer.StartSection("Ai " + Ce.Entities.EntitiesAlias[IndexEntity]);
                 EntityAge++;
 
                 // Диспавн моба.
-                //DespawnEntity();
+                _DespawnEntity();
                 // Ощущение. (senses)
 
                 // Определение цели
-                //tasks.OnUpdateTasks();
+                _tasks.OnUpdateTasks();
                 // Навигация. Расчёт следующего шага до точки прибытия в навигации
                 Navigator.OnUpdateNavigation();
                 // Задачи моба. 
@@ -149,9 +174,92 @@ namespace Vge.Entity
                     LevelMotionChange = 2;
                 }
             }
-            _UpdateTest();
         }
 
-        protected virtual void _UpdateTest() { }
+
+        /// <summary>
+        /// Заставляет сущность исчезать, если требования выполнены
+        /// </summary>
+        private void _DespawnEntity()
+        {
+            if (_persistenceRequired && !_CanDespawn())
+            {
+                EntityAge = 0;
+            }
+            else
+            {
+                PlayerServer entityPlayer = GetWorldServer().GetClosestPlayerToEntity(this, -1f);
+                if (entityPlayer != null)
+                {
+                    float k = entityPlayer.DistanceSqToEntity(this);
+                    // 16384 это растояние примерно 128
+                    // 25600 это растояние примерно 160
+                    if (k > 25600)
+                    {
+                        SetDead();
+                    }
+                    // 1024 это растояние примерно 32
+                    // 2304 это растояние примерно 48
+                    if (EntityAge > 600 && k > 2304 && GetWorldServer().Rnd.Next(800) == 0)
+                    {
+                        SetDead();
+                    }
+
+                    if (k < 2304)
+                    {
+                        EntityAge = 0;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сущность которая последняя атаковала
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public EntityLiving GetAITarget() => _lastAttacker != null
+            && TicksExisted - _lastAttackerTime < 400 ? _lastAttacker : null;
+
+        /// <summary>
+        /// Задать сущность которая последняя атаковала
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetLastAttacker(EntityLiving entity)
+        {
+            _lastAttacker = entity;
+            _lastAttackerTime = TicksExisted;
+        }
+
+        /// <summary>
+        /// Обновить время агрессии на текущую сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UpLastAttacker() => _lastAttackerTime = TicksExisted;
+
+        /// <summary>
+        /// Будет уничтожен следующим тиком
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void SetDead()
+        {
+            base.SetDead();
+            // Тут надо пробежаться по всем сущностям и оповестить о смерти
+            GetWorldServer()?.AboutAllEntitesToDead(this);
+        }
+
+        /// <summary>
+        /// Объявить сущности о смерте тикущей сущности
+        /// </summary>
+        public override void AboutToDead(EntityMob entityMob)
+        {
+            if (AttackTarget != null && AttackTarget.Id == entityMob.Id)
+            {
+                AttackTarget = null;
+            }
+            if (_lastAttacker != null && _lastAttacker.Id == entityMob.Id)
+            {
+                _lastAttacker = null;
+            }
+        }
     }
 }

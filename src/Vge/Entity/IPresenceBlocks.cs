@@ -10,8 +10,16 @@ namespace Vge.Entity
         /// <summary>
         /// Находится ли в воде
         /// </summary>
-        bool IsInWater { get; }
+       // bool IsInWater { get; }
 
+        /// <summary>
+        /// Можно ли всплыть
+        /// </summary>
+        bool IsSurface { get; }
+        /// <summary>
+        /// Можно ли прыгнуть в жидкости
+        /// </summary>
+        bool IsJumpLiquid { get; }
         /// <summary>
         /// Находится ли в любой из жидкостей
         /// </summary>

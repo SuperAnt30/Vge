@@ -264,15 +264,46 @@ namespace Vge.World
             {
                 for (zc = minCz; zc <= maxCz; zc++)
                 {
-                    ChunkBase chunk = World.GetChunk(xc, zc);
-                    // Не надо отрабатывать null, для этого есть отработка в статике
-                    if (chunk != null)
-                    {
-                        chunk.FillInEntityBoundingBoxesFromSector(ListEntity, aabb, minCY, maxCY, id);
-                    }
+                    World.GetChunk(xc, zc)?.FillInEntityBoundingBoxesFromSector(
+                        ListEntity, aabb, minCY, maxCY, id);
                 }
             }
         }
+
+        /// <summary>
+        /// Собрать список одного типа сущностей, которые могут сталкиваются с aabb из секторов чанка,
+        /// </summary>
+        /// <param name="aabb">проверяемая рамка</param>
+        /// <param name="id">исключение ID сущности</param>
+        /// <param name="indexEntity">Индекс тип сущности, полученый на сервере из таблицы</param>
+        public void EntityBoundingBoxesFromSectorType(AxisAlignedBB aabb, int id, int indexEntity)
+        {
+            ListEntity.Clear();
+            Vector3i min = aabb.MinInt() - 2;
+            Vector3i max = aabb.MaxInt() + 2;
+
+            int minCx = min.X >> 4;
+            int minCz = min.Z >> 4;
+            int maxCx = max.X >> 4;
+            int maxCz = max.Z >> 4;
+            int minCY = min.Y;
+            if (minCY < 0) minCY = 0; else if (minCY > _numberBlocks) minCY = _numberBlocks;
+            minCY = minCY >> 4;
+            int maxCY = max.Y;
+            if (maxCY < 0) maxCY = 0; else if (maxCY > _numberBlocks) maxCY = _numberBlocks;
+            maxCY = maxCY >> 4;
+
+            int xc, zc;
+            for (xc = minCx; xc <= maxCx; xc++)
+            {
+                for (zc = minCz; zc <= maxCz; zc++)
+                {
+                    World.GetChunk(xc, zc)?.FillInEntityBoundingBoxesFromSectorType(
+                        ListEntity, aabb, minCY, maxCY, id, indexEntity);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Имеется ли хоть одна сущность, которые могут сталкиваются с aabb из секторов чанка,

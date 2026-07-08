@@ -278,17 +278,7 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual float GetEyeHeight() => SizeLiving.GetEye();
 
-        /// <summary>
-        /// Максимальное значение здоровья сущности
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual float _GetHelathMax() => 10;
-
-        /// <summary>
-        /// Мертвые и спящие существа не могут двигаться
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual bool _IsMovementBlocked() => GetHealth() <= 0f;
+        
 
         #endregion
 
@@ -371,6 +361,10 @@ namespace Vge.Entity
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Sitting() { }
 
+        #endregion
+
+        #region Helath
+
         /// <summary>
         /// Уровень здоровья
         /// </summary>
@@ -380,7 +374,43 @@ namespace Vge.Entity
         /// <summary>
         /// Задать уровень здоровья
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetHealth(float health) => MetaData.UpdateObject(1, Mth.Clamp(health, 0, _GetHelathMax()));
+
+        /// <summary>
+        /// Максимальное значение здоровья сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual float _GetHelathMax() => 10;
+
+        /// <summary>
+        /// Мертвые и спящие существа не могут двигаться
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _IsMovementBlocked() => GetHealth() <= 0f;
+
+        /// <summary>
+        /// Максимальное ли здоровье
+        /// </summary>
+        public bool IsHealthMax() => GetHealth() == _GetHelathMax();
+        /// <summary>
+        /// Увеличить хп
+        /// </summary>
+        public bool HealthAdd(int amount)
+        {
+            float health = GetHealth();
+            if (health > 0)
+            {
+                float healthNew = health + amount;
+                if (healthNew > _GetHelathMax()) healthNew = _GetHelathMax();
+                if (health != healthNew)
+                {
+                    SetHealth(healthNew);
+                    return true;
+                }
+            }
+            return false;
+        }
 
         #endregion
 

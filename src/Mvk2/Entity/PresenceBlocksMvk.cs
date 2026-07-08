@@ -24,8 +24,16 @@ namespace Mvk2.Entity
         /// <summary>
         /// Находится ли в воде
         /// </summary>
-        public bool IsInWater { get; private set; }
+       // public bool IsInWater { get; private set; }
 
+        /// <summary>
+        /// Можно ли всплыть
+        /// </summary>
+        public bool IsSurface { get; private set; }
+        /// <summary>
+        /// Можно ли прыгнуть в жидкости
+        /// </summary>
+        public bool IsJumpLiquid { get; private set; }
         /// <summary>
         /// Находится ли в любой из жидкостей
         /// </summary>
@@ -147,17 +155,21 @@ namespace Mvk2.Entity
                         }
                     }
                 }
+                _CheckSurface(world);
             }
             else
             {
                 // Точка, проверяем по позиции
                 BlockPos blockPos = new BlockPos(Entity.PosX, Entity.PosY, Entity.PosZ);
                 _CheckBlock(world, blockPos, world.GetBlockState(blockPos));
+                IsJumpLiquid = IsSurface = IsInLiquid;
             }
         }
 
         private void _EmptyBlocks()
         {
+            IsJumpLiquid = false;
+            IsSurface = false;
             IsInLiquid = false;
             IsImpulse = false;
             IsSlow = false;
@@ -167,6 +179,30 @@ namespace Mvk2.Entity
                 if (_numberAutoJump == 0)
                 {
                     IsInLiquidAutoJump = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Определения Статусов возможности всплыть и прыжка в жидкости
+        /// </summary>
+        /// <param name="world"></param>
+        private void _CheckSurface(WorldBase world)
+        {
+            if (IsInLiquid)
+            {
+                BlockPos blockPos = new BlockPos(Entity.PosX,
+                        Entity.PosY + Entity.Size.GetHeight() * PhysicsGround.FactorJumpLiquid, Entity.PosZ);
+                IsSurface = world.GetBlockState(blockPos).GetBlock().Material.Liquid;
+                if (IsSurface)
+                {
+                    IsJumpLiquid = false;
+                }
+                else
+                {
+                    blockPos = new BlockPos(Entity.PosX,
+                            Entity.PosY + Entity.Size.GetHeight() * PhysicsGround.FactorJumpLiquid * .5f, Entity.PosZ);
+                    IsJumpLiquid = !world.GetBlockState(blockPos).GetBlock().Material.Liquid;
                 }
             }
         }

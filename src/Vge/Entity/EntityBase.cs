@@ -395,6 +395,30 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Возвращает квадрат расстояния до объекта
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float DistanceSqToEntity(EntityBase entityIn)
+        {
+            float x = PosX - entityIn.PosX;
+            float y = PosY - entityIn.PosY;
+            float z = PosZ - entityIn.PosZ;
+            return x * x + y * y + z * z;
+        }
+
+        /// <summary>
+        /// Возвращает квадрат расстояния до координат
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float DistanceSq(float x, float y, float z)
+        {
+            float vx = PosX - x;
+            float vy = PosY - y;
+            float vz = PosZ - z;
+            return vx * vx + vy * vy + vz * vz;
+        }
+
+        /// <summary>
         /// Обновить значения Prev
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -602,6 +626,12 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void SetDead() => IsDead = true;
+
+        /// <summary>
+        /// Объявить сущности о смерте тикущей сущности
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void AboutToDead(EntityMob entityMob) { }
 
         /// <summary>
         /// Получить название для рендеринга

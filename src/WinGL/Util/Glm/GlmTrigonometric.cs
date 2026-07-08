@@ -16,6 +16,10 @@ namespace WinGL.Util
         }
 
         /// <summary>
+        /// Четверть Пи 0.17, аналог 10гр
+        /// </summary>
+        public const float Pi10 = 0.1745329f;
+        /// <summary>
         /// Четверть Пи 0.52, аналог 30гр
         /// </summary>
         public const float Pi30 = 0.5235988f;

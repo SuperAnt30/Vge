@@ -12,6 +12,10 @@ namespace Vge.Entity.Physics
     public class PhysicsGround : PhysicsBase
     {
         /// <summary>
+        /// Коэффициент множетеля для авто прыжка в жидкости дополнение, и запрет всплытия в жидкости
+        /// </summary>
+        public const float FactorJumpLiquid = .75f;
+        /// <summary>
         /// Не прыгаем (момент взлёта)
         /// </summary>
         private bool _isNotJump;
@@ -257,6 +261,11 @@ namespace Vge.Entity.Physics
                 float monCacheZ = z;
 
                 float heightAutoJump = _heightAutoJump;
+
+                if (Entity.PresenceBlocks.IsInLiquidAutoJump)
+                {
+                    heightAutoJump += Entity.Size.GetHeight() * FactorJumpLiquid;
+                }
                 // Если сидим авто прыжок в двое ниже
                 if (_IsMovementSneak())
                 {

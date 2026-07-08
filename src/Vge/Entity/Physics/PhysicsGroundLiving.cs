@@ -56,7 +56,7 @@ namespace Vge.Entity.Physics
 
             if (Movement.Jump)
             {
-                if (Entity.PresenceBlocks.IsInLiquid)
+                if (Entity.PresenceBlocks.IsSurface)
                 {
                     // Находимся в жидкости, всплываем
                     MotionY += Entity.PresenceBlocks.AccelerationAscentInLiquid;
@@ -69,13 +69,23 @@ namespace Vge.Entity.Physics
                         //Console.WriteLine("Jump");
                         //jumpBegin = new Vector2(Entity.PosX, Entity.PosZ);
                         _jumpTicks = Cp.ReJump;
-                        MotionY = Cp.AirborneJumpInHeight;
-
-                        if (isSprintingPrev)
+                        if (Entity.PresenceBlocks.IsInLiquid)
                         {
-                            // Если прыжок с бегом, то скорость увеличивается
-                            MotionX += Glm.Sin(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
-                            MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                            MotionY = Entity.PresenceBlocks.IsJumpLiquid
+                                ? (Entity.PresenceBlocks.AccelerationAscentInLiquid 
+                                + Cp.AirborneJumpInHeight + Cp.AirborneJumpInHeight) / 3f
+                                : Entity.PresenceBlocks.AccelerationAscentInLiquid;
+                        }
+                        else
+                        {
+                            MotionY = Cp.AirborneJumpInHeight;
+
+                            if (isSprintingPrev)
+                            {
+                                // Если прыжок с бегом, то скорость увеличивается
+                                MotionX += Glm.Sin(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                                MotionZ -= Glm.Cos(_entityLiving.RotationYaw) * Cp.AirborneJumpInLength;
+                            }
                         }
                     }
                 }

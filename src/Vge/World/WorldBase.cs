@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
@@ -426,6 +425,23 @@ namespace Vge.World
         /// </summary>
         protected virtual void _FlagDebugChunkProviderServer() { }
 
+        /// <summary>
+        /// Объявить всем сущностям о смерте тикущей сущности
+        /// </summary>
+        public void AboutAllEntitesToDead(EntityMob entityMob)
+        {
+            // Пробегаем по всем сущностям и обрабатываеи их такт
+            for (int i = 0; i < LoadedEntityList.Count; i++)
+            {
+                EntityBase entity = LoadedEntityList.GetAt(i);
+
+                if (entity != null && !entity.IsDead && entity.Id != entityMob.Id)
+                {
+                    entity.AboutToDead(entityMob);
+                }
+            }
+        }
+
         #endregion
 
         #region Entity Particle
@@ -470,8 +486,6 @@ namespace Vge.World
         public virtual void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0) { }
 
         #endregion
-
-        
 
         /// <summary>
         /// Для отладки
