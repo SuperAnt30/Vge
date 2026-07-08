@@ -1,5 +1,4 @@
-﻿using System;
-using Vge.Util;
+﻿using Vge.Util;
 using Vge.World;
 using WinGL.Util;
 
@@ -18,6 +17,10 @@ namespace Vge.Entity.Physics
         /// Количество тактов для запрета повторного прыжка
         /// </summary>
         private int _jumpTicks = 0;
+        /// <summary>
+        /// Количество тактов для запрета всплытия
+        /// </summary>
+        private int _surfaceTicks = 0;
 
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
@@ -43,6 +46,8 @@ namespace Vge.Entity.Physics
         //    }
         //}
 
+
+        
         /// <summary>
         /// Проверяем наличие прыжка для живой сущности
         /// </summary>
@@ -56,13 +61,18 @@ namespace Vge.Entity.Physics
 
             if (Movement.Jump)
             {
+                _surfaceTicks++;
                 if (Entity.PresenceBlocks.IsSurface)
                 {
-                    // Находимся в жидкости, всплываем
-                    MotionY += Entity.PresenceBlocks.AccelerationAscentInLiquid;
+                    if (_surfaceTicks > 5)
+                    {
+                        // Находимся в жидкости, всплываем
+                        MotionY += Entity.PresenceBlocks.AccelerationAscentInLiquid;
+                    }
                 }
                 else
                 {
+                    _surfaceTicks = 0;
                     if (Entity.OnGround && _jumpTicks == 0)
                     {
                         //jump = true;
