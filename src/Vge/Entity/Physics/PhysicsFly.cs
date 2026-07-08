@@ -38,7 +38,7 @@ namespace Vge.Entity.Physics
             // Если мелочь убираем
             ResetMinimumMotion();
 
-            float speed = Cp.Speed;
+            float speed = Entity.Speed;
 
             MotionY += Movement.MoveVertical * speed * Cp.VerticlSpeedFly;
 

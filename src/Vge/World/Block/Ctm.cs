@@ -36,6 +36,10 @@ namespace Vge.World.Block
         /// </summary>
         public const string RootGrowing = "RootGrowing";
         /// <summary>
+        /// Отмечает, может ли Mob по этому блоку перемещаться. (bool)
+        /// </summary>
+        public const string MoveMob = "MoveMob";
+        /// <summary>
         /// Массив семплов разрушения блока. ([string])
         /// </summary>
         public const string SamplesBreak = "SamplesBreak";

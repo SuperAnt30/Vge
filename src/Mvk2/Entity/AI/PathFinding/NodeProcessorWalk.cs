@@ -33,7 +33,11 @@ namespace Mvk2.Entity.AI.PathFinding
         /// <summary>
         /// Следует избегать воды
         /// </summary>
-        private bool _shouldAvoidWater = true;
+        private bool _shouldAvoidWater;
+        /// <summary>
+        /// Следует избегать лавы и огня
+        /// </summary>
+        private bool _shouldAvoidsLavaOrFire;
 
         /// <summary>
         /// Инициализация
@@ -42,6 +46,7 @@ namespace Mvk2.Entity.AI.PathFinding
         {
             base.InitProcessor(world, entity);
             _shouldAvoidWater = AvoidsWater;
+            _shouldAvoidsLavaOrFire = AvoidsLavaOrFire;
         }
 
         /// <summary>
@@ -51,6 +56,7 @@ namespace Mvk2.Entity.AI.PathFinding
         {
             base.PostProcess();
             AvoidsWater = _shouldAvoidWater;
+            AvoidsLavaOrFire = _shouldAvoidsLavaOrFire;
         }
 
         /// <summary>
@@ -72,13 +78,14 @@ namespace Mvk2.Entity.AI.PathFinding
                 y = (int)entity.PosY;
 
                 for (BlockBase block = _world.GetBlockState(new BlockPos(Mth.Floor(entity.PosX), y, Mth.Floor(entity.PosZ))).GetBlock();
-                    block.Material.IndexMaterial == (int)EnumMaterial.Water;
+                    block.Material.Liquid;
                     block = _world.GetBlockState(new BlockPos(Mth.Floor(entity.PosX), y, Mth.Floor(entity.PosZ))).GetBlock())
                 {
                     ++y;
                 }
 
                 AvoidsWater = false;
+                AvoidsLavaOrFire = false;
             }
             else
             {
@@ -160,7 +167,9 @@ namespace Mvk2.Entity.AI.PathFinding
                     // Проверяем что под ногами
                     i = _CheckRowBlocks(x, y - 1, z, _sizeXZ);
 
-                    if ((AvoidsWater && i == -1) || (AvoidsLavaOrFire && i == -3) || i == -2)
+                    if ((AvoidsWater && i == -1) // Избегаем воду
+                        || (AvoidsLavaOrFire && i == -3) // Избегаем лаву
+                        || i == -2) // Избегаем нефть
                     {
                         // Если вода, если избегаем воду или любая опастность (лава, огонь, нефть)
                         return null;

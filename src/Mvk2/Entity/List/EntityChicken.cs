@@ -19,7 +19,7 @@ namespace Mvk2.Entity.List
         public EntityChicken() : base()
         {
             SolidHeadWithBody = false;
-            _persistenceRequired = true;
+           // _persistenceRequired = true;
         }
 
         /// <summary>
@@ -28,6 +28,7 @@ namespace Mvk2.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitSize()
             => Size = SizeLiving = new SizeEntityLiving(this, .3f, .99f, .85f, 6);
+            //=> Size = SizeLiving = new SizeEntityLiving(this, .6f, 3.6f, 3.36f, 80);
 
         /// <summary>
         /// Инициализация физики
@@ -55,13 +56,16 @@ namespace Mvk2.Entity.List
         {
             base._InitServer();
             Damage = new DamageLiving(this);
+            Speed = .05f;
 
             _tasks.AddTask(0, new EntityAISwimming(this));
-            //_tasks.AddTask(4, new EntityAIFollowYour(this, .002f, .6f, 32));
-            //_tasks.AddTask(4, new EntityAIWander(this, .004f, .5f));
-            //_tasks.AddTask(5, new EntityAIWatchClosest(this, 10f));
-            //_tasks.AddTask(6, new EntityAIIncreaseHealth(this));
-            //_tasks.AddTask(6, new EntityAILookIdle(this));
+            _tasks.AddTask(1, new EntityAIPanic(this, 1.6f));
+            _tasks.AddTask(1, new EntityAIFindShore(this, 1.2f));
+            _tasks.AddTask(4, new EntityAIFollowYour(this, .002f, 1.2f, 32));
+            _tasks.AddTask(4, new EntityAIWander(this, .004f));
+            _tasks.AddTask(5, new EntityAIWatchClosest(this, 10f));
+            _tasks.AddTask(6, new EntityAIIncreaseHealth(this));
+            _tasks.AddTask(6, new EntityAILookIdle(this));
         }
 
         /// <summary>

@@ -120,6 +120,10 @@ namespace Vge.Entity
         /// Нельзя на прямую в физику, так-как может меняться физика.
         /// </summary>
         public bool NoClip { get; protected set; }
+        /// <summary>
+        /// Скорость
+        /// </summary>
+        public float Speed { get; protected set; } = .2f;
 
         /// <summary>
         /// Объект физики

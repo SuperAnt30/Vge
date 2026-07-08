@@ -106,6 +106,11 @@ namespace Mvk2.Entity.Damage
                 //{
                 //    World.PlaySound(SampleHurt(), Position, 1, (rand.NextFloat() - rand.NextFloat()) * .2f + 1f);
                 //}
+
+                if (entityAttack != null && _entity is EntityMob entityMob)
+                {
+                    entityMob.SetLastAttacker(entityAttack);
+                }
             }
         }
 

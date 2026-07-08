@@ -1,5 +1,6 @@
 {
     Parent: "_Stone",
+    MoveMob: false,
     Ignites: true,
     Liquid: true
 }

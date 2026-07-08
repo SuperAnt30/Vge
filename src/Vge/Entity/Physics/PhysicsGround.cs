@@ -106,7 +106,8 @@ namespace Vge.Entity.Physics
                 gravity = Entity.PresenceBlocks.FactorGravityInLiquid;
 
                 // Ускорение
-                acceleration = .02f + (_LivingUpdateSpeed() - .02f) * speedEnch;
+                float s = _LivingUpdateSpeed() * .1f;
+                acceleration = s + (_LivingUpdateSpeed() - s) * speedEnch;
             }
             else if (Entity.OnGround && Entity.IsSpeed​​Limit())
             {
@@ -376,7 +377,7 @@ namespace Vge.Entity.Physics
         /// <summary>
         /// Определяем и передаём скорость перемещения для живой сущности
         /// </summary>
-        protected virtual float _LivingUpdateSpeed() => Cp.Speed;
+        protected virtual float _LivingUpdateSpeed() => Entity.Speed;
 
         /// <summary>
         /// Проверяем наличие ускорения для живой сущности, возвращает скорость

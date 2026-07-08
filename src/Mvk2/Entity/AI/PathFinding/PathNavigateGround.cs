@@ -81,7 +81,7 @@ namespace Mvk2.Entity.AI.PathFinding
 
                 do
                 {
-                    if (block.Material.IndexMaterial != (int)EnumMaterial.Water)
+                    if (!block.Material.Liquid)
                     {
                         return y;
                     }
@@ -224,6 +224,7 @@ namespace Mvk2.Entity.AI.PathFinding
                 }
             }
 
+            BlockBase block;
             // Определить что под ногами
             for (int x = x0; x < x0 + sizeX; ++x)
             {
@@ -233,12 +234,12 @@ namespace Mvk2.Entity.AI.PathFinding
                     z2 = z + .5f - pos.Z;
                     if (x2 * vecX + z2 * vecZ >= 0.0f)
                     {
-                        EnumMaterial material = (EnumMaterial)_world.GetBlockState(
-                            new BlockPos(x, posY - 1, z)).GetBlock().Material.IndexMaterial;
-
-                        if (material == EnumMaterial.Air
-                            || (material == EnumMaterial.Water && !_entity.PresenceBlocks.IsInLiquid)
-                            || material == EnumMaterial.Lava || material == EnumMaterial.Oil)
+                        block = _world.GetBlockState(new BlockPos(x, posY - 1, z)).GetBlock();
+                        if (block.IsAir)
+                        {
+                            return false;
+                        }
+                        if (block.Material.Liquid && !_entity.PresenceBlocks.IsInLiquid)
                         {
                             return false;
                         }

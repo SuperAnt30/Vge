@@ -75,7 +75,6 @@
         /// </summary>
         public const string Height = "height";
 
-
         #region Model
 
         /// <summary>

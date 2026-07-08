@@ -153,7 +153,7 @@ namespace Vge.Entity.Physics
         /// </summary>
         protected override float _LivingUpdateSpeed()
         {
-            float speed = Cp.Speed * Movement.MoveSpeed;
+            float speed = Entity.Speed * Movement.MoveSpeed;
             if (Movement.Sprinting)
             {
                 // Если ускорение

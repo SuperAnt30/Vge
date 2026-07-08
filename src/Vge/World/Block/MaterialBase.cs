@@ -43,6 +43,10 @@ namespace Vge.World.Block
         /// Может ли корень дерева при росте заменить этот блок на корень
         /// </summary>
         public bool RootGrowing { get; private set; }
+        /// <summary>
+        /// Может ли Mob по этому блоку перемещаться
+        /// </summary>
+        public bool MoveMob { get; private set; }
 
         /// <summary>
         /// Индексы семплов сломоного блока
@@ -101,6 +105,7 @@ namespace Vge.World.Block
                 if (json.IsKey(Ctm.TurfDoesNotDry)) TurfDoesNotDry = json.GetBool();
                 if (json.IsKey(Ctm.Ignites)) Ignites = json.GetBool();
                 if (json.IsKey(Ctm.RootGrowing)) RootGrowing = json.GetBool();
+                if (json.IsKey(Ctm.MoveMob)) MoveMob = json.GetBool();
                 if (json.IsKey(Ctm.SamplesBreak))
                 {
                     string[] samples = json.GetArray().ToArrayString();
