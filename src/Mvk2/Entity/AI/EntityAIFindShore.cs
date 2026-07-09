@@ -29,7 +29,7 @@ namespace Mvk2.Entity.AI
         private readonly float _speed;
 
         /// <summary>
-        /// Задача бродить
+        /// Задача найти берег
         /// </summary>
         public EntityAIFindShore(EntityMob entity, float speed = 1f)
             : base(entity, 3)

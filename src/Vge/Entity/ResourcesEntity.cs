@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
+using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Entity.Shape;
 using Vge.Json;
@@ -97,7 +98,6 @@ namespace Vge.Entity
                     // Статы
                     //foreach (JsonKeyValue json in state.Items)
                     //{
-                    //    //if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
                     //    //if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
                     //    //if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
                     //    //if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();
