@@ -25,7 +25,7 @@
         public override bool ShouldExecute()
         {
             // Сущность далековато от игрока и шанс
-            if (_entity.EntityAge < 100 && Rnd.NextFloat() < _probability)
+            if (_entity.EntityAge < 200 && Rnd.NextFloat() < _probability)
             {
                 int bxz = 15;
                 int by = 7;

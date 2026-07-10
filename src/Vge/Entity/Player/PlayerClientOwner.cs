@@ -311,13 +311,6 @@ namespace Vge.Entity.Player
 
         #endregion
 
-        #region Действие рук, левый или правый клик
-
-        // TODO::2025-08-07 Временый тест, убрать...
-        public bool TestHandAction;
-
-        #endregion
-
         #region FrustumCulling Camera
 
         /// <summary>

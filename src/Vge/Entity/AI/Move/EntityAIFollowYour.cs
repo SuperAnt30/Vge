@@ -37,7 +37,7 @@ namespace Vge.Entity.AI
         /// </summary>
         public override bool ShouldExecute()
         {
-            if (_entity.EntityAge < 100 && Rnd.NextFloat() < _probability)
+            if (_entity.EntityAge < 200 && Rnd.NextFloat() < _probability)
             {
                 int count = _EntityFromSectorType();
                 if (count > 1)

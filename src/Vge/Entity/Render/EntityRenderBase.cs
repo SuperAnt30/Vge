@@ -10,6 +10,44 @@ namespace Vge.Entity.Render
     public class EntityRenderBase : IDisposable
     {
         /// <summary>
+        /// Строковая анимации, для вызова анимации на клиенте по коду
+        /// </summary>
+        public string AnimationCode { get; protected set; } = "";
+        /// <summary>
+        /// Скорость анимации, для вызова анимации на клиенте по коду
+        /// </summary>
+        public float SpeedAnimationCode { get; protected set; } = 1;
+
+        /// <summary>
+        /// Строковая анимации, для вызова дополнительной анимации на клиенте по коду
+        /// </summary>
+        public string AnimationCodeAdd { get; protected set; } = "";
+        /// <summary>
+        /// Скорость анимации, для вызова дополнительной анимации на клиенте по коду
+        /// </summary>
+        public float SpeedAnimationCodeAdd { get; protected set; } = 1;
+
+        /// <summary>
+        /// Задать анимацию на клиенте по коду
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetAnimationCode(string code, float speed)
+        {
+            AnimationCode = code;
+            SpeedAnimationCode = speed;
+        }
+
+        /// <summary>
+        /// Задать дополнительную анимацию на клиенте по коду
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetAnimationCodeAdd(string code, float speed)
+        {
+            AnimationCodeAdd = code;
+            SpeedAnimationCodeAdd = speed;
+        }
+
+        /// <summary>
         /// Метод для прорисовки
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>

@@ -610,7 +610,7 @@ namespace Vge.Entity.Player
         /// Пакет: анимации игрока
         /// </summary>
         public void PacketPlayerAnimation(PacketC0APlayerAnimation packet)
-            => GetWorldServer().Tracker.SendToAllTrackingEntity(Id, new PacketS0BAnimation(Id, packet.Animation));
+            => GetWorldServer().Tracker.SendToAllTrackingEntity(Id, new PacketS0BAnimation(Id, packet));
 
         /// <summary>
         /// Пакет: кликов по окну и контролам

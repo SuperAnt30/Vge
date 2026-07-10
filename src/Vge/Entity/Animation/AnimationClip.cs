@@ -233,7 +233,14 @@ namespace Vge.Entity.Animation
                 }
                 if (frame.Time > _currentTime)
                 {
-                    return BoneAnimationFrame.Lerp(positionFrames[i - 1], frame, _currentTime);
+                    if (i > 0)
+                    {
+                        return BoneAnimationFrame.Lerp(positionFrames[i - 1], frame, _currentTime);
+                    }
+                    else
+                    {
+                        return _boneAnimationFrameNull;
+                    }
                 }
             }
             return _boneAnimationFrameNull;

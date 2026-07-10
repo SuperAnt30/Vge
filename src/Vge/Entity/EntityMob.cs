@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.AI;
 using Vge.Entity.AI.PathFinding;
 using Vge.Entity.Player;
@@ -121,8 +122,8 @@ namespace Vge.Entity
                 _worldServer.Filer.StartSection("Ai " + Ce.Entities.EntitiesAlias[IndexEntity]);
                 EntityAge++;
 
-                // Диспавн моба.
-                _DespawnEntity();
+                // Заставляет сущность исчезать, если требования выполнены
+                _DespawnEntityAndDistancePlayer();
                 // Ощущение. (senses)
 
                 // Определение цели
@@ -180,35 +181,39 @@ namespace Vge.Entity
         /// <summary>
         /// Заставляет сущность исчезать, если требования выполнены
         /// </summary>
-        private void _DespawnEntity()
+        private void _DespawnEntityAndDistancePlayer()
         {
+            //Console.WriteLine(Tracker.DistantionPlayer);
             if (_persistenceRequired && !_CanDespawn())
             {
                 EntityAge = 0;
             }
             else
             {
-                PlayerServer entityPlayer = GetWorldServer().GetClosestPlayerToEntity(this, -1f);
-                if (entityPlayer != null)
+                if (Tracker != null)
                 {
-                    float k = entityPlayer.DistanceSqToEntity(this);
-                    // 16384 это растояние примерно 128
-                    // 25600 это растояние примерно 160
-                    if (k > 25600)
+                    float k = Tracker.DistantionPlayer;
+                    if (k > 160)
                     {
+                        // Сущность которая дальше 160 блоков от игрока сразу диспавн
                         SetDead();
                     }
-                    // 1024 это растояние примерно 32
-                    // 2304 это растояние примерно 48
-                    if (EntityAge > 600 && k > 2304 && GetWorldServer().Rnd.Next(800) == 0)
+                    if (EntityAge > 600 && k > 48 && GetWorldServer().Rnd.Next(800) == 0)
                     {
+                        // Сущность которая дальше 48 блоков от игрока сразу диспавн через рандом
+                        // 30 секунд радом игроков не было
                         SetDead();
                     }
-
-                    if (k < 2304)
+                    if (k < 48)
                     {
+                        // Сущность ближе 48 блоков, пометка активности
                         EntityAge = 0;
                     }
+                }
+                else
+                {
+                    // Если нет трекера игрока у сущности диспавн
+                    SetDead();
                 }
             }
         }

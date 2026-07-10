@@ -164,7 +164,13 @@ namespace Vge.Entity.Player
             {
                 if (!_blankShotAction)
                 {
-                    _player.TestHandAction = true;
+                    // TODO::2026-07-10 AttackRight, можно вынести в HandManagerMvk
+                    _player.Render.SetAnimationCodeAdd("AttackRight", 2);
+                    // Отправить анимацию
+                    _game.TrancivePacket(new PacketC0APlayerAnimation(
+                        _player.Render.AnimationCodeAdd, 
+                        PacketC0APlayerAnimation.EnumAction.CodeAdd,
+                        _player.Render.SpeedAnimationCodeAdd));
                 }
 
                 MovingObjectPosition moving = _player.MovingObject;

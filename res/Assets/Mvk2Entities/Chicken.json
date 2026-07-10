@@ -5,7 +5,7 @@
     #Model: "Humanoid",
     #Texture: "HumanoidSample",
     Texture: "ChickenBroun",
-    #OnlyMove: true,
+    OnlyMove: true,
     #BlinkEye: 70,
     #NameShapeLayers: "Base",
     #NameShapeLayers: "BaseOld",
@@ -17,122 +17,40 @@
             AnimationSpeed: 0.3,
             TriggeredBy: ["Idle"]
         },
+        {
+            Animation: "Walk",
+            AnimationSpeed: 1.4,
+            TriggeredBy: ["Move"]
+        },
+        { 
+            Animation: "WalkSwing",
+            AnimationSpeed: 1.4,
+            TriggeredBy: ["Levitate", "Move"]
+        },
+        {
+            Animation: "WalkSwing",
+            AnimationSpeed: 2.5,
+            TriggeredBy: ["Move", "Sprint"]
+        },
         { 
             Animation: "Sneak",
             AnimationSpeed: 0.3,
             TriggeredBy: ["Sneak", "Idle"]
         },
         { 
-            Animation: "SneakWalk",
-            AnimationSpeed: 0.55,
-            TriggeredBy: ["Sneak", "Forward"]
-        },
-        { 
-            Animation: "SneakWalk",
-            AnimationSpeed: 0.55,
-            TriggeredBy: ["Sneak", "Move"]
-        },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 0.3,
+            Animation: "Swing",
+            AnimationSpeed: 2.15,
             TriggeredBy: ["Levitate", "Idle"]
         },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 0.5,
-            TriggeredBy: ["Levitate", "Forward"]
-        },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 0.5,
-            TriggeredBy: ["Levitate", "Move"]
-        },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Levitate", "Forward", "Sprint"]
-        },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Levitate", "Move", "Sprint"]
+        {
+            Code: "Peck",
+            Animation: "Peck",
+            AnimationSpeed: 1.0
         },
         {
-            Animation: "Walk",
-            #AnimationSpeed: 2.15,
-            AnimationSpeed: 1.4,
-            #AnimationSpeed: 1.075,
-            TriggeredBy: ["Forward"]
-        },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 1.4,
-            TriggeredBy: ["Move"]
-        },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 2.15,
-            TriggeredBy: ["Move", "Sprint"]
-        },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 2.15,
-            TriggeredBy: ["Forward", "Sprint"]
-        },
-        {
-            Animation: "Back",
-            AnimationSpeed: 1.8,
-            TriggeredBy: ["Back"]
-        },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Left"]
-        },
-        {
-            Animation: "Right",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Right"]
-        },
-        {
-            Code: "AttackRight",
-            Animation: "AttackRight",
-            AnimationSpeed: 1.0,
-            ElementWeight: {
-                ArmRight: 80,
-                ForearmRight: 80,
-                HandRight: 80
-            }
-        },
-        {
-            Code: "HoldRight",
-            Animation: "HoldRight",
-            AnimationSpeed: 1.0,
-            ElementWeight: {
-                ArmRight: 20,
-                ForearmRight: 20
-            }
-        },
-        {
-            Code: "HoldLeft",
-            Animation: "HoldLeft",
-            AnimationSpeed: 1.0,
-            ElementWeight: {
-                ArmLeft: 20,
-                ForearmLeft: 20
-            }
-        },
-        {
-            Code: "HoldTwo",
-            Animation: "HoldTwo",
-            AnimationSpeed: 1.0,
-            ElementWeight: {
-                ArmRight: 90,
-                ForearmRight: 90,
-                Item: 90,
-                ArmLeft: 90,
-                ForearmLeft: 90,
-            }
+            Code: "Drip",
+            Animation: "Drip",
+            AnimationSpeed: 1.0
         }
     ]
 }

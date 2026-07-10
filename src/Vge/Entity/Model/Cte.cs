@@ -44,7 +44,8 @@
 
         /// <summary>
         /// Имя клипа как ключ для программы, должны быть уникальны в одной сущности. (string)
-        /// #Code: "Sneak" Code нужен только там где нет TriggeredBy тут он не обязателен и даже не нужен. И обязателен на Idle
+        /// #Code: "Sneak" Code нужен только там где нет TriggeredBy тут он не обязателен и даже не нужен. 
+        /// И обязателен на Idle
         /// </summary>
         public const string Code = "Code";
         /// <summary>

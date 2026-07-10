@@ -81,6 +81,11 @@ namespace Vge.Entity.Render
         /// </summary>
         private string _activeClip;
         /// <summary>
+        /// Активирован ли клип по коду
+        /// </summary>
+        private bool _isActiveClipCode;
+
+        /// <summary>
         /// Текущий триггерный активотора
         /// </summary>
         private EnumEntityActivity _activity;
@@ -228,24 +233,58 @@ namespace Vge.Entity.Render
                 }
             }
 
-            // Анимация по движению
-            _AnimationByMotion();
+            // Анимация целного клипа, не от движения, для мобов в большей части
+            _AnimationByCode();
 
-            // Временно клик
-            if (Entity is PlayerClientOwner playerClient && playerClient.TestHandAction)
+            if (!_isActiveClipCode)
             {
-                playerClient.TestHandAction = false;
-                AddClip("AttackRight", 2f);
+                // Анимация по движению
+                _AnimationByMotion();
             }
 
-            int i = 0;
-            int count = _animationClips.Count - 1;
-            for (i = count; i >= 0; i--)
+            // Дополнительная анимация
+            if (AnimationCodeAdd != "")
             {
-                if (_animations[_animationClips[i]].IsStoped())
+                AddClip(AnimationCodeAdd, SpeedAnimationCodeAdd);
+                AnimationCodeAdd = "";
+            }
+
+            int count = _animationClips.Count - 1;
+            string nameClip;
+            bool addIdle = false;
+            for (int i = count; i >= 0; i--)
+            {
+                nameClip = _animationClips[i];
+                if (_animations[nameClip].IsStoped())
                 {
                     _animationClips.RemoveAt(i);
+                    if (_isActiveClipCode && nameClip == _activeClip)
+                    {
+                        _isActiveClipCode = false;
+                        addIdle = true;
+                    }
                 }
+            }
+            if (addIdle)
+            {
+                // Надо включить Idle, закончился клип по коду
+                AddClipActivity(EnumEntityActivity.Idle);
+            }
+        }
+
+        /// <summary>
+        /// Анимация вызванная по коду
+        /// </summary>
+        private void _AnimationByCode()
+        {
+            if (AnimationCode != "")
+            {
+                // вызвал анимацию
+                _isActiveClipCode = true;
+                StopingClip(_activeClip);
+                _activeClip = AnimationCode;
+                AddClip(_activeClip, SpeedAnimationCode);
+                AnimationCode = "";
             }
         }
 

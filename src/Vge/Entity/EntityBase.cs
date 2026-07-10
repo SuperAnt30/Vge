@@ -147,6 +147,11 @@ namespace Vge.Entity
         public DamageBase Damage { get; protected set; }
 
         /// <summary>
+        /// Трекер сущности, на сервере
+        /// </summary>
+        public EntityTracker Tracker;
+
+        /// <summary>
         /// Уровень перемещение. Только для сервера 2 - 0 чтоб передвавать клиентам перемещение.
         /// 1 для игроков, 2 для мобов, на один больше, чтоб клиент мог зафиксировать сон, т.е. два последнийх одинаковые
         /// </summary>

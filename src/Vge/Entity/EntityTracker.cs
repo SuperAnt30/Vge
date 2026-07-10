@@ -30,6 +30,15 @@ namespace Vge.Entity
         /// </summary>
         public int UpdateCounter { get; private set; }
 
+        /// <summary>
+        /// Расстояние до ближайшего игрока, float.MaxValue нет инфы
+        /// </summary>
+        public float DistantionPlayer { get; private set; } = float.MaxValue;
+        /// <summary>
+        /// Ближайший игрок
+        /// </summary>
+        public PlayerServer ClosestPlayer { get; private set; } = null;
+
         public int Id => TrackedEntity.Id;
 
         /// <summary>
@@ -50,13 +59,15 @@ namespace Vge.Entity
         /// <summary>
         /// Обновить список игроков
         /// </summary>
-        //public void UpdatePlayerEntities(MapListEntity entityPlayers)
-        //{
-        //    for (int i = 0; i < entityPlayers.Count; i++)
-        //    {
-        //        UpdatePlayerEntity((EntityPlayerServer)entityPlayers.GetAt(i));
-        //    }
-        //}
+        public void UpdatePlayerEntities(MapEntity<PlayerServer> entityPlayers)
+        {
+            DistantionPlayer = float.MaxValue;
+            ClosestPlayer = null;
+            for (int i = 0; i < entityPlayers.Count; i++)
+            {
+                UpdatePlayerEntity(entityPlayers.GetAt(i));
+            }
+        }
 
         /// <summary>
         /// Обновить видна ли текущая сущность у игрока playerServer
@@ -89,10 +100,11 @@ namespace Vge.Entity
         public void UpdatePlayerList(MapEntity<PlayerServer> trackedPlayers)
         {
             FlagUpdatePlayerEntity = false;
-
             if (TrackedEntity.IsDistanceCube(_lastTrackedEntityPosX, _lastTrackedEntityPosY, _lastTrackedEntityPosZ, 2)
                 || TrackedEntity.IsOverviewChunkChanged())
             {
+                DistantionPlayer = float.MaxValue;
+                ClosestPlayer = null;
                 _lastTrackedEntityPosX = TrackedEntity.PosX;
                 _lastTrackedEntityPosY = TrackedEntity.PosY;
                 _lastTrackedEntityPosZ = TrackedEntity.PosZ;
@@ -210,7 +222,13 @@ namespace Vge.Entity
         {
             float c = playerServer.OverviewChunk << 4;
             if (c > TrackingDistanceThreshold) c = TrackingDistanceThreshold;
-            return TrackedEntity.Distance(playerServer) < c;
+            float distantion = TrackedEntity.Distance(playerServer);
+            if (distantion < DistantionPlayer)
+            {
+                DistantionPlayer = distantion;
+                ClosestPlayer = playerServer;
+            }
+            return distantion < c;
         }
 
         public override bool Equals(object obj)

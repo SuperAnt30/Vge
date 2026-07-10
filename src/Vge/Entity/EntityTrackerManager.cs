@@ -52,6 +52,7 @@ namespace Vge.Entity
         {
             if (entity is PlayerServer playerServer)
             {
+                // TODO::2026-07-09 Трекер сущностей растояние. Надо вынести в Mvk2 или JSON
                 _AddEntityToTracker(entity, 256);
 
                 // Fix, это нельзя, так-как вблизи не видны были игроки
@@ -71,7 +72,7 @@ namespace Vge.Entity
             //}
             else
             {
-                _AddEntityToTracker(entity, 128);
+                _AddEntityToTracker(entity, 64);
             }
         }
 
@@ -80,27 +81,26 @@ namespace Vge.Entity
         /// </summary>
         public void UntrackEntity(EntityBase entity)
         {
-            EntityTracker trackerEntry;
-
             if (entity is PlayerServer playerServer)
             {
                 for (int i = 0; i < _trackedEntities.Count; i++)
                 {
-                    trackerEntry = _trackedEntities.GetAt(i);
-                    if (trackerEntry != null)
-                    {
-                        trackerEntry.RemoveTrackedPlayerSymmetric(playerServer);
-                    }
+                    _trackedEntities.GetAt(i)?.RemoveTrackedPlayerSymmetric(playerServer);
                 }
             }
 
-            trackerEntry = _trackedEntities.Get(entity.Id);
+            EntityTracker trackerEntry = entity.Tracker;
+            if (trackerEntry == null)
+            {
+                trackerEntry = _trackedEntities.Get(entity.Id);
+            }
 
             if (trackerEntry != null)
             {
                 _trackedEntities.Remove(trackerEntry.Id, trackerEntry);
                 _trackedPlayers.Remove(trackerEntry.Id, trackerEntry.TrackedEntity as PlayerServer);
                 trackerEntry.DestroyEntityPacketToTrackedPlayers();
+                entity.Tracker = null;
             }
         }
 
@@ -116,8 +116,10 @@ namespace Vge.Entity
                 entityTracker = _trackedEntities.GetAt(i);
                 if (entityTracker != null)
                 {
+                    // Пробегаемся по всем, если сущность стоит, а игрок двигается, будет флаг FlagUpdatePlayerEntity
                     entityTracker.UpdatePlayerList(_trackedPlayers);
 
+                    // И тогда будем пробегатся тут. Если двигался игрок
                     if (entityTracker.FlagUpdatePlayerEntity && entityTracker.TrackedEntity is PlayerServer playerServer)
                     {
                         for (int j = 0; j < _trackedEntities.Count; j++)
@@ -125,7 +127,8 @@ namespace Vge.Entity
                             entityTracker2 = _trackedEntities.GetAt(j);
                             if (entityTracker2 != null && entityTracker2.TrackedEntity.Id != playerServer.Id)
                             {
-                                entityTracker2.UpdatePlayerEntity(playerServer);
+                                // Пробегаемся по всем игрокам, чтоб переопределить ближайшего игрока к сущности
+                                entityTracker2.UpdatePlayerEntities(_trackedPlayers);
                             }
                         }
                     }
@@ -225,6 +228,7 @@ namespace Vge.Entity
                 {
                     _trackedPlayers.Add(playerServer.Id, playerServer);
                 }
+                entity.Tracker = trackerEntry;
             }
             catch (Exception ex)
             {

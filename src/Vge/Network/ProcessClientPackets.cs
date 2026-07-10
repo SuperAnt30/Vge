@@ -237,7 +237,18 @@ namespace Vge.Network
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
             if (entity != null && entity.Render != null)
             {
-                entity.Render.SetMovingFlags(packet.Animation);
+                if (packet.Action == PacketS0BAnimation.EnumAction.Moving)
+                {
+                    entity.Render.SetMovingFlags(packet.Moving);
+                }
+                else if (packet.Action == PacketS0BAnimation.EnumAction.Code)
+                {
+                    entity.Render.SetAnimationCode(packet.Code, packet.Speed);
+                }
+                else
+                {
+                    entity.Render.SetAnimationCodeAdd(packet.Code, packet.Speed);
+                }
             }
         }
 

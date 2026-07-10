@@ -1,4 +1,7 @@
-﻿namespace Vge.Entity.AI
+﻿using System;
+using Vge.Network.Packets.Server;
+
+namespace Vge.Entity.AI
 {
     /// <summary>
     /// Задача паника
@@ -23,7 +26,6 @@
                 _xPosition = _entity.PosX + Rnd.Next(bxz) - Rnd.Next(bxz);
                 _yPosition = _entity.PosY + Rnd.Next(by) - Rnd.Next(by);
                 _zPosition = _entity.PosZ + Rnd.Next(bxz) - Rnd.Next(bxz);
-
                 return true;
             }
             return false;
@@ -34,10 +36,10 @@
         /// </summary>
         public override void UpdateTask()
         {
-            if (Rnd.NextFloat() < .4f)
-            {
-                _entity.MoveHelper.SetSprinting();
-            }
+            //if (Rnd.NextFloat() < .4f)
+            // _entity.MoveHelper.SetSprinting();
+
+            
         }
     }
 }

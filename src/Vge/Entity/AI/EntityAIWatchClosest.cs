@@ -36,17 +36,12 @@ namespace Vge.Entity.AI
         /// </summary>
         public override bool ShouldExecute()
         {
-            if (Rnd.NextFloat() >= _probability)
+            if (_entity.Tracker != null 
+                && _entity.Tracker.ClosestPlayer != null 
+                && Rnd.NextFloat() < _probability 
+                && _entity.Tracker.DistantionPlayer < _maxDistanceForPlayer)
             {
-                return false;
-            }
-
-            PlayerServer playerServer = _entity.GetWorldServer().FindNearestPlaerWithinAABB(
-                _entity.SizeLiving.GetBoundingBox().Expand(_maxDistanceForPlayer, 5f, _maxDistanceForPlayer),
-                _entity);
-            if (playerServer != null)
-            {
-                _closestEntity = playerServer;
+                _closestEntity = _entity.Tracker.ClosestPlayer;
                 return true;
             }
             

@@ -441,33 +441,33 @@ namespace Vge.World
         /// Получает ближайшего игрока к объекту в пределах указанного расстояния 
         /// (если расстояние меньше 0, то игнорируется).
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public PlayerServer GetClosestPlayerToEntity(EntityBase entity, float distance)
-            => GetClosesPlayer(entity.PosX, entity.PosY, entity.PosZ, distance);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public PlayerServer GetClosestPlayerToEntity(EntityBase entity, float distance)
+        //    => GetClosesPlayer(entity.PosX, entity.PosY, entity.PosZ, distance);
 
-        /// <summary>
-        /// Получает ближайшего игрока к точке в пределах указанного расстояния 
-        /// (расстояние можно установить меньше 0, чтобы не ограничивать расстояние)
-        /// </summary>
-        public PlayerServer GetClosesPlayer(float x, float y, float z, float distance)
-        {
-            PlayerServer entityResult = null;
-            float distanceMin = -1f;
-            for (int i = 0; i < PlayerEntities.Count; i++)
-            {
-                if (PlayerEntities[i] is PlayerServer playerServer)
-                {
-                    float distanceCache = playerServer.DistanceSq(x, y, z);
-                    if ((distance < 0 || distanceCache < distance * distance)
-                        && (distanceMin == -1f || distanceMin > distanceCache))
-                    {
-                        distanceMin = distanceCache;
-                        entityResult = playerServer;
-                    }
-                }
-            }
-            return entityResult;
-        }
+        ///// <summary>
+        ///// Получает ближайшего игрока к точке в пределах указанного расстояния 
+        ///// (расстояние можно установить меньше 0, чтобы не ограничивать расстояние)
+        ///// </summary>
+        //public PlayerServer GetClosesPlayer(float x, float y, float z, float distance)
+        //{
+        //    PlayerServer entityResult = null;
+        //    float distanceMin = -1f;
+        //    for (int i = 0; i < PlayerEntities.Count; i++)
+        //    {
+        //        if (PlayerEntities[i] is PlayerServer playerServer)
+        //        {
+        //            float distanceCache = playerServer.DistanceSq(x, y, z);
+        //            if ((distance < 0 || distanceCache < distance * distance)
+        //                && (distanceMin == -1f || distanceMin > distanceCache))
+        //            {
+        //                distanceMin = distanceCache;
+        //                entityResult = playerServer;
+        //            }
+        //        }
+        //    }
+        //    return entityResult;
+        //}
 
         /// <summary>
         /// Найти ближайшего игрока которые пересекают AABB
