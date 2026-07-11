@@ -20,6 +20,14 @@
             Speed = 0;
         }
 
+        public PacketC0APlayerAnimation(EnumAction action)
+        {
+            Action = action;
+            Code = "";
+            Speed = 0;
+            Moving = 0;
+        }
+
         public PacketC0APlayerAnimation(string code, EnumAction action = EnumAction.Code, float speed = 1)
         {
             Moving = 0;
@@ -35,7 +43,7 @@
             {
                 Moving = stream.Byte();
             }
-            else
+            else if (Action == EnumAction.Code || Action == EnumAction.CodeAdd)
             {
                 Code = stream.String();
                 Speed = stream.Float();
@@ -49,7 +57,7 @@
             {
                 stream.Byte(Moving);
             }
-            else
+            else if(Action == EnumAction.Code || Action == EnumAction.CodeAdd)
             {
                 stream.String(Code);
                 stream.Float(Speed);
@@ -72,7 +80,15 @@
             /// <summary>
             /// Дополнительный по коду
             /// </summary>
-            CodeAdd = 2
+            CodeAdd = 2,
+            /// <summary>
+            /// Анимация открыть глаза
+            /// </summary>
+            EyeOpen = 3,
+            /// <summary>
+            /// Анимация закрыть глаза
+            /// </summary>
+            EyeClose = 4
         }
     }
 }

@@ -97,7 +97,8 @@ namespace Vge.Entity.AI.PathFinding
         /// <param name="allowPartialPath">Разрешить частичный путь</param>
         /// <param name="stopOnOverlap">Задать остановку при соприкосновении коллизии, true - соприкосновении коллизии, false - центр</param>
         /// <param name="acceptanceRadius">Задать расстояние до точки, которое будет считаться выполненым, 0 - расчёта нет</param>
-        public bool TryMoveToXYZ(float x, float y, float z, float speed, bool allowPartialPath = true, bool stopOnOverlap = false, float acceptanceRadius = 0f)
+        public bool TryMoveToXYZ(float x, float y, float z, float speed, bool allowPartialPath = true, 
+            bool stopOnOverlap = false, float acceptanceRadius = 0f)
         {
             _pathFinder.SetOptions(stopOnOverlap, acceptanceRadius);
             BlockPos blockPos = new BlockPos(x, y, z);

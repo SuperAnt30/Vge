@@ -33,6 +33,15 @@ namespace Vge.Network.Packets.Server
             Speed = 0;
         }
 
+        public PacketS0BAnimation(int entityId, EnumAction action)
+        {
+            EntityId = entityId;
+            Action = action;
+            Code = "";
+            Speed = 0;
+            Moving = 0;
+        }
+
         public PacketS0BAnimation(int entityId, string code, EnumAction action = EnumAction.Code, float speed = 1)
         {
             EntityId = entityId;
@@ -50,7 +59,7 @@ namespace Vge.Network.Packets.Server
             {
                 Moving = stream.Byte();
             }
-            else
+            else if (Action == EnumAction.Code || Action == EnumAction.CodeAdd)
             {
                 Code = stream.String();
                 Speed = stream.Float();
@@ -65,7 +74,7 @@ namespace Vge.Network.Packets.Server
             {
                 stream.Byte(Moving);
             }
-            else
+            else if (Action == EnumAction.Code || Action == EnumAction.CodeAdd)
             {
                 stream.String(Code);
                 stream.Float(Speed);
@@ -88,7 +97,15 @@ namespace Vge.Network.Packets.Server
             /// <summary>
             /// Дополнительный по коду
             /// </summary>
-            CodeAdd = 2
+            CodeAdd = 2,
+            /// <summary>
+            /// Анимация открыть глаза
+            /// </summary>
+            EyeOpen = 3,
+            /// <summary>
+            /// Анимация закрыть глаза
+            /// </summary>
+            EyeClose = 4
         }
     }
 }

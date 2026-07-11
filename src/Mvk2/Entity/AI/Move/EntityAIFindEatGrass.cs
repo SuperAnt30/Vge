@@ -22,17 +22,25 @@ namespace Mvk2.Entity.AI
 
 
         /// <summary>
-        /// действие перемещения
+        /// Действие перемещения
         /// </summary>
         private bool _actionMove;
         /// <summary>
-        /// действие кушать
+        /// Действие кушать
         /// </summary>
         private bool _actionEat;
+        /// <summary>
+        /// Действие конечной анимации
+        /// </summary>
+        private bool _actionEnd;
         /// <summary>
         /// Время в тиках на поедание блока
         /// </summary>
         private int _timeEat;
+        /// <summary>
+        /// Время в тиках на конечной анимации
+        /// </summary>
+        private int _timeEnd;
         /// <summary>
         /// Ищем траву
         /// </summary>
@@ -125,8 +133,6 @@ namespace Mvk2.Entity.AI
             int id = _entity.GetWorldServer().GetBlockState(new BlockPos(x, y, z)).Id;
             return id == BlocksRegMvk.Turf.IndexBlock || id == BlocksRegMvk.TurfLoam.IndexBlock;
         }
-            //=> //_isSapling ? entity.World.GetBlockState(new BlockPos(x, y, z)).GetBlock().Material.EMaterial == EnumMaterial.Sapling
-            //    _entity.GetWorldServer().GetBlockState(new BlockPos(x, y - 1, z)).Id == BlocksRegMvk.Turf;
 
         /// <summary>
         /// Начинаем кушать
@@ -136,6 +142,7 @@ namespace Mvk2.Entity.AI
             _actionMove = false;
             _actionEat = true;
             _timeEat = 25;
+            //_entity.MoveHelper.SetForward(.1f);
             //_entity.LookHelper.SetLookPitch(-Glm.Pi90, Glm.Pi10);
             _entity.GetWorldServer().Tracker.SendToAllTrackingEntity(_entity.Id,
                        new PacketS0BAnimation(_entity.Id, "Peck"));
@@ -155,11 +162,21 @@ namespace Mvk2.Entity.AI
                 if (--_timeEat <= 0)
                 {
                     _actionEat = false;
-                    _entity.GetWorldServer().Tracker.SendToAllTrackingEntity(_entity.Id,
-                        new PacketS0BAnimation(_entity.Id, "Drip"));
-
-                    //_entity.LookHelper.SetLookPitch(0, Glm.Pi10);
-                    _Action(new BlockPos(_entity.PosX, _entity.PosY, _entity.PosZ));
+                    if (_Action(new BlockPos(_entity.PosX, _entity.PosY, _entity.PosZ)))
+                    {
+                        _actionEnd = true;
+                        _timeEnd = 70;
+                        _entity.GetWorldServer().Tracker.SendToAllTrackingEntity(_entity.Id,
+                            new PacketS0BAnimation(_entity.Id, "Drip"));
+                    }
+                }
+            }
+            else if (_actionEnd)
+            {
+                // Процесс, чтоб отработала анимация
+                if (--_timeEnd <= 0)
+                {
+                    _actionEnd = false;
                 }
             }
         }
@@ -167,29 +184,32 @@ namespace Mvk2.Entity.AI
         /// <summary>
         /// Действие когда дошли до блока
         /// </summary>
-        private void _Action(BlockPos blockPos)
+        private bool _Action(BlockPos blockPos)
         {
-            //if (entity.World.GetBlockState(blockPos).GetBlock().Material.EMaterial == EnumMaterial.Sapling)
-            //{
-            //    entity.World.SetBlockToAir(blockPos, 31);
-            //    Eat();
-            //}
-            //else if (!isSapling)
+            if (_entity.GetWorldServer().GetBlockState(blockPos).GetBlock().Material.IndexMaterial
+                == (int)EnumMaterial.Plant)
             {
-                blockPos = blockPos.OffsetDown();
-                int id = _entity.GetWorldServer().GetBlockState(blockPos).Id;
+                // Растение
+                _entity.GetWorldServer().SetBlockToAir(blockPos, 31);
+                _Eat();
+                return false;
 
-                if (id == BlocksRegMvk.Turf.IndexBlock)
-                {
-                    _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Humus.IndexBlock), 31);
-                    _Eat();
-                }
-                else if (id == BlocksRegMvk.TurfLoam.IndexBlock)
-                {
-                    _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Loam.IndexBlock), 31);
-                    _Eat();
-                }
             }
+            blockPos = blockPos.OffsetDown();
+            int id = _entity.GetWorldServer().GetBlockState(blockPos).Id;
+
+            if (id == BlocksRegMvk.Turf.IndexBlock)
+            {
+                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Humus.IndexBlock), 31);
+                _Eat();
+            }
+            else if (id == BlocksRegMvk.TurfLoam.IndexBlock)
+            {
+                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Loam.IndexBlock), 31);
+                _Eat();
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -206,7 +226,7 @@ namespace Mvk2.Entity.AI
         /// <summary>
         /// Возвращает значение, указывающее, должна ли незавершенная тикущая задача продолжать выполнение
         /// </summary>
-        public override bool ContinueExecuting() => _actionMove || _actionEat;
+        public override bool ContinueExecuting() => _actionMove || _actionEat || _actionEnd;
 
         /// <summary>
         /// Выполните разовую задачу или начните выполнять непрерывную задачу
@@ -226,6 +246,7 @@ namespace Mvk2.Entity.AI
         {
             _actionMove = false;
             _actionEat = false;
+            _actionEnd = false;
         }
 
     }

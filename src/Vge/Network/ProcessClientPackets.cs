@@ -245,9 +245,17 @@ namespace Vge.Network
                 {
                     entity.Render.SetAnimationCode(packet.Code, packet.Speed);
                 }
-                else
+                else if(packet.Action == PacketS0BAnimation.EnumAction.CodeAdd)
                 {
                     entity.Render.SetAnimationCodeAdd(packet.Code, packet.Speed);
+                }
+                else if (packet.Action == PacketS0BAnimation.EnumAction.EyeOpen)
+                {
+                    entity.Render.SetEyeOpen(true);
+                }
+                else if (packet.Action == PacketS0BAnimation.EnumAction.EyeClose)
+                {
+                    entity.Render.SetEyeOpen(false);
                 }
             }
         }

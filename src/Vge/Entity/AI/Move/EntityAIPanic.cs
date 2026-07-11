@@ -37,9 +37,7 @@ namespace Vge.Entity.AI
         public override void UpdateTask()
         {
             //if (Rnd.NextFloat() < .4f)
-            // _entity.MoveHelper.SetSprinting();
-
-            
+            _entity.MoveHelper.SetSprinting();
         }
     }
 }

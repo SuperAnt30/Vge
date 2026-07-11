@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Layer;
-using Vge.Entity.Player;
 using Vge.Entity.Shape;
 using Vge.Item;
 using Vge.Item.List;

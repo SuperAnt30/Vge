@@ -6,7 +6,7 @@
     #Texture: "HumanoidSample",
     Texture: "ChickenBroun",
     OnlyMove: true,
-    #BlinkEye: 70,
+    BlinkEye: 50,
     #NameShapeLayers: "Base",
     #NameShapeLayers: "BaseOld",
     Animations: [
