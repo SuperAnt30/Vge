@@ -154,6 +154,12 @@ namespace Vge.Entity.Player
         public override bool CanBeCollidedWith() => true;
 
         /// <summary>
+        /// Является ли режим выживания
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSurvival() => !CreativeMode && !IsSpectator();
+
+        /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

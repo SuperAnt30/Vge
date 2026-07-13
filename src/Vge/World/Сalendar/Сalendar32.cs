@@ -68,6 +68,10 @@ namespace Vge.World.Сalendar
         /// Угол солнца и луны прошлого кадра
         /// </summary>
         private float _angleSunPrev;
+        /// <summary>
+        /// Небесный свет ночь 0..3 в зависимости от фазы луны, день 15
+        /// </summary>
+        private int _skylightSubtracted;
 
         public Сalendar32(int speedDay)
         {
@@ -87,13 +91,21 @@ namespace Vge.World.Сalendar
         public void UpdateClient()
         {
             TickCounter++;
+            _CalculateInitialYear();
+        }
+
+        /// <summary>
+        /// Рассчитать год, пору года и день в году
+        /// </summary>
+        private void _CalculateInitialYear()
+        {
             _time++;
-            if (_time > _speedDay)
+            if (_time >= _speedDay)
             {
                 // Изменился день
                 _time = 0;
                 Day++;
-                if (Day > _speedYear)
+                if (Day >= _speedYear)
                 {
                     Day = 0;
                     Year++;
@@ -101,8 +113,39 @@ namespace Vge.World.Сalendar
                 TimeYear = (EnumTimeYear)(Day / 8);
                 MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
             }
+
+            //int day = (int)((TickCounter + 0) / _speedDay);
+            //_time = (int)(TickCounter - day * _speedDay);
+            //Day = (byte)(day % 32);
+            //Year = day / 32;
+            //TimeYear = (EnumTimeYear)(Day / 8);
+            //MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
+
+            // рассчитать небесный свет
+            float angle = _CalculateCelestialAngle(1f);
+            float light = 1f - (Glm.Cos(angle * Glm.Pi360) * 2f + .5f);
+            light = Mth.Clamp(light, 0f, 1f);
+            // light = light * (1f - MvkStatic.LightMoonPhase[moohPhase] * .3125f);
+            light = light * (1f - .32f * .3125f);
+            light = 1f - light;
+            _skylightSubtracted = (int)(light * 15f);
         }
-        
+
+        /// <summary>
+        /// Вычисляет угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
+        /// </summary>
+        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
+        private float _CalculateCelestialAngle(float timeIndex)
+        {
+            float angleSun = (_time + timeIndex) / (float)_speedDay - .25f;
+            if (angleSun < 0f) angleSun++;
+            if (angleSun > 1f) angleSun--;
+            float time2 = angleSun;
+            angleSun = 1f - ((Glm.Cos(angleSun * Glm.Pi) + 1f) / 2f);
+            angleSun = time2 + (angleSun - time2) / 3f;
+            return angleSun;
+        }
+
         /// <summary>
         /// Обновление во фрейме, и возвращает было ли изменение
         /// </summary>
@@ -110,26 +153,20 @@ namespace Vge.World.Сalendar
         public bool UpdateFrame(float timeIndex)
         {
             // Находим угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
-            float angleSun = (_time + timeIndex) / _speedDay - .25f;
-            if (angleSun < 0f) angleSun++;
-            if (angleSun > 1f) angleSun--;
-            float time2 = angleSun;
-            angleSun = 1f - ((Glm.Cos(angleSun * Glm.Pi) + 1f) / 2f);
-            angleSun = time2 + (angleSun - time2) / 3f;
-            angleSun *= Glm.Pi360;
+            float angleSun = _CalculateCelestialAngle(timeIndex) * Glm.Pi360;
 
             if (_angleSunPrev != angleSun)
             {
                 _angleSunPrev = angleSun;
-
+                
                 // Углы амплитуд косинуса и синуса
                 float lightCos = Glm.Cos(angleSun) * 2f;
                 float lightSin = Glm.Sin(angleSun) * 2f;
 
                 // Яркость солнца
-                _sunLight = Mth.Clamp(lightSin + .64f, 0, 1);
+                _sunLight = Mth.Clamp(lightCos + .64f, 0, 1);
                 // Яркость неба
-                float skyLight = Mth.Clamp(lightSin + .5f, 0, 1);
+                float skyLight = Mth.Clamp(lightCos + .5f, 0, 1);
 
                 if (lightSin < 0)
                 {
@@ -168,7 +205,20 @@ namespace Vge.World.Сalendar
         /// Обновление раз в тик на сервере
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateServer() => TickCounter++;
+        public void UpdateServer()
+        {
+            TickCounter++;
+            _CalculateInitialYear();
+
+            //// рассчитать небесный свет
+            //float angle = _CalculateCelestialAngle(1f);
+            //float light = 1f - (Glm.Cos(angle * Glm.Pi360) * 2f + .5f);
+            //light = Mth.Clamp(light, 0f, 1f);
+            //// light = light * (1f - MvkStatic.LightMoonPhase[moohPhase] * .3125f);
+            //light = light * (1f - .32f * .3125f);
+            //light = 1f - light;
+            //_skylightSubtracted = (int)(light * 15f);
+        }
 
         public void SetTickCounter(uint tickCounter)
         {
@@ -199,6 +249,12 @@ namespace Vge.World.Сalendar
         public float GetSunLight() => _sunLight;
 
         /// <summary>
+        /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetSkylightSubtracted() => _skylightSubtracted;
+
+        /// <summary>
         /// Получить яркость луны
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -216,7 +272,15 @@ namespace Vge.World.Сalendar
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetColorFog() => _colorFog;
 
+        /// <summary>
+        /// Проверяет, является ли сейчас дневное время, определяя по яркости неба
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsDayTime() => _skylightSubtracted > 6;
+
         public override string ToString()
-            => "d:" + Day + " y:" + Year + " " + TimeYear;
+            => _time + " d:" + Day + " y:" + Year 
+            + " Sky:" + _skylightSubtracted + "/" + _sunLight
+            + " " + TimeYear + " " + MoonPhase;
     }
 }

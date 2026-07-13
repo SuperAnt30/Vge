@@ -54,6 +54,11 @@ namespace Vge.World.Сalendar
         float GetMoonLight();
 
         /// <summary>
+        /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
+        /// </summary>
+        int GetSkylightSubtracted();
+
+        /// <summary>
         /// Получить цвет неба
         /// </summary>
         Vector3 GetColorSky();
@@ -67,5 +72,10 @@ namespace Vge.World.Сalendar
         /// Пара года
         /// </summary>
         EnumTimeYear TimeYear { get; }
+
+        /// <summary>
+        /// Проверяет, является ли сейчас дневное время, определяя по яркости неба
+        /// </summary>
+        bool IsDayTime();
     }
 }

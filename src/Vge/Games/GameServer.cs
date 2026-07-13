@@ -565,8 +565,8 @@ namespace Vge.Games
             // Тут игровые мировые тики
             Worlds.Update();
 
-            // Прошла 1/3 секунда, или 10 тактов
-            if (Ce.IsDebugDraw && TickCounterGlobal % 10 == 0)
+            // Прошла 1/4 секунда, или 5 тактов
+            if (Ce.IsDebugDraw && TickCounterGlobal % 5 == 0)
             {
                 // лог статистика за это время
                 _OnTextDebug();

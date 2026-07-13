@@ -78,6 +78,12 @@ namespace Vge.World.Сalendar
         public float GetMoonLight() => .12f;
 
         /// <summary>
+        /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetSkylightSubtracted() => 15;
+
+        /// <summary>
         /// Получить цвет неба
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,6 +94,12 @@ namespace Vge.World.Сalendar
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetColorFog() => _colorFog;
+
+        /// <summary>
+        /// Проверяет, является ли сейчас дневное время, определяя по яркости неба
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsDayTime() => false;
 
         public override string ToString() => "";
     }

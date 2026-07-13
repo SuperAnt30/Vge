@@ -35,6 +35,10 @@ namespace Vge.Entity.AI
         /// Обновить сесть
         /// </summary>
         private bool _updateSneak;
+        /// <summary>
+        /// Пробуждаем физику
+        /// </summary>
+        private bool _awakenPhysics;
 
         public EntityMoveHelper(EntityMob entity)
         {
@@ -77,8 +81,13 @@ namespace Vge.Entity.AI
         /// <summary>
         /// Задать крастся
         /// </summary>
+        /// <param name="awakenPhysics">Пробуждаем физику</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetSneak() => _updateSneak = true;
+        public void SetSneak(bool awakenPhysics = true)
+        {
+            _updateSneak = true;
+            _awakenPhysics = awakenPhysics;
+        }
 
         public void OnUpdateMove()
         {
@@ -126,7 +135,10 @@ namespace Vge.Entity.AI
             {
                 _updateSneak = false;
                 _entity.Physics.Movement.SetSneak(true);
-                _entity.Physics.AwakenPhysics();
+                if (_awakenPhysics)
+                {
+                    _entity.Physics.AwakenPhysics();
+                }
                 _move = true;
             }
         }

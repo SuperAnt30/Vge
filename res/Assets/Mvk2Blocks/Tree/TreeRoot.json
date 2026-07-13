@@ -1,6 +1,6 @@
 {
     LightOpacity: 2,
-    Translucent: true,
+    #Translucent: true,
     Variants: [ 
         { Shape: "Tree/TreeRoot" },
         { Shape: "Tree/TreeRoot", IsRotateX90: true, RotateY: 90 },

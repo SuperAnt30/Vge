@@ -1,7 +1,4 @@
-﻿using System;
-using Vge.Network.Packets.Server;
-
-namespace Vge.Entity.AI
+﻿namespace Vge.Entity.AI
 {
     /// <summary>
     /// Задача паника
@@ -9,7 +6,7 @@ namespace Vge.Entity.AI
     public class EntityAIPanic : EntityAIBaseMove
     {
         /// <summary>
-        /// Задача бродить
+        /// Задача паника
         /// </summary>
         public EntityAIPanic(EntityMob entity, float speed = 1f) : base(entity, speed) { }
 
@@ -38,6 +35,10 @@ namespace Vge.Entity.AI
         {
             //if (Rnd.NextFloat() < .4f)
             _entity.MoveHelper.SetSprinting();
+            if (Rnd.NextFloat() < .02f)
+            {
+                _entity.MoveHelper.SetJumping();
+            }
         }
     }
 }

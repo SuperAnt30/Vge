@@ -32,6 +32,7 @@ namespace Vge.Entity.AI
         public override bool ShouldExecute()
         {
             if (_entity.Tracker != null && _entity.Tracker.ClosestPlayer != null
+                && _entity.Tracker.ClosestPlayer.IsSurvival()
                 && _entity.Tracker.DistantionPlayer < _maxDistanceForPlayer)
             {
                 float probability = _probability;
@@ -68,6 +69,10 @@ namespace Vge.Entity.AI
         public override void UpdateTask()
         {
             _entity.MoveHelper.SetSprinting();
+            if (Rnd.NextFloat() < .02f)
+            {
+                _entity.MoveHelper.SetJumping();
+            }
         }
     }
 }

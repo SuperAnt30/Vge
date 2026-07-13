@@ -350,6 +350,17 @@ namespace Vge.Entity
         public void SetInFire(bool fire) => SetFlag(0, fire);
 
         /// <summary>
+        /// Спит ли сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSleep() => GetFlag(6);
+        /// <summary>
+        /// Задать спит сущность
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSleep(bool sleep) => SetFlag(6, sleep);
+
+        /// <summary>
         /// Положение стоя
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

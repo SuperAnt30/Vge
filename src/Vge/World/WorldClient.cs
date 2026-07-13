@@ -327,7 +327,12 @@ namespace Vge.World
         public override void DebugString(string logMessage, params object[] args)
             => Debug.DebugString = string.Format(logMessage, args);
 
-        public override string ToString() => ChunkPrClient.ToString();
+        public override string ToString()
+        {
+            string calendar = Settings == null ? "Null" : Settings.Calendar.ToString();
+            return "\r\nChPr " + ChunkPrClient.ToString()
+                + "\r\nCalendar " + calendar;
+        } 
 
         /// <summary>
         /// Событие любого объекта с сервера для отладки

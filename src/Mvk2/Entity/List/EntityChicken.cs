@@ -59,21 +59,27 @@ namespace Mvk2.Entity.List
             Speed = .05f;
 
             _tasks.AddTask(0, new EntityAISwimming(this));
-            _tasks.AddTask(1, new EntityAIRunFromFear(this, 10f, .2f, 1.8f));
-            _tasks.AddTask(1, new EntityAIFindShore(this, 1.2f));
-            _tasks.AddTask(2, new EntityAIPanic(this, 1.6f));
+
+            _tasks.AddTask(1, new EntityAISleep(this, .3f));
+
+            _tasks.AddTask(2, new EntityAIRunFromFear(this, 14f, .6f, 3.8f));
+            _tasks.AddTask(2, new EntityAIFindShore(this, 1.2f));
+
+            _tasks.AddTask(3, new EntityAIPanic(this, 1.6f));
+
             
+
             //-_tasks.AddTask(2, new EntityAIFollowHome(this));
             //-_tasks.AddTask(2, new EntityAIFindNestSleep(this));
-            _tasks.AddTask(3, new EntityAIFindEatGrass(this, .01f));
+            _tasks.AddTask(4, new EntityAIFindEatGrass(this, .01f));
             //-_tasks.AddTask(3, entityAIFindNest = new EntityAIFindNestEgg(this, 1.2f));
 
-            _tasks.AddTask(4, new EntityAIFollowOneYour(this, .004f, 1f, 32));
-            _tasks.AddTask(4, new EntityAIFollowYour(this, .002f, 1.2f, 32));
-            _tasks.AddTask(4, new EntityAIWander(this, .004f));
-            _tasks.AddTask(5, new EntityAIWatchClosest(this, 10f));
-            _tasks.AddTask(6, new EntityAIIncreaseHealth(this));
-            _tasks.AddTask(6, new EntityAILookIdle(this));
+            _tasks.AddTask(5, new EntityAIFollowOneYour(this, .004f, 1f, 32));
+            _tasks.AddTask(5, new EntityAIFollowYour(this, .002f, 1.2f, 32));
+            _tasks.AddTask(5, new EntityAIWander(this, .004f));
+            _tasks.AddTask(6, new EntityAIWatchClosest(this, 10f));
+            _tasks.AddTask(7, new EntityAIIncreaseHealth(this));
+            _tasks.AddTask(7, new EntityAILookIdle(this));
         }
 
         /// <summary>
