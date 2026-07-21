@@ -429,14 +429,17 @@ namespace Vge.Entity.Player
         /// <param name="vec">направляющий вектор к расположению камеры</param>
         private Vector3 _GetPositionCamera(Vector3 pos, Vector3 vec, float dis)
         {
+            if (!IsSpectator())
+            {
+                _game.World.Collision.RayCastBlock(PosX, PosY + GetEyeHeight(), PosZ, vec, dis, true);
+                if (_game.World.Collision.MovingObject.IsBlock())
+                {
+                    return pos + vec * Glm.Distance(pos, _game.World.Collision.MovingObject.RayHit
+                        + new Vector3(_game.World.Collision.MovingObject.Norm) * .5f
+                        - new Vector3(PosX, PosY, PosZ));
+                }
+            }
             return pos + vec * dis;
-            //Vector3 offset = ClientWorld.RenderEntityManager.CameraOffset;
-            //if (IsSpectator())
-            //{
-            //    return pos + vec * dis;
-            //}
-            //MovingObjectPosition moving = World.RayCastBlock(pos + offset, vec, dis, true);
-            //return pos + vec * (moving.IsBlock() ? glm.distance(pos, moving.RayHit + new vec3(moving.Norm) * .5f - offset) : dis);
         }
 
         /// <summary>
