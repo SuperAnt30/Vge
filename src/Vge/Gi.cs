@@ -224,6 +224,10 @@ public sealed class Gi
     /// </summary>
     public static readonly float[] MatrixView = new float[16];
     /// <summary>
+    /// Матрица просмотра Projection * LookAt для модели с глаз
+    /// </summary>
+    public static readonly float[] MatrixViewEye = new float[16];
+    /// <summary>
     /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
     /// </summary>
     public static readonly float[] MatrixViewDepthMap = new float[16];

@@ -408,12 +408,18 @@ namespace Vge.Entity.Player
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(Gi.MatrixView);
 
+            if (ViewCamera == EnumViewCamera.Eye)
+            {
+                // Если с глаз, нужна ещё матрица
+                matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height, 0.01f, -.2f);
+                matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
+                matrix.ConvArray(Gi.MatrixViewEye);
+            }
+
             // Матрица солнца, для тени
             //PosLight = new Vector3(32, 50, 0);
             //matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
             //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
-
-            
         }
 
         /// <summary>

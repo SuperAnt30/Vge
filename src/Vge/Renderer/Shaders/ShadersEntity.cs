@@ -151,6 +151,25 @@ namespace Vge.Renderer.Shaders
         }
 
         /// <summary>
+        /// Занести начальные юниформы для моделей с глаз
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformBeginEye()
+        {
+            _flagActionDepthMap = false;
+            _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
+            _shderAction.Bind();
+            _shderAction.SetUniformMatrix4("view", Gi.MatrixViewEye);
+            _shderAction.SetUniform1("scale", 1f);
+            _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
+            _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);
+            if (_qualitatively)
+            {
+                _shderAction.SetUniformMatrix4("lightMatrix", Gi.MatrixViewDepthMap);
+            }
+        }
+
+        /// <summary>
         /// Занести начальные юниформы для карты глубины
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

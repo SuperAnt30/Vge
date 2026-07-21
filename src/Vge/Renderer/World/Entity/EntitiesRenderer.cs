@@ -355,8 +355,9 @@ namespace Vge.Renderer.World.Entity
             {
                 // Перерасчёт матрицы игрока, без головы и с изменениями
                 _game.Player.Render.UpdateMatrixOwnerEye(timeIndex);
+
                 // Параметры шейдоров
-                ShsEntity.BindUniformBegin();
+                ShsEntity.BindUniformBeginEye();
                 _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
             }
         }

@@ -209,6 +209,15 @@ namespace Vge.Renderer.World
             return _particleRenderQuad;
         }
 
+        /// <summary>
+        /// Удалить все частички, нужен для перехода миров
+        /// </summary>
+        public void Clear()
+        {
+            _list3d.Clear();
+            _list2d.Clear();
+        }
+
         public override void Dispose()
         {
             _hitbox.Dispose();

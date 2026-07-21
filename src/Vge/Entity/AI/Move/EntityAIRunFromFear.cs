@@ -39,7 +39,7 @@ namespace Vge.Entity.AI
                 if (_entity.Tracker.ClosestPlayer.IsSneaking()
                     && _entity.Tracker.DistantionPlayer > _maxDistanceForPlayer * .5f)
                 {
-                    probability *= .125f;
+                    probability *= .05f;
                 }
                 if (Rnd.NextFloat() < probability)
                 {
@@ -69,7 +69,7 @@ namespace Vge.Entity.AI
         public override void UpdateTask()
         {
             _entity.MoveHelper.SetSprinting();
-            if (Rnd.NextFloat() < .02f)
+            if (Rnd.NextFloat() < .01f)
             {
                 _entity.MoveHelper.SetJumping();
             }

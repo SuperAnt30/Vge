@@ -67,8 +67,6 @@ namespace Mvk2.Entity.List
 
             _tasks.AddTask(3, new EntityAIPanic(this, 1.6f));
 
-            
-
             //-_tasks.AddTask(2, new EntityAIFollowHome(this));
             //-_tasks.AddTask(2, new EntityAIFindNestSleep(this));
             _tasks.AddTask(4, new EntityAIFindEatGrass(this, .01f));

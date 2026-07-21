@@ -262,7 +262,7 @@ namespace Vge.Renderer
         public void DepthOff()
         {
             gl.Disable(GL.GL_DEPTH_TEST);
-            gl.DepthMask(0);
+            gl.DepthMask(0); // GL_FALSE
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace Vge.Renderer
         public void DepthOn()
         {
             gl.Enable(GL.GL_DEPTH_TEST);
-            gl.DepthMask(1);
+            gl.DepthMask(1); // GL_TRUE
         }
 
         #region Draw

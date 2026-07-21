@@ -136,6 +136,7 @@ namespace Vge.Renderer.World
         /// </summary>
         public void RespawnInWorld()
         {
+            Particles.Clear();
             _cursorRender.SetHeightChunks(_game.World.ChunkPr.Settings.NumberBlocks);
         }
 
