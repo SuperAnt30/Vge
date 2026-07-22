@@ -44,7 +44,7 @@ namespace Vge.Command
                     byte worldId = byte.Parse(world);
                     if (worldId != player.IdWorld)
                     {
-                        player.ChangeWorld(worldId);
+                        player.ChangeWorldBegin(worldId);
                         return ChatStyle.Green + L.S("WorldTp") + world;
                     }
                     return ChatStyle.Yellow + L.S("WorldTpNone");

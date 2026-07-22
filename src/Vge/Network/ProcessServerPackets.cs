@@ -1,10 +1,7 @@
-﻿using System;
-using Vge.Entity;
-using Vge.Entity.Player;
+﻿using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
-using Vge.Network.Packets.Server;
 using Vge.Util;
 
 namespace Vge.Network

@@ -2,13 +2,16 @@
 using Mvk2.Entity.List;
 using Mvk2.Entity.Particle;
 using Mvk2.Gui;
+using Mvk2.Renderer.World;
 using Mvk2.World;
 using Mvk2.World.Biome;
 using Mvk2.World.BlockEntity;
+using System;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Network.Packets.Server;
+using Vge.Renderer.World;
 using Vge.World;
 using WinGL.Actions;
 
@@ -34,6 +37,9 @@ namespace Mvk2.Games
             _windowMvk = window;
             Colors.CreateGrass(Biomes.ColorsGrass);
             Colors.CreateWater(Biomes.ColorsWater);
+#if DEBUG
+            Console.WriteLine("_construct GameModClientMvk");
+#endif
         }
 
         /// <summary>
@@ -48,6 +54,7 @@ namespace Mvk2.Games
             EntitiesRegMvk.InitId();
             BlocksEntityRegMvk.InitId();
             EntitiesFXRegMvk.InitId();
+
         }
 
         /// <summary>
@@ -55,8 +62,29 @@ namespace Mvk2.Games
         /// </summary>
         public override WorldSettings CreateWorldSettings(byte id)
         {
-            if (id == 2) return new WorldSettingsNightmare();
+#if DEBUG
+            Console.WriteLine("_function GameModClientMvk.CreateWorldSettings");
+#endif
+            // Определяем настройки, в зависимости от мира
+            if (id == 2)
+            {
+                Game.WorldRender.WorldStarted(new SkyRender(Game.Player, Game.WorldRender));
+                return new WorldSettingsNightmare();
+            }
+
+            Game.WorldRender.WorldStarted(new SkyIslandRender(Game.Player, Game.WorldRender));
             return new WorldSettingsIsland();
+        }
+
+        /// <summary>
+        /// Мир остановлен, стоп и смена мира
+        /// </summary>
+        public override void WorldStoped()
+        {
+#if DEBUG
+            Console.WriteLine("_function GameModClientMvk.ExitWorld");
+#endif
+            Game.WorldRender.WorldStoped();
         }
 
         /// <summary>

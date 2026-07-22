@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Gen;
+using System;
 using System.IO;
 using Vge.NBT;
 using Vge.World;
@@ -14,7 +15,12 @@ namespace Mvk2.World
         /// <summary>
         /// Для клиента
         /// </summary>
-        public WorldSettingsNightmare() : base() { }
+        public WorldSettingsNightmare() : base()
+        {
+#if DEBUG
+            Console.WriteLine("_construct WorldSettingsNightmare CLIENT");
+#endif
+        }
 
         /// <summary>
         /// Для сервера
@@ -28,6 +34,9 @@ namespace Mvk2.World
                 TagCompound nbt = NBTTools.ReadFromFile(_pathFileSetting, true);
                 Calendar.SetTickCounter((uint)nbt.GetLong("TickCounter"));
             }
+#if DEBUG
+            Console.WriteLine("_construct WorldSettingsNightmare SERVER");
+#endif
         }
 
         protected override void _Init()

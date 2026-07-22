@@ -1,6 +1,7 @@
 ﻿using Mvk2.Item;
 using Mvk2.World.BlockEntity.List;
 using Mvk2.World.Gen;
+using System;
 using System.IO;
 using Vge.Games;
 using Vge.Item;
@@ -23,7 +24,12 @@ namespace Mvk2.World
         /// <summary>
         /// Для клиента
         /// </summary>
-        public WorldSettingsIsland() : base() { }
+        public WorldSettingsIsland() : base()
+        {
+#if DEBUG
+            Console.WriteLine("_construct WorldSettingsIsland CLIENT");
+#endif
+        }
 
         /// <summary>
         /// Для сервера
@@ -32,7 +38,6 @@ namespace Mvk2.World
         {
             // Сид используется только в серверной части
             ChunkGenerate = new ChunkProviderGenerateIsland(NumberChunkSections, server.Settings.Seed);
-
             StorageHole = new BlockHole(server);
 
             if (File.Exists(_pathFileSetting))
@@ -55,6 +60,9 @@ namespace Mvk2.World
                 StorageHole.SetStackInSlot(17, new ItemStack(ItemsRegMvk.Cobblestone, 7));
                 StorageHole.SetStackInSlot(18, new ItemStack(ItemsRegMvk.Brol, 2));
             }
+#if DEBUG
+            Console.WriteLine("_construct WorldSettingsIsland SERVER");
+#endif
         }
 
         protected override void _Init()

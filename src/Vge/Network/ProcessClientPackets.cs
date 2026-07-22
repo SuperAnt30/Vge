@@ -91,7 +91,9 @@ namespace Vge.Network
         /// </summary>
         private void _UpdateReceivePacket(IPacket packet)
         {
-            //if (IsNet) Game.Log.Client("Packet {0:X}", packet.Id);
+            //if (IsNet) 
+            //if (packet.Id != 0x21) Game.Log.Client("Packet {0:X}", packet.Id);
+            //if (packet.Id != 0x21) Console.WriteLine("Packet {0:X}", packet.Id);
             switch (packet.Id)
             {
                 case 0x03: _Handle03JoinGame((PacketS03JoinGame)packet); break;

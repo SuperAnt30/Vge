@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Event;
 using Vge.Games;
@@ -99,12 +100,16 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Останавливаем мир
+        /// Останавливаем мир, НЕ смена миров
         /// </summary>
         public void Stoping()
         {
             WorldRender.Stoping();
             ChunkPrClient.Stoping();
+            Game.ModClient.WorldStoped();
+#if DEBUG
+            Console.WriteLine("_function WorldClient.Stoping");
+#endif
         }
 
         /// <summary>
@@ -112,6 +117,7 @@ namespace Vge.World
         /// </summary>
         public void PacketRespawnInWorld(PacketS07RespawnInWorld packet)
         {
+            Game.ModClient.WorldStoped();
             ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
             Settings = Game.ModClient.CreateWorldSettings(packet.IdSetting);
             Settings.PacketRespawnInWorld(packet);

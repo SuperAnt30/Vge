@@ -3,6 +3,7 @@ using Mvk2.Entity;
 using Mvk2.Entity.List;
 using Mvk2.Entity.Particle;
 using Mvk2.World.BlockEntity;
+using System;
 using Vge.Command;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -15,7 +16,12 @@ namespace Mvk2.Games
     /// </summary>
     public class GameModServerMvk : GameModServer
     {
-        public GameModServerMvk() : base() { }
+        public GameModServerMvk() : base()
+        {
+#if DEBUG
+            Console.WriteLine("_construct GameModServerMvk");
+#endif
+        }
 
         /// <summary>
         /// Создать объект сетевого игрока

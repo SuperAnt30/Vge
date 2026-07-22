@@ -20,7 +20,7 @@ namespace Vge.World.Сalendar
         /// <summary>
         /// Цвет неба
         /// </summary>
-        private readonly Vector3 _colorSky = new Vector3(.6f);
+        private readonly Vector3 _colorSky = new Vector3(1, 0, 0);//.6f);
         /// <summary>
         /// Цвет тумана
         /// </summary>

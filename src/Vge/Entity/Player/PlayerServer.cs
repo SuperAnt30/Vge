@@ -41,7 +41,7 @@ namespace Vge.Entity.Player
         /// Сколько мили секунд эта сущность прожила
         /// </summary>
         public double TimesExisted { get; private set; }
-        
+
         #region Anchor (якорь)
 
         /// <summary>
@@ -129,6 +129,18 @@ namespace Vge.Entity.Player
         /// Список сущностей не игрок, которые в ближайшем тике будут удалены
         /// </summary>
         private ListMessy<int> _destroyedItemsNetCache = new ListMessy<int>();
+        /// <summary>
+        /// Флаг, сущность переходит в другой мир
+        /// </summary>
+        private bool _flagChangeWorld;
+        /// <summary>
+        /// ID другово мира для перехода
+        /// </summary>
+        private byte _idChangeWorld;
+        /// <summary>
+        /// Счётчик перехода мира
+        /// </summary>
+        private int _changeWorldCounter;
 
         /// <summary>
         /// Создать сетевого
@@ -703,28 +715,60 @@ namespace Vge.Entity.Player
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override WorldServer GetWorldServer()
         {
-            if (_worldServer == null)
-            {
-                _worldServer = _server.Worlds.GetWorld(IdWorld);
-            }
+            //if (_worldServer == null)
+            //{
+            //    _worldServer = _server.Worlds.GetWorld(IdWorld);
+            //}
             return _worldServer;
         }
 
         /// <summary>
-        /// Смена мира, передаём новый id мира
+        /// Определить мир, при старте сингл
         /// </summary>
-        public void ChangeWorld(byte newIdWorld)
+        public void DefineWorld()
         {
-            GetWorldServer().RemovePlayerInWorldForNextWorld(this);
-            // Смена id мира
-            IdWorld = newIdWorld;
             _worldServer = _server.Worlds.GetWorld(IdWorld);
-            SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorldServer().Settings));
-            // Вносим в менеджер фрагментов игрока
-            IsDead = false;
-            GetWorldServer().PlayerForNextWorld(this);
-            // Установленный перемещенный якорь
-            MountedMovedAnchor();
+        }
+
+        /// <summary>
+        /// Начало смены мира, передаём новый id мира
+        /// </summary>
+        public void ChangeWorldBegin(byte newIdWorld)
+        {
+            if (IdWorld != newIdWorld)
+            {
+                // Выходим с мира
+                GetWorldServer().RemovePlayerInWorldForNextWorld(this);
+                // Устанавливаем флаги для нового мира
+                _flagChangeWorld = true;
+                _idChangeWorld = newIdWorld;
+                // Количество тактов до перехода в другой мир,
+                // нужны для выгрузки из старого. Причина разных потоков
+                _changeWorldCounter = 10;
+            }
+        }
+
+        /// <summary>
+        /// Провера окончании смены мира, если имеется, переходим
+        /// </summary>
+        public void ChangeWorldEnd()
+        {
+            if (_flagChangeWorld)
+            {
+                if (--_changeWorldCounter == 0)
+                {
+                    _flagChangeWorld = false;
+                    // Смена id мира
+                    IdWorld = _idChangeWorld;
+                    _worldServer = _server.Worlds.GetWorld(IdWorld);
+                    SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorldServer().Settings));
+                    // Вносим в менеджер фрагментов игрока
+                    IsDead = false;
+                    GetWorldServer().PlayerForNextWorld(this);
+                    // Установленный перемещенный якорь
+                    MountedMovedAnchor();
+                }
+            }
         }
 
         #endregion

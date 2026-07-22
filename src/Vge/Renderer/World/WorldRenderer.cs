@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
@@ -59,6 +60,10 @@ namespace Vge.Renderer.World
         /// Рендер курсоров
         /// </summary>
         private readonly CursorRender _cursorRender;
+        /// <summary>
+        /// Рендер неба
+        /// </summary>
+        private SkyRender _skyRender;
 
         /// <summary>
         /// Желаемый размер партии рендера чанков
@@ -76,16 +81,19 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Цвет неба
         /// </summary>
-        private Vector3 _colorSky = new Vector3(0);
+        public Vector3 ColorSky = new Vector3(0);
         /// <summary>
         /// Цвет тумана
         /// </summary>
-        private Vector3 _colorFog = new Vector3(0);
+        public Vector3 ColorFog = new Vector3(0);
         /// <summary>
         /// Параметр ветра для шедора
         /// </summary>
         private float _wind;
-
+        /// <summary>
+        /// Запущен ли мир для прорисовки
+        /// </summary>
+        private bool _isWorldDrawRun;
 
         public WorldRenderer(GameBase game) : base(game)
         {
@@ -95,6 +103,10 @@ namespace Vge.Renderer.World
             Entities = new EntitiesRenderer(game, _arrayChunkRender);
             Particles = new ParticlesRenderer(game);
             Shadow = new ShadowMapping(gl);
+
+#if DEBUG
+            Console.WriteLine("_construct WorldRenderer");
+#endif
         }
 
         /// <summary>
@@ -110,6 +122,10 @@ namespace Vge.Renderer.World
 
             // Для отладки карта теней
             Shadow.InitDebug();
+
+#if DEBUG
+            Console.WriteLine("_function WorldRenderer.GameStarting");
+#endif
         }
 
         /// <summary>
@@ -229,13 +245,16 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Останавливаем мир, возможно смена миров
+        /// Останавливаем мир, НЕ смена миров
         /// </summary>
         public void Stoping() 
         {
             _flagRenderLoopRunning = false;
             // Сигнализируем, что waitHandler в сигнальном состоянии
             _waitHandler.Set();
+#if DEBUG
+            Console.WriteLine("_function WorldRender.Stoping");
+#endif
         }
 
         /// <summary>
@@ -260,84 +279,98 @@ namespace Vge.Renderer.World
             // Debug.Text = Gi.ViewLightDir.ToString();
         }
 
+#if DEBUG
+        private bool _flagDrawDebug;
+#endif
         /// <summary>
         /// Метод для прорисовки кадра
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public override void Draw(float timeIndex)
         {
-            // Обновить кадр основного игрока, камера и прочее
-            _game.Player.UpdateFrame(timeIndex);
-
-            // Биндим чанки вокселей и готовим массив чанков
-            // В игровом такте нельзя, так-как кадр чаще, при резком вращении, видны фантомы не загруженных чанков 18.11.2025
-            _BindChunkVoxel();
-
-            Entities.UpdateMatrix(timeIndex);
-
-            // Параметр ветра
-            _Wind(timeIndex);
-
-            // Буфер есть работаем дальше
-            if (Shadow.RenderSceneBegin())
+            if (_isWorldDrawRun)
             {
-                // --- Начало сцены ТЕНЕЙ
+#if DEBUG
+                if (!_flagDrawDebug)
+                {
+                    Console.WriteLine("_function WorldRenderer.Draw");
+                    _flagDrawDebug = true;
+                }
+#endif
+                // Обновить кадр основного игрока, камера и прочее
+                _game.Player.UpdateFrame(timeIndex);
+
+                // Биндим чанки вокселей и готовим массив чанков
+                // В игровом такте нельзя, так-как кадр чаще, при резком вращении, видны фантомы не загруженных чанков 18.11.2025
+                _BindChunkVoxel();
+
+                Entities.UpdateMatrix(timeIndex);
+
+                // Параметр ветра
+                _Wind(timeIndex);
+
+                // Буфер есть работаем дальше
+                if (Shadow.RenderSceneBegin())
+                {
+                    // --- Начало сцены ТЕНЕЙ
 
 
+
+                    // Рисуем воксели сплошных и уникальных блоков
+                    // gl.Enable(GL.GL_CULL_FACE);
+                    //gl.Disable(GL.GL_CULL_FACE);
+                    // gl.CullFace(GL.GL_BACK);
+                    _DrawVoxelDenseDepthMap(timeIndex);
+                    // gl.CullFace(GL.GL_BACK);
+                    // Сущности
+                    Entities.DrawDepthMap(timeIndex);
+                    // Частички, нужны ли в тени ?
+                    //Particles.DrawDepthMap(timeIndex);
+
+                    // Облака
+                    _skyRender.DrawClouds(timeIndex);
+
+                    // --- Конец сцены ТЕНЕЙ
+
+                    // Меняем буфер экрана
+                    gl.BindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+                    gl.Viewport(0, 0, Gi.Width, Gi.Height);
+                }
+
+                gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+
+                // --- Начало сцены
+                gl.ClearColor(ColorFog.X, ColorFog.Y, ColorFog.Z, 1f);
+
+                // Небо
+                _skyRender.DrawSky(timeIndex);
 
                 // Рисуем воксели сплошных и уникальных блоков
-               // gl.Enable(GL.GL_CULL_FACE);
-                //gl.Disable(GL.GL_CULL_FACE);
-               // gl.CullFace(GL.GL_BACK);
-                _DrawVoxelDenseDepthMap(timeIndex);
-               // gl.CullFace(GL.GL_BACK);
+                _DrawVoxelDense(timeIndex);
                 // Сущности
-                Entities.DrawDepthMap(timeIndex);
-                // Частички, нужны ли в тени ?
-                //Particles.DrawDepthMap(timeIndex);
-
+                Entities.Draw(timeIndex);
+                // Рендер и прорисовка курсора если это необходимо
+                _cursorRender.RenderDraw();
+                // Прорисовка вид не с руки, а видим себя
+                Entities.DrawOwner(timeIndex);
+                // Частички
+                Particles.Draw(timeIndex);
                 // Облака
-                _DrawClouds(timeIndex);
+                _skyRender.DrawClouds(timeIndex);
 
-                // --- Конец сцены ТЕНЕЙ
+                // Прорисовка руки
+                Entities.DrawOwnerEye(timeIndex);
 
-                // Меняем буфер экрана
-                gl.BindFramebuffer(GL.GL_FRAMEBUFFER, 0);
-                gl.Viewport(0, 0, Gi.Width, Gi.Height);
+                // Рисуем воксели альфа
+                _DrawVoxelAlpha();
+
+
+                // --- Конец сцены
+
+                // Отладка на экране карта глубины для теней
+                //Shadow.DrawQuadDebug(Render.GetOrtho2D());
             }
-            
-            gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
-
-            // --- Начало сцены
-            
-            // Небо
-            _DrawSky(timeIndex);
-
-            // Рисуем воксели сплошных и уникальных блоков
-            _DrawVoxelDense(timeIndex);
-            // Сущности
-            Entities.Draw(timeIndex);
-            // Рендер и прорисовка курсора если это необходимо
-            _cursorRender.RenderDraw();
-            // Прорисовка вид не с руки, а видим себя
-            Entities.DrawOwner(timeIndex);
-            // Частички
-            Particles.Draw(timeIndex);
-            // Облака
-            _DrawClouds(timeIndex);
-
-            // Прорисовка руки
-            Entities.DrawOwnerEye(timeIndex);
-
-            // Рисуем воксели альфа
-            _DrawVoxelAlpha();
-            
-
-            // --- Конец сцены
-
-            // Отладка на экране карта глубины для теней
-            //Shadow.DrawQuadDebug(Render.GetOrtho2D());
         }
 
         /// <summary>
@@ -350,8 +383,8 @@ namespace Vge.Renderer.World
                 IСalendar calendar = _game.World.Settings.Calendar;
                 calendar.UpdateFrame(timeIndex);
                 Gi.ViewLightDir = calendar.GetVectorLight();
-                _colorSky = calendar.GetColorSky();
-                _colorFog = calendar.GetColorFog();
+                ColorSky = calendar.GetColorSky();
+                ColorFog = calendar.GetColorFog();
 
                 Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
                 Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
@@ -468,7 +501,7 @@ namespace Vge.Renderer.World
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
                 (int)_game.World.GetTickCounter(), _wind, _overviewBlock,
-                _colorFog, 5);
+                ColorFog, 5);
 
             if (Debug.IsDrawVoxelLine)
             {
@@ -540,21 +573,25 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Прорисовка неба
+        /// Мир запущен, старт и смена мира
         /// </summary>
-        private void _DrawSky(float timeIndex)
+        public void WorldStarted(SkyRender skyRender)
         {
-            gl.ClearColor(_colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
-
-
+            _skyRender?.Dispose();
+            _skyRender = skyRender;
+            _isWorldDrawRun = true;
         }
 
         /// <summary>
-        /// Облака неба
+        /// Мир остановлен, стоп и смена мира
         /// </summary>
-        private void _DrawClouds(float timeIndex)
+        public void WorldStoped()
         {
-
+            _isWorldDrawRun = false;
+            _skyRender?.Dispose();
+#if DEBUG
+            _flagDrawDebug = false;
+#endif
         }
 
         public override void Dispose()

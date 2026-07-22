@@ -352,7 +352,10 @@ namespace Vge.Management
             {
                 countPl++;
                 _PlayerServerUpdateTimeOut(_players[i]);
+                _players[i].ChangeWorldEnd();
             }
+            PlayerOwner.ChangeWorldEnd();
+
             // Отладка
             if (Ce.IsDebugDrawChunks)
             {
@@ -479,8 +482,15 @@ namespace Vge.Management
             {
                 // Игрок загружен
                 // Проверка токенов
-                return token.Equals(entityPlayer.Token);
+                if (token.Equals(entityPlayer.Token))
+                {
+                    // Меняем мир игроку если надо
+                    entityPlayer.DefineWorld();
+                    return true;
+                }
+                return false;
             }
+
             // Игрок впервые зашёл, создаём
             entityPlayer.CreatePlayer();
             return true;

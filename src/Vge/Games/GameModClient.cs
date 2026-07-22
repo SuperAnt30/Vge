@@ -34,7 +34,10 @@ namespace Vge.Games
 
         public GameModClient(WindowMain window) => _window = window;
 
-        public void Init(GameBase game) => Game = game;
+        public void Init(GameBase game)
+        {
+            Game = game;
+        }
 
         /// <summary>
         /// Объект экрана
@@ -65,6 +68,11 @@ namespace Vge.Games
         /// Создать настройки мира по id
         /// </summary>
         public virtual WorldSettings CreateWorldSettings(byte id) => null;
+
+        /// <summary>
+        /// Мир остановлен, стоп и смена мира
+        /// </summary>
+        public virtual void WorldStoped() { }
 
         /// <summary>
         /// Создать объект сетевого игрока
