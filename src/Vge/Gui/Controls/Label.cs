@@ -1,6 +1,7 @@
 ﻿using System;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.Mesh;
 using WinGL.Actions;
 using WinGL.Util;
 

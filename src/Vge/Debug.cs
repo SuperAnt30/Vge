@@ -2,6 +2,7 @@
 using Vge.Event;
 using Vge.Realms;
 using Vge.Renderer;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 using Vge.World.Chunk;
 using WinGL.Util;

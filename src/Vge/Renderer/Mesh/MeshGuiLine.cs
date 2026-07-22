@@ -1,12 +1,12 @@
 ﻿using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки для 2д gui линий с цветом альфа без текстуры
     /// Не используем EBO
     /// </summary>
-    public class MeshGuiLine : Mesh
+    public class MeshGuiLine : MeshBase
     {
         public MeshGuiLine(GL gl) : base(gl) { }
 

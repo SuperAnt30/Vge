@@ -2,12 +2,12 @@
 using Vge.Entity.Render;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки для сущностей с текстурой
     /// </summary>
-    public class MeshEntity : Mesh
+    public class MeshEntity : MeshBase
     {
         /// <summary>
         /// Дополнительный буфер для int данных

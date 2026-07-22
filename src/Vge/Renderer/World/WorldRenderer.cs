@@ -297,7 +297,7 @@ namespace Vge.Renderer.World
                 //Particles.DrawDepthMap(timeIndex);
 
                 // Облака
-                //_DrawClouds(timeIndex);
+                _DrawClouds(timeIndex);
 
                 // --- Конец сцены ТЕНЕЙ
 
@@ -310,10 +310,9 @@ namespace Vge.Renderer.World
 
 
             // --- Начало сцены
-            gl.ClearColor(_colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
-
+            
             // Небо
-            //DrawSky(timeIndex);
+            _DrawSky(timeIndex);
 
             // Рисуем воксели сплошных и уникальных блоков
             _DrawVoxelDense(timeIndex);
@@ -326,7 +325,7 @@ namespace Vge.Renderer.World
             // Частички
             Particles.Draw(timeIndex);
             // Облака
-            //_DrawClouds(timeIndex);
+            _DrawClouds(timeIndex);
 
             // Прорисовка руки
             Entities.DrawOwnerEye(timeIndex);
@@ -538,6 +537,24 @@ namespace Vge.Renderer.World
 
             gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
             gl.PolygonOffset(0, 0);
+        }
+
+        /// <summary>
+        /// Прорисовка неба
+        /// </summary>
+        private void _DrawSky(float timeIndex)
+        {
+            gl.ClearColor(_colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
+
+
+        }
+
+        /// <summary>
+        /// Облака неба
+        /// </summary>
+        private void _DrawClouds(float timeIndex)
+        {
+
         }
 
         public override void Dispose()

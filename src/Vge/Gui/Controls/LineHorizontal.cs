@@ -1,4 +1,5 @@
 ﻿using Vge.Renderer;
+using Vge.Renderer.Mesh;
 
 namespace Vge.Gui.Controls
 {

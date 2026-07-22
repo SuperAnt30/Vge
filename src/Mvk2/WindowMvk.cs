@@ -19,6 +19,7 @@ using Mvk2.World.BlockEntity;
 using System.Runtime.CompilerServices;
 using Vge.Audio;
 using Mvk2.Entity.Particle;
+using Vge.Renderer.Mesh;
 
 namespace Mvk2
 {

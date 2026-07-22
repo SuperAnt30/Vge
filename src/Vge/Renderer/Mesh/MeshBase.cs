@@ -2,12 +2,12 @@
 using System.Runtime.CompilerServices;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект буфера сетки через VAO
     /// </summary>
-    public abstract class Mesh : IDisposable
+    public abstract class MeshBase : IDisposable
     {
         protected uint _ebo;
         protected readonly uint _vao;
@@ -26,7 +26,7 @@ namespace Vge.Renderer
         /// </summary>
         protected int _vertexSize;
 
-        public Mesh(GL gl)
+        public MeshBase(GL gl)
         {
             _gl = gl;
             uint[] id = new uint[1];

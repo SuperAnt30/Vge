@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
 using Vge.Item;
+using Vge.Renderer.Mesh;
 using Vge.Renderer.Shaders;
 using WinGL.OpenGL;
 

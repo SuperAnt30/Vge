@@ -1,6 +1,6 @@
 ﻿using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки частички, с текстурой

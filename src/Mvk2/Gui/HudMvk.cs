@@ -4,6 +4,7 @@ using Vge.Games;
 using Vge.Gui.Huds;
 using Vge.Item;
 using Vge.Renderer;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 using WinGL.OpenGL;
 

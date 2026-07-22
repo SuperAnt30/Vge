@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity;
+using Vge.Renderer.Mesh;
 using WinGL.OpenGL;
 using WinGL.Util;
 

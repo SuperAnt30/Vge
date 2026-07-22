@@ -2,6 +2,7 @@
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.Mesh;
 
 namespace Vge.Gui.Huds
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Vge.Realms;
 using Vge.Renderer;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 
 namespace Vge.Gui.Screens

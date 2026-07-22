@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Vge.Gui.Controls;
 using Vge.Realms;
 using Vge.Renderer;
+using Vge.Renderer.Mesh;
 using WinGL.Actions;
 
 namespace Vge.Gui.Screens

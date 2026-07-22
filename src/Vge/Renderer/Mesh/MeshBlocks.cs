@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using Vge.Renderer.World;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки для воксельного мира с цветом альфа без текстуры
     /// </summary>
-    public class MeshBlocks : Mesh
+    public class MeshBlocks : MeshBase
     {
         /// <summary>
         /// Пометка изменения

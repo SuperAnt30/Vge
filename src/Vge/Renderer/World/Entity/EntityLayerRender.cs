@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
+using Vge.Renderer.Mesh;
 
 namespace Vge.Renderer.World.Entity
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vge.Entity.Player;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;

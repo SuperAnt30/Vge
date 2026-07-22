@@ -1,11 +1,11 @@
 ﻿using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки частички, без текстуры
     /// </summary>
-    public class MeshParticle : Mesh
+    public class MeshParticle : MeshBase
     {
         public MeshParticle(GL gl, float[] buffer) : base(gl)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
+using Vge.Renderer.Mesh;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.World.Entity
@@ -13,7 +14,7 @@ namespace Vge.Renderer.World.Entity
         /// <summary>
         /// Сетка частички
         /// </summary>
-        private readonly Mesh _mesh;
+        private readonly MeshBase _mesh;
 
         public ParticleRender(GL gl, bool texture, float[] buffer)
         {

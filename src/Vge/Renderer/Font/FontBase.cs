@@ -1,4 +1,5 @@
 ﻿using System;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
@@ -38,7 +39,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Сетка шрифта
         /// </summary>
-        private Mesh _mesh;
+        private MeshBase _mesh;
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа с учётом размера интерфейса
         /// </summary>
@@ -557,7 +558,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Перезалить в сторонюю сетку
         /// </summary>
-        public void Reload(Mesh mesh)
+        public void Reload(MeshBase mesh)
         {
             if (mesh != null)
             {

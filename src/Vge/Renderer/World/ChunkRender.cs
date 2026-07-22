@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;

@@ -1,11 +1,11 @@
 ﻿using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки квадрата 2д, для отладки
     /// </summary>
-    public class MeshQuad : Mesh
+    public class MeshQuad : MeshBase
     {
         public MeshQuad(GL gl, float x1, float y1, float x2, float y2) : base(gl)
         {

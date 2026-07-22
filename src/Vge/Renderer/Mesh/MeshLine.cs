@@ -1,13 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки для 3д линий с цветом альфа без текстуры
     /// Не используем EBO
     /// </summary>
-    public class MeshLine : Mesh
+    public class MeshLine : MeshBase
     {
         /// <summary>
         /// Тип отрисовки.

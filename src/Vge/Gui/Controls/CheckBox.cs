@@ -1,5 +1,6 @@
 ﻿using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.Mesh;
 using WinGL.Actions;
 
 namespace Vge.Gui.Controls

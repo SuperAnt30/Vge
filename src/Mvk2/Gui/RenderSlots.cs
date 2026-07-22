@@ -4,6 +4,7 @@ using Vge.Item;
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.Mesh;
 using Vge.Util;
 
 namespace Mvk2.Gui

@@ -1,12 +1,12 @@
 ﻿using Vge.Entity.Render;
 using WinGL.OpenGL;
 
-namespace Vge.Renderer
+namespace Vge.Renderer.Mesh
 {
     /// <summary>
     /// Объект сетки для сущностей и предметов с текстурой для Gui
     /// </summary>
-    public class MeshGuiEntity : Mesh
+    public class MeshGuiEntity : MeshBase
     {
         public MeshGuiEntity(GL gl) : base(gl) { }
 

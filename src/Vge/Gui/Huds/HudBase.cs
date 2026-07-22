@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Vge.Games;
 using Vge.Renderer;
-using WinGL.Util;
+using Vge.Renderer.Mesh;
 
 namespace Vge.Gui.Huds
 {

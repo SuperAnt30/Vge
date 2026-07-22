@@ -2,6 +2,7 @@
 using System.Configuration;
 using Vge.Renderer;
 using Vge.Renderer.Font;
+using Vge.Renderer.Mesh;
 using WinGL.Util;
 
 namespace Vge.Gui
