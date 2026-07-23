@@ -402,7 +402,7 @@ namespace Vge.Entity.Player
             else
             {
                 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
-                   0.01f, OverviewChunk * 22f);
+                   0.01f, (OverviewChunk + 4) * 16f);
             }
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
@@ -1081,7 +1081,7 @@ namespace Vge.Entity.Player
                 Ce.OverviewAlphaSphere = Sundry.GenOverviewSphere(overviewChunk < Gi.UpdateAlphaChunk
                     ? overviewChunk : Gi.UpdateAlphaChunk);
                 // Корректируем FrustumCulling
-                _InitFrustumCulling();
+                _CameraHasBeenChanged();
                 // Меняем в рендере мира
                 _game.WorldRender.ModifyOverviewChunk();
                 // Отправим обзор 

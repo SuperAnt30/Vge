@@ -53,6 +53,10 @@ namespace Vge.Renderer
         /// Шейдора для блоков
         /// </summary>
         public readonly ShadersBlocks ShsBlocks;
+        /// <summary>
+        /// Шейдор неба
+        /// </summary>
+        public readonly ShaderSky ShSky;
 
         /// <summary>
         /// Время выполнения кадра
@@ -91,6 +95,7 @@ namespace Vge.Renderer
             ShLine = new ShaderLine(gl);
             ShsBlocks = new ShadersBlocks(gl, "BlocksLow", "BlocksHigh", "BlocksDepthMap");
             ShsEntity = new ShadersEntity(gl, "EntityGui", "EntityLow", "EntityHigh", "EntityDepthMap");
+            ShSky = new ShaderSky(gl);
 
             _Initialize();
         }
@@ -180,6 +185,18 @@ namespace Vge.Renderer
             ShLine.Bind();
             ShLine.SetUniformMatrix4("view", view);
             ShLine.SetUniform3("pos", posX, posY, posZ);
+        }
+
+        /// <summary>
+        /// Связать шейдер Sky
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ShaderBindSky(float[] view, Vector3 color, Vector3 colorFog)
+        {
+            ShSky.Bind();
+            ShSky.SetUniformMatrix4("view", view);
+            ShSky.SetUniform3("color", color.X, color.Y, color.Z);
+            ShSky.SetUniform3("colorfog", colorFog.X, colorFog.Y, colorFog.Z);
         }
 
         #endregion

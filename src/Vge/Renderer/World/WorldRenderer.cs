@@ -76,7 +76,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Обзор в блоках
         /// </summary>
-        private int _overviewBlock = 32;
+        public int OverviewBlock = 32;
 
         /// <summary>
         /// Цвет неба
@@ -134,7 +134,8 @@ namespace Vge.Renderer.World
         public void ModifyOverviewChunk()
         { 
             _arrayChunkRender.Resize(Ce.OverviewCircles.Length);
-            _overviewBlock = _game.Player.OverviewChunk * 16;
+            OverviewBlock = _game.Player.OverviewChunk * 16;
+            _skyRender?.ModifyOverviewChunk(OverviewBlock);
         }
 
         /// <summary>
@@ -500,7 +501,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _wind, _overviewBlock,
+                (int)_game.World.GetTickCounter(), _wind, OverviewBlock,
                 ColorFog, 5);
 
             if (Debug.IsDrawVoxelLine)
@@ -589,6 +590,7 @@ namespace Vge.Renderer.World
         {
             _isWorldDrawRun = false;
             _skyRender?.Dispose();
+            _skyRender = null;
 #if DEBUG
             _flagDrawDebug = false;
 #endif
