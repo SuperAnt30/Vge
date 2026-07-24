@@ -54,6 +54,11 @@ namespace Vge.World.Сalendar
         float GetMoonLight();
 
         /// <summary>
+        /// Получить небесный угол
+        /// </summary>
+        float GetCelestialAngle();
+
+        /// <summary>
         /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
         /// </summary>
         int GetSkylightSubtracted();

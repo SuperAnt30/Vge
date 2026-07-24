@@ -89,7 +89,7 @@ namespace Vge.Gui.Screens
             _sliderMouseSensitivity = new Slider(window, font, 200, 0, 100, 1, L.T("MouseSensitivity"));
             _sliderMouseSensitivity.SetValue(Options.MouseSensitivity);
 
-            _sliderOverviewChunk = new Slider(window, font, 200, 2, 64, 1, L.T("OverviewChunk"));
+            _sliderOverviewChunk = new Slider(window, font, 200, 4, 64, 1, L.T("OverviewChunk"));
             _sliderOverviewChunk.SetValue(Options.OverviewChunk);
 
             _checkBoxBigInterface = new CheckBox(window, font, 200, L.T("BigInterface"));

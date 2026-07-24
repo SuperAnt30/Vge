@@ -6,20 +6,36 @@
     public enum EnumMoonPhase
     {
         /// <summary>
-        /// Новолуние, когда Луна не видна
+        /// #0 Новолуние, когда Луна не видна
         /// </summary>
         NewMoon,
         /// <summary>
-        /// Растущая луна
+        /// #1 Hастущий серп (молодая луна)
         /// </summary>
-        GrowingMoon,
+        WaxingCrescent,
         /// <summary>
-        /// Полнолуние, когда освещена вся Луна целиком
+        /// #2 Первая четверь
+        /// </summary>
+        FirstQuarter,
+        /// <summary>
+        /// 3# Растущая выпуклая луна
+        /// </summary>
+        WaxingGibbous,
+        /// <summary>
+        /// #4 Полнолуние, когда освещена вся Луна целиком
         /// </summary>
         FullMoon,
         /// <summary>
-        /// Стареющая луна
+        /// #5 Убывающая выпуклая луна
         /// </summary>
-        AgingMoon
+        WaningGibbous,
+        /// <summary>
+        /// #6 Третья четверть
+        /// </summary>
+        ThirdQuarter,
+        /// <summary>
+        /// #7 убывающий серп
+        /// </summary>
+        WaningCrescent
     }
 }

@@ -72,7 +72,8 @@ namespace Mvk2.Games
                 return new WorldSettingsNightmare();
             }
 
-            Game.WorldRender.WorldStarted(new SkyIslandRender(Game.Player, Game.WorldRender));
+            Game.WorldRender.WorldStarted(new SkyIslandRender(
+                Game.Player, Game.WorldRender, _windowMvk.GetRender()));
             return new WorldSettingsIsland();
         }
 

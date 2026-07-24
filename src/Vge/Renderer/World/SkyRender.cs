@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Renderer.Mesh;
+using Vge.Renderer.Shaders;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -28,55 +29,93 @@ namespace Vge.Renderer.World
         protected readonly PlayerClientOwner _player;
 
         /// <summary>
+        /// Шейдор неба
+        /// </summary>
+        protected readonly ShaderSky _shSky;
+        /// <summary>
         /// Сетка неба
         /// </summary>
         private readonly MeshSky _mesh;
+        /// <summary>
+        /// Количество сегментов окружности
+        /// </summary>
+        protected int _segments = 16;
+        /// <summary>
+        /// Верхняя высота
+        /// </summary>
+        protected int _heightUp = 32;
+        /// <summary>
+        /// Средняя высота, примерно для глаз
+        /// </summary>
+        protected int _heightCenter = 8;
+        /// <summary>
+        /// Нижняя высота
+        /// </summary>
+        protected int _heightDown = -16;
+        /// <summary>
+        /// Обзор в блоках
+        /// </summary>
+        protected int _overviewBlock;
+
+        private Vector3 _colorSky;
+        private Vector3 _colorFog;
 
         public SkyRender(PlayerClientOwner player, WorldRenderer worldRenderer)
         {
             _worldRenderer = worldRenderer;
             _player = player;
+            _overviewBlock = _player.OverviewChunk * 16;
             gl = worldRenderer.GetOpenGL();
-            _mesh = new MeshSky(gl);
-            _mesh.Reload(_GenBuffer(_player.OverviewChunk * 16));
+            _mesh = new MeshSky(gl, GL.GL_STATIC_DRAW);
+            _mesh.Reload(_GenBuffer());
+            _shSky = new ShaderSky(gl);
         }
 
-        private float[] _GenBuffer(int overviewBlock)
+        private float[] _GenBuffer()
         {
-            float fob = overviewBlock + 32;
-            float fy = 32;// 24;
-            float fyd = 8;
-
             List<float> list = new List<float>();
-
-            int segments = 32;
-
-            float angleStep = Glm.Pi360 / segments;
-
-            float x, z, x0, z0;
+            float fob = _overviewBlock + 32;
+            float angleStep = Glm.Pi360 / _segments;
+            float x, z, x0, z0, currentAngle;
             x0 = z0 = 0;
 
             // Генерация вершин по окружности
-            for (int i = 0; i <= segments; i++)
+            for (int i = 0; i <= _segments; i++)
             {
-                float currentAngle = angleStep * i;
+                currentAngle = angleStep * i;
                 x = fob * Glm.Cos(currentAngle);
                 z = fob * Glm.Sin(currentAngle);
 
                 if (i > 0)
                 {
                     list.AddRange(new float[] {
-                        x, fy, z, 0,
-                        0, fy, 0, 0,
-                        x0, fy, z0, 0,
+                        // Up
+                        x, _heightUp, z, 0,
+                        0, _heightUp, 0, 0,
+                        x0, _heightUp, z0, 0,
 
-                        x, fyd, z, 1,
-                        x, fy, z, 0,
-                        x0, fy, z0, 0,
+                        // Up side
+                        x, _heightCenter, z, 1,
+                        x, _heightUp, z, 0,
+                        x0, _heightUp, z0, 0,
 
-                        x0, fyd, z0, 1,
-                        x, fyd, z, 1,
-                        x0, fy, z0, 0
+                        x0, _heightCenter, z0, 1,
+                        x, _heightCenter, z, 1,
+                        x0, _heightUp, z0, 0,
+
+                        // Down side
+                        x, _heightDown * 4, z, 1,
+                        x, _heightCenter, z, 1,
+                        x0, _heightCenter, z0, 1,
+
+                        x0, _heightDown * 4, z0, 1,
+                        x, _heightDown * 4, z, 1,
+                        x0, _heightCenter, z0, 1,
+
+                        // Down
+                        x0, _heightDown * 4, z0, 1,
+                        0, _heightDown * 4, 0, 1,
+                        x, _heightDown * 4, z, 1,
                     });
                 }
 
@@ -90,9 +129,20 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Изменён обзор чанков
         /// </summary>
-        public void ModifyOverviewChunk(int overviewBlock)
+        public virtual void ModifyOverviewChunk(int overviewBlock)
         {
-            _mesh.Reload(_GenBuffer(overviewBlock));
+            _overviewBlock = overviewBlock;
+            _mesh.Reload(_GenBuffer());
+        }
+
+        /// <summary>
+        /// Игровой такт
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void Update()
+        {
+            _colorSky = _worldRenderer.ColorSky;
+            _colorFog = _worldRenderer.ColorFog;
         }
 
         /// <summary>
@@ -110,9 +160,13 @@ namespace Vge.Renderer.World
                 _worldRenderer.Render.DepthOff();
             }
 
-            _worldRenderer.Render.ShaderBindSky(Gi.MatrixView, _worldRenderer.ColorSky,
-                _worldRenderer.ColorFog);
+            _shSky.Bind();
+            _shSky.SetUniformMatrix4("view", Gi.MatrixView);
+            _shSky.SetUniform4("color", _colorSky.X, _colorSky.Y, _colorSky.Z, 1f);
+            _shSky.SetUniform4("colorfog", _colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
             _mesh.Draw();
+
+            _DrawAddElementSky(timeIndex);
 
             if (Debug.IsDrawVoxelLine)
             {
@@ -131,9 +185,17 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DrawClouds(float timeIndex) { }
 
+        /// <summary>
+        /// Дополнительные элементы неба
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual void _DrawAddElementSky(float timeIndex) { }
+
+
         public virtual void Dispose()
         {
             _mesh.Dispose();
+            _shSky.Delete();
         }
     }
 }

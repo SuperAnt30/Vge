@@ -82,6 +82,16 @@ namespace Mvk2.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureConteinerStorage() => Texture.BindTexture(_textureIndexMvk.ConteinerStorage);
+        /// <summary>
+        /// Запустить текстуру солнца
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureSun() => Texture.BindTexture(_textureIndexMvk.Sun);
+        /// <summary>
+        /// Запустить текстуру луны
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureMoon() => Texture.BindTexture(_textureIndexMvk.Moon);
 
         #endregion
 
@@ -124,6 +134,14 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.ConteinerStorage.ToString()))
             {
                 _textureIndexMvk.ConteinerStorage = Texture.SetTexture(buffereds[EnumTextureMvk.ConteinerStorage.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Sun.ToString()))
+            {
+                _textureIndexMvk.Sun = Texture.SetTexture(buffereds[EnumTextureMvk.Sun.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.Moon.ToString()))
+            {
+                _textureIndexMvk.Moon = Texture.SetTexture(buffereds[EnumTextureMvk.Moon.ToString()]);
             }
         }
     }

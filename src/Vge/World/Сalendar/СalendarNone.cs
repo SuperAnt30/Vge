@@ -78,6 +78,12 @@ namespace Vge.World.Сalendar
         public float GetMoonLight() => .12f;
 
         /// <summary>
+        /// Получить небесный угол
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetCelestialAngle() => 0;
+
+        /// <summary>
         /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

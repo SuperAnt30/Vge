@@ -140,6 +140,8 @@ namespace WinGL.OpenGL
         private glCheckFramebufferStatus delegateCheckFramebufferStatus;
         private delegate void glFramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level);
         private glFramebufferTexture2D delegateFramebufferTexture2D;
+        private delegate void glBlendFuncSeparate(uint sfactorRGB, uint dfactorRGB, uint sfactorAlpha, uint dfactorAlpha);
+        private glBlendFuncSeparate delegateBlendFuncSeparate;
 
         #endregion
 
@@ -465,6 +467,13 @@ namespace WinGL.OpenGL
             if (delegateFramebufferTexture2D == null)
                 delegateFramebufferTexture2D = GetDelegate<glFramebufferTexture2D>() as glFramebufferTexture2D;
             delegateFramebufferTexture2D(target, attachment, textarget, texture, level);
+        }
+
+        public void BlendFuncSeparate(uint sfactorRGB, uint dfactorRGB, uint sfactorAlpha, uint dfactorAlpha)
+        {
+            if (delegateBlendFuncSeparate == null)
+                delegateBlendFuncSeparate = GetDelegate<glBlendFuncSeparate>() as glBlendFuncSeparate;
+            delegateBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
         }
 
         #endregion

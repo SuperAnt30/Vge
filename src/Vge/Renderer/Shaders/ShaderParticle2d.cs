@@ -15,8 +15,7 @@ namespace Vge.Renderer.Shaders
             Create("EntityParticle2d", vsh, fsh,
                 new Dictionary<uint, string> {
                     { 0, "v_position" },
-                    { 1, "v_texCoord" },
-                    { 2, "v_color" }
+                    { 1, "v_texCoord" }
                 });
         }
     }

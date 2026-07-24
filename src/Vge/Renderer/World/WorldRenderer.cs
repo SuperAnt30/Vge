@@ -277,6 +277,8 @@ namespace Vge.Renderer.World
             // Считаем вектор, матрицы и прочее из календаря
             _GenVectorLightСalendar(0);
 
+            _skyRender.Update();
+
             // Debug.Text = Gi.ViewLightDir.ToString();
         }
 

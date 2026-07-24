@@ -1,11 +1,12 @@
-﻿using WinGL.OpenGL;
+﻿using Vge.Renderer.Mesh;
+using WinGL.OpenGL;
 
-namespace Vge.Renderer.Mesh
+namespace Mvk2.Renderer.Mesh
 {
     /// <summary>
-    /// Объект сетки неба, без текстуры
+    /// Объект сетки для элементов неба, с текстурой
     /// </summary>
-    public class MeshSky : MeshBase
+    public class MeshSkyElement : MeshBase
     {
         /// <summary>
         /// Тип отрисовки.
@@ -16,25 +17,14 @@ namespace Vge.Renderer.Mesh
         private readonly uint _typeDraw;
 
         /// <summary>
-        /// Объект сетки неба, без текстуры
+        /// Объект сетки для элементов неба, с текстурой
         /// </summary>
         /// <param name="typeDraw">GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_STREAM_DRAW</param>
-        public MeshSky(GL gl, uint typeDraw) : base(gl)
+        public MeshSkyElement(GL gl, uint typeDraw) : base(gl)
             => _typeDraw = typeDraw;
 
-        protected override void _InitEbo() { }
-
         protected override void _InitAtributs()
-            => _InitAtributs(new int[] { 3, 1 });
-
-        /// <summary>
-        /// Прорисовать меш с линиями GL_LINES
-        /// </summary>
-        public override void Draw()
-        {
-            _gl.BindVertexArray(_vao);
-            _gl.DrawArrays(GL.GL_TRIANGLES, 0, _countVertices);
-        }
+            => _InitAtributs(new int[] { 3, 2 });
 
         /// <summary>
         /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
@@ -44,10 +34,9 @@ namespace Vge.Renderer.Mesh
             _countVertices = vertices.Length / _vertexSize;
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            // GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
-            // GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
-            // GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, _typeDraw);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_DYNAMIC_DRAW);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), _typeDraw);
         }
     }
 }

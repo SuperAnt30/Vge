@@ -67,7 +67,7 @@ namespace Vge.Actions
                 }
                 else if (keys == Keys.PageDown)
                 {
-                    if (_game.Player.OverviewChunk > 0)
+                    if (_game.Player.OverviewChunk > 4)
                     {
                         _game.Player.SetOverviewChunk((byte)(_game.Player.OverviewChunk - 1), true);
                     }

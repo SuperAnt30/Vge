@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using WinGL.Util;
 
 namespace Vge.World.Сalendar
@@ -13,6 +14,15 @@ namespace Vge.World.Сalendar
         /// Скорость года в днях
         /// </summary>
         private const byte _speedYear = 32;
+        /// <summary>
+        /// Яркость луны по фазам
+        /// </summary>
+        private readonly static float[] _lightMoonPhase = new float[] { 0, .16f, .32f, .48f, .8f, .48f, .32f, .16f };
+
+        /// <summary>
+        /// Угол солнца, от пары года
+        /// </summary>
+        public readonly static float[] AngleSunTimeYear = new float[] { Glm.Pi45, Glm.Pi20, Glm.Pi45, Glm.Pi60 };
 
         /// <summary>
         /// Увеличивается каждый игровой тик
@@ -32,9 +42,17 @@ namespace Vge.World.Сalendar
         /// </summary>
         public EnumTimeYear TimeYear { get; private set; }
         /// <summary>
-        /// Фаза луны
+        /// Пара года
+        /// </summary>
+        public int TimeYearIndex { get; private set; }
+        /// <summary>
+        /// Фаза луны тип
         /// </summary>
         public EnumMoonPhase MoonPhase { get; private set; }
+        /// <summary>
+        /// Фаза луны индекс
+        /// </summary>
+        public int MoonPhaseIndex { get; private set; }
 
         /// <summary>
         /// Скорость суток в тактах
@@ -48,6 +66,10 @@ namespace Vge.World.Сalendar
         /// Яркость солнца
         /// </summary>
         private float _sunLight;
+        /// <summary>
+        /// Небесный угол
+        /// </summary>
+        private float _celestialAngle;
         /// <summary>
         /// Яркость звёзд
         /// </summary>
@@ -110,8 +132,10 @@ namespace Vge.World.Сalendar
                     Day = 0;
                     Year++;
                 }
-                TimeYear = (EnumTimeYear)(Day / 8);
-                MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
+                TimeYearIndex = Day / 8;
+                TimeYear = (EnumTimeYear)TimeYearIndex;
+                MoonPhaseIndex = (Day + 4) % 8;
+                MoonPhase = (EnumMoonPhase)MoonPhaseIndex;
             }
 
             //int day = (int)((TickCounter + 0) / _speedDay);
@@ -122,8 +146,8 @@ namespace Vge.World.Сalendar
             //MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
 
             // рассчитать небесный свет
-            float angle = _CalculateCelestialAngle(1f);
-            float light = 1f - (Glm.Cos(angle * Glm.Pi360) * 2f + .5f);
+            _celestialAngle = _CalculateCelestialAngle(1f);
+            float light = 1f - (Glm.Cos(_celestialAngle * Glm.Pi360) * 2f + .5f);
             light = Mth.Clamp(light, 0f, 1f);
             // light = light * (1f - MvkStatic.LightMoonPhase[moohPhase] * .3125f);
             light = light * (1f - .32f * .3125f);
@@ -145,6 +169,8 @@ namespace Vge.World.Сalendar
             angleSun = time2 + (angleSun - time2) / 3f;
             return angleSun;
         }
+
+        
 
         /// <summary>
         /// Обновление во фрейме, и возвращает было ли изменение
@@ -168,23 +194,27 @@ namespace Vge.World.Сalendar
                 // Яркость неба
                 float skyLight = Mth.Clamp(lightCos + .5f, 0, 1);
 
-                if (lightSin < 0)
-                {
-                    // Яркость звёзд 0.0 - 0.75
-                    _starLight = Mth.Clamp(lightSin + .25f, 0, 1);
-                    _starLight = _starLight * _starLight * .75f;
+                // Яркость звёзд 0.0 - 0.75
+                _starLight = Mth.Clamp(lightSin + .25f, 0, 1);
+                _starLight = _starLight * _starLight * .75f;
 
+                Mat4 matSun = Mat4.Identity();
+                // Вектор солнцы или луны
+                if (_celestialAngle > .25f && _celestialAngle < .75f)// lightSin < 0)
+                {
                     // Ночь
-                    lightSin = -lightSin;
-                    lightCos = -lightCos;
+                    matSun.RotateX(Glm.Pi45);
+                    matSun.RotateZ(angleSun);
+                    _vectorLight = new Vector3(matSun * new Vector4(0, -1, 0, 1));
+
                 }
                 else
                 {
                     // День
+                    matSun.RotateX(AngleSunTimeYear[TimeYearIndex]);
+                    matSun.RotateZ(angleSun);
+                    _vectorLight = new Vector3(matSun * new Vector4(0, 1, 0, 1));
                 }
-
-                // Вектор солнцы или луны
-                _vectorLight = new Vector3(lightCos, lightSin * 4f, lightSin * 2f).Normalize();
 
                 // Цвет неба
                 _colorSky.X = .5f * skyLight;
@@ -229,8 +259,10 @@ namespace Vge.World.Сalendar
                 _time = (int)(TickCounter - day * _speedDay);
                 Day = (byte)(day % 32);
                 Year = day / 32;
-                TimeYear = (EnumTimeYear)(Day / 8);
-                MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
+                TimeYearIndex = Day / 8;
+                TimeYear = (EnumTimeYear)TimeYearIndex;
+                MoonPhaseIndex = (Day + 4) % 8;
+                MoonPhase = (EnumMoonPhase)MoonPhaseIndex;
                 // Надо просчитать расположения солнца и луны и прочего
                 //UpdateFrame(1);
             }
@@ -249,16 +281,22 @@ namespace Vge.World.Сalendar
         public float GetSunLight() => _sunLight;
 
         /// <summary>
+        /// Получить яркость луны
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetMoonLight() => _lightMoonPhase[MoonPhaseIndex];
+
+        /// <summary>
+        /// Получить небесный угол
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetCelestialAngle() => _celestialAngle;
+
+        /// <summary>
         /// Получить небесныц свет ночь 0..3 в зависимости от фазы луны, день 15
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSkylightSubtracted() => _skylightSubtracted;
-
-        /// <summary>
-        /// Получить яркость луны
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float GetMoonLight() => .25f;
 
         /// <summary>
         /// Получить цвет неба

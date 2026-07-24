@@ -31,8 +31,14 @@ namespace Mvk2.Renderer
         /// Текстура контейнера хранилища Storage
         /// </summary>
         public uint ConteinerStorage;
-        
-
+        /// <summary>
+        /// Текстура солнца
+        /// </summary>
+        public uint Sun;
+        /// <summary>
+        /// Текстура луны
+        /// </summary>
+        public uint Moon;
     }
 
 
@@ -72,7 +78,14 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Текстура контейнера хранилища Storage
         /// </summary>
-        ConteinerStorage
+        ConteinerStorage,
+        /// <summary>
+        /// Текстура солнца
+        /// </summary>
+        Sun,
+        /// <summary>
+        /// Текстура луны
+        /// </summary>
+        Moon
     }
-
 }
