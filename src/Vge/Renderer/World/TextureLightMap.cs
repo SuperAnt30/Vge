@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System;
+using Vge.Util;
 using Vge.World;
 using WinGL.OpenGL;
 
@@ -30,9 +31,13 @@ namespace Vge.Renderer.World
         private readonly byte[] _buffer = new byte[1024];
 
         /// <summary>
-        /// Параметр яркости неба прошлого обнавления
+        /// Параметр яркости солнца прошлого обнавления
         /// </summary>
-        private float _skyLightPrev = -1f;
+        private float _sunLightPrev = -1f;
+        /// <summary>
+        /// Параметр яркости луны прошлого обнавления
+        /// </summary>
+        private float _moonLightPrev = -1f;
         /// <summary>
         /// Неба нет (true), прошлого обновления
         /// </summary>
@@ -68,8 +73,9 @@ namespace Vge.Renderer.World
                 }
                 else
                 {
-                    _skyLightPrev = worldSettings.Calendar.GetSunLight();
-                    _GenTextureSky(_skyLightPrev, worldSettings.Calendar.GetMoonLight());
+                    _sunLightPrev = worldSettings.Calendar.GetSunLight();
+                    _moonLightPrev = worldSettings.Calendar.GetMoonLight();
+                    _GenTextureSky(_sunLightPrev, _moonLightPrev);
                     _UpdateLightmap();
                 }
             }
@@ -77,10 +83,12 @@ namespace Vge.Renderer.World
             {
                 // Есть небо, проверяем смену яркости солнца
                 float sunLight = worldSettings.Calendar.GetSunLight();
-                if (_skyLightPrev != sunLight)
+                float moonLight = worldSettings.Calendar.GetMoonLight();
+                if (_sunLightPrev != sunLight || _moonLightPrev != moonLight)
                 {
-                    _skyLightPrev = sunLight;
-                    _GenTextureSky(_skyLightPrev, worldSettings.Calendar.GetMoonLight());
+                    _sunLightPrev = sunLight;
+                    _moonLightPrev = moonLight;
+                    _GenTextureSky(_sunLightPrev, _moonLightPrev);
                     _UpdateLightmap();
                 }
             }

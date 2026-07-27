@@ -53,6 +53,10 @@ namespace Vge.World.Сalendar
         /// Фаза луны индекс
         /// </summary>
         public int MoonPhaseIndex { get; private set; }
+        /// <summary>
+        /// Яркость звёзд 0.0 - 0.75
+        /// </summary>
+        public float StarLight { get; private set; }
 
         /// <summary>
         /// Скорость суток в тактах
@@ -70,10 +74,6 @@ namespace Vge.World.Сalendar
         /// Небесный угол
         /// </summary>
         private float _celestialAngle;
-        /// <summary>
-        /// Яркость звёзд
-        /// </summary>
-        private float _starLight;
         /// <summary>
         /// Нормализованный вектор источника света
         /// </summary>
@@ -149,7 +149,7 @@ namespace Vge.World.Сalendar
             _celestialAngle = _CalculateCelestialAngle(1f);
             float light = 1f - (Glm.Cos(_celestialAngle * Glm.Pi360) * 2f + .5f);
             light = Mth.Clamp(light, 0f, 1f);
-            // light = light * (1f - MvkStatic.LightMoonPhase[moohPhase] * .3125f);
+            light = light * (1f - _lightMoonPhase[MoonPhaseIndex] * .3125f);
             light = light * (1f - .32f * .3125f);
             light = 1f - light;
             _skylightSubtracted = (int)(light * 15f);
@@ -187,7 +187,7 @@ namespace Vge.World.Сalendar
                 
                 // Углы амплитуд косинуса и синуса
                 float lightCos = Glm.Cos(angleSun) * 2f;
-                float lightSin = Glm.Sin(angleSun) * 2f;
+                //float lightSin = Glm.Sin(angleSun) * 2f;
 
                 // Яркость солнца
                 _sunLight = Mth.Clamp(lightCos + .64f, 0, 1);
@@ -195,8 +195,8 @@ namespace Vge.World.Сalendar
                 float skyLight = Mth.Clamp(lightCos + .5f, 0, 1);
 
                 // Яркость звёзд 0.0 - 0.75
-                _starLight = Mth.Clamp(lightSin + .25f, 0, 1);
-                _starLight = _starLight * _starLight * .75f;
+                StarLight = Mth.Clamp(1f - lightCos + .25f, 0, 1);
+                StarLight = StarLight * StarLight * .75f;
 
                 Mat4 matSun = Mat4.Identity();
                 // Вектор солнцы или луны

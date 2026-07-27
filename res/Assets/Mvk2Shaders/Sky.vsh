@@ -7,12 +7,16 @@ out vec4 a_color;
 
 uniform mat4 view;
 uniform vec4 color;
+uniform vec4 colorDown;
 uniform vec4 colorfog;
 
 void main()
 {
     if (v_fog == 0) {
         a_color = color;
+    }
+    else if (v_fog == 1) {
+        a_color = colorDown;
     }
     else {
         a_color = colorfog;

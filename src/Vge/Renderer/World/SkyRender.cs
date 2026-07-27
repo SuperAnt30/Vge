@@ -59,6 +59,7 @@ namespace Vge.Renderer.World
 
         private Vector3 _colorSky;
         private Vector3 _colorFog;
+        protected Vector3 _colorDown;
 
         public SkyRender(PlayerClientOwner player, WorldRenderer worldRenderer)
         {
@@ -95,22 +96,22 @@ namespace Vge.Renderer.World
                         x0, _heightUp, z0, 0,
 
                         // Up side
-                        x, _heightCenter, z, 1,
+                        x, _heightCenter, z, 2,
                         x, _heightUp, z, 0,
                         x0, _heightUp, z0, 0,
 
-                        x0, _heightCenter, z0, 1,
-                        x, _heightCenter, z, 1,
+                        x0, _heightCenter, z0, 2,
+                        x, _heightCenter, z, 2,
                         x0, _heightUp, z0, 0,
 
                         // Down side
                         x, _heightDown * 4, z, 1,
-                        x, _heightCenter, z, 1,
-                        x0, _heightCenter, z0, 1,
+                        x, _heightCenter, z, 2,
+                        x0, _heightCenter, z0, 2,
 
                         x0, _heightDown * 4, z0, 1,
                         x, _heightDown * 4, z, 1,
-                        x0, _heightCenter, z0, 1,
+                        x0, _heightCenter, z0, 2,
 
                         // Down
                         x0, _heightDown * 4, z0, 1,
@@ -143,6 +144,7 @@ namespace Vge.Renderer.World
         {
             _colorSky = _worldRenderer.ColorSky;
             _colorFog = _worldRenderer.ColorFog;
+            _colorDown = _colorFog;
         }
 
         /// <summary>
@@ -163,6 +165,7 @@ namespace Vge.Renderer.World
             _shSky.Bind();
             _shSky.SetUniformMatrix4("view", Gi.MatrixView);
             _shSky.SetUniform4("color", _colorSky.X, _colorSky.Y, _colorSky.Z, 1f);
+            _shSky.SetUniform4("colorDown", _colorDown.X, _colorDown.Y, _colorDown.Z, 1f);
             _shSky.SetUniform4("colorfog", _colorFog.X, _colorFog.Y, _colorFog.Z, 1f);
             _mesh.Draw();
 
