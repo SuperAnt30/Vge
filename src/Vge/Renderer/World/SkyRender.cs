@@ -43,7 +43,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Верхняя высота
         /// </summary>
-        protected int _heightUp = 32;
+        protected int _heightUp = 128;// 32;
         /// <summary>
         /// Средняя высота, примерно для глаз
         /// </summary>
@@ -71,6 +71,11 @@ namespace Vge.Renderer.World
             _mesh.Reload(_GenBuffer());
             _shSky = new ShaderSky(gl);
         }
+
+        /// <summary>
+        /// Инициализация настроек мира
+        /// </summary>
+        public virtual void InitSetting() { }
 
         private float[] _GenBuffer()
         {
@@ -187,6 +192,11 @@ namespace Vge.Renderer.World
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DrawClouds(float timeIndex) { }
+        /// <summary>
+        /// Прорисовка облака неба для карты теней
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void DrawCloudsDepthMap(float timeIndex) { }
 
         /// <summary>
         /// Дополнительные элементы неба

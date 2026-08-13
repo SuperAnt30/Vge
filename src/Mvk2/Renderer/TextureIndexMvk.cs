@@ -41,7 +41,6 @@ namespace Mvk2.Renderer
         public uint Moon;
     }
 
-
     /// <summary>
     /// Перечисление разных ключей текстур для малювек
     /// </summary>

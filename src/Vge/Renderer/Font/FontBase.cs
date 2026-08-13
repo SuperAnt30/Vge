@@ -39,7 +39,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Сетка шрифта
         /// </summary>
-        private MeshBase _mesh;
+        private MeshGuiColor _mesh;
         /// <summary>
         /// Горизонтальное смещение начала следующего глифа с учётом размера интерфейса
         /// </summary>
@@ -558,7 +558,7 @@ namespace Vge.Renderer.Font
         /// <summary>
         /// Перезалить в сторонюю сетку
         /// </summary>
-        public void Reload(MeshBase mesh)
+        public void Reload(MeshGuiColor mesh)
         {
             if (mesh != null)
             {

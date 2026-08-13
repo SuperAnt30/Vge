@@ -48,7 +48,7 @@ namespace Vge.World.Сalendar
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool UpdateFrame(float timeIndex) => false;
+        public void UpdateFrame(float timeIndex) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetTickCounter(uint tickCounter) => TickCounter = tickCounter;
@@ -100,6 +100,12 @@ namespace Vge.World.Сalendar
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetColorFog() => _colorFog;
+
+        /// <summary>
+        /// Значение ветра
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetWind() => 0;
 
         /// <summary>
         /// Проверяет, является ли сейчас дневное время, определяя по яркости неба

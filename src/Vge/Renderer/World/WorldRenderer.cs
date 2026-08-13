@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
 using Vge.Realms;
@@ -86,10 +85,6 @@ namespace Vge.Renderer.World
         /// Цвет тумана
         /// </summary>
         public Vector3 ColorFog = new Vector3(0);
-        /// <summary>
-        /// Параметр ветра для шедора
-        /// </summary>
-        private float _wind;
         /// <summary>
         /// Запущен ли мир для прорисовки
         /// </summary>
@@ -275,7 +270,7 @@ namespace Vge.Renderer.World
             Particles.OnTick(deltaTime);
 
             // Считаем вектор, матрицы и прочее из календаря
-            _GenVectorLightСalendar(0);
+            _GenVectorLightСalendar();
 
             _skyRender?.Update();
 
@@ -300,6 +295,11 @@ namespace Vge.Renderer.World
                     _flagDrawDebug = true;
                 }
 #endif
+                if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
+                {
+                    _game.World.Settings.Calendar.UpdateFrame(timeIndex);
+                }
+
                 // Обновить кадр основного игрока, камера и прочее
                 _game.Player.UpdateFrame(timeIndex);
 
@@ -308,9 +308,6 @@ namespace Vge.Renderer.World
                 _BindChunkVoxel();
 
                 Entities.UpdateMatrix(timeIndex);
-
-                // Параметр ветра
-                _Wind(timeIndex);
 
                 // Буфер есть работаем дальше
                 if (Shadow.RenderSceneBegin())
@@ -331,7 +328,7 @@ namespace Vge.Renderer.World
                     //Particles.DrawDepthMap(timeIndex);
 
                     // Облака
-                    _skyRender.DrawClouds(timeIndex);
+                    _skyRender.DrawCloudsDepthMap(timeIndex);
 
                     // --- Конец сцены ТЕНЕЙ
 
@@ -359,12 +356,12 @@ namespace Vge.Renderer.World
                 Entities.DrawOwner(timeIndex);
                 // Частички
                 Particles.Draw(timeIndex);
-                // Облака
-                _skyRender.DrawClouds(timeIndex);
-
+                
                 // Прорисовка руки
                 Entities.DrawOwnerEye(timeIndex);
 
+                // Облака
+                _skyRender.DrawClouds(timeIndex);
                 // Рисуем воксели альфа
                 _DrawVoxelAlpha();
 
@@ -379,12 +376,11 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Считаем вектор, матрицы и прочее из календаря
         /// </summary>
-        private void _GenVectorLightСalendar(float timeIndex)
+        private void _GenVectorLightСalendar()
         {
             if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
             {
                 IСalendar calendar = _game.World.Settings.Calendar;
-                calendar.UpdateFrame(timeIndex);
                 Gi.ViewLightDir = calendar.GetVectorLight();
                 ColorSky = calendar.GetColorSky();
                 ColorFog = calendar.GetColorFog();
@@ -392,7 +388,8 @@ namespace Vge.Renderer.World
                 Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
                 Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
                 int sosm = ShadowMapping.SizeOrthShadowMap;
-                Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 2, sosm);
+                //Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 2, sosm);
+                Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 4, sosm);
                 matrix.Multiply(Glm.LookAt(Gi.ViewLightDir, new Vector3(0, 0, 0), vu));
                 matrix.ConvArray(Gi.MatrixViewDepthMap);
             }
@@ -462,14 +459,7 @@ namespace Vge.Renderer.World
                 _waitHandler.Set();
             }
         }
-
-        /// <summary>
-        /// Расчитать силу ветра
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _Wind(float timeIndex)
-            => _wind = Glm.Cos((((int)_game.Time() / 48 & 0x7F) + timeIndex) * .049f) * .16f;
-
+       
         /// <summary>
         /// Рисуем воксели сплошных и уникальных блоков для карты глубины
         /// </summary>
@@ -478,7 +468,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBiginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _wind);
+                (int)_game.World.GetTickCounter(), _game.World.Settings.Calendar.GetWind());
             
             int count = _arrayChunkRender.Count;
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
@@ -503,8 +493,8 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _wind, OverviewBlock,
-                ColorFog, 5);
+                (int)_game.World.GetTickCounter(), _game.World.Settings.Calendar.GetWind(), 
+                OverviewBlock, ColorFog, 5);
 
             if (Debug.IsDrawVoxelLine)
             {
@@ -583,6 +573,14 @@ namespace Vge.Renderer.World
             _skyRender?.Dispose();
             _skyRender = skyRender;
             _isWorldDrawRun = true;
+        }
+
+        /// <summary>
+        /// Инициализация в рендере мира настроек мира
+        /// </summary>
+        public void WorldRenderInitSetting()
+        {
+            _skyRender.InitSetting();
         }
 
         /// <summary>

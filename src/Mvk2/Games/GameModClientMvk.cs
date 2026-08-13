@@ -63,7 +63,7 @@ namespace Mvk2.Games
         public override WorldSettings CreateWorldSettings(byte id)
         {
 #if DEBUG
-            Console.WriteLine("_function GameModClientMvk.CreateWorldSettings");
+            Console.WriteLine("_function GameModClientMvk.CreateWorldSettings " + id);
 #endif
             // Определяем настройки, в зависимости от мира
             if (id == 2)

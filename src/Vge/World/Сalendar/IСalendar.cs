@@ -26,7 +26,7 @@ namespace Vge.World.Сalendar
         /// Обновление во фрейме, и возвращает было ли изменение
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        bool UpdateFrame(float timeIndex);
+        void UpdateFrame(float timeIndex);
 
         /// <summary>
         /// Внести изменение по мировому времени
@@ -82,5 +82,9 @@ namespace Vge.World.Сalendar
         /// Проверяет, является ли сейчас дневное время, определяя по яркости неба
         /// </summary>
         bool IsDayTime();
+        /// <summary>
+        /// Параметр ветра
+        /// </summary>
+        float GetWind();
     }
 }

@@ -8,14 +8,6 @@ namespace Vge.Renderer.Mesh
     public class MeshSky : MeshBase
     {
         /// <summary>
-        /// Тип отрисовки.
-        /// GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
-        /// GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
-        /// GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
-        /// </summary>
-        private readonly uint _typeDraw;
-
-        /// <summary>
         /// Объект сетки неба, без текстуры
         /// </summary>
         /// <param name="typeDraw">GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_STREAM_DRAW</param>

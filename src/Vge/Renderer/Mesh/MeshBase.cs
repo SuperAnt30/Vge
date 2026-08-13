@@ -26,6 +26,14 @@ namespace Vge.Renderer.Mesh
         /// </summary>
         protected int _vertexSize;
 
+        /// <summary>
+        /// Тип отрисовки.
+        /// GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
+        /// GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
+        /// GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
+        /// </summary>
+        protected uint _typeDraw = GL.GL_DYNAMIC_DRAW;
+
         public MeshBase(GL gl)
         {
             _gl = gl;
@@ -159,22 +167,9 @@ namespace Vge.Renderer.Mesh
             _countVertices = vertices.Length / _vertexSize;
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_DYNAMIC_DRAW);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, _typeDraw);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_DYNAMIC_DRAW);
-        }
-
-        /// <summary>
-        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
-        /// </summary>
-        public void Reload(float[] vertices, int count)
-        {
-            _countVertices = count / _vertexSize;
-            _gl.BindVertexArray(_vao);
-            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
-            _gl.BufferData(GL.GL_ARRAY_BUFFER, count, vertices, GL.GL_STATIC_DRAW);
-            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
-            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), GL.GL_STATIC_DRAW);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), _typeDraw);
         }
 
         #endregion

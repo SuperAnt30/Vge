@@ -120,6 +120,7 @@ namespace Vge.World
             Game.ModClient.WorldStoped();
             ChunkPr.Settings.SetHeightChunks(packet.NumberChunkSections);
             Settings = Game.ModClient.CreateWorldSettings(packet.IdSetting);
+            Game.WorldRender.WorldRenderInitSetting();
             Settings.PacketRespawnInWorld(packet);
             Collision.Init();
         }

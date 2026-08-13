@@ -402,7 +402,7 @@ namespace Vge.Entity.Player
             else
             {
                 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
-                   0.01f, (OverviewChunk + 6) * 16f);
+                   0.01f, 1450);// (OverviewChunk + 6) * 16f);
             }
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));

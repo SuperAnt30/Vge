@@ -10,14 +10,6 @@ namespace Vge.Renderer.Mesh
     public class MeshLine : MeshBase
     {
         /// <summary>
-        /// Тип отрисовки.
-        /// GL_STATIC_DRAW: данные либо никогда не будут изменяться, либо будут изменяться очень редко;
-        /// GL_DYNAMIC_DRAW: данные будут меняться довольно часто;
-        /// GL_STREAM_DRAW: данные будут меняться при каждой отрисовке.
-        /// </summary>
-        private readonly uint _typeDraw;
-
-        /// <summary>
         /// Объект сетки для 3д линий с цветом альфа без текстуры
         /// Не используем EBO
         /// </summary>
