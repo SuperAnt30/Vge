@@ -360,6 +360,12 @@ namespace Vge.Games
                 // Отправляем количество шагов на загрузку
 
                 WorldServer worldServer = Players.PlayerOwner.GetWorldServer();
+                if (worldServer == null)
+                {
+                    // Если новый мир, то ещё не определён, переопределяем
+                    Players.PlayerOwner.DefineWorld();
+                    worldServer = Players.PlayerOwner.GetWorldServer();
+                }
                 int cpx = Players.PlayerOwner.ChunkPositionX;
                 int cpy = Players.PlayerOwner.ChunkPositionZ;
                 int radius = Players.PlayerOwner.ActiveRadius + FragmentManager.AddOverviewChunkServer;

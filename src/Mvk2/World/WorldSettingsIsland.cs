@@ -72,7 +72,8 @@ namespace Mvk2.World
             NumberChunkSections = 8;
             //Calendar = new Сalendar32(36000); // 24000 при 20 тиках = 20 мин. При 30 тиках = 36000
             Calendar = new Сalendar32(24000);
-            //Calendar = new Сalendar32(240);// 00);
+            //Calendar = new Сalendar32(600);// 00);
+            //Calendar.SetTickCounter(1800);
         }
 
         /// <summary>

@@ -94,7 +94,8 @@ namespace Vge.World.Сalendar
         /// </summary>
         private readonly int _speedDay;
         /// <summary>
-        /// Время конкретного дня, в тактах
+        /// Время конкретного дня, в тактах. 
+        /// 0 это полдень, 
         /// </summary>
         private int _time;
         /// <summary>
@@ -134,7 +135,7 @@ namespace Vge.World.Сalendar
         public Сalendar32(int speedDay)
         {
             _speedDay = speedDay;
-            SetTickCounter((uint)(speedDay / 3));
+            SetTickCounter((uint)(speedDay * 3 / 4));
         }
 
         /// <summary>
@@ -155,15 +156,15 @@ namespace Vge.World.Сalendar
             if (++_cloudDebug > 100)
             {
                 _cloudDebug = 0;
-                
+
                 //_cloudConditionsNext = CloudConditions + 1;
                 //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
                 //{
                 //    _cloudConditionsNext = 0;
                 //}
-
-                Rand rand = new Rand();
-                _cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
+                //_cloudConditionsNext = EnumClouds.Cloudy;
+                //Rand rand = new Rand();
+                //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
             }
 
             // Плавность смены облаков
@@ -195,7 +196,8 @@ namespace Vge.World.Сalendar
             _CalculateInitialYear();
 
             // Находим угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
-            float angleSun = _CalculateCelestialAngle(0) * Glm.Pi360;
+            float angleSun = _celestialAngle * Glm.Pi360;
+            //Console.WriteLine(angleSun);
 
             if (_angleSunPrev != angleSun)
             {
@@ -271,15 +273,8 @@ namespace Vge.World.Сalendar
                 MoonPhase = (EnumMoonPhase)MoonPhaseIndex;
             }
 
-            //int day = (int)((TickCounter + 0) / _speedDay);
-            //_time = (int)(TickCounter - day * _speedDay);
-            //Day = (byte)(day % 32);
-            //Year = day / 32;
-            //TimeYear = (EnumTimeYear)(Day / 8);
-            //MoonPhase = (EnumMoonPhase)((Day + 4) % 8);
-
             // рассчитать небесный свет
-            _celestialAngle = _CalculateCelestialAngle(1f);
+            _celestialAngle = _CalculateCelestialAngle();
             float light = 1f - (Glm.Cos(_celestialAngle * Glm.Pi360) * 2f + .5f);
             light = Mth.Clamp(light, 0f, 1f);
             light = light * (1f - _lightMoonPhase[MoonPhaseIndex] * .3125f);
@@ -291,15 +286,39 @@ namespace Vge.World.Сalendar
         /// <summary>
         /// Вычисляет угол солнца и луны в небе относительно заданного времени (0.0 - 1.0)
         /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        private float _CalculateCelestialAngle(float timeIndex)
+        private float _CalculateCelestialAngle()
         {
-            float angleSun = (_time + timeIndex) / (float)_speedDay - .25f;
+            /**
+             * 0.00 = полдень
+             * 0.25 = вечер
+             * 0.50 = ночь
+             * 0.75 = утро
+             */
+            float angleSun = _time / (float)_speedDay; // -.25 это чтоб с утра, 0 это день.
             if (angleSun < 0f) angleSun++;
             if (angleSun > 1f) angleSun--;
+
             float time2 = angleSun;
             angleSun = 1f - ((Glm.Cos(angleSun * Glm.Pi) + 1f) / 2f);
-            angleSun = time2 + (angleSun - time2) / 3f;
+
+            // Длинна дня меняется от пары года
+            if (TimeYear == EnumTimeYear.Winter)
+            {
+                angleSun = time2 - (angleSun - time2) / 2f; // 12 ночь - 8 день
+            }
+            else if (TimeYear == EnumTimeYear.Summer)
+            {
+                angleSun = time2 + (angleSun - time2); // 6.5 ночь - 13.5 день
+            }
+            else
+            {
+                angleSun = time2 + (angleSun - time2) / 2f; // 8 ночь - 12 день
+            }
+
+            //angleSun = time2 - (angleSun - time2) / 3f; // ~1 ночь - ~1 день просто реще смена заката
+            //angleSun = time2 + (angleSun - time2) / 2f; 25 ночь - 35 день
+            //angleSun = time2 + (angleSun - time2);// 1 ночь - 2 день
+            //angleSun = time2 - (angleSun - time2);// 2 ночь - 1 день
             return angleSun;
         }
 
@@ -321,20 +340,11 @@ namespace Vge.World.Сalendar
         {
             TickCounter++;
             _CalculateInitialYear();
-
-            //// рассчитать небесный свет
-            //float angle = _CalculateCelestialAngle(1f);
-            //float light = 1f - (Glm.Cos(angle * Glm.Pi360) * 2f + .5f);
-            //light = Mth.Clamp(light, 0f, 1f);
-            //// light = light * (1f - MvkStatic.LightMoonPhase[moohPhase] * .3125f);
-            //light = light * (1f - .32f * .3125f);
-            //light = 1f - light;
-            //_skylightSubtracted = (int)(light * 15f);
         }
 
         public void SetTickCounter(uint tickCounter)
         {
-            if (TickCounter != tickCounter)
+            if (TickCounter != tickCounter || TickCounter == 0)
             {
                 TickCounter = tickCounter;
                 int day = (int)((TickCounter + 0) / _speedDay);
