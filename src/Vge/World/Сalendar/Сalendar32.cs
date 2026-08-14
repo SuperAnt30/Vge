@@ -81,6 +81,14 @@ namespace Vge.World.Сalendar
         /// </summary>
         public float SpeedCloudZ { get; private set; } = .03125f;
         /// <summary>
+        /// Имеется ли дождь
+        /// </summary>
+        public bool IsRain { get; private set; } = false;
+        /// <summary>
+        /// Имеется ли ливень, IsRain должен быть true
+        /// </summary>
+        public bool IsShowers { get; private set; } = false; 
+        /// <summary>
         /// Состояние облаков
         /// </summary>
         public EnumClouds CloudConditions { get; private set; } = EnumClouds.Clear;
@@ -162,7 +170,7 @@ namespace Vge.World.Сalendar
                 //{
                 //    _cloudConditionsNext = 0;
                 //}
-                //_cloudConditionsNext = EnumClouds.Cloudy;
+                _cloudConditionsNext = EnumClouds.Rain;
                 //Rand rand = new Rand();
                 //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
             }
@@ -180,6 +188,19 @@ namespace Vge.World.Сalendar
                     {
                         CloudConditions = _cloudConditionsNext;
                         FewClouds = fewClouds;
+                        if (CloudConditions == EnumClouds.Rain)
+                        {
+                            IsRain = true;
+                            IsShowers = false;
+                        }
+                        else if (CloudConditions == EnumClouds.Showers)
+                        {
+                            IsRain = IsShowers = true;
+                        }
+                        else
+                        {
+                            IsRain = IsShowers = false;
+                        }
                     }
                 }
                 else

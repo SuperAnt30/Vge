@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Util;
 using WinGL.OpenGL;
 
 namespace Vge.Renderer.Mesh
@@ -168,6 +169,19 @@ namespace Vge.Renderer.Mesh
             _gl.BindVertexArray(_vao);
             _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
             _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices, _typeDraw);
+            _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
+            _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), _typeDraw);
+        }
+
+        /// <summary>
+        /// Перезаписать полигоны, не создавая и не меняя длинну одной точки
+        /// </summary>
+        public virtual void Reload(ListFlout vertices)
+        {
+            _countVertices = vertices.Count / _vertexSize;
+            _gl.BindVertexArray(_vao);
+            _gl.BindBuffer(GL.GL_ARRAY_BUFFER, _vbo);
+            _gl.BufferData(GL.GL_ARRAY_BUFFER, vertices.Count, vertices.GetBufferAll(), _typeDraw);
             _gl.BindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, _ebo);
             _gl.BufferData(GL.GL_ELEMENT_ARRAY_BUFFER, _QuadIndices(), _typeDraw);
         }

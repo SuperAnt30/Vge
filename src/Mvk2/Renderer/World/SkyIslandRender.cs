@@ -8,6 +8,8 @@ using Vge.Entity.Player;
 using Vge.Renderer.Mesh;
 using Vge.Renderer.World;
 using Vge.Util;
+using Vge.World;
+using Vge.World.Block;
 using Vge.World.Gen;
 using Vge.World.Сalendar;
 using WinGL.OpenGL;
@@ -23,7 +25,7 @@ namespace Mvk2.Renderer.World
         /// <summary>
         /// Объект календаря
         /// </summary>
-        private Сalendar32 _сalendar;
+        private Сalendar32 _calendar;
 
         /// <summary>
         /// Цвет заката и рассвета
@@ -42,6 +44,10 @@ namespace Mvk2.Renderer.World
         /// Сетка солнца
         /// </summary>
         private readonly MeshSkyElement _meshMoon;
+        /// <summary>
+        /// Сетка дождя
+        /// </summary>
+        private readonly MeshSkyElement _meshRain;
         /// <summary>
         /// Сетка звёзд
         /// </summary>
@@ -130,11 +136,37 @@ namespace Mvk2.Renderer.World
         /// </summary>
         private uint _textureCloud = 0;
         /// <summary>
+        /// Индекс текстуры дождя
+        /// </summary>
+        private uint _textureRain = 0;
+        /// <summary>
+        /// Индекс текстуры ливня
+        /// </summary>
+        private uint _textureShowers = 0;
+        
+        /// <summary>
         /// Начальная альфа
         /// </summary>
         private float _alpha = -.4f;
 
         #endregion
+
+        /// <summary>
+        /// Катет по X для дождя
+        /// </summary>
+        private readonly float[] _xSqrt = new float[1024];
+        /// <summary>
+        /// Катет по Z для дождя
+        /// </summary>
+        private readonly float[] _zSqrt = new float[1024];
+        /// <summary>
+        /// Счётчик дождя
+        /// </summary>
+        private int _rendererUpdateCount;
+        /// <summary>
+        /// Быстрый массив, для построения буффера дождя
+        /// </summary>
+        private ListFlout _bufferRain = new ListFlout();
 
         public SkyIslandRender(PlayerClientOwner player, WorldRenderer worldRenderer, RenderMvk renderMvk) 
             : base(player, worldRenderer)
@@ -156,6 +188,9 @@ namespace Mvk2.Renderer.World
             _meshClouds.Reload(_GenBufferClouds());
             _CreateTextureClouds();
 
+            _meshRain = new MeshSkyElement(gl, GL.GL_STREAM_DRAW);
+            _CreateTextureRain();
+
             _meshStar = new MeshSkyStar(gl);
             _meshStar.Reload(_GenBufferStar());
 
@@ -163,6 +198,18 @@ namespace Mvk2.Renderer.World
             _shSkyStar = new ShaderSkyStar(gl);
             _shSkyClouds = new ShaderSkyClouds(gl);
             _renderMvk = renderMvk;
+
+            for (int x = 0; x < 32; x++)
+            {
+                int x0 = x - 16;
+                for (int z = 0; z < 32; z++)
+                {
+                    int z0 = z - 16;
+                    float q = Mth.Sqrt(z0 * z0 + x0 * x0);
+                    _xSqrt[x << 5 | z] = x0 / q;
+                    _zSqrt[x << 5 | z] = -z0 / q;
+                }
+            }
         }
 
         /// <summary>
@@ -170,7 +217,7 @@ namespace Mvk2.Renderer.World
         /// </summary>
         public override void InitSetting()
         {
-            _сalendar = (Сalendar32)_player.GetWorld().Settings.Calendar;
+            _calendar = (Сalendar32)_player.GetWorld().Settings.Calendar;
         }
 
         /// <summary>
@@ -298,14 +345,17 @@ namespace Mvk2.Renderer.World
             if (_alpha < 1) _alpha += .1f;
             base.Update();
 
+            // Счётяик дождя
+            if (_calendar.IsRain) _rendererUpdateCount++;
+
             // Счётчик облаков
             _cloudTickCounterX++;
-            if (_cloudTickCounterX > (_cloudSizeTexure / Mth.Abs(_сalendar.SpeedCloudX)))
+            if (_cloudTickCounterX > (_cloudSizeTexure / Mth.Abs(_calendar.SpeedCloudX)))
             {
                 _cloudTickCounterX = 0;
             }
             _cloudTickCounterZ++;
-            if (_cloudTickCounterZ > (_cloudSizeTexure / Mth.Abs(_сalendar.SpeedCloudZ)))
+            if (_cloudTickCounterZ > (_cloudSizeTexure / Mth.Abs(_calendar.SpeedCloudZ)))
             {
                 _cloudTickCounterZ = 0;
             }
@@ -315,7 +365,7 @@ namespace Mvk2.Renderer.World
                 _colorDown = new Vector3(0);
             }
 
-            float celestialAngle = _сalendar.GetCelestialAngle();
+            float celestialAngle = _calendar.GetCelestialAngle();
             _colors = _CalcSunriseSunsetColors(celestialAngle);
 
             // Параметра для размера солнца, растояние от глаз 64 - 128
@@ -332,15 +382,15 @@ namespace Mvk2.Renderer.World
             }
 
             // Матрица расположения солнца
-            if (_сalendar.GetSunLight() > 0)
+            if (_calendar.GetSunLight() > 0)
             {
                 _matSun = Mat4.Identity();
-                _matSun.RotateX(Сalendar32.AngleSunTimeYear[_сalendar.TimeYearIndex]);
+                _matSun.RotateX(Сalendar32.AngleSunTimeYear[_calendar.TimeYearIndex]);
                 _matSun.RotateZ(celestialAngle * Glm.Pi360);
-                _matSun.Translate(0, 64f + (_сalendar.GetSunLight() + sunLightAdd) * 30f, 0);
+                _matSun.Translate(0, 64f + (_calendar.GetSunLight() + sunLightAdd) * 30f, 0);
             }
 
-            if (_сalendar.StarLight > 0)
+            if (_calendar.StarLight > 0)
             {
                 _matStar = Mat4.Identity();
                 _matStar.RotateX(Glm.Pi45);
@@ -350,9 +400,9 @@ namespace Mvk2.Renderer.World
                 _matMoon.RotateY(celestialAngle * Glm.Pi90 + 2.4f); // Чтоб луна была в горизонте читабельная фазе
                 _matMoon.Translate(0, -112f, 0);
 
-                if (_moonPhaseIndexPrev != _сalendar.MoonPhaseIndex)
+                if (_moonPhaseIndexPrev != _calendar.MoonPhaseIndex)
                 {
-                    _moonPhaseIndexPrev = _сalendar.MoonPhaseIndex;
+                    _moonPhaseIndexPrev = _calendar.MoonPhaseIndex;
                     int phaseV = _moonPhaseIndexPrev % 4;
                     int phaseH = _moonPhaseIndexPrev / 4 % 2;
                     float u1 = phaseV / 4f;
@@ -421,21 +471,21 @@ namespace Mvk2.Renderer.World
             gl.BlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE, GL.GL_ZERO);
 
             // Солнце
-            if (_сalendar.GetSunLight() > 0)
+            if (_calendar.GetSunLight() > 0)
             {
                 _renderMvk.BindTextureSun();
                 _shSkyElement.Bind();
-                _shSkyElement.SetUniform1("transparency", _сalendar.GetSunLight());
+                _shSkyElement.SetUniform1("transparency", _calendar.GetSunLight());
                 _shSkyElement.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyElement.SetUniformMatrix4("model", _matSun.ToArray());
                 _meshSun.Draw();
             }
 
             // Звёзды и луна
-            if (_сalendar.StarLight > 0)
+            if (_calendar.StarLight > 0)
             {
                 _shSkyStar.Bind();
-                _shSkyStar.SetUniform1("transparency", _сalendar.StarLight);
+                _shSkyStar.SetUniform1("transparency", _calendar.StarLight);
                 _shSkyStar.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyStar.SetUniformMatrix4("model", _matStar.ToArray());
                 _shSkyStar.SetUniform3("color", _starRand1, _starRand2, _starRand3);
@@ -443,7 +493,7 @@ namespace Mvk2.Renderer.World
 
                 _renderMvk.BindTextureMoon();
                 _shSkyElement.Bind();
-                _shSkyElement.SetUniform1("transparency", _сalendar.StarLight + .15f);
+                _shSkyElement.SetUniform1("transparency", _calendar.StarLight + .15f);
                 _shSkyElement.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyElement.SetUniformMatrix4("model", _matMoon.ToArray());
                 _meshMoon.Draw();
@@ -522,10 +572,10 @@ namespace Mvk2.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _ShCloudsBind(float timeIndex)
         {
-            float x0 = _player.PosFrameX - (_cloudTickCounterX + timeIndex) * _сalendar.SpeedCloudX;
+            float x0 = _player.PosFrameX - (_cloudTickCounterX + timeIndex) * _calendar.SpeedCloudX;
             x0 = (x0 - Mth.Floor(x0 / _cloudSizeTexure) * _cloudSizeTexure) * _cloudSizePixelTexure;
 
-            float z0 = _player.PosFrameZ - (_cloudTickCounterZ + timeIndex) * _сalendar.SpeedCloudZ;
+            float z0 = _player.PosFrameZ - (_cloudTickCounterZ + timeIndex) * _calendar.SpeedCloudZ;
             z0 = (z0 - Mth.Floor(z0 / _cloudSizeTexure) * _cloudSizeTexure) * _cloudSizePixelTexure;
 
             //Console.WriteLine(x0 + " - " + z0);
@@ -534,10 +584,38 @@ namespace Mvk2.Renderer.World
         }
 
         /// <summary>
-        /// Прорисовка облака неба
+        /// Прорисовка облака неба и дождя
         /// </summary>
-        public override void DrawClouds(float timeIndex)
+        public override void DrawCloudsRain(float timeIndex)
         {
+            _DrawClouds(timeIndex);
+            _DrawRain(timeIndex);
+        }
+
+        /// <summary>
+        /// Прорисовка облака неба для карты теней
+        /// </summary>
+        public override void DrawCloudsDepthMap(float timeIndex)
+        {
+            if (_calendar.FewClouds < .7f)
+            {
+                gl.ActiveTexture(GL.GL_TEXTURE0);
+                gl.BindTexture(GL.GL_TEXTURE_2D, _textureCloud);
+                _ShCloudsBind(timeIndex);
+                _shSkyClouds.SetUniform1("transparency", 1f);
+                _shSkyClouds.SetUniformMatrix4("view", Gi.MatrixViewDepthMap);
+                _shSkyClouds.SetUniform1("posY", _player.PosFrameY + 4);
+                _shSkyClouds.SetUniform1("few", _calendar.FewClouds + .14f);
+                _meshClouds.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Прорисовка облака
+        /// </summary>
+        private void _DrawClouds(float timeIndex)
+        {
+            // Это облака
             if (_alpha > 0)
             {
                 if (Vge.Debug.IsDrawVoxelLine)
@@ -553,22 +631,22 @@ namespace Mvk2.Renderer.World
                 _shSkyClouds.SetUniformMatrix4("view", Gi.MatrixView);
 
                 // Второй уровень затемнённости
-                if (_сalendar.FewClouds < .7f)
+                if (_calendar.FewClouds < .7f)
                 {
                     _shSkyClouds.SetUniform1("transparency", _alpha);
                     _shSkyClouds.SetUniform1("posY", _player.PosFrameY + 4);
-                    _shSkyClouds.SetUniform1("few", _сalendar.FewClouds + .14f);
-                    _shSkyClouds.SetUniform3("color", _сalendar.ColorClouds.X * .7f,
-                    _сalendar.ColorClouds.Y * .7f, _сalendar.ColorClouds.Z * .7f);
+                    _shSkyClouds.SetUniform1("few", _calendar.FewClouds + .14f);
+                    _shSkyClouds.SetUniform3("color", _calendar.ColorClouds.X * .7f,
+                    _calendar.ColorClouds.Y * .7f, _calendar.ColorClouds.Z * .7f);
                     _meshClouds.Draw();
                 }
 
                 // Светлые полупрозрачный слой
                 _shSkyClouds.SetUniform1("transparency", .6f * _alpha);
                 _shSkyClouds.SetUniform1("posY", _player.PosFrameY);
-                _shSkyClouds.SetUniform1("few", _сalendar.FewClouds);
-                _shSkyClouds.SetUniform3("color", _сalendar.ColorClouds.X,
-                    _сalendar.ColorClouds.Y, _сalendar.ColorClouds.Z);
+                _shSkyClouds.SetUniform1("few", _calendar.FewClouds);
+                _shSkyClouds.SetUniform3("color", _calendar.ColorClouds.X,
+                    _calendar.ColorClouds.Y, _calendar.ColorClouds.Z);
                 _meshClouds.Draw();
 
                 if (Vge.Debug.IsDrawVoxelLine)
@@ -580,25 +658,7 @@ namespace Mvk2.Renderer.World
         }
 
         /// <summary>
-        /// Прорисовка облака неба для карты теней
-        /// </summary>
-        public override void DrawCloudsDepthMap(float timeIndex)
-        {
-            if (_сalendar.FewClouds < .7f)
-            {
-                gl.ActiveTexture(GL.GL_TEXTURE0);
-                gl.BindTexture(GL.GL_TEXTURE_2D, _textureCloud);
-                _ShCloudsBind(timeIndex);
-                _shSkyClouds.SetUniform1("transparency", 1f);
-                _shSkyClouds.SetUniformMatrix4("view", Gi.MatrixViewDepthMap);
-                _shSkyClouds.SetUniform1("posY", _player.PosFrameY + 4);
-                _shSkyClouds.SetUniform1("few", _сalendar.FewClouds + .14f);
-                _meshClouds.Draw();
-            }
-        }
-
-        /// <summary>
-        /// Создать текстуру
+        /// Создать текстуру облаков
         /// </summary>
         private void _CreateTextureClouds()
         {
@@ -712,6 +772,183 @@ namespace Mvk2.Renderer.World
 
         #endregion
 
+        #region Rain
+
+        private void _DrawRain(float timeIndex)
+        {
+            // Это дождь
+            if (_calendar.IsRain)
+            {
+                gl.ActiveTexture(GL.GL_TEXTURE0);
+                gl.BindTexture(GL.GL_TEXTURE_2D, 
+                    _calendar.IsShowers ? _textureShowers : _textureRain);
+
+                _shSkyElement.Bind();
+                _shSkyElement.SetUniform1("transparency", 1f);
+                _shSkyElement.SetUniformMatrix4("view", Gi.MatrixView);
+                _shSkyElement.SetUniformMatrix4("model", Mat4.Identity().ToArray());
+
+                float px = _player.PosFrameX;
+                float py = _player.PosFrameY;
+                float pz = _player.PosFrameZ;
+
+                WorldBase world = _player.GetWorld();
+                BlockPos blockPos = new BlockPos(px, py, pz);
+                
+                int bx = blockPos.X;
+                int by = blockPos.Y;
+                int bz = blockPos.Z;
+
+                int step = 6; // Максималка 10 минималка 5
+                int x, z, index;
+
+                float x1, x2, y1, y2, z1, z2;
+                float qx, qz, by0, v1, v2, y3;
+
+                _bufferRain.Clear();
+                for (x = bx - step; x <= bx + step; x++)
+                {
+                    for (z = bz - step; z <= bz + step; z++)
+                    {
+                        index = (x - bx + 16) * 32 + z - bz + 16;
+                        qx = _zSqrt[index] * .5f;
+                        x1 = x - qx - px + .5f;
+                        x2 = x + qx - px + .5f;
+                        qz = _xSqrt[index] * .5f;
+                        z1 = z - qz - pz + .5f;
+                        z2 = z + qz - pz + .5f;
+
+                        by0 = world.GetHeightMap(x, z);
+                        y1 = by - step;
+                        y2 = by + 4 + step;
+
+                        if (y1 < by0) y1 = by0;
+                        if (y2 < by0) y2 = by0;
+                        if (y2 > _heightClouds) y2 = _heightClouds;
+
+                        if (y1 < y2)
+                        {
+                            y3 = ((_rendererUpdateCount & 511) + timeIndex) / 512f
+                                + world.Rnd.NextFloat() + (_rendererUpdateCount + timeIndex) 
+                                * world.Rnd.NextGaussian() * .001f;
+                            //float y3 = ((_rendererUpdateCount & 511) + timeIndex) / 512f; // снег, медленно
+                            v1 = y1 / 4f + y3;
+                            v2 = y2 / 4f + y3;
+
+                            y1 -= py;
+                            y2 -= py;
+
+                            _bufferRain.AddRange(new float[] {
+                                x1, y1, z1, 0, v1, 
+                                x2, y1, z2, 1, v1,
+                                x2, y2, z2, 1, v2,
+                                x1, y2, z1, 0, v2
+                            });
+                        }
+                    }
+                }
+
+                _meshRain.Reload(_bufferRain);
+                _meshRain.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Создать текстуру дождя или ливня
+        /// </summary>
+        private uint _CreateTextureRain(byte[] byteNoise, uint idTexture, int noise)
+        {
+            // Буфер текстуры
+            byte[] buffer = new byte[65536];
+
+            int i, j;
+            // Заполняем байтами буфер
+            for (i = 0; i < 16384; i++)
+            {
+                j = i * 4;
+                buffer[j + 2] = 65;
+                buffer[j + 1] = 90;
+                buffer[j + 0] = 172;
+
+                if (byteNoise[i] < noise) // 40 ливень // 20 дождь
+                {
+                    buffer[j + 3] = 255;// (byte)(255 - byteNoise[i]);
+                }
+                else
+                {
+                    buffer[j + 3] = 0;
+                }
+            }
+
+            bool isCreate = idTexture == 0;
+            if (isCreate)
+            {
+                uint[] texture = new uint[1];
+                gl.GenTextures(1, texture);
+                idTexture = texture[0];
+            }
+
+            gl.ActiveTexture(GL.GL_TEXTURE0);
+            gl.BindTexture(GL.GL_TEXTURE_2D, idTexture);
+
+            if (isCreate)
+            {
+                gl.TexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 64, 256,
+                0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, buffer);
+
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+                gl.TexParameter(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+            }
+            else
+            {
+                gl.TexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 64, 256,
+                        GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, buffer);
+            }
+
+            return idTexture;
+        }
+
+        /// <summary>
+        /// Создать текстуру дождя
+        /// </summary>
+        private void _CreateTextureRain()
+        {
+            // Используем шум 128 на 128 текстуру
+            NoiseGeneratorPerlin noiseArea = new NoiseGeneratorPerlin(new Rand(200), 4);
+            // Массив шума 64*256
+            float[] areaNoise = new float[16384];
+            noiseArea.GenerateNoise2d(areaNoise, 0, 0, 64, 256, 2.8f, .2f);
+            // Байтовый шум
+            byte[] byteNoise = new byte[16384];
+
+            float f;
+            int i;
+
+            // Находим приделы шума
+            float max = float.MinValue;
+            float min = float.MaxValue;
+            for (i = 0; i < 16384; i++)
+            {
+                f = areaNoise[i];
+                if (f > max) max = f;
+                if (f < min) min = f;
+            }
+            float delta = 255f / (max - min);
+
+            // Заполняем байтами буфер
+            for (i = 0; i < 16384; i++)
+            {
+                byteNoise[i] = (byte)((areaNoise[i] - min) * delta);
+            }
+
+            _textureRain = _CreateTextureRain(byteNoise, _textureRain, 20);
+            _textureShowers = _CreateTextureRain(byteNoise, _textureShowers, 40);
+        }
+
+        #endregion
+
         public override void Dispose()
         {
             base.Dispose();
@@ -724,10 +961,7 @@ namespace Mvk2.Renderer.World
             _shSkyStar.Delete();
             _shSkyClouds.Delete();
 
-            if (_textureCloud != 0)
-            {
-                gl.DeleteTextures(1, new uint[] { _textureCloud });
-            }
+            gl.DeleteTextures(3, new uint[] { _textureCloud, _textureRain, _textureShowers });
         }
     }
 }

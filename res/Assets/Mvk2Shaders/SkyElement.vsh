@@ -14,7 +14,5 @@ void main()
 {
     a_texCoord = v_texCoord;
     a_transparency = transparency;
-   // mat4 modelMatrix = mat4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, pos.x, pos.y, pos.z, 1);
-   // gl_Position = view * modelMatrix * rotateMatrix * vec4(v_position, 1.0);
-   gl_Position = view * model * vec4(v_position, 1.0);
+    gl_Position = view * model * vec4(v_position, 1.0);
 }

@@ -98,6 +98,20 @@ namespace Vge.World
         public ChunkBase GetChunk(BlockPos blockPos)
             => ChunkPr.GetChunk(blockPos.GetPositionChunkX(), blockPos.GetPositionChunkZ());
 
+        /// <summary>
+        /// Получить блок высоты из карты высот
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetHeightMap(int x, int z)
+        {
+            ChunkBase chunk = ChunkPr.GetChunk(x >> 4, z >> 4);
+            if (chunk != null)
+            {
+                return chunk.Light.GetHeight(x & 15, z & 15);
+            }
+            return 0;
+        }
+
         #endregion
 
         #region Block

@@ -45,7 +45,7 @@ namespace Vge.Command
             uint timeDay = (uint)(totalWorldTick % speed);
             if (param.Equals("day") || param.Equals("d"))
             {
-                float f = speed * (7f / 24f); // на 7 утра целимся
+                float f = speed * (19f / 24f); // на 7 утра целимся
                 worldServer.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
                 worldServer.Tracker.SendToAllMessage(ChatStyle.Yellow + L.S("CommandsTimeDay"));
                 return "";
@@ -53,7 +53,7 @@ namespace Vge.Command
 
             if (param.Equals("night") || param.Equals("n"))
             {
-                float f = speed * (19f / 24f); // на 19 часов вечера целимся
+                float f = speed * (7f / 24f); // на 19 часов вечера целимся
                 worldServer.SetTickCounter(totalWorldTick + (uint)(timeDay < f ? f : speed + f) - timeDay);
                 worldServer.Tracker.SendToAllMessage(ChatStyle.Aqua + L.S("CommandsTimeNight"));
                 return "";

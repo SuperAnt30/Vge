@@ -188,16 +188,16 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
-        /// Прорисовка облака неба
+        /// Прорисовка облака неба и дождь
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void DrawClouds(float timeIndex) { }
+        public virtual void DrawCloudsRain(float timeIndex) { }
         /// <summary>
         /// Прорисовка облака неба для карты теней
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DrawCloudsDepthMap(float timeIndex) { }
-
+        
         /// <summary>
         /// Дополнительные элементы неба
         /// </summary>

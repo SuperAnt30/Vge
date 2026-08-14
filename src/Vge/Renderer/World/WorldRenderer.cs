@@ -360,8 +360,9 @@ namespace Vge.Renderer.World
                 // Прорисовка руки
                 Entities.DrawOwnerEye(timeIndex);
 
-                // Облака
-                _skyRender.DrawClouds(timeIndex);
+                // Облака и дождь
+                _skyRender.DrawCloudsRain(timeIndex);
+
                 // Рисуем воксели альфа
                 _DrawVoxelAlpha();
 
