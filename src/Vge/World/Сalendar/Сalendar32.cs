@@ -133,12 +133,17 @@ namespace Vge.World.Сalendar
         private float _angleSunPrev;
         /// <summary>
         /// Небесный свет ночь 0..3 в зависимости от фазы луны, день 15
+        /// Showers 5, Rain 9, HeavilyCloudy 13
         /// </summary>
         private int _skylightSubtracted;
         /// <summary>
         /// Значение ветра
         /// </summary>
         private float _wind;
+        /// <summary>
+        /// Цветовой коэффицент умножения неба, тумана, облаков
+        /// </summary>
+        private float _colorKf = 1.0f;
 
         public Сalendar32(int speedDay)
         {
@@ -154,6 +159,25 @@ namespace Vge.World.Сalendar
 
         int _cloudDebug = 0;
 
+        private void _ModifyClouds(float fewClouds)
+        {
+            CloudConditions = _cloudConditionsNext;
+            FewClouds = fewClouds;
+            if (CloudConditions == EnumClouds.Rain)
+            {
+                IsRain = true;
+                IsShowers = false;
+            }
+            else if (CloudConditions == EnumClouds.Showers)
+            {
+                IsRain = IsShowers = true;
+            }
+            else
+            {
+                IsRain = IsShowers = false;
+            }
+        }
+
         /// <summary>
         /// Обновление раз в тик на клиенте
         /// </summary>
@@ -161,16 +185,16 @@ namespace Vge.World.Сalendar
         {
             TickCounter++;
 
-            if (++_cloudDebug > 100)
+            if (++_cloudDebug > 200)
             {
                 _cloudDebug = 0;
 
-                //_cloudConditionsNext = CloudConditions + 1;
-                //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
-                //{
-                //    _cloudConditionsNext = 0;
-                //}
-                _cloudConditionsNext = EnumClouds.Rain;
+                _cloudConditionsNext = CloudConditions + 1;
+                if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
+                {
+                    _cloudConditionsNext = 0;
+                }
+                //_cloudConditionsNext = EnumClouds.Showers;
                 //Rand rand = new Rand();
                 //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
             }
@@ -181,36 +205,26 @@ namespace Vge.World.Сalendar
                 float fewClouds = CloudConditionsConvert.FewClouds(_cloudConditionsNext);
 
                 if (fewClouds == FewClouds) CloudConditions = _cloudConditionsNext;
-                else if (fewClouds < FewClouds)
-                {
-                    FewClouds -= .005f;
-                    if (fewClouds >= FewClouds)
-                    {
-                        CloudConditions = _cloudConditionsNext;
-                        FewClouds = fewClouds;
-                        if (CloudConditions == EnumClouds.Rain)
-                        {
-                            IsRain = true;
-                            IsShowers = false;
-                        }
-                        else if (CloudConditions == EnumClouds.Showers)
-                        {
-                            IsRain = IsShowers = true;
-                        }
-                        else
-                        {
-                            IsRain = IsShowers = false;
-                        }
-                    }
-                }
                 else
-                {
-                    FewClouds += .005f;
-                    if (fewClouds <= FewClouds)
+                { 
+                    if (fewClouds < FewClouds)
                     {
-                        CloudConditions = _cloudConditionsNext;
-                        FewClouds = fewClouds;
+                        FewClouds -= .005f;
+                        if (fewClouds >= FewClouds)
+                        {
+                            _ModifyClouds(fewClouds);
+                        }
                     }
+                    else
+                    {
+                        FewClouds += .005f;
+                        if (fewClouds <= FewClouds)
+                        {
+                            _ModifyClouds(fewClouds);
+                        }
+                    }
+                    _colorKf = FewClouds * .25f + FewClouds * FewClouds * 3f;
+                    if (_colorKf > 1f) _colorKf = 1f;
                 }
             }
 
@@ -269,6 +283,23 @@ namespace Vge.World.Сalendar
                 ColorClouds.X = .9f * skyLight + .1f;
                 ColorClouds.Y = .9f * skyLight + .1f;
                 ColorClouds.Z = .85f * skyLight + .15f;
+
+                if (_colorKf != 1f)
+                {
+                    _colorSky.X *= _colorKf;
+                    _colorSky.Y *= _colorKf;
+                    _colorSky.Z *= _colorKf;
+
+                    _colorFog.X *= _colorKf;
+                    _colorFog.Y *= _colorKf;
+                    _colorFog.Z *= _colorKf;
+
+                    ColorClouds.X *= _colorKf;
+                    ColorClouds.Y *= _colorKf;
+                    ColorClouds.Z *= _colorKf;
+
+                    _sunLight *= _colorKf;
+                }
             }
         }
 
@@ -301,6 +332,7 @@ namespace Vge.World.Сalendar
             light = light * (1f - _lightMoonPhase[MoonPhaseIndex] * .3125f);
             light = light * (1f - .32f * .3125f);
             light = 1f - light;
+            if (_colorKf != 1f) light *= _colorKf;
             _skylightSubtracted = (int)(light * 15f);
         }
 

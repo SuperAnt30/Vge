@@ -4,6 +4,7 @@ using Mvk2.World.Biome;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Renderer.Mesh;
 using Vge.Renderer.World;
@@ -345,8 +346,35 @@ namespace Mvk2.Renderer.World
             if (_alpha < 1) _alpha += .1f;
             base.Update();
 
-            // Счётяик дождя
-            if (_calendar.IsRain) _rendererUpdateCount++;
+            
+            if (_calendar.IsRain)
+            {
+                // Счётчик дождя
+                _rendererUpdateCount++;
+                // Растояние брызг
+                int size = 16;
+                // Каличество брызг за такт
+                int count = _calendar.IsShowers ? 10 : 1;
+                WorldBase world = _player.GetWorld();
+                BlockPos blockPos = new BlockPos(_player.PosX, _player.PosY, _player.PosZ);
+                int x = blockPos.X;
+                int z = blockPos.Z;
+                for (int i = 0; i < count; i++)
+                {
+                    blockPos.X = x + world.Rnd.Next(size) - world.Rnd.Next(size);
+                    blockPos.Z = z + world.Rnd.Next(size) - world.Rnd.Next(size);
+                    blockPos.Y = world.GetHeightMap(blockPos.X, blockPos.Z) - 1;
+                    if (!world.GetBlockState(blockPos).IsAir())
+                    {
+                        // Продумать замену частичек капель
+                        world.SpawnParticle(EntitiesFXReg.PartColorId, 1,
+                            new Vector3(blockPos.X + world.Rnd.NextFloat(),
+                            blockPos.Y + 1.1f,
+                            blockPos.Z + world.Rnd.NextFloat()),
+                            new Vector3(1), 100, 0x415AAC);
+                    }
+                }
+            }
 
             // Счётчик облаков
             _cloudTickCounterX++;
@@ -866,9 +894,9 @@ namespace Mvk2.Renderer.World
             for (i = 0; i < 16384; i++)
             {
                 j = i * 4;
-                buffer[j + 2] = 65;
-                buffer[j + 1] = 90;
-                buffer[j + 0] = 172;
+                buffer[j + 2] = 0x41;
+                buffer[j + 1] = 0x5A;
+                buffer[j + 0] = 0xAC;
 
                 if (byteNoise[i] < noise) // 40 ливень // 20 дождь
                 {

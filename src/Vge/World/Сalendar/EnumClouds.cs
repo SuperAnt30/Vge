@@ -41,13 +41,13 @@ namespace Vge.World.Сalendar
         {
             switch (enumClouds)
             {
-                case EnumClouds.Showers: return .31f;
-                case EnumClouds.Rain: return .41f;
-                case EnumClouds.HeavilyCloudy: return .51f;
-                case EnumClouds.Cloudy: return .61f;
-                case EnumClouds.PartlyCloudy: return .76f;
+                case EnumClouds.Showers: return .31f; // .0961
+                case EnumClouds.Rain: return .41f; // .1681
+                case EnumClouds.HeavilyCloudy: return .51f; // .2601
+                case EnumClouds.Cloudy: return .61f; // .3721
+                case EnumClouds.PartlyCloudy: return .76f; // .5776
             }
-            return .91f;
+            return .91f; // .8281
         }
     }
 }
