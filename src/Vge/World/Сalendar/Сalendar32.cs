@@ -89,6 +89,10 @@ namespace Vge.World.Сalendar
         /// </summary>
         public bool IsShowers { get; private set; } = false; 
         /// <summary>
+        /// Гром
+        /// </summary>
+        public bool IsThunder { get; private set; } = false;
+        /// <summary>
         /// Состояние облаков
         /// </summary>
         public EnumClouds CloudConditions { get; private set; } = EnumClouds.Clear;
@@ -145,8 +149,11 @@ namespace Vge.World.Сalendar
         /// </summary>
         private float _colorKf = 1.0f;
 
+        private readonly Rand _rand;
+
         public Сalendar32(int speedDay)
         {
+            _rand = new Rand();
             _speedDay = speedDay;
             SetTickCounter((uint)(speedDay * 3 / 4));
         }
@@ -157,7 +164,7 @@ namespace Vge.World.Сalendar
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSpeedDay() => _speedDay;
 
-        int _cloudDebug = 0;
+       
 
         private void _ModifyClouds(float fewClouds)
         {
@@ -178,6 +185,10 @@ namespace Vge.World.Сalendar
             }
         }
 
+        int _cloudDebug = 0;
+
+        bool _next;
+
         /// <summary>
         /// Обновление раз в тик на клиенте
         /// </summary>
@@ -189,14 +200,49 @@ namespace Vge.World.Сalendar
             {
                 _cloudDebug = 0;
 
-                _cloudConditionsNext = CloudConditions + 1;
-                if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
+                // Дождь
+                if (_next)
                 {
-                    _cloudConditionsNext = 0;
+                    switch(CloudConditions)
+                    {
+                        case EnumClouds.Rain: _cloudConditionsNext = EnumClouds.Showers; break;
+                        case EnumClouds.Showers: _next = false; break;
+                        default: _cloudConditionsNext = EnumClouds.Rain; break;
+                    }
                 }
-                //_cloudConditionsNext = EnumClouds.Showers;
+                else
+                {
+                    switch (CloudConditions)
+                    {
+                        case EnumClouds.Showers: _cloudConditionsNext = EnumClouds.Rain; break;
+                        case EnumClouds.HeavilyCloudy: _next = true; break;
+                        default: _cloudConditionsNext = EnumClouds.HeavilyCloudy; break;
+                    }
+                }
+
+                //_cloudConditionsNext = CloudConditions + 1;
+                
+
+
+                //_cloudConditionsNext = CloudConditions + 1;
+                //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
+                //{
+                //    _cloudConditionsNext = 0;
+                //}
+               // _cloudConditionsNext = EnumClouds.Showers;
                 //Rand rand = new Rand();
                 //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
+            }
+
+            if (IsThunder) IsThunder = false;
+
+            if (IsShowers)
+            {
+                if (_rand.Next(100) == 0)
+                {
+                    // Гром
+                    IsThunder = true;
+                }
             }
 
             // Плавность смены облаков
@@ -284,7 +330,23 @@ namespace Vge.World.Сalendar
                 ColorClouds.Y = .9f * skyLight + .1f;
                 ColorClouds.Z = .85f * skyLight + .15f;
 
-                if (_colorKf != 1f)
+                if (IsThunder)
+                {
+                    _colorSky.X = 1;
+                    _colorSky.Y = 1;
+                    _colorSky.Z = 1;
+
+                    _colorFog.X = 1;
+                    _colorFog.Y = 1;
+                    _colorFog.Z = 1;
+
+                    _sunLight = 1;
+
+                    //ColorClouds.X = _colorKf;
+                    //ColorClouds.Y = _colorKf;
+                    //ColorClouds.Z = _colorKf;
+                }
+                else if (_colorKf != 1f)
                 {
                     _colorSky.X *= _colorKf;
                     _colorSky.Y *= _colorKf;

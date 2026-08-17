@@ -4,6 +4,7 @@ using Mvk2.World.Biome;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Audio;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Renderer.Mesh;
@@ -169,6 +170,20 @@ namespace Mvk2.Renderer.World
         /// </summary>
         private ListFlout _bufferRain = new ListFlout();
 
+        /// <summary>
+        /// Счётчик для звука дождя
+        /// </summary>
+        private int _rainSoundCounter;
+
+        /// <summary>
+        /// Индексы семплов звука дождя
+        /// </summary>
+        private readonly int[] _samplesRain;
+        /// <summary>
+        /// Индексы семплов звука грома
+        /// </summary>
+        private readonly int[] _samplesThunder;
+
         public SkyIslandRender(PlayerClientOwner player, WorldRenderer worldRenderer, RenderMvk renderMvk) 
             : base(player, worldRenderer)
         {
@@ -211,6 +226,9 @@ namespace Mvk2.Renderer.World
                     _zSqrt[x << 5 | z] = -z0 / q;
                 }
             }
+
+            _samplesRain = AudioIndexs.GetKeys(new string[] { "Rain1", "Rain2" });
+            _samplesThunder = AudioIndexs.GetKeys(new string[] { "Thunder1", "Thunder2" });
         }
 
         /// <summary>
@@ -372,7 +390,23 @@ namespace Mvk2.Renderer.World
                             blockPos.Y + 1.1f,
                             blockPos.Z + world.Rnd.NextFloat()),
                             new Vector3(1), 100, 0x415AAC);
+
+                        if (i == 0 && world.Rnd.Next(3) < _rainSoundCounter++)
+                        {
+                            _rainSoundCounter = 0;
+                            world.PlaySoundDistance(
+                                _samplesRain[world.Rnd.Next(_samplesRain.Length)],
+                                blockPos.ToVector3Center(), _calendar.IsShowers ? .3f : .1f,
+                                _calendar.IsShowers ? .5f : 1f);
+                        }
                     }
+                }
+
+                if (_calendar.IsThunder)
+                {
+                    world.PlaySoundDistance(
+                        _samplesThunder[world.Rnd.Next(_samplesThunder.Length)], _player.GetPositionVec(),
+                            world.Rnd.NextFloat() + .5f, 1);
                 }
             }
 
