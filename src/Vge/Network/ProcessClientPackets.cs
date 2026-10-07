@@ -114,6 +114,7 @@ namespace Vge.Network
                 case 0x23: _Handle23BlockChange((PacketS23BlockChange)packet); break;
                 case 0x29: _Handle29SoundEffect((PacketS29SoundEffect)packet); break;
                 case 0x2A: _Handle2AParticles((PacketS2AParticles)packet); break;
+                case 0x2B: _Handle2BEnvironment((PacketS2BEnvironment)packet); break;
                 case 0x2F: _Handle2FSetSlot((PacketS2FSetSlot)packet); break;
                 case 0x30: _Handle30WindowItems((PacketS30WindowItems)packet); break;
                 case 0x3A: _Handle3AMessage((PacketS3AMessage)packet); break;
@@ -188,7 +189,7 @@ namespace Vge.Network
         /// Пакет синхронизации времени с сервером
         /// </summary>
         private void _Handle04TimeUpdate(PacketS04TickUpdate packet)
-            => Game.World.Settings.Calendar.SetTickCounter(packet.Tick);
+            => Game.World.Settings.Environment.SetTickCounter(packet.Tick);
 
         /// <summary>
         /// Пакет готовность игры
@@ -449,6 +450,13 @@ namespace Vge.Network
         private void _Handle2AParticles(PacketS2AParticles packet)
             => Game.World.SpawnParticle(packet.PacketId, packet.Count, packet.GetPosition(), 
                 packet.GetOffset(), packet.Motion, packet.Parameter);
+
+        /// <summary>
+        /// Пакет изменения погоды
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _Handle2BEnvironment(PacketS2BEnvironment packet)
+            => Game.World.Settings.Environment.SetEnvironment(packet);
 
         /// <summary>
         /// Пакет управления передвежением и изменением слота

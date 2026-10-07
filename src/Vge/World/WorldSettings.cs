@@ -2,8 +2,8 @@
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using Vge.World.Block;
+using Vge.World.Environment;
 using Vge.World.Gen;
-using Vge.World.Сalendar;
 
 namespace Vge.World
 {
@@ -40,9 +40,9 @@ namespace Vge.World
         /// </summary>
         public byte DestroyTickSpeed { get; protected set; } = 15;
         /// <summary>
-        /// Календарь
+        /// Календарь, погода, освещение
         /// </summary>
-        public IСalendar Calendar { get; protected set; }
+        public IEnvironment Environment { get; protected set; }
         /// <summary>
         /// Объект для генерации чанков, только для серверной части
         /// </summary>
@@ -84,7 +84,7 @@ namespace Vge.World
         {
             HasNoSky = packet.HasNoSky;
             NumberChunkSections = packet.NumberChunkSections;
-            Calendar.SetTickCounter(packet.TickCounter);
+            Environment.SetTickCounter(packet.TickCounter);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Vge.World
         /// </summary>
         protected virtual void _WriteToNBT(TagCompound nbt) 
         {
-            nbt.SetLong("TickCounter", Calendar.TickCounter);
+            nbt.SetLong("TickCounter", Environment.TickCounter);
         }
     }
 }

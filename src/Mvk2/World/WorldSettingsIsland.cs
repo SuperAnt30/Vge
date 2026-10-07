@@ -7,7 +7,7 @@ using Vge.Games;
 using Vge.Item;
 using Vge.NBT;
 using Vge.World;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 
 namespace Mvk2.World
 {
@@ -44,7 +44,7 @@ namespace Mvk2.World
             {
                 TagCompound nbt = NBTTools.ReadFromFile(_pathFileSetting, true);
                 // Загрузить дыру хранилищ
-                Calendar.SetTickCounter((uint)nbt.GetLong("TickCounter"));
+                Environment.SetTickCounter((uint)nbt.GetLong("TickCounter"));
                 StorageHole.ReadFromNBT(nbt);
             }
             else
@@ -71,7 +71,7 @@ namespace Mvk2.World
             ActiveRadius = 8;
             NumberChunkSections = 8;
             //Calendar = new Сalendar32(36000); // 24000 при 20 тиках = 20 мин. При 30 тиках = 36000
-            Calendar = new Сalendar32(24000);
+            Environment = new Environment32(24000);
             //Calendar = new Сalendar32(600);// 00);
             //Calendar.SetTickCounter(1800);
         }

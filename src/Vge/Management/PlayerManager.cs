@@ -493,6 +493,8 @@ namespace Vge.Management
 
             // Игрок впервые зашёл, создаём
             entityPlayer.CreatePlayer();
+            // Меняем мир игроку если надо
+            entityPlayer.DefineWorld();
             return true;
         }
 

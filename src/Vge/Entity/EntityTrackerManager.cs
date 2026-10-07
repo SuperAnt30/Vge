@@ -139,13 +139,13 @@ namespace Vge.Entity
         #region Send
 
         /// <summary>
-        /// Отправить всем сообщение
+        /// Отправить всем сообщение в текущем мире
         /// </summary>
         public void SendToAllMessage(string message)
             => SendToAll(new PacketS3AMessage(message));
 
         /// <summary>
-        /// Отправить пакет всем игрокам конкретного треккера
+        /// Отправить пакет всем игрокам конкретного треккера (текущего мира)
         /// </summary>
         public void SendToAll(IPacket packet)
         {
@@ -162,11 +162,7 @@ namespace Vge.Entity
         /// <param name="packet">пакет</param>
         public void SendToAllTrackingEntity(int entityId, IPacket packet)
         {
-            EntityTracker entityTracker = _trackedEntities.Get(entityId);
-            if (entityTracker != null)
-            {
-                entityTracker.SendPacketPlayers(packet);
-            }
+            _trackedEntities.Get(entityId)?.SendPacketPlayers(packet);
         }
 
         /// <summary>
@@ -176,11 +172,7 @@ namespace Vge.Entity
         /// <param name="packet">пакет</param>
         public void SendToAllTrackingEntityCurrent(EntityBase entity, IPacket packet)
         {
-            EntityTracker entityTracker = _trackedEntities.Get(entity.Id) as EntityTracker;
-            if (entityTracker != null)
-            {
-                entityTracker.SendPacketPlayersCurrent(packet);
-            }
+            _trackedEntities.Get(entity.Id)?.SendPacketPlayersCurrent(packet);
         }
 
         /// <summary>
@@ -190,7 +182,7 @@ namespace Vge.Entity
         {
             for (int i = 0; i < _trackedEntities.Count; i++)
             {
-                EntityTracker trackerEntry = _trackedEntities.GetAt(i) as EntityTracker;
+                EntityTracker trackerEntry = _trackedEntities.GetAt(i);
                 if (trackerEntry != null && trackerEntry.TrackedEntity is PlayerServer playerServer)
                 {
                     if (playerServer.Distance(pos) < distance)

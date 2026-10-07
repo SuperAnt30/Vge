@@ -1,12 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Network.Packets.Server;
 using WinGL.Util;
 
-namespace Vge.World.Сalendar
+namespace Vge.World.Environment
 {
     /// <summary>
-    /// Мировой календарь без учёта дней
+    /// Мировой календарь без учёта дней и погоды
     /// </summary>
-    public class СalendarNone : IСalendar
+    public class EnvironmentNone : IEnvironment
     {
         /// <summary>
         /// Увеличивается каждый игровой тик
@@ -38,10 +39,16 @@ namespace Vge.World.Сalendar
         public void UpdateClient() => TickCounter++;
 
         /// <summary>
+        /// Задать пакет погоды
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnvironment(PacketS2BEnvironment packet) { }
+
+        /// <summary>
         /// Обновление раз в тик на сервере
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateServer() => TickCounter++;
+        public void UpdateServer(WorldServer worldServer) => TickCounter++;
 
         /// <summary>
         /// Обновление во фрейме, и возвращает было ли изменение

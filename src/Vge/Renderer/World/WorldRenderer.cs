@@ -6,7 +6,7 @@ using Vge.Realms;
 using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World.Block;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -297,7 +297,7 @@ namespace Vge.Renderer.World
 #endif
                 if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
                 {
-                    _game.World.Settings.Calendar.UpdateFrame(timeIndex);
+                    _game.World.Settings.Environment.UpdateFrame(timeIndex);
                 }
 
                 // Обновить кадр основного игрока, камера и прочее
@@ -381,10 +381,10 @@ namespace Vge.Renderer.World
         {
             if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
             {
-                IСalendar calendar = _game.World.Settings.Calendar;
-                Gi.ViewLightDir = calendar.GetVectorLight();
-                ColorSky = calendar.GetColorSky();
-                ColorFog = calendar.GetColorFog();
+                IEnvironment environment = _game.World.Settings.Environment;
+                Gi.ViewLightDir = environment.GetVectorLight();
+                ColorSky = environment.GetColorSky();
+                ColorFog = environment.GetColorFog();
 
                 Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
                 Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
@@ -469,7 +469,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBiginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _game.World.Settings.Calendar.GetWind());
+                (int)_game.World.GetTickCounter(), _game.World.Settings.Environment.GetWind());
             
             int count = _arrayChunkRender.Count;
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
@@ -494,7 +494,7 @@ namespace Vge.Renderer.World
             // Биндим шейдор для вокселей
             Render.ShsBlocks.BindUniformBigin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
-                (int)_game.World.GetTickCounter(), _game.World.Settings.Calendar.GetWind(), 
+                (int)_game.World.GetTickCounter(), _game.World.Settings.Environment.GetWind(), 
                 OverviewBlock, ColorFog, 5);
 
             if (Debug.IsDrawVoxelLine)

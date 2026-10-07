@@ -6,9 +6,9 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
+using Vge.World.Environment;
 using Vge.World.Gen;
 using Vge.World.Gen.Feature;
-using Vge.World.Сalendar;
 using WinGL.Util;
 
 namespace Mvk2.World.Gen.Feature
@@ -1006,7 +1006,7 @@ namespace Mvk2.World.Gen.Feature
                 // Это просто бревно или ветка и мы не знаем о блок сущности
                 if (rand.Next(_fartuneGrowthLeaves) == 0)
                 {
-                    EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+                    EnumTimeYear timeYear = world.Settings.Environment.TimeYear;
                     if (timeYear == EnumTimeYear.Spring || timeYear == EnumTimeYear.Summer)
                     {
                         _LeavesGrowth(world, blockPos, blockState, rand);

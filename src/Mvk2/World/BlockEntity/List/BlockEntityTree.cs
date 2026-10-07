@@ -8,7 +8,7 @@ using Vge.World;
 using Vge.World.Block;
 using Vge.World.BlockEntity;
 using Vge.World.Chunk;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 
 namespace Mvk2.World.BlockEntity.List
 {
@@ -299,7 +299,7 @@ namespace Mvk2.World.BlockEntity.List
             }
             else
             {
-                EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+                EnumTimeYear timeYear = world.Settings.Environment.TimeYear;
                 if (timeYear == EnumTimeYear.Summer)
                 {
                     // Погода, для роста (лето)

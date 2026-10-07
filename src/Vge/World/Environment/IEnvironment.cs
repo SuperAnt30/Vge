@@ -1,11 +1,12 @@
-﻿using WinGL.Util;
+﻿using Vge.Network.Packets.Server;
+using WinGL.Util;
 
-namespace Vge.World.Сalendar
+namespace Vge.World.Environment
 {
     /// <summary>
-    /// Мировой календарь
+    /// Время, погода, освещение
     /// </summary>
-    public interface IСalendar
+    public interface IEnvironment
     {
         /// <summary>
         /// Увеличивается каждый игровой тик
@@ -20,13 +21,18 @@ namespace Vge.World.Сalendar
         /// <summary>
         /// Обновление раз в тик на сервере
         /// </summary>
-        void UpdateServer();
+        void UpdateServer(WorldServer worldServer);
 
         /// <summary>
         /// Обновление во фрейме, и возвращает было ли изменение
         /// </summary>
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         void UpdateFrame(float timeIndex);
+
+        /// <summary>
+        /// Задать пакет погоды
+        /// </summary>
+        void SetEnvironment(PacketS2BEnvironment packet);
 
         /// <summary>
         /// Внести изменение по мировому времени

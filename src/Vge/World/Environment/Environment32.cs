@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Util;
 
-namespace Vge.World.Сalendar
+namespace Vge.World.Environment
 {
     /// <summary>
-    /// Мировой календарь на 32 дня в году
+    /// Мировой календарь на 32 дня в году и погоды дождя и грома
     /// </summary>
-    public class Сalendar32 : IСalendar
+    public class Environment32 : IEnvironment
     {
         
         /// <summary>
@@ -102,6 +103,11 @@ namespace Vge.World.Сalendar
         private EnumClouds _cloudConditionsNext = EnumClouds.Clear;
 
         /// <summary>
+        /// Сколько времени ярко горит небо от молнии
+        /// </summary>
+        private int _thunder = 0;
+
+        /// <summary>
         /// Скорость суток в тактах
         /// </summary>
         private readonly int _speedDay;
@@ -151,7 +157,7 @@ namespace Vge.World.Сalendar
 
         private readonly Rand _rand;
 
-        public Сalendar32(int speedDay)
+        public Environment32(int speedDay)
         {
             _rand = new Rand();
             _speedDay = speedDay;
@@ -164,12 +170,15 @@ namespace Vge.World.Сalendar
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSpeedDay() => _speedDay;
 
-       
+        /// <summary>
+        /// Проиграли звук грома
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ThunderSound() => IsThunder = false;
 
-        private void _ModifyClouds(float fewClouds)
+        private void _ModifyClouds()
         {
             CloudConditions = _cloudConditionsNext;
-            FewClouds = fewClouds;
             if (CloudConditions == EnumClouds.Rain)
             {
                 IsRain = true;
@@ -185,9 +194,7 @@ namespace Vge.World.Сalendar
             }
         }
 
-        int _cloudDebug = 0;
-
-        bool _next;
+        
 
         /// <summary>
         /// Обновление раз в тик на клиенте
@@ -195,55 +202,6 @@ namespace Vge.World.Сalendar
         public void UpdateClient()
         {
             TickCounter++;
-
-            if (++_cloudDebug > 200)
-            {
-                _cloudDebug = 0;
-
-                // Дождь
-                if (_next)
-                {
-                    switch(CloudConditions)
-                    {
-                        case EnumClouds.Rain: _cloudConditionsNext = EnumClouds.Showers; break;
-                        case EnumClouds.Showers: _next = false; break;
-                        default: _cloudConditionsNext = EnumClouds.Rain; break;
-                    }
-                }
-                else
-                {
-                    switch (CloudConditions)
-                    {
-                        case EnumClouds.Showers: _cloudConditionsNext = EnumClouds.Rain; break;
-                        case EnumClouds.HeavilyCloudy: _next = true; break;
-                        default: _cloudConditionsNext = EnumClouds.HeavilyCloudy; break;
-                    }
-                }
-
-                //_cloudConditionsNext = CloudConditions + 1;
-                
-
-
-                //_cloudConditionsNext = CloudConditions + 1;
-                //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
-                //{
-                //    _cloudConditionsNext = 0;
-                //}
-               // _cloudConditionsNext = EnumClouds.Showers;
-                //Rand rand = new Rand();
-                //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
-            }
-
-            if (IsThunder) IsThunder = false;
-
-            if (IsShowers)
-            {
-                if (_rand.Next(100) == 0)
-                {
-                    // Гром
-                    IsThunder = true;
-                }
-            }
 
             // Плавность смены облаков
             if (_cloudConditionsNext != CloudConditions)
@@ -258,7 +216,8 @@ namespace Vge.World.Сalendar
                         FewClouds -= .005f;
                         if (fewClouds >= FewClouds)
                         {
-                            _ModifyClouds(fewClouds);
+                            FewClouds = fewClouds;
+                            _ModifyClouds();
                         }
                     }
                     else
@@ -266,7 +225,8 @@ namespace Vge.World.Сalendar
                         FewClouds += .005f;
                         if (fewClouds <= FewClouds)
                         {
-                            _ModifyClouds(fewClouds);
+                            FewClouds = fewClouds;
+                            _ModifyClouds();
                         }
                     }
                     _colorKf = FewClouds * .25f + FewClouds * FewClouds * 3f;
@@ -330,8 +290,9 @@ namespace Vge.World.Сalendar
                 ColorClouds.Y = .9f * skyLight + .1f;
                 ColorClouds.Z = .85f * skyLight + .15f;
 
-                if (IsThunder)
+                if (_thunder > 0)
                 {
+                    _thunder--;
                     _colorSky.X = 1;
                     _colorSky.Y = 1;
                     _colorSky.Z = 1;
@@ -447,14 +408,91 @@ namespace Vge.World.Сalendar
                 * .16f; // Тут размер амплитуды, к 0 не двигается, 1 много
         }
 
+        int _cloudDebug = 0;
+
+        bool _next;
+
+        /// <summary>
+        /// Задать пакет погоды с сервера
+        /// </summary>
+        public void SetEnvironment(PacketS2BEnvironment packet)
+        {
+            if (packet.Index < 6)
+            {
+                _cloudConditionsNext = (EnumClouds)packet.Index;
+            }
+            else if (packet.Index == 6)
+            {
+                // Гром
+                IsThunder = true;
+                _thunder = 3;
+            }
+        }
+
+
         /// <summary>
         /// Обновление раз в тик на сервере
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateServer()
+        public void UpdateServer(WorldServer worldServer)
         {
             TickCounter++;
             _CalculateInitialYear();
+
+            // Погода
+            _cloudDebug++;
+            if (_cloudDebug > 200)
+            {
+                _cloudDebug = 0;
+
+                // Дождь
+                if (_next)
+                {
+                    switch (CloudConditions)
+                    {
+                        case EnumClouds.Rain: _cloudConditionsNext = EnumClouds.Showers; break;
+                        case EnumClouds.Showers: _next = false; break;
+                        default: _cloudConditionsNext = EnumClouds.Rain; break;
+                    }
+                }
+                else
+                {
+                    switch (CloudConditions)
+                    {
+                        case EnumClouds.Showers: _cloudConditionsNext = EnumClouds.Rain; break;
+                        case EnumClouds.HeavilyCloudy: _next = true; break;
+                        default: _cloudConditionsNext = EnumClouds.HeavilyCloudy; break;
+                    }
+                }
+
+                worldServer.Tracker.SendToAll(new PacketS2BEnvironment((byte)_cloudConditionsNext, 0));
+                //_cloudConditionsNext = CloudConditions + 1;
+
+
+
+                //_cloudConditionsNext = CloudConditions + 1;
+                //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
+                //{
+                //    _cloudConditionsNext = 0;
+                //}
+                // _cloudConditionsNext = EnumClouds.Showers;
+                //Rand rand = new Rand();
+                //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
+            }
+
+            if (IsThunder) IsThunder = false;
+
+          //  if (IsRain || IsShowers)
+            {
+                if (_rand.Next(100) == 0)
+                {
+                    // Гром
+                    IsThunder = true;
+                    worldServer.Tracker.SendToAll(new PacketS2BEnvironment(6, 0));
+                }
+            }
+
+            _ModifyClouds();
+            //worldServer.Tracker.SendToAll();
         }
 
         public void SetTickCounter(uint tickCounter)

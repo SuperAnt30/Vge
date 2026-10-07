@@ -38,7 +38,7 @@ namespace Vge.Network.Packets.Server
             IdSetting = worldSettings.IdSetting;
             NumberChunkSections = worldSettings.NumberChunkSections;
             HasNoSky = worldSettings.HasNoSky;
-            TickCounter = worldSettings.Calendar.TickCounter;
+            TickCounter = worldSettings.Environment.TickCounter;
             IdWorld = idWorld;
         }
 

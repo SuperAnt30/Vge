@@ -34,14 +34,14 @@ namespace Vge.Command
 
             string param = commandParams[0].ToLower();
             WorldServer worldServer = player.GetWorldServer();
-            int speed = worldServer.Settings.Calendar.GetSpeedDay();
+            int speed = worldServer.Settings.Environment.GetSpeedDay();
             if (speed == 0)
             {
                 // Нет дней
                 return ChatStyle.Red + L.S("CommandsTimeNotDayWorld");
             }
 
-            uint totalWorldTick = worldServer.Settings.Calendar.TickCounter;
+            uint totalWorldTick = worldServer.Settings.Environment.TickCounter;
             uint timeDay = (uint)(totalWorldTick % speed);
             if (param.Equals("day") || param.Equals("d"))
             {

@@ -239,7 +239,7 @@ namespace Vge.Entity.Player
             TimesExisted += _server.DeltaTime;
 
             // Синхронизация времени с клиентом
-            uint tick = GetWorldServer().Settings.Calendar.TickCounter;
+            uint tick = GetWorldServer().Settings.Environment.TickCounter;
             if (tick % 600 == 0)
             {
                 // Раз в 30 секунд обновляем тик с клиентом
@@ -677,7 +677,7 @@ namespace Vge.Entity.Player
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorldServer().Settings));
             // Время на сервере
-            SendPacket(new PacketS04TickUpdate(GetWorldServer().Settings.Calendar.TickCounter));
+            SendPacket(new PacketS04TickUpdate(GetWorldServer().Settings.Environment.TickCounter));
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // Передаём весь инвентарь

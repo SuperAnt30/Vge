@@ -54,7 +54,7 @@ namespace Vge.World
         /// <summary>
         /// Увеличивается каждый такт конкретного мира
         /// </summary>
-        public uint TickCounter => Settings.Calendar.TickCounter;
+        public uint TickCounter => Settings.Environment.TickCounter;
 
         /// <summary>
         /// Кешовы Список BlockTick блоков которые должны мгновенно тикать,
@@ -138,7 +138,7 @@ namespace Vge.World
         public void Update()
         {
             long timeBegin = Server.Time();
-            Settings.Calendar.UpdateServer();
+            Settings.Environment.UpdateServer(this);
 
             if (TickCounter % Ce.Tps == 0)
             {
@@ -207,7 +207,7 @@ namespace Vge.World
         /// </summary>
         public void SetTickCounter(uint tickCounter)
         {
-            Settings.Calendar.SetTickCounter(tickCounter);
+            Settings.Environment.SetTickCounter(tickCounter);
             Tracker.SendToAll(new PacketS04TickUpdate(tickCounter));
         }
 
@@ -733,7 +733,7 @@ namespace Vge.World
                 + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
                 + "\r\n" + Tracker + " ChBt:" + chBt 
                 + " ChBe:" + chBe 
-                + " Desreoy:" + chDestroy + " " + Settings.Calendar;
+                + " Desreoy:" + chDestroy + " " + Settings.Environment;
         }
         
     }

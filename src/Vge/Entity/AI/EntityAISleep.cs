@@ -31,7 +31,7 @@ namespace Vge.Entity.AI
         /// </summary>
         public override bool ShouldExecute()
         {
-            if (!_entity.GetWorldServer().Settings.Calendar.IsDayTime() 
+            if (!_entity.GetWorldServer().Settings.Environment.IsDayTime() 
                 && !_entity.IsSleep())
             {
                 // Ночь, и сущность ещё не спит. Надо ложится спать
@@ -52,7 +52,7 @@ namespace Vge.Entity.AI
             if (_actionSleep)
             {
               //  bool actionSleeped = true;
-                if (_entity.GetWorldServer().Settings.Calendar.IsDayTime())
+                if (_entity.GetWorldServer().Settings.Environment.IsDayTime())
                 {
                     // День, надо просыпаться
                     if (_entity.IsSleep() && Rnd.NextFloat() < _probability)

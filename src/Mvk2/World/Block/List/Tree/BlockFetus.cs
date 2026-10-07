@@ -1,9 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using Vge.Util;
+﻿using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 
 namespace Mvk2.World.Block.List
 {
@@ -52,7 +51,7 @@ namespace Mvk2.World.Block.List
         public override void RandomTick(WorldServer world, ChunkServer chunk,
             BlockPos blockPos, BlockState blockState, Rand random)
         {
-            EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+            EnumTimeYear timeYear = world.Settings.Environment.TimeYear;
             if (timeYear == EnumTimeYear.Winter || timeYear == EnumTimeYear.Spring)
             {
                 // Удаляем

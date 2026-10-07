@@ -1,4 +1,4 @@
-﻿namespace Vge.World.Сalendar
+﻿namespace Vge.World.Environment
 {
     /// <summary>
     /// Фаза луны

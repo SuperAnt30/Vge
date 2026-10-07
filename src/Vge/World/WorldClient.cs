@@ -73,7 +73,7 @@ namespace Vge.World
         /// Получить тактовое время мира
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public uint GetTickCounter() => Settings == null ? 0 : Settings.Calendar.TickCounter;
+        public uint GetTickCounter() => Settings == null ? 0 : Settings.Environment.TickCounter;
 
         private void _ChunkPrClient_ChunkMappingChanged(object sender, System.EventArgs e)
             => _flagDebugChunkMappingChanged = true;
@@ -83,7 +83,7 @@ namespace Vge.World
         /// </summary>
         public void UpdateClient()
         {
-            Settings.Calendar.UpdateClient();
+            Settings.Environment.UpdateClient();
 
             Filer.StartSection("Entities");
             _UpdateEntities();
@@ -336,7 +336,7 @@ namespace Vge.World
 
         public override string ToString()
         {
-            string calendar = Settings == null ? "Null" : Settings.Calendar.ToString();
+            string calendar = Settings == null ? "Null" : Settings.Environment.ToString();
             return "\r\nChPr " + ChunkPrClient.ToString()
                 + "\r\nCalendar " + calendar;
         } 

@@ -73,8 +73,8 @@ namespace Vge.Renderer.World
                 }
                 else
                 {
-                    _sunLightPrev = worldSettings.Calendar.GetSunLight();
-                    _moonLightPrev = worldSettings.Calendar.GetMoonLight();
+                    _sunLightPrev = worldSettings.Environment.GetSunLight();
+                    _moonLightPrev = worldSettings.Environment.GetMoonLight();
                     _GenTextureSky(_sunLightPrev, _moonLightPrev);
                     _UpdateLightmap();
                 }
@@ -82,8 +82,8 @@ namespace Vge.Renderer.World
             else if (!_hasNoSkyPrev)
             {
                 // Есть небо, проверяем смену яркости солнца
-                float sunLight = worldSettings.Calendar.GetSunLight();
-                float moonLight = worldSettings.Calendar.GetMoonLight();
+                float sunLight = worldSettings.Environment.GetSunLight();
+                float moonLight = worldSettings.Environment.GetMoonLight();
                 if (_sunLightPrev != sunLight || _moonLightPrev != moonLight)
                 {
                     _sunLightPrev = sunLight;

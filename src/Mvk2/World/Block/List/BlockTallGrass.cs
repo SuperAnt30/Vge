@@ -3,7 +3,7 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 
 namespace Mvk2.World.Block.List
 {
@@ -119,7 +119,7 @@ namespace Mvk2.World.Block.List
             if (blockState.Met < 4 && blockState.LightSky < 10 
                 && random.Next(blockState.Met * 20 + 10) == 0) // Чем выше, тем реже ростём
             {
-                EnumTimeYear timeYear = world.Settings.Calendar.TimeYear;
+                EnumTimeYear timeYear = world.Settings.Environment.TimeYear;
                 if (timeYear == EnumTimeYear.Spring || timeYear == EnumTimeYear.Summer)
                 {
                     GrassGrowth(world, chunk, blockState, blockPos);

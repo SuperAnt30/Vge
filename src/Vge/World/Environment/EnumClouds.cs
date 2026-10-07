@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vge.World.Сalendar
+namespace Vge.World.Environment
 {
     /// <summary>
     /// Перечесление облачности
@@ -10,27 +10,27 @@ namespace Vge.World.Сalendar
         /// <summary>
         /// Ливень = .31f
         /// </summary>
-        Showers,
+        Showers = 5,
         /// <summary>
         /// Дождь = .41f
         /// </summary>
-        Rain,
+        Rain = 4,
         /// <summary>
         /// Сильная облачность = .51f
         /// </summary>
-        HeavilyCloudy,
+        HeavilyCloudy = 3,
         /// <summary>
         /// Облачно = .61f
         /// </summary>
-        Cloudy,
+        Cloudy = 2,
         /// <summary>
         /// Мало облачно = .76f
         /// </summary>
-        PartlyCloudy,
+        PartlyCloudy = 1,
         /// <summary>
         /// Ясно = .91f
         /// </summary>
-        Clear
+        Clear = 0
     }
 
     public static class CloudConditionsConvert

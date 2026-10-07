@@ -13,7 +13,7 @@ using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Gen;
-using Vge.World.Сalendar;
+using Vge.World.Environment;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -27,7 +27,7 @@ namespace Mvk2.Renderer.World
         /// <summary>
         /// Объект календаря
         /// </summary>
-        private Сalendar32 _calendar;
+        private Environment32 _environment;
 
         /// <summary>
         /// Цвет заката и рассвета
@@ -236,7 +236,7 @@ namespace Mvk2.Renderer.World
         /// </summary>
         public override void InitSetting()
         {
-            _calendar = (Сalendar32)_player.GetWorld().Settings.Calendar;
+            _environment = (Environment32)_player.GetWorld().Settings.Environment;
         }
 
         /// <summary>
@@ -365,14 +365,14 @@ namespace Mvk2.Renderer.World
             base.Update();
 
             
-            if (_calendar.IsRain)
+            if (_environment.IsRain)
             {
                 // Счётчик дождя
                 _rendererUpdateCount++;
                 // Растояние брызг
                 int size = 16;
                 // Каличество брызг за такт
-                int count = _calendar.IsShowers ? 10 : 1;
+                int count = _environment.IsShowers ? 10 : 1;
                 WorldBase world = _player.GetWorld();
                 BlockPos blockPos = new BlockPos(_player.PosX, _player.PosY, _player.PosZ);
                 int x = blockPos.X;
@@ -396,28 +396,31 @@ namespace Mvk2.Renderer.World
                             _rainSoundCounter = 0;
                             world.PlaySoundDistance(
                                 _samplesRain[world.Rnd.Next(_samplesRain.Length)],
-                                blockPos.ToVector3Center(), _calendar.IsShowers ? .3f : .1f,
-                                _calendar.IsShowers ? .5f : 1f);
+                                blockPos.ToVector3Center(), _environment.IsShowers ? .3f : .1f,
+                                _environment.IsShowers ? .5f : 1f);
                         }
                     }
                 }
+            }
 
-                if (_calendar.IsThunder)
-                {
-                    world.PlaySoundDistance(
-                        _samplesThunder[world.Rnd.Next(_samplesThunder.Length)], _player.GetPositionVec(),
-                            world.Rnd.NextFloat() + .5f, 1);
-                }
+            if (_environment.IsThunder)
+            {
+                WorldBase world = _player.GetWorld();
+                world.PlaySoundDistance(
+                    _samplesThunder[world.Rnd.Next(_samplesThunder.Length)], _player.GetPositionVec(),
+                        world.Rnd.NextFloat() + .5f, 1);
+
+                _environment.ThunderSound();
             }
 
             // Счётчик облаков
             _cloudTickCounterX++;
-            if (_cloudTickCounterX > (_cloudSizeTexure / Mth.Abs(_calendar.SpeedCloudX)))
+            if (_cloudTickCounterX > (_cloudSizeTexure / Mth.Abs(_environment.SpeedCloudX)))
             {
                 _cloudTickCounterX = 0;
             }
             _cloudTickCounterZ++;
-            if (_cloudTickCounterZ > (_cloudSizeTexure / Mth.Abs(_calendar.SpeedCloudZ)))
+            if (_cloudTickCounterZ > (_cloudSizeTexure / Mth.Abs(_environment.SpeedCloudZ)))
             {
                 _cloudTickCounterZ = 0;
             }
@@ -427,7 +430,7 @@ namespace Mvk2.Renderer.World
                 _colorDown = new Vector3(0);
             }
 
-            float celestialAngle = _calendar.GetCelestialAngle();
+            float celestialAngle = _environment.GetCelestialAngle();
             _colors = _CalcSunriseSunsetColors(celestialAngle);
 
             // Параметра для размера солнца, растояние от глаз 64 - 128
@@ -444,15 +447,15 @@ namespace Mvk2.Renderer.World
             }
 
             // Матрица расположения солнца
-            if (_calendar.GetSunLight() > 0)
+            if (_environment.GetSunLight() > 0)
             {
                 _matSun = Mat4.Identity();
-                _matSun.RotateX(Сalendar32.AngleSunTimeYear[_calendar.TimeYearIndex]);
+                _matSun.RotateX(Environment32.AngleSunTimeYear[_environment.TimeYearIndex]);
                 _matSun.RotateZ(celestialAngle * Glm.Pi360);
-                _matSun.Translate(0, 64f + (_calendar.GetSunLight() + sunLightAdd) * 30f, 0);
+                _matSun.Translate(0, 64f + (_environment.GetSunLight() + sunLightAdd) * 30f, 0);
             }
 
-            if (_calendar.StarLight > 0)
+            if (_environment.StarLight > 0)
             {
                 _matStar = Mat4.Identity();
                 _matStar.RotateX(Glm.Pi45);
@@ -462,9 +465,9 @@ namespace Mvk2.Renderer.World
                 _matMoon.RotateY(celestialAngle * Glm.Pi90 + 2.4f); // Чтоб луна была в горизонте читабельная фазе
                 _matMoon.Translate(0, -112f, 0);
 
-                if (_moonPhaseIndexPrev != _calendar.MoonPhaseIndex)
+                if (_moonPhaseIndexPrev != _environment.MoonPhaseIndex)
                 {
-                    _moonPhaseIndexPrev = _calendar.MoonPhaseIndex;
+                    _moonPhaseIndexPrev = _environment.MoonPhaseIndex;
                     int phaseV = _moonPhaseIndexPrev % 4;
                     int phaseH = _moonPhaseIndexPrev / 4 % 2;
                     float u1 = phaseV / 4f;
@@ -533,21 +536,21 @@ namespace Mvk2.Renderer.World
             gl.BlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE, GL.GL_ZERO);
 
             // Солнце
-            if (_calendar.GetSunLight() > 0)
+            if (_environment.GetSunLight() > 0)
             {
                 _renderMvk.BindTextureSun();
                 _shSkyElement.Bind();
-                _shSkyElement.SetUniform1("transparency", _calendar.GetSunLight());
+                _shSkyElement.SetUniform1("transparency", _environment.GetSunLight());
                 _shSkyElement.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyElement.SetUniformMatrix4("model", _matSun.ToArray());
                 _meshSun.Draw();
             }
 
             // Звёзды и луна
-            if (_calendar.StarLight > 0)
+            if (_environment.StarLight > 0)
             {
                 _shSkyStar.Bind();
-                _shSkyStar.SetUniform1("transparency", _calendar.StarLight);
+                _shSkyStar.SetUniform1("transparency", _environment.StarLight);
                 _shSkyStar.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyStar.SetUniformMatrix4("model", _matStar.ToArray());
                 _shSkyStar.SetUniform3("color", _starRand1, _starRand2, _starRand3);
@@ -555,7 +558,7 @@ namespace Mvk2.Renderer.World
 
                 _renderMvk.BindTextureMoon();
                 _shSkyElement.Bind();
-                _shSkyElement.SetUniform1("transparency", _calendar.StarLight + .15f);
+                _shSkyElement.SetUniform1("transparency", _environment.StarLight + .15f);
                 _shSkyElement.SetUniformMatrix4("view", Gi.MatrixView);
                 _shSkyElement.SetUniformMatrix4("model", _matMoon.ToArray());
                 _meshMoon.Draw();
@@ -634,10 +637,10 @@ namespace Mvk2.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _ShCloudsBind(float timeIndex)
         {
-            float x0 = _player.PosFrameX - (_cloudTickCounterX + timeIndex) * _calendar.SpeedCloudX;
+            float x0 = _player.PosFrameX - (_cloudTickCounterX + timeIndex) * _environment.SpeedCloudX;
             x0 = (x0 - Mth.Floor(x0 / _cloudSizeTexure) * _cloudSizeTexure) * _cloudSizePixelTexure;
 
-            float z0 = _player.PosFrameZ - (_cloudTickCounterZ + timeIndex) * _calendar.SpeedCloudZ;
+            float z0 = _player.PosFrameZ - (_cloudTickCounterZ + timeIndex) * _environment.SpeedCloudZ;
             z0 = (z0 - Mth.Floor(z0 / _cloudSizeTexure) * _cloudSizeTexure) * _cloudSizePixelTexure;
 
             //Console.WriteLine(x0 + " - " + z0);
@@ -659,7 +662,7 @@ namespace Mvk2.Renderer.World
         /// </summary>
         public override void DrawCloudsDepthMap(float timeIndex)
         {
-            if (_calendar.FewClouds < .7f)
+            if (_environment.FewClouds < .7f)
             {
                 gl.ActiveTexture(GL.GL_TEXTURE0);
                 gl.BindTexture(GL.GL_TEXTURE_2D, _textureCloud);
@@ -667,7 +670,7 @@ namespace Mvk2.Renderer.World
                 _shSkyClouds.SetUniform1("transparency", 1f);
                 _shSkyClouds.SetUniformMatrix4("view", Gi.MatrixViewDepthMap);
                 _shSkyClouds.SetUniform1("posY", _player.PosFrameY + 4);
-                _shSkyClouds.SetUniform1("few", _calendar.FewClouds + .14f);
+                _shSkyClouds.SetUniform1("few", _environment.FewClouds + .14f);
                 _meshClouds.Draw();
             }
         }
@@ -693,22 +696,22 @@ namespace Mvk2.Renderer.World
                 _shSkyClouds.SetUniformMatrix4("view", Gi.MatrixView);
 
                 // Второй уровень затемнённости
-                if (_calendar.FewClouds < .7f)
+                if (_environment.FewClouds < .7f)
                 {
                     _shSkyClouds.SetUniform1("transparency", _alpha);
                     _shSkyClouds.SetUniform1("posY", _player.PosFrameY + 4);
-                    _shSkyClouds.SetUniform1("few", _calendar.FewClouds + .14f);
-                    _shSkyClouds.SetUniform3("color", _calendar.ColorClouds.X * .7f,
-                    _calendar.ColorClouds.Y * .7f, _calendar.ColorClouds.Z * .7f);
+                    _shSkyClouds.SetUniform1("few", _environment.FewClouds + .14f);
+                    _shSkyClouds.SetUniform3("color", _environment.ColorClouds.X * .7f,
+                    _environment.ColorClouds.Y * .7f, _environment.ColorClouds.Z * .7f);
                     _meshClouds.Draw();
                 }
 
                 // Светлые полупрозрачный слой
                 _shSkyClouds.SetUniform1("transparency", .6f * _alpha);
                 _shSkyClouds.SetUniform1("posY", _player.PosFrameY);
-                _shSkyClouds.SetUniform1("few", _calendar.FewClouds);
-                _shSkyClouds.SetUniform3("color", _calendar.ColorClouds.X,
-                    _calendar.ColorClouds.Y, _calendar.ColorClouds.Z);
+                _shSkyClouds.SetUniform1("few", _environment.FewClouds);
+                _shSkyClouds.SetUniform3("color", _environment.ColorClouds.X,
+                    _environment.ColorClouds.Y, _environment.ColorClouds.Z);
                 _meshClouds.Draw();
 
                 if (Vge.Debug.IsDrawVoxelLine)
@@ -839,11 +842,11 @@ namespace Mvk2.Renderer.World
         private void _DrawRain(float timeIndex)
         {
             // Это дождь
-            if (_calendar.IsRain)
+            if (_environment.IsRain)
             {
                 gl.ActiveTexture(GL.GL_TEXTURE0);
                 gl.BindTexture(GL.GL_TEXTURE_2D, 
-                    _calendar.IsShowers ? _textureShowers : _textureRain);
+                    _environment.IsShowers ? _textureShowers : _textureRain);
 
                 _shSkyElement.Bind();
                 _shSkyElement.SetUniform1("transparency", 1f);
