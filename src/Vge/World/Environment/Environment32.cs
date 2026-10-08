@@ -1,5 +1,6 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
+using Vge.NBT;
 using Vge.Network.Packets.Server;
 using Vge.Util;
 using WinGL.Util;
@@ -11,7 +12,6 @@ namespace Vge.World.Environment
     /// </summary>
     public class Environment32 : IEnvironment
     {
-        
         /// <summary>
         /// Скорость года в днях
         /// </summary>
@@ -82,17 +82,26 @@ namespace Vge.World.Environment
         /// </summary>
         public float SpeedCloudZ { get; private set; } = .03125f;
         /// <summary>
-        /// Имеется ли дождь
+        /// Осадки
         /// </summary>
-        public bool IsRain { get; private set; } = false;
-        /// <summary>
-        /// Имеется ли ливень, IsRain должен быть true
-        /// </summary>
-        public bool IsShowers { get; private set; } = false; 
+        public EnumPrecipitation Precipitation { get; private set; } = EnumPrecipitation.None;
         /// <summary>
         /// Гром
         /// </summary>
         public bool IsThunder { get; private set; } = false;
+
+        /// <summary>
+        /// Грохочущий, период вероятности грома
+        /// </summary>
+        private bool _isThundering = false;
+        /// <summary>
+        /// Следующая смена погоды
+        /// </summary>
+        private uint _nextShift = 0;
+        /// <summary>
+        /// Осадки для след тика
+        /// </summary>
+        private EnumPrecipitation _nextPrecipitation = EnumPrecipitation.None;
         /// <summary>
         /// Состояние облаков
         /// </summary>
@@ -176,26 +185,6 @@ namespace Vge.World.Environment
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ThunderSound() => IsThunder = false;
 
-        private void _ModifyClouds()
-        {
-            CloudConditions = _cloudConditionsNext;
-            if (CloudConditions == EnumClouds.Rain)
-            {
-                IsRain = true;
-                IsShowers = false;
-            }
-            else if (CloudConditions == EnumClouds.Showers)
-            {
-                IsRain = IsShowers = true;
-            }
-            else
-            {
-                IsRain = IsShowers = false;
-            }
-        }
-
-        
-
         /// <summary>
         /// Обновление раз в тик на клиенте
         /// </summary>
@@ -217,7 +206,7 @@ namespace Vge.World.Environment
                         if (fewClouds >= FewClouds)
                         {
                             FewClouds = fewClouds;
-                            _ModifyClouds();
+                            CloudConditions = _cloudConditionsNext;
                         }
                     }
                     else
@@ -226,7 +215,7 @@ namespace Vge.World.Environment
                         if (fewClouds <= FewClouds)
                         {
                             FewClouds = fewClouds;
-                            _ModifyClouds();
+                            CloudConditions = _cloudConditionsNext;
                         }
                     }
                     _colorKf = FewClouds * .25f + FewClouds * FewClouds * 3f;
@@ -408,27 +397,53 @@ namespace Vge.World.Environment
                 * .16f; // Тут размер амплитуды, к 0 не двигается, 1 много
         }
 
-        int _cloudDebug = 0;
-
-        bool _next;
-
         /// <summary>
-        /// Задать пакет погоды с сервера
+        /// Задать погоду клиенту
         /// </summary>
-        public void SetEnvironment(PacketS2BEnvironment packet)
+        public void SetEnvironmentClient(byte value)
         {
-            if (packet.Index < 6)
+            if (value < 6)
             {
-                _cloudConditionsNext = (EnumClouds)packet.Index;
+                _cloudConditionsNext = (EnumClouds)value;
             }
-            else if (packet.Index == 6)
+            else if (value == 6)
             {
                 // Гром
                 IsThunder = true;
                 _thunder = 3;
             }
+            else
+            {
+                // Осадки
+                Precipitation = (EnumPrecipitation)(value - 7);
+                return;
+            }
         }
 
+        /// <summary>
+        /// Задать погоду серверу
+        /// </summary>
+        public void SetEnvironmentServer(byte value)
+        {
+            // 20 секунд, чтоб неменялась погода. Сдвиг
+            _nextShift += 400;
+
+            if (value < 6)
+            {
+                _cloudConditionsNext = (EnumClouds)value;
+            }
+            else if (value == 6)
+            {
+                // Гром
+                IsThunder = true;
+            }
+            else
+            {
+                // Осадки
+                _nextPrecipitation = (EnumPrecipitation)(value - 7);
+                return;
+            }
+        }
 
         /// <summary>
         /// Обновление раз в тик на сервере
@@ -438,61 +453,46 @@ namespace Vge.World.Environment
             TickCounter++;
             _CalculateInitialYear();
 
-            // Погода
-            _cloudDebug++;
-            if (_cloudDebug > 200)
+            if (_nextShift <= TickCounter)
             {
-                _cloudDebug = 0;
-
-                // Дождь
-                if (_next)
+                // Смена погоды
+                switch (CloudConditions)
                 {
-                    switch (CloudConditions)
-                    {
-                        case EnumClouds.Rain: _cloudConditionsNext = EnumClouds.Showers; break;
-                        case EnumClouds.Showers: _next = false; break;
-                        default: _cloudConditionsNext = EnumClouds.Rain; break;
-                    }
+                    case EnumClouds.Clear: _Weather0Clear(); break;
+                    case EnumClouds.PartlyCloudy: _Weather1PartlyCloudy(); break;
+                    case EnumClouds.Cloudy: _Weather2Cloudy(); break;
+                    case EnumClouds.MostlyCloudy: _Weather3MostlyCloudy(); break;
+                    case EnumClouds.HeavilyCloudy: _Weather4HeavilyCloudy(); break;
+                    case EnumClouds.Overcast: _Weather5Overcast(); break;
                 }
-                else
-                {
-                    switch (CloudConditions)
-                    {
-                        case EnumClouds.Showers: _cloudConditionsNext = EnumClouds.Rain; break;
-                        case EnumClouds.HeavilyCloudy: _next = true; break;
-                        default: _cloudConditionsNext = EnumClouds.HeavilyCloudy; break;
-                    }
-                }
-
-                worldServer.Tracker.SendToAll(new PacketS2BEnvironment((byte)_cloudConditionsNext, 0));
-                //_cloudConditionsNext = CloudConditions + 1;
-
-
-
-                //_cloudConditionsNext = CloudConditions + 1;
-                //if ((int)_cloudConditionsNext == CloudConditionsConvert.CountEnumClouds)
-                //{
-                //    _cloudConditionsNext = 0;
-                //}
-                // _cloudConditionsNext = EnumClouds.Showers;
-                //Rand rand = new Rand();
-                //_cloudConditionsNext = (EnumClouds)rand.Next(CloudConditionsConvert.CountEnumClouds);
             }
 
-            if (IsThunder) IsThunder = false;
+            if (CloudConditions != _cloudConditionsNext)
+            {
+                worldServer.Tracker.SendToAll(new PacketS2BEnvironment((byte)_cloudConditionsNext));
+                CloudConditions = _cloudConditionsNext;
+            }
 
-          //  if (IsRain || IsShowers)
+            if (Precipitation != _nextPrecipitation)
+            {
+                worldServer.Tracker.SendToAll(new PacketS2BEnvironment((byte)(_nextPrecipitation + 7)));
+                Precipitation = _nextPrecipitation;
+            }
+
+            if (_isThundering)
             {
                 if (_rand.Next(100) == 0)
                 {
                     // Гром
                     IsThunder = true;
-                    worldServer.Tracker.SendToAll(new PacketS2BEnvironment(6, 0));
                 }
             }
 
-            _ModifyClouds();
-            //worldServer.Tracker.SendToAll();
+            if (IsThunder)
+            {
+                IsThunder = false;
+                worldServer.Tracker.SendToAll(new PacketS2BEnvironment(6));
+            }
         }
 
         public void SetTickCounter(uint tickCounter)
@@ -565,9 +565,182 @@ namespace Vge.World.Environment
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsDayTime() => _skylightSubtracted > 6;
 
+        #region Смена погоды
+
+        /// <summary>
+        /// Была погода ясно, определяем что будет
+        /// </summary>
+        private void _Weather0Clear()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(600) + 600;
+            // Оставляем ясно, или меняем на Мало облачно или Облачно
+            int r = _rand.Next(4);
+            if (r == 4)
+            {
+                // Резко пасмурно
+                _cloudConditionsNext = EnumClouds.Overcast;
+                // И возможна граза
+                _isThundering = _rand.NextBool();
+            }
+            else
+            {
+                _cloudConditionsNext = (EnumClouds)r;
+                _isThundering = false;
+            }
+        }
+
+        /// <summary>
+        /// Была погода Мало облачно, определяем что будет
+        /// </summary>
+        private void _Weather1PartlyCloudy()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(800) + 800;
+            // Оставляем Мало облачно, или меняем
+            int r = _rand.Next(4);
+            _cloudConditionsNext = (EnumClouds)r;
+            _isThundering = false;
+        }
+
+        /// <summary>
+        /// Была погода Облачно, определяем что будет
+        /// </summary>
+        private void _Weather2Cloudy()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(800) + 800;
+            // Оставляем Мало облачно, или меняем
+            int r = _rand.Next(5);
+            _cloudConditionsNext = (EnumClouds)r;
+
+            if (r == 4) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+            else if (r == 3) _nextPrecipitation = _rand.Next(20) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+            else _nextPrecipitation = EnumPrecipitation.None;
+        }
+
+        /// <summary>
+        /// Была погода Значительная облачность, определяем что будет
+        /// </summary>
+        private void _Weather3MostlyCloudy()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(800) + 400;
+            // Оставляем Мало облачно, или меняем
+            int r = _rand.Next(5) + 1;
+            _cloudConditionsNext = (EnumClouds)r;
+            
+            if (r == 5) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else if (r == 4) _nextPrecipitation = _rand.Next(20) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else _nextPrecipitation = EnumPrecipitation.None;
+
+            if (_nextPrecipitation == EnumPrecipitation.Showers)
+            {
+                _isThundering = _rand.Next(10) == 0;
+            }
+            else
+            {
+                _isThundering = false;
+                if (r == 5) _nextPrecipitation = _rand.Next(5) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+                else if (r == 4) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+                else if (r == 3) _nextPrecipitation = _rand.Next(10) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+            }
+        }
+
+        /// <summary>
+        /// Была погода Сильная облачность, определяем что будет
+        /// </summary>
+        private void _Weather4HeavilyCloudy()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(600) + 400;
+            // Оставляем Мало облачно, или меняем
+            int r = _rand.Next(5) + 1;
+            _cloudConditionsNext = (EnumClouds)r;
+
+            if (r == 5) _nextPrecipitation = _rand.Next(5) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else if (r == 4) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else _nextPrecipitation = EnumPrecipitation.None;
+
+            if (_nextPrecipitation == EnumPrecipitation.Showers)
+            {
+                _isThundering = _rand.Next(5) == 0;
+            }
+            else
+            {
+                _isThundering = false;
+                if (r == 5) _nextPrecipitation = _rand.Next(3) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+                else if (r == 4) _nextPrecipitation = _rand.Next(5) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+                else if (r == 3) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+            }
+        }
+
+        /// <summary>
+        /// Была погода Пасмурно, определяем что будет
+        /// </summary>
+        private void _Weather5Overcast()
+        {
+            _nextShift = TickCounter + (uint)_rand.Next(600) + 200;
+            // Оставляем Мало облачно, или меняем
+            int r = _rand.Next(6);
+            _cloudConditionsNext = (EnumClouds)r;
+
+            if (r == 5) _nextPrecipitation = _rand.Next(3) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else if (r == 4) _nextPrecipitation = _rand.Next(5) == 0 ? EnumPrecipitation.Showers : EnumPrecipitation.None;
+            else _nextPrecipitation = EnumPrecipitation.None;
+
+            if (_nextPrecipitation == EnumPrecipitation.Showers)
+            {
+                _isThundering = _rand.Next(3) == 0;
+            }
+            else
+            {
+                _isThundering = false;
+                if (r == 5) _nextPrecipitation = EnumPrecipitation.Rain;
+                else if (r == 4) _nextPrecipitation = _rand.Next(5) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+                else if (r == 3) _nextPrecipitation = _rand.Next(8) == 0 ? EnumPrecipitation.Rain : EnumPrecipitation.None;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Присоединён игрок, передаём данные пакета
+        /// </summary>
+        public void JoinWorld(PlayerServer player)
+        {
+            player.SendPacket(new PacketS2BEnvironment((byte)CloudConditions));
+            player.SendPacket(new PacketS2BEnvironment((byte)(Precipitation + 7)));
+        }
+
+        #region NBT
+
+        /// <summary>
+        /// Сохранить данные
+        /// </summary>
+        public void WriteToNBT(TagCompound nbt)
+        {
+            nbt.SetLong("TickCounter", TickCounter);
+            nbt.SetLong("WeatherNextShift", _nextShift);
+            nbt.SetByte("Precipitation", (byte)Precipitation);
+            nbt.SetByte("CloudConditions", (byte)CloudConditions);
+            nbt.SetBool("Thundering", _isThundering);
+        }
+        /// <summary>
+        /// Прочесть данные
+        /// </summary>
+        public void ReadFromNBT(TagCompound nbt)
+        {
+            SetTickCounter((uint)nbt.GetLong("TickCounter"));
+            _nextShift = (uint)nbt.GetLong("WeatherNextShift");
+            _nextPrecipitation = (EnumPrecipitation)nbt.GetByte("Precipitation");
+            _cloudConditionsNext = (EnumClouds)nbt.GetByte("CloudConditions");
+            _isThundering = nbt.GetBool("Thundering");
+        }
+
+        #endregion
+
         public override string ToString()
             => _time + " d:" + Day + " y:" + Year 
             + " Sky:" + _skylightSubtracted + "/" + _sunLight
-            + " " + TimeYear + " " + MoonPhase;
+            + " " + TimeYear + " " 
+            + MoonPhaseConvert.ToMoonPhaseString(MoonPhase) 
+            + " " + Precipitation + " " + CloudConditions 
+            + (_isThundering ? " Th" : "");
     }
 }

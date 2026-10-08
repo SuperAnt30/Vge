@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
+using Vge.NBT;
 using Vge.Network.Packets.Server;
 using WinGL.Util;
 
@@ -39,10 +41,15 @@ namespace Vge.World.Environment
         public void UpdateClient() => TickCounter++;
 
         /// <summary>
-        /// Задать пакет погоды
+        /// Задать погоду клиенту
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnvironment(PacketS2BEnvironment packet) { }
+        public void SetEnvironmentClient(byte value) { }
+        /// <summary>
+        /// Задать погоду серверу
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnvironmentServer(byte value) { }
 
         /// <summary>
         /// Обновление раз в тик на сервере
@@ -120,6 +127,30 @@ namespace Vge.World.Environment
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsDayTime() => false;
 
+        /// <summary>
+        /// Присоединён игрок, передаём данные пакета
+        /// </summary>
+        public void JoinWorld(PlayerServer player) { }
+
+        #region NBT
+
+        /// <summary>
+        /// Сохранить данные
+        /// </summary>
+        public void WriteToNBT(TagCompound nbt)
+        {
+            nbt.SetLong("TickCounter", TickCounter);
+        }
+        /// <summary>
+        /// Прочесть данные
+        /// </summary>
+        public void ReadFromNBT(TagCompound nbt)
+        {
+            TickCounter = (uint)nbt.GetLong("TickCounter");
+        }
+
+        #endregion
+        
         public override string ToString() => "";
     }
 }

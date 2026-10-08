@@ -1,4 +1,6 @@
-﻿using Vge.Network.Packets.Server;
+﻿using Vge.Entity.Player;
+using Vge.NBT;
+using Vge.Network.Packets.Server;
 using WinGL.Util;
 
 namespace Vge.World.Environment
@@ -30,9 +32,13 @@ namespace Vge.World.Environment
         void UpdateFrame(float timeIndex);
 
         /// <summary>
-        /// Задать пакет погоды
+        /// Задать погоду клиенту
         /// </summary>
-        void SetEnvironment(PacketS2BEnvironment packet);
+        void SetEnvironmentClient(byte value);
+        /// <summary>
+        /// Задать погоду серверу
+        /// </summary>
+        void SetEnvironmentServer(byte value);
 
         /// <summary>
         /// Внести изменение по мировому времени
@@ -92,5 +98,22 @@ namespace Vge.World.Environment
         /// Параметр ветра
         /// </summary>
         float GetWind();
+        /// <summary>
+        /// Присоединён игрок, передаём данные пакета
+        /// </summary>
+        void JoinWorld(PlayerServer player);
+
+        #region NBT
+
+        /// <summary>
+        /// Сохранить данные
+        /// </summary>
+        void WriteToNBT(TagCompound nbt);
+        /// <summary>
+        /// Прочесть данные
+        /// </summary>
+        void ReadFromNBT(TagCompound nbt);
+
+        #endregion
     }
 }

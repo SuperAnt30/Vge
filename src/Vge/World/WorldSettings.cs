@@ -102,7 +102,7 @@ namespace Vge.World
         /// </summary>
         protected virtual void _WriteToNBT(TagCompound nbt) 
         {
-            nbt.SetLong("TickCounter", Environment.TickCounter);
+            Environment.WriteToNBT(nbt);
         }
     }
 }

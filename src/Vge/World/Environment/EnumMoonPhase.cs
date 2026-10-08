@@ -38,4 +38,21 @@
         /// </summary>
         WaningCrescent
     }
+    public static class MoonPhaseConvert
+    {
+        public static string ToMoonPhaseString(EnumMoonPhase enumMoon)
+        {
+            switch (enumMoon)
+            {
+                case EnumMoonPhase.WaxingCrescent: return ")";
+                case EnumMoonPhase.FirstQuarter: return "|)";
+                case EnumMoonPhase.WaxingGibbous: return "[)";
+                case EnumMoonPhase.FullMoon: return "(_)";
+                case EnumMoonPhase.WaningGibbous: return "(]";
+                case EnumMoonPhase.ThirdQuarter: return "(|";
+                case EnumMoonPhase.WaningCrescent: return "(";
+            }
+            return "_";
+        }
+    }
 }

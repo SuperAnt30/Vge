@@ -32,7 +32,7 @@ namespace Mvk2.World
             if (File.Exists(_pathFileSetting))
             {
                 TagCompound nbt = NBTTools.ReadFromFile(_pathFileSetting, true);
-                Environment.SetTickCounter((uint)nbt.GetLong("TickCounter"));
+                Environment.ReadFromNBT(nbt);
             }
 #if DEBUG
             Console.WriteLine("_construct WorldSettingsNightmare SERVER");

@@ -21,6 +21,7 @@ namespace Vge.Command
             Registration(new CommandTeleport(server));
             Registration(new CommandTime(server));
             Registration(new CommandSeed(server));
+            Registration(new CommandWeather(server));
 
             server.ModServer.InitCommand(this);
 

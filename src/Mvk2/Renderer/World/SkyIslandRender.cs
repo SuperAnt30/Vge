@@ -365,14 +365,16 @@ namespace Mvk2.Renderer.World
             base.Update();
 
             
-            if (_environment.IsRain)
+            if (_environment.Precipitation != EnumPrecipitation.None)
             {
                 // Счётчик дождя
                 _rendererUpdateCount++;
                 // Растояние брызг
                 int size = 16;
+                // ливень
+                bool isShowers = _environment.Precipitation == EnumPrecipitation.Showers;
                 // Каличество брызг за такт
-                int count = _environment.IsShowers ? 10 : 1;
+                int count = isShowers ? 10 : 1;
                 WorldBase world = _player.GetWorld();
                 BlockPos blockPos = new BlockPos(_player.PosX, _player.PosY, _player.PosZ);
                 int x = blockPos.X;
@@ -396,8 +398,8 @@ namespace Mvk2.Renderer.World
                             _rainSoundCounter = 0;
                             world.PlaySoundDistance(
                                 _samplesRain[world.Rnd.Next(_samplesRain.Length)],
-                                blockPos.ToVector3Center(), _environment.IsShowers ? .3f : .1f,
-                                _environment.IsShowers ? .5f : 1f);
+                                blockPos.ToVector3Center(), isShowers ? .3f : .1f,
+                                isShowers ? .5f : 1f);
                         }
                     }
                 }
@@ -842,11 +844,11 @@ namespace Mvk2.Renderer.World
         private void _DrawRain(float timeIndex)
         {
             // Это дождь
-            if (_environment.IsRain)
+            if (_environment.Precipitation != EnumPrecipitation.None)
             {
                 gl.ActiveTexture(GL.GL_TEXTURE0);
                 gl.BindTexture(GL.GL_TEXTURE_2D, 
-                    _environment.IsShowers ? _textureShowers : _textureRain);
+                    _environment.Precipitation == EnumPrecipitation.Showers ? _textureShowers : _textureRain);
 
                 _shSkyElement.Bind();
                 _shSkyElement.SetUniform1("transparency", 1f);

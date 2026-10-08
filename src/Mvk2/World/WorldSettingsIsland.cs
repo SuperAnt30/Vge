@@ -44,7 +44,7 @@ namespace Mvk2.World
             {
                 TagCompound nbt = NBTTools.ReadFromFile(_pathFileSetting, true);
                 // Загрузить дыру хранилищ
-                Environment.SetTickCounter((uint)nbt.GetLong("TickCounter"));
+                Environment.ReadFromNBT(nbt);
                 StorageHole.ReadFromNBT(nbt);
             }
             else

@@ -7,25 +7,26 @@
     {
         public byte Id => 0x2B;
 
-        public byte Index { get; private set; }
-        public float Parameter { get; private set; }
+        /// <summary>
+        /// 0-5 EnumClouds
+        /// 6 - Гром
+        /// 7-9 EnumPrecipitation + 7
+        /// </summary>
+        public byte EnvironmentId { get; private set; }
 
-        public PacketS2BEnvironment(byte index, float parameter)
+        public PacketS2BEnvironment(byte environmentId)
         {
-            Index = index;
-            Parameter = parameter;
+            EnvironmentId = environmentId;
         }
 
         public void ReadPacket(ReadPacket stream)
         {
-            Index = stream.Byte();
-            Parameter = stream.Float();
+            EnvironmentId = stream.Byte();
         }
 
         public void WritePacket(WritePacket stream)
         {
-            stream.Byte(Index);
-            stream.Float(Parameter);
+            stream.Byte(EnvironmentId);
         }
     }
 }

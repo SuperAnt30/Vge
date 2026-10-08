@@ -456,7 +456,7 @@ namespace Vge.Network
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle2BEnvironment(PacketS2BEnvironment packet)
-            => Game.World.Settings.Environment.SetEnvironment(packet);
+            => Game.World.Settings.Environment.SetEnvironmentClient(packet.EnvironmentId);
 
         /// <summary>
         /// Пакет управления передвежением и изменением слота

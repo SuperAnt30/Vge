@@ -676,8 +676,8 @@ namespace Vge.Entity.Player
             SendPacket(new PacketS03JoinGame(Id, UUID));
             // Информацию о мире в каком игрок находиться
             SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorldServer().Settings));
-            // Время на сервере
-            SendPacket(new PacketS04TickUpdate(GetWorldServer().Settings.Environment.TickCounter));
+            // Отправить пакет данных погоды
+            GetWorldServer().Settings.Environment.JoinWorld(this);
             // Местоположение игрока
             SendPacket(new PacketS08PlayerPosLook(PosX, PosY, PosZ, RotationYaw, RotationPitch));
             // Передаём весь инвентарь
@@ -762,6 +762,8 @@ namespace Vge.Entity.Player
                     IdWorld = _idChangeWorld;
                     _worldServer = _server.Worlds.GetWorld(IdWorld);
                     SendPacket(new PacketS07RespawnInWorld(IdWorld, GetWorldServer().Settings));
+                    // Отправить пакет данных погоды
+                    GetWorldServer().Settings.Environment.JoinWorld(this);
                     // Вносим в менеджер фрагментов игрока
                     IsDead = false;
                     GetWorldServer().PlayerForNextWorld(this);

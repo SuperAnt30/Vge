@@ -725,9 +725,12 @@ namespace Vge.World
                 Server.Players.PlayerOwner.IdWorld == IdWorld)
             {
                 ChunkServer chunk = GetChunkServer(Server.Players.PlayerOwner.GetChunkPosition());
-                chBt = chunk.GetTickBlockCount();
-                chBe = chunk.GetBlockEntityCount();
-                chDestroy = chunk.GetDestroyCount();
+                if (chunk != null)
+                {
+                    chBt = chunk.GetTickBlockCount();
+                    chBe = chunk.GetBlockEntityCount();
+                    chDestroy = chunk.GetDestroyCount();
+                }
             }
             return "World-" + IdWorld
                 + " " + _timeTick + "ms " + Fragment.ToString() + " " + ChunkPrServ.ToString()
