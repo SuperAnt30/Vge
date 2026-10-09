@@ -71,6 +71,10 @@ namespace Vge.Item
         /// Название анимации держать, если не указана, то будет по умолчанию 
         /// </summary>
         public string Hold { get; protected set; } = "";
+        /// <summary>
+        /// Предмет держим двумя руками
+        /// </summary>
+        public bool Two { get; protected set; } = false;
 
         /// <summary>
         /// Массив ключей ячеек одежды инвентаря, куда можно устанавливать этот предмет.
@@ -322,6 +326,7 @@ namespace Vge.Item
                         else if (json.IsKey(Cti.Weight)) Weight = json.GetInt();
                         else if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
                         else if (json.IsKey(Cti.Hold)) Hold = json.GetString();
+                        else if (json.IsKey(Cti.Two)) Two = json.GetBool();
                     }
                 }
                 catch

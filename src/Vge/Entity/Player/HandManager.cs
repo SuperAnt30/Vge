@@ -24,7 +24,7 @@ namespace Vge.Entity.Player
         /// </summary>
         private static float _impulsAttackY = .18f;
 
-        private readonly PlayerClientOwner _player;
+        protected readonly PlayerClientOwner _player;
         /// <summary>
         /// Класс игры
         /// </summary>
@@ -145,7 +145,25 @@ namespace Vge.Entity.Player
             _counterSecond++;
         }
 
-        
+        /// <summary>
+        /// Действие анимации правой руки
+        /// </summary>
+        /// <param name="itemStack">Предмет которым делаю действие</param>
+        /// <param name="moving">Выбранный объект</param>
+        protected virtual bool _ActionAnimationRight(ItemStack itemStack, 
+            MovingObjectPosition moving) => false;
+
+        /// <summary>
+        /// Отправить анимацию на сервер
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SendPlayerAnimation()
+        {
+            _game.TrancivePacket(new PacketC0APlayerAnimation(
+                _player.Render.AnimationCodeAdd,
+                PacketC0APlayerAnimation.EnumAction.CodeAdd,
+                _player.Render.SpeedAnimationCodeAdd));
+        }
 
         /// <summary>
         /// Такт действия
@@ -162,20 +180,18 @@ namespace Vge.Entity.Player
 
             if (_pauseAction == 0)
             {
-                if (!_blankShotAction)
-                {
-                    // TODO::2026-07-10 AttackRight, можно вынести в HandManagerMvk
-                    _player.Render.SetAnimationCodeAdd("AttackRight", 2);
-                    // Отправить анимацию
-                    _game.TrancivePacket(new PacketC0APlayerAnimation(
-                        _player.Render.AnimationCodeAdd, 
-                        PacketC0APlayerAnimation.EnumAction.CodeAdd,
-                        _player.Render.SpeedAnimationCodeAdd));
-                }
-
                 MovingObjectPosition moving = _player.MovingObject;
                 // Стак предмета в руке
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
+
+                if (!_blankShotAction)
+                {
+                    if (_ActionAnimationRight(itemStack, moving))
+                    {
+                        // Отправить анимацию
+                        _SendPlayerAnimation();
+                    }
+                }
 
                 if (itemStack != null)
                 {
@@ -314,6 +330,11 @@ namespace Vge.Entity.Player
                             //Console.WriteLine("BlockPlacement " + resultSecond.Pause);
                             _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
                                     moving.Side, moving.Facing, resultSecond.Replaceable, true));
+                            if (_ActionAnimationRight(itemStack, moving))
+                            {
+                                // Отправить анимацию
+                                _SendPlayerAnimation();
+                            }
                             _pauseSecond = resultSecond.Pause;
                         }
                         else if (resultSecond.Action == ResultHandSecond.ActionType.InteractEntity)
@@ -322,6 +343,11 @@ namespace Vge.Entity.Player
                             //Console.WriteLine("InteractItem");
                             _game.TrancivePacket(new PacketC03UseEntity(moving.Entity.Id,
                                 PacketC03UseEntity.EnumAction.Interact));
+                            if (_ActionAnimationRight(itemStack, moving))
+                            {
+                                // Отправить анимацию
+                                _SendPlayerAnimation();
+                            }
                             _pauseSecond = resultSecond.Pause;
                         }
                         else if (resultSecond.Action == ResultHandSecond.ActionType.UseItem)
@@ -330,6 +356,11 @@ namespace Vge.Entity.Player
                             _flagBeginUseSecond = true;
                              //Console.WriteLine("UseItem");
                             _game.TrancivePacket(new PacketC05UseItem(resultSecond.Number));
+                            if (_ActionAnimationRight(itemStack, moving))
+                            {
+                                // Отправить анимацию
+                                _SendPlayerAnimation();
+                            }
                             _pauseSecond = resultSecond.Pause;
                         }
                         else

@@ -107,6 +107,19 @@
             }
         },
         {
+            Code: "ActionTwo",
+            Animation: "ActionTwo",
+            AnimationSpeed: 1.0,
+            ElementWeight: {
+                ArmLeft: 80,
+                ForearmLeft: 80,
+                HandLeft: 80,
+                ArmRight: 80,
+                ForearmRight: 80,
+                HandRight: 80
+            }
+        },
+        {
             Code: "HoldRight",
             Animation: "HoldRight",
             AnimationSpeed: 1.0,
@@ -131,9 +144,23 @@
             ElementWeight: {
                 ArmRight: 90,
                 ForearmRight: 90,
-                Item: 90,
+                HoldItemOne: 90,
                 ArmLeft: 90,
                 ForearmLeft: 90,
+                HoldItemTwo: 90
+            }
+        },
+        {
+            Code: "HoldShovel",
+            Animation: "HoldShovel",
+            AnimationSpeed: 1.0,
+            ElementWeight: {
+                ArmRight: 90,
+                ForearmRight: 90,
+                HoldItemOne: 90,
+                ArmLeft: 90,
+                ForearmLeft: 90,
+                HoldItemTwo: 90
             }
         }
     ]

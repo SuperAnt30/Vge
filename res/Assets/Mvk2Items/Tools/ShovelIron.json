@@ -8,6 +8,8 @@
     Level: 2,
     Width: 0.5625,
     Height: 0.1875,
+    Hold: "HoldShovel",
+    Two: true,
     Shape: "Tools/ShovelIron",
     #ShapeGui: "Shovel",
     SpriteGui: "Items/Tools/SpriteShovelIron",

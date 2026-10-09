@@ -1,4 +1,5 @@
 ﻿using Mvk2.Entity.Inventory;
+using Mvk2.Entity.Player;
 using Mvk2.Entity.Render;
 using System;
 using System.Runtime.CompilerServices;
@@ -24,7 +25,7 @@ namespace Mvk2.Entity.List
 
         public PlayerClientOwnerMvk(GameBase game) : base(game)
         {
-            _handManager = new HandManager(game, this);
+            _handManager = new HandManagerMvk(game, this);
         }
 
         /// <summary>

@@ -636,6 +636,8 @@ namespace Vge.Entity.Render
             {
                 // Корректировка одевания слоёв
                 _StopingClipsHold();
+                // Скрыта левая рука
+                bool ifHiddenLeft = false;
                 for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
                 {
                     ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
@@ -643,18 +645,22 @@ namespace Vge.Entity.Render
                     {
                         if (i < _resourcesEntity.CountPositionItem)
                         {
-                            // Предмет в руках
-                            _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
+                            if (!ifHiddenLeft)
+                            {
+                                // Предмет в руках
+                                _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
                                 .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
 
-                            if (i == 0)
-                            {
-                                AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
-                            }
-                            else
-                            {
-                                // Левая рука, только держим предмет
-                                AddClip(HoldLeft);
+                                if (i == 0)
+                                {
+                                    ifHiddenLeft = itemStack.Item.Two;
+                                    AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
+                                }
+                                else
+                                {
+                                    // Левая рука, только держим предмет
+                                    AddClip(HoldLeft);
+                                }
                             }
                         }
                         else if (itemStack.Item is ItemCloth itemCloth)

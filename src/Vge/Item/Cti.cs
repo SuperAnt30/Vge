@@ -94,6 +94,10 @@
         /// Имя анимации как держать предмет. (string)
         /// </summary>
         public const string Hold = "Hold";
+        /// <summary>
+        /// Предмет держим двумя руками. (bool)
+        /// </summary>
+        public const string Two = "Two";
 
         #region Tool
 
