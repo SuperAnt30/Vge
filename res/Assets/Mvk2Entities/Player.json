@@ -7,6 +7,7 @@
     Model: "Humanoid",
     #Model: "Chicken",
     Texture: "Robinson",
+    #Texture: "HumanoidSample",
     OnlyMove: true,
     BlinkEye: 70,
     NameShapeLayers: "Base",
@@ -119,6 +120,7 @@
                 HandRight: 80
             }
         },
+        
         {
             Code: "HoldRight",
             Animation: "HoldRight",
@@ -146,8 +148,7 @@
                 ForearmRight: 90,
                 HoldItemOne: 90,
                 ArmLeft: 90,
-                ForearmLeft: 90,
-                HoldItemTwo: 90
+                ForearmLeft: 90
             }
         },
         {
@@ -155,13 +156,28 @@
             Animation: "HoldShovel",
             AnimationSpeed: 1.0,
             ElementWeight: {
+                ArmRight: 10,
+                ForearmRight: 10,
+                HandRight: 10,
+                HoldItemOne: 10,
+                ArmLeft: 10,
+                ForearmLeft: 10,
+                HandLeft: 10
+            }
+        },
+        {
+            Code: "ActionShovel",
+            Animation: "ActionShovel",
+            AnimationSpeed: 2.0,
+            ElementWeight: {
                 ArmRight: 90,
                 ForearmRight: 90,
+                HandRight: 90,
                 HoldItemOne: 90,
                 ArmLeft: 90,
                 ForearmLeft: 90,
-                HoldItemTwo: 90
+                HandLeft: 90
             }
-        }
+        },
     ]
 }

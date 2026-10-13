@@ -210,6 +210,37 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
+        /// Проверить совпадение если есть то вернёт true
+        /// </summary>
+        private bool _FindClipsHold(string holdRight, string holdLeft)
+        {
+            string s;
+            bool hr = false;
+            bool hl = false;
+            for (int i = 0; i < _animationClips.Count; i++)
+            {
+                s = _animationClips[i];
+                if (s == holdRight)
+                {
+                    if (holdLeft == "" || hl)
+                    {
+                        return true;
+                    }
+                    hr = true;
+                }
+                else if (s == holdLeft)
+                {
+                    if (holdRight == "" || hr)
+                    {
+                        return true;
+                    }
+                    hl = true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
@@ -634,13 +665,42 @@ namespace Vge.Entity.Render
         {
             if (_entityLayerRender != null && _shapeLayers != null && Entity is EntityLiving entityLiving)
             {
-                // Корректировка одевания слоёв
-                _StopingClipsHold();
                 // Скрыта левая рука
                 bool ifHiddenLeft = false;
+                // Блок защиты от дублирования выбора однотипного предмета
+                string newHoldRight = "";
+                string newHoldLeft = "";
+
+                ItemStack itemStack = entityLiving.Inventory.GetOutside(0);
+                if (itemStack != null)
+                {
+                    ifHiddenLeft = itemStack.Item.Two;
+                    newHoldRight = itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight;
+                }
+                if (!ifHiddenLeft)
+                { 
+                    if (Mth.Min(entityLiving.Inventory.OutsideCount, _resourcesEntity.CountPositionItem) > 0)
+                    {
+                        // Левая рука, только держим предмет
+                        newHoldLeft = HoldLeft;
+                    }
+                }
+
+                // Корректировка одевания слоёв
+                bool notModify = _FindClipsHold(newHoldRight, newHoldLeft);
+                //Console.WriteLine(notModify);
+                if (!notModify)
+                {
+                    _StopingClipsHold();
+                    if (newHoldRight != "") AddClip(newHoldRight);
+                    if (newHoldLeft != "") AddClip(newHoldLeft);
+                }
+                
+                //_StopingClipsHold();
+                ifHiddenLeft = false;
                 for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
                 {
-                    ItemStack itemStack = entityLiving.Inventory.GetOutside(i);
+                    itemStack = entityLiving.Inventory.GetOutside(i);
                     if (itemStack != null)
                     {
                         if (i < _resourcesEntity.CountPositionItem)
@@ -648,22 +708,19 @@ namespace Vge.Entity.Render
                             if (!ifHiddenLeft)
                             {
                                 // Предмет в руках
+
                                 _entityLayerRender.AddRangeBuffer(itemStack.Item.Buffer.GetBufferHold()
-                                .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
+                                    .CreateBufferMeshItem(_positionItems[i].Index, _positionItems[i].X, _positionItems[i].Y, _positionItems[i].Z));
 
                                 if (i == 0)
                                 {
                                     ifHiddenLeft = itemStack.Item.Two;
-                                    AddClip(itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight);
-                                }
-                                else
-                                {
-                                    // Левая рука, только держим предмет
-                                    AddClip(HoldLeft);
                                 }
                             }
                         }
-                        else if (itemStack.Item is ItemCloth itemCloth)
+                        else
+                        
+                        if (itemStack.Item is ItemCloth itemCloth)
                         {
                             // Одежда
                             LayerBuffer layer = _shapeLayers.GetLayer(itemCloth.PutOnBody, 
@@ -691,5 +748,23 @@ namespace Vge.Entity.Render
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Dispose() => _entityLayerRender?.Dispose();
+
+
+        public override string ToString()
+        {
+            // Отладка, какие клипы сейчас отрабатывают
+            // цифра = EnumEntityActivity
+
+            string r = "";// _animationClips.Count.ToString();
+            string s = "";
+            for(int i = 0; i < _animationClips.Count; i++)
+            {
+                s = _animationClips[i];
+                if (r != "") r += ", " + s;
+                else r += s;
+            }
+
+            return r;
+        }
     }
 }

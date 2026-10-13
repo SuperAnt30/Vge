@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.List;
 using Mvk2.Item;
+using System;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
@@ -36,6 +37,15 @@ namespace Mvk2.Entity.Player
             }
             else
             {
+
+                if (itemStack.Item.Action != "")
+                {
+                    //_player.Render.SetAnimationCodeAdd("AttackRight", 2);
+                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action, 1);
+                    //Console.WriteLine(itemStack.Item.Action);
+                    return true;
+                }
+
                 if (itemStack.Item.IndexItem == ItemsRegMvk.AxeIron.IndexItem)
                 {
                     ItemStack itemStackLeft = _playerMvk.InvPlayer.GetCurrentLeftItem();

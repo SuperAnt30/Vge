@@ -95,6 +95,10 @@
         /// </summary>
         public const string Hold = "Hold";
         /// <summary>
+        /// Имя анимации действия предмета. (string)
+        /// </summary>
+        public const string Action = "Action";
+        /// <summary>
         /// Предмет держим двумя руками. (bool)
         /// </summary>
         public const string Two = "Two";

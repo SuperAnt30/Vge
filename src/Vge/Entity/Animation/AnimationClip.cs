@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Entity.Animation
 {
@@ -121,7 +122,7 @@ namespace Vge.Entity.Animation
             else if (_stopTime != 0)
             {
                 // Клип отработал, у него нет время на микса
-                return 0;
+                return 1f; // Было 0, но была бага на ModelLoop.Once фриз последнего кадра
             }
             return 1f;
         }
@@ -147,11 +148,14 @@ namespace Vge.Entity.Animation
             }
             else if (_modelClip.Loop == Model.ModelLoop.Once)
             {
-                _currentTime += delta;
-                // Надо с учётом микса остановить
-                if (_stopTime == 0 && _currentTimeFull > _modelClip.Duration - _GetTimeMix())
+                if (_stopTime == 0)
                 {
-                    Stoping();
+                    _currentTime += delta;
+                    // Надо с учётом микса остановить
+                    if (_currentTimeFull > _modelClip.Duration - _GetTimeMix())
+                    {
+                        Stoping();
+                    }
                 }
             }
             else
@@ -239,11 +243,12 @@ namespace Vge.Entity.Animation
                     }
                     else
                     {
-                        return _boneAnimationFrameNull;
+                        //return _boneAnimationFrameNull;
+                        return positionFrames[0]; // ??
                     }
                 }
             }
-            return _boneAnimationFrameNull;
+            return positionFrames[positionFrames.Length - 1];
         }
     }
 }

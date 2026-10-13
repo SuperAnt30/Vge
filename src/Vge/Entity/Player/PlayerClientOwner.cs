@@ -1104,6 +1104,8 @@ namespace Vge.Entity.Player
                 Physics.ToDebugString()
                 );
 
+            string render = Render.ToString();
+
             string chunkStorage = "";
             ChunkBase chunk = _game.World.GetChunk(ChunkPositionX, ChunkPositionZ);
             if (chunk != null && ChunkPositionY >= 0 && ChunkPositionY < chunk.Settings.NumberSections)
@@ -1114,7 +1116,9 @@ namespace Vge.Entity.Player
             return Login + " " + ToStringPositionRotation() + " O:" + OverviewChunk
                 + (OnGround ? " OnGround" : "")
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
-                + Movement + PresenceBlocks + "\r\n" + motion  
+                + Movement + PresenceBlocks + "\r\n" 
+                + "Render: " + render + "\r\n"
+                + motion  
                 + chunkStorage;
         }
 

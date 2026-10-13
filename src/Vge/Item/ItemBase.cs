@@ -72,6 +72,10 @@ namespace Vge.Item
         /// </summary>
         public string Hold { get; protected set; } = "";
         /// <summary>
+        /// Название анимации действия предмета, если не указана, то будет по умолчанию 
+        /// </summary>
+        public string Action { get; protected set; } = "";
+        /// <summary>
         /// Предмет держим двумя руками
         /// </summary>
         public bool Two { get; protected set; } = false;
@@ -326,6 +330,7 @@ namespace Vge.Item
                         else if (json.IsKey(Cti.Weight)) Weight = json.GetInt();
                         else if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
                         else if (json.IsKey(Cti.Hold)) Hold = json.GetString();
+                        else if (json.IsKey(Cti.Action)) Action = json.GetString();
                         else if (json.IsKey(Cti.Two)) Two = json.GetBool();
                     }
                 }
