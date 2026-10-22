@@ -15,8 +15,15 @@ namespace Mvk2.Item.List.Tool
         /// уровень инструмента, Качество дропа, 0-минимум, 1-левел инструмента, 2-левел, 3-левел
         /// </summary>
         public int Level { get; private set; }
+        /// <summary>
+        /// Пауза между ударами в тактах
+        /// </summary>
+        public int Pause { get; protected set; }
+        /// <summary>
+        /// Ускорение разрушении блока, по умолчанию 1, при 0 ломает за один удар.
+        /// </summary>
+        public float Acceleration { get; protected set; }
 
-        
         /// <summary>
         /// ID для графики стола, значение инструмента от 1 до 10
         /// </summary>
@@ -25,14 +32,6 @@ namespace Mvk2.Item.List.Tool
         /// Сила урона для атаки
         /// </summary>
         private float _damage = 1;
-        /// <summary>
-        /// Пауза между ударами в тактах
-        /// </summary>
-        protected int _pause;
-        /// <summary>
-        /// Ускорение разрушении блока, по умолчанию 1, при 0 ломает за один удар.
-        /// </summary>
-        protected float _acceleration;
 
         #region Методы для импорта данных с json
 
@@ -51,8 +50,8 @@ namespace Mvk2.Item.List.Tool
                     {
                         if (json.IsKey(Cti.Damage)) _damage = json.GetFloat();
                         else if (json.IsKey(Cti.Level)) Level = json.GetInt();
-                        else if (json.IsKey(Cti.Pause)) _pause = json.GetInt();
-                        else if(json.IsKey(Cti.Acceleration)) _acceleration = json.GetFloat();
+                        else if (json.IsKey(Cti.Pause)) Pause = json.GetInt();
+                        else if(json.IsKey(Cti.Acceleration)) Acceleration = json.GetFloat();
                     }
                 }
                 catch
@@ -84,7 +83,7 @@ namespace Mvk2.Item.List.Tool
             => string.Format(_toolTip, 
                 Level, _damage,
                 stack.ToStringDamaged(),
-                _pause, _acceleration);
+                Pause, Acceleration);
 
         /// <summary>
         /// Получить урон для атаки предметом который в руке

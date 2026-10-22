@@ -107,19 +107,7 @@
                 HandRight: 80
             }
         },
-        {
-            Code: "ActionTwo",
-            Animation: "ActionTwo",
-            AnimationSpeed: 1.0,
-            ElementWeight: {
-                ArmLeft: 80,
-                ForearmLeft: 80,
-                HandLeft: 80,
-                ArmRight: 80,
-                ForearmRight: 80,
-                HandRight: 80
-            }
-        },
+        
         
         {
             Code: "HoldRight",
@@ -176,8 +164,46 @@
                 HoldItemOne: 90,
                 ArmLeft: 90,
                 ForearmLeft: 90,
-                HandLeft: 90
+                HandLeft: 90,
+                Chest: 50
             }
         },
+        {
+            Code: "ActionAxe",
+            Animation: "ActionAxe",
+            AnimationSpeed: 2.0,
+            ElementWeight: {
+                ArmRight: 80,
+                ForearmRight: 80,
+                HandRight: 80
+            }
+        },
+        {
+            Code: "ActionAxes",
+            Animation: "ActionAxes",
+            AnimationSpeed: 2.0,
+            ElementWeight: {
+                ArmLeft: 80,
+                ForearmLeft: 80,
+                HandLeft: 80,
+                ArmRight: 80,
+                ForearmRight: 80,
+                HandRight: 80
+            }
+        },
+        {
+            Code: "ActionBlock",
+            Animation: "ActionBlock",
+            AnimationSpeed: 2.0,
+            ElementWeight: {
+                ArmLeft: 90,
+                ForearmLeft: 90,
+                HoldItemOne: 90,
+                ArmRight: 90,
+                ForearmRight: 90,
+                Chest: 50
+            }
+        },
+
     ]
 }

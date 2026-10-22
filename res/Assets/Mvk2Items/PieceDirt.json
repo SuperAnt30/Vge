@@ -1,4 +1,5 @@
 {
+    Parent: "_Base",
     MaxStackSize: 50,
     Width: 0.5625,
     Height: 0.1875,

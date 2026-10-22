@@ -15,7 +15,11 @@ namespace Vge.Gui.Controls
         /// <summary>
         /// Ширина ползунка
         /// </summary>
-        private const int SliderWidth = 16;
+        private const int _SliderWidth = 16;
+        /// <summary>
+        /// Половина ширины ползунка
+        /// </summary>
+        private const int _SliderWidthHalf = _SliderWidth / 2;
 
         /// <summary>
         /// Значение
@@ -107,7 +111,7 @@ namespace Vge.Gui.Controls
             float u1 = Enabled ? _isLeftDown ? .75f : (Enter ? .6875f : .625f) : .5625f;
             float mm = Max - Min;
             float index = mm == 0 ? 0 : (Value - Min) / mm;
-            int px = (int)((Width - SliderWidth) * index) * _si;
+            int px = (int)((Width - _SliderWidth) * index) * _si;
             _meshBt.Reload(RenderFigure.Rectangle(x + px, y + 10 * _si, x + px + 32 * _si, y + 42 * _si,
                 .125f, u1, .1875f, u1 + .0625f));
         }
@@ -141,6 +145,7 @@ namespace Vge.Gui.Controls
                 OnMouseMove(x, y);
                 if (Enter)
                 {
+
                     _isLeftDown = true;
                     CheckMouse(x);
                 }
@@ -174,9 +179,9 @@ namespace Vge.Gui.Controls
         /// <param name="x">координата мыши по X</param>
         private void CheckMouse(int x)
         {
-            float xm = (x / _si - PosX - 4) / (float)(Width - 8);
-            if (xm < 0) xm = 0;
-            if (xm > 1) xm = 1;
+            float xm = (x / _si - PosX - _SliderWidthHalf) / (float)(Width - _SliderWidth);
+            if (xm < 0f) xm = 0f;
+            else if (xm > 1f) xm = 1f;
 
             Value = Mth.Round(((Max - Min) * xm + Min) / Step);
             Value *= Step;

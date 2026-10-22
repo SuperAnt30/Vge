@@ -79,6 +79,10 @@ namespace Vge.Item
         /// Предмет держим двумя руками
         /// </summary>
         public bool Two { get; protected set; } = false;
+        /// <summary>
+        /// Группа предметов, образно все виды топоров, если 0, нет группы
+        /// </summary>
+        //public int Group { get; protected set; } = 0;
 
         /// <summary>
         /// Массив ключей ячеек одежды инвентаря, куда можно устанавливать этот предмет.

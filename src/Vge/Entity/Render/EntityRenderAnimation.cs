@@ -210,37 +210,6 @@ namespace Vge.Entity.Render
         }
 
         /// <summary>
-        /// Проверить совпадение если есть то вернёт true
-        /// </summary>
-        private bool _FindClipsHold(string holdRight, string holdLeft)
-        {
-            string s;
-            bool hr = false;
-            bool hl = false;
-            for (int i = 0; i < _animationClips.Count; i++)
-            {
-                s = _animationClips[i];
-                if (s == holdRight)
-                {
-                    if (holdLeft == "" || hl)
-                    {
-                        return true;
-                    }
-                    hr = true;
-                }
-                else if (s == holdLeft)
-                {
-                    if (holdRight == "" || hr)
-                    {
-                        return true;
-                    }
-                    hl = true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Игровой такт на клиенте
         /// </summary>
         /// <param name="deltaTime">Дельта последнего тика в mc</param>
@@ -657,6 +626,9 @@ namespace Vge.Entity.Render
 
         #endregion
 
+        string _holdRightPrev = "";
+        string _holdLeftPrev = "";
+
         /// <summary>
         /// Изменён предмет внешности (что в руках и одежда)
         /// </summary>
@@ -668,35 +640,36 @@ namespace Vge.Entity.Render
                 // Скрыта левая рука
                 bool ifHiddenLeft = false;
                 // Блок защиты от дублирования выбора однотипного предмета
-                string newHoldRight = "";
-                string newHoldLeft = "";
+                string holdRight = "";
+                string holdLeft = "";
 
                 ItemStack itemStack = entityLiving.Inventory.GetOutside(0);
                 if (itemStack != null)
                 {
                     ifHiddenLeft = itemStack.Item.Two;
-                    newHoldRight = itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight;
+                    holdRight = itemStack.Item.Hold != "" ? itemStack.Item.Hold : HoldRight;
                 }
                 if (!ifHiddenLeft)
-                { 
-                    if (Mth.Min(entityLiving.Inventory.OutsideCount, _resourcesEntity.CountPositionItem) > 0)
+                {
+                    itemStack = entityLiving.Inventory.GetCurrentLeftItem();
+                    if (itemStack != null &&
+                        Mth.Min(entityLiving.Inventory.OutsideCount, _resourcesEntity.CountPositionItem) > 0)
                     {
                         // Левая рука, только держим предмет
-                        newHoldLeft = HoldLeft;
+                        holdLeft = HoldLeft;
                     }
                 }
 
                 // Корректировка одевания слоёв
-                bool notModify = _FindClipsHold(newHoldRight, newHoldLeft);
-                //Console.WriteLine(notModify);
-                if (!notModify)
+                if (_holdLeftPrev != holdLeft || _holdRightPrev != holdRight)
                 {
+                    _holdLeftPrev = holdLeft;
+                    _holdRightPrev = holdRight;
                     _StopingClipsHold();
-                    if (newHoldRight != "") AddClip(newHoldRight);
-                    if (newHoldLeft != "") AddClip(newHoldLeft);
+                    if (holdRight != "") AddClip(holdRight);
+                    if (holdLeft != "") AddClip(holdLeft);
                 }
-                
-                //_StopingClipsHold();
+
                 ifHiddenLeft = false;
                 for (int i = 0; i < entityLiving.Inventory.OutsideCount; i++)
                 {

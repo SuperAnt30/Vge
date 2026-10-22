@@ -41,7 +41,7 @@ namespace Vge.Entity.Render
         /// Задать дополнительную анимацию на клиенте по коду
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetAnimationCodeAdd(string code, float speed)
+        public void SetAnimationCodeAdd(string code, float speed = 1)
         {
             AnimationCodeAdd = code;
             SpeedAnimationCodeAdd = speed;

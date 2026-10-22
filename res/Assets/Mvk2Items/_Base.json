@@ -7,4 +7,5 @@
     #SpriteGui: "Blocks/Cobblestone"
     #ShapeGui: "Model3d"
     ##ShapeBlockGui: "Cobblestone"
+    #ViewHold: { Offset:[0, 4, 0], Scale: 3.75 }
 }

@@ -25,7 +25,19 @@ namespace Mvk2.Item.List.Tool
                     || block.Material.IndexMaterial == (int)EnumMaterial.Wood
                     || block.Material.IndexMaterial == (int)EnumMaterial.Branch)
                 {
-                    return new ResultHandAction(_pause, _acceleration);
+                    // TODO::2026-10-14 Если второй топор есть, то усиление
+
+                    ItemStack itemStackLeft = player.Inventory.GetCurrentLeftItem();
+                    if (itemStackLeft != null
+                        && itemStackLeft.Item is ItemAxe itemAxe)
+                    {
+                        //itemAxe.Pause; // Надо уменьшить
+                        //itemAxe.Acceleration; // Надо уменьшить
+
+                        return new ResultHandAction(Pause, Acceleration / 2f);
+                    }
+
+                    return new ResultHandAction(Pause, Acceleration);
                 }
             }
 

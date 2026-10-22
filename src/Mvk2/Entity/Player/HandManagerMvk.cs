@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.List;
 using Mvk2.Item;
+using Mvk2.Item.List.Tool;
 using System;
 using Vge.Entity.Player;
 using Vge.Games;
@@ -33,31 +34,28 @@ namespace Mvk2.Entity.Player
             if (itemStack == null)
             {
                // return false;
-                _player.Render.SetAnimationCodeAdd("AttackRight", 3);
+                _player.Render.SetAnimationCodeAdd("AttackRight");
             }
             else
             {
-
-                if (itemStack.Item.Action != "")
-                {
-                    //_player.Render.SetAnimationCodeAdd("AttackRight", 2);
-                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action, 1);
-                    //Console.WriteLine(itemStack.Item.Action);
-                    return true;
-                }
-
-                if (itemStack.Item.IndexItem == ItemsRegMvk.AxeIron.IndexItem)
+                if (itemStack.Item is ItemAxe)
                 {
                     ItemStack itemStackLeft = _playerMvk.InvPlayer.GetCurrentLeftItem();
-                    if (itemStackLeft != null 
-                        && itemStackLeft.Item.IndexItem == ItemsRegMvk.AxeIron.IndexItem)
+                    if (itemStackLeft != null
+                        && itemStackLeft.Item is ItemAxe)
                     {
-                        _player.Render.SetAnimationCodeAdd("ActionTwo", 4);
+                        _player.Render.SetAnimationCodeAdd("ActionAxes");
                         return true;
                     }
                 }
-                _player.Render.SetAnimationCodeAdd("AttackRight", 2);
-                //_player.Render.SetAnimationCodeAdd("ActionTwo", 4);
+
+                if (itemStack.Item.Action != "")
+                {
+                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action);
+                    return true;
+                }
+
+                _player.Render.SetAnimationCodeAdd("ActionAxe");
             }
             return true;
         }
