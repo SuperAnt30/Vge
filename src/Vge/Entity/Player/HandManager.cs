@@ -184,8 +184,12 @@ namespace Vge.Entity.Player
                 // Стак предмета в руке
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
 
+                bool isAnimationPrev = false;
+                bool isAnimation = false;
+
                 if (!_blankShotAction)
                 {
+                    isAnimationPrev = true;
                     if (_ActionAnimationRight(itemStack, moving))
                     {
                         // Отправить анимацию
@@ -201,11 +205,13 @@ namespace Vge.Entity.Player
                         // Разрушение блока с предметом
                         //Console.WriteLine("BlockDiggingItem");
                         _BlockDigging(moving.BlockPosition, resultAction.Acceleration);
+                        isAnimation = true;
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.AttackEntity)
                     {
                         // Атака на сущность, с предметом
                         _Attack(moving);
+                        isAnimation = true;
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.ItemOnBlock)
                     {
@@ -213,12 +219,14 @@ namespace Vge.Entity.Player
                         //Console.WriteLine("BlockPlacement " + resultAction.Pause);
                         _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
                                 moving.Side, moving.Facing, resultAction.Replaceable, true));
+                        isAnimation = true;
                     }
                     else if (resultAction.Action == ResultHandAction.ActionType.UseItem)
                     {
                         // Взаимодействия предмета, ЛКМ без блока
                         //Console.WriteLine("UseItem");
                         _game.TrancivePacket(new PacketC05UseItem());
+                        isAnimation = true;
                     }
                     else
                     {
@@ -257,6 +265,15 @@ namespace Vge.Entity.Player
                     //Console.WriteLine("Нет действий без предмета [null]");
                     _pauseAction = -1;
                     _blankShotAction = true;
+                }
+
+                if (!isAnimationPrev && isAnimation)
+                {
+                    if (_ActionAnimationRight(itemStack, moving))
+                    {
+                        // Отправить анимацию
+                        _SendPlayerAnimation();
+                    }
                 }
                 //Console.WriteLine(_pauseAction);
             }

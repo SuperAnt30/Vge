@@ -100,7 +100,7 @@
         {
             Code: "AttackRight",
             Animation: "AttackRight",
-            AnimationSpeed: 1.0,
+            AnimationSpeed: 1.5,
             ElementWeight: {
                 ArmRight: 80,
                 ForearmRight: 80,
@@ -156,7 +156,7 @@
         {
             Code: "ActionShovel",
             Animation: "ActionShovel",
-            AnimationSpeed: 2.0,
+            AnimationSpeed: 1.0,
             ElementWeight: {
                 ArmRight: 90,
                 ForearmRight: 90,
@@ -171,7 +171,7 @@
         {
             Code: "ActionAxe",
             Animation: "ActionAxe",
-            AnimationSpeed: 2.0,
+            AnimationSpeed: 1.0,
             ElementWeight: {
                 ArmRight: 80,
                 ForearmRight: 80,
@@ -181,7 +181,7 @@
         {
             Code: "ActionAxes",
             Animation: "ActionAxes",
-            AnimationSpeed: 2.0,
+            AnimationSpeed: 1.0,
             ElementWeight: {
                 ArmLeft: 80,
                 ForearmLeft: 80,
@@ -194,7 +194,7 @@
         {
             Code: "ActionBlock",
             Animation: "ActionBlock",
-            AnimationSpeed: 2.0,
+            AnimationSpeed: 1.0,
             ElementWeight: {
                 ArmLeft: 90,
                 ForearmLeft: 90,
