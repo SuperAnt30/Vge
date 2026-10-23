@@ -314,7 +314,7 @@ namespace Vge.Entity
         public Vector3 GetPositionVec() => new Vector3(PosX, PosY, PosZ);
 
         /// <summary>
-        /// Получить вектор позиции
+        /// Получить вектор центр позиции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 GetPositionCenterVec() 

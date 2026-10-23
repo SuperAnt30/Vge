@@ -488,10 +488,16 @@ namespace Vge.World
         #region Sound
 
         /// <summary>
-        /// Проиграть звуковой эффект, кто отслеживает entityId сущность
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность кроме сущности entityId
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId) { }
+
+        /// <summary>
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность с текущей сущностью  entityId
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void PlaySoundCurrent(int key, Vector3 pos, float volume, float pitch, int entityId) { }
 
         /// <summary>
         /// Проиграть звуковой эффект, по дистанции

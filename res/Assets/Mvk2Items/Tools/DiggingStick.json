@@ -1,6 +1,6 @@
 {
     Parent: "Tools/ShovelIron",
-    MaxDamage: 1000,
+    MaxDamage: 100,
     Damage: 1.5,
     Pause: 6,
     Acceleration: 1.0,

@@ -168,11 +168,11 @@ namespace Vge.Entity
         /// <summary>
         /// Отправить всем отслеживаемым игрока пакет, с тикущей
         /// </summary>
-        /// <param name="entity">сущность</param>
+        /// <param name="entityId">Индекс сущности</param>
         /// <param name="packet">пакет</param>
-        public void SendToAllTrackingEntityCurrent(EntityBase entity, IPacket packet)
+        public void SendToAllTrackingEntityCurrent(int entityId, IPacket packet)
         {
-            _trackedEntities.Get(entity.Id)?.SendPacketPlayersCurrent(packet);
+            _trackedEntities.Get(entityId)?.SendPacketPlayersCurrent(packet);
         }
 
         /// <summary>

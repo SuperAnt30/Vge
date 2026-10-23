@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Audio;
 using Vge.Entity.Player;
 using Vge.Json;
 using Vge.Util;
@@ -85,6 +86,11 @@ namespace Vge.Item
         //public int Group { get; protected set; } = 0;
 
         /// <summary>
+        /// Индекс звукового эффека поломки предмета
+        /// </summary>
+        public int SampleBreak { get; protected set; } = -1;
+
+        /// <summary>
         /// Массив ключей ячеек одежды инвентаря, куда можно устанавливать этот предмет.
         /// Если null, то можно установить только в ячейку с ключём 0
         /// </summary>
@@ -98,6 +104,12 @@ namespace Vge.Item
         public virtual void Init(JsonCompound state)
         {
             _ReadStateFromJson(state);
+
+            if (SampleBreak == -1)
+            {
+                // Если звуковой эффект поломки не задан, мы берём по умолчанию
+                SampleBreak = AudioIndexs.GetKey("Break");
+            }
             // Создание буфера для рендера
             Buffer = new ItemRenderBuffer();
         }

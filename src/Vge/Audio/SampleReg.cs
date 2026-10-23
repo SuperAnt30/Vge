@@ -22,5 +22,10 @@
                 Path = key + ".ogg";
             }
         }
+
+        public override string ToString()
+        {
+            return Key;
+        }
     }
 }

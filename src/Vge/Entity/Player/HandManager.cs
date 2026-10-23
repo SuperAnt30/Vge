@@ -476,7 +476,7 @@ namespace Vge.Entity.Player
                         _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos, (byte)destroy));
                     }
                     _game.World.PlaySound(block.Material.SampleBreak(_game.World.Rnd),
-                        _blockPos.ToVector3Center(), 1, .9f + _game.World.Rnd.NextFloat() * .2f);
+                        _blockPos.ToVector3Center(), .5f, .9f + _game.World.Rnd.NextFloat() * .2f);
 
                     _game.World.ParticleDiggingBlock(block, _player.MovingObject.RayHit, 5, true);
                     //if (block.IsParticle)

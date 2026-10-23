@@ -670,11 +670,18 @@ namespace Vge.World
         #region Sound
 
         /// <summary>
-        /// Проиграть звуковой эффект, кто отслеживает entityId сущность
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность кроме сущности entityId
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId)
             => Tracker.SendToAllTrackingEntity(entityId, new PacketS29SoundEffect(key, pos, volume, pitch));
+
+        /// <summary>
+        /// Проиграть звуковой эффект, кто отслеживает entityId сущность с текущей сущностью  entityId
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void PlaySoundCurrent(int key, Vector3 pos, float volume, float pitch, int entityId)
+            => Tracker.SendToAllTrackingEntityCurrent(entityId, new PacketS29SoundEffect(key, pos, volume, pitch));
 
         /// <summary>
         /// Проиграть звуковой эффект, по дистанции

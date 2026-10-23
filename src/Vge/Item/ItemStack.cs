@@ -5,6 +5,7 @@ using Vge.Entity.List;
 using Vge.Entity.Player;
 using Vge.NBT;
 using Vge.Network;
+using Vge.Network.Packets.Server;
 using Vge.World;
 using Vge.World.Block;
 using WinGL.Util;
@@ -227,11 +228,13 @@ namespace Vge.Item
                 if (!entityPlayer.GetWorld().IsRemote 
                     && entityPlayer.GetWorld() is WorldServer worldServer)
                 {
-                    // TODO::2026-06-11 Звук ломаного инструмента
+                    // Звук ломаного инструмента,
                     // всем звуковой эффект поломки из сервера, так-как на клиенте этот метод работает через тик,
                     // и сервер раньше может обнулить и звука не будет
-                    //worldServer.Tracker.SendToAllTrackingEntityCurrent(entityPlayer, new PacketS29SoundEffect(
-                    //    AssetsSample.Break, position, 1, world.Rnd.NextFloat() * .4f + .8f));
+                    worldServer.PlaySoundCurrent(Item.SampleBreak, 
+                        entityPlayer.GetPositionCenterVec(), 1,
+                        worldServer.Rnd.NextFloat() * .4f + .8f,
+                        entityPlayer.Id);
                 }
             }
             else
