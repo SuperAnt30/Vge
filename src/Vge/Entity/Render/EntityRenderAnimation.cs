@@ -219,7 +219,7 @@ namespace Vge.Entity.Render
 
             if (_trigger.Changed)
             {
-                SetEyeOpen(!_trigger.IsSneak());
+               // SetEyeOpen(!_trigger.IsSneak());
 
                 if (!Entity.OnGround)
                 {

@@ -241,7 +241,7 @@ namespace Mvk2.World.BlockEntity.List
                         //entity.SetDefaultPickupDelay();
                       //  world.SpawnEntityInWorld(entity);
 
-                        blockState.GetBlock().DropBlockAsItem(world, pos.Pos, blockState, null);
+                        blockState.GetBlock().DropBlockAsItem(world, null, pos.Pos, blockState);
                     }
                 }
                 return true;

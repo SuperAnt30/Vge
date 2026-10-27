@@ -23,6 +23,7 @@ namespace Mvk2.Item.List.Tool
                 BlockBase block = player.MovingObject.Block.GetBlock();
                 if (player.CanDestroyedBlock(block) 
                     || block.Material.IndexMaterial == (int)EnumMaterial.Wood
+                    || block.Material.IndexMaterial == (int)EnumMaterial.Door
                     || block.Material.IndexMaterial == (int)EnumMaterial.Branch
                     || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {

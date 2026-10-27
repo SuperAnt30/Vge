@@ -19,7 +19,7 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Стороны целого блока для рендера
         /// </summary>
-        public override QuadSide[] GetQuads(int met, int xb, int zb) => _GetQuads(met & 0xFF);
+        public override QuadSide[] GetQuads(int met, int xb, int zb) => _GetQuads(met & 0x3F);
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
@@ -41,7 +41,7 @@ namespace Mvk2.World.Block.List
         }
 
         /// <summary>
-        /// Передать список  ограничительных рамок блока
+        /// Передать список ограничительных рамок блока
         /// </summary>
       //  [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)

@@ -199,7 +199,7 @@ namespace Vge.World.Chunk
             if (CountBlock > 0)
             {
                 int id = Data[index] & 0xFFF;
-                Data[index] = id & 0xFFF | met << 12;
+                Data[index] = id | met << 12;
             }
         }
 

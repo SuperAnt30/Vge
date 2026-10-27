@@ -59,6 +59,10 @@ namespace Mvk2.World.Block
         /// Лава
         /// </summary>
         public readonly MaterialBase Lava;
+        /// <summary>
+        /// Материал двери
+        /// </summary>
+        public readonly MaterialBase Door;
 
         public MaterialsMvk()
         {
@@ -77,6 +81,7 @@ namespace Mvk2.World.Block
             Leaves = reg.RegState(new MaterialMvk(EnumMaterial.Leaves));
             Glass = reg.RegState(new MaterialMvk(EnumMaterial.Glass));
             Lava = reg.RegState(new MaterialMvk(EnumMaterial.Lava));
+            Door = reg.RegState(new MaterialMvk(EnumMaterial.Door));
         }
     }
 }

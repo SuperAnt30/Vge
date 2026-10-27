@@ -32,7 +32,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld, BlockState stateNew)
+            BlockPos blockPos, BlockState stateOld)
         {
             if (stateOld.Met < 256) // только для сгенерированных блоков
             {

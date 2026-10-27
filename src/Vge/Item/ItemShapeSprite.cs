@@ -61,12 +61,12 @@ namespace Vge.Item
         /// <summary>
         /// Сгенерировать буфер
         /// </summary>
-        public VertexEntityBuffer GenBuffer()
+        public VertexEntityBuffer GenBuffer(ShapeAdd shapeAdd)
         {
             int size = Ce.TextureSpriteBlockSize;
             int width = _res.CountWidth * size; 
             int heigth = _res.CountHeight * size;
-
+            float scale = shapeAdd.Scale;
             QuadSide quad;
             List<QuadSide> quads = new List<QuadSide>();
             int min = -8;
@@ -97,6 +97,7 @@ namespace Vge.Item
                         {
                             // Топ
                             quad = new QuadSide();
+                            quad.SetScale(scale);
                             quad.SetSide(Pole.North, false, xf, 0, yf, xf + .5f, h, yf + .5f)
                                 .SetTexture(_res.Index, x, y, x + 1, y + 1);
                             quads.Add(quad);
@@ -105,6 +106,7 @@ namespace Vge.Item
                         {
                             // Низ
                             quad = new QuadSide();
+                            quad.SetScale(scale);
                             quad.SetSide(Pole.South, false, xf, 0, yf, xf + .5f, h, yf + .5f)
                                 .SetTexture(_res.Index, x, y, x + 1, y + 1);
                             quads.Add(quad);
@@ -113,6 +115,7 @@ namespace Vge.Item
                         {
                             // Лево
                             quad = new QuadSide();
+                            quad.SetScale(scale);
                             quad.SetSide(Pole.West, false, xf, 0, yf, xf + .5f, h, yf + .5f)
                                 .SetTexture(_res.Index, x, y, x + 1, y + 1);
                             quads.Add(quad);
@@ -121,6 +124,7 @@ namespace Vge.Item
                         {
                             // Лево
                             quad = new QuadSide();
+                            quad.SetScale(scale);
                             quad.SetSide(Pole.East, false, xf, 0, yf, xf + .5f, h, yf + .5f)
                                 .SetTexture(_res.Index, x, y, x + 1, y + 1);
                             quads.Add(quad);
@@ -131,18 +135,32 @@ namespace Vge.Item
 
             // Вверх
             quad = new QuadSide();
+            quad.SetScale(scale);
             quad.SetSide(Pole.Up, false, min, h, min, max, h, max).SetTexture(_res.Index,
                 0, 0, width, heigth);
             quads.Add(quad);
 
             // Низ
             quad = new QuadSide();
+            quad.SetScale(scale);
             quad.SetSide(Pole.Down, false, min, 0, min, max, 0, max).SetTexture(_res.Index,
                 0, heigth, width, 0);
             quads.Add(quad);
 
             // Количество квадов на модели в мире
             //Console.WriteLine(_alias + " " + quads.Count);
+
+            foreach (QuadSide quad1 in quads)
+            {
+                if (shapeAdd.IsRotation)
+                {
+                    quad1.SetRotateAdd(shapeAdd.Rotate[0], shapeAdd.Rotate[1], shapeAdd.Rotate[2], shapeAdd.Scale);
+                }
+                if (shapeAdd.IsOffset)
+                {
+                    quad1.SetTranslate(shapeAdd.Offset[0], shapeAdd.Offset[1], shapeAdd.Offset[2]);
+                }
+            }
 
             return Convert(quads.ToArray());
         }

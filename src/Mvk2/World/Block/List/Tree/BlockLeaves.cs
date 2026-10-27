@@ -118,7 +118,7 @@ namespace Mvk2.World.Block.List
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld, BlockState stateNew)
+            BlockPos blockPos, BlockState stateOld)
         {
             if (!world.IsRemote) {
                 if ((stateOld.Met & 1 << 9) == 0) // 512

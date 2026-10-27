@@ -54,6 +54,11 @@ namespace Vge.World.Block
         public bool NotExtremeSide = false;
 
         /// <summary>
+        /// Масштаб
+        /// </summary>
+        private float _scale = 1f;
+
+        /// <summary>
         /// Прямоугольная сторона блока или элемента блока
         /// </summary>
         /// <param name = "typeColor" >Цвет биома, где 0 - нет цвета, 1 - трава, 2 - листа, 3 - вода, 4 - свой цвет</param>
@@ -65,6 +70,11 @@ namespace Vge.World.Block
         /// Не крайняя сторона, чтоб не отброкавать при прорисовке
         /// </summary>
         public void SetNotExtremeSide() => NotExtremeSide = true;
+
+        /// <summary>
+        /// Задать масштаб
+        /// </summary>
+        public void SetScale(float scale) => _scale = scale;
 
         /// <summary>
         /// Задать анимацию
@@ -92,6 +102,15 @@ namespace Vge.World.Block
             float x2 = x2i / 16f;
             float y2 = y2i / 16f;
             float z2 = z2i / 16f;
+            if (_scale != 1)
+            {
+                x1 *= _scale;
+                y1 *= _scale;
+                z1 *= _scale;
+                x2 *= _scale;
+                y2 *= _scale;
+                z2 *= _scale;
+            }
             Side = (int)pole;
             LightPole = shade ? 0f : 1f - Gi.LightPoles[Side];
             switch (pole)

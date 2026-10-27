@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;

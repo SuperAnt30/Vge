@@ -13,10 +13,11 @@ namespace Vge.World.Block
         public int Id;
         /// <summary>
         /// Дополнительные параметры блока 19 bit
-        /// LLL mmmm MMMM MMMM MMMM
+        /// LLL mmmm MMMM MMGG GGGG
         /// L - id блока жидкости через доп массив индексов
         /// m - met данные жидкости
-        /// M - met данные блока
+        /// M - met данные блока которые не зависят за внешний вид
+        /// G - met данные блока которые отвечают за графику
         /// </summary>
         public int Met;
         /// <summary>

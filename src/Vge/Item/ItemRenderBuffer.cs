@@ -1,6 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Render;
 using Vge.Json;
+using Vge.World.Block;
 
 namespace Vge.Item
 {
@@ -50,8 +52,16 @@ namespace Vge.Item
         public void InitAndSprite(string alias, JsonCompound state)
         {
             ItemShapeSprite shapeSprite = new ItemShapeSprite(alias, state.GetString(Cti.Sprite));
-            _buffer = shapeSprite.GenBuffer();
-            _bufferHold = _buffer.CopyBufferMesh();
+            
+            ShapeAdd shapeAdd = new ShapeAdd();
+            shapeAdd.RunShape(state.GetObject(Cti.View), false, 1);
+            _buffer = shapeSprite.GenBuffer(shapeAdd);
+
+            shapeAdd = new ShapeAdd();
+            shapeAdd.RunShape(state.GetObject(Cti.ViewHold), false, 1);
+            _bufferHold = shapeSprite.GenBuffer(shapeAdd);
+
+            //_bufferHold = _buffer.CopyBufferMesh();
         }
 
         /// <summary>

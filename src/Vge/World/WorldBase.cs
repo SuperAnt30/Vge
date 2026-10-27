@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
@@ -117,6 +118,17 @@ namespace Vge.World
         #region Block
 
         /// <summary>
+        /// Получить met данные жидкости, смещённые чтоб просто прибавить для смены метдаты блока
+        /// </summary>
+        public int GetLiquidBlock(BlockPos blockPos)
+        {
+            BlockState state = GetBlockState(blockPos);
+            if (state.IsEmpty()) return 0;
+            return (state.Met >> 12) << 12;
+            //Console.WriteLine("r " + i);
+        }
+
+        /// <summary>
         /// Получить блок данных
         /// </summary>
         public BlockState GetBlockState(BlockPos blockPos)
@@ -187,7 +199,7 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Изменить метданные блока
+        /// Изменить метданные блока, БЕЗ КОНТРОЛЯ ЖИДКОСТИ
         /// </summary>
         /// <param name="isMarkUpdate">Отметить блок для обновления</param>
         public void SetBlockStateMet(BlockPos blockPos, int met, bool isMarkUpdate = true)
@@ -198,6 +210,7 @@ namespace Vge.World
                 if (chunk == null) return;
                 int yc = blockPos.Y >> 4;
                 int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                //Console.WriteLine("w " + met);
                 chunk.StorageArrays[yc].NewMetBlock(index, met);
                 if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
             }
@@ -230,7 +243,7 @@ namespace Vge.World
             => SetBlockState(blockPos, new BlockState(0 | (2 << 12)), flag);
 
         /// <summary>
-        /// Сменить блока без проверки доп жидкости, как есть!
+        /// Сменить блока
         /// </summary>
         /// <param name="blockPos">позици блока</param>
         /// <param name="blockState">данные блока</param>
@@ -503,7 +516,7 @@ namespace Vge.World
         /// Проиграть звуковой эффект, по дистанции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0) { }
+        public virtual void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 48) { }
 
         #endregion
 

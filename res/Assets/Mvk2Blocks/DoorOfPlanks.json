@@ -1,0 +1,26 @@
+{
+    АmbientOcclusion: false,
+    UseNeighborBrightness: true,
+    Translucent: true,
+    LightOpacity: 0,
+    ForceDrawFace: true,
+    Hardness: 32,
+    Variants: [
+        { Shape: "DoorOfPlanks", RotateY: 270, Offset: [ 0, 0, -16 ] },
+        { Shape: "DoorOfPlanks", RotateY: 90, Offset: [ -16, 0, 0 ] },
+        { Shape: "DoorOfPlanks" },
+        { Shape: "DoorOfPlanks", RotateY: 180, Offset: [ -16, 0, -16 ] },
+        { Shape: "DoorOfPlanks", RotateY: 90, Offset: [ -16, 0, 30 ] },
+        { Shape: "DoorOfPlanks", RotateY: 270, Offset: [ 0, 0, 14 ] },
+        { Shape: "DoorOfPlanks", RotateY: 180, Offset: [ -16, 0, 14 ] },
+        { Shape: "DoorOfPlanks", Offset: [ 0, 0, 30 ] },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" },
+        { Shape: "_Null" }
+    ]
+}

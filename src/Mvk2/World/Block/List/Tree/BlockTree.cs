@@ -1,12 +1,10 @@
-﻿using Mvk2.Item;
-using Mvk2.World.BlockEntity.List;
+﻿using Mvk2.World.BlockEntity.List;
 using Mvk2.World.Gen;
 using Mvk2.World.Gen.Feature;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
-using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -122,7 +120,7 @@ namespace Mvk2.World.Block.List
         /// Действие блока после его удаления
         /// </summary>
         public override void OnBreakBlock(WorldBase world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState stateOld, BlockState stateNew)
+            BlockPos blockPos, BlockState stateOld)
         {
             if (!world.IsRemote && (Type == TypeTree.Log || Type == TypeTree.Branch)
                 && world is WorldServer worldServer)
@@ -175,8 +173,8 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
-        public override void DropBlockAsItem(WorldServer world, BlockPos blockPos, 
-            BlockState state, PlayerServer player)
+        public override void DropBlockAsItem(WorldServer worldServer, PlayerServer player,
+            BlockPos blockPos, BlockState stateOld)
         {
             //ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
         }

@@ -1,4 +1,5 @@
-﻿using Vge.Entity.Player;
+﻿using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -36,17 +37,34 @@ namespace Vge.Item.List
             }
 
             MovingObjectPosition moving = player.MovingObject;
-            if (moving.IsBlock())
+            if (_CheckMoving(moving))
             {
                 if (OnItemOnBlockPlacement(stack, player, moving.BlockPosition, moving.Side, 
                     moving.Facing, true, player.RotationYaw))
                 {
-                    return new ResultHandSecond(begin ? 8 : 4, true);
+                    return new ResultHandSecond(_Pause(begin), true);
                 }
-                return new ResultHandSecond(ResultHandSecond.ActionType.None, begin ? 8 : 4);
             }
+
+            // TODO::2026-10-27 подумать, как один раз фиксировать, begin перезапускается
+            //if (begin) 
+            player.PlaySampleNotCanPlacement();
             return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
+
+        /// <summary>
+        /// Дополнительная проверка на moving, чтоб сократить последующие проверки
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _CheckMoving(MovingObjectPosition moving)
+            => moving.IsBlock();
+
+        /// <summary>
+        /// Пауза между установками блоков
+        /// </summary>
+        /// <param name="begin">Первый блок</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual int _Pause(bool begin) => begin ? 8 : 4;
 
         /// <summary>
         /// Вызывается, когда текущий предмет пробуюет установить на блок,
@@ -62,37 +80,65 @@ namespace Vge.Item.List
         {
             WorldBase world = player.GetWorld();
 
-            //if (!world.IsRemote) return false;
-
             if (flagReplaceable && !world.GetBlockState(blockPos).GetBlock().IsReplaceable)
             {
                 blockPos = blockPos.Offset(side);
             }
 
-            if (_CanPlaceBlockOnSide(stack, player, world, blockPos, Block, side, facing))
+            // Сместить начальное положение
+            blockPos = _ShiftInitialPosition(blockPos, side, facing, playerYaw);
+
+            if (_CanPlaceBlockOnSide(stack, player, world, blockPos, Block, side, facing, playerYaw))
             {
                 BlockState blockState = Block.OnBlockPlaced(world, blockPos, 
                     new BlockState(Block.IndexBlock), side, facing, playerYaw);
                 if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);
-                    bool result = world.SetBlockState(blockPos, blockState, 15);
+                    bool result = world.SetBlockState(blockPos, blockState, 47);
                     if (result)
                     {
-                        //InstallAdditionalBlocks(worldIn, blockPos);
-                        if (!player.CreativeMode)
+                        if (!world.IsRemote && player is PlayerServer playerServer)
                         {
-                        //    blockStateOld.GetBlock().DropBlockAsItem(world, blockPos, blockStateOld);
-                            player.Inventory.DecrCurrentItem(1);
+                            result = _InstallAdditionalBlocks(playerServer, blockPos, side, facing, playerYaw);
+                            if (result)
+                            {
+                                if (!player.CreativeMode)
+                                {
+                                    blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(), 
+                                        playerServer, blockPos, blockStateOld);
+                                }
+                            }
                         }
-                        world.PlaySound(Block.Material.SamplePlace(world.Rnd),
-                            blockPos.ToVector3Center(), 1, 1, player.Id);
+                        if (result)
+                        {
+                            if (!player.CreativeMode)
+                            {
+                                player.Inventory.DecrCurrentItem(1);
+                            }
+                            world.PlaySound(Block.Material.SamplePlace(world.Rnd),
+                                blockPos.ToVector3Center(), 1, 1, player.Id);
+                        }
                     }
                     return result;
                 }
             }
             return false;
         }
+
+        /// <summary>
+        /// Сместить начальное положение
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual BlockPos _ShiftInitialPosition(BlockPos blockPos, Pole side, 
+            Vector3 facing, float playerYaw) => blockPos;
+
+        /// <summary>
+        /// Установить дополнительные блоки, только на сервере
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual bool _InstallAdditionalBlocks(PlayerServer player, BlockPos blockPos,
+            Pole side, Vector3 facing, float playerYaw) => true;
 
         #endregion
     }

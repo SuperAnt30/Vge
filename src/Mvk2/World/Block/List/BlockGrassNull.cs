@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Vge.World;
+﻿using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 
@@ -44,9 +43,8 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Действие блока после его удаления
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld, BlockState stateNew)
+            BlockPos blockPos, BlockState stateOld)
         {
             if (!world.IsRemote)
             {

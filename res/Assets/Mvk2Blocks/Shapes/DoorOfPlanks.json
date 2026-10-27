@@ -1,0 +1,18 @@
+{
+    Texture: {
+        T0: "Blocks/DoorOfPlanks"
+    },
+    Elements: [
+        {   From: [-8, 0, -8],
+            To: [24, 64, -6],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[32, 0, 0, 64]},
+                { Texture:"T0", Side:"East", Uv:[31, 0, 32, 64]},
+                { Texture:"T0", Side:"South", Uv:[0, 0, 32, 63.8]},
+                { Texture:"T0", Side:"West", Uv:[0, 0, 1, 64]},
+                { Texture:"T0", Side:"Up", Uv:[32, 1, 0, 0]},
+                { Texture:"T0", Side:"Down", Uv:[32, 63, 0, 64]}
+            ]
+        }
+    ]
+}

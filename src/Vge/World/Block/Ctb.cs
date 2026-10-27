@@ -51,7 +51,10 @@
         /// Может на этот блок поставить другой, к примеру трава. (bool)
         /// </summary>
         public const string IsReplaceable = "IsReplaceable";
-        
+        /// <summary>
+        /// Принудительное рисование всех сторон. (bool)
+        /// </summary>
+        public const string ForceDrawFace = "ForceDrawFace";
 
         /// <summary>
         /// Цвет блока, используется при BiomeColor = true. ([red, green, blue]), цвет указывается 0-1.0

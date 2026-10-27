@@ -136,7 +136,11 @@ namespace Vge.Entity.Player
         /// Обновить матрицы камеры
         /// </summary>
         private bool _updateCamera = true;
-        
+        /// <summary>
+        /// Последнее время в мс запуска проигрывания семпла не удачной установки
+        /// </summary>
+        private long _lastTimePlaySampleNotCanPlacement;
+
         /// <summary>
         /// Менеджер действий рук игрока 
         /// </summary>
@@ -1091,6 +1095,18 @@ namespace Vge.Entity.Player
                     Options.OverviewChunk = OverviewChunk;
                     _game.OptionsSave();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Проиграть семпл, не может установить предмет
+        /// </summary>
+        public void PlaySampleNotCanPlacement()
+        {
+            if (_lastTimePlaySampleNotCanPlacement + 200 < _Time())
+            {
+                _lastTimePlaySampleNotCanPlacement = _Time();
+                GetWorld().PlaySoundDistance(0, GetPositionCenterVec(), .2f, 2.4f);
             }
         }
 

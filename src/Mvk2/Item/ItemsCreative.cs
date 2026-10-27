@@ -39,15 +39,16 @@ namespace Mvk2.Item
             List<ItemStack> tabBlocks = new List<ItemStack>();
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Debug));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Sand));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.DoorOfPlanks));
 
             // Раздел крафтовые предметы 
             List<ItemStack> tabCraft = new List<ItemStack>();
             tabCraft.Add(new ItemStack(ItemsRegMvk.PieceStone));
             tabCraft.Add(new ItemStack(ItemsRegMvk.PieceDirt));
             tabCraft.Add(new ItemStack(ItemsRegMvk.DryGrass));
-            
 
             // Раздел инструменты и оружие
             List<ItemStack> tabTools = new List<ItemStack>();

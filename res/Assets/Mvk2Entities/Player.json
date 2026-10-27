@@ -114,8 +114,8 @@
             Animation: "HoldRight",
             AnimationSpeed: 1.0,
             ElementWeight: {
-                ArmRight: 20,
-                ForearmRight: 20
+                ArmRight: 10,
+                ForearmRight: 10
             }
         },
         {
@@ -132,11 +132,11 @@
             Animation: "HoldTwo",
             AnimationSpeed: 1.0,
             ElementWeight: {
-                ArmRight: 90,
-                ForearmRight: 90,
-                HoldItemOne: 90,
-                ArmLeft: 90,
-                ForearmLeft: 90
+                ArmRight: 10,
+                ForearmRight: 10,
+                HoldItemOne: 10,
+                ArmLeft: 10,
+                ForearmLeft: 10
             }
         },
         {
@@ -144,13 +144,13 @@
             Animation: "HoldShovel",
             AnimationSpeed: 1.0,
             ElementWeight: {
-                ArmRight: 10,
-                ForearmRight: 10,
-                HandRight: 10,
-                HoldItemOne: 10,
-                ArmLeft: 10,
-                ForearmLeft: 10,
-                HandLeft: 10
+                ArmRight: 50,
+                ForearmRight: 50,
+                HandRight: 50,
+                HoldItemOne: 50,
+                ArmLeft: 50,
+                ForearmLeft: 50,
+                HandLeft: 50
             }
         },
         {

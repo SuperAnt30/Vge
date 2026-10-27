@@ -326,7 +326,7 @@ namespace Vge.World
         /// Проиграть звуковой эффект, по дистанции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 0f)
+        public override void PlaySoundDistance(int key, Vector3 pos, float volume, float pitch, float distance = 48f)
             => Game.PlaySound(key, pos.X, pos.Y, pos.Z, volume, pitch);  
 
         #endregion

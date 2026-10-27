@@ -392,6 +392,20 @@ namespace Vge.World.Block
             ForceDrawFace = shapeDefinition.ForceDrawFace;
             _maskCullFaces = shapeDefinition.MaskCullFaces;
             _cullFaces = shapeDefinition.CullFaces;
+
+            if (state.IsKey(Ctb.ForceDrawFace) && !ForceDrawFace)
+            {
+                ForceDrawFace = true;
+                for (int j = 0; j < _cullFaces.Length; j++)
+                {
+                    _cullFaces[j] = new bool[6];
+                    for (int i = 0; i < _maskCullFaces[j].Length; i++)
+                    {
+                        _maskCullFaces[j][i] = new ulong[4];
+                    }
+                }
+            }
+
             _forceDrawFaces = shapeDefinition.ForceDrawFaces;
             _forceDrawNotExtremeFaces = shapeDefinition.ForceDrawNotExtremeFaces;
         }
@@ -555,17 +569,17 @@ namespace Vge.World.Block
         /// Имеется ли отбраковка конкретной стороны, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsCullFace(int met, int indexSide) => _cullFaces[met & 0xFF][indexSide];
+        public virtual bool IsCullFace(int met, int indexSide) => _cullFaces[met & 0x3F][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать сторону, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsForceDrawFace(int met, int indexSide) => _forceDrawFaces[met & 0xFF][indexSide];
+        public virtual bool IsForceDrawFace(int met, int indexSide) => _forceDrawFaces[met & 0x3F][indexSide];
         /// <summary>
         /// Надо ли принудительно рисовать не крайнюю сторону, конкретного варианта
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool IsForceDrawNotExtremeFace(int met, int indexSide) => _forceDrawNotExtremeFaces[met & 0xFF][indexSide];
+        public virtual bool IsForceDrawNotExtremeFace(int met, int indexSide) => _forceDrawNotExtremeFaces[met & 0x3F][indexSide];
 
         /// <summary>
         /// Проверка масок сторон
@@ -576,8 +590,8 @@ namespace Vge.World.Block
         /// <param name="metSide">Мет данные соседнего блока</param>
         public virtual bool ChekMaskCullFace(int indexSide, int met, BlockBase blockSide, int metSide)
         {
-            ulong[] mask = _maskCullFaces[met & 0xFF][indexSide];
-            ulong[] maskCheck = blockSide._maskCullFaces[metSide & 0xFF][PoleConvert.Reverse[indexSide]];
+            ulong[] mask = _maskCullFaces[met & 0x3F][indexSide];
+            ulong[] maskCheck = blockSide._maskCullFaces[metSide & 0x3F][PoleConvert.Reverse[indexSide]];
             return (maskCheck[0] & mask[0]) == mask[0]
                 && (maskCheck[1] & mask[1]) == mask[1]
                 && (maskCheck[2] & mask[2]) == mask[2]
@@ -676,7 +690,7 @@ namespace Vge.World.Block
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void OnBreakBlock(WorldBase world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState stateOld, BlockState stateNew) { }
+            BlockPos blockPos, BlockState stateOld) { }
 
         ///// <summary>
         ///// Спавн предмета при разрушении этого блока
@@ -691,8 +705,8 @@ namespace Vge.World.Block
         /// Спавн предмета при разрушении этого блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void DropBlockAsItem(WorldServer world, BlockPos blockPos, 
-            BlockState state, PlayerServer player) { }
+        public virtual void DropBlockAsItem(WorldServer worldServer, PlayerServer player, 
+            BlockPos blockPos, BlockState stateOld) { }
 
         /// <summary>
         /// Активация блока, true - был клик, false - нет такой возможности
@@ -703,6 +717,13 @@ namespace Vge.World.Block
         public virtual bool OnBlockActivated(PlayerBase player, BlockPos blockPos, Pole side, Vector3 facing) => false;
 
         #endregion
+
+        /// <summary>
+        /// Проиграть звук поломки
+        /// </summary>
+        public void PlaySoundBreak(WorldBase world, BlockPos blockPos) 
+            => world.PlaySoundDistance(Material.SampleBreak(world.Rnd), 
+                blockPos.ToVector3Center(), 1f, 1f);
 
         /// <summary>
         /// Получить строку мет данных, для отладки

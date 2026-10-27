@@ -2,6 +2,8 @@
     Samples: [
     "Click",
     "Break",
+    "DoorClose",
+    "DoorOpen",
     
     "Dig/DigGlass1",
     "Dig/DigGlass2",

@@ -204,7 +204,7 @@ namespace Vge.Item
         /// <param name="side">Сторона, по которой щелкнули правой кнопкой мыши</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         protected virtual bool _CanPlaceBlockOnSide(ItemStack stack, PlayerBase player, WorldBase world, 
-            BlockPos blockPos, BlockBase block, Pole side, Vector3 facing)
+            BlockPos blockPos, BlockBase block, Pole side, Vector3 facing, float playerYaw)
         {
             //if (world.IsRemote) return true;
 

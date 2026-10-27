@@ -250,6 +250,8 @@ namespace Mvk2.World.Block
         public static BlockAlpha GlassPurple { get; private set; }
         
         public static BlockBase Brol { get; private set; }
+        public static BlockDoor DoorOfPlanks { get; private set; }
+        
 
         public static void Initialization()
         {
@@ -332,7 +334,9 @@ namespace Mvk2.World.Block
             //Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
 
             BlocksReg.RegisterBlockClass("Brol", Brol = new BlockBrol(materials.Ore));
-            
+
+            BlocksReg.RegisterBlockClass("DoorOfPlanks", DoorOfPlanks = new BlockDoor(materials.Door));
+
 
             // Регистрация текстуры разрушения блока
             Gi.DestroyBlock.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "Destroy");

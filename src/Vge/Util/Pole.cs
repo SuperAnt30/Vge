@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using WinGL.Util;
 
 namespace Vge.Util
@@ -140,6 +141,19 @@ namespace Vge.Util
             else if (angle > Glm.Pi45 && angle < Glm.Pi135) return Pole.East;
             else if (angle < -Glm.Pi45 && angle > -Glm.Pi135) return Pole.West;
             return Pole.South;
+        }
+
+        /// <summary>
+        /// Проверить левее ли от тикущего полюса
+        /// </summary>
+        /// <param name="angle">угол в радианах</param>
+        public static bool IsFromAngleLeft(float angle, Pole pole)
+        {
+            if (pole == Pole.South) return angle < 0;
+            if (pole == Pole.North) return angle > 0;
+            if (pole == Pole.East) return angle < -Glm.Pi90;
+            if (pole == Pole.West) return angle < Glm.Pi90;
+            return true;
         }
     }
 }

@@ -4,4 +4,5 @@
     Height: 0.1875,
     Sprite: "Items/CannedFood",
     SpriteGui: "Items/CannedFood",
+    ViewHold: { Rotate:[90, 0, 0], Offset:[-6, 4, 8] }
 }
