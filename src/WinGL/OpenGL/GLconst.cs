@@ -864,6 +864,7 @@ namespace WinGL.OpenGL
 
         public const uint GL_VERTEX_SHADER = 0x8B31;
         public const uint GL_FRAGMENT_SHADER = 0x8B30;
+        public const uint GL_GEOMETRY_SHADER = 0x8DD9;
         public const uint GL_LINK_STATUS = 0x8B82;
 
         public const uint GL_FRAMEBUFFER = 0x8D40;

@@ -13,6 +13,8 @@ namespace Mvk2.World.Block
     /// </summary>
     public sealed class BlocksRegMvk
     {
+        public static BlockAir Air { get; private set; }
+
         public static BlockDebug Debug { get; private set; }
 
         #region Жидкие блоки
@@ -259,9 +261,9 @@ namespace Mvk2.World.Block
             MaterialsMvk materials = new MaterialsMvk();
 
             // Регистрация обязательных блоков Воздух
-            BlockAir air = new BlockAir(materials.Air);
-            air.InitAir();
-            BlocksReg.Table.Add("Air", air);
+            Air = new BlockAir(materials.Air);
+            Air.InitAir();
+            BlocksReg.Table.Add("Air", Air);
 
             // Отладочный
             BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug(materials.Debug));

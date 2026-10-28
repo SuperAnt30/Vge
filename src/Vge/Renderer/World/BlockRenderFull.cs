@@ -85,7 +85,6 @@ namespace Vge.Renderer.World
         protected int _numberBlocksY;
 
         protected ChunkStorage _storage;
-        private bool _isDraw;
         protected int _stateLight, _stateLightHis;
         protected byte _stateLightByte;
         private QuadSide[] _rectangularSides;
@@ -844,21 +843,17 @@ namespace Vge.Renderer.World
             aoLight.Aol = _blockCheck.IsNotTransparent || (_blockCheck.Liquid && Gi.Block.Liquid) ? 0 
                 : aoLight.Aoc;
 
-            if (aoLight.Aol == 0)
-            {
-                aoLight.LightBlock = 0;
-                aoLight.LightSky = 0;
-                return aoLight;
-            }
-            //_isDraw = id == 0 || _blockCheck.AllSideForcibly;
-            _isDraw = id == 0 /*|| !_blockCheck.GetCullFace(Met, _indexSide)*/ || _blockCheck.Translucent;
-            //if (_isDraw && (_blockCheck.Material == Block.Material && !_blockCheck.BlocksNotSame)) _isDraw = false;
-
-            if (_isDraw)
+            if (id == 0 || _blockCheck.Translucent)
             {
                 // Яркость берётся из данных блока
                 aoLight.LightSky = (byte)(_storage.Light[index] & 15);
                 aoLight.LightBlock = (byte)(_storage.Light[index] >> 4);
+                aoLight.Aol = 1;
+            }
+            else
+            {
+                aoLight.LightBlock = 0;
+                aoLight.LightSky = 0;
             }
             return aoLight;
         }

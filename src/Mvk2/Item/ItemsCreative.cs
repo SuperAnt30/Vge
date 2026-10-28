@@ -40,6 +40,7 @@ namespace Mvk2.Item
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Debug));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Sand));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Glass));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.DoorOfPlanks));

@@ -626,7 +626,7 @@ namespace Vge.World
         /// <summary>
         /// Уведомить соседей об изменении состояния
         /// </summary>
-        protected override void _NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block)
+        public override void NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block)
         {
             _NotifyBlockOfStateChange(pos.OffsetWest(), block);
             _NotifyBlockOfStateChange(pos.OffsetEast(), block);

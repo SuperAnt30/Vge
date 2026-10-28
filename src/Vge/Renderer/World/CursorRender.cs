@@ -87,7 +87,12 @@ namespace Vge.Renderer.World
             // Прорисовка
             if (!_hiddenBlock)
             {
-                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0);
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, .1f);
+                _worldRenderer.Render.DepthOff();
+                _meshBlock.Draw();
+                _worldRenderer.Render.DepthOn();
+
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, 1f);
                 _meshBlock.Draw();
             }
             if (!_hiddenChunk)
@@ -98,7 +103,7 @@ namespace Vge.Renderer.World
                 _worldRenderer.Render.ShaderBindLine(Gi.MatrixView,
                     posCh.X - _player.PosFrameX,
                     -_player.PosFrameY,
-                    posCh.Y - _player.PosFrameZ);
+                    posCh.Y - _player.PosFrameZ, 1f);
                 _meshChunk.Draw();
             }
         }
@@ -138,30 +143,31 @@ namespace Vge.Renderer.World
                     float dis = Glm.Distance(pos, blockCenter) * .01f;
                     dis *= dis;
                     dis += .001f;
-                    //pos = blockCenter - pos;
-                    //Vector3 from = pos - .5f - dis;// b moving.BlockPosition.ToVector3() +  - 0.02f;
-                    //Vector3 to = pos + .5f + dis;
-                    //_meshBlock.Reload(MeshLine.CubeLine(from.X, from.Y, from.Z,
-                    //    to.X, to.Y, to.Z, 1, 1, 0, 1));
-
-                    //TODO::2026-05-29 Возможно надо не GetCollisionOne
-                    //AxisAlignedBB aabb = moving.Block.GetBlock().GetCollisionOne(
-                    //    moving.BlockPosition, moving.Block.Met);
-                    //_meshBlock.Reload(MeshLine.CubeLine(
-                    //        aabb.Min.X - pos.X - dis, aabb.Min.Y - pos.Y - dis, aabb.Min.Z - pos.Z - dis,
-                    //        aabb.Max.X - pos.X + dis, aabb.Max.Y - pos.Y + dis, aabb.Max.Z - pos.Z + dis,
-                    //        1, 1, 0, 1));
 
                     AxisAlignedBB[] axes = moving.Block.GetBlock().GetCollisionBoxesToList(
                         moving.BlockPosition, moving.Block.Met);
-                    List<float> floats = new List<float>();
+
                     for (int i = 0; i < axes.Length; i++)
                     {
-                        floats.AddRange(MeshLine.CubeLine(
-                            axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
-                            axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
-                            1, 1, 0, 1));
+                        axes[i] = new AxisAlignedBB(axes[i].Min - pos - dis,
+                            axes[i].Max - pos + dis);
                     }
+
+                    List<Vector3> vectors = AabbOutline.Build(axes);
+                    List<float> floats = new List<float>();
+                    for (int i = 0; i < vectors.Count; i++)
+                    {
+                        floats.AddRange(new float[] {
+                            vectors[i].X, vectors[i].Y, vectors[i].Z,
+                            1, 1, 0, 1 });
+                    }
+                    //for (int i = 0; i < axes.Length; i++)
+                    //{
+                    //    floats.AddRange(MeshLine.CubeLine(
+                    //        axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
+                    //        axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
+                    //        1, 1, 0, 1));
+                    //}
                     _meshBlock.Reload(floats.ToArray());
                 }
             }

@@ -266,7 +266,7 @@ namespace Vge.World
                 // Частички блока, только на сервере чтоб всем разослать
                 if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos.ToVector3Center());
                 // Уведомление соседей только на сервере!
-                if ((flag & 2) != 0) _NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
+                if ((flag & 2) != 0) NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
             }
 
             return true;
@@ -275,7 +275,7 @@ namespace Vge.World
         /// <summary>
         /// Уведомить соседей об изменении состояния
         /// </summary>
-        protected virtual void _NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block) { }
+        public virtual void NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block) { }
 
         /// <summary>
         /// Видит ли данный блок небо

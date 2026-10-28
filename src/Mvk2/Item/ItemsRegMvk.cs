@@ -127,6 +127,8 @@ namespace Mvk2.Item
         public static ItemBase FlowerClover { get; private set; }
         public static ItemBase Cobblestone { get; private set; }
         public static ItemBase Sand { get; private set; }
+        public static ItemBase Glass { get; private set; }
+        
         public static ItemBase Brol { get; private set; }
         public static ItemBase Debug { get; private set; }
 
@@ -238,6 +240,7 @@ namespace Mvk2.Item
 
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
             ItemsReg.RegisterItemClass("Sand", Sand = new ItemBlock(BlocksRegMvk.Sand));
+            ItemsReg.RegisterItemClass("Glass", Glass = new ItemBlock(BlocksRegMvk.Glass));
             ItemsReg.RegisterItemClass("Brol", Brol = new ItemBlock(BlocksRegMvk.Brol));
             ItemsReg.RegisterItemClass("Debug", Debug = new ItemBlock(BlocksRegMvk.Debug));
 

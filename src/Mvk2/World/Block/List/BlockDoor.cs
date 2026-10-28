@@ -213,7 +213,19 @@ namespace Mvk2.World.Block.List
                 {
                     for (int y = 0; y < 4; y++)
                     {
-                        world.SetBlockToAir(blockPos.Offset(x - bx, y - by, z - bz), 110); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock
+                        world.SetBlockToAir(blockPos.Offset(x - bx, y - by, z - bz), 108); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock
+                    }
+                }
+            }
+
+            for (int x = 0; x < 2; x++)
+            {
+                for (int z = 0; z < 2; z++)
+                {
+                    for (int y = 0; y < 4; y++)
+                    {
+                        world.NotifyNeighborsOfStateChange(blockPos.Offset(x - bx, y - by, z - bz), 
+                            BlocksRegMvk.Air);
                     }
                 }
             }
@@ -240,6 +252,23 @@ namespace Mvk2.World.Block.List
                 DropBlockAsItem(world, null, blockPos, blockState);
                 PlaySoundBreak(world, blockPos);
             }
+        }
+
+        /// <summary>
+        /// Сместить положение, как правило на ключевое значение отвечающее за рендер.
+        /// Пример дверь, кровать
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override BlockPos ShiftPosition(BlockPos blockPos, BlockState state)
+        {
+            int met = state.Met;
+            int bx = (met & 128) != 0 ? 1 : 0;
+            int bz = (met & 256) != 0 ? 1 : 0;
+            int by = met >> 9 & 3;
+            blockPos.X -= bx;
+            blockPos.Y -= by;
+            blockPos.Z -= bz;
+            return blockPos;
         }
 
         /// <summary>

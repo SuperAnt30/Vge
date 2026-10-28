@@ -175,11 +175,12 @@ namespace Vge.Renderer
         /// Связать шейдер Line
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ShaderBindLine(float[] view, float posX, float posY, float posZ)
+        public void ShaderBindLine(float[] view, float posX, float posY, float posZ, float alpha)
         {
             ShLine.Bind();
             ShLine.SetUniformMatrix4("view", view);
             ShLine.SetUniform3("pos", posX, posY, posZ);
+            ShLine.SetUniform1("alpha", alpha);
         }
 
         #endregion

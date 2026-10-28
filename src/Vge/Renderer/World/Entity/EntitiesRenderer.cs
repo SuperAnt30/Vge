@@ -340,7 +340,7 @@ namespace Vge.Renderer.World.Entity
 
             if (IsHitBox)
             {
-                _game.WorldRender.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0);
+                _game.WorldRender.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, 1f);
                 _hitbox.Draw(timeIndex, _game.Player);
             }
         }

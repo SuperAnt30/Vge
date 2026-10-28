@@ -86,7 +86,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Количесто частичек при разрушении блока
         /// </summary>
-        public byte ParticleCount { get; protected set; } = 20;
+        public byte ParticleCount { get; protected set; } = 50;
         /// <summary>
         /// Индекс сокрощённого списка блоков жидкостей, нужен для оптимизации
         /// </summary>
@@ -714,7 +714,15 @@ namespace Vge.World.Block
         /// <param name="pos">Позиция блока, по которому щелкают</param>
         /// <param name="side">Сторона, по которой щелкнули</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool OnBlockActivated(PlayerBase player, BlockPos blockPos, Pole side, Vector3 facing) => false;
+
+        /// <summary>
+        /// Сместить положение, как правило на ключевое значение отвечающее за рендер.
+        /// Пример дверь, кровать
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual BlockPos ShiftPosition(BlockPos blockPos, BlockState state) => blockPos;
 
         #endregion
 

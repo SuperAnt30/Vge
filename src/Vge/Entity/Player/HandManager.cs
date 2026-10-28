@@ -444,10 +444,15 @@ namespace Vge.Entity.Player
         private void _BlockDigging(BlockPos blockPos, float power = 1)
         {
             bool begin;
-            if (!_isBlockDestroy || !blockPos.Equals(_blockPos))
+
+            BlockState blockState = _game.World.GetBlockState(blockPos);
+            BlockBase block = blockState.GetBlock();
+            BlockPos blockPosShift = block.ShiftPosition(blockPos, blockState);
+
+            if (!_isBlockDestroy || !blockPosShift.Equals(_blockPos))
             {
                 begin = true;
-                _blockPos = blockPos;
+                _blockPos = blockPosShift;
                 _isBlockDestroy = true;
             }
             else
@@ -456,8 +461,11 @@ namespace Vge.Entity.Player
                 begin = false;
             }
 
-            BlockState blockState = _game.World.GetBlockState(_blockPos);
-            BlockBase block = blockState.GetBlock();
+            if (!blockPosShift.Equals(blockPos))
+            {
+                blockState = _game.World.GetBlockState(_blockPos);
+                block = blockState.GetBlock();
+            }
 
             if (block.Hardness > 0 && !_player.CreativeMode)
             {
