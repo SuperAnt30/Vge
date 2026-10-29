@@ -295,5 +295,75 @@ namespace Mvk2.World.Block.List
 
             return new AxisAlignedBB[0];
         }
+
+
+        /// <summary>
+        /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции
+        /// </summary>
+        public override AxisAlignedBB[] GetOutline(BlockPos pos, int met)
+        {
+            int bx = (met & 128) != 0 ? 1 : 0;
+            int bz = (met & 256) != 0 ? 1 : 0;
+            int by = met >> 9 & 3;
+            int x = pos.X - bx;
+            int y = pos.Y - by;
+            int z = pos.Z - bz;
+            int pole = met & 3;
+            bool left = (met & 4) != 0;
+
+            if (pole == 0)
+            {
+                if (left)
+                {
+                    return new AxisAlignedBB[]
+                        { new AxisAlignedBB(x + 1.8125f, y, z, x + 2, y + 4, z + 2),
+                      new AxisAlignedBB(x + 1.78125f, y + 1.8125f, z + .125f, x + 2.03125f, y + 2.1875f, z + .5f)};
+                }
+                return new AxisAlignedBB[]
+                        { new AxisAlignedBB(x + 1.8125f, y, z, x + 2, y + 4, z + 2),
+                      new AxisAlignedBB(x + 1.78125f, y + 1.8125f, z + 1.5f, x + 2.03125f, y + 2.1875f, z + 1.875f)};
+            }
+            if (pole == 1)
+            {
+                if (left)
+                {
+                    return new AxisAlignedBB[]
+                        { new AxisAlignedBB(x, y, z, x + .1875f, y + 4, z + 2),
+                        new AxisAlignedBB(x - .03125f, y + 1.8125f, z + 1.5f, x + .21875f, y + 2.1875f, z + 1.875f)};
+
+                }
+                return new AxisAlignedBB[]
+                    { new AxisAlignedBB(x, y, z, x + .1875f, y + 4, z + 2),
+                    new AxisAlignedBB(x - .03125f, y + 1.8125f, z + .125f, x + .21875f, y + 2.1875f, z + .5f)};
+            }
+            if (pole == 2)
+            {
+                if (left)
+                {
+                    return new AxisAlignedBB[]
+                        { new AxisAlignedBB(x, y, z, x + 2, y + 4, z + .1875f),
+                      new AxisAlignedBB(x + .125f, y + 1.8125f, z - .03125f, x + .5f, y + 2.1875f, z + .21875f)};
+                }
+                return new AxisAlignedBB[]
+                    { new AxisAlignedBB(x, y, z, x + 2, y + 4, z + .1875f),
+                    new AxisAlignedBB(x + 1.5f, y + 1.8125f, z - .03125f, x + 1.875f, y + 2.1875f, z + .21875f)};
+            }
+
+            if (pole == 3)
+            {
+                if (left)
+                {
+                    return new AxisAlignedBB[]
+                        { new AxisAlignedBB(x, y, z + 1.8125f, x + 2, y + 4, z + 2),
+                        new AxisAlignedBB(x + 1.5f, y + 1.8125f, z + 1.78125f, x + 1.875f, y + 2.1875f, z + 2.03125f)};
+
+                }
+                return new AxisAlignedBB[]
+                    { new AxisAlignedBB(x, y, z + 1.8125f, x + 2, y + 4, z + 2),
+                    new AxisAlignedBB(x + .125f, y + 1.8125f, z + 1.78125f, x + .5f, y + 2.1875f, z + 2.03125f)};
+            }
+
+            return new AxisAlignedBB[0];
+        }
     }
 }

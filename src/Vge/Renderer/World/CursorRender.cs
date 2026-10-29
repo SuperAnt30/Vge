@@ -144,30 +144,36 @@ namespace Vge.Renderer.World
                     dis *= dis;
                     dis += .001f;
 
-                    AxisAlignedBB[] axes = moving.Block.GetBlock().GetCollisionBoxesToList(
+                    AxisAlignedBB[] axes = moving.Block.GetBlock().GetOutline(
                         moving.BlockPosition, moving.Block.Met);
-
-                    for (int i = 0; i < axes.Length; i++)
-                    {
-                        axes[i] = new AxisAlignedBB(axes[i].Min - pos - dis,
-                            axes[i].Max - pos + dis);
-                    }
-
-                    List<Vector3> vectors = AabbOutline.Build(axes);
+                    
                     List<float> floats = new List<float>();
-                    for (int i = 0; i < vectors.Count; i++)
+
+                    if (axes.Length < 2)
                     {
-                        floats.AddRange(new float[] {
+                        for (int i = 0; i < axes.Length; i++)
+                        {
+                            floats.AddRange(MeshLine.CubeLine(
+                                axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
+                                axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
+                                1, 1, 0, 1));
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < axes.Length; i++)
+                        {
+                            axes[i] = new AxisAlignedBB(axes[i].Min - pos - dis,
+                                axes[i].Max - pos + dis);
+                        }
+                        List<Vector3> vectors = AabbOutline.Build(axes);
+                        for (int i = 0; i < vectors.Count; i++)
+                        {
+                            floats.AddRange(new float[] {
                             vectors[i].X, vectors[i].Y, vectors[i].Z,
                             1, 1, 0, 1 });
+                        }
                     }
-                    //for (int i = 0; i < axes.Length; i++)
-                    //{
-                    //    floats.AddRange(MeshLine.CubeLine(
-                    //        axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
-                    //        axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
-                    //        1, 1, 0, 1));
-                    //}
                     _meshBlock.Reload(floats.ToArray());
                 }
             }

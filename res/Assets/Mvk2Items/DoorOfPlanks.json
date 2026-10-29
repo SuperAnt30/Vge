@@ -8,5 +8,5 @@
     Sprite: "Items/DoorOfPlanks",
     SpriteGui: "Items/DoorOfPlanks",
     View: { Rotate:[0, 0, 0], Offset:[0, 8, 0], Scale: 2.0 }
-    ViewHold: { Rotate:[110, 0, -12.5], Offset:[3, -16, 15], Scale: 2.0 }
+    ViewHold: { Rotate:[110, 0, -12.5], Offset:[3, -16, 13], Scale: 1.875 }
 }

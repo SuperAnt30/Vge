@@ -489,6 +489,12 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual AxisAlignedBB[] GetOutline(BlockPos pos, int met) => GetCollisionBoxesToList(pos, met);
+
+        /// <summary>
         /// Передать список  ограничительных рамок блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
