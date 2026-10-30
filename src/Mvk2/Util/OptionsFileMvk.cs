@@ -76,6 +76,7 @@ namespace Mvk2.Util
             file.WriteLine("ControlInventory: " + OptionsMvk.ControlInventory.ToString());
             file.WriteLine("\r\n# Game");
             file.WriteLine("OverviewChunk: " + Options.OverviewChunk.ToString());
+            file.WriteLine("BlockPlacementPreview: " + (Options.BlockPlacementPreview ? "1" : "0"));
         }
     }
 }

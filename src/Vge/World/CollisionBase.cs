@@ -84,7 +84,7 @@ namespace Vge.World
                                 block = blockState.GetBlock();
                                 if (block.IsCollidable)
                                 {
-                                    ListBlock.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
+                                    block.AddCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met, ListBlock);
                                 }
                             }
                             else
@@ -123,7 +123,7 @@ namespace Vge.World
                                                 block = blockState.GetBlock();
                                                 if (block.IsCollidable)
                                                 {
-                                                    ListBlock.AddRange(block.GetCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met));
+                                                    block.AddCollisionBoxesToList(new BlockPos(x, y, z), blockState.Met, ListBlock);
                                                 }
                                             }
                                             else

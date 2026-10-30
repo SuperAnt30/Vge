@@ -99,6 +99,7 @@ namespace Vge.Util
                 case "ControlSprinting": Options.ControlSprinting = int.Parse(value); return true;
                 case "ControlHandAction": Options.ControlHandAction = int.Parse(value); return true;
                 case "ControlHandSecond": Options.ControlHandSecond = int.Parse(value); return true;
+                case "BlockPlacementPreview": Options.BlockPlacementPreview = value == "1"; return true;
             }
             return false;
         }

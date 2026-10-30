@@ -1,4 +1,5 @@
-﻿using Vge.Util;
+﻿using System.Runtime.CompilerServices;
+using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
 using WinGL.Util;
@@ -12,13 +13,46 @@ namespace Mvk2.World.Block.List
     {
         public BlockDebug(MaterialBase material) : base(material)
         {
-            //Particle = numberTexture;
-            //_InitQuads(numberTexture);
+            _fullCube = new AxisAlignedBB[][] { 
+                new AxisAlignedBB[] 
+                { 
+                    new AxisAlignedBB(0, .5f, 0, .5f, 1, 1),
+                    new AxisAlignedBB(0, 0, 0, 1, .5f, 1)
+                },
+                new AxisAlignedBB[]
+                {
+                    new AxisAlignedBB(0, .5f, .5f, 1, 1, 1),
+                    new AxisAlignedBB(0, 0, 0, 1, .5f, 1)
+                },
+                new AxisAlignedBB[]
+                {
+                    new AxisAlignedBB(.5f, .5f, 0, 1, 1, 1),
+                    new AxisAlignedBB(0, 0, 0, 1, .5f, 1)
+                },
+                new AxisAlignedBB[]
+                {
+                    new AxisAlignedBB(0, .5f, 0, 1, 1, .5f),
+                    new AxisAlignedBB(0, 0, 0, 1, .5f, 1)
+                }
+            };
         }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[met & 3];
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override Vector3[] _GetOutlineLocal(int met) => _hitbox[met & 3];
 
         /// <summary>
         /// Стороны целого блока для рендера
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override QuadSide[] GetQuads(int met, int xb, int zb) => _GetQuads(met & 0x3F);
 
         /// <summary>
@@ -38,32 +72,6 @@ namespace Mvk2.World.Block.List
             if (side == Pole.South) return state.NewMet(3);
             if (side == Pole.North) return state.NewMet(1);
             return state.NewMet(2);
-        }
-
-        /// <summary>
-        /// Передать список ограничительных рамок блока
-        /// </summary>
-      //  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
-        {
-            met = met & 3;
-
-            if (met == 1) return new AxisAlignedBB[] {
-                new AxisAlignedBB(pos.X, pos.Y + .5f, pos.Z + .5f, pos.X + 1, pos.Y + 1, pos.Z + 1),
-                new AxisAlignedBB(pos.X , pos.Y, pos.Z, pos.X + 1, pos.Y + .5f, pos.Z + 1)
-            };
-            if (met == 2) return new AxisAlignedBB[] {
-                new AxisAlignedBB(pos.X + .5f, pos.Y + .5f, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1),
-                new AxisAlignedBB(pos.X , pos.Y, pos.Z, pos.X + 1, pos.Y + .5f, pos.Z + 1)
-            };
-            if (met == 3) return new AxisAlignedBB[] {
-                new AxisAlignedBB(pos.X, pos.Y + .5f, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + .5f),
-                new AxisAlignedBB(pos.X , pos.Y, pos.Z, pos.X + 1, pos.Y + .5f, pos.Z + 1)
-            };
-            return new AxisAlignedBB[] { 
-                new AxisAlignedBB(pos.X , pos.Y + .5f, pos.Z, pos.X + .5f, pos.Y + 1, pos.Z + 1),
-                new AxisAlignedBB(pos.X , pos.Y, pos.Z, pos.X + 1, pos.Y + .5f, pos.Z + 1)
-            };
         }
     }
 }

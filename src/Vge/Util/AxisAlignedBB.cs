@@ -29,7 +29,19 @@ namespace Vge.Util
             Min = new Vector3(Mth.Min(fromX, toX), Mth.Min(fromY, toY), Mth.Min(fromZ, toZ));
             Max = new Vector3(Mth.Max(fromX, toX), Mth.Max(fromY, toY), Mth.Max(fromZ, toZ));
         }
-        
+
+        public AxisAlignedBB(Vector3 from, Vector3 to, bool sort)
+        {
+            Min = from;
+            Max = to;
+        }
+
+        public AxisAlignedBB(float fromX, float fromY, float fromZ, float toX, float toY, float toZ, bool sort)
+        {
+            Min = new Vector3(fromX, fromY, fromZ);
+            Max = new Vector3(toX, toY, toZ);
+        }
+
         public Vector3i MinInt() => new Vector3i(Min);
         public Vector3i MaxInt() => new Vector3i(Max);
 
@@ -40,14 +52,27 @@ namespace Vge.Util
         /// Смещает текущую ограничивающую рамку на указанные координаты
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB Offset(float x, float y, float z) 
-            => new AxisAlignedBB(Min.X + x, Min.Y + y, Min.Z + z, Max.X + x, Max.Y + y, Max.Z + z);
+        public AxisAlignedBB Offset(float x, float y, float z)
+        //=> new AxisAlignedBB(Min.X + x, Min.Y + y, Min.Z + z, Max.X + x, Max.Y + y, Max.Z + z, false);
+        {
+            AxisAlignedBB r = this;
+            r.Min = new Vector3(Min.X + x, Min.Y + y, Min.Z + z);
+            r.Max = new Vector3(Max.X + x, Max.Y + y, Max.Z + z);
+            return r;
+        }
 
         /// <summary>
         /// Смещает текущую ограничивающую рамку на указанные координаты
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB Offset(Vector3 bias) => new AxisAlignedBB(Min + bias, Max + bias);
+        public AxisAlignedBB Offset(Vector3 bias)
+        //=> new AxisAlignedBB(Min + bias, Max + bias, false);
+        {
+            AxisAlignedBB r = this;
+            r.Min = Min + bias;
+            r.Max = Max + bias;
+            return r;
+        }
 
         /// <summary>
         /// Добавить координату в область как смещение от 0
@@ -118,18 +143,18 @@ namespace Vge.Util
         /// Возвращает ограничивающую рамку, расширенную указанным вектором
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB Expand(Vector3 vec) => new AxisAlignedBB(Min - vec, Max + vec);
+        public AxisAlignedBB Expand(Vector3 vec) => new AxisAlignedBB(Min - vec, Max + vec, false);
         /// <summary>
         /// Возвращает ограничивающую рамку, расширенную указанным вектором
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AxisAlignedBB Expand(float vec) => new AxisAlignedBB(Min - vec, Max + vec);
+        public AxisAlignedBB Expand(float vec) => new AxisAlignedBB(Min - vec, Max + vec, false);
         /// <summary>
         /// Возвращает ограничивающую рамку, расширенную указанным вектором
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AxisAlignedBB Expand(float x, float y, float z) 
-            => new AxisAlignedBB(Min.X - x, Min.Y - y, Min.Z - z, Max.X + x, Max.Y + y, Max.Z + z);
+            => new AxisAlignedBB(Min.X - x, Min.Y - y, Min.Z - z, Max.X + x, Max.Y + y, Max.Z + z, false);
 
         /// <summary>
         /// Возвращает ограничивающую рамку, уменьшенную указанным вектором

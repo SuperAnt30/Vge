@@ -140,6 +140,35 @@ namespace Vge.Item.List
         protected virtual bool _InstallAdditionalBlocks(PlayerServer player, BlockPos blockPos,
             Pole side, Vector3 facing, float playerYaw) => true;
 
+        /// <summary>
+        /// Имеется ли сетка контура для предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool CanOutlineBlock() => true;
+
+        /// <summary>
+        /// Получить сетку контура предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override YouCanPlaceIt GetOutlineBlock(ItemStack stack, PlayerBase player,
+            BlockPos blockPos, Pole side, Vector3 facing)
+        {
+            // Сместить начальное положение
+            if (!player.GetWorld().GetBlockState(blockPos).GetBlock().IsReplaceable)
+            {
+                blockPos = blockPos.Offset(side);
+            }
+            blockPos = _ShiftInitialPosition(blockPos, side, facing, player.RotationYaw);
+
+            bool canPlace = _CanPlaceBlockOnSide(stack, player, player.GetWorld(), blockPos, Block,
+                side, facing, player.RotationYaw);
+
+            BlockState blockState = Block.OnBlockPlaced(player.GetWorld(), blockPos,
+                new BlockState(Block.IndexBlock), side, facing, player.RotationYaw);
+
+            return new YouCanPlaceIt(canPlace, Block.GetOutline(blockPos, blockState.Met, 0));
+        }
+
         #endregion
     }
 }

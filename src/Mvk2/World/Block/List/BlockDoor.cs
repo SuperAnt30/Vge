@@ -54,6 +54,140 @@ namespace Mvk2.World.Block.List
         {
             _sampleOpen = AudioIndexs.GetKey("DoorOpen");
             _sampleClose = AudioIndexs.GetKey("DoorClose");
+
+            _fullCube = new AxisAlignedBB[][] {
+                new AxisAlignedBB[] { new AxisAlignedBB(.8125f, 0, 0, 1, 1, 1) }, // 0
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, .1875f, 1, 1) }, // 1
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 1, 1, .1875f) }, // 2
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, .8125f, 1, 1, 1) }, // 3
+                new AxisAlignedBB[] {  } // 4
+            };
+        }
+
+        /// <summary>
+        /// Генерации сетки Hitbox линиями
+        /// </summary>
+        protected override void _InitOutline()
+        {
+            AxisAlignedBB[][] fullCube = new AxisAlignedBB[][] {
+                // 0
+                new AxisAlignedBB[] { new AxisAlignedBB(1.8125f, 0, 0, 2, 4, 2),
+                    new AxisAlignedBB(1.78125f, 1.8125f, .125f, 2.03125f, 2.1875f, .5f) },
+                new AxisAlignedBB[] { new AxisAlignedBB(1.8125f, 0, 0, 2, 4, 2),
+                    new AxisAlignedBB(1.78125f, 1.8125f, 1.5f, 2.03125f, 2.1875f, 1.875f) },
+                // 1
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, .1875f, 4, 2),
+                    new AxisAlignedBB(-.03125f, 1.8125f, 1.5f, .21875f, 2.1875f, 1.875f) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, .1875f, 4, 2),
+                    new AxisAlignedBB(-.03125f, 1.8125f, .125f, .21875f, 2.1875f, .5f) },
+                // 2
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 2, 4, .1875f),
+                    new AxisAlignedBB(.125f, 1.8125f, -.03125f, .5f, 2.1875f, .21875f) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 2, 4, .1875f),
+                    new AxisAlignedBB(1.5f, 1.8125f, -.03125f, 1.875f, 2.1875f, .21875f) },
+                // 3
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 1.8125f, 2, 4, 2),
+                    new AxisAlignedBB(1.5f, 1.8125f, 1.78125f, 1.875f, 2.1875f, 2.03125f) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 1.8125f, 2, 4, 2),
+                    new AxisAlignedBB(.125f, 1.8125f, 1.78125f, .5f, 2.1875f, 2.03125f) },
+
+                new AxisAlignedBB[0]
+            };
+
+            _hitbox = new Vector3[fullCube.Length][];
+            for (int i = 0; i < fullCube.Length; i++)
+            {
+                if (fullCube[i].Length > 0)
+                {
+                    _hitbox[i] = AabbOutline.Build(fullCube[i]).ToArray();
+                }
+                else
+                {
+                    _hitbox[i] = new Vector3[0];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        public override AxisAlignedBB[] _GetCollisionBoxesLocal(int met)
+        {
+            int pole = met & 3;
+            int z = (met & 256) != 0 ? 1 : 0;
+            if (pole == 2 && z == 0) return _fullCube[2];
+            if (pole == 3 && z == 1) return _fullCube[3];
+            int x = (met & 128) != 0 ? 1 : 0;
+            if (pole == 1 && x == 0) return _fullCube[1];
+            if (pole == 0 && x == 1) return _fullCube[0];
+            return _fullCube[4];
+        }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        public override Vector3[] _GetOutlineLocal(int met)
+        {
+            int pole = met & 3;
+            bool left = (met & 4) != 0;
+
+            if (pole == 0)
+            {
+                if (left) return _hitbox[0];
+                return _hitbox[1];
+            }
+            if (pole == 1)
+            {
+                if (left) return _hitbox[2];
+                return _hitbox[3];
+            }
+            if (pole == 2)
+            {
+                if (left) return _hitbox[4];
+                return _hitbox[5];
+            }
+
+            if (pole == 3)
+            {
+                if (left) return _hitbox[6];
+                return _hitbox[7];
+            }
+            return _hitbox[8];
+        }
+
+        /// <summary>
+        /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции в локальных координатах
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override Vector3[] GetOutline(BlockPos pos, int met, float dis)
+        {
+            int bx = (met & 128) != 0 ? 1 : 0;
+            int bz = (met & 256) != 0 ? 1 : 0;
+            int by = met >> 9 & 3;
+
+            Vector3[] vectors = _GetOutlineLocal(met);
+            Vector3[] vectorsResult = new Vector3[vectors.Length];
+            if (dis == 0)
+            {
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    vectorsResult[i] = new Vector3(vectors[i].X - bx + pos.X,
+                        vectors[i].Y - by + pos.Y, vectors[i].Z - bz + pos.Z);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    vectorsResult[i] = new Vector3(vectors[i].X - bx,
+                        vectors[i].Y - by, vectors[i].Z - bz);
+
+                    vectorsResult[i].X += (vectorsResult[i].X < 0.5f ? -dis : dis) + pos.X;
+                    vectorsResult[i].Y += (vectorsResult[i].Y < 0.5f ? -dis : dis) + pos.Y;
+                    vectorsResult[i].Z += (vectorsResult[i].Z < 0.5f ? -dis : dis) + pos.Z;
+                }
+            }
+            return vectorsResult;
         }
 
         /// <summary>
@@ -275,95 +409,5 @@ namespace Mvk2.World.Block.List
         /// Коробки для рендера 
         /// </summary>
         public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 15];
-
-        /// <summary>
-        /// Передать список ограничительных рамок блока
-        /// </summary>
-        public override AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
-        {
-            int pole = met & 3;
-            int z = (met & 256) != 0 ? 1 : 0;
-            if (pole == 2 && z == 0) return new AxisAlignedBB[]
-                { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + .1875f) };
-            if (pole == 3 && z == 1) return new AxisAlignedBB[]
-                { new AxisAlignedBB(pos.X, pos.Y, pos.Z + .8125f, pos.X + 1, pos.Y + 1, pos.Z + 1) };
-            int x = (met & 128) != 0 ? 1 : 0;
-            if (pole == 1 && x == 0) return new AxisAlignedBB[]
-                { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + .1875f, pos.Y + 1, pos.Z + 1) };
-            if (pole == 0 && x == 1) return new AxisAlignedBB[]
-                { new AxisAlignedBB(pos.X + .8125f, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
-
-            return new AxisAlignedBB[0];
-        }
-
-
-        /// <summary>
-        /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции
-        /// </summary>
-        public override AxisAlignedBB[] GetOutline(BlockPos pos, int met)
-        {
-            int bx = (met & 128) != 0 ? 1 : 0;
-            int bz = (met & 256) != 0 ? 1 : 0;
-            int by = met >> 9 & 3;
-            int x = pos.X - bx;
-            int y = pos.Y - by;
-            int z = pos.Z - bz;
-            int pole = met & 3;
-            bool left = (met & 4) != 0;
-
-            if (pole == 0)
-            {
-                if (left)
-                {
-                    return new AxisAlignedBB[]
-                        { new AxisAlignedBB(x + 1.8125f, y, z, x + 2, y + 4, z + 2),
-                      new AxisAlignedBB(x + 1.78125f, y + 1.8125f, z + .125f, x + 2.03125f, y + 2.1875f, z + .5f)};
-                }
-                return new AxisAlignedBB[]
-                        { new AxisAlignedBB(x + 1.8125f, y, z, x + 2, y + 4, z + 2),
-                      new AxisAlignedBB(x + 1.78125f, y + 1.8125f, z + 1.5f, x + 2.03125f, y + 2.1875f, z + 1.875f)};
-            }
-            if (pole == 1)
-            {
-                if (left)
-                {
-                    return new AxisAlignedBB[]
-                        { new AxisAlignedBB(x, y, z, x + .1875f, y + 4, z + 2),
-                        new AxisAlignedBB(x - .03125f, y + 1.8125f, z + 1.5f, x + .21875f, y + 2.1875f, z + 1.875f)};
-
-                }
-                return new AxisAlignedBB[]
-                    { new AxisAlignedBB(x, y, z, x + .1875f, y + 4, z + 2),
-                    new AxisAlignedBB(x - .03125f, y + 1.8125f, z + .125f, x + .21875f, y + 2.1875f, z + .5f)};
-            }
-            if (pole == 2)
-            {
-                if (left)
-                {
-                    return new AxisAlignedBB[]
-                        { new AxisAlignedBB(x, y, z, x + 2, y + 4, z + .1875f),
-                      new AxisAlignedBB(x + .125f, y + 1.8125f, z - .03125f, x + .5f, y + 2.1875f, z + .21875f)};
-                }
-                return new AxisAlignedBB[]
-                    { new AxisAlignedBB(x, y, z, x + 2, y + 4, z + .1875f),
-                    new AxisAlignedBB(x + 1.5f, y + 1.8125f, z - .03125f, x + 1.875f, y + 2.1875f, z + .21875f)};
-            }
-
-            if (pole == 3)
-            {
-                if (left)
-                {
-                    return new AxisAlignedBB[]
-                        { new AxisAlignedBB(x, y, z + 1.8125f, x + 2, y + 4, z + 2),
-                        new AxisAlignedBB(x + 1.5f, y + 1.8125f, z + 1.78125f, x + 1.875f, y + 2.1875f, z + 2.03125f)};
-
-                }
-                return new AxisAlignedBB[]
-                    { new AxisAlignedBB(x, y, z + 1.8125f, x + 2, y + 4, z + 2),
-                    new AxisAlignedBB(x + .125f, y + 1.8125f, z + 1.78125f, x + .5f, y + 2.1875f, z + 2.03125f)};
-            }
-
-            return new AxisAlignedBB[0];
-        }
     }
 }

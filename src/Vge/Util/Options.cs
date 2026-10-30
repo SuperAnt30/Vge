@@ -96,6 +96,10 @@ namespace Vge.Util
         /// </summary>
         public static bool Shadow = true;
         /// <summary>
+        /// Рисунок пред установки блока 
+        /// </summary>
+        public static bool BlockPlacementPreview = true;
+        /// <summary>
         /// Желаемый FPS
         /// </summary>
         public static int Fps = 60;

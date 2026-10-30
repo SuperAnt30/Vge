@@ -40,6 +40,7 @@ namespace Vge.Gui.Screens
         protected readonly CheckBox _checkBoxFullScreen;
         protected readonly CheckBox _checkBoxAmbientOcclusion;
         protected readonly CheckBox _checkBoxShadow;
+        protected readonly CheckBox _checkBoxBlockPlacementPreview;
         protected readonly Button _buttonNet;
 
         protected readonly Button _buttonDone;
@@ -102,6 +103,8 @@ namespace Vge.Gui.Screens
             _checkBoxAmbientOcclusion.SetChecked(Options.AmbientOcclusion);
             _checkBoxShadow = new CheckBox(window, font, 200, L.T("Shadow"));
             _checkBoxShadow.SetChecked(Options.Shadow);
+            _checkBoxBlockPlacementPreview = new CheckBox(window, font, 200, L.T("BlockPlacementPreview"));
+            _checkBoxBlockPlacementPreview.SetChecked(Options.BlockPlacementPreview);
 
             if (_isGameLocal && window.Game != null && window.Game is GameLocal gameLocal
                 && gameLocal.IsRunNet())
@@ -189,6 +192,7 @@ namespace Vge.Gui.Screens
             Options.OverviewChunk = (byte)_sliderOverviewChunk.Value;
             Options.AmbientOcclusion = _checkBoxAmbientOcclusion.Checked;
             Options.Shadow = _checkBoxShadow.Checked;
+            Options.BlockPlacementPreview = _checkBoxBlockPlacementPreview.Checked;
             window.OptionsSave();
             if (isFullScreen)
             {
@@ -253,6 +257,7 @@ namespace Vge.Gui.Screens
             _AddControls(_checkBoxVSinc);
             _AddControls(_checkBoxAmbientOcclusion);
             _AddControls(_checkBoxShadow);
+            _AddControls(_checkBoxBlockPlacementPreview);
 
             _AddControls(_buttonNet);
             _AddControls(_checkBoxFullScreen);
@@ -268,34 +273,37 @@ namespace Vge.Gui.Screens
             PosY = (Height - HeightWindow) / 2;
             base._OnResized();
 
-            _sliderLanguage.SetPosition(PosX + 36, PosY + 32);
+            // --Options
+            _sliderLanguage.SetPosition(PosX + 36, PosY + 22);
 
             _labelNikname.SetPosition(PosX + 274, PosY + 32);
             _textBoxNikname.SetPosition(PosX + 348, PosY + 32);
-            _sliderMouseSensitivity.SetPosition(PosX + 36, PosY + 62);
-            _sliderOverviewChunk.SetPosition(PosX + 274, PosY + 62);
+            _sliderMouseSensitivity.SetPosition(PosX + 36, PosY + 52);
+            _sliderOverviewChunk.SetPosition(PosX + 36, PosY + 82);
+            _checkBoxBlockPlacementPreview.SetPosition(PosX + 274, PosY + 62);
 
             // --Sound
-            _lineSound.SetPosition(PosX + 80, PosY + 120);
-            _labelSound.SetPosition(PosX + 14, PosY + 115);
-            _sliderSoundVolume.SetPosition(PosX + 36, PosY + 140);
-            _sliderMusicVolume.SetPosition(PosX + 274, PosY + 140);
+            _lineSound.SetPosition(PosX + 80, PosY + 140);
+            _labelSound.SetPosition(PosX + 14, PosY + 135);
+            _sliderSoundVolume.SetPosition(PosX + 36, PosY + 160);
+            _sliderMusicVolume.SetPosition(PosX + 274, PosY + 160);
 
             // --Graphics 
-            _lineGraphics.SetPosition(PosX + 80, PosY + 200);
-            _labelGraphics.SetPosition(PosX + 14, PosY + 195);
-            _sliderFps.SetPosition(PosX + 36, PosY + 220);
-            _checkBoxVSinc.SetPosition(PosX + 274, PosY + 232);
-            _checkBoxFullScreen.SetPosition(PosX + 274, PosY + 262);
-            _checkBoxBigInterface.SetPosition(PosX + 274, PosY + 292);
+            _lineGraphics.SetPosition(PosX + 80, PosY + 220);
+            _labelGraphics.SetPosition(PosX + 14, PosY + 215);
+            _sliderFps.SetPosition(PosX + 36, PosY + 240);
+            _checkBoxVSinc.SetPosition(PosX + 274, PosY + 252);
+            _checkBoxFullScreen.SetPosition(PosX + 274, PosY + 282);
+            _checkBoxBigInterface.SetPosition(PosX + 274, PosY + 312);
             
-            _checkBoxAmbientOcclusion.SetPosition(PosX + 36, PosY + 262);
-            _checkBoxShadow.SetPosition(PosX + 36, PosY + 292);
+            _checkBoxAmbientOcclusion.SetPosition(PosX + 36, PosY + 282);
+            _checkBoxShadow.SetPosition(PosX + 36, PosY + 312);
 
-            _buttonNet.SetPosition(PosX + 192, PosY + 332);
-            
-            _buttonDone.SetPosition(PosX + 122, PosY + 372);
-            _buttonCancel.SetPosition(PosX + 262, PosY + 372);
+            // --Button
+            _buttonNet.SetPosition(PosX + 36, PosY + 372);
+
+            _buttonDone.SetPosition(PosX + 208, PosY + 372);
+            _buttonCancel.SetPosition(PosX + 348, PosY + 372);
         }
 
         public override void Draw(float timeIndex)

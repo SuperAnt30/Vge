@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using Vge.Entity.Player;
+using Vge.Item;
 using Vge.Renderer.Mesh;
 using Vge.Util;
 using WinGL.OpenGL;
@@ -26,9 +28,17 @@ namespace Vge.Renderer.World
         /// </summary>
         private readonly MeshLine _meshBlock;
         /// <summary>
+        /// Сетка контура предмета
+        /// </summary>
+        private readonly MeshLine _meshOutline;
+        /// <summary>
         /// Скрыт ли курсор блока
         /// </summary>
         private bool _hiddenBlock = true;
+        /// <summary>
+        /// Скрыт ли контура предмета
+        /// </summary>
+        private bool _hiddenOutline = true;
         /// <summary>
         /// Позиция глаз прошлого такта
         /// </summary>
@@ -37,6 +47,14 @@ namespace Vge.Renderer.World
         /// Объект луча прошлого такта
         /// </summary>
         private readonly MovingObjectPosition _movingObjectPrev = new MovingObjectPosition();
+        /// <summary>
+        /// Предыдущее значение
+        /// </summary>
+        private float _playerYawPrev;
+        /// <summary>
+        /// Предыдущее значение предмета
+        /// </summary>
+        private int _itemIndexPrev;
         /// <summary>
         /// Сетка курсора
         /// </summary>
@@ -58,6 +76,7 @@ namespace Vge.Renderer.World
         {
             _worldRenderer = worldRenderer;
             _player = player;
+            _meshOutline = new MeshLine(_worldRenderer.GetOpenGL(), GL.GL_DYNAMIC_DRAW);
             _meshBlock = new MeshLine(_worldRenderer.GetOpenGL(), GL.GL_DYNAMIC_DRAW);
             _meshChunk = new MeshLine(_worldRenderer.GetOpenGL(), GL.GL_STATIC_DRAW);
         }
@@ -73,6 +92,7 @@ namespace Vge.Renderer.World
 
         public void Dispose()
         {
+            _meshOutline.Dispose();
             _meshBlock.Dispose();
             _meshChunk.Dispose();
         }
@@ -87,13 +107,20 @@ namespace Vge.Renderer.World
             // Прорисовка
             if (!_hiddenBlock)
             {
-                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, .1f);
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView,
+                    -_player.PosFrameX, -_player.PosFrameY, -_player.PosFrameZ, .1f);
                 _worldRenderer.Render.DepthOff();
                 _meshBlock.Draw();
                 _worldRenderer.Render.DepthOn();
-
-                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, 1f);
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView,
+                    -_player.PosFrameX, -_player.PosFrameY, -_player.PosFrameZ, 1f);
                 _meshBlock.Draw();
+            }
+            if (!_hiddenOutline && Options.BlockPlacementPreview)
+            { 
+                _worldRenderer.Render.ShaderBindLine(Gi.MatrixView,
+                    -_player.PosFrameX, -_player.PosFrameY, -_player.PosFrameZ, 1f);
+                _meshOutline.Draw();
             }
             if (!_hiddenChunk)
             {
@@ -121,22 +148,97 @@ namespace Vge.Renderer.World
             MovingObjectPosition moving = _player.MovingObject;
             if (moving.IsBlock())
             {
-                _hiddenBlock = false;
                 Vector3 pos = new Vector3(_player.PosFrameX, _player.PosFrameY, _player.PosFrameZ);
 
                 bool compiled = false;
-                if (!_posPrev.Equals(pos))
+                bool compiledOutline = false;
+
+                if (!_posPrev.Equals(pos)) // Смена позиции игрока
                 {
-                    compiled = true;
+                    compiledOutline = compiled = true;
                     _posPrev = pos;
                 }
-                if (!moving.Equals(_movingObjectPrev))
+                if (!moving.Equals(_movingObjectPrev)) // Смена выбронной области (блок, сущность, ничего)
                 {
-                    compiled = true;
+                    compiledOutline = compiled = true;
                     _movingObjectPrev.Copy(moving);
                 }
+                if (_movingObjectPrev.Side != moving.Side) // Смена стороны выбрнного блока
+                {
+                    compiledOutline = true;
+                    _movingObjectPrev.Copy(moving);
+                }
+                if (_playerYawPrev != _player.RotationYaw) // Смена вращения игрока по Yaw
+                {
+                    compiledOutline = true;
+                    _playerYawPrev = _player.RotationYaw;
+                }
 
-                if (compiled)
+                // Проверка смены предмета в руке
+                ItemStack itemStack = _player.Inventory.GetCurrentItem();
+                int itemIndex = itemStack != null ? itemStack.Item.IndexItem : -1;
+                if (itemIndex != _itemIndexPrev)
+                {
+                    if (itemIndex == -1)
+                    {
+                        compiled = true;
+                    }
+                    else
+                    {
+                        if (itemStack.Item.CanOutlineBlock())
+                        {
+                            compiledOutline = true;
+                        }
+                        else
+                        {
+                            compiled = true;
+                            _hiddenOutline = true;
+                        }
+                    }
+                    _itemIndexPrev = itemIndex;
+                }
+
+                // -- Проверки и после рисуем сетку устанавливаемого блока
+
+                if (Options.BlockPlacementPreview && itemStack != null)
+                {
+                    // Сетка блока который ставим
+                    if (compiledOutline)
+                    {
+                        YouCanPlaceIt youCan = itemStack.Item.GetOutlineBlock(itemStack, _player,
+                            moving.BlockPosition, moving.Side, moving.Facing);
+
+                        if (youCan.Body)
+                        {
+                            Vector3[] vectors = youCan.Lines;
+                            List<float> floats = new List<float>();
+                            float r = youCan.CanPlace ? 0 : 1;
+                            float g = youCan.CanPlace ? 1 : 0;
+                            for (int i = 0; i < vectors.Length; i++)
+                            {
+                                floats.AddRange(new float[] {
+                                    vectors[i].X, vectors[i].Y, vectors[i].Z,
+                                    r, g, 0, 1 });
+                            }
+                            
+                            _hiddenOutline = false;
+                            _hiddenBlock = true;
+                            _meshOutline.Reload(floats.ToArray());
+                        }
+                        else
+                        {
+                            _hiddenOutline = true;
+                        }
+                    }
+                }
+                else
+                {
+                    _hiddenOutline = true;
+                }
+
+                // -- Курсор блока который будем ломать
+
+                if (_hiddenOutline && compiled)
                 {
                     // Готовим сетку
                     Vector3 blockCenter = moving.BlockPosition.ToVector3Center();
@@ -144,41 +246,23 @@ namespace Vge.Renderer.World
                     dis *= dis;
                     dis += .001f;
 
-                    AxisAlignedBB[] axes = moving.Block.GetBlock().GetOutline(
-                        moving.BlockPosition, moving.Block.Met);
-                    
+                    Vector3[] vectors = moving.Block.GetBlock().GetOutline(moving.BlockPosition, moving.Block.Met, dis);
                     List<float> floats = new List<float>();
 
-                    if (axes.Length < 2)
+                    for (int i = 0; i < vectors.Length; i++)
                     {
-                        for (int i = 0; i < axes.Length; i++)
-                        {
-                            floats.AddRange(MeshLine.CubeLine(
-                                axes[i].Min.X - pos.X - dis, axes[i].Min.Y - pos.Y - dis, axes[i].Min.Z - pos.Z - dis,
-                                axes[i].Max.X - pos.X + dis, axes[i].Max.Y - pos.Y + dis, axes[i].Max.Z - pos.Z + dis,
-                                1, 1, 0, 1));
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < axes.Length; i++)
-                        {
-                            axes[i] = new AxisAlignedBB(axes[i].Min - pos - dis,
-                                axes[i].Max - pos + dis);
-                        }
-                        List<Vector3> vectors = AabbOutline.Build(axes);
-                        for (int i = 0; i < vectors.Count; i++)
-                        {
-                            floats.AddRange(new float[] {
+                        floats.AddRange(new float[] {
                             vectors[i].X, vectors[i].Y, vectors[i].Z,
                             1, 1, 0, 1 });
-                        }
                     }
+
                     _meshBlock.Reload(floats.ToArray());
+                    _hiddenBlock = false;
                 }
             }
             else
             {
+                _hiddenOutline = true;
                 _hiddenBlock = true;
             }
         }

@@ -197,6 +197,19 @@ namespace Vge.Item
         #region Дейстыия рук, ЛКМ и ПКМ
 
         /// <summary>
+        /// Имеется ли сетка контура для предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool CanOutlineBlock() => false;
+
+        /// <summary>
+        /// Получить сетку контура предмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual YouCanPlaceIt GetOutlineBlock(ItemStack stack, PlayerBase player, 
+            BlockPos blockPos, Pole side, Vector3 facing) => new YouCanPlaceIt();
+
+        /// <summary>
         /// Проверка, может ли блок устанавливаться в этом месте
         /// </summary>
         /// <param name="blockPos">Координата блока, по которому щелкают правой кнопкой мыши</param>

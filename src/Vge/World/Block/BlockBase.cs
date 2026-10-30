@@ -126,6 +126,15 @@ namespace Vge.World.Block
         /// </summary>
         public float LiquidImpulse { get; private set; }
 
+        /// <summary>
+        /// Все блоки, или массив AxisAlignedBB
+        /// </summary>
+        protected AxisAlignedBB[][] _fullCube = { new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 1, 1, 1) } };
+        /// <summary>
+        /// Массив точек линий хитбокса
+        /// </summary>
+        protected Vector3[][] _hitbox;
+
         #endregion
 
         #region Для Render
@@ -286,6 +295,8 @@ namespace Vge.World.Block
             _InitBlockRender();
             // Задать что блок не прозрачный
             if (LightOpacity > 13) IsNotTransparent = true;
+
+            _InitOutline();
         }
 
         /// <summary>
@@ -489,17 +500,93 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Генерации сетки Hitbox линиями
+        /// </summary>
+        protected virtual void _InitOutline()
+        {
+            _hitbox = new Vector3[_fullCube.Length][];
+            for (int i = 0; i < _fullCube.Length; i++)
+            {
+                if (_fullCube[i].Length > 0)
+                {
+                    _hitbox[i] = AabbOutline.Build(_fullCube[i]).ToArray();
+                }
+                else
+                {
+                    _hitbox[i] = new Vector3[0];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual Vector3[] _GetOutlineLocal(int met) => _hitbox[0];
+
+        /// <summary>
         /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual AxisAlignedBB[] GetOutline(BlockPos pos, int met) => GetCollisionBoxesToList(pos, met);
+        public virtual Vector3[] GetOutline(BlockPos pos, int met, float dis)
+        {
+            Vector3[] vectors = _GetOutlineLocal(met);
+            Vector3[] vectorsResult = new Vector3[vectors.Length];
+            if (dis == 0)
+            {
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    vectorsResult[i] = new Vector3(vectors[i].X + pos.X, 
+                        vectors[i].Y + pos.Y, vectors[i].Z + pos.Z);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    vectorsResult[i] = new Vector3(vectors[i]);
+
+                    vectorsResult[i].X += (vectorsResult[i].X < 0.5f ? -dis : dis) + pos.X;
+                    vectorsResult[i].Y += (vectorsResult[i].Y < 0.5f ? -dis : dis) + pos.Y;
+                    vectorsResult[i].Z += (vectorsResult[i].Z < 0.5f ? -dis : dis) + pos.Z;
+                }
+            }
+            return vectorsResult;
+        }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[0];
 
         /// <summary>
         /// Передать список  ограничительных рамок блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
-            => new AxisAlignedBB[] { new AxisAlignedBB(pos.X, pos.Y, pos.Z, pos.X + 1, pos.Y + 1, pos.Z + 1) };
+        {
+            AxisAlignedBB[] boxes = _GetCollisionBoxesLocal(met);
+            AxisAlignedBB[] boxesResult = new AxisAlignedBB[boxes.Length];
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                boxesResult[i] = boxes[i].Offset(pos.X, pos.Y, pos.Z);
+            }
+            return boxesResult;
+        }
+
+        /// <summary>
+        /// Добавить список ограничительных рамок блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void AddCollisionBoxesToList(BlockPos pos, int met, ListFast<AxisAlignedBB> list)
+        {
+            AxisAlignedBB[] boxes = _GetCollisionBoxesLocal(met);
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                list.Add(boxes[i].Offset(pos.X, pos.Y, pos.Z));
+            }
+        }
 
         /// <summary>
         /// Получить одну большую рамку блока, если их несколько они объеденяться, используется для установки блока
