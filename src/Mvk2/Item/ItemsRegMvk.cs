@@ -143,7 +143,6 @@ namespace Mvk2.Item
         public static void Initialization()
         {
             // В ядре нет регистрации обязательный предметов, только тут
-            // TODO::!!!
             // Br - Браконьер, Bu - Бедуин, P - Игрок старт
 
             // === Одежда

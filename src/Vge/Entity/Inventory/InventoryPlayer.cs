@@ -715,18 +715,6 @@ namespace Vge.Entity.Inventory
         private void _OnSlotStorageChanged(int slotId, ItemStack stack)
             => SlotStorageChanged?.Invoke(this, new SlotEventArgs(slotId, stack));
 
-
-        // TODO::2025-10-01 удалить
-        /// <summary>
-        /// Событие изменён слот
-        /// </summary>
-        public event SlotEventHandler SlotChanged;
-        /// <summary>
-        /// Событие изменён слот
-        /// </summary>
-        protected override void _OnSlotChanged(int slotId)
-            => SlotChanged?.Invoke(this, new SlotEventArgs(slotId));
-
         /// <summary>
         /// Событие изменён индекс выбраного слота правой руки
         /// </summary>

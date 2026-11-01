@@ -3,9 +3,9 @@
 namespace Vge.Item
 {
     /// <summary>
-    /// Структура возможности установки предмета, и его AABB сетка
+    /// Структура возможности установки предмета, и его список линий
     /// </summary>
-    public struct YouCanPlaceIt
+    public readonly struct YouCanPlaceIt
     {
         /// <summary>
         /// Массив линий

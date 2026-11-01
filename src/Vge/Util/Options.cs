@@ -96,7 +96,7 @@ namespace Vge.Util
         /// </summary>
         public static bool Shadow = true;
         /// <summary>
-        /// Рисунок пред установки блока 
+        /// Предпросмотр размещения блока
         /// </summary>
         public static bool BlockPlacementPreview = true;
         /// <summary>

@@ -53,6 +53,21 @@ namespace Vge.Entity.Render
                 {
                     ChunkStorage chunkStorage = chunk.StorageArrays[blockPos.Y >> 4];
                     int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                    if (chunkStorage.Light[index] == 0)
+                    {
+                        if (blockPos.Y > 1 && blockPos.Y < chunk.Settings.NumberMaxBlock)
+                        {
+                            int index2 = ((blockPos.Y - 1) & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                            if (chunkStorage.Light[index] != 0)
+                            {
+                                index = index2;
+                            }
+                            else
+                            {
+                                index = ((blockPos.Y + 1) & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
+                            }
+                        }
+                    }
                     _lightBlock = (chunkStorage.Light[index] >> 4) / 16f + .03125f;
                     _lightSky = (chunkStorage.Light[index] & 15) / 16f + .03125f;
                 }

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Vge.World.Block
+﻿namespace Vge.World.Block
 {
     /// <summary>
     /// Константы названий тег для параметров материала в json
     /// </summary>
     public sealed class Ctm
     {
+        /// <summary>
+        /// Отмечает, если блоки этих материалов являются лестнице, лианой и тп. (bool)
+        /// </summary>
+        public const string OnLadder = "OnLadder"; 
         /// <summary>
         /// Отмечает, если блоки этих материалов являются жидкостями. (bool)
         /// </summary>

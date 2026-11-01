@@ -196,7 +196,12 @@ namespace Vge.Json.Bbmodel
                              + _ToFloat(ar[2]) + ", " + _ToFloat(ar[3]) + "]";
                     }
                 }
-                    _textOut += "}";
+                if (face.IsKey(Ctbb.Rotation))
+                {
+                    _textOut += ", UvRotate:" + face.GetString(Ctbb.Rotation);
+                }
+
+                _textOut += "}";
             }
             return one;
         }

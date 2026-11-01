@@ -46,6 +46,23 @@ namespace Vge.Entity
         float FactorGravityInLiquid { get; }
 
         /// <summary>
+        /// Находится на лестнице
+        /// </summary>
+        bool IsOnLadder { get; }
+        /// <summary>
+        /// Коэффициент гравитации на лестнице
+        /// </summary>
+        float FactorGravityOnLadder { get; }
+        /// <summary>
+        /// Ускорение поднятия на лестнице
+        /// </summary>
+        float AccelerationUpOnLadder { get; }
+        /// <summary>
+        /// Ускорение спуска на лестнице
+        /// </summary>
+        float AccelerationDownOnLadder { get; }
+
+        /// <summary>
         /// Имеются ли замедления
         /// </summary>
         bool IsSlow { get; }

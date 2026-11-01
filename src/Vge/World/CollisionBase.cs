@@ -244,7 +244,7 @@ namespace Vge.World
         public void EntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
         {
             ListEntity.Clear();
-            // TODO::2025-06-18 Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
+            // Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
             Vector3i min = aabb.MinInt() - 2;
             Vector3i max = aabb.MaxInt() + 2;
 
@@ -312,7 +312,7 @@ namespace Vge.World
         /// <param name="id">исключение ID сущности</param>
         public bool IsEntityBoundingBoxesFromSector(AxisAlignedBB aabb, int id)
         {
-            // TODO::2025-06-18 Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
+            // Добавляю во все стороны по два блока, чтоб найти в соседнем чанке сущность которая может выступать
             Vector3i min = aabb.MinInt() - 2;
             Vector3i max = aabb.MaxInt() + 2;
 

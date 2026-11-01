@@ -244,7 +244,7 @@ namespace Vge.Entity.Player
                         // Разрушение блока без предмета
                         _BlockDigging(moving.BlockPosition);
                         //Console.WriteLine("BlockDigging");
-                        _pauseAction = 6; //TODO::2026-05-30 Тут надо Интструмент!!! entityPlayer.PauseTimeBetweenBlockDestruction
+                        _pauseAction = 6;
                     }
                     else
                     {

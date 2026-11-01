@@ -88,9 +88,9 @@ namespace Vge.Entity.Physics
             // Гравитация
             float gravity = _gravity;
 
-            if (Entity.IsSpeed​​Limit() && Entity.PresenceBlocks.IsInLiquid)
+            if (Entity.PresenceBlocks.IsInLiquid && Entity.IsSpeed​​Limit())
             {
-                // Находимся в жидкости
+                //= Находимся в жидкости
 
                 // Скоростной делитель, для ускорения хождения по блокам в жидкости
                 float speedEnch = 1f; // Тут нужно добавить чару на воду, которая не превышает 3.
@@ -101,7 +101,7 @@ namespace Vge.Entity.Physics
                 // Трение
                 inertiaY = inertiaXZ = Entity.PresenceBlocks.FactorInertiaInLiquid;
                 inertiaXZ += (.546f - inertiaXZ) * speedEnch;
-                
+
                 // Графитация в жидкости
                 gravity = Entity.PresenceBlocks.FactorGravityInLiquid;
 
@@ -109,9 +109,22 @@ namespace Vge.Entity.Physics
                 float s = _LivingUpdateSpeed() * .1f;
                 acceleration = s + (_LivingUpdateSpeed() - s) * speedEnch;
             }
+            else if (Entity.PresenceBlocks.IsOnLadder && Entity.IsSpeed​​Limit())
+            {
+                //= Находимся на лестнице
+
+                // трение блока в воздухе как с блоков, трение блока лестницы
+                inertiaY = inertiaXZ = _airborneInertia * Cp.DefaultSlipperiness;
+
+                // Ускорение
+                acceleration = Entity.Speed * 0.16277136f / (inertiaXZ * inertiaXZ * inertiaXZ);
+
+                // Графитация на лестнице
+                gravity = Entity.PresenceBlocks.FactorGravityOnLadder;
+            }
             else if (Entity.OnGround && Entity.IsSpeed​​Limit())
             {
-                // Находимся в воздухе
+                //= Находимся в воздухе на твёрдой поверхности
 
                 // трение блока под ногами
                 inertiaXZ = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
@@ -130,11 +143,8 @@ namespace Vge.Entity.Physics
                 acceleration = _LivingUpdateSprinting();
             }
 
-            //float motionY0 = MotionY;
-
             // Если имеется сила для движения, задаём вектор передвижения
             _LivingUpdateMotion(acceleration);
-
             
             // Если мелочь убираем
             ResetMinimumMotion();

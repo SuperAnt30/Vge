@@ -54,6 +54,7 @@ OverviewChunk:Обзор чанков
 BigInterface:Большой интерфейс
 FullScreen:Полноэкранный
 Shadow:Эффект тени
+BlockPlacementPreview:Превью размещения
 NetOn:Сеть включена
 Net:Сеть
 Singleplayer:Одиночная игра

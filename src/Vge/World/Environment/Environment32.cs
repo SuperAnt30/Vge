@@ -164,6 +164,11 @@ namespace Vge.World.Environment
         /// </summary>
         private float _colorKf = 1.0f;
 
+        /// <summary>
+        /// Частота погодных изменений, 100 это стартовое, дастаточно часто на день меняется.
+        /// </summary>
+        private int _frequencyWeatherChanges = 400;
+
         private readonly Rand _rand;
 
         public Environment32(int speedDay)
@@ -567,12 +572,17 @@ namespace Vge.World.Environment
 
         #region Смена погоды
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private uint _GetRandWeather(int taktRand, int taktPause)
+            => (uint)(_rand.Next(taktRand * _frequencyWeatherChanges)
+                + taktPause * _frequencyWeatherChanges);
+        
         /// <summary>
         /// Была погода ясно, определяем что будет
         /// </summary>
         private void _Weather0Clear()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(600) + 600;
+            _nextShift = TickCounter + _GetRandWeather(6, 6);
             // Оставляем ясно, или меняем на Мало облачно или Облачно
             int r = _rand.Next(4);
             if (r == 4)
@@ -594,7 +604,7 @@ namespace Vge.World.Environment
         /// </summary>
         private void _Weather1PartlyCloudy()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(800) + 800;
+            _nextShift = TickCounter + _GetRandWeather(8, 8);
             // Оставляем Мало облачно, или меняем
             int r = _rand.Next(4);
             _cloudConditionsNext = (EnumClouds)r;
@@ -606,7 +616,7 @@ namespace Vge.World.Environment
         /// </summary>
         private void _Weather2Cloudy()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(800) + 800;
+            _nextShift = TickCounter + _GetRandWeather(8, 8);
             // Оставляем Мало облачно, или меняем
             int r = _rand.Next(5);
             _cloudConditionsNext = (EnumClouds)r;
@@ -621,7 +631,7 @@ namespace Vge.World.Environment
         /// </summary>
         private void _Weather3MostlyCloudy()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(800) + 400;
+            _nextShift = TickCounter + _GetRandWeather(8, 4);
             // Оставляем Мало облачно, или меняем
             int r = _rand.Next(5) + 1;
             _cloudConditionsNext = (EnumClouds)r;
@@ -648,7 +658,7 @@ namespace Vge.World.Environment
         /// </summary>
         private void _Weather4HeavilyCloudy()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(600) + 400;
+            _nextShift = TickCounter + _GetRandWeather(6, 4);
             // Оставляем Мало облачно, или меняем
             int r = _rand.Next(5) + 1;
             _cloudConditionsNext = (EnumClouds)r;
@@ -675,7 +685,7 @@ namespace Vge.World.Environment
         /// </summary>
         private void _Weather5Overcast()
         {
-            _nextShift = TickCounter + (uint)_rand.Next(600) + 200;
+            _nextShift = TickCounter + _GetRandWeather(6, 2);
             // Оставляем Мало облачно, или меняем
             int r = _rand.Next(6);
             _cloudConditionsNext = (EnumClouds)r;

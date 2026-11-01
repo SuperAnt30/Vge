@@ -1,5 +1,4 @@
-﻿using Mvk2.World.Block;
-using Vge.Entity;
+﻿using Vge.Entity;
 using Vge.Entity.Physics;
 using Vge.Entity.Sizes;
 using Vge.Util;
@@ -50,6 +49,7 @@ namespace Mvk2.Entity
         /// Ускорение для погружения в жидкости
         /// </summary>
         public float AccelerationToDiveInLiquid { get; private set; } = -.032f;
+
         /// <summary>
         /// Коэффициент трения в жидкости
         /// </summary>
@@ -58,6 +58,23 @@ namespace Mvk2.Entity
         /// Коэффициент гравитации в жидкости
         /// </summary>
         public float FactorGravityInLiquid { get; private set; } = .01f;
+
+        /// <summary>
+        /// Находится на лестнице
+        /// </summary>
+        public bool IsOnLadder { get; private set; }
+        /// <summary>
+        /// Коэффициент гравитации на лестнице
+        /// </summary>
+        public float FactorGravityOnLadder { get; private set; } = .04f;
+        /// <summary>
+        /// Ускорение поднятия на лестнице 2,35 м/с  (майнкрафт)
+        /// </summary>
+        public float AccelerationUpOnLadder { get; private set; } = .1285f;
+        /// <summary>
+        /// Ускорение спуска на лестнице 3,0 (майнкрафт)
+        /// </summary> 
+        public float AccelerationDownOnLadder { get; private set; } = -.1145f;
 
         /// <summary>
         /// Имеются ли замедления
@@ -173,6 +190,7 @@ namespace Mvk2.Entity
             IsInLiquid = false;
             IsImpulse = false;
             IsSlow = false;
+            IsOnLadder = false;
             if (_numberAutoJump > 0)
             {
                 _numberAutoJump--;
@@ -224,6 +242,10 @@ namespace Mvk2.Entity
                 IsInLiquidAutoJump = true;
                 _numberAutoJump = 5;
             }
+            else if (block.Material.OnLadder)
+            {
+                IsOnLadder = true;
+            }
             else if (block.IsSlow)
             {
                 FactorSlowXZ = block.FactorSlowXZ;
@@ -237,6 +259,7 @@ namespace Mvk2.Entity
             return (IsInLiquid ? " Liquid" : "") 
                 + (IsSlow ? " Slow" : "")
                 + (IsImpulse ? " Impulse" : "")
+                + (IsOnLadder ? " OnLadder" : "")
                 + (IsInLiquidAutoJump ? " AutoJump" : "");
         }
     }

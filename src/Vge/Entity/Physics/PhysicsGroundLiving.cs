@@ -73,7 +73,11 @@ namespace Vge.Entity.Physics
                 else
                 {
                     _surfaceTicks = 0;
-                    if (Entity.OnGround && _jumpTicks == 0)
+                    if (Entity.PresenceBlocks.IsOnLadder)
+                    {
+                        MotionY += Entity.PresenceBlocks.AccelerationUpOnLadder;
+                    } 
+                    else if (Entity.OnGround && _jumpTicks == 0)
                     {
                         //jump = true;
                         //Console.WriteLine("Jump");
@@ -82,7 +86,7 @@ namespace Vge.Entity.Physics
                         if (Entity.PresenceBlocks.IsInLiquid)
                         {
                             MotionY = Entity.PresenceBlocks.IsJumpLiquid
-                                ? (Entity.PresenceBlocks.AccelerationAscentInLiquid 
+                                ? (Entity.PresenceBlocks.AccelerationAscentInLiquid
                                 + Cp.AirborneJumpInHeight + Cp.AirborneJumpInHeight) / 3f
                                 : Entity.PresenceBlocks.AccelerationAscentInLiquid;
                         }
@@ -115,10 +119,18 @@ namespace Vge.Entity.Physics
                 IsPoseChange = true;
             }
             // Для воды свои правила, плыть вниз
-            else if (Movement.Sneak && Entity.PresenceBlocks.IsInLiquid)
+            else if (Movement.Sneak)
             {
-                // Находимся в жидкости, погружаемся
-                MotionY += Entity.PresenceBlocks.AccelerationToDiveInLiquid;
+                if (Entity.PresenceBlocks.IsInLiquid)
+                {
+                    // Находимся в жидкости, погружаемся
+                    MotionY += Entity.PresenceBlocks.AccelerationToDiveInLiquid;
+                }
+                else if (Entity.PresenceBlocks.IsOnLadder)
+                {
+                    // Находимся на лестнице
+                    MotionY += Entity.PresenceBlocks.AccelerationDownOnLadder;
+                }
             }
             // Если хотим встать
             else if (!Movement.Sneak && isSneaking)
