@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Vge.Entity
 {
@@ -18,11 +19,15 @@ namespace Vge.Entity
         /// <summary>
         /// Состояние когда сущность находится в воде, для состояния плавания
         /// </summary>
-        public bool Water { get; private set; }
+        public bool InLiquid { get; private set; }
         /// <summary>
         /// Состояние когда сущность соприкосается с элементом лазить по вертикали
         /// </summary>
         public bool Climb { get; private set; }
+        /// <summary>
+        /// Состояние когда сущность умерла
+        /// </summary>
+        public bool Dead { get; private set; }
 
         /// <summary>
         /// Тип байт данных общего перемещения
@@ -36,7 +41,47 @@ namespace Vge.Entity
         public void SetLevitate(bool value)
         {
             Levitate = value;
+            if (!Levitate && InLiquid) InLiquid = false;
             Changed = true;
+        }
+
+        /// <summary>
+        /// Задать состояние лестница
+        /// </summary>
+        public void SetClimb(bool value)
+        {
+            if (Climb != value)
+            {
+                Climb = value;
+                Changed = true;
+            }
+        }
+
+        /// <summary>
+        /// Задать состояние в жидкости
+        /// </summary>
+        public void SetInLiquid(bool value)
+        {
+            if (InLiquid != value)
+            {
+                if (!value || (value && Levitate))
+                {
+                    InLiquid = value;
+                    Changed = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Задать состояние смерти
+        /// </summary>
+        public void SetDead(bool value)
+        {
+            if (value && !Dead)
+            {
+                Dead = true;
+                Changed = true;
+            }
         }
 
         /// <summary>
@@ -63,7 +108,7 @@ namespace Vge.Entity
         public void Clear()
         {
             _movingWork = 0;
-            Levitate = Water = Climb = false;
+            Levitate = InLiquid = Climb = false;
             Changed = true;
         }
 
@@ -131,6 +176,10 @@ namespace Vge.Entity
             + (IsStrafeRight() ? "R" : "")
             + (IsSneak() ? "Sn" : "")
             + (IsSprinting() ? "Sp" : "")
-            + (IsJump() ? "J" : "");
+            + (IsJump() ? "J" : "")
+            + (Climb ? "-Climb" : "")
+            + (Levitate ? "-Levitate" : "")
+            + (InLiquid ? "-Liquid" : "")
+            ;
     }
 }

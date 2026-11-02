@@ -105,12 +105,23 @@ namespace Vge.Entity.Render
         /// </summary>
         protected readonly int _deleayLevitate = 5;
 
-        public EntityRenderAnimation(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
+        /// <summary>
+        /// Объект живой сущности, моб или игрок
+        /// </summary>
+        protected readonly EntityLiving _entityLiving;
+        /// <summary>
+        /// Объект для рендера слоёв (предметов или одежды) на сущности
+        /// </summary>
+        protected readonly EntityLayerRender _entityLayerRender;
+
+        public EntityRenderAnimation(EntityLiving entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
         {
+            _entityLiving = entity;
             if (resourcesEntity.NameShapeLayers != "")
             {
                 // Имеется одежда для этой сущности
+                _entityLayerRender = new EntityLayerRender(entities);
                 try
                 {
                     _shapeLayers = EntitiesReg.GetShapeLayers(resourcesEntity.NameShapeLayers);
@@ -292,7 +303,8 @@ namespace Vge.Entity.Render
         /// </summary>
         private void _AnimationByMotion()
         {
-            // Сразу определяем смену доп параметров сущности
+            //== Сразу определяем смену доп параметров сущности
+
             if (_trigger.Levitate)
             {
                 if (Entity.OnGround)
@@ -317,44 +329,79 @@ namespace Vge.Entity.Render
                 }
             }
 
+            _trigger.SetClimb(_entityLiving.IsClimb());
+            _trigger.SetInLiquid(_entityLiving.IsInLiquid());
+            _trigger.SetDead(_entityLiving.IsDying());
+            
             // Если было изменение
             if (_trigger.Changed)
             {
                 // Проверяем текущее состояние
                 EnumEntityActivity clip;
-                if (_trigger.IsMove())
+
+                if (_trigger.Dead)
                 {
-                    // Что-то имеется, проверяем сразу на движение
-                    if (_resourcesEntity.OnlyMove)
-                    {
-                        // Только движение
-                        clip = EnumEntityActivity.Move;
-                    }
-                    else
-                    {
-                        if (_trigger.IsMovingStrafe())
-                        {
-                            // Только стрейф
-                            clip = _trigger.IsStrafeLeft() ? EnumEntityActivity.Left : EnumEntityActivity.Right;
-                        }
-                        else
-                        {
-                            // Вперёд и назад
-                            clip = _trigger.IsForward() ? EnumEntityActivity.Forward : EnumEntityActivity.Back;
-                        }
-                    }
+                    clip = EnumEntityActivity.Dead;
                 }
                 else
                 {
-                    clip = EnumEntityActivity.Idle;
-                }
+                    if (_trigger.IsMove())
+                    {
+                        // Что-то имеется, проверяем сразу на движение
+                        if (_resourcesEntity.OnlyMove)
+                        {
+                            // Только движение
+                            clip = EnumEntityActivity.Move;
+                        }
+                        else
+                        {
+                            if (_trigger.IsMovingStrafe())
+                            {
+                                // Только стрейф
+                                clip = _trigger.IsStrafeLeft() ? EnumEntityActivity.Left : EnumEntityActivity.Right;
+                            }
+                            else
+                            {
+                                // Вперёд и назад
+                                clip = _trigger.IsForward() ? EnumEntityActivity.Forward : EnumEntityActivity.Back;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        clip = EnumEntityActivity.Idle;
+                    }
 
-                if (_trigger.IsSprinting()) clip |= EnumEntityActivity.Sprint;
-                if (_trigger.Levitate) clip |= EnumEntityActivity.Levitate;
-                else if (_trigger.IsSneak())
-                {
-                    // У ливитации положения сидя не должно быть
-                    clip |= EnumEntityActivity.Sneak;
+                    if (_trigger.Climb)
+                    {
+                        // Если пробует лазить
+                        EnumEntityActivity clipClimb = EnumEntityActivity.None;
+                        // Проверяем движение вверх или вниз
+                        if (_trigger.IsSneak() || _trigger.IsJump())
+                        {
+                            clipClimb = EnumEntityActivity.Move;
+                        }
+                        // Проверяем состояние ливитации
+                        if (_trigger.Levitate)
+                        {
+                            clipClimb |= EnumEntityActivity.Levitate;
+                        }
+                        if (clipClimb != EnumEntityActivity.None)
+                        {
+                            clip = EnumEntityActivity.Climb | clipClimb;
+                        }
+                    }
+                    else
+                    {
+                        if (_trigger.IsSprinting()) clip |= EnumEntityActivity.Sprint;
+                        if (_trigger.Levitate) clip |= EnumEntityActivity.Levitate;
+                        else if (_trigger.IsSneak())
+                        {
+                            // У ливитации положения сидя не должно быть
+                            clip |= EnumEntityActivity.Sneak;
+                        }
+                        if (_trigger.InLiquid) clip |= EnumEntityActivity.InLiquid;
+                    }
                 }
 
                 // Если клип поменялся
@@ -737,7 +784,7 @@ namespace Vge.Entity.Render
                 else r += s;
             }
 
-            return r;
+            return r + " Tr:" + _trigger.ToString();
         }
     }
 }

@@ -46,21 +46,21 @@ namespace Vge.Entity
         float FactorGravityInLiquid { get; }
 
         /// <summary>
-        /// Находится на лестнице
+        /// Состояние взбираться на лестнице, лиане, канат
         /// </summary>
-        bool IsOnLadder { get; }
+        bool IsClimb { get; }
         /// <summary>
-        /// Коэффициент гравитации на лестнице
+        /// Коэффициент гравитации взбираться
         /// </summary>
-        float FactorGravityOnLadder { get; }
+        float FactorGravityClimb { get; }
         /// <summary>
-        /// Ускорение поднятия на лестнице
+        /// Ускорение поднятия взбираться 2,35 м/с  (майнкрафт)
         /// </summary>
-        float AccelerationUpOnLadder { get; }
+        float AccelerationUpClimb { get; }
         /// <summary>
-        /// Ускорение спуска на лестнице
-        /// </summary>
-        float AccelerationDownOnLadder { get; }
+        /// Ускорение спуска взбираться 3,0 (майнкрафт)
+        /// </summary> 
+        float AccelerationDownClimb { get; }
 
         /// <summary>
         /// Имеются ли замедления

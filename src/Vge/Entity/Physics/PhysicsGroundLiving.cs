@@ -73,9 +73,9 @@ namespace Vge.Entity.Physics
                 else
                 {
                     _surfaceTicks = 0;
-                    if (Entity.PresenceBlocks.IsOnLadder)
+                    if (Entity.PresenceBlocks.IsClimb)
                     {
-                        MotionY += Entity.PresenceBlocks.AccelerationUpOnLadder;
+                        MotionY += Entity.PresenceBlocks.AccelerationUpClimb;
                     } 
                     else if (Entity.OnGround && _jumpTicks == 0)
                     {
@@ -126,10 +126,10 @@ namespace Vge.Entity.Physics
                     // Находимся в жидкости, погружаемся
                     MotionY += Entity.PresenceBlocks.AccelerationToDiveInLiquid;
                 }
-                else if (Entity.PresenceBlocks.IsOnLadder)
+                else if (Entity.PresenceBlocks.IsClimb)
                 {
                     // Находимся на лестнице
-                    MotionY += Entity.PresenceBlocks.AccelerationDownOnLadder;
+                    MotionY += Entity.PresenceBlocks.AccelerationDownClimb;
                 }
             }
             // Если хотим встать

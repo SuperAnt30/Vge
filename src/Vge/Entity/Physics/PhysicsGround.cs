@@ -109,7 +109,7 @@ namespace Vge.Entity.Physics
                 float s = _LivingUpdateSpeed() * .1f;
                 acceleration = s + (_LivingUpdateSpeed() - s) * speedEnch;
             }
-            else if (Entity.PresenceBlocks.IsOnLadder && Entity.IsSpeed​​Limit())
+            else if (Entity.PresenceBlocks.IsClimb && Entity.IsSpeed​​Limit())
             {
                 //= Находимся на лестнице
 
@@ -120,7 +120,7 @@ namespace Vge.Entity.Physics
                 acceleration = Entity.Speed * 0.16277136f / (inertiaXZ * inertiaXZ * inertiaXZ);
 
                 // Графитация на лестнице
-                gravity = Entity.PresenceBlocks.FactorGravityOnLadder;
+                gravity = Entity.PresenceBlocks.FactorGravityClimb;
             }
             else if (Entity.OnGround && Entity.IsSpeed​​Limit())
             {

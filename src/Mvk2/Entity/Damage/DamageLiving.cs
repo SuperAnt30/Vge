@@ -13,6 +13,10 @@ namespace Mvk2.Entity.Damage
     public class DamageLiving : DamageBase
     {
         /// <summary>
+        /// Сколько тактов сущность будет видна, покуда не исчезнет
+        /// </summary>
+        private static int _tiktOfDeath = 60;
+        /// <summary>
         /// Сущность к которой прекреплена физика
         /// </summary>
         protected readonly EntityLiving _entity;
@@ -42,13 +46,13 @@ namespace Mvk2.Entity.Damage
             if (DeathTime != -1 && _entity.GetHealth() <= 0)
             {
                 DeathTime++;
-                if (DeathTime >= 20)
+                if (DeathTime >= _tiktOfDeath)
                 {
                     // Исчизновение сущности после смерти
                     _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
-                        _entity.GetPositionCenterVec(), new Vector3(1), 25, 0x882222);
+                        _entity.GetPositionCenterVec(), new Vector3(2f, .5f, 2f), 25, 0x882222);
                     _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
-                        _entity.GetPositionCenterVec(), new Vector3(1), 25, 0x1000000);
+                        _entity.GetPositionCenterVec(), new Vector3(2f, .5f, 2f), 25, 0x1000000);
 
                     //World.SpawnParticle(EnumParticle.Test, 100, Position, new vec3(Width, .25f, Width), 0);
                     DeathTime = -1;
@@ -94,7 +98,7 @@ namespace Mvk2.Entity.Damage
                 // Звук смерти
                // _worldServer.PlaySound
                 //World.PlaySound(GetDeathSound(), Position, 1, (rand.NextFloat() - rand.NextFloat()) * .2f + 1f);
-                //_entity.OnDeath(source);
+               // _entity.OnDeath(source, entityAttack == null ? -1 : entityAttack.IndexEntity);
 
                 //entityPlayerServer.OnDeathPlayerServer(worldServer, source, entityAttacks);
             }

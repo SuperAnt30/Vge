@@ -22,7 +22,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Возвращает, если блоки этих материалов являются лестницей, лианой и тп
         /// </summary>
-        public bool OnLadder { get; private set; }
+        public bool Climb { get; private set; }
         
         /// <summary>
         /// Возвращает, если блоки этих материалов являются жидкостями
@@ -104,7 +104,7 @@ namespace Vge.World.Block
             // Статы
             foreach (JsonKeyValue json in state.Items)
             {
-                if (json.IsKey(Ctm.OnLadder)) OnLadder = json.GetBool();
+                if (json.IsKey(Ctm.Climb)) Climb = json.GetBool();
                 if (json.IsKey(Ctm.Liquid)) Liquid = json.GetBool();
                 if (json.IsKey(Ctm.RequiresNoTool)) RequiresNoTool = json.GetBool();
                 if (json.IsKey(Ctm.Glass)) Glass = json.GetBool();

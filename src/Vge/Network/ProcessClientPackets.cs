@@ -279,7 +279,7 @@ namespace Vge.Network
                 player.OnGround = packet.OnGround;
                 player.SpawnRotation(packet.Yaw, packet.Pitch);
                 player.Inventory.SetOutside(packet.Stacks);
-                player.MetaData.UpdateWatchedObjectsFromList(packet.Data);
+                player.UpdateWatchedObjectsFromList(packet.Data);
 
                 Game.World.SpawnEntityInWorld(player);
             }
@@ -298,12 +298,9 @@ namespace Vge.Network
             if (entity is EntityLiving entityLiving)
             {
                 entityLiving.SpawnRotation(packet.Yaw, packet.Pitch);
-                if (entityLiving.Inventory != null)
-                {
-                    entityLiving.Inventory.SetOutside(packet.Stacks);
-                }
+                entityLiving.Inventory?.SetOutside(packet.Stacks);
             }
-            entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);
+            entity.UpdateWatchedObjectsFromList(packet.Data);
             Game.World.SpawnEntityInWorld(entity);
         }
 
@@ -375,12 +372,7 @@ namespace Vge.Network
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
             if (entity != null && packet.Data.Length > 0)
             {
-                entity.MetaData.UpdateWatchedObjectsFromList(packet.Data);
-                // TODO::2025-06-23 Вынести в анимацию!!!
-                if (entity is EntityLiving entityLiving)
-                {
-                    if (entityLiving.IsSneaking()) entityLiving.Sitting(); else entityLiving.Standing();
-                }
+                entity.UpdateWatchedObjectsFromList(packet.Data);
             }
         }
 

@@ -46,7 +46,7 @@ namespace Vge.Entity.Render
         /// </summary>
         private int _counterSpeaks = 0;
 
-        public EntityRenderEyeMouth(EntityBase entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
+        public EntityRenderEyeMouth(EntityLiving entity, EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
             : base(entity, entities, resourcesEntity)
         {
             _timeBlinkEye = resourcesEntity.BlinkEye;

@@ -148,6 +148,10 @@ namespace Vge.Entity
                     _flagMovement = Physics.Movement.Flags;
                 }
             }
+            else
+            {
+                Physics.Movement.SetStop();
+            }
 
             if (!Physics.IsPhysicSleep())
             {
@@ -264,6 +268,29 @@ namespace Vge.Entity
             if (_lastAttacker != null && _lastAttacker.Id == entityMob.Id)
             {
                 _lastAttacker = null;
+            }
+        }
+
+        /// <summary>
+        /// Обновить наличие блоков в каких находится сущность
+        /// Вода, огонь, лава, и прочее
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdatePresenceBlocks(WorldBase world)
+        {
+            if (PresenceBlocks != null)
+            {
+                bool inLiquid = PresenceBlocks.IsInLiquid;
+                bool climb = PresenceBlocks.IsClimb;
+                PresenceBlocks.Update(world);
+                if (inLiquid != PresenceBlocks.IsInLiquid)
+                {
+                    SetInLiquid(PresenceBlocks.IsInLiquid);
+                }
+                if (climb != PresenceBlocks.IsClimb)
+                {
+                    SetClimb(PresenceBlocks.IsClimb);
+                }
             }
         }
     }

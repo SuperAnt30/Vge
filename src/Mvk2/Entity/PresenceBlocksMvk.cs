@@ -60,21 +60,21 @@ namespace Mvk2.Entity
         public float FactorGravityInLiquid { get; private set; } = .01f;
 
         /// <summary>
-        /// Находится на лестнице
+        /// Состояние взбираться на лестнице, лиане, канат
         /// </summary>
-        public bool IsOnLadder { get; private set; }
+        public bool IsClimb { get; private set; }
         /// <summary>
-        /// Коэффициент гравитации на лестнице
+        /// Коэффициент гравитации взбираться
         /// </summary>
-        public float FactorGravityOnLadder { get; private set; } = .04f;
+        public float FactorGravityClimb { get; private set; } = .04f;
         /// <summary>
-        /// Ускорение поднятия на лестнице 2,35 м/с  (майнкрафт)
+        /// Ускорение поднятия взбираться 2,35 м/с  (майнкрафт)
         /// </summary>
-        public float AccelerationUpOnLadder { get; private set; } = .1285f;
+        public float AccelerationUpClimb { get; private set; } = .1285f;
         /// <summary>
-        /// Ускорение спуска на лестнице 3,0 (майнкрафт)
+        /// Ускорение спуска взбираться 3,0 (майнкрафт)
         /// </summary> 
-        public float AccelerationDownOnLadder { get; private set; } = -.1145f;
+        public float AccelerationDownClimb { get; private set; } = -.1145f;
 
         /// <summary>
         /// Имеются ли замедления
@@ -190,7 +190,7 @@ namespace Mvk2.Entity
             IsInLiquid = false;
             IsImpulse = false;
             IsSlow = false;
-            IsOnLadder = false;
+            IsClimb = false;
             if (_numberAutoJump > 0)
             {
                 _numberAutoJump--;
@@ -242,9 +242,9 @@ namespace Mvk2.Entity
                 IsInLiquidAutoJump = true;
                 _numberAutoJump = 5;
             }
-            else if (block.Material.OnLadder)
+            else if (block.Material.Climb)
             {
-                IsOnLadder = true;
+                IsClimb = true;
             }
             else if (block.IsSlow)
             {
@@ -259,7 +259,7 @@ namespace Mvk2.Entity
             return (IsInLiquid ? " Liquid" : "") 
                 + (IsSlow ? " Slow" : "")
                 + (IsImpulse ? " Impulse" : "")
-                + (IsOnLadder ? " OnLadder" : "")
+                + (IsClimb ? " Climb" : "")
                 + (IsInLiquidAutoJump ? " AutoJump" : "");
         }
     }

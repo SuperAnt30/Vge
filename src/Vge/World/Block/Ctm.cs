@@ -8,7 +8,7 @@
         /// <summary>
         /// Отмечает, если блоки этих материалов являются лестнице, лианой и тп. (bool)
         /// </summary>
-        public const string OnLadder = "OnLadder"; 
+        public const string Climb = "Climb"; 
         /// <summary>
         /// Отмечает, если блоки этих материалов являются жидкостями. (bool)
         /// </summary>

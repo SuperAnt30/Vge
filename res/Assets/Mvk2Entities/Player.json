@@ -43,29 +43,42 @@
         { 
             Animation: "Levitate",
             AnimationSpeed: 0.5,
-            TriggeredBy: ["Levitate", "Forward"]
-        },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 0.5,
             TriggeredBy: ["Levitate", "Move"]
         },
-        { 
-            Animation: "Levitate",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Levitate", "Forward", "Sprint"]
-        },
-        { 
+        {
             Animation: "Levitate",
             AnimationSpeed: 1.0,
             TriggeredBy: ["Levitate", "Move", "Sprint"]
         },
         {
-            Animation: "Walk",
-            #AnimationSpeed: 2.15,
-            AnimationSpeed: 1.4,
-            #AnimationSpeed: 1.075,
-            TriggeredBy: ["Forward"]
+            # На лестнице без движения, плавно опускается
+            Animation: "Climb",
+            AnimationSpeed: 0.3,
+            TriggeredBy: ["Climb", "Levitate"]
+        },
+        {
+            # На лестнице подымаемся или опускаемся
+            Animation: "Climb",
+            AnimationSpeed: 1.0,
+            TriggeredBy: ["Climb", "Levitate", "Move"]
+        },
+        {
+            # В жидкости без движения и не на дне
+            Animation: "Climb",
+            AnimationSpeed: 2.3,
+            TriggeredBy: ["InLiquid", "Levitate", "Idle"]
+        },
+        { 
+            # В жидкости плаваем
+            Animation: "SneakWalk",
+            AnimationSpeed: 2.0,
+            TriggeredBy: ["InLiquid", "Levitate", "Move"]
+        },
+        { 
+            # В жидкости быстро плаваем
+            Animation: "SneakWalk",
+            AnimationSpeed: 5.0,
+            TriggeredBy: ["InLiquid", "Levitate", "Move", "Sprint"]
         },
         {
             Animation: "Walk",
@@ -77,26 +90,7 @@
             AnimationSpeed: 2.15,
             TriggeredBy: ["Move", "Sprint"]
         },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 2.15,
-            TriggeredBy: ["Forward", "Sprint"]
-        },
-        {
-            Animation: "Back",
-            AnimationSpeed: 1.8,
-            TriggeredBy: ["Back"]
-        },
-        {
-            Animation: "Walk",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Left"]
-        },
-        {
-            Animation: "Right",
-            AnimationSpeed: 1.0,
-            TriggeredBy: ["Right"]
-        },
+
         {
             Code: "AttackRight",
             Animation: "AttackRight",

@@ -138,7 +138,8 @@ namespace Vge.Entity
         /// </summary>
         public ISizeEntity Size { get; protected set; }
         /// <summary>
-        /// Объект наличия блоков в которой находится сущность
+        /// Объект наличия блоков в которой находится сущность,
+        /// Нужен для физики!
         /// </summary>
         public IPresenceBlocks PresenceBlocks { get; protected set; }
         /// <summary>
@@ -214,11 +215,7 @@ namespace Vge.Entity
             IndexEntity = index;
             if (Ce.Entities.GetResourcesEntity(IndexEntity) is ResourcesEntity resourcesEntity)
             {
-                Render = resourcesEntity.IsAnimation
-                    ? resourcesEntity.BlinkEye != 0
-                        ? new EntityRenderEyeMouth(this, entitiesRenderer, resourcesEntity)
-                        : new EntityRenderAnimation(this, entitiesRenderer, resourcesEntity)
-                    : new EntityRenderClient(this, entitiesRenderer, resourcesEntity);
+                Render = _CreateEnityRender(entitiesRenderer, resourcesEntity);
             }
             else
             {
@@ -232,10 +229,11 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Создатьб объект рендер анимации
+        /// Создать объект реднедра
         /// </summary>
-        protected virtual EntityRenderAnimation _CreateRenderAnimation(EntitiesRenderer entities, ResourcesEntity resourcesEntity) 
-            => new EntityRenderAnimation(this, entities, resourcesEntity);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected virtual EntityRenderBase _CreateEnityRender(EntitiesRenderer entities, ResourcesEntity resourcesEntity)
+            => new EntityRenderClient(this, entities, resourcesEntity);
 
         /// <summary>
         /// Инициализация для сервера кроме игроков
@@ -281,6 +279,17 @@ namespace Vge.Entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _CreateInventory() { }
+
+        #endregion
+
+        #region MetaData
+
+        /// <summary>
+        /// Обновить данные со списка в дополнительных данных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void UpdateWatchedObjectsFromList(WatchableObject[] watchables)
+            => MetaData.UpdateWatchedObjectsFromList(watchables);
 
         #endregion
 
@@ -681,7 +690,7 @@ namespace Vge.Entity
         /// Вода, огонь, лава, и прочее
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdatePresenceBlocks(WorldBase world) => PresenceBlocks?.Update(world);
+        public virtual void UpdatePresenceBlocks(WorldBase world) => PresenceBlocks?.Update(world);
 
         /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.

@@ -38,6 +38,11 @@
             TriggeredBy: ["Sneak", "Idle"]
         },
         { 
+            Animation: "Dead",
+            AnimationSpeed: 1.5,
+            TriggeredBy: ["Dead"]
+        },
+        { 
             Animation: "Swing",
             AnimationSpeed: 2.15,
             TriggeredBy: ["Levitate", "Idle"]

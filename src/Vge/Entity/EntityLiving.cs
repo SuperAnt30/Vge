@@ -1,10 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Entity.Inventory;
 using Vge.Entity.MetaData;
+using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Item;
 using Vge.NBT;
 using Vge.Realms;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -85,6 +88,23 @@ namespace Vge.Entity
         /// Пройденное расстояние, для звукового эффекта
         /// </summary>
         private float _distanceWalkedOnStepModified = 0;
+
+        #region Init
+
+        /// <summary>
+        /// Создать объект реднедра
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override EntityRenderBase _CreateEnityRender(EntitiesRenderer entities, ResourcesEntity resourcesEntity)
+        {
+            return resourcesEntity.IsAnimation 
+                   ? resourcesEntity.BlinkEye != 0
+                       ? new EntityRenderEyeMouth(this, entities, resourcesEntity)
+                       : new EntityRenderAnimation(this, entities, resourcesEntity)
+                    : new EntityRenderClient(this, entities, resourcesEntity);
+        }
+
+        #endregion
 
         #region Методы для Position и Rotation
 
@@ -296,18 +316,32 @@ namespace Vge.Entity
         }
 
         /// <summary>
+        /// Обновить данные со списка в дополнительных данных
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdateWatchedObjectsFromList(WatchableObject[] watchables)
+        {
+            bool sneak = IsSneaking();
+            base.UpdateWatchedObjectsFromList(watchables);
+
+            // Если изменено положение Hitbox
+            if (sneak != IsSneaking())
+            {
+                if (sneak) Standing(); else Sitting();
+            }
+        }
+
+        /// <summary>
         /// Возвращает true, если флаг активен для сущности.Известные флаги:
         /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 
         /// </summary>
-        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение (невидимый)</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool GetFlag(int flag) => (MetaData.GetByte(0) & 1 << flag) != 0;
 
         /// <summary>
         /// Включите или отключите флаг сущности
-        /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение; 6) спит 7) невидимый по чаре
+        /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) в жидкости; 5) взбирвться; 6) спит; 7)* невидимый по чаре
         /// </summary>
-        /// <param name="flag">0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) ест; 5) наблюдение (невидимый)</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SetFlag(int flag, bool set)
         {
@@ -317,15 +351,15 @@ namespace Vge.Entity
         }
 
         /// <summary>
-        /// Ускорение
+        /// Горит ли сущность
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSprinting() => GetFlag(3);
+        public bool InFire() => GetFlag(0);
         /// <summary>
-        /// Задать значение ускоряется ли
+        /// Задать горит ли сущность
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetSprinting(bool sprinting) => SetFlag(3, sprinting);
+        public void SetInFire(bool fire) => SetFlag(0, fire);
 
         /// <summary>
         /// Крадется
@@ -339,15 +373,37 @@ namespace Vge.Entity
         public void SetSneaking(bool sneaking) => SetFlag(1, sneaking);
 
         /// <summary>
-        /// Горит ли сущность
+        /// Ускорение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool InFire() => GetFlag(0);
+        public bool IsSprinting() => GetFlag(3);
         /// <summary>
-        /// Задать горит ли сущность
+        /// Задать значение ускоряется ли
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetInFire(bool fire) => SetFlag(0, fire);
+        public void SetSprinting(bool sprinting) => SetFlag(3, sprinting);
+
+        /// <summary>
+        /// В жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInLiquid() => GetFlag(4);
+        /// <summary>
+        /// Задать значение в жидкости ли
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetInLiquid(bool inLiquid) => SetFlag(4, inLiquid);
+
+        /// <summary>
+        /// Взбираться
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsClimb() => GetFlag(5);
+        /// <summary>
+        /// Задать значение взбирается ли
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetClimb(bool climb) => SetFlag(5, climb);
 
         /// <summary>
         /// Спит ли сущность
@@ -403,7 +459,14 @@ namespace Vge.Entity
         /// <summary>
         /// Максимальное ли здоровье
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsHealthMax() => GetHealth() == _GetHelathMax();
+        /// <summary>
+        /// Умирает
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsDying() => GetHealth() <= 0f;
+
         /// <summary>
         /// Увеличить хп
         /// </summary>

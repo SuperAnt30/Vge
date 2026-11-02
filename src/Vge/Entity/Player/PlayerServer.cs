@@ -342,6 +342,26 @@ namespace Vge.Entity.Player
         /// </summary>
         public void MarkPlayerActive() { }// => playerLastActiveTime = ServerMain.TickCounter;
 
+        /// <summary>
+        /// Обновить наличие блоков в каких находится сущность
+        /// Вода, огонь, лава, и прочее
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void UpdatePresenceBlocks(WorldBase world)
+        {
+            bool inLiquid = PresenceBlocks.IsInLiquid;
+            bool climb = PresenceBlocks.IsClimb;
+            PresenceBlocks.Update(world);
+            if (inLiquid != PresenceBlocks.IsInLiquid)
+            {
+                SetInLiquid(PresenceBlocks.IsInLiquid);
+            }
+            if (climb != PresenceBlocks.IsClimb)
+            {
+                SetClimb(PresenceBlocks.IsClimb);
+            }
+        }
+
         #endregion
 
         #region Packet

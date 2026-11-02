@@ -12,12 +12,6 @@ namespace Vge.Entity.Render
         /// Объект рендера всех сущностей
         /// </summary>
         protected readonly EntitiesRenderer _entities;
-
-        /// <summary>
-        /// Объект для рендера слоёв (предметов или одежды) на сущности
-        /// </summary>
-        protected readonly EntityLayerRender _entityLayerRender;
-
         /// <summary>
         /// Ресурсы сущности, нужны везде, но форма только на клиенте
         /// </summary>
@@ -28,12 +22,6 @@ namespace Vge.Entity.Render
         {
             _entities = entities;
             _resourcesEntity = resourcesEntity;
-
-            // Если имеется инвентарь, то создаём объект слоёв
-            if (Entity is EntityLiving || _resourcesEntity.IsAnimation) // Временно реагируем на живую сущность
-            {
-                _entityLayerRender = new EntityLayerRender(entities);
-            }
         }
 
         /// <summary>
@@ -69,12 +57,6 @@ namespace Vge.Entity.Render
 
             // Рисуем основную сетку сущности
             _entityRender.MeshDraw();
-
-            // Если имеются слои, рисуем сетку слоёв
-            _entityLayerRender?.MeshDraw();
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Dispose() => _entityLayerRender?.Dispose();
     }
 }
