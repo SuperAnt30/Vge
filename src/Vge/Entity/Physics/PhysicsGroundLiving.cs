@@ -21,12 +21,27 @@ namespace Vge.Entity.Physics
         /// Количество тактов для запрета всплытия
         /// </summary>
         private int _surfaceTicks = 0;
+        /// <summary>
+        /// Ускорение при прыжке в высоту
+        /// </summary>
+        private float _airborneJumpInHeight;
 
         /// <summary>
         /// Физика для сущности которая имеет силу для перемещения
         /// </summary>
         public PhysicsGroundLiving(CollisionBase collision, EntityLiving entity)
-            : base(collision, entity) => _entityLiving = entity;
+            : base(collision, entity)
+        {
+            _entityLiving = entity;
+            _airborneJumpInHeight = Cp.AirborneJumpInHeight;
+        }
+
+        /// <summary>
+        /// Задать ускорение при прыжке в высоту, по умолчанию 0.84 (Cp.AirborneJumpInHeight)
+        /// </summary>
+        /// <param name="airborneJumpInHeight"></param>
+        public void SetAirborneJumpInHeight(float airborneJumpInHeight = Cp.AirborneJumpInHeight)
+            => _airborneJumpInHeight = airborneJumpInHeight;
 
         #region Living
 
@@ -47,7 +62,7 @@ namespace Vge.Entity.Physics
         //}
 
 
-        
+
         /// <summary>
         /// Проверяем наличие прыжка для живой сущности
         /// </summary>
@@ -87,12 +102,12 @@ namespace Vge.Entity.Physics
                         {
                             MotionY = Entity.PresenceBlocks.IsJumpLiquid
                                 ? (Entity.PresenceBlocks.AccelerationAscentInLiquid
-                                + Cp.AirborneJumpInHeight + Cp.AirborneJumpInHeight) / 3f
+                                + _airborneJumpInHeight + _airborneJumpInHeight) / 3f
                                 : Entity.PresenceBlocks.AccelerationAscentInLiquid;
                         }
                         else
                         {
-                            MotionY = Cp.AirborneJumpInHeight;
+                            MotionY = _airborneJumpInHeight;
 
                             if (isSprintingPrev)
                             {

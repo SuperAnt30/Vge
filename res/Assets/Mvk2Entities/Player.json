@@ -53,31 +53,31 @@
         {
             # На лестнице без движения, плавно опускается
             Animation: "Climb",
-            AnimationSpeed: 0.3,
+            AnimationSpeed: 0.35,
             TriggeredBy: ["Climb", "Levitate"]
         },
         {
             # На лестнице подымаемся или опускаемся
             Animation: "Climb",
-            AnimationSpeed: 1.0,
+            AnimationSpeed: 1.5,
             TriggeredBy: ["Climb", "Levitate", "Move"]
         },
         {
             # В жидкости без движения и не на дне
-            Animation: "Climb",
-            AnimationSpeed: 2.3,
+            Animation: "InLiquid",
+            AnimationSpeed: 0.3,
             TriggeredBy: ["InLiquid", "Levitate", "Idle"]
         },
         { 
             # В жидкости плаваем
-            Animation: "SneakWalk",
-            AnimationSpeed: 2.0,
+            Animation: "InLiquid",
+            AnimationSpeed: 0.8,
             TriggeredBy: ["InLiquid", "Levitate", "Move"]
         },
         { 
             # В жидкости быстро плаваем
-            Animation: "SneakWalk",
-            AnimationSpeed: 5.0,
+            Animation: "InLiquid",
+            AnimationSpeed: 1.2,
             TriggeredBy: ["InLiquid", "Levitate", "Move", "Sprint"]
         },
         {

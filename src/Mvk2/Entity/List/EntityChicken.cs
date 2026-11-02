@@ -35,7 +35,10 @@ namespace Mvk2.Entity.List
         /// </summary>
         protected override void _InitPhysics(CollisionBase collision)
         {
+            // прыжок ~= 1.02
             PhysicsGroundLiving physicsGround = new PhysicsGroundLiving(collision, this);
+            physicsGround.SetGravity(.2f);
+            physicsGround.SetAirborneJumpInHeight(.25f);
             physicsGround.SetHeightAutoJump(1f);
             Physics = physicsGround;
             PresenceBlocks = new PresenceBlocksMvk(this);
