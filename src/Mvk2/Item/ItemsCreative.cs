@@ -44,6 +44,7 @@ namespace Mvk2.Item
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.DoorOfPlanks));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Rope));
 
             // Раздел крафтовые предметы 
             List<ItemStack> tabCraft = new List<ItemStack>();

@@ -245,6 +245,19 @@ namespace Mvk2.World.Block
 
         #endregion
 
+        #region Вещи-предметы
+
+        /// <summary>
+        /// Дверь из досок
+        /// </summary>
+        public static BlockDoor DoorOfPlanks { get; private set; }
+        /// <summary>
+        /// Верёвка
+        /// </summary>
+        public static BlockRope Rope { get; private set; }
+
+        #endregion
+
         public static BlockBase Glass { get; private set; }
         public static BlockAlpha GlassRed { get; private set; }
         public static BlockAlpha GlassGreen { get; private set; }
@@ -252,7 +265,7 @@ namespace Mvk2.World.Block
         public static BlockAlpha GlassPurple { get; private set; }
         
         public static BlockBase Brol { get; private set; }
-        public static BlockDoor DoorOfPlanks { get; private set; }
+        
         
 
         public static void Initialization()
@@ -338,7 +351,8 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("Brol", Brol = new BlockBrol(materials.Ore));
 
             BlocksReg.RegisterBlockClass("DoorOfPlanks", DoorOfPlanks = new BlockDoor(materials.Door));
-
+            BlocksReg.RegisterBlockClass("Rope", Rope = new BlockRope(materials.Rope));
+            
 
             // Регистрация текстуры разрушения блока
             Gi.DestroyBlock.Registration(8, "Blocks" + Path.DirectorySeparatorChar + "Destroy");

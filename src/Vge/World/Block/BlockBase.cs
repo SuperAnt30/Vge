@@ -321,6 +321,20 @@ namespace Vge.World.Block
         /// </summary>
         public virtual void InitAfterItems() { }
 
+        /// <summary>
+        /// Пройтись по массиву AABB fullCube и поделить все значения на 16
+        /// </summary>
+        protected void _InitFullCubeDivide16()
+        {
+            for(int i = 0; i < _fullCube.Length; i++)
+            {
+                for (int j = 0; j < _fullCube[i].Length; j++)
+                {
+                    _fullCube[i][j] = _fullCube[i][j].Divide16();
+                }
+            }
+        }
+
         #endregion
 
         #region Методы для импорта данных с json
@@ -561,7 +575,7 @@ namespace Vge.World.Block
         public virtual AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[0];
 
         /// <summary>
-        /// Передать список  ограничительных рамок блока
+        /// Передать список ограничительных рамок блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
@@ -589,7 +603,8 @@ namespace Vge.World.Block
         }
 
         /// <summary>
-        /// Получить одну большую рамку блока, если их несколько они объеденяться, используется для установки блока
+        /// Получить одну большую рамку блока, если их несколько они объеденяться, 
+        /// используется для установки блока
         /// </summary>
         public AxisAlignedBB GetCollisionOne(BlockPos pos, int met)
         {

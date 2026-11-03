@@ -68,8 +68,12 @@
         /// <summary>
         /// Дверь
         /// </summary>
-        Door = 16
-            
+        Door = 16,
+        /// <summary>
+        /// Верёвка
+        /// </summary>
+        Rope = 17
+
         /*
         /// <summary>
         /// Растительный белок 

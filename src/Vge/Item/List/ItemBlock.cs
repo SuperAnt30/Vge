@@ -95,32 +95,25 @@ namespace Vge.Item.List
                 if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);
-                    bool result = world.SetBlockState(blockPos, blockState, 47);
-                    if (result)
+                    if (world.SetBlockState(blockPos, blockState, 47))
                     {
-                        if (!world.IsRemote && player is PlayerServer playerServer)
+                        byte amount = _InstallAdditionalBlocks(player, blockState, blockPos, side, facing, playerYaw);
+                        if (amount > 0)
                         {
-                            result = _InstallAdditionalBlocks(playerServer, blockPos, side, facing, playerYaw);
-                            if (result)
+                            if (!world.IsRemote && !player.CreativeMode 
+                                && player is PlayerServer playerServer)
                             {
-                                if (!player.CreativeMode)
-                                {
-                                    blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(), 
-                                        playerServer, blockPos, blockStateOld);
-                                }
+                                blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(), 
+                                    playerServer, blockPos, blockStateOld);
+
+                                world.PlaySound(Block.Material.SamplePlace(world.Rnd),
+                                    blockPos.ToVector3Center(), 1, 1, player.Id);
                             }
-                        }
-                        if (result)
-                        {
-                            if (!player.CreativeMode)
-                            {
-                                player.Inventory.DecrCurrentItem(1);
-                            }
-                            world.PlaySound(Block.Material.SamplePlace(world.Rnd),
-                                blockPos.ToVector3Center(), 1, 1, player.Id);
+
+                            player.Inventory.DecrCurrentItem(amount);
+                            return true;
                         }
                     }
-                    return result;
                 }
             }
             return false;
@@ -134,11 +127,13 @@ namespace Vge.Item.List
             Vector3 facing, float playerYaw) => blockPos;
 
         /// <summary>
-        /// Установить дополнительные блоки, только на сервере
+        /// Установить дополнительные блоки.
+        /// Вернёт количество предметов на удаление. 0, не смог установить
         /// </summary>
+        /// <param name="blockState">Данные блока которые уже установленны на blockPos</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual bool _InstallAdditionalBlocks(PlayerServer player, BlockPos blockPos,
-            Pole side, Vector3 facing, float playerYaw) => true;
+        protected virtual byte _InstallAdditionalBlocks(PlayerBase player, BlockState blockState,
+            BlockPos blockPos, Pole side, Vector3 facing, float playerYaw) => 1;
 
         /// <summary>
         /// Имеется ли сетка контура для предмета

@@ -27,7 +27,7 @@ namespace Vge.Entity
         /// <summary>
         /// Можно ли совершить авто прыжок
         /// </summary>
-        bool IsInLiquidAutoJump { get; }
+        bool IsInAutoJump { get; }
         /// <summary>
         /// Ускорение всплытия в жидкости
         /// </summary>

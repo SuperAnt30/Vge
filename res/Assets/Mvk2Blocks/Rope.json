@@ -1,0 +1,16 @@
+{
+    АmbientOcclusion: false,
+    #UseNeighborBrightness: true,
+    LightOpacity: 0,
+    #ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],
+    #ParticleCount: 8,
+    Hardness: 4,
+    Variants: [
+        { Shape: "Rope" },
+        { Shape: "Rope", Offset: [ -6, 0, 0 ] },
+        { Shape: "Rope", Offset: [ 6, 0, 0 ] },
+        { Shape: "Rope", Offset: [ 0, 0, 6 ] },
+        { Shape: "Rope", Offset: [ 0, 0, -6 ] }
+        
+    ]
+}

@@ -40,7 +40,7 @@ namespace Mvk2.Entity
         /// <summary>
         /// Можно ли совершить авто прыжок
         /// </summary>
-        public bool IsInLiquidAutoJump { get; private set; }
+        public bool IsInAutoJump { get; private set; }
         /// <summary>
         /// Ускорение всплытия в жидкости
         /// </summary>
@@ -196,7 +196,7 @@ namespace Mvk2.Entity
                 _numberAutoJump--;
                 if (_numberAutoJump == 0)
                 {
-                    IsInLiquidAutoJump = false;
+                    IsInAutoJump = false;
                 }
             }
         }
@@ -239,12 +239,14 @@ namespace Mvk2.Entity
                     IsImpulse = true;
                 }
                 IsInLiquid = true;
-                IsInLiquidAutoJump = true;
+                IsInAutoJump = true;
                 _numberAutoJump = 5;
             }
             else if (block.Material.Climb)
             {
                 IsClimb = true;
+                IsInAutoJump = true;
+                _numberAutoJump = 5;
             }
             else if (block.IsSlow)
             {
@@ -260,7 +262,7 @@ namespace Mvk2.Entity
                 + (IsSlow ? " Slow" : "")
                 + (IsImpulse ? " Impulse" : "")
                 + (IsClimb ? " Climb" : "")
-                + (IsInLiquidAutoJump ? " AutoJump" : "");
+                + (IsInAutoJump ? " AutoJump" : "");
         }
     }
 }

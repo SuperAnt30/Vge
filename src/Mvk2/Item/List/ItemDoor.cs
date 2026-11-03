@@ -61,12 +61,13 @@ namespace Mvk2.Item.List
         }
 
         /// <summary>
-        /// Установить дополнительные блоки, только на сервере
+        /// Установить дополнительные блоки.
+        /// Вернёт количество дополнительных предметов на удаление. -1, не смог установить
         /// </summary>
-        protected override bool _InstallAdditionalBlocks(PlayerServer player, BlockPos blockPos,
-            Pole side, Vector3 facing, float playerYaw)
+        protected override byte _InstallAdditionalBlocks(PlayerBase player, BlockState blockState, 
+            BlockPos blockPos, Pole side, Vector3 facing, float playerYaw)
         {
-            WorldServer world = player.GetWorldServer();
+            WorldBase world = player.GetWorld();
 
             // Определяем на какую сторону смотрит игрок
             if (side == Pole.Up || side == Pole.Down)
@@ -79,7 +80,7 @@ namespace Mvk2.Item.List
 
             int add = BlockDoor.ConvMetData(false, left, (int)side - 2);
 
-            bool result = true;
+            byte result = 1;
             BlockPos blockPosCheck;
             BlockState blockStateOld;
             for (int x = 0; x < 2; x++)
@@ -96,22 +97,19 @@ namespace Mvk2.Item.List
                             if (!world.SetBlockState(blockPosCheck, 
                                 new BlockState(Block.IndexBlock | met << 12), 47))
                             {
-                                result = false;
+                                result = 0;
                             }
-                            else
+                            else if (!player.CreativeMode && player is PlayerServer playerServer)
                             {
-                                if (!player.CreativeMode)
-                                {
-                                    blockStateOld.GetBlock().DropBlockAsItem(player.GetWorldServer(),
-                                        player, blockPos, blockStateOld);
-                                }
+                                blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(),
+                                    playerServer, blockPos, blockStateOld);
                             }
                         }
                     }
                 }
             }
 
-            if (!result)
+            if (result == 0)
             {
                 // Откатать на воздух!
                 for (int x = 0; x < 2; x++)

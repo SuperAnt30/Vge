@@ -399,6 +399,13 @@ namespace Vge.Util
             return (x + y + z) / 3f;
         }
 
+        /// <summary>
+        /// Подедить значение на 16, это для упрощения, чтоб ранее писать в пикселах
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AxisAlignedBB Divide16()
+            => new AxisAlignedBB(Min / 16f, Max / 16f, false);
+
         #region Для коллизии Gjk или Sat
 
         /// <summary>

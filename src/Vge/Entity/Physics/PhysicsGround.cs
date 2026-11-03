@@ -255,7 +255,7 @@ namespace Vge.Entity.Physics
                 // Не прыгаем (момент взлёта)
                 _isNotJump = Entity.OnGround 
                     || MotionY != y && MotionY < 0f
-                    || Entity.PresenceBlocks.IsInLiquidAutoJump;
+                    || Entity.PresenceBlocks.IsInAutoJump;
             }
         }
         /// <summary>
@@ -273,7 +273,7 @@ namespace Vge.Entity.Physics
 
                 float heightAutoJump = _heightAutoJump;
 
-                if (Entity.PresenceBlocks.IsInLiquidAutoJump)
+                if (Entity.PresenceBlocks.IsInAutoJump)
                 {
                     heightAutoJump += Entity.Size.GetHeight() * FactorJumpLiquid;
                 }

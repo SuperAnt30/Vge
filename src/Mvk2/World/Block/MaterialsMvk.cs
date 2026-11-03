@@ -63,6 +63,10 @@ namespace Mvk2.World.Block
         /// Материал двери
         /// </summary>
         public readonly MaterialBase Door;
+        /// <summary>
+        /// Материал верёвка
+        /// </summary>
+        public readonly MaterialBase Rope;
 
         public MaterialsMvk()
         {
@@ -82,6 +86,7 @@ namespace Mvk2.World.Block
             Glass = reg.RegState(new MaterialMvk(EnumMaterial.Glass));
             Lava = reg.RegState(new MaterialMvk(EnumMaterial.Lava));
             Door = reg.RegState(new MaterialMvk(EnumMaterial.Door));
+            Rope = reg.RegState(new MaterialMvk(EnumMaterial.Rope));
         }
     }
 }

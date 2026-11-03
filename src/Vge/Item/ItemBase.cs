@@ -234,7 +234,11 @@ namespace Vge.Item
             bool isCheckCollision = !block.IsCollidable;
             if (!isCheckCollision)
             {
-                AxisAlignedBB axisBlock = block.GetCollisionOne(blockPos, blockState.Met);
+                // Определяем желаемый Met
+                int met = block.OnBlockPlaced(world, blockPos,
+                    new BlockState(block.IndexBlock), side, facing, playerYaw).Met;
+
+                AxisAlignedBB axisBlock = block.GetCollisionOne(blockPos, met);
                 // Проверка коллизии сущностей и блока
                 isCheckCollision = !player.Size.IntersectsWith(axisBlock);
                     //world.GetEntitiesWithinAABB(ChunkBase.EnumEntityClassAABB.EntityLiving, axisBlock, player.Id).Count == 0;

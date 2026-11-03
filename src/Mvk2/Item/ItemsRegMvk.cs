@@ -101,10 +101,19 @@ namespace Mvk2.Item
 
         #endregion
 
+        #region Вещи-предметы для установки блока
+
         /// <summary>
         /// Дверь из досок
         /// </summary>
         public static ItemBase DoorOfPlanks { get; private set; }
+        /// <summary>
+        /// Верёвка
+        /// </summary>
+        public static ItemBase Rope { get; private set; }
+
+        #endregion
+
         /// <summary>
         /// Консерва
         /// </summary>
@@ -229,7 +238,10 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("PickaxeSteel", PickaxeSteel = new ItemPickaxe(), "Tools");
             ItemsReg.RegisterItemClass("PickaxeRed", PickaxeRed = new ItemPickaxe(), "Tools");
 
-            ItemsReg.RegisterItemClass("DoorOfPlanks", DoorOfPlanks = new ItemDoor(BlocksRegMvk.DoorOfPlanks)); 
+            ItemsReg.RegisterItemClass("DoorOfPlanks", DoorOfPlanks = new ItemDoor(BlocksRegMvk.DoorOfPlanks));
+            //ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.BranchFruit));
+            ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.Rope));
+
             ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
             ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
