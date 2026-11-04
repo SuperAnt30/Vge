@@ -138,6 +138,12 @@ namespace Vge.Item
         /// <summary>
         /// Создает данный ItemStack как EntityItem в мире в заданной позиции 
         /// </summary>
+        public static void SpawnAsEntity(WorldServer world, BlockPos blockPos, ItemBase item, byte amount = 1)
+            => SpawnAsEntity(world, blockPos, new ItemStack(item, amount));
+
+        /// <summary>
+        /// Создает данный ItemStack как EntityItem в мире в заданной позиции 
+        /// </summary>
         public static void SpawnAsEntity(WorldServer world, BlockPos blockPos, ItemStack itemStack)
         {
             Vector3 pos = new Vector3(

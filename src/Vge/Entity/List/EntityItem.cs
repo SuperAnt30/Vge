@@ -7,7 +7,9 @@ using Vge.Entity.Sizes;
 using Vge.Item;
 using Vge.NBT;
 using Vge.Renderer.World.Entity;
+using Vge.Util;
 using Vge.World;
+using Vge.World.Block;
 using WinGL.Util;
 
 namespace Vge.Entity.List
@@ -21,6 +23,10 @@ namespace Vge.Entity.List
         /// Сколько тиков жизни
         /// </summary>
         protected int _age = 0;
+        /// <summary>
+        /// Флаг для корректности выталкивания предмета из блоков
+        /// </summary>
+        private bool _flagCaughtInBlock;
 
         public EntityItem()
         {
@@ -126,6 +132,9 @@ namespace Vge.Entity.List
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool CanBeCollidedWith() => true;
 
+
+       
+
         /// <summary>
         /// Игровой такт на сервере
         /// </summary>
@@ -151,6 +160,32 @@ namespace Vge.Entity.List
 
                 // Обновить наличие блоков в каких находится игрок
                 UpdatePresenceBlocks(_worldServer);
+
+                if (_flagCaughtInBlock)
+                {
+                    if (!Physics.AreWeStuckInBlocks((ISizeEntityBox)Size))
+                    {
+                        // Вылезли из блоков, включаем гравитацию и запрет сквозь стены
+                        Physics.SetGravity(1);
+                        NoClip = false;
+                        _flagCaughtInBlock = false;
+                    }
+                    else
+                    {
+                        // Мы попрежнему застряли
+                        _PushOutOfBlocks();
+                    }
+                }
+                else if (Physics.CaughtInBlock > 2) // Пока застрявшие, счётчик не идёт сколько времени
+                {
+                    // Мы застряли, запускаем алгоритм выталкивания
+                    _PushOutOfBlocks();
+                    _flagCaughtInBlock = true;
+                    // Отключаем гравитацию и ходим сквозь стены
+                    Physics.SetGravity(0);
+                    NoClip = true;
+                }
+
                 // Расчитать перемещение в объекте физика
                 Physics.LivingUpdate();
 
@@ -165,7 +200,8 @@ namespace Vge.Entity.List
                 //    }
                 //}
 
-                if (Physics.CaughtInBlock > 2 || Physics.CaughtInEntity > 30)
+
+                if (Physics.CaughtInBlock > 100 || Physics.CaughtInEntity > 400)
                 {
                     SetDead();
                     return;
@@ -183,7 +219,7 @@ namespace Vge.Entity.List
                     //RotationPrevPitch = RotationPitch;
 
                     UpdatePositionPrev();
-                        
+
                     LevelMotionChange = 2;
                 }
                 else if (!Physics.IsPhysicSleep())
@@ -260,6 +296,70 @@ namespace Vge.Entity.List
             {
                 SetDead();
                 player.AddItemStackToInventory(GetEntityItemStack());
+            }
+        }
+
+        /// <summary>
+        /// Вытолкнуть из блоков
+        /// </summary>
+        private void _PushOutOfBlocks()
+        {
+            BlockPos blockPos = new BlockPos(PosX, PosY, PosZ);
+            float mv = _worldServer.Rnd.NextFloat() * .1f + .05f;
+            bool b = true;
+            if (_worldServer.Rnd.Next(10) != 0)
+            {
+                int side0 = _worldServer.Rnd.Next(4);
+                int side;
+
+                for (int i = 2; i < 6; i++)
+                {
+                    side = side0 + i;
+                    if (side > 5) side = 2;
+
+                    if (!_worldServer.GetBlockState(blockPos.Offset(side)).GetBlock().IsCollidable)
+                    {
+                        if (side == 2)
+                        {
+                            // X +
+                            Physics.MotionX = mv;
+                            Physics.MotionY *= .75f;
+                            Physics.MotionZ *= .25f;
+                        }
+                        else if (side == 3)
+                        {
+                            // X -
+                            Physics.MotionX = -mv;
+                            Physics.MotionY *= .75f;
+                            Physics.MotionZ *= .25f;
+                        }
+                        else if (side == 4)
+                        {
+                            // Z -
+                            Physics.MotionX *= .25f;
+                            Physics.MotionY *= .75f;
+                            Physics.MotionZ = -mv;
+                        }
+                        else
+                        {
+                            // Z +
+                            Physics.MotionX *= .25f;
+                            Physics.MotionY *= .75f;
+                            Physics.MotionZ = mv;
+                        }
+
+                        if (Physics.IsPhysicSleep()) Physics.AwakenPhysics();
+                        b = false;
+                        break;
+                    }
+                }
+            }
+            if (b)
+            {
+                Physics.MotionX *= .75f;
+                Physics.MotionY = mv * 2f;
+                Physics.MotionZ *= .75f;
+                if (Physics.IsPhysicSleep()) Physics.AwakenPhysics();
             }
         }
 

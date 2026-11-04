@@ -110,7 +110,10 @@ namespace Vge.Item.List
                                     blockPos.ToVector3Center(), 1, 1, player.Id);
                             }
 
-                            player.Inventory.DecrCurrentItem(amount);
+                            if (!player.CreativeMode)
+                            {
+                                player.Inventory.DecrCurrentItem(amount);
+                            }
                             return true;
                         }
                     }

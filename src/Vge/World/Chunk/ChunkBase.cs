@@ -462,7 +462,7 @@ namespace Vge.World.Chunk
                 else if ((flag & 64) == 0) // проверку сломаного
                 {
                     // Действие блока после его удаления
-                    blockOld.OnBreakBlock(World, (ChunkServer)this, blockPos, blockStateOld);
+                    blockOld.OnBreakBlock((WorldServer)World, (ChunkServer)this, blockPos, blockStateOld);
                 }
             }
             else if (blockState.Met != blockStateOld.Met) // Метданные разные
@@ -654,7 +654,8 @@ namespace Vge.World.Chunk
         private void _AwakenEntitiesTouching(BlockPos blockPos)
         {
             int x = blockPos.X;
-            int y = blockPos.Y + 1;
+            int y = blockPos.Y;
+            int y1 = y + 1; // Нижний блок, чтоб сущность начала падать если это надо
             int z = blockPos.Z;
             int cy = y >> 4;
 
@@ -666,7 +667,8 @@ namespace Vge.World.Chunk
                 entity = ListEntitiesSection[cy].GetAt(i);
                 if (!entity.IsDead && entity.IsPhysicSleep())
                 {
-                    if (entity.Size.IntersectsWithBlock(x, y, z))
+                    if (entity.Size.IntersectsWithBlock(x, y, z)
+                        || entity.Size.IntersectsWithBlock(x, y1, z))
                     {
                         entity.AwakenPhysicSleep();
                     }

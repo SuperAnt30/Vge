@@ -43,7 +43,7 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Действие блока после его удаления
         /// </summary>
-        public override void OnBreakBlock(WorldBase world, ChunkServer chunk,
+        public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
             BlockPos blockPos, BlockState stateOld)
         {
             if (!world.IsRemote)

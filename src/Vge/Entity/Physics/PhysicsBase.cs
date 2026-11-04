@@ -266,6 +266,25 @@ namespace Vge.Entity.Physics
         }
 
         /// <summary>
+        /// Мы застряли в блоках?
+        /// </summary>
+        public bool AreWeStuckInBlocks(ISizeEntityBox size)
+        {
+            if (Collision.IsStaticBoundingBoxes(size.GetBoundingBox()))
+            {
+                if (CaughtInBlock < CountTickCaughtMax)
+                {
+                    CaughtInBlock++;
+                    AwakenPhysics();
+                }
+                return true;
+            }
+
+            _NotClampedBlock();
+            return false;
+        }
+
+        /// <summary>
         /// Проверка перемещения со столкновением для медленный сущностей с hitbox
         /// </summary>
         protected void _CheckMoveColliding(ISizeEntityBox size)

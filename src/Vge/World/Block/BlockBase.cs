@@ -797,7 +797,7 @@ namespace Vge.World.Block
         /// Действие блока после его удаления
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void OnBreakBlock(WorldBase world, ChunkServer chunk, 
+        public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld) { }
 
         ///// <summary>

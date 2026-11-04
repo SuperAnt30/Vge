@@ -1,6 +1,6 @@
 {
     MaxStackSize: 1,
-    Width: .75,
+    Width: .45,
     Height: 0.125,
     Hold: "HoldTwo",
     Action: "ActionBlock",

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Mvk2.Item;
+using System;
 using System.Runtime.CompilerServices;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -75,18 +77,57 @@ namespace Mvk2.World.Block.List
         }
 
         /// <summary>
-        /// Смена соседнего блока
+        /// Действие блока после его удаления
         /// </summary>
-        public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState stateOld)
         {
-            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
-            if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
+            // Надо проверить на наличие верёвки снизу и удалить её
+            byte count = 0;
+            bool b = true;
+            int y = blockPos.Y;
+            while (b && blockPos.Y > 2)
             {
-                //DropBlockAsItem(worldIn, blockPos, state);
-                world.SetBlockToAir(blockPos);
+                blockPos.Y--;
+                if (chunk.GetBlockState(blockPos).Id == IndexBlock)
+                {
+                    if (!world.SetBlockToAir(blockPos, 111))
+                    {
+                        // Ошибка, в лог надо
+                        world.SetLog("BlockRope не удалился в позиции " + blockPos);
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                }
+                else
+                {
+                    b = false;
+                }
+            }
+            blockPos.Y = y;
+
+            if (count > 0)
+            {
+                ItemStack.SpawnAsEntity(world, blockPos, ItemsRegMvk.Rope, count);
             }
         }
+
+        /// <summary>
+        /// Смена соседнего блока
+        /// </summary>
+        //public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
+        //    BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+        //{
+        //    base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+        //    if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
+        //    {
+        //        //DropBlockAsItem(worldIn, blockPos, state);
+        //        world.SetBlockToAir(blockPos);
+        //    }
+        //}
 
         /// <summary> 
         /// Проверка установи блока, можно ли его установить тут
