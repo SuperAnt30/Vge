@@ -61,7 +61,7 @@ namespace Mvk2.Item.List
                     if (chunk.GetBlockState(blockPos).IsAir()
                         && chunk.GetBlockState(blockPos.OffsetDown()).IsAir())
                     {
-                        if (!world.SetBlockState(blockPos, blockState, 47))
+                        if (!world.SetBlockState(blockPos, blockState, BlockFlag.cParticle))
                         {
                             countMax = 0;
                         }

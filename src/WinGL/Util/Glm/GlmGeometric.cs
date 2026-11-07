@@ -243,6 +243,20 @@ namespace WinGL.Util
 
         #endregion
 
+        /// <summary>
+        /// Пополам
+        /// </summary>
+        /// <param name="x1">значение 1</param>
+        /// <param name="x2">значение 2</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float InHalf(float x1, float x2)
+            => x1 > x2 ? x2 + ((x1 - x2) / 2) : x1 + ((x2 - x1) / 2);
 
+        /// <summary>
+        /// Найти точку по середине
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 InHalf(Vector3 v1, Vector3 v2)
+            => new Vector3(InHalf(v1.X, v2.X), InHalf(v1.Y, v2.Y), InHalf(v1.Z, v2.Z));
     }
 }

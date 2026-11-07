@@ -44,14 +44,14 @@ namespace Mvk2.World.Block.List
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
-            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+            base.NeighborBlockChange(world, chunk, blockPos, blockState);
             if (!CanBlockStay(world, chunk, blockPos))
             {
                 // Снизу не подходящий блок для травы
                 //DropBlockAsItem(worldIn, blockPos, state);
-                world.SetBlockToAir(blockPos, 47);
+                world.SetBlockToAir(blockPos, BlockFlag.cSound);
             }
             else
             {
@@ -103,7 +103,7 @@ namespace Mvk2.World.Block.List
                     pos = blockPos.OffsetUp(i);
                     if (chunk.GetBlockState(pos).Id == 0)
                     {
-                        world.SetBlockState(pos, new BlockState(BlocksRegMvk.GrassNull.IndexBlock), 46);
+                        world.SetBlockState(pos, new BlockState(BlocksRegMvk.GrassNull.IndexBlock), BlockFlag.cNotify);
                     }
                 }
             }

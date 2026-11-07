@@ -5,6 +5,7 @@
     Hold: "HoldTwo",
     Action: "ActionBlock",
     Two: true,
+
     Sprite: "Items/DoorOfPlanks",
     SpriteGui: "Items/DoorOfPlanks",
     View: { Rotate:[0, 0, 0], Offset:[0, 8, 0], Scale: 2.0 }

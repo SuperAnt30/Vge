@@ -94,8 +94,7 @@ namespace Mvk2.Item.List
                             blockPosCheck = blockPos.Offset(x, y, z);
                             blockStateOld = world.GetBlockState(blockPosCheck);
                             int met = BlockDoor.ConvMetData(x, y, z) + add;
-                            if (!world.SetBlockState(blockPosCheck, 
-                                new BlockState(Block.IndexBlock | met << 12), 47))
+                            if (!world.SetBlockState(blockPosCheck, new BlockState(Block.IndexBlock | met << 12), BlockFlag.cParticle))
                             {
                                 result = 0;
                             }

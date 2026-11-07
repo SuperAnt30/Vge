@@ -298,7 +298,6 @@ namespace Vge.World.Block
 
         public override string ToString() => X + "; " + Y + "; " + Z;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
         {
             if (obj.GetType() == typeof(BlockPos))
@@ -309,7 +308,6 @@ namespace Vge.World.Block
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() 
             => X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
     }

@@ -344,8 +344,7 @@ namespace Vge.World.Light
         /// <param name="y">глобальная позиция блока y</param>
         /// <param name="z">глобальная позиция блока z</param>
         /// <param name="differenceOpacity">Разница в непрозрачности, только для небесного освещения</param>
-        /// <param name="replaceAir">блок заменён на воздух или на оборот воздух заменён на блок</param>
-        public void CheckLightFor(BlockPos blockPos, bool differenceOpacity, bool isModify, bool isModifyRender)
+        public void CheckLightFor(BlockPos blockPos, bool differenceOpacity)
         {
             int x = blockPos.X;
             int y = blockPos.Y;
@@ -395,28 +394,23 @@ namespace Vge.World.Light
             }
             int c1 = _countBlock;
             // Проверка яркости неба
-            if (differenceOpacity)// || replaceAir)
+            if (differenceOpacity)
             {
                 _chunk.Light.CheckLightSky(x, y, z, lo);
             }
 
             // Обновление для рендера чанков
-            if (isModifyRender)
+            if (_countBlock <= 1 && _axisX0 == _axisX1 && _axisY0 == _axisY1 && _axisZ0 == _axisZ1)
             {
-                if (_countBlock <= 1 && _axisX0 == _axisX1 && _axisY0 == _axisY1 && _axisZ0 == _axisZ1)
-                {
-                    _world.MarkBlockForUpdate(_axisX0, _axisY0, _axisZ0);
-                }
-                else
-                {
-                    _world.MarkBlockRangeForUpdate(_axisX0, _axisY0, _axisZ0, _axisX1, _axisY1, _axisZ1);
-                }
+                _world.MarkBlockForUpdate(_axisX0, _axisY0, _axisZ0);
             }
+            else
+            {
+                _world.MarkBlockRangeForUpdate(_axisX0, _axisY0, _axisZ0, _axisX1, _axisY1, _axisZ1);
+            }
+
             // Сохранение чанков
-            if (isModify)
-            {
-                _world.MarkBlockRangeForModified(_axisX0, _axisZ0, _axisX1, _axisZ1);
-            }
+            _world.MarkBlockRangeForModified(_axisX0, _axisZ0, _axisX1, _axisZ1);
 
             long timeEnd = _world.ElapsedTicks();
             _debugStr = string.Format("Count B/S: {1}/{2} Light: {0:0.00}ms",

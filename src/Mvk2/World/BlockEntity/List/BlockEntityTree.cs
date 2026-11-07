@@ -221,13 +221,17 @@ namespace Mvk2.World.BlockEntity.List
                 _UpdateAxis();
 
                 // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
+
+                world.ClearListNeighboringBlocks();
+                world.AddEntryToNotifyNeighborBlocks(blockPos);
                 BlockState blockState;
                 foreach (PosId pos in list)
                 {
                     blockState = world.GetBlockState(pos.Pos);
                     if (pos.Id == blockState.Id)
                     {
-                        world.SetBlockToAir(pos.Pos, 110); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock 
+                        world.SetBlockToAir(pos.Pos, BlockFlag.nBreakParticle); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock 
+                        world.AddEntryToNotifyNeighborBlocks(pos.Pos);
                         // Разрушаем блок ветки
 
                         //EntityItem entity = new EntityItem();
@@ -239,11 +243,13 @@ namespace Mvk2.World.BlockEntity.List
                         //entity.Physics.MotionZ = (pos.Pos.Y - blockPos.Y) * .015f;
                         //entity.SetEntityItemStack(new ItemStack(ItemsRegMvk.Brol, 1));
                         //entity.SetDefaultPickupDelay();
-                      //  world.SpawnEntityInWorld(entity);
+                        //  world.SpawnEntityInWorld(entity);
 
                         blockState.GetBlock().DropBlockAsItem(world, null, pos.Pos, blockState);
                     }
                 }
+
+                world.RunEntryToNotifyNeighborBlocks();
                 return true;
             }
             return false;
@@ -265,6 +271,7 @@ namespace Mvk2.World.BlockEntity.List
 
             // Удаляем блоки, уже при обращении BlockEntytyTree этих блоков быть не должно у этого дерева
             BlockPos pos = new BlockPos();
+            world.ClearListNeighboringBlocks();
             foreach (BlockPosLoc posLoc in blocks)
             {
                 pos.X = posLoc.X + biasX;
@@ -272,9 +279,11 @@ namespace Mvk2.World.BlockEntity.List
                 pos.Z = posLoc.Z + biasZ;
                 if (posLoc.Id == world.GetBlockState(pos).Id)
                 {
-                    world.SetBlockToAir(pos, 110); // 2 4 8 32 64
+                    world.SetBlockToAir(pos, BlockFlag.nBreakParticle); // 2 4 8 32 64
+                    world.AddEntryToNotifyNeighborBlocks(pos);
                 }
             }
+            world.RunEntryToNotifyNeighborBlocks();
         }
 
         /// <summary>

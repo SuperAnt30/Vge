@@ -95,7 +95,7 @@ namespace Vge.Item.List
                 if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);
-                    if (world.SetBlockState(blockPos, blockState, 47))
+                    if (world.SetBlockState(blockPos, blockState, BlockFlag.cParticle))
                     {
                         byte amount = _InstallAdditionalBlocks(player, blockState, blockPos, side, facing, playerYaw);
                         if (amount > 0)
@@ -106,8 +106,11 @@ namespace Vge.Item.List
                                 blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(), 
                                     playerServer, blockPos, blockStateOld);
 
-                                world.PlaySound(Block.Material.SamplePlace(world.Rnd),
-                                    blockPos.ToVector3Center(), 1, 1, player.Id);
+                                if (Block.Material.IsSamplePlace())
+                                {
+                                    world.PlaySound(Block.Material.SamplePlace(world.Rnd),
+                                        blockPos.ToVector3Center(), 1, 1, player.Id);
+                                }
                             }
 
                             if (!player.CreativeMode)
@@ -164,7 +167,7 @@ namespace Vge.Item.List
             BlockState blockState = Block.OnBlockPlaced(player.GetWorld(), blockPos,
                 new BlockState(Block.IndexBlock), side, facing, player.RotationYaw);
 
-            return new YouCanPlaceIt(canPlace, Block.GetOutline(blockPos, blockState.Met, 0));
+            return new YouCanPlaceIt(canPlace, Block.GetOutline(blockPos, blockState.Met));
         }
 
         #endregion

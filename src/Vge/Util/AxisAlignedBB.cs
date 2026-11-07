@@ -406,6 +406,12 @@ namespace Vge.Util
         public AxisAlignedBB Divide16()
             => new AxisAlignedBB(Min / 16f, Max / 16f, false);
 
+        /// <summary>
+        /// Получить вектор центра
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 GetCenter() => Glm.InHalf(Min, Max);
+
         #region Для коллизии Gjk или Sat
 
         /// <summary>

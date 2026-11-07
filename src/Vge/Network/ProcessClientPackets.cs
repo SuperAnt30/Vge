@@ -8,6 +8,7 @@ using Vge.Network.Packets;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Util;
+using Vge.World.Block;
 
 namespace Vge.Network
 {
@@ -415,7 +416,7 @@ namespace Vge.Network
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _Handle23BlockChange(PacketS23BlockChange packet)
         {
-            Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), 4);
+            Game.World.SetBlockState(packet.GetBlockPos(), packet.GetBlockState(), BlockFlag.None);
             if ((packet.Progress & 1 << 7) != 0)
             {
                 // Удаление

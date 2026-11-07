@@ -461,13 +461,13 @@ namespace Mvk2.World.Gen.Feature
                         if (world.GetBlockState(pos).Id == 0)
                         {
                             // Без соседей
-                            world.SetBlockState(pos, blockCache.GetBlockState(), 44);
+                            world.SetBlockState(pos, blockCache.GetBlockState(), BlockFlag.cQuiet);
                         }
                     }
                     else
                     {
                         // Без соседей, кроме первого
-                        world.SetBlockState(pos, blockCache.GetBlockState(), i == 0 ? 46 : 44);
+                        world.SetBlockState(pos, blockCache.GetBlockState(), i == 0 ? BlockFlag.cNotify : BlockFlag.cQuiet);
                     }
                 }
             }
@@ -888,7 +888,7 @@ namespace Mvk2.World.Gen.Feature
             if (blockState.LightSky < 10)
             {
                 // Саженец засох из-за отсутствии неба
-                world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), 44);
+                world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), BlockFlag.cQuiet);
             }
             else
             {
@@ -916,7 +916,7 @@ namespace Mvk2.World.Gen.Feature
                     else if (_NextInt(5) == 0)
                     {
                         // Саженец засох
-                        world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), 44);
+                        world.SetBlockState(blockPos, new BlockState(BlocksRegMvk.SaplingDry.IndexBlock), BlockFlag.cQuiet);
                     }
                     _blocks = null;
                 }
@@ -1032,7 +1032,7 @@ namespace Mvk2.World.Gen.Feature
                     if (blockStateSide.IsAir() && blockStateSide.LightSky > 10)
                     {
                         // Листва
-                        world.SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
+                        world.SetBlockState(blockCache.Position, blockCache.GetBlockState(), BlockFlag.cNotify);
                     }
                 }
                 world.SetBlockStateMet(blockPos, blockState.Met - 512, true);

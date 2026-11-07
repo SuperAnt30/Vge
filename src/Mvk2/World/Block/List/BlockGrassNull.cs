@@ -15,13 +15,13 @@ namespace Mvk2.World.Block.List
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
-            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+            base.NeighborBlockChange(world, chunk, blockPos, blockState);
             if (!CanBlockStay(world, chunk, blockPos))
             {
                 // Снизу не подходящий блок
-                world.SetBlockToAir(blockPos, 47);
+                world.SetBlockToAir(blockPos, BlockFlag.cSound);
             }
         }
 

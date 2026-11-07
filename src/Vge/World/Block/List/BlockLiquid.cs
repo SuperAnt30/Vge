@@ -356,7 +356,7 @@ namespace Vge.World.Block.List
         /// </summary>
         private void _SetBlock(WorldServer world, BlockPos pos, int met, bool isAddLiquid)
         {
-            world.SetBlockState(pos, new BlockState() { Id = IndexBlock, Met = met }, 46);
+            world.SetBlockState(pos, new BlockState() { Id = IndexBlock, Met = met }, BlockFlag.cNotify);
             if (isAddLiquid) world.SetBlockAddLiquidTick(pos, _tickRate);
             else world.SetBlockTick(pos, _tickRate);
         }
@@ -530,7 +530,7 @@ namespace Vge.World.Block.List
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
             if (!_Mixing(world, blockPos, blockState))
             {

@@ -51,13 +51,13 @@ namespace Mvk2.World.Block.List
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
-            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+            base.NeighborBlockChange(world, chunk, blockPos, blockState);
             if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
-                world.SetBlockToAir(blockPos, 47); // 1 2 4 8 32 без звука но с частичками
+                world.SetBlockToAir(blockPos, BlockFlag.cParticle); // 1 2 4 8 32 без звука но с частичками
             }
         }
 
@@ -107,7 +107,7 @@ namespace Mvk2.World.Block.List
         {
             if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
             {
-                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), 44);
+                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), BlockFlag.cQuiet); // 44
                 return true;
             }
             return false;

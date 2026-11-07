@@ -527,14 +527,8 @@ namespace Vge.Entity.Player
         private void _BlockDestroyed(BlockBase block)
         {
             _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos));
-            _game.World.SetBlockToAir(_blockPos, 46);
+            _game.World.SetBlockToAir(_blockPos);
             _isBlockDestroy = false;
-
-            //if (block.IsParticle)
-            //{
-            //    _game.World.SpawnParticle(0, 20, _blockPos.ToVector3Center(),
-            //        new Vector3(1), 1, block.IndexBlock);
-            //}
         }
 
         /// <summary>

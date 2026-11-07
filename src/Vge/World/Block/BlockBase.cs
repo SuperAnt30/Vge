@@ -503,7 +503,7 @@ namespace Vge.World.Block
                 if (FullBlock) return true;
                 // Если блок не полный, обрабатываем хитбокс блока
                 Vector3 a = new Vector3(px, py, pz);
-                AxisAlignedBB[] aabbs = GetCollisionBoxesToList(pos, met);
+                AxisAlignedBB[] aabbs = _GetCollisionBoxesToList(pos, met);
                 Vector3 pos2 = a + dir * maxDist;
                 foreach (AxisAlignedBB aabb in aabbs)
                 {
@@ -542,7 +542,7 @@ namespace Vge.World.Block
         /// Передать фигуру в виде списка ограничительных рамок для курсора или проекции
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual Vector3[] GetOutline(BlockPos pos, int met, float dis)
+        public virtual Vector3[] GetOutline(BlockPos pos, int met, float dis = 0)
         {
             Vector3[] vectors = _GetOutlineLocal(met);
             Vector3[] vectorsResult = new Vector3[vectors.Length];
@@ -556,13 +556,15 @@ namespace Vge.World.Block
             }
             else
             {
+                // Вытащить AABB чтоб сменить центр. А то если блок смещён, коряво
+                Vector3 center = GetCenterBoxes(met);
                 for (int i = 0; i < vectors.Length; i++)
                 {
                     vectorsResult[i] = new Vector3(vectors[i]);
 
-                    vectorsResult[i].X += (vectorsResult[i].X < 0.5f ? -dis : dis) + pos.X;
-                    vectorsResult[i].Y += (vectorsResult[i].Y < 0.5f ? -dis : dis) + pos.Y;
-                    vectorsResult[i].Z += (vectorsResult[i].Z < 0.5f ? -dis : dis) + pos.Z;
+                    vectorsResult[i].X += (vectorsResult[i].X < center.X ? -dis : dis) + pos.X;
+                    vectorsResult[i].Y += (vectorsResult[i].Y < center.Y ? -dis : dis) + pos.Y;
+                    vectorsResult[i].Z += (vectorsResult[i].Z < center.Z ? -dis : dis) + pos.Z;
                 }
             }
             return vectorsResult;
@@ -578,7 +580,7 @@ namespace Vge.World.Block
         /// Передать список ограничительных рамок блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual AxisAlignedBB[] GetCollisionBoxesToList(BlockPos pos, int met)
+        private AxisAlignedBB[] _GetCollisionBoxesToList(BlockPos pos, int met)
         {
             AxisAlignedBB[] boxes = _GetCollisionBoxesLocal(met);
             AxisAlignedBB[] boxesResult = new AxisAlignedBB[boxes.Length];
@@ -603,12 +605,31 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Получить вектор центра рамки локально координаты (0.0 - 1.0 => 0.5)
+        /// </summary>
+        public Vector3 GetCenterBoxes(int met)
+        {
+            AxisAlignedBB[] boxes = _GetCollisionBoxesLocal(met);
+
+            if (boxes.Length > 0)
+            {
+                AxisAlignedBB aabb = boxes[0];
+                for (int i = 1; i < boxes.Length; i++)
+                {
+                    aabb = aabb.AddCoord(boxes[i].Min).AddCoord(boxes[i].Max);
+                }
+                return aabb.GetCenter();
+            }
+            return new Vector3(.5f, .5f, .5f);
+        }
+
+        /// <summary>
         /// Получить одну большую рамку блока, если их несколько они объеденяться, 
         /// используется для установки блока
         /// </summary>
         public AxisAlignedBB GetCollisionOne(BlockPos pos, int met)
         {
-            AxisAlignedBB[] axes = GetCollisionBoxesToList(pos, met);
+            AxisAlignedBB[] axes = _GetCollisionBoxesToList(pos, met);
             if (axes.Length == 1)
             {
                 return axes[0];
@@ -649,6 +670,7 @@ namespace Vge.World.Block
             Passable = true;
 
             _quads = new QuadSide[][] { new QuadSide[] { new QuadSide(0) } };
+            _hitbox = new Vector3[][] { new Vector3[] { new Vector3(0) } };
         }
 
         #endregion
@@ -771,7 +793,7 @@ namespace Vge.World.Block
         /// Смена соседнего блока
         /// </summary>
         public virtual void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
             if (IsAddLiquid(blockState.Met))
             {
@@ -789,14 +811,19 @@ namespace Vge.World.Block
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual BlockState OnBlockPlaced(WorldBase world, BlockPos blockPos, 
             BlockState blockState, Pole side, Vector3 facing, float playerYaw) => blockState;
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его установки, не смена met!!! Только на сервере
+        /// Удалять тут другие блоки НЕЛЬЗЯ
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void OnBlockAdded(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState state) { }
+
+        /// <summary>
+        /// Действие блока после его удаления, только на сервере
+        /// </summary>
         public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState stateOld) { }
 
@@ -837,9 +864,14 @@ namespace Vge.World.Block
         /// <summary>
         /// Проиграть звук поломки
         /// </summary>
-        public void PlaySoundBreak(WorldBase world, BlockPos blockPos) 
-            => world.PlaySoundDistance(Material.SampleBreak(world.Rnd), 
-                blockPos.ToVector3Center(), 1f, 1f);
+        public void PlaySoundBreak(WorldBase world, BlockPos blockPos)
+        {
+            if (Material.IsSampleBreak())
+            {
+                world.PlaySoundDistance(Material.SampleBreak(world.Rnd),
+                    blockPos.ToVector3Center(), 1f, 1f);
+            }
+        }
 
         /// <summary>
         /// Получить строку мет данных, для отладки

@@ -29,13 +29,13 @@ namespace Mvk2.World.Block.List
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
-            base.NeighborBlockChange(world, chunk,blockPos, blockState, neighborBlock);
+            base.NeighborBlockChange(world, chunk,blockPos, blockState);
             if (!CanBlockStay(world, chunk, blockPos))
             {
                 //DropBlockAsItem(worldIn, blockPos, state);
-                world.SetBlockToAir(blockPos);
+                world.SetBlockToAir(blockPos, BlockFlag.cSound);
             }
         }
 

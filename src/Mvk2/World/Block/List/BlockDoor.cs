@@ -177,14 +177,15 @@ namespace Mvk2.World.Block.List
             }
             else
             {
+                Vector3 center = GetCenterBoxes(met);
                 for (int i = 0; i < vectors.Length; i++)
                 {
                     vectorsResult[i] = new Vector3(vectors[i].X - bx,
                         vectors[i].Y - by, vectors[i].Z - bz);
 
-                    vectorsResult[i].X += (vectorsResult[i].X < 0.5f ? -dis : dis) + pos.X;
-                    vectorsResult[i].Y += (vectorsResult[i].Y < 0.5f ? -dis : dis) + pos.Y;
-                    vectorsResult[i].Z += (vectorsResult[i].Z < 0.5f ? -dis : dis) + pos.Z;
+                    vectorsResult[i].X += (vectorsResult[i].X < center.X ? -dis : dis) + pos.X;
+                    vectorsResult[i].Y += (vectorsResult[i].Y < center.Y ? -dis : dis) + pos.Y;
+                    vectorsResult[i].Z += (vectorsResult[i].Z < center.Z ? -dis : dis) + pos.Z;
                 }
             }
             return vectorsResult;
@@ -341,37 +342,30 @@ namespace Mvk2.World.Block.List
             int bz = (met & 256) != 0 ? 1 : 0;
             int by = met >> 9 & 3;
 
+            world.ClearListNeighboringBlocks();
+            BlockPos pos;
             for (int x = 0; x < 2; x++)
             {
                 for (int z = 0; z < 2; z++)
                 {
                     for (int y = 0; y < 4; y++)
                     {
-                        world.SetBlockToAir(blockPos.Offset(x - bx, y - by, z - bz), 108); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock
+                        pos = blockPos.Offset(x - bx, y - by, z - bz);
+                        world.SetBlockToAir(pos, BlockFlag.nBreakParticle); // 2 4 8 32 64 без частичек и звука, и отключен OnBreakBlock
+                        world.AddEntryToNotifyNeighborBlocks(pos);
                     }
                 }
             }
-
-            for (int x = 0; x < 2; x++)
-            {
-                for (int z = 0; z < 2; z++)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        world.NotifyNeighborsOfStateChange(blockPos.Offset(x - bx, y - by, z - bz), 
-                            BlocksRegMvk.Air);
-                    }
-                }
-            }
+            world.RunEntryToNotifyNeighborBlocks();
         }
 
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
         public override void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
+            BlockPos blockPos, BlockState blockState)
         {
-            base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
+            base.NeighborBlockChange(world, chunk, blockPos, blockState);
 
             int met = blockState.Met;
             int bx = (met & 128) != 0 ? 1 : 0;
@@ -382,9 +376,8 @@ namespace Mvk2.World.Block.List
 
             if (!CanDoorStay(world, blockPos.Offset(-bx, -by, -bz), left, pole))
             {
-                OnBreakBlock(world, chunk, blockPos, blockState);
-                DropBlockAsItem(world, null, blockPos, blockState);
-                PlaySoundBreak(world, blockPos);
+                // Снизу не подходящий блок
+                world.SetBlockToAir(blockPos, BlockFlag.cSound);
             }
         }
 

@@ -14,7 +14,7 @@ namespace Mvk2.Entity.Damage
         /// <summary>
         /// Состояние (Например, урон для инструментов) 
         /// </summary>
-        private float _health = 5;
+        private float _health = 25;
 
         /// <summary>
         /// Сущность к которой прекреплена физика
@@ -36,6 +36,7 @@ namespace Mvk2.Entity.Damage
             EntityLiving entityAttack = null)
         {
             if (_health <= 0) return false;
+            if (entityAttack != null) damage *= .1f;
 
             return base.OnAttack(source, hitY, damage, entityAttack);
         }

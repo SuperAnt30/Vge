@@ -4,6 +4,8 @@
     Translucent: true,
     LightOpacity: 0,
     ForceDrawFace: true,
+    ParticleColors: [ "5c762a", "4d6322", "3d6a1f", "424223" ],
+    ParticleCount: 8,
     Hardness: 32,
     Variants: [
         { Shape: "DoorOfPlanks", RotateY: 270, Offset: [ 0, 0, -16 ] },

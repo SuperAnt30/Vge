@@ -201,6 +201,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255 без проверки
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockState GetBlockStateNotCheck(int x, int y, int z)
         {
             ChunkStorage chunkStorage = StorageArrays[y >> 4];
@@ -223,6 +224,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить блок данных, XZ 0..15, Y 0..255 без проверки и без света
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BlockState GetBlockStateNotCheckLight(int xz, int y)
         {
             ChunkStorage chunkStorage = StorageArrays[y >> 4];
@@ -241,6 +243,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить процес разрушения блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte GetBlockDestroy(BlockPos blockPos)
         {
             if (blockPos.IsValid(Settings))
@@ -253,6 +256,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Получить процес разрушения блока, без проверки валидности координат, XZ 0..15, Y 0..255
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte GetBlockDestroyNotCheck(int x, int y, int z)
         {
             ChunkStorage chunkStorage = StorageArrays[y >> 4];
@@ -267,6 +271,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Задать процес разрушения блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBlockDestroy(BlockPos blockPos, byte process)
         {
             if (blockPos.IsValid(Settings))
@@ -321,17 +326,8 @@ namespace Vge.World.Chunk
         /// <param name="blockState">Данные нового блока</param>
         /// <param name="flag">флаг, 4 modifyRender, 8 modifySave, 16 sound break, 
         /// 32 проверка доп жидкости, 64 OnBreakBlock отключить!</param>
-        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
+        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, BlockFlag flag)
         {
-            // Пометка надо сохранение чанка
-            bool isModify = (flag & 8) != 0;
-            // Пометка надо обновить рендер чанка
-            bool isModifyRender = (flag & 4) != 0;
-            // Звуковое сопровождение сломанного блока
-            bool isSound = (flag & 16) != 0;
-            // Проверка доп жидкости
-            bool isCheckLiquid = (flag & 32) != 0;
-
             int bx = blockPos.X & 15;
             int by = blockPos.Y;
             int bz = blockPos.Z & 15;
@@ -348,7 +344,7 @@ namespace Vge.World.Chunk
             if (storage.CountBlock == 0 && block.IsAir) return new BlockState().Empty();
             BlockBase blockOld = blockStateOld.GetBlock();
 
-            if (isCheckLiquid)
+            if ((flag & BlockFlag.Liquid) != 0)
             {
                 // Проверка жидкости, Как мы работаем.
                 // Если прилетает блок жидкости, а у нас не жидкость мы пробуем проверить и склеить.
@@ -405,7 +401,7 @@ namespace Vge.World.Chunk
                     }
                 }
             }
-            else if (block.IsAir && blockState.Met != 0)
+            else if (block.IsAir)
             {
                 // Для того чтоб убрать блок жидкости
                 blockState.Met = 0;
@@ -418,10 +414,6 @@ namespace Vge.World.Chunk
             {
                 // Удалить разрушение
                 storage.Destroy.Remove(index);
-                // Отмена тик блока
-                _RemoveBlockTick(bx, by, bz, false);
-                // Для клиента дальние частички
-                _SetRequiredRandomTick(bx, by, bz, blockOld, block);
 
                 bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
                 if (differenceOpacity || block.LightValue != blockOld.LightValue)
@@ -432,7 +424,7 @@ namespace Vge.World.Chunk
                         // Отключаем проверку небесного освещения
                         differenceOpacity = false;
                     }
-                    World.Light.CheckLightFor(blockPos, differenceOpacity, isModify, isModifyRender);//, replaceAir);
+                    World.Light.CheckLightFor(blockPos, differenceOpacity);
                 }
                 else
                 {
@@ -442,53 +434,56 @@ namespace Vge.World.Chunk
                     {
                         World.Light.ClearDebugString();
                     }
-                    if (isModify)
-                    {
-                        World.MarkBlockForModified(blockPos.X, blockPos.Y, blockPos.Z);
-                    }
+                    World.MarkBlockForModified(blockPos.X, blockPos.Y, blockPos.Z);
                 }
 
-                if (isModifyRender)
-                {
-                    World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
-                    // Пробуждение сущности
-                    _AwakenEntitiesTouching(blockPos);
-                }
+                World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                // Пробуждение сущности
+                _AwakenEntitiesTouching(blockPos);
 
                 if (World.IsRemote)
                 {
+                    // Для клиента дальние частички
+                    _SetRequiredRandomTick(bx, by, bz, blockOld, block);
+
                     World.DebugString(World.Light.ToDebugString());
                 }
-                else if ((flag & 64) == 0) // проверку сломаного
+                else  if (World is WorldServer worldServer && this is ChunkServer chunkServer)
                 {
-                    // Действие блока после его удаления
-                    blockOld.OnBreakBlock((WorldServer)World, (ChunkServer)this, blockPos, blockStateOld);
+                    // Отмена тик блока
+                    _RemoveBlockTick(bx, by, bz, false);
+
+                    if ((flag & BlockFlag.Break) == 0) // проверку сломаного
+                    {
+                        // Действие блока после его удаления
+                        blockOld.OnBreakBlock(worldServer, chunkServer, blockPos, blockStateOld);
+                    }
+                    block.OnBlockAdded(worldServer, chunkServer, blockPos, blockState);
+
+                    // Звуковое сопровождение сломанного блока
+                    if ((flag & BlockFlag.Sound) != 0)
+                    {
+                        blockOld.PlaySoundBreak(worldServer, blockPos);
+                    }
                 }
             }
             else if (blockState.Met != blockStateOld.Met) // Метданные разные
             {
-                if (isModifyRender)
-                {
-                    World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
-                    // Пробуждение сущности
-                    _AwakenEntitiesTouching(blockPos);
-                }
-            }
-
-            //if (!World.IsRemote && blockOld != block)
-            //{
-            //    block.OnBlockAdded(World, blockPos, blockState);
-            //}
-
-            // Звуковое сопровождение сломанного блока
-            if (isSound && !World.IsRemote && World is WorldServer worldServer)
-            {
-                worldServer.PlaySoundDistance(blockOld.Material.SampleBreak(worldServer.Rnd),
-                    blockPos.ToVector3Center(), 1, 1);
+                World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                // Пробуждение сущности
+                _AwakenEntitiesTouching(blockPos);
             }
 
             // Эта строка не понятна мне, зачем это я делал?! 2024-12-04
-            if (storage.CountBlock != 0 && storage.Data[index] != block.IndexBlock) return new BlockState();
+            // if (storage.CountBlock != 0 && storage.Data[index] != block.IndexBlock) return new BlockState();
+            // Cloud подсказал 06.11.2026
+            // Она пришла из Chunk.setBlockState в Minecraft. Там после OnBlockAdded проверяется,
+            // тот ли блок лежит в хранилище. Смысл такой: OnBlockAdded мог сам заменить блок
+            // (например, песок сразу упал или блок тут же превратился в другой), и тогда метод возвращает null,
+            // сообщая вызывающему коду, что установка «перебита».
+            // У вас это сравнение storage.Data[index] != block.IndexBlock.
+            // Если ваш код нигде не проверяет результат SetBlockState на такой случай,
+            // строка не нужна, её можно удалить совсем.
 
             return blockStateOld;
         }
@@ -496,19 +491,16 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Изменить состояние обязательного случайного тика
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _SetRequiredRandomTick(int x, int y, int z, BlockBase blockOld, BlockBase blockNew) { }
 
         /// <summary>
         /// Обновить в секции блоки состояния обязательного случайного тика
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _UpSectionRequiredRandomTick(int sy) { }
 
         /// <summary>
         /// Отменить мгновенный тик блока
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void _RemoveBlockTick(int x, int y, int z, bool liquid) { }
 
         #endregion

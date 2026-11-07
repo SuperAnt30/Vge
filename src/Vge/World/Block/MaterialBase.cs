@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Audio;
 using Vge.Json;
 using Vge.Util;
@@ -75,22 +76,35 @@ namespace Vge.World.Block
         #region Sound
 
         /// <summary>
+        /// Есть ли звуковой эффект разрушения блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSampleBreak() => _samplesBreak != null;
+        /// <summary>
+        /// Есть ли звуковой эффект установки блока
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSamplePlace() => _samplesPlace != null;
+        /// <summary>
         /// Есть ли звуковой эффект шага
         /// </summary>
         public bool IsSampleStep() => _samplesStep != null;
-
         /// <summary>
         /// Получить индекс семпла разрушения блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int SampleBreak(Rand rand) => _samplesBreak[rand.Next(_samplesBreak.Length)];
         /// <summary>
         /// Получить индекс семпла установки блока
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int SamplePlace(Rand rand) => _samplesPlace[rand.Next(_samplesPlace.Length)];
         /// <summary>
         /// Получить индекс семпла ходьбы по блоку
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int SampleStep(Rand rand)=> _samplesStep[rand.Next(_samplesStep.Length)];
+        
 
         #endregion
 

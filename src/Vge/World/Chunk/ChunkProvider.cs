@@ -45,7 +45,7 @@ namespace Vge.World.Chunk
         /// Получить чанк по координатам чанка
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual ChunkBase GetChunk(int x, int y) 
+        public ChunkBase GetChunk(int x, int y) 
             => _chunkMapping.Get(x, y) as ChunkBase;
 
         /// <summary>

@@ -3,6 +3,7 @@ using Mvk2.Item.List.Tool;
 using Mvk2.World.Block;
 using Vge.Item;
 using Vge.Item.List;
+using Vge.World.Block;
 
 namespace Mvk2.Item
 {
@@ -248,6 +249,7 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
 
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak));
+            //ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.Air));
 
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
             ItemsReg.RegisterItemClass("Sand", Sand = new ItemBlock(BlocksRegMvk.Sand));

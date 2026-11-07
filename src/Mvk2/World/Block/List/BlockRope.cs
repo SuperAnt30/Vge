@@ -85,14 +85,15 @@ namespace Mvk2.World.Block.List
         {
             // Надо проверить на наличие верёвки снизу и удалить её
             byte count = 0;
-            bool b = true;
             int y = blockPos.Y;
-            while (b && blockPos.Y > 2)
+            world.ClearListNeighboringBlocks();
+            while (blockPos.Y > 2)
             {
                 blockPos.Y--;
                 if (chunk.GetBlockState(blockPos).Id == IndexBlock)
                 {
-                    if (!world.SetBlockToAir(blockPos, 111))
+                    world.AddEntryToNotifyNeighborBlocks(blockPos);
+                    if (!world.SetBlockToAir(blockPos, BlockFlag.nBreakParticle))
                     {
                         // Ошибка, в лог надо
                         world.SetLog("BlockRope не удалился в позиции " + blockPos);
@@ -104,9 +105,10 @@ namespace Mvk2.World.Block.List
                 }
                 else
                 {
-                    b = false;
+                    break;
                 }
             }
+            world.RunEntryToNotifyNeighborBlocks();
             blockPos.Y = y;
 
             if (count > 0)

@@ -27,7 +27,7 @@ namespace Mvk2.World.Block.List
                 {
                     if (world.GetBlockState(blockPos.OffsetUp()).GetBlock().IsAir)
                     {
-                        world.SetBlockState(blockPos.OffsetUp(), world.GetBlockState(blockPos), 46);
+                        world.SetBlockState(blockPos.OffsetUp(), world.GetBlockState(blockPos), BlockFlag.cNotify);
                         world.SetBlockToAir(blockPos);
                     }
                 }
@@ -35,7 +35,7 @@ namespace Mvk2.World.Block.List
                 {
                     if (world.GetBlockState(blockPos.OffsetDown()).GetBlock().IsAir)
                     {
-                        world.SetBlockState(blockPos.OffsetDown(), world.GetBlockState(blockPos), 46);
+                        world.SetBlockState(blockPos.OffsetDown(), world.GetBlockState(blockPos), BlockFlag.cNotify);
                         world.SetBlockToAir(blockPos);
                     }
                 }

@@ -515,7 +515,7 @@ namespace Vge.Entity.Player
             {
                 BlockBase block = blockState.GetBlock();
                 block.DropBlockAsItem(worldServer, this, packet.GetBlockPos(), blockState);
-                worldServer.SetBlockToAir(packet.GetBlockPos(), 63);
+                worldServer.SetBlockToAir(packet.GetBlockPos(), BlockFlag.cSound);
                 //worldServer.MarkBlockForUpdate(packet.GetBlockPos().X, packet.GetBlockPos().Y, packet.GetBlockPos().Z);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }

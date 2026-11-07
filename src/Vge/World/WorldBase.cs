@@ -226,7 +226,7 @@ namespace Vge.World
         /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 
         /// 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool SetBlockToAir(BlockPos blockPos, int flag = 46) 
+        public bool SetBlockToAir(BlockPos blockPos, BlockFlag flag = BlockFlag.cNotify) 
             => SetBlockState(blockPos, new BlockState(0), flag);
 
         /// <summary>
@@ -239,8 +239,8 @@ namespace Vge.World
         /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 4 modifyRender, 
         /// 8 modifySave, 16 sound break, 32 проверка доп жидкости</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool SetLiquidBlockToAir(BlockPos blockPos, int flag = 46)
-            => SetBlockState(blockPos, new BlockState(0 | (2 << 12)), flag);
+        public bool SetLiquidBlockToAir(BlockPos blockPos)
+            => SetBlockState(blockPos, new BlockState(0 | (2 << 12)), BlockFlag.cNotify);
 
         /// <summary>
         /// Сменить блока
@@ -251,31 +251,16 @@ namespace Vge.World
         /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости,
         /// 64 OnBreakBlock отключить!</param>
         /// <returns>true смена была</returns>
-        public bool SetBlockState(BlockPos blockPos, BlockState blockState, int flag)
+        public virtual bool SetBlockState(BlockPos blockPos, BlockState blockState, BlockFlag flag)
         {
             if (!blockPos.IsValid(ChunkPr.Settings)) return false;
 
             ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
             if (chunk == null) return false;
-
-            BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, flag);
-            if (blockStateTrue.IsEmpty()) return false;
-
-            if (!IsRemote)
-            {
-                // Частички блока, только на сервере чтоб всем разослать
-                if ((flag & 1) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos.ToVector3Center());
-                // Уведомление соседей только на сервере!
-                if ((flag & 2) != 0) NotifyNeighborsOfStateChange(blockPos, blockState.GetBlock());
-            }
+            if (chunk.SetBlockState(blockPos, blockState, flag).IsEmpty()) return false;
 
             return true;
         }
-
-        /// <summary>
-        /// Уведомить соседей об изменении состояния
-        /// </summary>
-        public virtual void NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block) { }
 
         /// <summary>
         /// Видит ли данный блок небо

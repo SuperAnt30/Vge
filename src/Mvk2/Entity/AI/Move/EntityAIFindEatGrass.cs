@@ -190,7 +190,7 @@ namespace Mvk2.Entity.AI
                 == (int)EnumMaterial.Plant)
             {
                 // Растение
-                _entity.GetWorldServer().SetBlockToAir(blockPos, 31);
+                _entity.GetWorldServer().SetBlockToAir(blockPos, BlockFlag.cSound);
                 _Eat();
                 return false;
 
@@ -200,12 +200,12 @@ namespace Mvk2.Entity.AI
 
             if (id == BlocksRegMvk.Turf.IndexBlock)
             {
-                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Humus.IndexBlock), 31);
+                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Humus.IndexBlock), BlockFlag.cSound);
                 _Eat();
             }
             else if (id == BlocksRegMvk.TurfLoam.IndexBlock)
             {
-                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Loam.IndexBlock), 31);
+                _entity.GetWorldServer().SetBlockState(blockPos, new BlockState(BlocksRegMvk.Loam.IndexBlock), BlockFlag.cSound);
                 _Eat();
             }
 

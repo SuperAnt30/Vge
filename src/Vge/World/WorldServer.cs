@@ -61,7 +61,11 @@ namespace Vge.World
         /// нужен чтоб непересоздавать его в каждом чанке в каждом тике
         /// </summary>
         public readonly ListMessy<BlockTick> TickBlocksCache = new ListMessy<BlockTick>();
-        
+
+        /// <summary>
+        /// Вспомогательный массив для сбора позиций блоков, для Пометки уведомлений соседей
+        /// </summary>
+        private readonly List<BlockPos> _listNotify = new List<BlockPos>();
         /// <summary>
         /// Время затраченое за такт
         /// </summary>
@@ -124,7 +128,7 @@ namespace Vge.World
                 for (int i = 0; i < count; i++)
                 {
                     blockCache = Settings.BlockCaches[i];
-                    SetBlockState(blockCache.Position, blockCache.GetBlockState(), 46);
+                    SetBlockState(blockCache.Position, blockCache.GetBlockState(), BlockFlag.cNotify);
                 }
             }
             Settings.BlockCaches.Clear();
@@ -499,6 +503,33 @@ namespace Vge.World
         #region Blocks
 
         /// <summary>
+        /// Сменить блока
+        /// </summary>
+        /// <param name="blockPos">позици блока</param>
+        /// <param name="blockState">данные блока</param>
+        /// <param name="flag">флаг, 1 частички старого блока, 2 уведомление соседей, 
+        /// 4 modifyRender, 8 modifySave, 16 sound break, 32 проверка доп жидкости,
+        /// 64 OnBreakBlock отключить!</param>
+        /// <returns>true смена была</returns>
+        public override bool SetBlockState(BlockPos blockPos, BlockState blockState, BlockFlag flag)
+        {
+            if (!blockPos.IsValid(ChunkPr.Settings)) return false;
+
+            ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
+            if (chunk == null) return false;
+
+            BlockState blockStateTrue = chunk.SetBlockState(blockPos, blockState, flag);
+            if (blockStateTrue.IsEmpty()) return false;
+
+            // Частички блока, только на сервере чтоб всем разослать
+            if ((flag & BlockFlag.Particle) != 0) ParticleDiggingBlock(blockStateTrue.GetBlock(), blockPos.ToVector3Center());
+            // Уведомление соседей только на сервере!
+            if ((flag & BlockFlag.Notify) != 0) _NotifyNeighborsOfStateChange(blockPos);
+
+            return true;
+        }
+
+        /// <summary>
         /// Тикание блоков и чанков
         /// </summary>
         private void _TickBlocks()
@@ -623,45 +654,109 @@ namespace Vge.World
             }
         }
 
+        #endregion
+
+        #region BlocksNotify
+
+        /// <summary>
+        /// Очистить список позиций соседних блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearListNeighboringBlocks() => _listNotify.Clear();
+
+        /// <summary>
+        /// Добавить позицию блока для уведомления соседних блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddEntryToNotifyNeighborBlocks(BlockPos pos)
+        {
+            if (!_listNotify.Contains(pos)) _listNotify.Add(pos);
+        }
+
+        /// <summary>
+        /// Выполнить операцию для уведомления соседних блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RunEntryToNotifyNeighborBlocks()
+        {
+            if (_listNotify.Count > 0)
+            {
+                List<BlockPos> list = new List<BlockPos>();
+
+                // Добавляем соседей
+                BlockPos blockPos;
+                foreach (BlockPos pos in _listNotify)
+                {
+                    blockPos = pos.OffsetUp();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                    blockPos = pos.OffsetDown();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                    blockPos = pos.OffsetWest();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                    blockPos = pos.OffsetEast();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                    blockPos = pos.OffsetNorth();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                    blockPos = pos.OffsetSouth();
+                    if (!list.Contains(blockPos)) list.Add(blockPos);
+                }
+
+                // Убираем кто в списке
+                foreach (BlockPos pos in _listNotify)
+                {
+                    if (list.Contains(pos)) list.Remove(pos);
+                }
+
+                // Запуск 
+                ChunkServer chunk;
+                foreach (BlockPos pos in list)
+                {
+                    chunk = GetChunkServer(pos);
+                    if (chunk != null)
+                    {
+                        BlockState blockState = chunk.GetBlockState(pos);
+                        blockState.GetBlock().NeighborBlockChange(this, chunk, pos, blockState);
+                    }
+                    //SetBlockState(pos, new BlockState(51), 0);
+                }
+
+                _listNotify.Clear();
+            }
+        }
+
         /// <summary>
         /// Уведомить соседей об изменении состояния
         /// </summary>
-        public override void NotifyNeighborsOfStateChange(BlockPos pos, BlockBase block)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _NotifyNeighborsOfStateChange(BlockPos pos)
         {
-            _NotifyBlockOfStateChange(pos.OffsetWest(), block);
-            _NotifyBlockOfStateChange(pos.OffsetEast(), block);
-            _NotifyBlockOfStateChange(pos.OffsetDown(), block);
-            _NotifyBlockOfStateChange(pos.OffsetUp(), block);
-            _NotifyBlockOfStateChange(pos.OffsetNorth(), block);
-            _NotifyBlockOfStateChange(pos.OffsetSouth(), block);
-            //if (block.IsAir)
-            //{
-            //    // Для дверей диагональ
-            //    _NotifyBlockOfStateChange(pos.Offset(1, 0, 1), block);
-            //    _NotifyBlockOfStateChange(pos.Offset(-1, 0, 1), block);
-            //    _NotifyBlockOfStateChange(pos.Offset(1, 0, -1), block);
-            //    _NotifyBlockOfStateChange(pos.Offset(-1, 0, -1), block);
-            //}
+            ChunkServer chunk = GetChunkServer(pos);
+            if (chunk != null)
+            {
+                BlockPos pos2 = pos.OffsetUp();
+                BlockState blockState = chunk.GetBlockState(pos2);
+                blockState.GetBlock().NeighborBlockChange(this, chunk, pos2, blockState);
+                pos2 = pos.OffsetDown();
+                blockState = chunk.GetBlockState(pos2);
+                blockState.GetBlock().NeighborBlockChange(this, chunk, pos2, blockState);
+            }
+            _NotifyBlockOfStateChange(pos.OffsetWest());
+            _NotifyBlockOfStateChange(pos.OffsetEast());
+            _NotifyBlockOfStateChange(pos.OffsetNorth());
+            _NotifyBlockOfStateChange(pos.OffsetSouth());
         }
 
         /// <summary>
         /// Уведомить о блок об изменения состоянии соседнего блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _NotifyBlockOfStateChange(BlockPos pos, BlockBase block)
+        private void _NotifyBlockOfStateChange(BlockPos pos)
         {
-            try
+            ChunkServer chunk = GetChunkServer(pos);
+            if (chunk != null)
             {
-                ChunkServer chunk = GetChunkServer(pos);
-                if (chunk != null)
-                {
-                    BlockState blockState = chunk.GetBlockState(pos);
-                    blockState.GetBlock().NeighborBlockChange(this, chunk, pos, blockState, block);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Crash(ex, "NotifyBlockOfStateChange " + pos.ToString());
+                BlockState blockState = chunk.GetBlockState(pos);
+                blockState.GetBlock().NeighborBlockChange(this, chunk, pos, blockState);
             }
         }
 
@@ -672,7 +767,6 @@ namespace Vge.World
         /// <summary>
         /// Проиграть звуковой эффект, кто отслеживает entityId сущность кроме сущности entityId
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void PlaySound(int key, Vector3 pos, float volume, float pitch, int entityId)
             => Tracker.SendToAllTrackingEntity(entityId, new PacketS29SoundEffect(key, pos, volume, pitch));
 
