@@ -4,7 +4,9 @@ using Mvk2.World.Gen.Feature;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Player;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -117,10 +119,11 @@ namespace Mvk2.World.Block.List
             => world.ChunkPrServ.ChunkGenerate is IGenTree genTree ? genTree.Tree.FeatureTrees[_indexGen] : null;
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его удаления, только на сервере
         /// </summary>
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
             if (!world.IsRemote && (Type == TypeTree.Log || Type == TypeTree.Branch)
                 && world is WorldServer worldServer)
@@ -135,12 +138,9 @@ namespace Mvk2.World.Block.List
                         && blockEntityTree.IsAABB(blockPos))
                     {
                         // Это блок возможно принадлежит этому дереву. Откусить
-                        blockEntityTree.RemoveBlock(worldServer, chunk, blockPos);
+                        blockEntityTree.RemoveBlock(worldServer, chunk, blockPos, entity);
                     }
                 }
-
-                // Разрушаем блок ветки
-                //DropBlockAsItem(world, blockPos, stateOld);
             }
         }
 
@@ -173,10 +173,10 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
-        public override void DropBlockAsItem(WorldServer worldServer, PlayerServer player,
-            BlockPos blockPos, BlockState stateOld)
-        {
-            //ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
-        }
+        //public override void DropBlockAsItem(WorldServer worldServer, PlayerServer player,
+        //    BlockPos blockPos, BlockState stateOld)
+        //{
+        //    //ItemStack.SpawnAsEntity(world, blockPos, new ItemStack(ItemsRegMvk.Brol, 1));
+        //}
     }
 }

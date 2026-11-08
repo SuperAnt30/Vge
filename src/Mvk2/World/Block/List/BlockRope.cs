@@ -1,6 +1,7 @@
 ﻿using Mvk2.Item;
 using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Item;
 using Vge.Util;
 using Vge.World;
@@ -77,11 +78,11 @@ namespace Mvk2.World.Block.List
         }
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его удаления, только на сервере
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
             // Надо проверить на наличие верёвки снизу и удалить её
             byte count = 0;
@@ -111,7 +112,7 @@ namespace Mvk2.World.Block.List
             world.RunEntryToNotifyNeighborBlocks();
             blockPos.Y = y;
 
-            if (count > 0)
+            if (count > 0 && (entity == null || entity.IsDropBreakingBlock()))
             {
                 ItemStack.SpawnAsEntity(world, blockPos, ItemsRegMvk.Rope, count);
             }
@@ -120,16 +121,15 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Смена соседнего блока
         /// </summary>
-        //public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
-        //    BlockPos blockPos, BlockState blockState, BlockBase neighborBlock)
-        //{
-        //    base.NeighborBlockChange(world, chunk, blockPos, blockState, neighborBlock);
-        //    if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
-        //    {
-        //        //DropBlockAsItem(worldIn, blockPos, state);
-        //        world.SetBlockToAir(blockPos);
-        //    }
-        //}
+        public override void NeighborBlockChange(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState blockState)
+        {
+            base.NeighborBlockChange(world, chunk, blockPos, blockState);
+            if (!CanBlockStay(world, chunk, blockPos, blockState.Met))
+            {
+                world.SetBlockToAir(blockPos);
+            }
+        }
 
         /// <summary> 
         /// Проверка установи блока, можно ли его установить тут

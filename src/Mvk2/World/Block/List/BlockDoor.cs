@@ -1,6 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Mvk2.Item;
+using System.Runtime.CompilerServices;
 using Vge.Audio;
+using Vge.Entity;
 using Vge.Entity.Player;
+using Vge.Item;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -333,9 +336,9 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Действие блока после его удаления
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
             int met = stateOld.Met;
             int bx = (met & 128) != 0 ? 1 : 0;
@@ -379,6 +382,15 @@ namespace Mvk2.World.Block.List
                 // Снизу не подходящий блок
                 world.SetBlockToAir(blockPos, BlockFlag.cSound);
             }
+        }
+
+        /// <summary>
+        /// Спавн предмета при разрушении этого блока
+        /// </summary>
+        public override void DropBlockAsItem(WorldServer worldServer, PlayerServer player,
+            BlockPos blockPos, BlockState stateOld)
+        {
+            ItemStack.SpawnAsEntity(worldServer, blockPos, ItemsRegMvk.DoorOfPlanks);
         }
 
         /// <summary>

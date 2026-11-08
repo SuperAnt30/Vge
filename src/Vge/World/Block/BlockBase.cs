@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Json;
@@ -824,8 +825,9 @@ namespace Vge.World.Block
         /// <summary>
         /// Действие блока после его удаления, только на сервере
         /// </summary>
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public virtual void OnBreakBlock(WorldServer world, ChunkServer chunk, 
-            BlockPos blockPos, BlockState stateOld) { }
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity) { }
 
         ///// <summary>
         ///// Спавн предмета при разрушении этого блока
@@ -839,7 +841,6 @@ namespace Vge.World.Block
         /// <summary>
         /// Спавн предмета при разрушении этого блока
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DropBlockAsItem(WorldServer worldServer, PlayerServer player, 
             BlockPos blockPos, BlockState stateOld) { }
 

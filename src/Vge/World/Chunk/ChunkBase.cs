@@ -324,9 +324,8 @@ namespace Vge.World.Chunk
         /// </summary>
         /// <param name="blockPos">Позици блока</param>
         /// <param name="blockState">Данные нового блока</param>
-        /// <param name="flag">флаг, 4 modifyRender, 8 modifySave, 16 sound break, 
-        /// 32 проверка доп жидкости, 64 OnBreakBlock отключить!</param>
-        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, BlockFlag flag)
+        /// <param name="flagLiquid">Проверка доп жидкости</param>
+        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, bool flagLiquid)
         {
             int bx = blockPos.X & 15;
             int by = blockPos.Y;
@@ -344,7 +343,7 @@ namespace Vge.World.Chunk
             if (storage.CountBlock == 0 && block.IsAir) return new BlockState().Empty();
             BlockBase blockOld = blockStateOld.GetBlock();
 
-            if ((flag & BlockFlag.Liquid) != 0)
+            if (flagLiquid)
             {
                 // Проверка жидкости, Как мы работаем.
                 // Если прилетает блок жидкости, а у нас не жидкость мы пробуем проверить и склеить.
@@ -437,10 +436,6 @@ namespace Vge.World.Chunk
                     World.MarkBlockForModified(blockPos.X, blockPos.Y, blockPos.Z);
                 }
 
-                World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
-                // Пробуждение сущности
-                _AwakenEntitiesTouching(blockPos);
-
                 if (World.IsRemote)
                 {
                     // Для клиента дальние частички
@@ -448,31 +443,16 @@ namespace Vge.World.Chunk
 
                     World.DebugString(World.Light.ToDebugString());
                 }
-                else  if (World is WorldServer worldServer && this is ChunkServer chunkServer)
+                else
                 {
                     // Отмена тик блока
                     _RemoveBlockTick(bx, by, bz, false);
-
-                    if ((flag & BlockFlag.Break) == 0) // проверку сломаного
-                    {
-                        // Действие блока после его удаления
-                        blockOld.OnBreakBlock(worldServer, chunkServer, blockPos, blockStateOld);
-                    }
-                    block.OnBlockAdded(worldServer, chunkServer, blockPos, blockState);
-
-                    // Звуковое сопровождение сломанного блока
-                    if ((flag & BlockFlag.Sound) != 0)
-                    {
-                        blockOld.PlaySoundBreak(worldServer, blockPos);
-                    }
                 }
             }
-            else if (blockState.Met != blockStateOld.Met) // Метданные разные
-            {
-                World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
-                // Пробуждение сущности
-                _AwakenEntitiesTouching(blockPos);
-            }
+
+            World.MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+            // Пробуждение сущности
+            _AwakenEntitiesTouching(blockPos);
 
             // Эта строка не понятна мне, зачем это я делал?! 2024-12-04
             // if (storage.CountBlock != 0 && storage.Data[index] != block.IndexBlock) return new BlockState();

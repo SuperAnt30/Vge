@@ -160,6 +160,11 @@ namespace Vge.Entity.Player
         public bool IsSurvival() => !CreativeMode && !IsSpectator();
 
         /// <summary>
+        /// Выпадает ли предмет при разрушении блока?
+        /// </summary>
+        public override bool IsDropBreakingBlock() => !CreativeMode;
+
+        /// <summary>
         /// Инициализация размеров сущности
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

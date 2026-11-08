@@ -118,6 +118,13 @@ namespace Vge.World.Chunk
         }
 
         /// <summary>
+        /// Получить чанк по координатам чанка
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ChunkServer GetChunkServer(Vector2i chunkPos)
+            => _chunkMapping.Get(chunkPos.X, chunkPos.Y) as ChunkServer;
+
+        /// <summary>
         /// Добавить чанк на удаление
         /// </summary>
         public void DropChunk(int x, int y) => _droppedChunks.Add(Conv.ChunkXyToIndex(x, y));

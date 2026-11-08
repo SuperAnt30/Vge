@@ -1,5 +1,6 @@
 ﻿using Mvk2.World.BlockEntity.List;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -28,11 +29,11 @@ namespace Mvk2.World.Block.List
         public override QuadSide[] GetQuads(int met, int xb, int zb) => _quads[met & 0xF];
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его удаления, только на сервере
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
             if (stateOld.Met < 256) // только для сгенерированных блоков
             {

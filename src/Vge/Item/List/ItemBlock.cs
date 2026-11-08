@@ -100,11 +100,11 @@ namespace Vge.Item.List
                         byte amount = _InstallAdditionalBlocks(player, blockState, blockPos, side, facing, playerYaw);
                         if (amount > 0)
                         {
-                            if (!world.IsRemote && !player.CreativeMode 
+                            if (!world.IsRemote && player.IsDropBreakingBlock()
                                 && player is PlayerServer playerServer)
                             {
                                 blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(), 
-                                    playerServer, blockPos, blockStateOld);
+                                    null, blockPos, blockStateOld);
 
                                 if (Block.Material.IsSamplePlace())
                                 {

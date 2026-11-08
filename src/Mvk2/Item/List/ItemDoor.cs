@@ -98,10 +98,10 @@ namespace Mvk2.Item.List
                             {
                                 result = 0;
                             }
-                            else if (!player.CreativeMode && player is PlayerServer playerServer)
+                            else if (player.IsDropBreakingBlock() && player is PlayerServer playerServer)
                             {
                                 blockStateOld.GetBlock().DropBlockAsItem(playerServer.GetWorldServer(),
-                                    playerServer, blockPos, blockStateOld);
+                                    null, blockPos, blockStateOld);
                             }
                         }
                     }
@@ -117,7 +117,7 @@ namespace Mvk2.Item.List
                     {
                         for (int y = 0; y < 4; y++)
                         {
-                            world.SetBlockToAir(blockPos.Offset(x, y, z));
+                            world.SetBlockToAir(blockPos.Offset(x, y, z), BlockFlag.cQuiet);
                         }
                     }
                 }

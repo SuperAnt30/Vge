@@ -78,7 +78,7 @@ namespace Vge.Network.Packets.Server
                     blockPos.X = chx + ((index >> 4) & 15);
                     blockPos.Y = index >> 8;
                     blockPos.Z = chz + (index & 15);
-                    chunk.SetBlockState(blockPos, _blocks[i].State, BlockFlag.None);
+                    chunk.SetBlockState(blockPos, _blocks[i].State, false);
                     process = _blocks[i].Process;
                     if ((process & 1 << 7) != 0)
                     {

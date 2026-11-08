@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
 using Vge.Util;
 using Vge.World;
 using Vge.World.Block;
@@ -107,35 +108,33 @@ namespace Mvk2.World.Block.List
         {
             if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
             {
-                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), BlockFlag.cQuiet); // 44
+                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), true); // 44
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его удаления, только на сервере
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
-            if (!world.IsRemote) {
-                if ((stateOld.Met & 1 << 9) == 0) // 512
+            if ((stateOld.Met & 1 << 9) == 0) // 512
+            {
+                // Просто удалена листва, надо пометить ствол для регенерации листвы
+                int met = stateOld.Met & 15;
+                if (met > 5) met -= 6;
+                if (met < 6)
                 {
-                    // Просто удалена листва, надо пометить ствол для регенерации листвы
-                    int met = stateOld.Met & 15;
-                    if (met > 5) met -= 6;
-                    if (met < 6)
+                    BlockPos blockPosSide = blockPos.OffsetReversal(met);
+                    BlockState blockState = world.GetBlockState(blockPosSide);
+                    if (blockState.Met < 512 &&
+                        (blockState.Id == _idBranch || blockState.Id == _idLog))
                     {
-                        BlockPos blockPosSide = blockPos.OffsetReversal(met);
-                        BlockState blockState = world.GetBlockState(blockPosSide);
-                        if (blockState.Met < 512 &&
-                            (blockState.Id == _idBranch || blockState.Id == _idLog))
-                        {
-                            // Верно, помечаем
-                            world.SetBlockStateMet(blockPosSide, blockState.Met + 512, true);
-                        }
+                        // Верно, помечаем
+                        world.SetBlockStateMet(blockPosSide, blockState.Met + 512, true);
                     }
                 }
             }

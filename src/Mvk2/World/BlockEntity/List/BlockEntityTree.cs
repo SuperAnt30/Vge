@@ -1,7 +1,10 @@
-﻿using Mvk2.World.Block;
+﻿using Mvk2.Item;
+using Mvk2.World.Block;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Vge.Entity;
+using Vge.Item;
 using Vge.NBT;
 using Vge.Util;
 using Vge.World;
@@ -140,7 +143,8 @@ namespace Mvk2.World.BlockEntity.List
         /// Удалить цепочку блоков,
         /// Возвращает true если хоть один блок удалён
         /// </summary>
-        public bool RemoveBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos)
+        /// <param name="entity">Сущность которая сломала этот блок</param>
+        public bool RemoveBlock(WorldServer world, ChunkServer chunk, BlockPos blockPos, EntityLiving entity)
         {
             // Список для пополнения блоков удаления по цепочке дерева
             List<PosId> list = new List<PosId>();
@@ -225,6 +229,7 @@ namespace Mvk2.World.BlockEntity.List
                 world.ClearListNeighboringBlocks();
                 world.AddEntryToNotifyNeighborBlocks(blockPos);
                 BlockState blockState;
+                bool isDrop = entity == null || entity.IsDropBreakingBlock();
                 foreach (PosId pos in list)
                 {
                     blockState = world.GetBlockState(pos.Pos);
@@ -245,7 +250,12 @@ namespace Mvk2.World.BlockEntity.List
                         //entity.SetDefaultPickupDelay();
                         //  world.SpawnEntityInWorld(entity);
 
-                        blockState.GetBlock().DropBlockAsItem(world, null, pos.Pos, blockState);
+                        if (isDrop)
+                        {
+                            // Это дополнительный дроп
+                            ItemStack.SpawnAsEntity(world, pos.Pos, ItemsRegMvk.Brol);
+                        }
+                        //blockState.GetBlock().DropBlockAsItem(world, null, pos.Pos, blockState);
                     }
                 }
 

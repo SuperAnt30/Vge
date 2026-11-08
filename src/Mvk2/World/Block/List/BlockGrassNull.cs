@@ -1,4 +1,5 @@
-﻿using Vge.World;
+﻿using Vge.Entity;
+using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
 
@@ -41,32 +42,30 @@ namespace Mvk2.World.Block.List
         }
 
         /// <summary>
-        /// Действие блока после его удаления
+        /// Действие блока после его удаления, только на сервере
         /// </summary>
+        /// <param name="entity">Сущность которая сломала этот блок</param>
         public override void OnBreakBlock(WorldServer world, ChunkServer chunk,
-            BlockPos blockPos, BlockState stateOld)
+            BlockPos blockPos, BlockState stateOld, EntityLiving entity)
         {
-            if (!world.IsRemote)
+            int yi = 1;
+            BlockPos pos;
+            while (yi < 5)
             {
-                int yi = 1;
-                BlockPos pos;
-                while (yi < 5)
+                pos = blockPos.OffsetUp(-yi);
+                int index = chunk.GetBlockState(pos).Id;
+                if (index == 0)
                 {
-                    pos = blockPos.OffsetUp(-yi);
-                    int index = chunk.GetBlockState(pos).Id;
-                    if (index == 0)
-                    {
-                        // Тут мы попадаем, когда соседний удалённый блок попался, надо приостановить.
-                        break;
-                    }
-                    else if (index == BlocksRegMvk.TallGrass.IndexBlock)
-                    {
-                        // Нашли основу высокой травы, меняем мет данные
-                        world.SetBlockStateMet(pos, yi - 1, true);
-                        break;
-                    }
-                    yi++;
+                    // Тут мы попадаем, когда соседний удалённый блок попался, надо приостановить.
+                    break;
                 }
+                else if (index == BlocksRegMvk.TallGrass.IndexBlock)
+                {
+                    // Нашли основу высокой травы, меняем мет данные
+                    world.SetBlockStateMet(pos, yi - 1, true);
+                    break;
+                }
+                yi++;
             }
         }
     }

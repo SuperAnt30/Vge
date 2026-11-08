@@ -254,12 +254,9 @@ namespace Vge.World
         public virtual bool SetBlockState(BlockPos blockPos, BlockState blockState, BlockFlag flag)
         {
             if (!blockPos.IsValid(ChunkPr.Settings)) return false;
-
             ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
             if (chunk == null) return false;
-            if (chunk.SetBlockState(blockPos, blockState, flag).IsEmpty()) return false;
-
-            return true;
+            return !chunk.SetBlockState(blockPos, blockState, (flag & BlockFlag.Liquid) != 0).IsEmpty();
         }
 
         /// <summary>

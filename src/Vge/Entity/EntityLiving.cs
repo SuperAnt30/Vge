@@ -493,7 +493,6 @@ namespace Vge.Entity
         /// <summary>
         /// Добавляет стек предметов в инвентарь, если это невозможно заспавнит предмет рядом
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void AddItemStackToInventory(ItemStack itemStack) { }
 
         /// <summary>
@@ -502,8 +501,12 @@ namespace Vge.Entity
         /// <param name="itemStack">Стак предмета</param>
         /// <param name="inFrontOf">Флаг перед собой</param>
         /// <param name="longAway">Далеко бросить от себя</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DropItem(ItemStack itemStack, bool inFrontOf, bool longAway) { }
+        
+        /// <summary>
+        /// Выпадает ли предмет при разрушении блока?
+        /// </summary>
+        public virtual bool IsDropBreakingBlock() => true;
 
         #endregion
 

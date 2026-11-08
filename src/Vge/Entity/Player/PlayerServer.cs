@@ -514,8 +514,11 @@ namespace Vge.Entity.Player
             if (packet.Digging == PacketC07PlayerDigging.EnumDigging.Destroy)
             {
                 BlockBase block = blockState.GetBlock();
-                block.DropBlockAsItem(worldServer, this, packet.GetBlockPos(), blockState);
-                worldServer.SetBlockToAir(packet.GetBlockPos(), BlockFlag.cSound);
+                if (worldServer.SetBreakBlock(packet.GetBlockPos(), this)
+                    && IsDropBreakingBlock())
+                {
+                    block.DropBlockAsItem(worldServer, this, packet.GetBlockPos(), blockState);
+                }
                 //worldServer.MarkBlockForUpdate(packet.GetBlockPos().X, packet.GetBlockPos().Y, packet.GetBlockPos().Z);
                 //pause = entityPlayer.PauseTimeBetweenBlockDestruction();
             }
