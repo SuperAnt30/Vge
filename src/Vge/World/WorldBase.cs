@@ -199,7 +199,7 @@ namespace Vge.World
         }
 
         /// <summary>
-        /// Изменить метданные блока, БЕЗ КОНТРОЛЯ ЖИДКОСТИ
+        /// Изменить метданные блока, БЕЗ КОНТРОЛЯ ЖИДКОСТИ и без метода OnMetSelected
         /// </summary>
         /// <param name="isMarkUpdate">Отметить блок для обновления</param>
         public void SetBlockStateMet(BlockPos blockPos, int met, bool isMarkUpdate = true)
@@ -207,12 +207,13 @@ namespace Vge.World
             if (blockPos.IsValid(ChunkPr.Settings))
             {
                 ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
-                if (chunk == null) return;
-                int yc = blockPos.Y >> 4;
-                int index = (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15);
-                //Console.WriteLine("w " + met);
-                chunk.StorageArrays[yc].NewMetBlock(index, met);
-                if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                if (chunk != null)
+                {
+                    chunk.StorageArrays[blockPos.Y >> 4].NewMetBlock(
+                        (blockPos.Y & 15) << 8 | (blockPos.Z & 15) << 4 | (blockPos.X & 15),
+                        met);
+                    if (isMarkUpdate) MarkBlockForUpdate(blockPos.X, blockPos.Y, blockPos.Z);
+                }
             }
         }
 
@@ -256,7 +257,7 @@ namespace Vge.World
             if (!blockPos.IsValid(ChunkPr.Settings)) return false;
             ChunkBase chunk = ChunkPr.GetChunk(blockPos.GetPositionChunk());
             if (chunk == null) return false;
-            return !chunk.SetBlockState(blockPos, blockState, (flag & BlockFlag.Liquid) != 0).IsEmpty();
+            return !chunk.SetBlockState(blockPos, ref blockState, (flag & BlockFlag.Liquid) != 0).IsEmpty();
         }
 
         /// <summary>

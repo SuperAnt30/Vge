@@ -280,6 +280,7 @@ namespace Mvk2.World.Block
 
             // Отладочный
             BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug(materials.Debug));
+
             Water = BlocksReg.RegisterBlockClassLiquid("Water", materials.Water, true);
             Bedrock = BlocksReg.RegisterBlockClass("Bedrock", materials.Bedrock);
             Limestone = BlocksReg.RegisterBlockClass("Limestone", materials.Solid);

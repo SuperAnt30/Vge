@@ -325,7 +325,7 @@ namespace Vge.World.Chunk
         /// <param name="blockPos">Позици блока</param>
         /// <param name="blockState">Данные нового блока</param>
         /// <param name="flagLiquid">Проверка доп жидкости</param>
-        public BlockState SetBlockState(BlockPos blockPos, BlockState blockState, bool flagLiquid)
+        public BlockState SetBlockState(BlockPos blockPos, ref BlockState blockState, bool flagLiquid)
         {
             int bx = blockPos.X & 15;
             int by = blockPos.Y;

@@ -345,7 +345,8 @@ namespace Vge.Entity.Player
                         {
                             // Размещение блока (Взаимодействие предмета на выбранный блок)
                             //Console.WriteLine("BlockPlacement " + resultSecond.Pause);
-                            _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
+                            _game.TrancivePacket(new PacketC08PlayerBlockPlacement(
+                                resultSecond.IsLiquid ? moving.BlockLiquidPosition : moving.BlockPosition,
                                     moving.Side, moving.Facing, resultSecond.Replaceable, true));
                             if (_ActionAnimationRight(itemStack, moving))
                             {

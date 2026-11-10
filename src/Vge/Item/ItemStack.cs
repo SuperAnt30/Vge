@@ -29,7 +29,18 @@ namespace Vge.Item
         /// Количество вещей в стаке
         /// </summary>
         public byte Amount { get; private set; }
+        /// <summary>
+        /// Мет данные стака
+        /// </summary>
+        public byte Met { get; private set; }
 
+        public ItemStack(ItemBase item, byte amount, int itemDamaged, byte met)
+        {
+            Item = item;
+            Amount = amount;
+            ItemDamaged = itemDamaged;
+            Met = met;
+        }
         public ItemStack(ItemBase item, byte amount, int itemDamaged)
         {
             Item = item;
@@ -50,11 +61,21 @@ namespace Vge.Item
         /// <summary>
         /// Копия стака
         /// </summary>
-        public ItemStack Copy() => new ItemStack(Item, Amount, ItemDamaged);
+        public ItemStack Copy() => new ItemStack(Item, Amount, ItemDamaged, Met);
         /// <summary>
         /// Копия стака с заданным количеством
         /// </summary>
-        public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamaged);
+        public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamaged, Met);
+
+        /// <summary>
+        /// Изменить метданные бстака
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ItemStack SetMet(byte met)
+        {
+            Met = met;
+            return this;
+        }
 
         /// <summary>
         /// Добавить к количеству
@@ -110,7 +131,7 @@ namespace Vge.Item
         /// Возвращает true, когда повреждаемый элемент поврежден
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsItemDamaged() => IsItemStackDamageable() && ItemDamaged > 0;
+        public bool IsItemDamaged() => Item.MaxDamage > 0 && ItemDamaged > 0;
 
         /// <summary>
         /// true, если этот стек предметов можно повредить
@@ -122,14 +143,7 @@ namespace Vge.Item
         /// Возвращает true, если стак может содержать 2 или более единиц элемента.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsStackable() 
-            => Item.MaxStackSize > 1 && (!IsItemStackDamageable() || !IsItemDamaged());
-
-        /// <summary>
-        /// Сравнить предмет (стак без учёта количества)
-        /// </summary>
-        public bool IsItemEqual(ItemStack other) => other != null 
-            && Item.IndexItem == other.Item.IndexItem && ItemDamaged == other.ItemDamaged;
+        public bool IsStackable() => Item.MaxStackSize > 1;
 
         #endregion
 
@@ -173,6 +187,27 @@ namespace Vge.Item
 
         #endregion
 
+        /// <summary>
+        /// Усреднить износ предмета
+        /// </summary>
+        /// <param name="amount">Количество добавится для замены</param>
+        /// <param name="damage">Урон добавляемого</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ItemStack AverageWearItem(byte amount, int damage)
+        {
+            ItemDamaged = (Amount * ItemDamaged + amount * damage) / (Amount + amount);
+            return this;
+        }
+
+        /// <summary>
+        /// Изменить износ предмета в правой руке
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetDamageItem(PlayerBase entityPlayer, int damage)
+        {
+            ItemDamaged = damage;
+            entityPlayer.Inventory.SetCurrentItem(this);
+        }
 
         /// <summary>
         /// Попытки повредить ItemStack с количеством повреждений damage. 
@@ -272,6 +307,7 @@ namespace Vge.Item
                 stream.Short((short)itemStack.Item.IndexItem);
                 stream.Byte(itemStack.Amount);
                 stream.Short((short)itemStack.ItemDamaged);
+                stream.Byte(itemStack.Met);
             }
         }
 
@@ -282,11 +318,10 @@ namespace Vge.Item
         public static ItemStack ReadStream(ReadPacket stream)
         {
             int id = stream.Short();
-            if (id >= 0)
+            if (id != -1)
             {
-                byte amount = stream.Byte();
-                int itemDamage = stream.Short();
-                return new ItemStack(Ce.Items.ItemObjects[id], amount, itemDamage);
+                return new ItemStack(Ce.Items.ItemObjects[id],
+                    stream.Byte(), stream.Short(), stream.Byte());
             }
             return null;
         }
@@ -298,6 +333,7 @@ namespace Vge.Item
         {
             nbt.SetShort("Id", (short)Item.IndexItem);
             nbt.SetByte("Amount", Amount);
+            nbt.SetByte("Met", Met);
             nbt.SetShort("Damaged", (short)ItemDamaged);
             return nbt;
         }
@@ -311,7 +347,7 @@ namespace Vge.Item
             if (nbt.HasKey("Id"))
             { 
                 return new ItemStack(Ce.Items.ItemObjects[nbt.GetShort("Id")], 
-                    nbt.GetByte("Amount"), nbt.GetShort("Damaged"));
+                    nbt.GetByte("Amount"), nbt.GetShort("Damaged"), nbt.GetByte("Met"));
             }
             return null;
         }
@@ -326,6 +362,7 @@ namespace Vge.Item
             return (max - ItemDamaged).ToString() + "/" + max.ToString();
         }
 
-        public override string ToString() => Item.ToString() + " (" + Amount + ")";
+        public override string ToString() => Item.ToString() + " (" + Amount + ")" 
+            + (Met == 0 ? "" : " M" + Met);
     }
 }

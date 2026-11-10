@@ -253,7 +253,14 @@ namespace Mvk2.World.BlockEntity.List
                         if (isDrop)
                         {
                             // Это дополнительный дроп
-                            ItemStack.SpawnAsEntity(world, pos.Pos, ItemsRegMvk.Brol);
+                            //ItemStack.SpawnAsEntity(world, pos.Pos, ItemsRegMvk.Brol);
+                            EntityBase entity2 = Ce.Entities.CreateEntityServer(
+                                Entity.EntitiesRegMvk.ChickenId, world);
+                            entity2.PosX = pos.Pos.X;
+                            entity2.PosY = pos.Pos.Y;
+                            entity2.PosZ = pos.Pos.Z;
+                            world.SpawnEntityInWorld(entity2);
+
                         }
                         //blockState.GetBlock().DropBlockAsItem(world, null, pos.Pos, blockState);
                     }

@@ -1,0 +1,10 @@
+{
+    MaxStackSize: 1,
+    MaxDamage: 100,
+    Width: .4,
+    Height: 0.0675,
+    Sprite: "Items/ItemsForBlock/BucketWater",
+    SpriteGui: "Items/ItemsForBlock/BucketWater",
+    View: { Offset:[0, 8, 0] }
+    ViewHold: { Offset:[0, 8, 0] }
+}

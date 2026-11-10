@@ -499,17 +499,14 @@ namespace Vge.World.Block
         public bool CollisionRayTrace(BlockPos pos, int met, 
             float px, float py, float pz, Vector3 dir, float maxDist)
         {
-            if (IsAction)
+            if (FullBlock) return true;
+            // Если блок не полный, обрабатываем хитбокс блока
+            Vector3 a = new Vector3(px, py, pz);
+            AxisAlignedBB[] aabbs = _GetCollisionBoxesToList(pos, met);
+            Vector3 pos2 = a + dir * maxDist;
+            foreach (AxisAlignedBB aabb in aabbs)
             {
-                if (FullBlock) return true;
-                // Если блок не полный, обрабатываем хитбокс блока
-                Vector3 a = new Vector3(px, py, pz);
-                AxisAlignedBB[] aabbs = _GetCollisionBoxesToList(pos, met);
-                Vector3 pos2 = a + dir * maxDist;
-                foreach (AxisAlignedBB aabb in aabbs)
-                {
-                    if (aabb.CalculateIntercept(a, pos2).Intersection) return true;
-                }
+                if (aabb.CalculateIntercept(a, pos2).Intersection) return true;
             }
             return false;
         }
@@ -574,7 +571,6 @@ namespace Vge.World.Block
         /// <summary>
         /// Локальные рамки коллизии для метаданных
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[0];
 
         /// <summary>
@@ -820,6 +816,13 @@ namespace Vge.World.Block
         /// Удалять тут другие блоки НЕЛЬЗЯ
         /// </summary>
         public virtual void OnBlockAdded(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState state) { }
+
+        /// <summary>
+        /// Действие блока после его смены met!!! Только на сервере
+        /// Удалять тут другие блоки НЕЛЬЗЯ
+        /// </summary>
+        public virtual void OnMetSelected(WorldServer world, ChunkServer chunk,
             BlockPos blockPos, BlockState state) { }
 
         /// <summary>

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Vge.Item
+﻿namespace Vge.Item
 {
     /// <summary>
     /// Структура результата вспомогательного действий рук
@@ -27,6 +21,10 @@ namespace Vge.Item
         /// Может на этот блок поставить другой, к примеру трава
         /// </summary>
         public bool Replaceable;
+        /// <summary>
+        /// Взаимодействие блока с жидкостью
+        /// </summary>
+        public bool IsLiquid;
 
         /// <summary>
         /// Указать действие и паузу до след действия
@@ -37,6 +35,7 @@ namespace Vge.Item
             Number = 0;
             Action = action;
             Replaceable = false;
+            IsLiquid = false;
         }
 
         /// <summary>
@@ -48,6 +47,7 @@ namespace Vge.Item
             Number = 0;
             Action = ActionType.BlockPlacement;
             Replaceable = replaceable;
+            IsLiquid = false;
         }
 
         /// <summary>
@@ -59,6 +59,19 @@ namespace Vge.Item
             Number = number;
             Action = ActionType.UseItem;
             Replaceable = false;
+            IsLiquid = false;
+        }
+
+        /// <summary>
+        /// Указать действие и паузу до след действия
+        /// </summary>
+        public ResultHandSecond(ActionType action, bool isLiquid)
+        {
+            Pause = -1;
+            Number = 0;
+            Action = action;
+            Replaceable = true;
+            IsLiquid = isLiquid;
         }
 
         public enum ActionType

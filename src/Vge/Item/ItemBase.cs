@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Vge.Audio;
 using Vge.Entity.Player;
@@ -199,13 +200,11 @@ namespace Vge.Item
         /// <summary>
         /// Имеется ли сетка контура для предмета
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool CanOutlineBlock() => false;
 
         /// <summary>
         /// Получить сетку контура предмета
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual YouCanPlaceIt GetOutlineBlock(ItemStack stack, PlayerBase player, 
             BlockPos blockPos, Pole side, Vector3 facing) => new YouCanPlaceIt();
 
@@ -219,20 +218,17 @@ namespace Vge.Item
         protected virtual bool _CanPlaceBlockOnSide(ItemStack stack, PlayerBase player, WorldBase world, 
             BlockPos blockPos, BlockBase block, Pole side, Vector3 facing, float playerYaw)
         {
-            //if (world.IsRemote) return true;
+            // Если стак пуст
+            if (stack == null || stack.Amount == 0) return false;
 
             BlockState blockState = world.GetBlockState(blockPos);
             BlockBase blockOld = blockState.GetBlock();
             // Проверка ставить блоки, на те которые можно, к примеру на траву
             if (!blockOld.IsReplaceable) return false;
             // Если устанавливаемый блок такой же как стоит
-            if (blockOld == block) return false;
-            // Если стак пуст
-            if (stack == null || stack.Amount == 0) return false;
+            if (_CheckEqualsBlockPlace(block, blockOld)) return false;
 
-            //if (world.IsRemote) return true;
-            bool isCheckCollision = !block.IsCollidable;
-            if (!isCheckCollision)
+            if (block.IsCollidable)
             {
                 // Определяем желаемый Met
                 int met = block.OnBlockPlaced(world, blockPos,
@@ -240,12 +236,17 @@ namespace Vge.Item
 
                 AxisAlignedBB axisBlock = block.GetCollisionOne(blockPos, met);
                 // Проверка коллизии сущностей и блока
-                isCheckCollision = !player.Size.IntersectsWith(axisBlock);
+                return !player.Size.IntersectsWith(axisBlock);
                     //world.GetEntitiesWithinAABB(ChunkBase.EnumEntityClassAABB.EntityLiving, axisBlock, player.Id).Count == 0;
             }
 
-            return isCheckCollision;
+            return true;
         }
+
+        /// <summary>
+        /// Проверка равенства старого и нового блока, при установке
+        /// </summary>
+        protected virtual bool _CheckEqualsBlockPlace(BlockBase block, BlockBase blockOld) => blockOld == block;
 
         /// <summary>
         /// Действие предмета ЛКМ.
@@ -272,7 +273,7 @@ namespace Vge.Item
         /// Действие текущего предмета.
         /// Для сервера
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public virtual void OnUseAction(ItemStack stack, PlayerServer player) { }
 
         /// <summary>
@@ -283,6 +284,16 @@ namespace Vge.Item
         /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
         public virtual ResultHandSecond OnSecond(bool begin, ItemStack stack, 
             PlayerClientOwner player, int counter)
+        {
+            return _CheckEntitySecond(player);
+        }
+
+        /// <summary>
+        /// Провекрка на сущность для Вспомогательное действие предмета ПКМ.
+        /// Для клиента.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected ResultHandSecond _CheckEntitySecond(PlayerClientOwner player)
         {
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsEntity())
@@ -324,6 +335,11 @@ namespace Vge.Item
             BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw) => false;
 
         #endregion
+
+        /// <summary>
+        /// Нарисовать сетку буффера дополнительный дааных для GUI
+        /// </summary>
+        public virtual float[] RenderBufferMetGui(byte met, int x, int y, int si) => new float[0];
 
         #region Методы для импорта данных с json
 

@@ -30,7 +30,7 @@ namespace Vge.Item.List
         public override ResultHandSecond OnSecond(bool begin, ItemStack stack, 
             PlayerClientOwner player, int counter)
         {
-            ResultHandSecond result = base.OnSecond(begin, stack, player, counter);
+            ResultHandSecond result = _CheckEntitySecond(player);
             if (result.Action != ResultHandSecond.ActionType.None)
             {
                 return result;
@@ -90,8 +90,8 @@ namespace Vge.Item.List
 
             if (_CanPlaceBlockOnSide(stack, player, world, blockPos, Block, side, facing, playerYaw))
             {
-                BlockState blockState = Block.OnBlockPlaced(world, blockPos, 
-                    new BlockState(Block.IndexBlock), side, facing, playerYaw);
+                BlockState blockState = Block.OnBlockPlaced(world, blockPos,
+                   CreateBlockState(stack), side, facing, playerYaw);
                 if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
                     BlockState blockStateOld = world.GetBlockState(blockPos);
@@ -144,8 +144,12 @@ namespace Vge.Item.List
         /// <summary>
         /// Имеется ли сетка контура для предмета
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool CanOutlineBlock() => true;
+
+        /// <summary>
+        /// Создать структура блок да установки
+        /// </summary>
+        protected virtual BlockState CreateBlockState(ItemStack stack) => new BlockState(Block.IndexBlock);
 
         /// <summary>
         /// Получить сетку контура предмета
@@ -165,7 +169,7 @@ namespace Vge.Item.List
                 side, facing, player.RotationYaw);
 
             BlockState blockState = Block.OnBlockPlaced(player.GetWorld(), blockPos,
-                new BlockState(Block.IndexBlock), side, facing, player.RotationYaw);
+                CreateBlockState(stack), side, facing, player.RotationYaw);
 
             return new YouCanPlaceIt(canPlace, Block.GetOutline(blockPos, blockState.Met));
         }

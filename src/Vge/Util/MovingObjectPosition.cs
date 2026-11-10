@@ -5,6 +5,8 @@ using WinGL.Util;
 
 namespace Vge.Util
 {
+    // TODO::2026-11-09 MovingObjectPosition не ловит доп жидкость без коллизии
+
     /// <summary>
     /// Объект отвечающий какой объект попадает под луч
     /// </summary>

@@ -45,7 +45,7 @@ namespace Mvk2.Item.List
         public override ResultHandSecond OnSecond(bool begin, ItemStack stack, 
             PlayerClientOwner player, int counter)
         {
-            ResultHandSecond result = base.OnSecond(begin, stack, player, counter);
+            ResultHandSecond result = _CheckEntitySecond(player);
             if (result.Action == ResultHandSecond.ActionType.None || player.IsKeyShift())
             {
                 if (counter > 20) counter = 20;

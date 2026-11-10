@@ -60,7 +60,8 @@ namespace Vge.Entity.Inventory
             if (stack != null && stack.Amount != 0 && stack.Item != null)
             {
                 if (length == -1) length = stacks.Length;
-                if (stack.IsItemDamaged())
+                
+                if (!stack.IsStackable())
                 {
                     int slot = _GetFirstEmptyStack(stacks, sourceIndex, length);
 
@@ -155,7 +156,7 @@ namespace Vge.Entity.Inventory
             {
                 if (stacks[slot] == null)
                 {
-                    stacks[slot] = new ItemStack(item, 0, itemStack.ItemDamaged);
+                    stacks[slot] = new ItemStack(item, 0, itemStack.ItemDamaged, itemStack.Met);
                 }
 
                 int amount2 = amount;
@@ -171,7 +172,8 @@ namespace Vge.Entity.Inventory
                 else
                 {
                     amount -= amount2;
-                    stacks[slot].AddAmount((byte)amount2);
+                    stacks[slot].AverageWearItem((byte)amount2, itemStack.ItemDamaged)
+                        .AddAmount((byte)amount2);
                     _OnSendSetSlot(slot + _biasSlot, stacks[slot], amount2);
                     if (IdDamageCategory == 0
                         || (IdDamageCategory != 0 && IdDamageSlotIgnor != slot))
@@ -188,17 +190,18 @@ namespace Vge.Entity.Inventory
         /// </summary>
         private int _StoreItemStack(ItemStack[] stacks, ItemStack itemStack, int sourceIndex, int length)
         {
-            ItemStack stack;
-            for (int i = sourceIndex; i < sourceIndex + length; i++)
+            if (itemStack != null)
             {
-                stack = stacks[i];
-                if (stack != null && stack.Item.IndexItem == itemStack.Item.IndexItem
-                    && stack.IsStackable() && stack.Amount < stack.Item.MaxStackSize
-                    && stack.Amount < _inventoryStackLimit
-                    && stack.ItemDamaged == itemStack.ItemDamaged
-                    && stack.IsItemEqual(itemStack))
+                ItemStack stack;
+                for (int i = sourceIndex; i < sourceIndex + length; i++)
                 {
-                    return i;
+                    stack = stacks[i];
+                    if (stack != null && stack.Item.IndexItem == itemStack.Item.IndexItem
+                        && stack.IsStackable() && stack.Amount < stack.Item.MaxStackSize
+                        && stack.Amount < _inventoryStackLimit)
+                    {
+                        return i;
+                    }
                 }
             }
             return -1;

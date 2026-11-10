@@ -25,13 +25,21 @@ namespace Mvk2.Gui
         /// </summary>
         private readonly MeshGuiColor _meshDamage;
         /// <summary>
+        /// Сетка доп данных
+        /// </summary>
+        private readonly MeshGuiColor _meshMet;
+        /// <summary>
         /// Объект шрифта
         /// </summary>
         private readonly FontBase _font;
         /// <summary>
-        /// Список буфера для построения сеток
+        /// Список буфера для построения сеток урона
         /// </summary>
-        public static readonly ListFlout ListBuffer = new ListFlout();
+        private static readonly ListFlout _listBufferDamage = new ListFlout();
+        /// <summary>
+        /// Список буфера для построения сеток метданных
+        /// </summary>
+        private static readonly ListFlout _listBufferMet = new ListFlout();
 
         /// <summary>
         /// Имеется ли текст
@@ -41,6 +49,10 @@ namespace Mvk2.Gui
         /// Имеется ли урон в предметах
         /// </summary>
         private bool _isDamage;
+        /// <summary>
+        /// Имеется ли доп предмета
+        /// </summary>
+        private bool _isMet;
 
         public RenderSlots(RenderMvk renderMvk)
         {
@@ -48,11 +60,13 @@ namespace Mvk2.Gui
             _font = _renderMvk.FontMain;
             _meshTxt = new MeshGuiColor(_renderMvk.GetOpenGL());
             _meshDamage = new MeshGuiColor(_renderMvk.GetOpenGL());
+            _meshMet = new MeshGuiColor(_renderMvk.GetOpenGL());
         }
 
         public void Clear()
         {
             _isDamage = false;
+            _isMet = false;
             _isText = false;
         }
 
@@ -70,21 +84,15 @@ namespace Mvk2.Gui
         }
 
         /// <summary>
-        /// Перед рендером для урона
-        /// </summary>
-        public void BeforeRenderDamage()
-        {
-            _isDamage = false;
-            ListBuffer.Clear();
-        }
-
-        /// <summary>
         /// Перед рендером
         /// </summary>
         public void BeforeRender()
         {
             BeforeRenderText();
-            BeforeRenderDamage();
+            _isDamage = false;
+            _listBufferDamage.Clear();
+            _isMet = false;
+            _listBufferMet.Clear();
         }
 
         /// <summary>
@@ -101,7 +109,11 @@ namespace Mvk2.Gui
             }
             if (_isDamage)
             {
-                _meshDamage.Reload(ListBuffer.GetBufferAll(), ListBuffer.Count);
+                _meshDamage.Reload(_listBufferDamage.GetBufferAll(), _listBufferDamage.Count);
+            }
+            if (_isMet)
+            {
+                _meshMet.Reload(_listBufferMet.GetBufferAll(), _listBufferMet.Count);
             }
         }
 
@@ -138,10 +150,10 @@ namespace Mvk2.Gui
                 //int line = itemStack.Amount * 30 / itemStack.Item.MaxStackSize;
                 if (line > 30) line = 30;
 
-                ListBuffer.AddRange(RenderFigure.Rectangle(
+                _listBufferDamage.AddRange(RenderFigure.Rectangle(
                     (x + 2) * Gi.Si, (y + 30) * Gi.Si, (x + 34) * Gi.Si, (y + 34) * Gi.Si, .16f, .16f, .16f));
 
-                ListBuffer.AddRange(RenderFigure.Rectangle(
+                _listBufferDamage.AddRange(RenderFigure.Rectangle(
                     (x + 3) * Gi.Si, (y + 31) * Gi.Si, (x + 33 - line) * Gi.Si, (y + 33) * Gi.Si,
                     line < 15 ? line / 15f : 1,
                     line > 15 ? (30 - line) / 15f : 1,
@@ -151,18 +163,39 @@ namespace Mvk2.Gui
             }
         }
 
+        public void MetRender(ItemStack itemStack, int x, int y)
+        {
+            if (itemStack.Met != 0)
+            {
+                float[] buffers = itemStack.Item.RenderBufferMetGui(itemStack.Met, x + 2, y + 2, Gi.Si);
+                if (buffers.Length > 0)
+                {
+                    _listBufferMet.AddRange(buffers);
+                    _isMet = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Метод для прорисовки кадра
         /// </summary>
         public void Draw(int x, int y)
         {
-            if (_isText || _isDamage)
+            if (_isText || _isDamage || _isMet)
             {
                 // Рисуем текст
                 _renderMvk.ShaderBindGuiColor(x, y);
-                _font.BindTexture();
-                if (_isDamage) _meshDamage.Draw();
-                if (_isText) _meshTxt.Draw();
+                if (_isText || _isDamage)
+                {
+                    _font.BindTexture();
+                    if (_isDamage) _meshDamage.Draw();
+                    if (_isText) _meshTxt.Draw();
+                }
+                if (_isMet)
+                {
+                    _renderMvk.BindTextureItemMet();
+                    _meshMet.Draw();
+                }
             }
         }
 
@@ -170,6 +203,7 @@ namespace Mvk2.Gui
         {
             _meshTxt?.Dispose();
             _meshDamage?.Dispose();
+            _meshMet?.Dispose();
         }
     }
 }

@@ -3,7 +3,6 @@ using Mvk2.Item.List.Tool;
 using Mvk2.World.Block;
 using Vge.Item;
 using Vge.Item.List;
-using Vge.World.Block;
 
 namespace Mvk2.Item
 {
@@ -12,39 +11,94 @@ namespace Mvk2.Item
     /// </summary>
     public sealed class ItemsRegMvk
     {
-        #region Одежда
+        private const string _Blocks = "Blocks";
+        private const string _ItemsForBlock = "ItemsForBlock";
+        private const string _Craft = "Craft";
+        private const string _Tools = "Tools";
+        private const string _Cloth = "Cloth";
+        private const string _Food = "Food";
+
+
+        #region Blocks - Блоки
+
+        public static ItemBase Debug { get; private set; }
         /// <summary>
-        /// Галстук
+        /// Блок стоячей воды
         /// </summary>
-        public static ItemCloth Tie { get; private set; }
+        public static ItemLiquid Water { get; private set; }
         /// <summary>
-        /// Фирменная рубашка
+        /// Блок стоячей лавы
         /// </summary>
-        public static ItemCloth ShirtBranded { get; private set; }
+        public static ItemLiquid Lava { get; private set; }
+
         /// <summary>
-        /// Фирменные ботинки
+        /// Булыжник
         /// </summary>
-        public static ItemCloth BootsBranded { get; private set; }
+        public static ItemBase Cobblestone { get; private set; }
         /// <summary>
-        /// Фирменный рюкзак
+        /// Песок
         /// </summary>
-        public static ItemCloth BackpackBranded { get; private set; }
+        public static ItemBase Sand { get; private set; }
         /// <summary>
-        /// Джинсовые брюки
+        /// Стекло
         /// </summary>
-        public static ItemCloth PantsJeans { get; private set; }
+        public static ItemBase Glass { get; private set; }
         /// <summary>
-        /// Фирменный ремень
+        /// Брол
         /// </summary>
-        public static ItemCloth BeltBranded { get; private set; }
-        /// <summary>
-        /// Кепка тёмная
-        /// </summary>
-        public static ItemCloth CapDark { get; private set; }
+        public static ItemBase Brol { get; private set; }
+
 
         #endregion
 
-        #region Tools
+        #region ItemsForBlock - Предметы для блока
+
+        /// <summary>
+        /// Дверь из досок
+        /// </summary>
+        public static ItemBase DoorOfPlanks { get; private set; }
+        /// <summary>
+        /// Верёвка
+        /// </summary>
+        public static ItemRope Rope { get; private set; }
+        /// <summary>
+        /// Ведро
+        /// </summary>
+        public static ItemBucket Bucket { get; private set; }
+        /// <summary>
+        /// Ведро с водой
+        /// </summary>
+        public static ItemLiquid BucketWater { get; private set; }
+        /// <summary>
+        /// Ведро с лавой
+        /// </summary>
+        public static ItemLiquid BucketLava { get; private set; }
+
+        /// <summary>
+        /// Цветок клевер белый
+        /// </summary>
+        public static ItemBase FlowerClover { get; private set; }
+
+        #endregion
+
+        #region Craft - Для крафта
+
+        /// <summary>
+        /// Сухая трава
+        /// </summary>
+        public static ItemBase DryGrass { get; private set; }
+        /// <summary>
+        /// Земляной кусочек
+        /// </summary>
+        public static ItemBase PieceDirt { get; private set; }
+        /// <summary>
+        /// Каменный кусочек
+        /// </summary>
+        public static ItemBase PieceStone { get; private set; }
+
+        #endregion
+
+        #region Tools - Инструменты
 
         /// <summary>
         /// Техническая палочка, для отладки
@@ -59,7 +113,7 @@ namespace Mvk2.Item
         /// Палка-копалка
         /// </summary>
         public static ItemAbTool DiggingStick { get; private set; }
-        
+
         /// <summary>
         /// Железный топор
         /// </summary>
@@ -102,48 +156,50 @@ namespace Mvk2.Item
 
         #endregion
 
-        #region Вещи-предметы для установки блока
+        #region Cloth - Одежда
 
         /// <summary>
-        /// Дверь из досок
+        /// Галстук
         /// </summary>
-        public static ItemBase DoorOfPlanks { get; private set; }
+        public static ItemCloth Tie { get; private set; }
         /// <summary>
-        /// Верёвка
+        /// Фирменная рубашка
         /// </summary>
-        public static ItemBase Rope { get; private set; }
+        public static ItemCloth ShirtBranded { get; private set; }
+        /// <summary>
+        /// Фирменные ботинки
+        /// </summary>
+        public static ItemCloth BootsBranded { get; private set; }
+        /// <summary>
+        /// Фирменный рюкзак
+        /// </summary>
+        public static ItemCloth BackpackBranded { get; private set; }
+        /// <summary>
+        /// Джинсовые брюки
+        /// </summary>
+        public static ItemCloth PantsJeans { get; private set; }
+        /// <summary>
+        /// Фирменный ремень
+        /// </summary>
+        public static ItemCloth BeltBranded { get; private set; }
+        /// <summary>
+        /// Кепка тёмная
+        /// </summary>
+        public static ItemCloth CapDark { get; private set; }
+
+        public static ItemCloth StrawHat { get; private set; }
+        public static ItemCloth CamouflageJacket { get; private set; }
 
         #endregion
+
+        #region Food - Еда
 
         /// <summary>
         /// Консерва
         /// </summary>
         public static ItemBase CannedFood { get; private set; }
-        /// <summary>
-        /// Сухая трава
-        /// </summary>
-        public static ItemBase DryGrass { get; private set; }
-        /// <summary>
-        /// Земляной кусочек
-        /// </summary>
-        public static ItemBase PieceDirt { get; private set; }
-        /// <summary>
-        /// Каменный кусочек
-        /// </summary>
-        public static ItemBase PieceStone { get; private set; }
-        /// <summary>
-        /// Цветок клевер белый
-        /// </summary>
-        public static ItemBase FlowerClover { get; private set; }
-        public static ItemBase Cobblestone { get; private set; }
-        public static ItemBase Sand { get; private set; }
-        public static ItemBase Glass { get; private set; }
-        
-        public static ItemBase Brol { get; private set; }
-        public static ItemBase Debug { get; private set; }
 
-        public static ItemCloth StrawHat { get; private set; }
-        public static ItemCloth CamouflageJacket { get; private set; }
+        #endregion
 
         /// <summary>
         /// Объект креативного инвентаря
@@ -221,52 +277,61 @@ namespace Mvk2.Item
             // Маска + Акваланг ?!
             // 
 
-
-            // Tools
-            ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical(), "Tools");
-
-            ItemsReg.RegisterItemClass("AxeStone", AxeStone = new ItemAxeStone(), "Tools");
-            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe(), "Tools");
-            ItemsReg.RegisterItemClass("AxeSteel", AxeSteel = new ItemAxe(), "Tools");
-            ItemsReg.RegisterItemClass("AxeRed", AxeRed = new ItemAxe(), "Tools");
-
-            ItemsReg.RegisterItemClass("DiggingStick", DiggingStick = new ItemShovel(), "Tools");
-            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel(), "Tools");
-            ItemsReg.RegisterItemClass("ShovelSteel", ShovelSteel = new ItemShovel(), "Tools");
-            ItemsReg.RegisterItemClass("ShovelRed", ShovelRed = new ItemShovel(), "Tools");
-
-            ItemsReg.RegisterItemClass("PickaxeIron", PickaxeIron = new ItemPickaxe(), "Tools");
-            ItemsReg.RegisterItemClass("PickaxeSteel", PickaxeSteel = new ItemPickaxe(), "Tools");
-            ItemsReg.RegisterItemClass("PickaxeRed", PickaxeRed = new ItemPickaxe(), "Tools");
-
-            ItemsReg.RegisterItemClass("DoorOfPlanks", DoorOfPlanks = new ItemDoor(BlocksRegMvk.DoorOfPlanks));
-            //ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.BranchFruit));
-            ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.Rope));
-
-            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
-            ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
-            ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
-            ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
-
-            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak));
-            //ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.Air));
-
+            // Blocks
+            ItemsReg.RegisterItemClass("Debug", Debug = new ItemBlock(BlocksRegMvk.Debug));
+            ItemsReg.RegisterItemClass("Water", Water = new ItemLiquid(BlocksRegMvk.Water, true), _Blocks);
+            ItemsReg.RegisterItemClass("Lava", Lava = new ItemLiquid(BlocksRegMvk.Lava, true), _Blocks);
             ItemsReg.RegisterItemClass("Cobblestone", Cobblestone = new ItemBlock(BlocksRegMvk.Cobblestone));
             ItemsReg.RegisterItemClass("Sand", Sand = new ItemBlock(BlocksRegMvk.Sand));
             ItemsReg.RegisterItemClass("Glass", Glass = new ItemBlock(BlocksRegMvk.Glass));
             ItemsReg.RegisterItemClass("Brol", Brol = new ItemBlock(BlocksRegMvk.Brol));
-            ItemsReg.RegisterItemClass("Debug", Debug = new ItemBlock(BlocksRegMvk.Debug));
+            
 
-            StrawHat = ItemsReg.RegisterItemClothClass("StrawHat");
-            CamouflageJacket = ItemsReg.RegisterItemClothClass("CamouflageJacket");
+            // ItemsForBlock
+            ItemsReg.RegisterItemClass("DoorOfPlanks", DoorOfPlanks = new ItemDoor(BlocksRegMvk.DoorOfPlanks), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.Rope), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("Bucket", Bucket = new ItemBucket(), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("BucketWater", BucketWater = new ItemLiquid(BlocksRegMvk.Water, false), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("BucketLava", BucketLava = new ItemLiquid(BlocksRegMvk.Lava, false, .25f), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock);
 
-            PantsJeans = ItemsReg.RegisterItemClothClass("PantsJeans");
+            // Craft
+            ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
+            ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());
+            ItemsReg.RegisterItemClass("PieceStone", PieceStone = new ItemPiece());
+
+            // Tools
+            ItemsReg.RegisterItemClass("StickTechnical", StickTechnical = new ItemStickTechnical(), _Tools);
+
+            ItemsReg.RegisterItemClass("AxeStone", AxeStone = new ItemAxeStone(), _Tools);
+            ItemsReg.RegisterItemClass("AxeIron", AxeIron = new ItemAxe(), _Tools);
+            ItemsReg.RegisterItemClass("AxeSteel", AxeSteel = new ItemAxe(), _Tools);
+            ItemsReg.RegisterItemClass("AxeRed", AxeRed = new ItemAxe(), _Tools);
+
+            ItemsReg.RegisterItemClass("DiggingStick", DiggingStick = new ItemShovel(), _Tools);
+            ItemsReg.RegisterItemClass("ShovelIron", ShovelIron = new ItemShovel(), _Tools);
+            ItemsReg.RegisterItemClass("ShovelSteel", ShovelSteel = new ItemShovel(), _Tools);
+            ItemsReg.RegisterItemClass("ShovelRed", ShovelRed = new ItemShovel(), _Tools);
+
+            ItemsReg.RegisterItemClass("PickaxeIron", PickaxeIron = new ItemPickaxe(), _Tools);
+            ItemsReg.RegisterItemClass("PickaxeSteel", PickaxeSteel = new ItemPickaxe(), _Tools);
+            ItemsReg.RegisterItemClass("PickaxeRed", PickaxeRed = new ItemPickaxe(), _Tools);
+
+            // Cloth
+            ItemsReg.RegisterItemClass("PantsJeans", PantsJeans = new ItemCloth(), _Cloth);
+            //PantsJeans = ItemsReg.RegisterItemClothClass("PantsJeans");
             ShirtBranded = ItemsReg.RegisterItemClothClass("ShirtBranded");
             BootsBranded = ItemsReg.RegisterItemClothClass("BootsBranded");
             BackpackBranded = ItemsReg.RegisterItemClothClass("BackpackBranded");
             BeltBranded = ItemsReg.RegisterItemClothClass("BeltBranded");
             Tie = ItemsReg.RegisterItemClothClass("Tie");
             CapDark = ItemsReg.RegisterItemClothClass("CapDark");
+
+            StrawHat = ItemsReg.RegisterItemClothClass("StrawHat");
+            CamouflageJacket = ItemsReg.RegisterItemClothClass("CamouflageJacket");
+
+            // Food
+            ItemsReg.RegisterItemClass("CannedFood", CannedFood = new ItemFood());
 
             // Объект регистрации и данных креативного инвентаря
             Creative = new ItemsCreative();

@@ -108,7 +108,8 @@ namespace Mvk2.World.Block.List
         {
             if (chunk.GetBlockStateNotCheck(blockPos.OffsetDown()).Id == 0)
             {
-                chunk.SetBlockState(blockPos.OffsetDown(), new BlockState(_idFetus), true); // 44
+                BlockState blockState = new BlockState(_idFetus);
+                chunk.SetBlockState(blockPos.OffsetDown(), ref blockState, true); // 44
                 return true;
             }
             return false;

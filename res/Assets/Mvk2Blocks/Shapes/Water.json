@@ -4,6 +4,8 @@
         Still: "Blocks/WaterStill"
     },
     Element: {
+        From: [ -8, 0, -8 ],
+        To: [ 8, 16, 8 ],
         TypeColor:3,
         Wind:1,
         Faces: [

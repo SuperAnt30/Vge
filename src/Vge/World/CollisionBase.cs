@@ -480,17 +480,20 @@ namespace Vge.World
 
                 if (isLiquid && !liquid && block.Liquid)// && !(block is BlockAbLiquidFlowing))
                 {
-                    liquid = true;
-                    blockPosLiquid.X = blockPos.X;
-                    blockPosLiquid.Y = blockPos.Y;
-                    blockPosLiquid.Z = blockPos.Z;
-                    idBlockLiquid = idBlock;
+                    if (block.CollisionRayTrace(blockPos, blockState.Met, px, py, pz, dir, maxDist))
+                    {
+                        liquid = true;
+                        blockPosLiquid.X = blockPos.X;
+                        blockPosLiquid.Y = blockPos.Y;
+                        blockPosLiquid.Z = blockPos.Z;
+                        idBlockLiquid = idBlock;
+                    }
                 }
 
                 if ((isLight && block.IsNotTransparent) 
                     || (!isLight && ((!collidable) 
                     || (collidable && block.IsCollidable))
-                    && block.CollisionRayTrace(blockPos, blockState.Met, px, py, pz, dir, maxDist)))
+                    && block.IsAction && block.CollisionRayTrace(blockPos, blockState.Met, px, py, pz, dir, maxDist)))
                 {
                     end.X = px + t * dx;
                     end.Y = py + t * dy;

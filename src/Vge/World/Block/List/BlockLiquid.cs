@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Vge.Json;
 using Vge.Util;
 using Vge.World.Chunk;
@@ -27,7 +28,32 @@ namespace Vge.World.Block.List
             CullFaceAll = true;
             LiquidOutside = 1024;
             NotLiquidOutside = new int[] { 0, 0, 0, 0, 0, 0 };
+
+            _fullCube = new AxisAlignedBB[][] {
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 16, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 1, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 2, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 3, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 4, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 5, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 6, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 7, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 8, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 9, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 10, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 11, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 12, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 13, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 14, 16) },
+                new AxisAlignedBB[] { new AxisAlignedBB(0, 0, 0, 16, 15, 16) }
+            };
+            _InitFullCubeDivide16();
         }
+
+        /// <summary>
+        /// Локальные рамки коллизии для метаданных
+        /// </summary>
+        public override AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[met & 0xF];
 
         /// <summary>
         /// Инициализация объекта рендера для блока
@@ -66,7 +92,7 @@ namespace Vge.World.Block.List
         /// Сколько игровых тиков между тиками
         /// 5 вода, 15 нефть, 30 лава
         /// </summary>
-        protected uint _tickRate = 8;
+        protected uint _tickRate = 5;
         /// <summary>
         /// Лужа
         /// </summary>
@@ -186,10 +212,10 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, 
-            BlockState state, Pole side, Vector3 facing, float playerYaw)
-            => state.NewMet(7);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public override BlockState OnBlockPlaced(WorldBase worldIn, BlockPos blockPos, 
+        //    BlockState state, Pole side, Vector3 facing, float playerYaw) => state.NewMet(7);
+        // Для установки блока жидкости, этот атрибут определяется в объекте предмета
 
         #region Методы для тиков
 
@@ -359,6 +385,22 @@ namespace Vge.World.Block.List
             world.SetBlockState(pos, new BlockState() { Id = IndexBlock, Met = met }, BlockFlag.cNotify);
             if (isAddLiquid) world.SetBlockAddLiquidTick(pos, _tickRate);
             else world.SetBlockTick(pos, _tickRate);
+        }
+
+        /// <summary>
+        /// Задать тик блоку жидкости
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _SetTickBlock(WorldServer world, BlockPos pos)
+        {
+            if (world.GetBlockState(pos).GetBlock().Material.Liquid)
+            {
+                world.SetBlockTick(pos, _tickRate);
+            }
+            else 
+            {
+                world.SetBlockAddLiquidTick(pos, _tickRate);
+            }
         }
 
         /// <summary>
@@ -534,9 +576,23 @@ namespace Vge.World.Block.List
         {
             if (!_Mixing(world, blockPos, blockState))
             {
-                world.SetBlockTick(blockPos, 4);
+                _SetTickBlock(world, blockPos);
             }
         }
+
+        /// <summary>
+        /// Действие блока после его установки, не смена met!!! Только на сервере
+        /// Удалять тут другие блоки НЕЛЬЗЯ
+        /// </summary>
+        public override void OnBlockAdded(WorldServer world, ChunkServer chunk, 
+            BlockPos blockPos, BlockState state) => _SetTickBlock(world, blockPos);
+
+        /// <summary>
+        /// Действие блока после его смены met!!! Только на сервере
+        /// Удалять тут другие блоки НЕЛЬЗЯ
+        /// </summary>
+        public override void OnMetSelected(WorldServer world, ChunkServer chunk,
+            BlockPos blockPos, BlockState state) => _SetTickBlock(world, blockPos);
 
         /// <summary>
         /// Смешивание блоков

@@ -92,6 +92,11 @@ namespace Mvk2.Renderer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindTextureMoon() => Texture.BindTexture(_textureIndexMvk.Moon);
+        /// <summary>
+        /// Запустить текстуру Inventory
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindTextureItemMet() => Texture.BindTexture(_textureIndexMvk.ItemMet);
 
         #endregion
 
@@ -142,6 +147,10 @@ namespace Mvk2.Renderer
             if (buffereds.ContainsKey(EnumTextureMvk.Moon.ToString()))
             {
                 _textureIndexMvk.Moon = Texture.SetTexture(buffereds[EnumTextureMvk.Moon.ToString()]);
+            }
+            if (buffereds.ContainsKey(EnumTextureMvk.ItemMet.ToString()))
+            {
+                _textureIndexMvk.ItemMet = Texture.SetTexture(buffereds[EnumTextureMvk.ItemMet.ToString()]);
             }
         }
     }

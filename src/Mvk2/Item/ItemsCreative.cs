@@ -17,15 +17,15 @@ namespace Mvk2.Item
         public const int Count = 48;
         /// <summary>
         /// Количество вкладок
-        /// All, Blocks, Craft, Tools, Cloth, Food
+        /// All, Blocks, ItemsForBlock, Craft, Tools, Cloth, Food
         /// </summary>
-        public const int CountTab = 6;
+        public const int CountTab = 7;
         /// <summary>
         /// Массив названий разделов
         /// </summary>
         public readonly static string[] NameTab = new string[]
         {
-            L.T("All"), L.T("Blocks"), L.T("Craft"), L.T("Tools"), L.T("Cloth"), L.T("Food")
+            L.T("All"), L.T("Blocks"), L.T("ItemsForBlock"), L.T("Craft"), L.T("Tools"), L.T("Cloth"), L.T("Food")
         };
 
         private ItemStack[][][] _stacks;
@@ -38,13 +38,21 @@ namespace Mvk2.Item
             // Раздел блоки
             List<ItemStack> tabBlocks = new List<ItemStack>();
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Debug));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Water));
+            tabBlocks.Add(new ItemStack(ItemsRegMvk.Lava));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Cobblestone));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Sand));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Glass));
             tabBlocks.Add(new ItemStack(ItemsRegMvk.Brol));
-            tabBlocks.Add(new ItemStack(ItemsRegMvk.FlowerClover));
-            tabBlocks.Add(new ItemStack(ItemsRegMvk.DoorOfPlanks));
-            tabBlocks.Add(new ItemStack(ItemsRegMvk.Rope));
+
+            // Раздел предметы для блока
+            List<ItemStack> tabItemsForBlock = new List<ItemStack>();
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FlowerClover));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.DoorOfPlanks));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.Rope));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.Bucket));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketWater, 1, 0, 7));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketLava, 1, 0, 7));
 
             // Раздел крафтовые предметы 
             List<ItemStack> tabCraft = new List<ItemStack>();
@@ -71,16 +79,16 @@ namespace Mvk2.Item
             // Раздел одежда
             List<ItemStack> tabCloth = new List<ItemStack>();
             
-            tabCloth.Add(new ItemStack(ItemsRegMvk.Tie, 1, ItemsRegMvk.Tie.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.ShirtBranded, 1, ItemsRegMvk.ShirtBranded.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.BootsBranded, 1, ItemsRegMvk.BootsBranded.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.BackpackBranded, 1, ItemsRegMvk.BackpackBranded.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.PantsJeans, 1, ItemsRegMvk.PantsJeans.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.BeltBranded, 1, ItemsRegMvk.BeltBranded.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.CapDark, 1, ItemsRegMvk.CapDark.MaxDamage));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.Tie));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.ShirtBranded));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.BootsBranded));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.BackpackBranded));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.PantsJeans));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.BeltBranded));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.CapDark));
 
-            tabCloth.Add(new ItemStack(ItemsRegMvk.StrawHat, 1, ItemsRegMvk.StrawHat.MaxDamage));
-            tabCloth.Add(new ItemStack(ItemsRegMvk.CamouflageJacket, 1, ItemsRegMvk.CamouflageJacket.MaxDamage));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.StrawHat));
+            tabCloth.Add(new ItemStack(ItemsRegMvk.CamouflageJacket));
 
             // Раздел еда
             List<ItemStack> tabFood = new List<ItemStack>();
@@ -90,6 +98,7 @@ namespace Mvk2.Item
             // Раздел всего
             List<ItemStack> tabAll = new List<ItemStack>();
             tabAll.AddRange(tabBlocks);
+            tabAll.AddRange(tabItemsForBlock);
             tabAll.AddRange(tabCraft);
             tabAll.AddRange(tabTools);
             tabAll.AddRange(tabCloth);
@@ -98,10 +107,11 @@ namespace Mvk2.Item
             _stacks = new ItemStack[CountTab][][];
             _Init(0, tabAll);
             _Init(1, tabBlocks);
-            _Init(2, tabCraft);
-            _Init(3, tabTools);
-            _Init(4, tabCloth);
-            _Init(5, tabFood);
+            _Init(2, tabItemsForBlock);
+            _Init(3, tabCraft);
+            _Init(4, tabTools);
+            _Init(5, tabCloth);
+            _Init(6, tabFood);
 
             return;
         }

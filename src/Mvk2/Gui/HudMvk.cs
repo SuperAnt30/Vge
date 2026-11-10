@@ -155,6 +155,7 @@ namespace Mvk2.Gui
             {
                 _renderSlots.TextRenderCheck(itemStack, x, y);
                 _renderSlots.DamageRender(itemStack, x, y);
+                _renderSlots.MetRender(itemStack, x, y);
             }
         }
 

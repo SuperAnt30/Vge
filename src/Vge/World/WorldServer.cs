@@ -514,19 +514,27 @@ namespace Vge.World
             ChunkServer chunk = ChunkPrServ.GetChunkServer(blockPos.GetPositionChunk());
             if (chunk == null) return false;
 
-            BlockState blockStateOld = chunk.SetBlockState(blockPos, blockState, true);
+            BlockState blockStateOld = chunk.SetBlockState(blockPos, ref blockState, true);
             if (blockStateOld.IsEmpty()) return false;
 
-            BlockBase blockOld = blockStateOld.GetBlock();
-            // Действие блока после его удаления
-            blockOld.OnBreakBlock(this, chunk, blockPos, blockStateOld, entity);
-            blockState.GetBlock().OnBlockAdded(this, chunk, blockPos, blockState);
+            if (blockState.Id != blockStateOld.Id) // Жидкость попала или исчезла из этого блока
+            {
+                BlockBase blockOld = blockStateOld.GetBlock();
+                // Действие блока после его удаления
+                blockOld.OnBreakBlock(this, chunk, blockPos, blockStateOld, entity);
+                blockState.GetBlock().OnBlockAdded(this, chunk, blockPos, blockState);
+                // Звуковое сопровождение сломанного блока
+                blockOld.PlaySoundBreak(this, blockPos);
+                // Частички блока, только на сервере чтоб всем разослать
+                ParticleDiggingBlock(blockOld, blockPos.ToVector3Center());
+            }
+            else if (blockState.Met != blockStateOld.Met)
+            {
+                // Смена мет данных влечёт
+                blockState.GetBlock().OnMetSelected(this, chunk, blockPos, blockState);
+            }
             // Уведомление соседей только на сервере!
             _NotifyNeighborsOfStateChange(blockPos);
-            // Звуковое сопровождение сломанного блока
-            blockOld.PlaySoundBreak(this, blockPos);
-            // Частички блока, только на сервере чтоб всем разослать
-            ParticleDiggingBlock(blockOld, blockPos.ToVector3Center());
 
             return true;
         }
@@ -547,34 +555,43 @@ namespace Vge.World
             ChunkServer chunk = ChunkPrServ.GetChunkServer(blockPos.GetPositionChunk());
             if (chunk == null) return false;
 
-            BlockState blockStateOld = chunk.SetBlockState(blockPos, blockState, (flag & BlockFlag.Liquid) != 0);
+            BlockState blockStateOld = chunk.SetBlockState(blockPos, ref blockState, (flag & BlockFlag.Liquid) != 0);
             if (blockStateOld.IsEmpty()) return false;
 
-            BlockBase blockOld = blockStateOld.GetBlock();
-
-            // Действие блока после его удаления
-            if ((flag & BlockFlag.Break) == 0) // проверку сломаного
+            if (blockState.Id != blockStateOld.Id) // Жидкость попала или исчезла из этого блока
             {
-                blockOld.OnBreakBlock(this, chunk, blockPos, blockStateOld, null);
-            }
+                BlockBase blockOld = blockStateOld.GetBlock();
 
-            blockState.GetBlock().OnBlockAdded(this, chunk, blockPos, blockState);
+                // Действие блока после его удаления
+                if ((flag & BlockFlag.Break) == 0) // проверку сломаного
+                {
+                    blockOld.OnBreakBlock(this, chunk, blockPos, blockStateOld, null);
+                }
+
+                blockState.GetBlock().OnBlockAdded(this, chunk, blockPos, blockState);
+                // Звуковое сопровождение сломанного блока
+                if ((flag & BlockFlag.Sound) != 0)
+                {
+                    blockOld.PlaySoundBreak(this, blockPos);
+                }
+                // Частички блока, только на сервере чтоб всем разослать
+                if ((flag & BlockFlag.Particle) != 0)
+                {
+                    ParticleDiggingBlock(blockOld, blockPos.ToVector3Center());
+                }
+            }
+            else if (blockState.Met != blockStateOld.Met)
+            {
+                // Смена мет данных влечёт
+                blockState.GetBlock().OnMetSelected(this, chunk, blockPos, blockState);
+            }
 
             // Уведомление соседей только на сервере!
             if ((flag & BlockFlag.Notify) != 0)
             {
                 _NotifyNeighborsOfStateChange(blockPos);
             }
-            // Звуковое сопровождение сломанного блока
-            if ((flag & BlockFlag.Sound) != 0)
-            {
-                blockOld.PlaySoundBreak(this, blockPos);
-            }
-            // Частички блока, только на сервере чтоб всем разослать
-            if ((flag & BlockFlag.Particle) != 0)
-            {
-                ParticleDiggingBlock(blockOld, blockPos.ToVector3Center());
-            }
+            
 
             return true;
         }

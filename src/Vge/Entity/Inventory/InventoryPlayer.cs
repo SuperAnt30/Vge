@@ -354,7 +354,9 @@ namespace Vge.Entity.Inventory
                         if (_CanPutItemStack(slotIn, stackAir))
                         {
                             // В воздухе имеется и в ячейке имеется
-                            if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem && stackSlot.ItemDamaged == stackAir.ItemDamaged)
+                            if (stackSlot.Item.IndexItem == stackAir.Item.IndexItem 
+                                && (stackSlot.Item.MaxDamage > 0
+                                    || stackSlot.ItemDamaged == stackAir.ItemDamaged))
                             {
                                 // Если предметы одинаковые
                                 if (slotIn >= 100 && _isCreative)
@@ -384,7 +386,7 @@ namespace Vge.Entity.Inventory
                                     if (stackSlot.Item.MaxStackSize > stackSlot.Amount)
                                     {
                                         // Если был клик правой клавишей, то добавляем только одну единицу
-                                        _SetSendSlotContents(slotIn, stackSlot.AddAmount(1));
+                                        _SetSendSlotContents(slotIn, stackSlot.AverageWearItem(1, stackAir.ItemDamaged).AddAmount(1));
                                         _SetSendAirContents(stackAir.ReduceAmount(1));
                                     }
                                 }
@@ -394,13 +396,15 @@ namespace Vge.Entity.Inventory
                                     if (aw > stackSlot.Item.MaxStackSize)
                                     {
                                         // сумма больше слота значит не весь перекладываем в руке останется
-                                        _SetSendSlotContents(slotIn, stackSlot.SetAmount(stackSlot.Item.MaxStackSize));
+                                        _SetSendSlotContents(slotIn, stackSlot
+                                            .AverageWearItem((byte)(stackSlot.Item.MaxStackSize - stackSlot.Amount), stackAir.ItemDamaged).SetAmount(stackSlot.Item.MaxStackSize));
                                         _SetSendAirContents(stackAir.SetAmount((byte)(aw - stackSlot.Item.MaxStackSize)));
                                     }
                                     else
                                     {
                                         // весь можно переложить
-                                        _SetSendSlotContents(slotIn, stackSlot.SetAmount(aw));
+                                        _SetSendSlotContents(slotIn, stackSlot
+                                            .AverageWearItem(stackAir.Amount, stackAir.ItemDamaged).SetAmount(aw));
                                         _SetSendAirContents();
                                     }
                                 }
@@ -518,7 +522,6 @@ namespace Vge.Entity.Inventory
         /// <summary>
         /// Устанавливает данный стак предметов в указанный слот в инвентаре
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetInventorySlotContents(int slotIn, ItemStack stack)
         {
             if (slotIn == 255)

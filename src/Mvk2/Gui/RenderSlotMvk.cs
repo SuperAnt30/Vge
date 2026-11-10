@@ -51,9 +51,10 @@ namespace Vge.Gui
                     _renderSlots.BeforeRenderText();
                     _renderSlots.TextRender(Stack);
                 }
-
                 // Ренедер урона
                 _renderSlots.DamageRender(Stack, 0, 0);
+                // Рендер доп данных
+                _renderSlots.MetRender(Stack, 0, 0);
             }
             else
             {

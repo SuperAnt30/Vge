@@ -78,7 +78,6 @@ namespace Mvk2.Item.List.Tool
         /// <summary>
         /// Текст в подсказке для GUI
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string GetToolTip(ItemStack stack)
             => string.Format(_toolTip, 
                 Level, _damage,

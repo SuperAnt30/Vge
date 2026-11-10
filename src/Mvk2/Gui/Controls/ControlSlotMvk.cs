@@ -4,6 +4,7 @@ using Vge.Gui.Controls;
 using Vge.Item;
 using Vge.Renderer;
 using Vge.Renderer.Mesh;
+using Vge.Util;
 
 namespace Mvk2.Gui.Controls
 {
@@ -12,6 +13,11 @@ namespace Mvk2.Gui.Controls
     /// </summary>
     public class ControlSlotMvk : ControlSlot
     {
+        /// <summary>
+        /// Список буфера для построения сеток
+        /// </summary>
+        private static readonly ListFlout _listBuffer = new ListFlout();
+
         /// <summary>
         /// Сетка фона
         /// </summary>
@@ -51,19 +57,19 @@ namespace Mvk2.Gui.Controls
 
                 if (bg)
                 {
-                    RenderSlots.ListBuffer.Clear();
-                    
+                    _listBuffer.Clear();
+
                     // Маркер 32*32
-                    RenderSlots.ListBuffer.AddRange(RenderFigure.Rectangle((PosX + 2) * _si, (PosY + 2) * _si,
+                    _listBuffer.AddRange(RenderFigure.Rectangle((PosX + 2) * _si, (PosY + 2) * _si,
                         (PosX + 34) * _si, (PosY + 34) * _si,
                         v3 - .0625f, .9375f, v3, 1));
 
                     // Выделенный слот
-                    RenderSlots.ListBuffer.AddRange(RenderFigure.Rectangle(PosX * _si, PosY * _si,
+                    _listBuffer.AddRange(RenderFigure.Rectangle(PosX * _si, PosY * _si,
                         (PosX + Width) * _si, (PosY + Height) * _si,
                         v1, .9296875f, v2, 1));
 
-                    _meshBg.Reload(RenderSlots.ListBuffer.GetBufferAll(), RenderSlots.ListBuffer.Count);
+                    _meshBg.Reload(_listBuffer.GetBufferAll(), _listBuffer.Count);
                 }
                 else
                 {

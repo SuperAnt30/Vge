@@ -1,0 +1,10 @@
+{
+    MaxStackSize: 5,
+    MaxDamage: 100,
+    Width: .4,
+    Height: 0.0675,
+    Sprite: "Items/ItemsForBlock/Bucket",
+    SpriteGui: "Items/ItemsForBlock/Bucket",
+    View: { Offset:[0, 8, 0] }
+    ViewHold: { Offset:[0, 8, 0] }
+}

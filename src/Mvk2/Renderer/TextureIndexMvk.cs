@@ -39,6 +39,10 @@ namespace Mvk2.Renderer
         /// Текстура луны
         /// </summary>
         public uint Moon;
+        /// <summary>
+        /// Текстура дополнительной отрисовки для предметов
+        /// </summary>
+        public uint ItemMet;
     }
 
     /// <summary>
@@ -85,6 +89,10 @@ namespace Mvk2.Renderer
         /// <summary>
         /// Текстура луны
         /// </summary>
-        Moon
+        Moon,
+        /// <summary>
+        /// Текстура дополнительной отрисовки для предметов
+        /// </summary>
+        ItemMet
     }
 }
