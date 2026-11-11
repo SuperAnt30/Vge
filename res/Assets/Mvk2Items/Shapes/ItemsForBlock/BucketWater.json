@@ -1,0 +1,55 @@
+{
+    Texture: {
+        T0: "Items/ItemsForBlock/Bucket",
+        T1: "Items/WaterLava"
+    },
+    Elements: [
+        {   From: [-5, 0, -5],
+            To: [5, 10, 5],
+            Faces: [
+                { Texture:"T1", Side:"Up", Uv:[8.5, 1, 13.5, 6]},
+                { Texture:"T0", Side:"Down", Uv:[0.5, 9, 5.5, 14]}
+            ]
+        },
+        {   From: [-6, 0, -6],
+            To: [-5, 14, 6],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[5.5, 0, 6, 7]},
+                { Texture:"T0", Side:"East", Uv:[6, 0, 12, 7]},
+                { Texture:"T0", Side:"South", Uv:[0, 0, 0.5, 7]},
+                { Texture:"T0", Side:"West", Uv:[0, 0, 6, 7]},
+                { Texture:"T0", Side:"Up", Uv:[6, 8.5, 6.5, 14.5]},
+                { Texture:"T0", Side:"Down", Uv:[0, 8.5, 0.5, 14.5]}
+            ]
+        },
+        {   From: [5, 0, -6],
+            To: [6, 14, 6],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0, 0, 0.5, 7]},
+                { Texture:"T0", Side:"East", Uv:[0, 0, 6, 7]},
+                { Texture:"T0", Side:"South", Uv:[5.5, 0, 6, 7]},
+                { Texture:"T0", Side:"West", Uv:[6, 0, 12, 7]},
+                { Texture:"T0", Side:"Up", Uv:[11.5, 8.5, 12, 14.5]},
+                { Texture:"T0", Side:"Down", Uv:[5.5, 8.5, 6, 14.5]}
+            ]
+        },
+        {   From: [-5, 0, -6],
+            To: [5, 14, -5],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0.5, 0, 5.5, 7]},
+                { Texture:"T0", Side:"South", Uv:[6.5, 0, 11.5, 7]},
+                { Texture:"T0", Side:"Up", Uv:[6.5, 8.5, 11.5, 9]},
+                { Texture:"T0", Side:"Down", Uv:[0.5, 14, 5.5, 14.5]}
+            ]
+        },
+        {   From: [-5, 0, 5],
+            To: [5, 14, 6],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[6.5, 0, 11.5, 7]},
+                { Texture:"T0", Side:"South", Uv:[0.5, 0, 5.5, 7]},
+                { Texture:"T0", Side:"Up", Uv:[6.5, 14, 11.5, 14.5]},
+                { Texture:"T0", Side:"Down", Uv:[0.5, 8.5, 5.5, 9]}
+            ]
+        }
+    ]
+}

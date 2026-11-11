@@ -1,0 +1,18 @@
+{
+    Texture: {
+        T0: "Items/WaterLava"
+    },
+    Elements: [
+        {   From: [-8, 0, -8],
+            To: [8, 16, 8],
+            Faces: [
+                { Texture:"T0", Side:"North", Uv:[0, 8, 8, 16]},
+                { Texture:"T0", Side:"East", Uv:[0, 8, 8, 16]},
+                { Texture:"T0", Side:"South", Uv:[0, 8, 8, 16]},
+                { Texture:"T0", Side:"West", Uv:[0, 8, 8, 16]},
+                { Texture:"T0", Side:"Up", Uv:[8, 8, 16, 16]},
+                { Texture:"T0", Side:"Down", Uv:[8, 8, 16, 16]}
+            ]
+        }
+    ]
+}

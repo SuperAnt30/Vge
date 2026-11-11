@@ -1,6 +1,5 @@
 {
     Parent: "_Block",
-    Sprite: "Items/Water",
-    SpriteGui: "Items/Water"
-    #ShapeGui: "Tools/AxeRed"
+    Shape: "Water",
+    ShapeGui: "Water"
 }

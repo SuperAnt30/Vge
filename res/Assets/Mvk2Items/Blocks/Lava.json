@@ -1,6 +1,5 @@
 {
     Parent: "_Block",
-    Sprite: "Items/Lava",
-    SpriteGui: "Items/Lava"
-    #ShapeGui: "Tools/AxeRed"
+    Shape: "Lava",
+    ShapeGui: "Lava"
 }

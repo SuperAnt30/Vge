@@ -1,10 +1,12 @@
 {
     MaxStackSize: 1,
     MaxDamage: 100,
-    Width: .4,
-    Height: 0.0675,
-    Sprite: "Items/ItemsForBlock/BucketLava",
-    SpriteGui: "Items/ItemsForBlock/BucketLava",
-    View: { Offset:[0, 8, 0] }
-    ViewHold: { Offset:[0, 8, 0] }
+    Width: 0.375,
+    Height: 0.875,
+    Hold: "HoldTwo",
+    Action: "ActionBlock",
+    Two: true,
+    Shape: "ItemsForBlock/BucketLava",
+    SpriteGui: "Items/ItemsForBlock/SpriteBucketLava",
+    ViewHold: { Scale: 0.9375 }
 }
