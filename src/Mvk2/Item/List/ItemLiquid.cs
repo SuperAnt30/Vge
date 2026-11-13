@@ -2,6 +2,7 @@
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Item.List;
+using Vge.Json;
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Util;
@@ -24,7 +25,6 @@ namespace Mvk2.Item.List
         private bool _flagFull;
         /// <summary>
         /// Смещение текстуры 
-        /// TODO::2026-11-10 Надо вынести в JSON
         /// </summary>
         private readonly float _biasTexture;
 

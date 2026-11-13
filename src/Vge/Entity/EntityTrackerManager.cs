@@ -50,30 +50,7 @@ namespace Vge.Entity
         /// <param name="entity">сущность</param>
         public void EntityAdd(EntityBase entity)
         {
-            if (entity is PlayerServer playerServer)
-            {
-                // TODO::2026-07-09 Трекер сущностей растояние. Надо вынести в Mvk2 или JSON
-                _AddEntityToTracker(entity, 256);
-
-                // Fix, это нельзя, так-как вблизи не видны были игроки
-                //EntityTracker trackerEntry;
-                //for (int i = 0; i < _trackedEntities.Count; i++)
-                //{
-                //    trackerEntry = _trackedEntities.GetAt(i);
-                //    if (trackerEntry != null)
-                //    {
-                //        trackerEntry.UpdatePlayerEntity("Add", playerServer);
-                //    }
-                //}
-            }
-            //else if (entity is EntityItem)
-            //{
-            //    AddEntityToTracker(entity, 64, 20, true); // item
-            //}
-            else
-            {
-                _AddEntityToTracker(entity, 64);
-            }
+            _AddEntityToTracker(entity);
         }
 
         /// <summary>
@@ -199,9 +176,9 @@ namespace Vge.Entity
         /// Добавить сущность в трек
         /// </summary>
         /// <param name="entity">сущность</param>
-        /// <param name="trackingRange">Пороговое значение расстояния отслеживания</param>
-        private void _AddEntityToTracker(EntityBase entity, int trackingRange)
+        private void _AddEntityToTracker(EntityBase entity)
         {
+            int trackingRange = entity.TrackingRange;
             if (trackingRange > _maxTrackingDistanceThreshold)
             {
                 trackingRange = _maxTrackingDistanceThreshold;

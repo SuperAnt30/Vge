@@ -32,6 +32,10 @@ namespace Vge.Entity
         /// Индекс тип сущности, полученый на сервере из таблицы
         /// </summary>
         public ushort IndexEntity { get; protected set; }
+        /// <summary>
+        /// Пороговое значение расстояния отслеживания этой сущности
+        /// </summary>
+        public ushort TrackingRange { get; protected set; } = 64;
 
         /// <summary>
         /// Сущность мертва, не активна

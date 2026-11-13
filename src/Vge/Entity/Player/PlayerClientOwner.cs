@@ -4,6 +4,7 @@ using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Event;
 using Vge.Games;
+using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
@@ -1107,6 +1108,30 @@ namespace Vge.Entity.Player
             {
                 _lastTimePlaySampleNotCanPlacement = _Time();
                 GetWorld().PlaySoundDistance(0, GetPositionCenterVec(), .2f, 2.4f);
+            }
+        }
+
+        /// <summary>
+        /// Наносим урон предмету (инструменту) в правой или левой руке.
+        /// И отправляем изменение на сервер
+        /// </summary>
+        /// <param name="damage">Сила урона</param>
+        /// <param name="isLeft">Левая ли рука</param>
+        public void DamageItemTool(int damage, bool isLeft = false)
+        {
+            if (!CreativeMode)
+            {
+                ItemStack stack = isLeft ? Inventory.GetCurrentLeftItem()
+                    : Inventory.GetCurrentItem();
+
+                if (stack != null)
+                {
+                    damage = stack.DamageItemTool(this, damage, isLeft);
+                    if (damage > 0)
+                    {
+                        _game.TrancivePacket(new PacketC06DamageItem((byte)damage, isLeft));
+                    }
+                }
             }
         }
 

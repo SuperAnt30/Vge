@@ -82,6 +82,14 @@ namespace Vge.Item
         /// </summary>
         public bool Two { get; protected set; } = false;
         /// <summary>
+        /// Пауза задержки до удара, для анимации, где-то пополам как Pause
+        /// </summary>
+        public int HitDelay { get; protected set; } = HandManager.HitDelayNotItem;
+        /// <summary>
+        /// Коэффициент ускорения анимации для удара 0 - 1
+        /// </summary>
+        public float HitSpeed { get; protected set; } = 1f;
+        /// <summary>
         /// Группа предметов, образно все виды топоров, если 0, нет группы
         /// </summary>
         //public int Group { get; protected set; } = 0;
@@ -259,14 +267,15 @@ namespace Vge.Item
             if (moving.IsEntity())
             {
                 // Урон для сущности
-                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity);
+                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity, 
+                    HandManager.PauseNotItem, HandManager.HitDelayNotItem);
             }
             if (moving.IsBlock() && player.CanDestroyedBlock(moving.Block.GetBlock()))
             {
                 // Можно разрушить блок без предмета
-                return new ResultHandAction(8, 1);
+                return new ResultHandAction(HandManager.PauseNotItem, HandManager.HitDelayNotItem, 1);
             }
-            return new ResultHandAction(ResultHandAction.ActionType.None);
+            return new ResultHandAction(ResultHandAction.ActionType.None, HandManager.HitDelayNotItem);
         }
 
         /// <summary>
@@ -381,6 +390,8 @@ namespace Vge.Item
                         else if (json.IsKey(Cti.Hold)) Hold = json.GetString();
                         else if (json.IsKey(Cti.Action)) Action = json.GetString();
                         else if (json.IsKey(Cti.Two)) Two = json.GetBool();
+                        else if (json.IsKey(Cti.HitSpeed)) HitSpeed = json.GetFloat();
+                        else if (json.IsKey(Cti.HitDelay)) HitDelay = json.GetInt();
                     }
                 }
                 catch

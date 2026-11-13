@@ -20,10 +20,6 @@ namespace Mvk2.Entity.Damage
         /// Сущность к которой прекреплена физика
         /// </summary>
         protected readonly EntityLiving _entity;
-        /// <summary>
-        /// Мир сервера где находится сущность
-        /// </summary>
-        protected readonly WorldServer _worldServer;
 
         /// <summary>
         /// Оставшееся время эта сущность должна вести себя как «мертвая», то есть иметь в мире труп.
@@ -33,7 +29,6 @@ namespace Mvk2.Entity.Damage
         public DamageLiving(EntityLiving entity)
         {
             _entity = entity;
-            _worldServer = entity.GetWorldServer();
         }
 
         /// <summary>
@@ -48,10 +43,11 @@ namespace Mvk2.Entity.Damage
                 DeathTime++;
                 if (DeathTime >= _tiktOfDeath)
                 {
+                    WorldServer worldServer = _entity.GetWorldServer();
                     // Исчизновение сущности после смерти
-                    _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
+                    worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
                         _entity.GetPositionCenterVec(), new Vector3(2f, .5f, 2f), 25, 0x882222);
-                    _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
+                    worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 50,
                         _entity.GetPositionCenterVec(), new Vector3(2f, .5f, 2f), 25, 0x1000000);
 
                     //World.SpawnParticle(EnumParticle.Test, 100, Position, new vec3(Width, .25f, Width), 0);
@@ -88,7 +84,7 @@ namespace Mvk2.Entity.Damage
 
             Console.WriteLine("GetHealth" + _entity.GetHealth());
             // Анимация урона
-            _worldServer.SpawnParticle(EntitiesFXReg.PartColorId, 5, 
+            _entity.GetWorldServer().SpawnParticle(EntitiesFXReg.PartColorId, 5, 
                 _entity.GetPositionCenterVec(), new Vector3(.5f), 1, 0x1000000);
             //worldServer.Tracker.SendToAllTrackingEntityCurrent(this, new PacketS0BAnimation(Id,
             //        PacketS0BAnimation.EnumAnimation.Hurt, (byte)enumBody));

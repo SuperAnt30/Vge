@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity.Animation;
 using Vge.Entity.Model;
-using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Entity.Shape;
 using Vge.Json;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Json;
 using Vge.Realms;
+using Vge.Util;
 
 namespace Mvk2.Item.List.Tool
 {
@@ -21,6 +23,8 @@ namespace Mvk2.Item.List.Tool
         public int Pause { get; protected set; }
         /// <summary>
         /// Ускорение разрушении блока, по умолчанию 1, при 0 ломает за один удар.
+        /// Как множетель %
+        /// block.Hardness * Acceleration
         /// </summary>
         public float Acceleration { get; protected set; }
 
@@ -51,7 +55,7 @@ namespace Mvk2.Item.List.Tool
                         if (json.IsKey(Cti.Damage)) _damage = json.GetFloat();
                         else if (json.IsKey(Cti.Level)) Level = json.GetInt();
                         else if (json.IsKey(Cti.Pause)) Pause = json.GetInt();
-                        else if(json.IsKey(Cti.Acceleration)) Acceleration = json.GetFloat();
+                        else if (json.IsKey(Cti.Acceleration)) Acceleration = json.GetFloat();
                     }
                 }
                 catch
@@ -89,5 +93,21 @@ namespace Mvk2.Item.List.Tool
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override float GetDamageToAttack() => _damage;
+
+        /// <summary>
+        /// Действие предмета ЛКМ.
+        /// Для клиента.
+        /// </summary>
+        /// <param name="begin">Первый клик, без паузы</param>
+        public override ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        {
+            MovingObjectPosition moving = player.MovingObject;
+            if (moving.IsEntity())
+            {
+                // Урон для сущности
+                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity, HitDelay, Pause);
+            }
+            return base.OnAction(begin, stack, player);
+        }
     }
 }

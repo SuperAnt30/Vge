@@ -1,4 +1,5 @@
 ﻿using Mvk2.World.Block;
+using System;
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.World.Block;
@@ -26,19 +27,20 @@ namespace Mvk2.Item.List.Tool
                     || block.Material.IndexMaterial == (int)EnumMaterial.Door
                     || block.Material.IndexMaterial == (int)EnumMaterial.Branch)
                 {
-                    // TODO::2026-10-14 Если второй топор есть, то усиление
-
                     ItemStack itemStackLeft = player.Inventory.GetCurrentLeftItem();
                     if (itemStackLeft != null
                         && itemStackLeft.Item is ItemAxe itemAxe)
                     {
-                        //itemAxe.Pause; // Надо уменьшить
-                        //itemAxe.Acceleration; // Надо уменьшить
-
-                        return new ResultHandAction(Pause, Acceleration / 2f);
+                        // Если второй топор есть, то усиление
+                        player.DamageItemTool(1, true);
+                        int pause = (itemAxe.Pause + Pause) / 2;
+                        float destroy = Acceleration * itemAxe.Acceleration 
+                            / (Acceleration + itemAxe.Acceleration);
+                        
+                        return new ResultHandAction(HitDelay, pause, destroy);
                     }
 
-                    return new ResultHandAction(Pause, Acceleration);
+                    return new ResultHandAction(HitDelay, Pause, Acceleration);
                 }
             }
 

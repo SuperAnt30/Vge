@@ -24,7 +24,7 @@ namespace Mvk2.Item.List.Tool
                 if (player.CanDestroyedBlock(block) 
                     || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {
-                    return new ResultHandAction(Pause, Acceleration);
+                    return new ResultHandAction(HitDelay, Pause, Acceleration);
                 }
             }
 

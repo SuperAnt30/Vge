@@ -36,24 +36,24 @@ namespace Mvk2.Entity.Player
             }
             else
             {
-                if (itemStack.Item is ItemAxe)
+                if (itemStack.Item is ItemAxe itemAxe)
                 {
                     ItemStack itemStackLeft = _playerMvk.InvPlayer.GetCurrentLeftItem();
                     if (itemStackLeft != null
                         && itemStackLeft.Item is ItemAxe)
                     {
-                        _player.Render.SetAnimationCodeAdd("ActionAxes");
+                        _player.Render.SetAnimationCodeAdd("ActionAxes", itemAxe.HitSpeed);
                         return true;
                     }
                 }
 
                 if (itemStack.Item.Action != "")
                 {
-                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action);
+                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action, itemStack.Item.HitSpeed);
                     return true;
                 }
 
-                _player.Render.SetAnimationCodeAdd("ActionAxe");
+                _player.Render.SetAnimationCodeAdd("ActionAxe", itemStack.Item.HitSpeed);
             }
             return true;
         }

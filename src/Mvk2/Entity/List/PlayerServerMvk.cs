@@ -30,6 +30,7 @@ namespace Mvk2.Entity.List
         {
             PresenceBlocks = new PresenceBlocksMvk(this);
             Damage = new DamageLiving(this);
+            TrackingRange = 256;
         }
 
         /// <summary>

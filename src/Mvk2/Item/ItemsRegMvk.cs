@@ -74,6 +74,24 @@ namespace Mvk2.Item
         /// </summary>
         public static ItemLiquid BucketLava { get; private set; }
 
+        
+        /// <summary>
+        /// Саженец берёзы
+        /// </summary>
+        public static ItemBase SaplingBirch { get; private set; }
+        /// <summary>
+        /// Саженец елового
+        /// </summary>
+        public static ItemBase SaplingConifer { get; private set; }
+        /// <summary>
+        /// Саженец фруктового
+        /// </summary>
+        public static ItemBase SaplingFruit { get; private set; }
+        /// <summary>
+        /// Саженец дуба
+        /// </summary>
+        public static ItemBase SaplingOak { get; private set; }
+
         /// <summary>
         /// Цветок клевер белый
         /// </summary>
@@ -294,6 +312,11 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("BucketWater", BucketWater = new ItemLiquid(BlocksRegMvk.Water, false), _ItemsForBlock);
             ItemsReg.RegisterItemClass("BucketLava", BucketLava = new ItemLiquid(BlocksRegMvk.Lava, false, .25f), _ItemsForBlock);
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock);
+
+            ItemsReg.RegisterItemClass("SaplingBirch", SaplingBirch = new ItemBlock(BlocksRegMvk.SaplingBirch), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("SaplingConifer", SaplingConifer = new ItemBlock(BlocksRegMvk.SaplingConifer), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("SaplingFruit", SaplingFruit = new ItemBlock(BlocksRegMvk.SaplingFruit), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("SaplingOak", SaplingOak = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock + "/Tree");
 
             // Craft
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());

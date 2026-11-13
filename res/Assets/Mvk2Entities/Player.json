@@ -94,7 +94,7 @@
         {
             Code: "AttackRight",
             Animation: "AttackRight",
-            AnimationSpeed: 1.5,
+            AnimationSpeed: 1.0,
             ElementWeight: {
                 ArmRight: 80,
                 ForearmRight: 80,

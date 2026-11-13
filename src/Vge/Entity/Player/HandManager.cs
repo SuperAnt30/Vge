@@ -16,6 +16,14 @@ namespace Vge.Entity.Player
     public class HandManager
     {
         /// <summary>
+        /// Пауза без предмета
+        /// </summary>
+        public static int PauseNotItem = 8;
+        /// <summary>
+        /// Задержка удара без предмета, в тактах (момент удара в анимации руки)
+        /// </summary>
+        public static int HitDelayNotItem = 5;
+        /// <summary>
         /// Импульс отскока при атаке на XZ
         /// </summary>
         private static float _impulsAttackXZ = .9f;
@@ -89,6 +97,45 @@ namespace Vge.Entity.Player
         /// </summary>
         private bool _flagBeginUseSecond;
 
+        #region Отложенный удар ЛКМ
+
+        /// <summary>
+        /// Тип отложенного действия ЛКМ
+        /// </summary>
+        private enum PendingKind
+        {
+            /// <summary>
+            /// Нет ожидания
+            /// </summary>
+            None,
+            /// <summary>
+            /// Действие предмета (результат OnAction)
+            /// </summary>
+            Item,
+            /// <summary>
+            /// Разрушение блока рукой
+            /// </summary>
+            DigHand,
+            /// <summary>
+            /// Атака сущности рукой
+            /// </summary>
+            AttackHand
+        }
+
+        /// <summary>
+        /// Какое действие ждёт момента удара в анимации
+        /// </summary>
+        private PendingKind _pendingKind = PendingKind.None;
+        /// <summary>
+        /// Сколько тактов осталось до удара
+        /// </summary>
+        private int _pendingDelay;
+        /// <summary>
+        /// Результат OnAction, принятый в момент клика
+        /// </summary>
+        private ResultHandAction _pendingResult;
+
+        #endregion
 
         public HandManager(GameBase game, PlayerClientOwner player)
         {
@@ -96,12 +143,13 @@ namespace Vge.Entity.Player
             _player = player;
         }
 
-
         public void SetStop()
         {
             _action = false;
             _second = false;
             _flagAbort = true;
+            // Замах прерван
+            _pendingKind = PendingKind.None;
         }
 
         /// <summary>
@@ -119,6 +167,20 @@ namespace Vge.Entity.Player
         /// </summary>
         public void Update()
         {
+            // Отложенный удар тикает всегда, даже если ЛКМ уже отпустили —
+            // замах начат, удар доводим до конца
+            if (_pendingKind != PendingKind.None)
+            {
+                if (_pendingDelay > 0)
+                {
+                    _pendingDelay--;
+                    if (_pendingDelay == 0)
+                    {
+                        _ExecutePending();
+                    }
+                }
+            }
+
             if (_action)
             {
                 _Action(!_actionPrev);
@@ -167,6 +229,8 @@ namespace Vge.Entity.Player
 
         /// <summary>
         /// Такт действия
+        /// Здесь только принимается решение и запускается анимация,
+        /// само действие выполняется в момент удара, в _UpdatePending
         /// </summary>
         protected virtual void _Action(bool begin)
         {
@@ -178,14 +242,14 @@ namespace Vge.Entity.Player
                 _blankShotAction = false;
             }
 
-            if (_pauseAction == 0)
+            // Новый замах только после паузы и когда прошлый удар уже состоялся
+            if (_pauseAction == 0 && _pendingKind == PendingKind.None)
             {
                 MovingObjectPosition moving = _player.MovingObject;
                 // Стак предмета в руке
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
 
                 bool isAnimationPrev = false;
-                bool isAnimation = false;
 
                 if (!_blankShotAction)
                 {
@@ -197,42 +261,24 @@ namespace Vge.Entity.Player
                     }
                 }
 
+                PendingKind kind = PendingKind.None;
+                int delay = 0;
+                ResultHandAction resultAction = default;
+
                 if (itemStack != null)
                 {
-                    ResultHandAction resultAction = itemStack.Item.OnAction(begin, itemStack, _player);
-                    if (resultAction.Action == ResultHandAction.ActionType.DestroyBlock)
+                    resultAction = itemStack.Item.OnAction(begin, itemStack, _player);
+                    if (resultAction.Action == ResultHandAction.ActionType.None)
                     {
-                        // Разрушение блока с предметом
-                        //Console.WriteLine("BlockDiggingItem");
-                        _BlockDigging(moving.BlockPosition, resultAction.Acceleration);
-                        isAnimation = true;
-                    }
-                    else if (resultAction.Action == ResultHandAction.ActionType.AttackEntity)
-                    {
-                        // Атака на сущность, с предметом
-                        _Attack(moving);
-                        isAnimation = true;
-                    }
-                    else if (resultAction.Action == ResultHandAction.ActionType.ItemOnBlock)
-                    {
-                        // Размещение блока (Взаимодействие предмета на выбранный блок)
-                        //Console.WriteLine("BlockPlacement " + resultAction.Pause);
-                        _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
-                                moving.Side, moving.Facing, resultAction.Replaceable, true));
-                        isAnimation = true;
-                    }
-                    else if (resultAction.Action == ResultHandAction.ActionType.UseItem)
-                    {
-                        // Взаимодействия предмета, ЛКМ без блока
-                        //Console.WriteLine("UseItem");
-                        _game.TrancivePacket(new PacketC05UseItem());
-                        isAnimation = true;
+                        // Нет действий с предметом
+                        _blankShotAction = true;
                     }
                     else
                     {
-                        // Нет действий с предметом
-                        //Console.WriteLine("Нет действий с предметом");
-                        _blankShotAction = true;
+                        Console.WriteLine("OnAction " + resultAction.Action);
+                        kind = PendingKind.Item;
+                        // Момент удара в анимации предмета, в тактах
+                        delay = resultAction.HitDelay;
                     }
                     _pauseAction = resultAction.Pause;
                     //Console.Write(_pauseAction + " ");
@@ -242,9 +288,10 @@ namespace Vge.Entity.Player
                     if (_player.CanDestroyedBlock(moving.Block.GetBlock()))
                     {
                         // Разрушение блока без предмета
-                        _BlockDigging(moving.BlockPosition);
+                        kind = PendingKind.DigHand;
+                        delay = HitDelayNotItem;
+                        _pauseAction = PauseNotItem;
                         //Console.WriteLine("BlockDigging");
-                        _pauseAction = 6;
                     }
                     else
                     {
@@ -256,8 +303,9 @@ namespace Vge.Entity.Player
                 else if (moving.IsEntity())
                 {
                     // Атака на сущность, без предмета
-                    _Attack(moving);
-                    _pauseAction = -1;
+                    kind = PendingKind.AttackHand;
+                    delay = HitDelayNotItem;
+                    _pauseAction = PauseNotItem;
                 }
                 else
                 {
@@ -267,12 +315,20 @@ namespace Vge.Entity.Player
                     _blankShotAction = true;
                 }
 
-                if (!isAnimationPrev && isAnimation)
+                if (kind != PendingKind.None)
                 {
-                    if (_ActionAnimationRight(itemStack, moving))
+                    if (!isAnimationPrev && _ActionAnimationRight(itemStack, moving))
                     {
                         // Отправить анимацию
                         _SendPlayerAnimation();
+                    }
+
+                    _pendingKind = kind;
+                    _pendingDelay = delay;
+                    _pendingResult = resultAction;
+                    if (delay <= 0)
+                    {
+                        _ExecutePending();
                     }
                 }
                 //Console.WriteLine(_pauseAction);
@@ -287,6 +343,76 @@ namespace Vge.Entity.Player
                 _pauseAction = _blankShotAction ? 0 : 10;
             }
             //Console.WriteLine(_pauseAction);
+        }
+
+        /// <summary>
+        /// Момент удара в анимации: выполняем действие по тому, на что смотрим сейчас
+        /// </summary>
+        private void _ExecutePending()
+        {
+            PendingKind kind = _pendingKind;
+            _pendingKind = PendingKind.None;
+
+            if (_player.IsSpectator()) return;
+
+            // Цель берём на момент удара: за время замаха игрок мог отвернуться.
+            // Если цели нужного типа нет — удар мимо
+            MovingObjectPosition moving = _player.MovingObject;
+
+            switch (kind)
+            {
+                case PendingKind.Item:
+                    switch (_pendingResult.Action)
+                    {
+                        case ResultHandAction.ActionType.DestroyBlock:
+                            // Разрушение блока с предметом
+                            if (moving.IsBlock())
+                            {
+                                //Console.WriteLine("BlockDiggingItem2");
+                                _BlockDigging(moving.BlockPosition, _pendingResult.Acceleration);
+                            }
+                            break;
+                        case ResultHandAction.ActionType.AttackEntity:
+                            // Атака на сущность, с предметом
+                            if (moving.IsEntity())
+                            {
+                                _Attack(moving);
+                            }
+                            break;
+                        case ResultHandAction.ActionType.ItemOnBlock:
+                            // Размещение блока (Взаимодействие предмета на выбранный блок)
+                            if (moving.IsBlock())
+                            {
+                                //Console.WriteLine("BlockPlacement2 " + _pauseAction);
+                                _game.TrancivePacket(new PacketC08PlayerBlockPlacement(moving.BlockPosition,
+                                    moving.Side, moving.Facing, _pendingResult.Replaceable, true));
+                            }
+                            break;
+                        case ResultHandAction.ActionType.UseItem:
+                            // Взаимодействия предмета, ЛКМ без блока
+                            //Console.WriteLine("UseItem2");
+                            _game.TrancivePacket(new PacketC05UseItem());
+                            break;
+                    }
+                    break;
+
+                case PendingKind.DigHand:
+                    // Разрушение блока без предмета
+                    if (moving.IsBlock() && _player.CanDestroyedBlock(moving.Block.GetBlock()))
+                    {
+                        //Console.WriteLine("BlockDigging2");
+                        _BlockDigging(moving.BlockPosition);
+                    }
+                    break;
+
+                case PendingKind.AttackHand:
+                    // Атака на сущность, без предмета
+                    if (moving.IsEntity())
+                    {
+                        _Attack(moving);
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -505,11 +631,6 @@ namespace Vge.Entity.Player
                         _blockPos.ToVector3Center(), .5f, .9f + _game.World.Rnd.NextFloat() * .2f);
 
                     _game.World.ParticleDiggingBlock(block, _player.MovingObject.RayHit, 5, true);
-                    //if (block.IsParticle)
-                    //{
-                        //_game.World.SpawnParticle((ushort)EnumParticles.Smoke, 5, _player.MovingObject.RayHit,
-                        //    new Vector3(.25f), 1, block.IndexBlock);
-                    //}
                 }
             }
             else
@@ -519,7 +640,7 @@ namespace Vge.Entity.Player
             }
 
             // Инструмент ламаем
-            DamageItemTool(1);
+            _player.DamageItemTool(1);
         }
 
         /// <summary>
@@ -530,29 +651,6 @@ namespace Vge.Entity.Player
             _game.TrancivePacket(new PacketC07PlayerDigging(_blockPos));
             _game.World.SetBlockToAir(_blockPos);
             _isBlockDestroy = false;
-        }
-
-        /// <summary>
-        /// Наносим урон предмету (инструменту)
-        /// </summary>
-        /// <param name="damage">Сила урона</param>
-        /// <param name="isLeft">Левая ли рука</param>
-        public void DamageItemTool(int damage, bool isLeft = false)
-        {
-            if (!_player.CreativeMode)
-            {
-                ItemStack stack = isLeft ? _player.Inventory.GetCurrentLeftItem()
-                    : _player.Inventory.GetCurrentItem(); 
-
-                if (stack != null)
-                {
-                    damage = stack.DamageItemTool(_player, damage, isLeft);
-                    if (damage > 0)
-                    {
-                        _game.TrancivePacket(new PacketC06DamageItem((byte)damage, isLeft));
-                    }
-                }
-            }
         }
     }
 }

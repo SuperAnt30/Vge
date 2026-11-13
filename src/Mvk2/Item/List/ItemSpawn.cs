@@ -23,7 +23,7 @@ namespace Mvk2.Item.List
             {
                 player.Inventory.DecrCurrentItem(1);
             }
-            return new ResultHandAction(ResultHandAction.ActionType.UseItem, 12);
+            return new ResultHandAction(ResultHandAction.ActionType.UseItem, HandManager.PauseNotItem,12);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Mvk2.Item.List
             WorldServer worldServer = player.GetWorldServer();
             if (worldServer != null)
             {
-           //     for (int i = 0; i < 250; i++)
+                //for (int i = 0; i < 250; i++)
                 {
                     EntityBase entity = Ce.Entities.CreateEntityServer(EntitiesRegMvk.ChickenId, worldServer);
                     worldServer.EntityDropsEntityInWorld(player, entity, true, false);

@@ -1,12 +1,8 @@
 {
     MaxStackSize: 100,
-    Width: .4,
+    Width: 0.4,
     Height: 0.0675,
-    Hold: "HoldTwo",
-    Action: "ActionBlock",
-    Two: true,
     Sprite: "Items/ItemsForBlock/Rope",
     SpriteGui: "Items/ItemsForBlock/Rope",
-    View: { Rotate:[0, 0, 0], Offset:[0, 8, 0], Scale: 1.0 }
-    ViewHold: { Rotate:[90, 0, -15], Offset:[2, -4, 10], Scale: 1.2 }
+    ViewHold: { Rotate:[90, 0, 0], Offset:[-6, 2, 8] }
 }

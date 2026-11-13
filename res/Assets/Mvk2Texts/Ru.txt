@@ -6,6 +6,7 @@ Creative:Творческий
 Hole:Дыра
 All:Все
 Blocks:Блоки
+ItemsForBlock:Предметы для блока
 Craft:Ремесло
 Tools:Инструменты
 Cloth:Одежда

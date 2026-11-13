@@ -27,7 +27,7 @@ namespace Mvk2.Item.List.Tool
                     || block.Material.IndexMaterial == (int)EnumMaterial.Branch
                     || block.Material.IndexMaterial == (int)EnumMaterial.Solid)
                 {
-                    return new ResultHandAction(Pause, Acceleration);
+                    return new ResultHandAction(HitDelay, Pause, Acceleration);
                 }
             }
 

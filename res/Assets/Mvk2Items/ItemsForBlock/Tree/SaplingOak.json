@@ -1,0 +1,5 @@
+{
+    Parent: "ItemsForBlock/Tree/_Sapling",
+    Sprite: "Items/Tree/SaplingOak",
+    SpriteGui: "Items/Tree/SaplingOak"
+}

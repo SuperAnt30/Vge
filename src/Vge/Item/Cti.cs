@@ -102,6 +102,14 @@
         /// Предмет держим двумя руками. (bool)
         /// </summary>
         public const string Two = "Two";
+        /// <summary>
+        /// Имя коэффициента ускорения анимации для удара 0 - 1. (float)
+        /// </summary>
+        public const string HitSpeed = "HitSpeed";
+        /// <summary>
+        /// Имя паузы задержки до удара, для анимации, где-то пополам как Pause. (int)
+        /// </summary>
+        public const string HitDelay = "HitDelay";
 
         #region Tool
 
@@ -123,5 +131,6 @@
         public const string Acceleration = "Acceleration";
 
         #endregion
+        
     }
 }
