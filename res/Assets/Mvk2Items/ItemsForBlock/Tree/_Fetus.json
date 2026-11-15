@@ -1,0 +1,6 @@
+{
+    MaxStackSize: 20,
+    Width: 0.4,
+    Height: 0.0675,
+    ViewHold: { Rotate:[90, 0, 0], Offset:[-2, 8, 8] }
+}

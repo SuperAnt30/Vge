@@ -91,6 +91,30 @@ namespace Mvk2.Item
         /// Саженец дуба
         /// </summary>
         public static ItemBase SaplingOak { get; private set; }
+        /// <summary>
+        /// Саженец сухой
+        /// </summary>
+        public static ItemBase SaplingDry { get; private set; }
+
+        /// <summary>
+        /// Берёзовый плод, серёжки
+        /// </summary>
+        public static ItemBase FetusBirch { get; private set; }
+        /// <summary>
+        /// Хаойный плод, шишка
+        /// </summary>
+        public static ItemBase FetusConifer { get; private set; }
+        /// <summary>
+        /// Фруктовый плод, яблоко или апельсин, ещё не решил
+        /// </summary>
+        public static ItemBase FetusFruit { get; private set; }
+        /// <summary>
+        /// Дубовый плод, жёлудь
+        /// </summary>
+        public static ItemBase FetusOak { get; private set; }
+
+
+
 
         /// <summary>
         /// Цветок клевер белый
@@ -317,6 +341,13 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("SaplingConifer", SaplingConifer = new ItemBlock(BlocksRegMvk.SaplingConifer), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingFruit", SaplingFruit = new ItemBlock(BlocksRegMvk.SaplingFruit), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingOak", SaplingOak = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("SaplingDry", SaplingDry = new ItemBlock(BlocksRegMvk.SaplingDry), _ItemsForBlock + "/Tree");
+
+            ItemsReg.RegisterItemClass("FetusBirch", FetusBirch = new ItemBlock(BlocksRegMvk.FetusBirch), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("FetusConifer", FetusConifer = new ItemBlock(BlocksRegMvk.FetusConifer), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("FetusFruit", FetusFruit = new ItemBlock(BlocksRegMvk.FetusFruit), _ItemsForBlock + "/Tree");
+            ItemsReg.RegisterItemClass("FetusOak", FetusOak = new ItemBlock(BlocksRegMvk.FetusOak), _ItemsForBlock + "/Tree");
+
 
             // Craft
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());

@@ -54,11 +54,15 @@ namespace Mvk2.Item
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketWater, 1, 0, 7));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketLava, 1, 0, 7));
 
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FetusBirch));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingBirch));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FetusConifer));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingConifer));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FetusFruit));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingFruit));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FetusOak));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingOak));
-
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingDry));
 
             // Раздел крафтовые предметы 
             List<ItemStack> tabCraft = new List<ItemStack>();

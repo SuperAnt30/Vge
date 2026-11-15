@@ -1,4 +1,5 @@
 {
     Hardness: 8,
+    ParticleColors: [ "7A7672", "635F5E", "706767", "9E9494" ],
     Variants: [ { Shape: "Gravel" } ]
 }

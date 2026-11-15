@@ -1,5 +1,5 @@
 {
     Hardness: 24,
-    ParticleColors: [ "4F4F5F", "414F5D", "4A4A5C" ],
+    ParticleColors: [ "7D7D7D", "595959", "646464", "989898" ],
     Variants: [ { Shape: "Cobblestone" } ]
 }

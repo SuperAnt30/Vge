@@ -1,0 +1,5 @@
+{
+    Parent: "ItemsForBlock/Tree/_Fetus",
+    Sprite: "Items/Tree/FetusFruit",
+    SpriteGui: "Items/Tree/FetusFruit"
+}

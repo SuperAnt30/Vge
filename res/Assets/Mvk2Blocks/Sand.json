@@ -1,5 +1,5 @@
 {
     Hardness: 4,
-    ParticleColors: [ "BFAF8F", "D1BF9D", "BAAA8C" ],
+    ParticleColors: [ "D9C09D", "C1AC8C", "CCB493" ],
     Variants: [ { Shape: "Sand" } ]
 }
