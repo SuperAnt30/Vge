@@ -80,7 +80,6 @@ namespace Vge.Renderer.World
             : base(worldClient, worldClient.ChunkPr.Settings, chunkPosX, chunkPosY)
         {
             // Тут создавать сетки нельзя из-за VSync, он может создать паузу в момент создания объекта
-
             _worldClient = worldClient;
             _listAlphaBlock = new List<ushort>[NumberSections];
             _listRequiredParticles = new ListMessy<ushort>[NumberSections];
@@ -170,14 +169,8 @@ namespace Vge.Renderer.World
             {
                 _isRenderingSection[y] = false;
             }
-            if (_meshDense != null)
-            {
-                _meshDense.Dispose();
-            }
-            if (_meshDense != null)
-            {
-                _meshAlpha.Dispose();
-            }
+            _meshDense?.Dispose();
+            _meshAlpha?.Dispose();
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Particle;
 using Vge.Entity.Player;
@@ -19,11 +18,24 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Максимальное количество частичек для 3д
         /// </summary>
-        private const int _MaxAmount3d = 1000;
+        public static int MaxAmount3d = 5000;
         /// <summary>
         /// Максимальное количество частичек для 2д
         /// </summary>
-        private const int _MaxAmount2d = 4000;
+        public static int MaxAmount2d = 20000;
+        /// <summary>
+        /// Максимальное количество частичек для 3д FrustumCulling
+        /// </summary>
+        public static int MaxAmount3dFC = 2000;
+        /// <summary>
+        /// Максимальное количество частичек для 2д FrustumCulling
+        /// </summary>
+        public static int MaxAmount2dFC = 5000;
+
+        /// <summary>
+        /// Объект игрока для клиента
+        /// </summary>
+        public readonly PlayerClientOwner Player;
 
         /// <summary>
         /// Объект OpenGL для элемента управления
@@ -33,16 +45,19 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Объёмные частички
         /// </summary>
-        private readonly List<EntityFX> _list3d = new List<EntityFX>(_MaxAmount3d);
+        private readonly List<EntityFX> _list3d = new List<EntityFX>(MaxAmount3d);
         /// <summary>
         /// Двухмерные частички
         /// </summary>
-        private readonly List<EntityFX> _list2d = new List<EntityFX>(_MaxAmount2d);
-
+        private readonly List<EntityFX> _list2d = new List<EntityFX>(MaxAmount2d);
         /// <summary>
-        /// Объект для отладки хитбокса сущности
+        /// Количество частичек 2d которые попали в FrustumCulling чанка, т.е. видимых для прорисовки
         /// </summary>
-        private readonly HitboxEntityRender _hitbox;
+        private int _count2dFC;
+        /// <summary>
+        /// Количество частичек 3d которые попали в FrustumCulling чанка, т.е. видимых для прорисовки
+        /// </summary>
+        private int _count3dFC;
 
         /// <summary>
         /// Рендер частички 2д квадрат просто цвет
@@ -60,7 +75,7 @@ namespace Vge.Renderer.World
         public ParticlesRenderer(GameBase game) : base(game)
         {
             gl = GetOpenGL();
-            _hitbox = new HitboxEntityRender(gl);
+            Player = game.Player;
 
             _particleRenderQuad = new ParticleRender(gl, false, _Rectangle(-.125f, .125f));
             _particleRenderSprite = new ParticleRender(gl, true, _Rectangle(-.125f, .125f));
@@ -118,28 +133,18 @@ namespace Vge.Renderer.World
 
         #endregion
 
-        /// <summary>
-        /// Объект игрока для клиента
-        /// </summary>
-        public PlayerClientOwner Player
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _game.Player;
-        }
-
         public void Spawn(ushort particleId, Vector3 pos, Vector3 motion, int parameter)
         {
             EntityFX entity = Ce.EntitiesFX.CreateEntityClient(particleId, _game.World, this, parameter);
             entity.InitRun(pos, motion);
-
             if (entity.IsCube)
             {
-                while (_list3d.Count >= _MaxAmount3d) _list3d.RemoveAt(0);
+                while (_list3d.Count >= MaxAmount3d) _list3d.RemoveAt(0);
                 _list3d.Add(entity);
             }
             else
             {
-                while (_list2d.Count >= _MaxAmount2d) _list2d.RemoveAt(0);
+                while (_list2d.Count >= MaxAmount2d) _list2d.RemoveAt(0);
                 _list2d.Add(entity);
             }
         }
@@ -151,23 +156,39 @@ namespace Vge.Renderer.World
         public override void Draw(float timeIndex)
         {
             Render.ShsEntity.BindUniformParticle3d();
-            
-            int count = _list3d.Count;
-            for (int i = 0; i < count; i++)
+            EntityFX entityFX;
+            float deltaTime = _game.DeltaTimeFrame;
+            _count3dFC = 0;
+            int i;
+            int count = _list3d.Count - 1;
+            for (i = count; i >= 0; i--)
             {
-                _list3d[i].Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                entityFX = _list3d[i];
+                if (Player.IsPointInFrustum(entityFX.PosX, entityFX.PosY, entityFX.PosZ))
+                {
+                    entityFX.Render.Draw(timeIndex, deltaTime);
+                    _count3dFC++;
+                    if (_count3dFC >= MaxAmount3dFC) break;
+                }
             }
 
             Render.BindTextureParticles();
             float pitch = _game.Player.RotationFramePitch;
-            if (_game.Player.ViewCamera == EnumViewCamera.Front) pitch += Glm.Pi;
+            if (Player.ViewCamera == EnumViewCamera.Front) pitch += Glm.Pi;
 
-            Render.ShsEntity.BindUniformParticle2d(_game.Player.RotationFrameYaw, pitch);
+            Render.ShsEntity.BindUniformParticle2d(Player.RotationFrameYaw, pitch);
 
-            count = _list2d.Count;
-            for (int i = 0; i < count; i++)
+            _count2dFC = 0;
+            count = _list2d.Count - 1;
+            for (i = count; i >= 0; i--)
             {
-                _list2d[i].Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                entityFX = _list2d[i];
+                if (Player.IsPointInFrustum(entityFX.PosX, entityFX.PosY, entityFX.PosZ))
+                {
+                    entityFX.Render.Draw(timeIndex, deltaTime);
+                    _count2dFC++;
+                    if (_count2dFC >= MaxAmount2dFC) break;
+                }
             }
         }
 
@@ -220,14 +241,14 @@ namespace Vge.Renderer.World
 
         public override void Dispose()
         {
-            _hitbox.Dispose();
+            Clear();
             _particleRenderQuad.Dispose();
             _particleRenderSprite.Dispose();
             _particleRenderCube.Dispose();
-            _list3d.Clear();
-            _list2d.Clear();
         }
 
-        public override string ToString() => "Fx2d:" + _list2d.Count + " Fx3d:" + _list3d.Count;
+        public override string ToString()
+            => "Fx2d: " + _count2dFC + "|" + _list2d.Count
+                + " Fx3d: " + _count3dFC + "|" + _list3d.Count;
     }
 }

@@ -525,6 +525,14 @@ namespace Vge.Entity.Player
         public bool IsBoxInFrustum(AxisAlignedBB aabb) => _frustumCulling.IsBoxInFrustum(aabb);
 
         /// <summary>
+        /// Возвращает true, если точка находится внутри всех 6 плоскостей отсечения,
+        /// в противном случае возвращает false.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPointInFrustum(float x, float y, float z) 
+            => _frustumCulling.IsPointInFrustum(x - PosX, y - PosY, z - PosZ);
+
+        /// <summary>
         /// Помечаем на перерендер всех чанков в округ игрока
         /// </summary>
         public void RerenderAllChunks()

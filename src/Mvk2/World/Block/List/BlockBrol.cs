@@ -52,6 +52,8 @@ namespace Mvk2.World.Block.List
             pos.Y += .75f;
             //world.SpawnParticle(1, 1, pos, new Vector3(.5f), 1, 0);
             //world.SpawnParticle((ushort)EnumParticles.Smoke, 5, pos, new Vector3(.5f), 1, 0);
+            world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 2, pos, new Vector3(.5f), 1, 0);
+            //world.SpawnParticle(Vge.Entity.Particle.EntitiesFXReg.PartColorId, 75, pos, new Vector3(.5f), 1, 0x1000000);
         }
 
         /// <summary>
@@ -59,9 +61,13 @@ namespace Mvk2.World.Block.List
         /// </summary>
         public override void RequiredRandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState)
         {
-            Vector3 pos = blockPos.ToVector3Center();
-            pos.Y += .75f;
-            world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 1, pos, new Vector3(.5f), 1, 0);
+          //  if (world.Rnd.Next(5) == 0)
+            {
+                Vector3 pos = blockPos.ToVector3Center();
+                pos.Y += .75f;
+                world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 1, pos, new Vector3(.5f), 1, 0);
+                world.SpawnParticle(Vge.Entity.Particle.EntitiesFXReg.PartColorId, 2, pos, new Vector3(.5f), 1, 0x1000000);
+            }
         }
 
         /// <summary>
