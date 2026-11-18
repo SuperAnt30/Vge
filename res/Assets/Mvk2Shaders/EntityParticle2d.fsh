@@ -1,25 +1,27 @@
 #version 330 core
 
 in vec2 a_texCoord;
-in vec4 a_color;
+flat in vec4 a_color;
+flat in vec2 a_light;
+flat in int a_param;
 
 out vec4 f_color;
 
-uniform int param;
-uniform vec2 light;
 uniform sampler2D light_map;
 uniform sampler2D u_texture0;
 
 void main()
 {
     vec4 light_color;
-    if (param >> 1 == 1) {
-        light_color = vec4(1);
+    // param: бит 2 — без освещения (полная яркость)
+    if ((a_param & 2) != 0) {
+        light_color = vec4(1.0);
     }
     else {
-        light_color = texture(light_map, light);
+        light_color = texture(light_map, a_light);
     }
-    if ((param & 1) == 1) {
+    // param: бит 1 — есть текстура
+    if ((a_param & 1) == 1) {
         // Имеется ли текстура
         vec4 tex_color = texture(u_texture0, a_texCoord);
         if (tex_color.a < 0.05) discard;

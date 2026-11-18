@@ -57,6 +57,14 @@ namespace WinGL.OpenGL
         private glDeleteBuffers delegateDeleteBuffers;
         private delegate void glBufferData(uint target, int size, IntPtr data, uint usage);
         private glBufferData delegateBufferData;
+        private delegate void glBufferSubData(uint target, int offset, int size, IntPtr data);
+        private glBufferSubData delegateBufferSubData;
+        private delegate void glDrawArraysInstanced(uint mode, int first, int count, int primcount);
+        private glDrawArraysInstanced delegateDrawArraysInstanced;
+        private delegate void glDrawElementsInstanced(uint mode, int count, uint type, IntPtr indices, int primcount);
+        private glDrawElementsInstanced delegateDrawElementsInstanced;
+        private delegate void glVertexAttribDivisor(uint index, uint divisor);
+        private glVertexAttribDivisor delegateVertexAttribDivisor;
 
         private delegate void glEnableVertexAttribArray(uint index);
         private glEnableVertexAttribArray delegateEnableVertexAttribArray;
@@ -228,6 +236,31 @@ namespace WinGL.OpenGL
             Marshal.Copy(data, 0, p, data.Length);
             BufferData(target, size, p, usage);
             Marshal.FreeHGlobal(p);
+        }
+        public void BufferSubData(uint target, int offset, int size, IntPtr data)
+        {
+            if (delegateBufferSubData == null)
+                delegateBufferSubData = GetDelegate<glBufferSubData>() as glBufferSubData;
+            delegateBufferSubData(target, offset, size, data);
+        }
+
+        public void DrawArraysInstanced(uint mode, int first, int count, int primcount)
+        {
+            if (delegateDrawArraysInstanced == null)
+                delegateDrawArraysInstanced = GetDelegate<glDrawArraysInstanced>() as glDrawArraysInstanced;
+            delegateDrawArraysInstanced(mode, first, count, primcount);
+        }
+        public void DrawElementsInstanced(uint mode, int count, uint type, IntPtr indices, int primcount)
+        {
+            if (delegateDrawElementsInstanced == null)
+                delegateDrawElementsInstanced = GetDelegate<glDrawElementsInstanced>() as glDrawElementsInstanced;
+            delegateDrawElementsInstanced(mode, count, type, indices, primcount);
+        }
+        public void VertexAttribDivisor(uint index, uint divisor)
+        {
+            if (delegateVertexAttribDivisor == null)
+                delegateVertexAttribDivisor = GetDelegate<glVertexAttribDivisor>() as glVertexAttribDivisor;
+            delegateVertexAttribDivisor(index, divisor);
         }
 
         public void EnableVertexAttribArray(uint index)

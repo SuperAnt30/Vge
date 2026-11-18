@@ -1,6 +1,6 @@
 ﻿using Vge.Entity.Particle;
 using Vge.Renderer.World;
-using WinGL.OpenGL;
+using Vge.Renderer.World.Entity;
 
 namespace Vge.Entity.Render
 {
@@ -17,54 +17,66 @@ namespace Vge.Entity.Render
         /// Объект сузности частички
         /// </summary>
         private readonly EntityFX _entityParticle;
-        /// <summary>
-        /// Шейдер для частичек
-        /// </summary>
-        private readonly ShaderProgram _shader;
 
         public EntityRenderParticle(EntityFX entityParticle, ParticlesRenderer particles)
             : base(entityParticle)
         {
             _entityParticle = entityParticle;
             _particles = particles;
-            _shader = _particles.Render.ShsEntity.GetShaderParticle(entityParticle);
         }
 
-        private void _Uniform(float timeIndex)
+        public void WriteInstance(ParticleInstanced2d instanced, float timeIndex)
         {
-            _shader.SetUniform3("pos",
-                _entityParticle.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX,
-                _entityParticle.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY,
-                _entityParticle.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ);
-            _shader.SetUniform4("color", 
-                _entityParticle.Color.X, _entityParticle.Color.Y,
-                _entityParticle.Color.Z, _entityParticle.Color.W);
-            _shader.SetUniform2("light", _lightBlock, _lightSky);
-            _shader.SetUniform1("scale", _entityParticle.Scale);
-            _shader.SetUniform1("param", _entityParticle.Param);
+            int o = instanced.Next();
+            if (o < 0) return;
+            float[] d = instanced.Data;
+
+            // xyz — позиция относительно камеры, w — масштаб
+            d[o] = _entityParticle.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX;
+            d[o + 1] = _entityParticle.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY;
+            d[o + 2] = _entityParticle.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ;
+            d[o + 3] = _entityParticle.Scale;
+            // Цвет
+            d[o + 4] = _entityParticle.Color.X;
+            d[o + 5] = _entityParticle.Color.Y;
+            d[o + 6] = _entityParticle.Color.Z;
+            d[o + 7] = _entityParticle.Color.W;
+            // UV в атласе (без спрайта не используется, шейдер смотрит на param)
             if (_entityParticle.IsSprite)
             {
-                _shader.SetUniform4("uv",
-                    _entityParticle.Uv.X, _entityParticle.Uv.Y,
-                    _entityParticle.Uv.Z, _entityParticle.Uv.W);
+                d[o + 8] = _entityParticle.Uv.X;
+                d[o + 9] = _entityParticle.Uv.Y;
+                d[o + 10] = _entityParticle.Uv.Z;
+                d[o + 11] = _entityParticle.Uv.W;
             }
+            // Свет и параметры
+            d[o + 12] = _lightBlock;
+            d[o + 13] = _lightSky;
+            d[o + 14] = _entityParticle.Param;
+            d[o + 15] = 0;
         }
 
-        /// <summary>
-        /// Метод для прорисовки
-        /// </summary>
-        /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
-        /// <param name="deltaTime">Дельта последнего кадра в mc</param>
-        public override void Draw(float timeIndex, float deltaTime)
+        public void WriteInstance(ParticleInstanced3d instanced, float timeIndex)
         {
-            if (_entityRender == null)
-            {
-                _entityRender = _particles.GetParticleRender(_entityParticle.TypeDraw);
-            }
-            // шейдор
-            _Uniform(timeIndex);
-            // Рисуем основную сетку сущности
-            _entityRender.MeshDraw();
+            int o = instanced.Next();
+            if (o < 0) return;
+            float[] d = instanced.Data;
+
+            // xyz — позиция относительно камеры, w — масштаб
+            d[o] = _entityParticle.GetPosFrameX(timeIndex) - _particles.Player.PosFrameX;
+            d[o + 1] = _entityParticle.GetPosFrameY(timeIndex) - _particles.Player.PosFrameY;
+            d[o + 2] = _entityParticle.GetPosFrameZ(timeIndex) - _particles.Player.PosFrameZ;
+            d[o + 3] = _entityParticle.Scale;
+            // Цвет
+            d[o + 4] = _entityParticle.Color.X;
+            d[o + 5] = _entityParticle.Color.Y;
+            d[o + 6] = _entityParticle.Color.Z;
+            d[o + 7] = _entityParticle.Color.W;
+            // Свет и параметры
+            d[o + 8] = _lightBlock;
+            d[o + 9] = _lightSky;
+            d[o + 10] = _entityParticle.Param;
+            d[o + 11] = 0;
         }
     }
 }

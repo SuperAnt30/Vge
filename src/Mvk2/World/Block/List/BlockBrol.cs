@@ -65,8 +65,9 @@ namespace Mvk2.World.Block.List
             {
                 Vector3 pos = blockPos.ToVector3Center();
                 pos.Y += .75f;
-                world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 1, pos, new Vector3(.5f), 1, 0);
-                world.SpawnParticle(Vge.Entity.Particle.EntitiesFXReg.PartColorId, 2, pos, new Vector3(.5f), 1, 0x1000000);
+                world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 5, pos, new Vector3(.5f), 1, 0);
+                //world.SpawnParticle(EntitiesFXRegMvk.DropletId, 50, pos, new Vector3(.5f), 1, 0);
+                world.SpawnParticle(Vge.Entity.Particle.EntitiesFXReg.PartColorId, 100, pos, new Vector3(2.5f), 2, 0x1000000);
             }
         }
 

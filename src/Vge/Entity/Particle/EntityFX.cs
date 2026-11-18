@@ -3,6 +3,7 @@ using Vge.Entity.Physics;
 using Vge.Entity.Render;
 using Vge.Entity.Sizes;
 using Vge.Renderer.World;
+using Vge.Renderer.World.Entity;
 using Vge.Util;
 using Vge.World;
 using WinGL.Util;
@@ -27,6 +28,10 @@ namespace Vge.Entity.Particle
         /// </summary>
         public readonly bool IsSprite;
 
+        /// <summary>
+        /// Объект рендера частичек
+        /// </summary>
+        public EntityRenderParticle RenderParticle { get; private set; }
         /// <summary>
         /// Цвет частички
         /// </summary>
@@ -82,7 +87,7 @@ namespace Vge.Entity.Particle
             Physics = new PhysicsBallistics(world.Collision, this, true);
             NoClip = true;
             Physics.SetGravity(_gravity);
-            Render = new EntityRenderParticle(this, particles);
+            Render = RenderParticle = new EntityRenderParticle(this, particles);
 
             _Init(parameter);
         }
@@ -131,7 +136,6 @@ namespace Vge.Entity.Particle
         /// <summary>
         /// Вызывается, когда быстрая сущность сталкивается с блоком или сущностью.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OnImpact(WorldBase world, MovingObjectPosition moving)
         {
             // Проверка перемещения со столкновением сущностей
@@ -150,6 +154,7 @@ namespace Vge.Entity.Particle
         /// </summary>
         public override void Update()
         {
+
             if (_age++ > _maxAge)
             {
                 SetDead();
@@ -157,7 +162,6 @@ namespace Vge.Entity.Particle
 
             else
             {
-
 
 
                 //if (!IsVolumetricForm())
