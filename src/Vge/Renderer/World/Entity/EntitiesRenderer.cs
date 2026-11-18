@@ -174,7 +174,8 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (!(entity is EntityItem) && entity.Id != playerId)// && _game.Player.IsBoxInFrustum(entity.GetBoundingBoxOffset(-x, -y, -z)))
+                        if (!(entity is EntityItem) && entity.Id != playerId
+                            && _game.Player.IsBoxInFrustum(entity))
                         {
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
@@ -195,7 +196,7 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (entity is EntityItem)
+                        if (entity is EntityItem && _game.Player.IsBoxInFrustum(entity))
                         {
                             // Model
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
@@ -258,7 +259,8 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (!(entity is EntityItem))
+                        // TODO::2026-11-18 Frustum для DepthMap
+                        if (!(entity is EntityItem))// && _game.Player.IsBoxInFrustum(entity))
                         {
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
                         }
@@ -267,7 +269,7 @@ namespace Vge.Renderer.World.Entity
             }
 
             // Предметы
-            ShsEntity.BindUniformItems();
+            ShsEntity.BindUniformItemsDepthMap();
             for (int i = 0; i < count; i++)
             {
                 chunkRender = _arrayChunkRender[i];
@@ -277,7 +279,7 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (entity is EntityItem)
+                        if (entity is EntityItem)// && _game.Player.IsBoxInFrustum(entity))
                         {
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
                         }

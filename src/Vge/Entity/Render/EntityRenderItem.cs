@@ -46,7 +46,7 @@ namespace Vge.Entity.Render
             if (_entityRender != null) // Может быть случай, когда пакет данных стака ещё не пришёл
             {
                 // Заносим в шейдор
-                _entities.ShsEntity.UniformData(
+                _entities.ShsEntity.UniformDataItems(
                     Entity.GetPosFrameX(timeIndex) - _entities.Player.PosFrameX,
                     Entity.GetPosFrameY(timeIndex) - _entities.Player.PosFrameY,
                     Entity.GetPosFrameZ(timeIndex) - _entities.Player.PosFrameZ,

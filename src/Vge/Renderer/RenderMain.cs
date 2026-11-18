@@ -90,7 +90,8 @@ namespace Vge.Renderer
             ShGuiLine = new ShaderGuiLine(gl);
             ShLine = new ShaderLine(gl);
             ShsBlocks = new ShadersBlocks(gl, "BlocksLow", "BlocksHigh", "BlocksDepthMap");
-            ShsEntity = new ShadersEntity(gl, "EntityGui", "EntityLow", "EntityHigh", "EntityDepthMap");
+            ShsEntity = new ShadersEntity(gl, "EntityGui", "EntityLow", "EntityHigh",
+                "EntityItemLow", "EntityItemHigh", "EntityDepthMap");
 
             _Initialize();
         }

@@ -20,15 +20,15 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Максимальное количество частичек для 2д
         /// </summary>
-        public static int MaxAmount2d = 20000;
+        public static int MaxAmount2d = 16000;
         /// <summary>
         /// Максимальное количество частичек для 3д FrustumCulling
         /// </summary>
-        public static int MaxAmount3dFC = 5000;
+        public static int MaxAmount3dFC = 10000;
         /// <summary>
         /// Максимальное количество частичек для 2д FrustumCulling
         /// </summary>
-        public static int MaxAmount2dFC = 10000;
+        public static int MaxAmount2dFC = 16000;
 
         /// <summary>
         /// Объект игрока для клиента

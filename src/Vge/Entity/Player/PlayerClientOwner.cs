@@ -522,7 +522,18 @@ namespace Vge.Entity.Player
         /// в противном случае возвращает false.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsBoxInFrustum(AxisAlignedBB aabb) => _frustumCulling.IsBoxInFrustum(aabb);
+        //public bool IsBoxInFrustum(AxisAlignedBB aabb) => _frustumCulling.IsBoxInFrustum(aabb);
+        public bool IsBoxInFrustum(EntityBase entity)
+        {
+            float w = entity.Size.GetWidth();
+            float h = entity.Size.GetHeight();
+
+            float x = entity.PosX - PosX;
+            float y = entity.PosY - PosY;
+            float z = entity.PosZ - PosZ;
+
+            return _frustumCulling.IsBoxInFrustum(x - w, y, z - w, x + w, y + h, x + z);
+        }
 
         /// <summary>
         /// Возвращает true, если точка находится внутри всех 6 плоскостей отсечения,

@@ -37,11 +37,20 @@ namespace Vge.Renderer.Shaders
         /// Шейдоры для объёмных частичек
         /// </summary>
         private readonly ShaderParticle3d _shaderParticle3d;
+        /// <summary>
+        /// Шейдоры для предметов с низким качеством
+        /// </summary>
+        private readonly ShaderEntity _shaderItemLow;
+        /// <summary>
+        /// Шейдоры для предметов с высоким качеством
+        /// </summary>
+        private readonly ShaderEntity _shaderItemHigh;
 
         /// <summary>
         /// Активный шейдор, обычный или для теней
         /// </summary>
         private ShaderEntity _shderAction;
+
         /// <summary>
         /// Активна ли карта глубины
         /// </summary>
@@ -51,7 +60,8 @@ namespace Vge.Renderer.Shaders
         /// </summary>
         private bool _qualitatively;
 
-        public ShadersEntity(GL gl, string nameGui, string nameLow, string nameHigh, string nameDepthMap)
+        public ShadersEntity(GL gl, string nameGui, string nameLow, string nameHigh,
+            string nameItemLow, string nameItemHigh, string nameDepthMap)
         {
             this.gl = gl;
             _shaderGui = new ShaderGuiEntity(gl, nameGui);
@@ -60,6 +70,8 @@ namespace Vge.Renderer.Shaders
             _shaderDepthMap = new ShaderEntity(gl, nameDepthMap);
             _shaderParticle2d = new ShaderParticle2d(gl);
             _shaderParticle3d = new ShaderParticle3d(gl);
+            _shaderItemLow = new ShaderEntity(gl, nameItemLow);
+            _shaderItemHigh = new ShaderEntity(gl, nameItemHigh);
             _qualitatively = Options.Shadow;
         }
 
@@ -93,6 +105,23 @@ namespace Vge.Renderer.Shaders
             _shaderParticle3d.Bind();
             // Активация текстуры карты света
             gl.Uniform1(_shaderParticle3d.GetUniformLocation("light_map"),
+                Gi.ActiveTextureLightMap);
+
+            // Для предметов максимального качества
+            _shaderItemHigh.Bind();
+            gl.Uniform1(_shaderItemHigh.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
+            gl.Uniform1(_shaderItemHigh.GetUniformLocation("light_map"),
+                Gi.ActiveTextureLightMap);
+            // Активация текстуры карты глубины
+            gl.Uniform1(_shaderItemHigh.GetUniformLocation("depth_map"),
+                Gi.ActiveTextureShadowMap);
+
+            // Для предметов простого качества
+            _shaderItemLow.Bind();
+            gl.Uniform1(_shaderItemLow.GetUniformLocation("atlas"),
+                Gi.ActiveTextureAatlasSharpness);
+            gl.Uniform1(_shaderItemLow.GetUniformLocation("light_map"),
                 Gi.ActiveTextureLightMap);
 
             // Для максимального качества
@@ -187,9 +216,44 @@ namespace Vge.Renderer.Shaders
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BindUniformItems()
         {
+            _shderAction = _qualitatively ? _shaderItemHigh : _shaderItemLow;
+            _shderAction.Bind();
+            _shderAction.SetUniformMatrix4("view", Gi.MatrixView);
+            _shderAction.SetUniform1("scale", 1f);
+
+            _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
+            _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);
+
+            if (_qualitatively)
+            {
+                _shderAction.SetUniformMatrix4("lightMatrix", Gi.MatrixViewDepthMap);
+            }
+        }
+
+        /// <summary>
+        /// Обнулить для предметов и карты глубины
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void BindUniformItemsDepthMap()
+        {
+            _shderAction = _shaderDepthMap;
             _shderAction.SetUniform1("depth", 0f);
             _shderAction.SetUniform1("anim", 0f);
             _shderAction.SetUniform1("eyeMouth", 0);
+        }
+
+        /// <summary>
+        /// Внести данные в юниформы для претмета
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void UniformDataItems(float x, float y, float z, float lightBlock, float lightSky)
+        {
+            _shderAction.SetUniform3("pos", x, y, z);
+            if (!_flagActionDepthMap)
+            {
+                // Свет для карты теней не нужен
+                _shderAction.SetUniform2("light", lightBlock, lightSky);
+            }
         }
 
         /// <summary>
@@ -331,6 +395,8 @@ namespace Vge.Renderer.Shaders
             _shaderDepthMap.Delete();
             _shaderParticle2d.Delete();
             _shaderParticle3d.Delete();
+            _shaderItemLow.Delete();
+            _shaderItemHigh.Delete();
         }
     }
 }
