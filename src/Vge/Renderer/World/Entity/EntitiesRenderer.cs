@@ -259,8 +259,7 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        // TODO::2026-11-18 Frustum для DepthMap
-                        if (!(entity is EntityItem))// && _game.Player.IsBoxInFrustum(entity))
+                        if (!(entity is EntityItem))
                         {
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
                         }
@@ -279,7 +278,7 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (entity is EntityItem)// && _game.Player.IsBoxInFrustum(entity))
+                        if (entity is EntityItem)
                         {
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
                         }

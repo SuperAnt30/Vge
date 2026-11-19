@@ -16,9 +16,10 @@ namespace Vge.Renderer
         /// Сколько чанков в обзоре, для карты теней. 
         /// Квадрат 5*5 минус углы = 21
         /// Квадрат 7*7 минус углы = 45
-        /// Квадрат 9*9 минус углы = 77
+        /// Квадрат 9*9 минус углы = 69
+        /// Квадрат 11*11 минус углы = 109
         /// </summary>
-        public const int CountChunkShadowMap = 45;
+        public const int CountChunkShadowMap = 69;
         /// <summary>
         /// Размер ортогональной матрицы
         /// </summary>

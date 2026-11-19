@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Physics;
-using Vge.Entity.Render;
 using Vge.Event;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
 using Vge.Network.Packets.Server;
 using Vge.Realms;
+using Vge.Renderer;
 using Vge.Renderer.World;
 using Vge.Util;
 using Vge.World;
@@ -466,6 +466,7 @@ namespace Vge.Entity.Player
             int countOC = Ce.OverviewCircles.Length;
             _countUnusedFrustumCulling = 0;
             _countTickLastFrustumCulling = 0;
+
             for (i = 0; i < countOC; i++)
             {
                 vec = Ce.OverviewCircles[i];
@@ -482,7 +483,8 @@ namespace Vge.Entity.Player
                 y2 = _heightChinkFrustumCulling + y1;
                 z2 = zb + 15;
 
-                if (_frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
+                if ((Options.Shadow && i < ShadowMapping.CountChunkShadowMap) 
+                    || _frustumCulling.IsBoxInFrustum(x1, y1, z1, x2, y2, z2))
                 {
                     chunk = _game.World.ChunkPrClient.GetChunkRender(xc + chunkPosX, zc + chunkPosZ);
                     if (chunk != null)
@@ -522,7 +524,6 @@ namespace Vge.Entity.Player
         /// в противном случае возвращает false.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public bool IsBoxInFrustum(AxisAlignedBB aabb) => _frustumCulling.IsBoxInFrustum(aabb);
         public bool IsBoxInFrustum(EntityBase entity)
         {
             float w = entity.Size.GetWidth();

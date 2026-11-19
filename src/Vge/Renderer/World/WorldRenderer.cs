@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
 using Vge.Realms;
@@ -85,6 +86,7 @@ namespace Vge.Renderer.World
         /// Цвет тумана
         /// </summary>
         public Vector3 ColorFog = new Vector3(0);
+
         /// <summary>
         /// Запущен ли мир для прорисовки
         /// </summary>
@@ -370,7 +372,7 @@ namespace Vge.Renderer.World
                 // --- Конец сцены
 
                 // Отладка на экране карта глубины для теней
-                //Shadow.DrawQuadDebug(Render.GetOrtho2D());
+                Shadow.DrawQuadDebug(Render.GetOrtho2D());
             }
         }
 
@@ -386,13 +388,29 @@ namespace Vge.Renderer.World
                 ColorSky = environment.GetColorSky();
                 ColorFog = environment.GetColorFog();
 
-                Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
-                Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
-                int sosm = ShadowMapping.SizeOrthShadowMap;
-                //Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 2, sosm);
-                Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 4, sosm);
-                matrix.Multiply(Glm.LookAt(Gi.ViewLightDir, new Vector3(0, 0, 0), vu));
-                matrix.ConvArray(Gi.MatrixViewDepthMap);
+                if (Options.Shadow)
+                {
+                    // Плавно исчезает тень для перехода день/ночь
+                    float vdir = Mth.Abs(Gi.ViewLightDir.X);
+                    if (vdir < .95f)
+                    {
+                        Gi.EntityBrightness = Gi.EntityBrightnessDefault;
+                        Gi.BlockBrightness = Gi.BlockBrightnessDefault;
+                    }
+                    else
+                    {
+                        vdir = (1 - vdir) / .05f;
+                        Gi.EntityBrightness = Gi.EntityBrightnessDefault * vdir;
+                        Gi.BlockBrightness = Gi.BlockBrightnessDefault * vdir;
+                    }
+
+                    Vector3 vr = Glm.Cross(new Vector3(0, 1, 0), Gi.ViewLightDir);
+                    Vector3 vu = Glm.Cross(Gi.ViewLightDir, vr);
+                    int sosm = ShadowMapping.SizeOrthShadowMap;
+                    Mat4 matrix = Glm.Ortho(-sosm, sosm, -sosm, sosm, -sosm * 4, sosm);
+                    matrix.Multiply(Glm.LookAt(Gi.ViewLightDir, new Vector3(0, 0, 0), vu));
+                    matrix.ConvArray(Gi.MatrixViewDepthMap);
+                }
             }
         }
 
@@ -470,7 +488,7 @@ namespace Vge.Renderer.World
             Render.ShsBlocks.BindUniformBiginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
                 (int)_game.World.GetTickCounter(), _game.World.Settings.Environment.GetWind());
-            
+
             int count = _arrayChunkRender.Count;
             if (count > ShadowMapping.CountChunkShadowMap) count = ShadowMapping.CountChunkShadowMap;
             ChunkRender chunkRender;
@@ -606,6 +624,7 @@ namespace Vge.Renderer.World
         }
 
         public override string ToString() => ChatStyle.Gray + ChatStyle.Bolb + "WorldRenderer " + ChatStyle.Reset
+            + "LightDir: " + Gi.ViewLightDir + " "
             + Entities.ToString() + " " + Particles.ToString()
             + " dbs:" + _desiredBatchSize + "|" + _batchChunksTime + "mc";
     }

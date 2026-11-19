@@ -236,13 +236,21 @@ public sealed class Gi
     /// </summary>
     public static Vector3 ViewLightDir = new Vector3(0);
     /// <summary>
-    /// Яркость теней сущностей
+    /// Яркость теней сущностей по умолчанию
     /// </summary>
-    public static float EntityBrightness = 0.3f;
+    public static float EntityBrightnessDefault = 0.3f;
+    /// <summary>
+    /// Яркость теней блоков по умолчанию
+    /// </summary>
+    public static float BlockBrightnessDefault = 0.3f;
+    /// <summary>
+    /// Яркость теней сущностей 
+    /// </summary>
+    public static float EntityBrightness = EntityBrightnessDefault;
     /// <summary>
     /// Яркость теней блоков
     /// </summary>
-    public static float BlockBrightness = 0.3f;
+    public static float BlockBrightness = BlockBrightnessDefault;
 
     /// <summary>
     /// Обновить ортогональную проекцию
