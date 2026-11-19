@@ -215,27 +215,39 @@ namespace WinGL.OpenGL
         }
         public void BufferData(uint target, float[] data, uint usage)
         {
-            int size = data.Length * sizeof(float);
-            IntPtr p = Marshal.AllocHGlobal(size);
-            Marshal.Copy(data, 0, p, data.Length);
-            BufferData(target, size, p, usage);
-            Marshal.FreeHGlobal(p);
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            try
+            {
+                BufferData(target, data.Length * sizeof(float), handle.AddrOfPinnedObject(), usage);
+            }
+            finally
+            {
+                handle.Free();
+            }
         }
         public void BufferData(uint target, int count, float[] data, uint usage)
         {
-            int size = count * sizeof(float);
-            IntPtr p = Marshal.AllocHGlobal(size);
-            Marshal.Copy(data, 0, p, count);
-            BufferData(target, size, p, usage);
-            Marshal.FreeHGlobal(p);
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            try
+            {
+                BufferData(target, count * sizeof(float), handle.AddrOfPinnedObject(), usage);
+            }
+            finally
+            {
+                handle.Free();
+            }
         }
         public void BufferData(uint target, int[] data, uint usage)
         {
-            int size = data.Length * sizeof(int);
-            IntPtr p = Marshal.AllocHGlobal(size);
-            Marshal.Copy(data, 0, p, data.Length);
-            BufferData(target, size, p, usage);
-            Marshal.FreeHGlobal(p);
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            try
+            {
+                BufferData(target, data.Length * sizeof(int), handle.AddrOfPinnedObject(), usage);
+            }
+            finally
+            {
+                handle.Free();
+            }
         }
         public void BufferSubData(uint target, int offset, int size, IntPtr data)
         {
