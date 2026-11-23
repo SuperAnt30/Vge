@@ -31,7 +31,6 @@ uniform mat4x3 elementTransforms[24];
 
 void main()
 {
-    a_brightness = brightness;
     a_lightDir = lightDir;
     
     int jointId = v_jointId & 0xFF;
@@ -51,6 +50,11 @@ void main()
     }
     a_texCoord = v_texCoord;
     a_light = light;
+    // Определяем яркость от блока
+    float lightBlock = 1.0375 - light.x * 1.2;
+    if (lightBlock < 0) lightBlock = 0;
+    a_brightness = brightness * lightBlock;
+    
     if (v_clothId == -2)
     {
         // Для текстуры атласа блоков и предметов

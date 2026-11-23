@@ -1047,6 +1047,12 @@ namespace Vge.Entity.Player
         /// </summary>
         public void PacketPlayerAbilities(PacketS39PlayerAbilities packet)
         {
+            CreativeMode = packet.CreativeMode;
+            NoClip = packet.NoClip;
+            /*IsFlying =*/
+            AllowFlying = packet.AllowFlying;
+            DisableDamage = packet.DisableDamage;
+
             if (packet.Spectator && Physics is PhysicsPlayer)
             {
                 // Только полёт
@@ -1057,13 +1063,6 @@ namespace Vge.Entity.Player
                 // Только по земле
                 Physics = new PhysicsPlayer(_game.World.Collision, this);
             }
-
-            CreativeMode = packet.CreativeMode;
-            NoClip = packet.NoClip;
-            /*IsFlying =*/ AllowFlying = packet.AllowFlying;
-            DisableDamage = packet.DisableDamage;
-
-            
         }
 
         #endregion
@@ -1177,7 +1176,8 @@ namespace Vge.Entity.Player
             return Login + " " + ToStringPositionRotation() + " O:" + OverviewChunk
                 + (OnGround ? " OnGround" : "")
                 + " batch:" + _batchChunksQuantity + "|" + _batchChunksTime + "mc "
-                + Movement + PresenceBlocks + "\r\n" 
+                + Movement + PresenceBlocks + "\r\n"
+                + "IsSpectator: " + IsSpectator() + "\r\n"
                 + "Render: " + render + "\r\n"
                 + motion  
                 + chunkStorage;

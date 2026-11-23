@@ -54,6 +54,7 @@ namespace Mvk2.Util
             file.WriteLine("\r\n# Graphics");
             file.WriteLine("AmbientOcclusion: " + (Options.AmbientOcclusion ? "1" : "0"));
             file.WriteLine("Shadow: " + (Options.Shadow ? "1" : "0"));
+            file.WriteLine("ParticlesMany: " + (Options.ParticlesMany ? "1" : "0"));
             file.WriteLine("FullScreen: " + (Options.FullScreen ? "1" : "0"));
             file.WriteLine("VSync: " + (Options.VSync ? "1" : "0"));
             file.WriteLine("SizeInterface: " + Options.SizeInterface.ToString());

@@ -259,7 +259,8 @@ namespace Vge.Renderer.World.Entity
                     for (int j = 0; j < countEntity; j++)
                     {
                         entity = chunkRender.ListEntities.GetAt(j);
-                        if (!(entity is EntityItem))
+                        if (!(entity is EntityItem) && (!(entity is PlayerBase) 
+                            || (entity is PlayerBase playerBase && !playerBase.IsSpectator())))
                         {
                             entity.Render.Draw(timeIndex, _game.DeltaTimeFrame);
                         }
@@ -332,17 +333,20 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void DrawOwner(float timeIndex)
         {
-            // Параметрв шейдоров
-            if (_game.Player.ViewCamera != EnumViewCamera.Eye)
+            if (!_game.Player.IsSpectator())
             {
-                ShsEntity.BindUniformBegin();
-                _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
-            }
+                // Параметрв шейдоров
+                if (_game.Player.ViewCamera != EnumViewCamera.Eye)
+                {
+                    ShsEntity.BindUniformBegin();
+                    _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                }
 
-            if (IsHitBox)
-            {
-                _game.WorldRender.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, 1f);
-                _hitbox.Draw(timeIndex, _game.Player);
+                if (IsHitBox)
+                {
+                    _game.WorldRender.Render.ShaderBindLine(Gi.MatrixView, 0, 0, 0, 1f);
+                    _hitbox.Draw(timeIndex, _game.Player);
+                }
             }
         }
 
@@ -352,7 +356,7 @@ namespace Vge.Renderer.World.Entity
         /// <param name="timeIndex">коэффициент времени от прошлого TPS клиента в диапазоне 0 .. 1</param>
         public void DrawOwnerEye(float timeIndex)
         {
-            if (_game.Player.ViewCamera == EnumViewCamera.Eye)
+            if (!_game.Player.IsSpectator() && _game.Player.ViewCamera == EnumViewCamera.Eye)
             {
                 // Перерасчёт матрицы игрока, без головы и с изменениями
                 _game.Player.Render.UpdateMatrixOwnerEye(timeIndex);

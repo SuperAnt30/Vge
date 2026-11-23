@@ -25,7 +25,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Объект рендера всех частичек
         /// </summary>
-        public readonly ParticlesRenderer Particles;
+        public ParticlesRenderer Particles { get; private set; }
         /// <summary>
         /// Объект отвечает за всенаправленных карт теней
         /// </summary>
@@ -143,6 +143,15 @@ namespace Vge.Renderer.World
             Shadow.ReloadInit();
             Render.ShsEntity.UpdateOptions();
             Render.ShsBlocks.UpdateOptions();
+        }
+
+        /// <summary>
+        /// Изменено количество частичек
+        /// </summary>
+        public void ModifyParticles()
+        {
+            Particles.Dispose();
+            Particles = new ParticlesRenderer(_game);
         }
 
         /// <summary>
@@ -372,7 +381,7 @@ namespace Vge.Renderer.World
                 // --- Конец сцены
 
                 // Отладка на экране карта глубины для теней
-                Shadow.DrawQuadDebug(Render.GetOrtho2D());
+                //Shadow.DrawQuadDebug(Render.GetOrtho2D());
             }
         }
 

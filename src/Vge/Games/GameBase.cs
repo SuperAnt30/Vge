@@ -452,7 +452,7 @@ namespace Vge.Games
             }
 
             // Тут индикация если имеется
-            if (Hud != null)
+            if (Hud != null && !Player.IsSpectator())
             {
                 Hud.Draw(timeIndex);
             }

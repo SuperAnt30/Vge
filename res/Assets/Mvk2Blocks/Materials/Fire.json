@@ -1,0 +1,6 @@
+{
+    MoveMob: false,
+    Ignites: true,
+    RequiresNoTool: true,
+    RootGrowing: true
+}

@@ -50,19 +50,18 @@ namespace Mvk2.Entity.Particle
 
             //Scale = .25f + _rand.NextFloat() * .5f; // Для маленький квадов без текстуры
             Scale = 1f + _rand.NextFloat() * 2f; // Для дыма спрайта
-            float c = .5f + _rand.NextFloat() * .5f;
+            //float c = .5f + _rand.NextFloat() * .5f;
+            float c = _rand.NextFloat() * 2f;
+            if (c > 1f) c = 1f;
+
             Color = new Vector4(c, c, c, 1);
-            //Uv = new Vector4(0.4375f, 0, .5f, 0.0625f);
-            Uv = new Vector4(0, 0, .0625f, .0625f);
+            Uv = new Vector4(.125f, 0, .15625f, .03125f);
         }
 
         protected override void _Update()
         {
-            //int i = 8 * _age  / _maxAge;
-            //float v = (8 - _age * 8 / _maxAge) * .0625f;
-            float v = (_age * 12 / _maxAge) * .0625f;
-            //Console.WriteLine(i + " " + v);
-            Uv = new Vector4(v, 0, v + .0625f, .0625f);
+            float v = _age * 12 / _maxAge * .03125f + .125f;
+            Uv = new Vector4(v, 0, v + .03125f, .03125f);
         }
     }
 }

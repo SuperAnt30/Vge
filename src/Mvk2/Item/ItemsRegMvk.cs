@@ -335,7 +335,7 @@ namespace Mvk2.Item
             ItemsReg.RegisterItemClass("Bucket", Bucket = new ItemBucket(), _ItemsForBlock);
             ItemsReg.RegisterItemClass("BucketWater", BucketWater = new ItemLiquid(BlocksRegMvk.Water, false), _ItemsForBlock);
             ItemsReg.RegisterItemClass("BucketLava", BucketLava = new ItemLiquid(BlocksRegMvk.Lava, false, .25f), _ItemsForBlock);
-            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock);
+            ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.Fire), _ItemsForBlock);
 
             ItemsReg.RegisterItemClass("SaplingBirch", SaplingBirch = new ItemBlock(BlocksRegMvk.SaplingBirch), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingConifer", SaplingConifer = new ItemBlock(BlocksRegMvk.SaplingConifer), _ItemsForBlock + "/Tree");

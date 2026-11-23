@@ -340,7 +340,9 @@ namespace Vge.Entity
 
         /// <summary>
         /// Включите или отключите флаг сущности
-        /// 0) горит; 1) крадется; 2) едет на чем-то; 3) бегает; 4) в жидкости; 5) взбирвться; 6) спит; 7)* невидимый по чаре
+        /// 0) горит; 1) крадется; 2) бегает; 3) в жидкости; 4) взбирвться; 5) спит; 6) наблюдение; 
+        /// 7)* невидимый по чаре; едет на чем-то
+        /// 
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void SetFlag(int flag, bool set)
@@ -376,45 +378,45 @@ namespace Vge.Entity
         /// Ускорение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSprinting() => GetFlag(3);
+        public bool IsSprinting() => GetFlag(2);
         /// <summary>
         /// Задать значение ускоряется ли
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetSprinting(bool sprinting) => SetFlag(3, sprinting);
+        public void SetSprinting(bool sprinting) => SetFlag(2, sprinting);
 
         /// <summary>
         /// В жидкости
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsInLiquid() => GetFlag(4);
+        public bool IsInLiquid() => GetFlag(3);
         /// <summary>
         /// Задать значение в жидкости ли
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetInLiquid(bool inLiquid) => SetFlag(4, inLiquid);
+        public void SetInLiquid(bool inLiquid) => SetFlag(3, inLiquid);
 
         /// <summary>
         /// Взбираться
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsClimb() => GetFlag(5);
+        public bool IsClimb() => GetFlag(4);
         /// <summary>
         /// Задать значение взбирается ли
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetClimb(bool climb) => SetFlag(5, climb);
+        public void SetClimb(bool climb) => SetFlag(4, climb);
 
         /// <summary>
         /// Спит ли сущность
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSleep() => GetFlag(6);
+        public bool IsSleep() => GetFlag(5);
         /// <summary>
         /// Задать спит сущность
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetSleep(bool sleep) => SetFlag(6, sleep);
+        public void SetSleep(bool sleep) => SetFlag(5, sleep);
 
         /// <summary>
         /// Положение стоя

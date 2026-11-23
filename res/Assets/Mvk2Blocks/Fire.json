@@ -1,0 +1,16 @@
+{
+    АmbientOcclusion: false,
+    UseNeighborBrightness: true,
+    Translucent: true,
+    IgnoreOwn: true,
+    NoCollision: true,
+    IsReplaceable: true,
+    Passable: true,
+    LightValue: 15,
+    LightOpacity: 0,
+    NeedsRandomTick: true,
+    RequiredRandomTick: true,
+    Variants: [
+        { Shape: "Fire" }
+    ]
+}

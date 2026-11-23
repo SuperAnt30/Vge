@@ -36,7 +36,6 @@ uniform vec2 chunk;
 
 void main()
 {
-    a_brightness = brightness;
     a_lightDir = lightDir;
     
     vec3 pos = vec3(chunk.x - player.x, -player.y, chunk.y - player.z);
@@ -67,6 +66,12 @@ void main()
     a_light = vec2(lightBlock, lightSky);
     a_texCoord = v_texCoord;
     a_sharpness = (v_anim >> 18) & 1;
+    
+    // Определяем яркость от блока
+    lightBlock = 1.0375 - lightBlock * 1.2;
+    if (lightBlock < 0) lightBlock = 0;
+    
+    a_brightness = brightness * lightBlock; 
     
     int frame = (v_anim & 0xFF);
     if (frame > 0)

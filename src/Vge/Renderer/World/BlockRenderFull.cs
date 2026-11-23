@@ -409,7 +409,7 @@ namespace Vge.Renderer.World
                     else if (_blockCheck.Translucent)
                     {
                         // Соседний блок прозрачный
-                        if (Gi.Block.IndexBlock != id)
+                        if (Gi.Block.IndexBlock != id || _blockCheck.IgnoreOwn)
                         {
                             // Блоки разного типа, то палюбому надо рисовать сторону
                             _emptySide = false;
@@ -500,6 +500,7 @@ namespace Vge.Renderer.World
             {
                 _GetAmbientOcclusionLights();
                 _lightPole *= .5f;
+                
                 if (Gi.Block.Liquid)
                 {
                     _colorLight.InitColorsLights(

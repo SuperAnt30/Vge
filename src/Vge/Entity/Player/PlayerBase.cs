@@ -56,12 +56,12 @@ namespace Vge.Entity.Player
         /// Наблюдение
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsSpectator() => GetFlag(5);
+        public bool IsSpectator() => GetFlag(6);
         /// <summary>
         /// Задать наблюдение сущность
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetSpectator(bool invisible) => SetFlag(5, invisible);
+        public void SetSpectator(bool invisible) => SetFlag(6, invisible);
 
         #endregion
 

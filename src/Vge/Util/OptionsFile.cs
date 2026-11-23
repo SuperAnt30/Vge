@@ -100,6 +100,7 @@ namespace Vge.Util
                 case "ControlHandAction": Options.ControlHandAction = int.Parse(value); return true;
                 case "ControlHandSecond": Options.ControlHandSecond = int.Parse(value); return true;
                 case "BlockPlacementPreview": Options.BlockPlacementPreview = value == "1"; return true;
+                case "ParticlesMany": Options.ParticlesMany = value == "1"; return true;
             }
             return false;
         }

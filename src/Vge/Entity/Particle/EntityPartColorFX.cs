@@ -57,7 +57,6 @@ namespace Vge.Entity.Particle
             }
             else
             {
-                // Тут мы не должны появится!
                 Color = new Vector4(_rand.NextFloat(), _rand.NextFloat(), _rand.NextFloat(), 1);
             }
         }

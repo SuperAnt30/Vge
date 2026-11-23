@@ -28,6 +28,10 @@
         /// </summary>
         public const string Translucent = "Translucent";
         /// <summary>
+        ///Игнорировать собственного типа, пример огонь между собой. (bool)
+        /// </summary>
+        public const string IgnoreOwn = "IgnoreOwn";
+        /// <summary>
         /// Блок должен использовать самое яркое значение соседнего света как свое собственное, листва, вода, стекло. (bool)
         /// </summary>
         public const string UseNeighborBrightness = "UseNeighborBrightness";

@@ -32,6 +32,7 @@ void main()
     vec4 light_color = texture(light_map, a_light);
     
     float shadow = ShadowCalculation();
+    
     vec4 color = a_color * tex_color * light_color;
     vec3 col3 = vec3(color) * (1.0 - shadow);
     col3 = mix(col3, fog_color, fog_factor);

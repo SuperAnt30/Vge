@@ -165,6 +165,10 @@ namespace Vge.World.Block
         /// </summary>
         public bool Translucent = false;
         /// <summary>
+        /// Игнорировать собственного типа, пример огонь между собой
+        /// </summary>
+        public bool IgnoreOwn = false;
+        /// <summary>
         /// Флаг, если блок должен использовать самое яркое значение соседнего света как свое собственное
         /// Пример: листва, вода, стекло
         /// </summary>
@@ -355,6 +359,7 @@ namespace Vge.World.Block
                     if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
                     if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
+                    if (json.IsKey(Ctb.IgnoreOwn)) IgnoreOwn = json.GetBool();
                     if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
                     if (json.IsKey(Ctb.АmbientOcclusion)) АmbientOcclusion = json.GetBool();
                     if (json.IsKey(Ctb.BiomeColor)) BiomeColor = json.GetBool();

@@ -223,10 +223,29 @@ namespace Vge.World
         public override void SpawnParticle(ushort particleId,
             int count, Vector3 pos, Vector3 offset, float motion, int parameter)
         {
+            if (!Options.ParticlesMany && count > 1)
+            {
+                count /= 4;
+                if (count < 1) count = 1;
+            }
+
             ParticlesRenderer particles = Game.WorldRender.Particles;
             if (count == 1)
             {
-                particles.Spawn(particleId, pos, offset * motion, parameter);
+                Vector3 of = new Vector3(
+                        (Rnd.NextFloat() - .5f) * offset.X,
+                        (Rnd.NextFloat() - .5f) * offset.Y,
+                        (Rnd.NextFloat() - .5f) * offset.Z);
+                Vector3 m = new Vector3(0);
+                if (motion > 0)
+                {
+                    m = new Vector3(
+                        (Rnd.NextFloat() - .5f) * motion,
+                        (Rnd.NextFloat() - .5f) * motion,
+                        (Rnd.NextFloat() - .5f) * motion);
+                }
+
+                particles.Spawn(particleId, pos + of, m, parameter);
             }
             else
             {
@@ -266,12 +285,16 @@ namespace Vge.World
             int k, x1, y1, z1, i, j, count2;
 
             int count0 = Game.Player.OverviewCircles.Count;
-            int count = count0 > 45 ? 45 : count0;
+            // 4 радиус = 61
+            // 3 радиус = 37
+            // 2 радиус = 21
+            // 1 радиус = 9
+            int count = count0 > 61 ? 61 : count0; 
             count2 = 20;
             for (i = 0; i < count; i++)
             {
-                if (i == 9) count2 = 4;
-                else if (i == 25) count2 = 1;
+                if (i == 21) count2 = 4;
+                else if (i == 37) count2 = 1;
 
                 for (j = 0; j < count2; j++)
                 {

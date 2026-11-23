@@ -40,6 +40,7 @@ namespace Vge.Gui.Screens
         protected readonly CheckBox _checkBoxFullScreen;
         protected readonly CheckBox _checkBoxAmbientOcclusion;
         protected readonly CheckBox _checkBoxShadow;
+        protected readonly CheckBox _checkBoxParticlesMany;
         protected readonly CheckBox _checkBoxBlockPlacementPreview;
         protected readonly Button _buttonNet;
 
@@ -103,6 +104,8 @@ namespace Vge.Gui.Screens
             _checkBoxAmbientOcclusion.SetChecked(Options.AmbientOcclusion);
             _checkBoxShadow = new CheckBox(window, font, 200, L.T("Shadow"));
             _checkBoxShadow.SetChecked(Options.Shadow);
+            _checkBoxParticlesMany = new CheckBox(window, font, 200, L.T("ParticlesMany"));
+            _checkBoxParticlesMany.SetChecked(Options.ParticlesMany);
             _checkBoxBlockPlacementPreview = new CheckBox(window, font, 200, L.T("BlockPlacementPreview"));
             _checkBoxBlockPlacementPreview.SetChecked(Options.BlockPlacementPreview);
 
@@ -172,6 +175,7 @@ namespace Vge.Gui.Screens
             bool isAmbientOcclusion = Options.AmbientOcclusion != _checkBoxAmbientOcclusion.Checked;
             bool isShadow = Options.Shadow != _checkBoxShadow.Checked;
             bool isLanguage = Options.GetLanguageIndex() != _sliderLanguage.Value;
+            bool isParticles = Options.ParticlesMany != _checkBoxParticlesMany.Checked;
             if (Options.VSync != _checkBoxVSinc.Checked)
             {
                 window.SetVSync(_checkBoxVSinc.Checked);
@@ -192,6 +196,7 @@ namespace Vge.Gui.Screens
             Options.OverviewChunk = (byte)_sliderOverviewChunk.Value;
             Options.AmbientOcclusion = _checkBoxAmbientOcclusion.Checked;
             Options.Shadow = _checkBoxShadow.Checked;
+            Options.ParticlesMany = _checkBoxParticlesMany.Checked;
             Options.BlockPlacementPreview = _checkBoxBlockPlacementPreview.Checked;
             window.OptionsSave();
             if (isFullScreen)
@@ -223,6 +228,10 @@ namespace Vge.Gui.Screens
             if (isShadow && window.Game != null)
             {
                 window.Game.WorldRender.ModifyShadow();
+            }
+            if (isParticles && window.Game != null)
+            {
+                window.Game.WorldRender.ModifyParticles();
             }
             if (isLanguage)
             {
@@ -257,6 +266,7 @@ namespace Vge.Gui.Screens
             _AddControls(_checkBoxVSinc);
             _AddControls(_checkBoxAmbientOcclusion);
             _AddControls(_checkBoxShadow);
+            _AddControls(_checkBoxParticlesMany);
             _AddControls(_checkBoxBlockPlacementPreview);
 
             _AddControls(_buttonNet);
@@ -298,6 +308,7 @@ namespace Vge.Gui.Screens
             
             _checkBoxAmbientOcclusion.SetPosition(PosX + 36, PosY + 282);
             _checkBoxShadow.SetPosition(PosX + 36, PosY + 312);
+            _checkBoxParticlesMany.SetPosition(PosX + 36, PosY + 342);
 
             // --Button
             _buttonNet.SetPosition(PosX + 36, PosY + 372);

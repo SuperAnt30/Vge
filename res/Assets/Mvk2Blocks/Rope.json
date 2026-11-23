@@ -1,6 +1,6 @@
 {
     АmbientOcclusion: false,
-    #UseNeighborBrightness: true,
+    UseNeighborBrightness: true,
     LightOpacity: 0,
     ParticleColors: [ "78543A", "845E3D", "977658", "4F3221" ],
     ParticleCount: 8,

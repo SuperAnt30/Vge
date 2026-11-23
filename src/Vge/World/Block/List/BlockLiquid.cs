@@ -58,7 +58,6 @@ namespace Vge.World.Block.List
         /// <summary>
         /// Инициализация объекта рендера для блока
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _InitBlockRender()
             => BlockRender = Gi.BlockLiquidAlphaRendFull;
 

@@ -24,6 +24,11 @@ namespace Mvk2.World.Block
 
         #endregion
 
+        /// <summary>
+        /// Огонь
+        /// </summary>
+        public static BlockFire Fire { get; private set; }
+
         #region Твёрдые каменные блоки
 
         /// <summary>
@@ -282,6 +287,9 @@ namespace Mvk2.World.Block
             BlocksReg.RegisterBlockClass("Debug", Debug = new BlockDebug(materials.Debug));
 
             Water = BlocksReg.RegisterBlockClassLiquid("Water", materials.Water, true);
+            Lava = BlocksReg.RegisterBlockClassLiquid("Lava", materials.Lava, false);
+            BlocksReg.RegisterBlockClass("Fire", Fire = new BlockFire(materials.Fire));
+
             Bedrock = BlocksReg.RegisterBlockClass("Bedrock", materials.Bedrock);
             Limestone = BlocksReg.RegisterBlockClass("Limestone", materials.Solid);
             Granite = BlocksReg.RegisterBlockClass("Granite", materials.Solid);
@@ -346,7 +354,7 @@ namespace Mvk2.World.Block
             GlassBlue = BlocksReg.RegisterBlockClassAlpha("GlassBlue", materials.Glass);
             GlassPurple = BlocksReg.RegisterBlockClassAlpha("GlassPurple", materials.Glass);
             
-            Lava = BlocksReg.RegisterBlockClassLiquid("Lava", materials.Lava, false);
+            
             //Brol = BlocksReg.RegisterBlockClass("Brol", materials.Ore);
 
             BlocksReg.RegisterBlockClass("Brol", Brol = new BlockBrol(materials.Ore));

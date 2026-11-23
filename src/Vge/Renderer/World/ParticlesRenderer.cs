@@ -3,6 +3,7 @@ using Vge.Entity.Particle;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Renderer.World.Entity;
+using Vge.Util;
 using WinGL.OpenGL;
 using WinGL.Util;
 
@@ -16,7 +17,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Максимальное количество частичек для 3д
         /// </summary>
-        public static int MaxAmount3d = 10000;
+        public static int MaxAmount3d = 16000;
         /// <summary>
         /// Максимальное количество частичек для 2д
         /// </summary>
@@ -28,7 +29,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Максимальное количество частичек для 2д FrustumCulling
         /// </summary>
-        public static int MaxAmount2dFC = 16000;
+        public static int MaxAmount2dFC = 10000;
 
         /// <summary>
         /// Объект игрока для клиента
@@ -62,6 +63,16 @@ namespace Vge.Renderer.World
         {
             gl = GetOpenGL();
             Player = game.Player;
+            if (Options.ParticlesMany)
+            {
+                MaxAmount3d = MaxAmount2d = 16000;
+                MaxAmount3dFC = MaxAmount2dFC = 10000;
+            }
+            else
+            {
+                MaxAmount3d = MaxAmount2d = 4000;
+                MaxAmount3dFC = MaxAmount2dFC = 2500;
+            }
 
             _particleInstanced2D = new ParticleInstanced2d(gl, MaxAmount2dFC);
             _particleInstanced3D = new ParticleInstanced3d(gl, MaxAmount3dFC);

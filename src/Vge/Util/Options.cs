@@ -96,6 +96,10 @@ namespace Vge.Util
         /// </summary>
         public static bool Shadow = true;
         /// <summary>
+        /// Много частичек
+        /// </summary>
+        public static bool ParticlesMany = true;
+        /// <summary>
         /// Предпросмотр размещения блока
         /// </summary>
         public static bool BlockPlacementPreview = true;

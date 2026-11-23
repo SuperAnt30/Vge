@@ -40,12 +40,10 @@ namespace Mvk2.World.Block.List
         /// <summary>
         /// Локальные рамки коллизии для метаданных
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override AxisAlignedBB[] _GetCollisionBoxesLocal(int met) => _fullCube[met & 7];
         /// <summary>
         /// Локальные рамки коллизии для метаданных
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Vector3[] _GetOutlineLocal(int met) => _hitbox[met & 7];
     }
 }

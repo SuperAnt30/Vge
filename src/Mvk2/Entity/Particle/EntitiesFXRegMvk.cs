@@ -12,15 +12,25 @@ namespace Mvk2.Entity.Particle
         /// </summary>
         public static ushort SmokeId { get; private set; }
         /// <summary>
+        /// Индекс частички огня
+        /// </summary>
+        public static ushort FlameId { get; private set; }
+        /// <summary>
         /// Индекс частички капельки
         /// </summary>
         public static ushort DropletId { get; private set; }
+        /// <summary>
+        /// Индекс частички языка пламени с дымом
+        /// </summary>
+        public static ushort FlameSmokeId { get; private set; }
 
         public static void Initialization()
         {
             EntitiesFXReg.RegisterEntityFXClass("Droplet", typeof(EntityDropletFX));
             EntitiesFXReg.RegisterEntityFXClass("Smoke", typeof(EntitySmokeFX));
-            
+            EntitiesFXReg.RegisterEntityFXClass("Flame", typeof(EntityFlameFX));
+            EntitiesFXReg.RegisterEntityFXClass("FlameSmoke", typeof(EntityFlameSmokeFX));
+
         }
 
         /// <summary>
@@ -35,6 +45,8 @@ namespace Mvk2.Entity.Particle
                 alias = Ce.EntitiesFX.EntitiesFXAlias[i];
                 if (alias == "Smoke") SmokeId = i;
                 else if (alias == "Droplet") DropletId = i;
+                else if (alias == "Flame") FlameId = i;
+                else if (alias == "FlameSmoke") FlameSmokeId = i;
             }
         }
     }

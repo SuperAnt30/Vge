@@ -25,11 +25,15 @@ uniform vec2 light;
 
 void main()
 {
-    a_brightness = brightness;
+    
     a_lightDir = lightDir;
     
 	a_texCoord = v_texCoord;
     a_light = light;
+    // Определяем яркость от блока
+    float lightBlock = 1.0375 - light.x * 1.2;
+    if (lightBlock < 0) lightBlock = 0;
+    a_brightness = brightness * lightBlock;
     
     gl_Position = view * vec4(pos + v_position, 1.0);
     a_fragToLight = lightMatrix * vec4(pos + v_position, 1.0); //
