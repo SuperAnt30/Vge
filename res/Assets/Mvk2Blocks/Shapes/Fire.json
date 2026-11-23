@@ -5,8 +5,10 @@
     },
     Elements: [
         {   
-            From: [ -8, 0, -8 ], To: [ 8, 16, 8 ],
+            From: [ -8, 0, -8 ],
+            To: [ 8, 16, 8 ],
             Shade:true,
+            Sharpness: true,
             Faces: [
                 { Texture:"Side", Side:"North", Pause:2 },
                 { Texture:"Side", Side:"East", Pause:2 },
@@ -15,19 +17,35 @@
             ]
         },
         {   
-            From: [ -7, -1, -4 ], To: [ 7, 20, -4 ], Shade:true, Rotate: [ 30, 10, 0 ],
+            From: [ -7, -1, -4 ],
+            To: [ 7, 20, -4 ],
+            Rotate: [ 30, 10, 0 ],
+            Shade:true, 
+            Sharpness: true,
             Faces: [ { Texture:"Slope", Side:"North", Pause:1 } ]
         },
         {   
-            From: [ -7, -1, 4 ], To: [ 7, 20, 4 ], Shade:true, Rotate: [ -30, -10, 0 ],
+            From: [ -7, -1, 4 ],
+            To: [ 7, 20, 4 ],
+            Rotate: [ -30, -10, 0 ],
+            Shade:true,
+            Sharpness: true,
             Faces: [ { Texture:"Slope", Side:"South", Pause:1 } ]
         }
         {   
-            From: [ -4, -1, -7 ], To: [ -4, 20, 7 ], Shade:true, Rotate: [ 0, 10, -30 ],
+            From: [ -4, -1, -7 ],
+            To: [ -4, 20, 7 ],
+            Rotate: [ 0, 10, -30 ],
+            Shade:true,
+            Sharpness: true,
             Faces: [ { Texture:"Slope", Side:"West", Pause:1 } ]
         },
         {   
-            From: [ 4, -1, -7 ], To: [ 4, 20, 7 ], Shade:true, Rotate: [ 0, -10, 30 ],
+            From: [ 4, -1, -7 ],
+            To: [ 4, 20, 7 ],
+            Rotate: [ 0, -10, 30 ],
+            Shade:true,
+            Sharpness: true,
             Faces: [ { Texture:"Slope", Side:"East", Pause:1 } ]
         }
     ]

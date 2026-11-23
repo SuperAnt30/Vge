@@ -223,32 +223,20 @@ namespace Vge.World
         public override void SpawnParticle(ushort particleId,
             int count, Vector3 pos, Vector3 offset, float motion, int parameter)
         {
-            if (!Options.ParticlesMany && count > 1)
-            {
-                count /= 4;
-                if (count < 1) count = 1;
-            }
-
             ParticlesRenderer particles = Game.WorldRender.Particles;
+
             if (count == 1)
             {
-                Vector3 of = new Vector3(
-                        (Rnd.NextFloat() - .5f) * offset.X,
-                        (Rnd.NextFloat() - .5f) * offset.Y,
-                        (Rnd.NextFloat() - .5f) * offset.Z);
-                Vector3 m = new Vector3(0);
-                if (motion > 0)
-                {
-                    m = new Vector3(
-                        (Rnd.NextFloat() - .5f) * motion,
-                        (Rnd.NextFloat() - .5f) * motion,
-                        (Rnd.NextFloat() - .5f) * motion);
-                }
-
-                particles.Spawn(particleId, pos + of, m, parameter);
+                particles.Spawn(particleId, pos, offset * motion, parameter);
             }
             else
             {
+                if (!Options.ParticlesMany)
+                {
+                    count /= 4;
+                    if (count < 1) count = 1;
+                }
+
                 Vector3 of;
                 Vector3 m = new Vector3(0);
                 for (int i = 0; i < count; i++)
@@ -268,8 +256,6 @@ namespace Vge.World
                 }
             }
         }
-
-        
 
         /// <summary>
         /// Обработка ближайших блоков для эффектов звуков и анимации, только у клиента

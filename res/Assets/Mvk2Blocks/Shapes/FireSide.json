@@ -1,0 +1,18 @@
+{
+    Texture: { 
+        Slope: "@Blocks/Fire0pxBA"
+    },
+    Elements: [
+        {   
+            From: [ -8, 0, -8 ],
+            To: [ -8, 20, 8 ],
+            Rotate: [0, 0, -10],
+            Shade:true,
+            Sharpness: true,
+            Faces: [
+                { Texture:"Slope", Side:"West", Pause:2 },
+                { Texture:"Slope", Side:"East", Pause:2 }
+            ]
+        }
+    ]
+}

@@ -8,9 +8,14 @@
     Passable: true,
     LightValue: 15,
     LightOpacity: 0,
-    NeedsRandomTick: true,
+    #NeedsRandomTick: true,
     RequiredRandomTick: true,
     Variants: [
-        { Shape: "Fire" }
+        { Shape: "Fire" },
+        { Shape: "FireSide" },
+        { Shape: "FireSide", RotateY: 90 },
+        { Shape: "FireSide", RotateY: 180 },
+        { Shape: "FireSide", RotateY: 270 },
+        { Shape: "FireUp" }
     ]
 }
