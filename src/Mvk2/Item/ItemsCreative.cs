@@ -53,6 +53,7 @@ namespace Mvk2.Item
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.Bucket));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketWater, 1, 0, 7));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.BucketLava, 1, 0, 7));
+            tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.Matches));
 
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.FetusBirch));
             tabItemsForBlock.Add(new ItemStack(ItemsRegMvk.SaplingBirch));
@@ -73,6 +74,7 @@ namespace Mvk2.Item
             // Раздел инструменты и оружие
             List<ItemStack> tabTools = new List<ItemStack>();
             tabTools.Add(new ItemStack(ItemsRegMvk.StickTechnical));
+            
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeStone));
             tabTools.Add(new ItemStack(ItemsRegMvk.DiggingStick));
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeIron));
@@ -84,7 +86,6 @@ namespace Mvk2.Item
             tabTools.Add(new ItemStack(ItemsRegMvk.AxeRed));
             tabTools.Add(new ItemStack(ItemsRegMvk.ShovelRed));
             tabTools.Add(new ItemStack(ItemsRegMvk.PickaxeRed));
-
 
             // Раздел одежда
             List<ItemStack> tabCloth = new List<ItemStack>();

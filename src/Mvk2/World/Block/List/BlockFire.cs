@@ -120,7 +120,8 @@ namespace Mvk2.World.Block.List
             BlockPos blockPos, BlockState state)
         {
             // запустить мгновенный тик
-            world.SetBlockTick(blockPos, (uint)(world.Rnd.Next(10) + 5));
+            //world.SetBlockTick(blockPos, (uint)(world.Rnd.Next(10) + 5));
+            world.SetBlockTick(blockPos, (uint)(world.Rnd.Next(10) + 50));
         }
 
         /// <summary>

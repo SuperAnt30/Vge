@@ -1,5 +1,6 @@
 ﻿using Mvk2.Entity.List;
-using Mvk2.Item.List.Tool;
+using Mvk2.Item.List.Tools;
+using System;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
@@ -22,7 +23,7 @@ namespace Mvk2.Entity.Player
         }
 
         /// <summary>
-        /// Действие анимации правой руки
+        /// Активное действие анимации правой руки
         /// </summary>
         /// <param name="itemStack">Предмет которым делаю действие</param>
         /// <param name="moving">Выбранный объект</param>
@@ -32,6 +33,44 @@ namespace Mvk2.Entity.Player
             if (itemStack == null)
             {
                // return false;
+                _player.Render.SetAnimationCodeAdd("AttackRight");
+            }
+            else
+            {
+                if (itemStack.Item is ItemAxe itemAxe)
+                {
+                    ItemStack itemStackLeft = _playerMvk.InvPlayer.GetCurrentLeftItem();
+                    if (itemStackLeft != null
+                        && itemStackLeft.Item is ItemAxe)
+                    {
+                        _player.Render.SetAnimationCodeAdd("ActionAxes", itemAxe.HitSpeed);
+                        return true;
+                    }
+                }
+
+                if (itemStack.Item.Action != "")
+                {
+                    _player.Render.SetAnimationCodeAdd(itemStack.Item.Action, itemStack.Item.HitSpeed);
+                    return true;
+                }
+
+                _player.Render.SetAnimationCodeAdd("ActionAxe", itemStack.Item.HitSpeed);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Вспомогательное действие анимации правой руки
+        /// </summary>
+        /// <param name="itemStack">Предмет которым делаю действие</param>
+        /// <param name="moving">Выбранный объект</param>
+        protected override bool _SecondAnimationRight(ItemStack itemStack,
+            MovingObjectPosition moving)
+        {
+            //Console.WriteLine("_SecondAnimationRight");
+            if (itemStack == null)
+            {
+                // return false;
                 _player.Render.SetAnimationCodeAdd("AttackRight");
             }
             else

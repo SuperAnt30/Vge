@@ -601,7 +601,7 @@ namespace Vge.Entity.Player
                 {
                     BlockPos blockPos = packet.GetBlockPos();
                     // Установить блок который в руке
-                    if (!itemStack.Item.OnItemOnBlockPlacement(itemStack, this, blockPos, packet.Side,
+                    if (!itemStack.Item.OnItemOnBlockPlacement(false, itemStack, this, blockPos, packet.Side,
                         packet.Facing, packet.Replaceable, RotationYaw))
                     {
                         // Если ты не можешь его установить, надо отправить текущему клиенту откат блока

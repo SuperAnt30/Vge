@@ -989,7 +989,7 @@ namespace Vge.Entity.Player
             //ClientWorld.ClientMain.TrancivePacket(new PacketC0CPlayerAction(PacketC0CPlayerAction.EnumAction.Fall, fallDistanceResult));
             _game.World.ParticleDiggingBlock(_game.World.GetBlockState(
                 new BlockPos(PosX, PosY - .125f, PosZ)).GetBlock(),
-                new Vector3(PosX, PosY + .25f, PosZ), (int)(distance * 3), false);
+                new Vector3(PosX, PosY + .25f, PosZ), (int)(distance * 4), false);
 
 
         }

@@ -16,10 +16,11 @@ namespace Mvk2.Item.List
         /// Действие предмета ЛКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
-        public override ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        public override ResultHandAction OnAction(bool preview, bool begin, ItemStack stack, PlayerClientOwner player)
         {
-            if (!player.CreativeMode)
+            if (!preview && !player.CreativeMode)
             {
                 player.Inventory.DecrCurrentItem(1);
             }
@@ -43,15 +44,16 @@ namespace Mvk2.Item.List
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
         /// /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
-        public override ResultHandSecond OnSecond(bool begin, ItemStack stack,
+        public override ResultHandSecond OnSecond(bool preview, bool begin, ItemStack stack,
             PlayerClientOwner player, int counter)
         {
             ResultHandSecond result = _CheckEntitySecond(player);
             if (result.Action == ResultHandSecond.ActionType.None || player.IsKeyShift())
             {
-                if (!player.CreativeMode)
+                if (!preview && !player.CreativeMode)
                 {
                     player.Inventory.DecrCurrentItem(1);
                 }

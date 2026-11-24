@@ -25,6 +25,10 @@
         /// Взаимодействие блока с жидкостью
         /// </summary>
         public bool IsLiquid;
+        /// <summary>
+        /// Пауза задержки до взаимодейстыия, для анимации
+        /// </summary>
+        public int UseDelay;
 
         /// <summary>
         /// Указать действие и паузу до след действия
@@ -36,6 +40,7 @@
             Action = action;
             Replaceable = false;
             IsLiquid = false;
+            UseDelay = -1;
         }
 
         /// <summary>
@@ -48,6 +53,7 @@
             Action = ActionType.BlockPlacement;
             Replaceable = replaceable;
             IsLiquid = false;
+            UseDelay = -1;
         }
 
         /// <summary>
@@ -60,6 +66,7 @@
             Action = ActionType.UseItem;
             Replaceable = false;
             IsLiquid = false;
+            UseDelay = -1;
         }
 
         /// <summary>
@@ -72,6 +79,7 @@
             Action = action;
             Replaceable = true;
             IsLiquid = isLiquid;
+            UseDelay = -1;
         }
 
         public enum ActionType

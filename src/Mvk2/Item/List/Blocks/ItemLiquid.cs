@@ -2,7 +2,6 @@
 using Vge.Entity.Player;
 using Vge.Item;
 using Vge.Item.List;
-using Vge.Json;
 using Vge.Realms;
 using Vge.Renderer;
 using Vge.Util;
@@ -11,7 +10,7 @@ using Vge.World.Block;
 using Vge.World.Block.List;
 using WinGL.Util;
 
-namespace Mvk2.Item.List
+namespace Mvk2.Item.List.Blocks
 {
     /// <summary>
     /// Предмет установить блок жидкости
@@ -27,6 +26,8 @@ namespace Mvk2.Item.List
         /// Смещение текстуры 
         /// </summary>
         private readonly float _biasTexture;
+
+        private bool _flagBegin;
 
         /// <param name="full">Установка полного блока</param>
         public ItemLiquid(BlockLiquid blockLiquid, bool full, float biasTexture = 0) : base(blockLiquid)
@@ -78,9 +79,10 @@ namespace Mvk2.Item.List
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
         /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
-        public override ResultHandSecond OnSecond(bool begin, ItemStack stack, PlayerClientOwner player, int counter)
+        public override ResultHandSecond OnSecond(bool preview, bool begin, ItemStack stack, PlayerClientOwner player, int counter)
         {
             ResultHandSecond result = _CheckEntitySecond(player);
             if (result.Action != ResultHandSecond.ActionType.None)
@@ -88,26 +90,36 @@ namespace Mvk2.Item.List
                 return result;
             }
 
+            _flagBegin = !begin;
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsLiquid)
             {
                 if (moving.IdBlockLiquid == Block.IndexBlock
-                    && OnItemOnBlockPlacement(stack, player, moving.BlockLiquidPosition, moving.Side,
+                    && OnItemOnBlockPlacement(preview, stack, player, moving.BlockLiquidPosition, moving.Side,
                     moving.Facing, true, player.RotationYaw))
                 {
-                    return new ResultHandSecond(ResultHandSecond.ActionType.BlockPlacement, true);
+                    _flagBegin = false;
+                    return new ResultHandSecond(HandManager.PauseUseItem, true)
+                    {
+                        IsLiquid = true,
+                        UseDelay = HandManager.SecondDelay
+                    };
                 }
             }
             else if (moving.IsBlock())
             {
                 // Надо проверить наличие воды
-                if (OnItemOnBlockPlacement(stack, player, moving.BlockPosition, moving.Side,
+                if (OnItemOnBlockPlacement(preview,stack, player, moving.BlockPosition, moving.Side,
                     moving.Facing, true, player.RotationYaw))
                 {
-                    return new ResultHandSecond(ResultHandSecond.ActionType.BlockPlacement, false);
+                    _flagBegin = false;
+                    return new ResultHandSecond(HandManager.PauseUseItem, true)
+                    {
+                        UseDelay = HandManager.SecondDelay
+                    };
                 }
             }
-
+            _flagBegin = false;
             player.PlaySampleNotCanPlacement();
             return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
@@ -116,18 +128,19 @@ namespace Mvk2.Item.List
         /// Вызывается, когда текущий предмет пробуюет установить на блок,
         /// возвращает true если действие состоялось
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
         /// <param name="playerYaw">Угол Yaw игрока в момент установки блока</param>
-        public override bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
+        public override bool OnItemOnBlockPlacement(bool preview, ItemStack stack, PlayerBase player,
             BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw)
         {
             if (_flagFull)
             {
                 // Установка блока воды
-                return base.OnItemOnBlockPlacement(stack, player, blockPos, side, facing, flagReplaceable, playerYaw);
+                return base.OnItemOnBlockPlacement(preview, stack, player, blockPos, side, facing, flagReplaceable, playerYaw);
             }
 
             WorldBase world = player.GetWorld();
@@ -154,7 +167,7 @@ namespace Mvk2.Item.List
             {
                 // Делаем смещение и повторяем всю процедуру с флагом о запрете смещения, защита от рекурсии
                 blockPos = blockPos.Offset(side);
-                return OnItemOnBlockPlacement(stack, player, blockPos, side, facing, false, playerYaw);
+                return OnItemOnBlockPlacement(preview, stack, player, blockPos, side, facing, false, playerYaw);
             }
 
             if (idBlockLiquid == Block.IndexBlock || idBlockLiquid == -1)
@@ -164,27 +177,28 @@ namespace Mvk2.Item.List
                     // Имеетса вода пробуем забрать
                     // Console.WriteLine((world.IsRemote ? "C" : "S") + " !Water " + water);
 
-                    if (stack != null) // по сути пустоты не должно быть!
+                    if (stack != null && stack.Met < 7)
                     {
-                        if (stack.Met < 7)
+                        if (!preview)
                         {
                             water += stack.Met;
                             if (water > 7) water = 7;
                             stack.SetMet((byte)water);
                             player.Inventory.SetCurrentItem(stack);
                             world.SetLiquidBlockToAir(blockPos);
-                            return true;
                         }
+                        return true;
                     }
                 }
                 //else
                 //{
                 //    Console.Write((world.IsRemote ? "C" : "S") + " !Water No");
                 //}
-
-                if (base.OnItemOnBlockPlacement(stack, player, blockPos, side, facing, flagReplaceable, playerYaw))
+                //Console.WriteLine("flagBegin " + _flagBegin);
+                if (!_flagBegin)
+                if (base.OnItemOnBlockPlacement(preview,stack, player, blockPos, side, facing, flagReplaceable, playerYaw))
                 {
-                    if (!player.CreativeMode)
+                    if (!preview && !player.CreativeMode)
                     {
                         // Вылили ведро
                         ItemStack stackLiquit = new ItemStack(ItemsRegMvk.Bucket, 1, stack.ItemDamaged);

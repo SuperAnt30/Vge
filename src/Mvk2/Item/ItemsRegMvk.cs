@@ -1,5 +1,6 @@
 ﻿using Mvk2.Item.List;
-using Mvk2.Item.List.Tool;
+using Mvk2.Item.List.Blocks;
+using Mvk2.Item.List.Tools;
 using Mvk2.World.Block;
 using Vge.Item;
 using Vge.Item.List;
@@ -74,7 +75,11 @@ namespace Mvk2.Item
         /// </summary>
         public static ItemLiquid BucketLava { get; private set; }
 
-        
+        /// <summary>
+        /// Спички
+        /// </summary>
+        public static ItemIncendiary Matches { get; private set; }
+
         /// <summary>
         /// Саженец берёзы
         /// </summary>
@@ -146,6 +151,9 @@ namespace Mvk2.Item
         /// Техническая палочка, для отладки
         /// </summary>
         public static ItemStickTechnical StickTechnical { get; private set; }
+
+        
+        
 
         /// <summary>
         /// Каменный топор
@@ -332,23 +340,28 @@ namespace Mvk2.Item
             // ItemsForBlock
             ItemsReg.RegisterItemClass("DoorOfPlanks", DoorOfPlanks = new ItemDoor(BlocksRegMvk.DoorOfPlanks), _ItemsForBlock);
             ItemsReg.RegisterItemClass("Rope", Rope = new ItemRope(BlocksRegMvk.Rope), _ItemsForBlock);
+            // - вёдра
             ItemsReg.RegisterItemClass("Bucket", Bucket = new ItemBucket(), _ItemsForBlock);
             ItemsReg.RegisterItemClass("BucketWater", BucketWater = new ItemLiquid(BlocksRegMvk.Water, false), _ItemsForBlock);
             ItemsReg.RegisterItemClass("BucketLava", BucketLava = new ItemLiquid(BlocksRegMvk.Lava, false, .25f), _ItemsForBlock);
+            // - поджигательные
+            ItemsReg.RegisterItemClass("Matches", Matches = new ItemIncendiary(BlocksRegMvk.Fire), _ItemsForBlock);
+
             ItemsReg.RegisterItemClass("FlowerClover", FlowerClover = new ItemBlock(BlocksRegMvk.Fire), _ItemsForBlock);
 
+            // - саженцы
             ItemsReg.RegisterItemClass("SaplingBirch", SaplingBirch = new ItemBlock(BlocksRegMvk.SaplingBirch), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingConifer", SaplingConifer = new ItemBlock(BlocksRegMvk.SaplingConifer), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingFruit", SaplingFruit = new ItemBlock(BlocksRegMvk.SaplingFruit), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingOak", SaplingOak = new ItemBlock(BlocksRegMvk.SaplingOak), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("SaplingDry", SaplingDry = new ItemBlock(BlocksRegMvk.SaplingDry), _ItemsForBlock + "/Tree");
-
+            // - плоды
             ItemsReg.RegisterItemClass("FetusBirch", FetusBirch = new ItemBlock(BlocksRegMvk.FetusBirch), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("FetusConifer", FetusConifer = new ItemBlock(BlocksRegMvk.FetusConifer), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("FetusFruit", FetusFruit = new ItemBlock(BlocksRegMvk.FetusFruit), _ItemsForBlock + "/Tree");
             ItemsReg.RegisterItemClass("FetusOak", FetusOak = new ItemBlock(BlocksRegMvk.FetusOak), _ItemsForBlock + "/Tree");
 
-
+            
             // Craft
             ItemsReg.RegisterItemClass("DryGrass", DryGrass = new ItemBase());
             ItemsReg.RegisterItemClass("PieceDirt", PieceDirt = new ItemSpawn());

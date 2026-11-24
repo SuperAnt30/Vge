@@ -4,7 +4,7 @@ using Vge.Entity.Player;
 using Vge.Item;
 using Vge.World.Block;
 
-namespace Mvk2.Item.List.Tool
+namespace Mvk2.Item.List.Tools
 {
     /// <summary>
     /// Предмет топор
@@ -15,8 +15,9 @@ namespace Mvk2.Item.List.Tool
         /// Действие предмета ЛКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
-        public override ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        public override ResultHandAction OnAction(bool preview, bool begin, ItemStack stack, PlayerClientOwner player)
         {
             if (player.MovingObject.IsBlock())
             {
@@ -32,7 +33,10 @@ namespace Mvk2.Item.List.Tool
                         && itemStackLeft.Item is ItemAxe itemAxe)
                     {
                         // Если второй топор есть, то усиление
-                        player.DamageItemTool(1, true);
+                        if (!preview)
+                        {
+                            player.DamageItemTool(1, true);
+                        }
                         int pause = (itemAxe.Pause + Pause) / 2;
                         float destroy = Acceleration * itemAxe.Acceleration 
                             / (Acceleration + itemAxe.Acceleration);
@@ -44,7 +48,7 @@ namespace Mvk2.Item.List.Tool
                 }
             }
 
-            return base.OnAction(begin, stack, player);
+            return base.OnAction(preview, begin, stack, player);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Mvk2.World.Block.List;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Item;
@@ -10,7 +9,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Mvk2.Item.List
+namespace Mvk2.Item.List.Blocks
 {
     /// <summary>
     /// Предмет верёвка
@@ -26,8 +25,7 @@ namespace Mvk2.Item.List
         /// <summary>
         /// Дополнительная проверка на moving, чтоб сократить последующие проверки
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override bool _CheckMoving(MovingObjectPosition moving)
+        protected override bool _CheckMoving(MovingObjectPosition moving, PlayerClientOwner player)
             => moving.IsBlock() && moving.Side != Pole.Up;
 
         /// <summary>

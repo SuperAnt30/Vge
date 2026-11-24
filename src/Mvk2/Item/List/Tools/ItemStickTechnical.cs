@@ -7,7 +7,7 @@ using Vge.World.Block;
 using Vge.World.Chunk;
 using WinGL.Util;
 
-namespace Mvk2.Item.List.Tool
+namespace Mvk2.Item.List.Tools
 {
     /// <summary>
     /// Предмет техническая палочка, для отладки
@@ -18,9 +18,10 @@ namespace Mvk2.Item.List.Tool
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
         /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
-        public override ResultHandSecond OnSecond(bool begin, ItemStack stack,
+        public override ResultHandSecond OnSecond(bool preview, bool begin, ItemStack stack,
             PlayerClientOwner player, int counter)
         {
             ResultHandSecond result = _CheckEntitySecond(player);
@@ -51,12 +52,13 @@ namespace Mvk2.Item.List.Tool
         /// Вызывается, когда текущий предмет пробуюет установить на блок,
         /// возвращает true если действие состоялось
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
         /// <param name="playerYaw">Угол Yaw игрока в момент установки блока</param>
-        public override bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
+        public override bool OnItemOnBlockPlacement(bool preview, ItemStack stack, PlayerBase player,
             BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw)
         {
             WorldBase world = player.GetWorld();

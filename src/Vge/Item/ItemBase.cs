@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Vge.Audio;
 using Vge.Entity.Player;
@@ -84,7 +83,7 @@ namespace Vge.Item
         /// <summary>
         /// Пауза задержки до удара, для анимации, где-то пополам как Pause
         /// </summary>
-        public int HitDelay { get; protected set; } = HandManager.HitDelayNotItem;
+        public int HitDelay { get; protected set; } = HandManager.ActionDelay;
         /// <summary>
         /// Коэффициент ускорения анимации для удара 0 - 1
         /// </summary>
@@ -260,22 +259,23 @@ namespace Vge.Item
         /// Действие предмета ЛКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
-        public virtual ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        public virtual ResultHandAction OnAction(bool preview, bool begin, ItemStack stack, PlayerClientOwner player)
         {
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsEntity())
             {
                 // Урон для сущности
                 return new ResultHandAction(ResultHandAction.ActionType.AttackEntity, 
-                    HandManager.PauseNotItem, HandManager.HitDelayNotItem);
+                    HandManager.PauseNotItem, HandManager.ActionDelay);
             }
             if (moving.IsBlock() && player.CanDestroyedBlock(moving.Block.GetBlock()))
             {
                 // Можно разрушить блок без предмета
-                return new ResultHandAction(HandManager.PauseNotItem, HandManager.HitDelayNotItem, 1);
+                return new ResultHandAction(HandManager.PauseNotItem, HandManager.ActionDelay, 1);
             }
-            return new ResultHandAction(ResultHandAction.ActionType.None, HandManager.HitDelayNotItem);
+            return new ResultHandAction(ResultHandAction.ActionType.None, HandManager.ActionDelay);
         }
 
         /// <summary>
@@ -289,9 +289,10 @@ namespace Vge.Item
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
         /// <param name="counter">Счётчик тактов от нажатия вспомогательное действия ПКМ</param>
-        public virtual ResultHandSecond OnSecond(bool begin, ItemStack stack, 
+        public virtual ResultHandSecond OnSecond(bool preview, bool begin, ItemStack stack, 
             PlayerClientOwner player, int counter)
         {
             return _CheckEntitySecond(player);
@@ -307,7 +308,10 @@ namespace Vge.Item
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsEntity())
             {
-                return new ResultHandSecond(ResultHandSecond.ActionType.InteractEntity);
+                return new ResultHandSecond(ResultHandSecond.ActionType.InteractEntity)
+                {
+                    UseDelay = HandManager.SecondDelay
+                };
             }
             return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
@@ -328,19 +332,19 @@ namespace Vge.Item
         /// Для сервера
         /// </summary>
         /// <param name="number">Дополнительный цифровой параметр</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void OnUseSecond(ItemStack stack, PlayerServer player, int number) { }
 
         /// <summary>
         /// Вызывается, когда текущий предмет пробуюет установить на блок,
         /// возвращает true если действие состоялось
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="pos">Позиция блока, по которому щелкают ПКМ</param>
         /// <param name="side">Сторона, по которой щелкнули ПКМ</param>
         /// <param name="facing">Значение в пределах 0..1, образно фиксируем пиксел клика на стороне</param>
         /// <param name="flagReplaceable">Надо ли проверять смещение на установку блока параметра IsReplaceable</param>
         /// <param name="playerYaw">Угол Yaw игрока в момент установки блока</param>
-        public virtual bool OnItemOnBlockPlacement(ItemStack stack, PlayerBase player,
+        public virtual bool OnItemOnBlockPlacement(bool preview, ItemStack stack, PlayerBase player,
             BlockPos blockPos, Pole side, Vector3 facing, bool flagReplaceable, float playerYaw) => false;
 
         #endregion

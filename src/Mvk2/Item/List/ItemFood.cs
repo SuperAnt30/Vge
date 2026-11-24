@@ -19,8 +19,9 @@ namespace Mvk2.Item.List
         /// Вспомогательное действие предмета ПКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
-        public override ResultHandSecond OnSecond(bool begin, ItemStack stack, 
+        public override ResultHandSecond OnSecond(bool preview, bool begin, ItemStack stack, 
             PlayerClientOwner player, int counter)
         {
             // шаг потреблении еды в тактах
@@ -32,7 +33,7 @@ namespace Mvk2.Item.List
             }
             // Время прошла мы одну единицу съели, и продолжаем кушать
             // Тут надо уменьшить голод у перса на клиенте
-            if (!player.CreativeMode)
+            if (!preview && !player.CreativeMode)
             {
                 player.Inventory.DecrCurrentItem(1);
             }

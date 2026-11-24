@@ -68,6 +68,16 @@ namespace Vge.Item
         public ItemStack Copy(byte amount) => new ItemStack(Item, amount, ItemDamaged, Met);
 
         /// <summary>
+        /// Получить индекс предмета, если предмета нет, вернёт -1
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetItemIndex()
+        {
+            if (Item != null) return Item.IndexItem;
+            return -1;
+        }
+
+        /// <summary>
         /// Изменить метданные бстака
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

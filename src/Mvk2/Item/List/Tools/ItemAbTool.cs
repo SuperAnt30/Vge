@@ -6,7 +6,7 @@ using Vge.Json;
 using Vge.Realms;
 using Vge.Util;
 
-namespace Mvk2.Item.List.Tool
+namespace Mvk2.Item.List.Tools
 {
     /// <summary>
     /// Абстрактный класс предмета инструмент
@@ -98,8 +98,9 @@ namespace Mvk2.Item.List.Tool
         /// Действие предмета ЛКМ.
         /// Для клиента.
         /// </summary>
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
         /// <param name="begin">Первый клик, без паузы</param>
-        public override ResultHandAction OnAction(bool begin, ItemStack stack, PlayerClientOwner player)
+        public override ResultHandAction OnAction(bool preview, bool begin, ItemStack stack, PlayerClientOwner player)
         {
             MovingObjectPosition moving = player.MovingObject;
             if (moving.IsEntity())
@@ -107,7 +108,7 @@ namespace Mvk2.Item.List.Tool
                 // Урон для сущности
                 return new ResultHandAction(ResultHandAction.ActionType.AttackEntity, HitDelay, Pause);
             }
-            return base.OnAction(begin, stack, player);
+            return base.OnAction(preview, begin, stack, player);
         }
     }
 }
