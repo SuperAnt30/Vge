@@ -18,19 +18,19 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Пауза без предмета
         /// </summary>
-        public static int PauseNotItem = 8;
+        public static int PauseNotItem = 5;
         /// <summary>
         /// Пауза для действия руки или предмета
         /// </summary>
-        public static int PauseUseItem = 5;
+        public static int PauseUseItem = 4;
         /// <summary>
         /// Задержка активного действия (ЛКМ), в тактах (момент удара в анимации руки)
         /// </summary>
-        public static int ActionDelay = 4;
+        public static int ActionDelay = 2;
         /// <summary>
         /// Задержка вспомогательного действия (ПКМ), в тактах (момент взаимодействия в анимации руки)
         /// </summary>
-        public static int SecondDelay = 4;
+        public static int SecondDelay = 2;
 
         /// <summary>
         /// Импульс отскока при атаке на XZ
@@ -52,17 +52,9 @@ namespace Vge.Entity.Player
         /// </summary>
         private int _pauseAction;
         /// <summary>
-        /// Имеется ли холостой выстрел для активного действия в промежутке, не первый!
-        /// </summary>
-        private bool _blankShotAction = false;
-        /// <summary>
         /// Пауза для вспомогательное действие ПКМ
         /// </summary>
         private int _pauseSecond;
-        /// <summary>
-        /// Имеется ли холостой выстрел для вспомогательное действия в промежутке, не первый!
-        /// </summary>
-        private bool _blankShotSecond = false;
         /// <summary>
         /// Была ли остановка с отменой, флаг для вспомогательного действия
         /// </summary>
@@ -106,9 +98,9 @@ namespace Vge.Entity.Player
         /// </summary>
         private bool _isBlockDestroy;
         /// <summary>
-        /// Флаг запуска вспомогательного предмета
+        /// Флаг запуска концовки вспомогательного предмета
         /// </summary>
-        private bool _flagBeginUseSecond;
+        private bool _flagUseSecondEnd;
 
         private struct Pending
         {
@@ -172,7 +164,8 @@ namespace Vge.Entity.Player
         /// </summary>
         private Pending _pendingAction;
         /// <summary>
-        /// Можно ли прервать выполнение, если анимация ещё не закончена
+        /// Можно ли прервать выполнение, если анимация ещё не закончена.
+        /// Нужен для прерывания последующих разрушений блоков при зажатой ЛКМ
         /// </summary>
         private bool _isStopAction = false;
 
@@ -293,6 +286,10 @@ namespace Vge.Entity.Player
                 _SecondEnd();
                 //_secondPrev = _second;
             }
+
+            if (_pauseAction > 0) _pauseAction--;
+            if (_pauseSecond > 0) _pauseSecond--;
+
             _actionPrev = _action;
             _secondPrev = _second;
             _counterSecond++;
@@ -345,11 +342,7 @@ namespace Vge.Entity.Player
         {
             if (_player.IsSpectator()) return;
 
-            if (begin)
-            {
-                _pauseAction = 0;
-                _blankShotAction = false;
-            }
+            if (begin && _pauseAction < 0) _pauseAction = 0;
 
             // Новый замах только после паузы и когда прошлый удар уже состоялся
             if (_pauseAction == 0 && _pendingKindAction == PendingKindAction.None)
@@ -359,18 +352,7 @@ namespace Vge.Entity.Player
                 // Стак предмета в руке
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
 
-                bool isAnimationPrev = false;
                 _isStopAction = false;
-
-                if (!_blankShotAction)
-                {
-                    isAnimationPrev = true;
-                    if (_ActionAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Action повторение после други действий
-                    }
-                }
 
                 PendingKindAction kind = PendingKindAction.None;
                 int delay = 0;
@@ -382,7 +364,8 @@ namespace Vge.Entity.Player
                     if (resultAction.Action == ResultHandAction.ActionType.None)
                     {
                         // Нет действий с предметом
-                        _blankShotAction = true;
+                        //Console.WriteLine("Нет действий c предметом");
+                        _pauseAction = 0;
                     }
                     else
                     {
@@ -396,9 +379,9 @@ namespace Vge.Entity.Player
                         kind = PendingKindAction.Item;
                         // Момент удара в анимации предмета, в тактах
                         delay = resultAction.HitDelay;
+                        _pauseAction = resultAction.Pause;
+                        if (_pauseAction == -1) _pauseAction = PauseNotItem;
                     }
-                    _pauseAction = resultAction.Pause;
-                    //Console.Write(_pauseAction + " ");
                 }
                 else if (moving.IsBlock())
                 {
@@ -414,8 +397,7 @@ namespace Vge.Entity.Player
                     else
                     {
                         //Console.WriteLine("Нет действий без предмета [block]");
-                        _pauseAction = -1; // Но тут если не begin нет анимации
-                        _blankShotAction = true;
+                        _pauseAction = 0;
                     }
                 }
                 else if (moving.IsEntity())
@@ -429,16 +411,16 @@ namespace Vge.Entity.Player
                 {
                     // Нет действий без предмета
                     //Console.WriteLine("Нет действий без предмета [null]");
-                    _pauseAction = -1;
-                    _blankShotAction = true;
+                    _pauseAction = 0;
                 }
 
                 if (kind != PendingKindAction.None)
                 {
-                    if (!isAnimationPrev && _ActionAnimationRight(itemStack, moving))
+                    //Console.WriteLine("Action kind");
+                    if (_ActionAnimationRight(itemStack, moving))
                     {
                         // Отправить анимацию
-                        _SendPlayerAnimation(); // Action первый раз
+                        _SendPlayerAnimation(); // Action kind
                     }
 
                     _pendingKindAction = kind;
@@ -450,18 +432,17 @@ namespace Vge.Entity.Player
                         _ExecutePendingAction();
                     }
                 }
+                else if (begin)
+                {
+                    //Console.WriteLine("Action begin");
+                    if (_ActionAnimationRight(itemStack, moving))
+                    {
+                        // Отправить анимацию
+                        _SendPlayerAnimation(); // Action begin
+                    }
+                }
                 //Console.WriteLine(_pauseAction);
             }
-            else if (_pauseAction > 0)
-            {
-                _pauseAction--;
-            }
-
-            if (_pauseAction == -1)
-            {
-                _pauseAction = _blankShotAction ? 0 : 10;
-            }
-            //Console.WriteLine(_pauseAction);
         }
 
         /// <summary>
@@ -558,6 +539,7 @@ namespace Vge.Entity.Player
         /// </summary>
         protected virtual void _ActionEnd()
         {
+            //Console.WriteLine("--");
             if (_isStopAction)
             {
                 // Замах прерван
@@ -572,41 +554,20 @@ namespace Vge.Entity.Player
         {
             if (_player.IsSpectator()) return;
 
-            if (begin)
-            {
-                _pauseSecond = 0;
-                _blankShotSecond = false;
-            }
+            if (begin && _pauseSecond < 0) _pauseSecond = 0;
 
             // Новый замах только после паузы и когда прошлый юз уже состоялся
-            if (_pauseSecond == 0)
+            if (_pauseSecond == 0 && _pendingKindSecond == PendingKindSecond.None)
             {
                 //Console.WriteLine("_Second " + begin);
                 MovingObjectPosition moving = _player.MovingObject;
                 // Стак предмета в руке
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
 
-                bool isAnimationPrev = false;
-
-                //_flagBeginUseSecond = false;
-                
-
-                if (!_blankShotSecond)
-                {
-                    isAnimationPrev = true;
-                    if (_SecondAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Second повторение после други действий
-                    }
-                }
-
-                //_blankShotSecond = false;
-
                 PendingKindSecond kind = PendingKindSecond.None;
                 int delay = SecondDelay;
                 ResultHandSecond resultSecond = default;
-
+                _flagUseSecondEnd = false;
                 if (!_player.IsKeyShift() && moving.IsBlock() && moving.Block.GetBlock().OnBlockActivated(
                     _player, moving.BlockPosition, moving.Side, moving.Facing))
                 {
@@ -620,50 +581,49 @@ namespace Vge.Entity.Player
                         itemStack, _player, _counterSecond);
                     if (resultSecond.Action == ResultHandSecond.ActionType.None)
                     {
-                        // Нет действия с предметом
-                        _blankShotSecond = true;
                         // Нет вспомогательного действий с предметом
                         //Console.WriteLine("Нет вспомогательного действий с предметом");
-                        _pauseSecond = PauseUseItem;
+                        _pauseSecond = resultSecond.Pause == -1 ? PauseUseItem : resultSecond.Pause;
                     }
                     else
                     {
                         kind = PendingKindSecond.Item;
+
+                        _flagUseSecondEnd = resultSecond.UseEnd;
                         // Момент удара в анимации предмета, в тактах
                         if (resultSecond.UseDelay != -1) delay = resultSecond.UseDelay;
                         _pauseSecond = resultSecond.Pause;
-                        //Console.WriteLine("Item " + resultSecond.Action + " P:" + _pauseSecond + " d:" + delay);
+                        //Console.WriteLine("OnSecond " + resultSecond.Action + " P:" + _pauseSecond + " d:" + delay);
                     }
                 }
                 else if (moving.IsBlock())
                 {
-                    //OnBlockActivated
-                    // Клик ПКМ на блок без предмета
+                    // Клик ПКМ на блок без предмета OnBlockActivated
                     kind = PendingKindSecond.UseHandBlock;
+                    _pauseSecond = -1;
                     //Console.WriteLine("Click RightMouse");
-                    _pauseSecond = -1;// PauseNotItem;
                 }
                 else if (moving.IsEntity())
                 {
                     // Взаимодействие на сущность, без предмета
                     kind = PendingKindSecond.UseHandEntity;
-                    //Console.WriteLine("Interact");
                     _pauseSecond = -1;
+                    //Console.WriteLine("Interact");
                 }
                 else
                 {
                     // Нет вспомогательного действий без предмета
-                    //Console.WriteLine("Нет вспомогательного действий без предмета!!!");
-                    _blankShotSecond = true;
                     _pauseSecond = -1;
+                    //Console.WriteLine("Нет вспомогательного действий без предмета!!!");
                 }
 
                 if (kind != PendingKindSecond.None)
                 {
-                    if (!isAnimationPrev && _SecondAnimationRight(itemStack, moving))
+                    //Console.WriteLine("Second kind");
+                    if (_SecondAnimationRight(itemStack, moving))
                     {
                         // Отправить анимацию
-                        _SendPlayerAnimation(); // Second начало
+                        _SendPlayerAnimation(); // Second kind
                     }
 
                     _pendingKindSecond = kind;
@@ -675,10 +635,15 @@ namespace Vge.Entity.Player
                         _ExecutePendingSecond();
                     }
                 }
-            }
-            else if (_pauseSecond > 0)
-            {
-                _pauseSecond--;
+                else if (begin || resultSecond.Animation)
+                {
+                    //Console.WriteLine("Second begin");
+                    if (_SecondAnimationRight(itemStack, moving))
+                    {
+                        // Отправить анимацию
+                        _SendPlayerAnimation(); // Second begin
+                    }
+                }
             }
         }
 
@@ -735,7 +700,6 @@ namespace Vge.Entity.Player
                         case ResultHandSecond.ActionType.UseItem:
                             // Взаимодействия предмета, ПКМ без блока
                             //Console.WriteLine("UseItem2");
-                            _flagBeginUseSecond = true;
                             _game.TrancivePacket(new PacketC05UseItem(resultSecond.Number));
                             break;
                     }
@@ -770,9 +734,8 @@ namespace Vge.Entity.Player
         protected virtual void _SecondEnd()
         {
             if (_player.IsSpectator()) return;
-            if (_flagBeginUseSecond)
+            if (_flagUseSecondEnd)
             {
-                _flagBeginUseSecond = false;
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
                 if (itemStack != null)
                 {

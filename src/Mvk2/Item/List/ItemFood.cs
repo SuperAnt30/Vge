@@ -29,7 +29,10 @@ namespace Mvk2.Item.List
             if (begin)
             {
                 // Начинаем кушать и подаём паузу
-                return new ResultHandSecond(step, 0);
+                return new ResultHandSecond(step, 0)
+                {
+                    UseEnd = true
+                };
             }
             // Время прошла мы одну единицу съели, и продолжаем кушать
             // Тут надо уменьшить голод у перса на клиенте
@@ -37,7 +40,10 @@ namespace Mvk2.Item.List
             {
                 player.Inventory.DecrCurrentItem(1);
             }
-            return new ResultHandSecond(step, 2);
+            return new ResultHandSecond(step, 2)
+            {
+                UseEnd = true
+            };
         }
 
         /// <summary>

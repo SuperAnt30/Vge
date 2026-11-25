@@ -23,7 +23,7 @@ namespace Mvk2.Item.List.Blocks
         /// <summary>
         /// Какая фартуна поджёга, 0-1.0, где 0 не загорится, 1 загорится
         /// </summary>
-        public float Fartune { get; private set; } = 1.0f;
+        public float Fartune { get; private set; } = .3f;
         /// <summary>
         /// Пауза между ударами в тактах
         /// </summary>
@@ -53,18 +53,22 @@ namespace Mvk2.Item.List.Blocks
         /// <summary>
         /// Не удачная установка блока
         /// </summary>
-        protected override ResultHandSecond _ResultHandSecondNone(PlayerClientOwner player)
+        protected override ResultHandSecond _ResultHandSecondNone()
         {
-            player.PlaySampleNotCanPlacement();
-            return new ResultHandSecond(Pause, 0);
+            return new ResultHandSecond(ResultHandSecond.ActionType.None, Pause)
+            {
+                Animation = true
+            };
         }
 
         /// <summary>
         /// Дополнительная проверка на moving, чтоб сократить последующие проверки
         /// </summary>
-        protected override bool _CheckMoving(MovingObjectPosition moving, PlayerClientOwner player)
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
+        protected override bool _CheckMoving(bool preview, MovingObjectPosition moving, PlayerClientOwner player)
         {
-            return moving.IsBlock() && Lit(player);
+            if (preview) return moving.IsBlock() && Lit(player);
+            return moving.IsBlock();
         }
 
         /// <summary>

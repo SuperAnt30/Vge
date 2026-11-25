@@ -29,6 +29,14 @@
         /// Пауза задержки до взаимодейстыия, для анимации
         /// </summary>
         public int UseDelay;
+        /// <summary>
+        /// Используем OnSecondEnd
+        /// </summary>
+        public bool UseEnd;
+        /// <summary>
+        /// Принудительная анимация, даже если сработал отказ
+        /// </summary>
+        public bool Animation;
 
         /// <summary>
         /// Указать действие и паузу до след действия
@@ -40,7 +48,9 @@
             Action = action;
             Replaceable = false;
             IsLiquid = false;
+            UseEnd = false;
             UseDelay = -1;
+            Animation = false;
         }
 
         /// <summary>
@@ -53,7 +63,9 @@
             Action = ActionType.BlockPlacement;
             Replaceable = replaceable;
             IsLiquid = false;
+            UseEnd = false;
             UseDelay = -1;
+            Animation = false;
         }
 
         /// <summary>
@@ -66,7 +78,9 @@
             Action = ActionType.UseItem;
             Replaceable = false;
             IsLiquid = false;
+            UseEnd = false;
             UseDelay = -1;
+            Animation = false;
         }
 
         /// <summary>
@@ -79,7 +93,9 @@
             Action = action;
             Replaceable = true;
             IsLiquid = isLiquid;
+            UseEnd = false;
             UseDelay = -1;
+            Animation = false;
         }
 
         public enum ActionType

@@ -27,6 +27,9 @@ namespace Mvk2.Item.List.Blocks
         /// </summary>
         private readonly float _biasTexture;
 
+        /// <summary>
+        /// Флаг начального действия, чтоб заблочить растекания если начали собирать воду
+        /// </summary>
         private bool _flagBegin;
 
         /// <param name="full">Установка полного блока</param>
@@ -195,8 +198,7 @@ namespace Mvk2.Item.List.Blocks
                 //    Console.Write((world.IsRemote ? "C" : "S") + " !Water No");
                 //}
                 //Console.WriteLine("flagBegin " + _flagBegin);
-                if (!_flagBegin)
-                if (base.OnItemOnBlockPlacement(preview,stack, player, blockPos, side, facing, flagReplaceable, playerYaw))
+                if (!_flagBegin && base.OnItemOnBlockPlacement(preview, stack, player, blockPos, side, facing, flagReplaceable, playerYaw))
                 {
                     if (!preview && !player.CreativeMode)
                     {

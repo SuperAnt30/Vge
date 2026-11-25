@@ -39,7 +39,7 @@ namespace Vge.Item.List
             }
 
             MovingObjectPosition moving = player.MovingObject;
-            if (_CheckMoving(moving, player))
+            if (_CheckMoving(preview, moving, player))
             {
                 if (OnItemOnBlockPlacement(preview, stack, player, moving.BlockPosition, moving.Side, 
                     moving.Facing, true, player.RotationYaw))
@@ -51,22 +51,31 @@ namespace Vge.Item.List
                 }
             }
 
-            return _ResultHandSecondNone(player);
+            if (preview) _PlaySampleNotCanPlacement(player);
+            return _ResultHandSecondNone();
         }
 
         /// <summary>
         /// Не удачная установка блока
         /// </summary>
-        protected virtual ResultHandSecond _ResultHandSecondNone(PlayerClientOwner player)
+        protected virtual ResultHandSecond _ResultHandSecondNone()
+        {
+            return new ResultHandSecond(ResultHandSecond.ActionType.None);
+        }
+
+        /// <summary>
+        /// Проиграть семпл, не может установить предмет
+        /// </summary>
+        protected virtual void _PlaySampleNotCanPlacement(PlayerClientOwner player)
         {
             player.PlaySampleNotCanPlacement();
-            return new ResultHandSecond(ResultHandSecond.ActionType.None);
         }
 
         /// <summary>
         /// Дополнительная проверка на moving, чтоб сократить последующие проверки
         /// </summary>
-        protected virtual bool _CheckMoving(MovingObjectPosition moving, PlayerClientOwner player)
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
+        protected virtual bool _CheckMoving(bool preview, MovingObjectPosition moving, PlayerClientOwner player)
             => moving.IsBlock();
 
         /// <summary>
@@ -77,7 +86,7 @@ namespace Vge.Item.List
 
         /// <summary>
         /// Задержка до установки блока.
-        /// По умолчанию HandManager.DelayPlacement = 2
+        /// По умолчанию HandManager.SecondDelay = 2
         /// </summary>
         protected virtual int _DelayPlacement() => HandManager.SecondDelay;
 

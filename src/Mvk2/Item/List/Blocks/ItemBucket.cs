@@ -48,30 +48,33 @@ namespace Mvk2.Item.List.Blocks
                 return result;
             }
 
-            MovingObjectPosition moving = player.MovingObject;
-            if (moving.IsLiquid)
+            if (begin)
             {
-                if (OnItemOnBlockPlacement(preview, stack, player, moving.BlockLiquidPosition, moving.Side,
-                    moving.Facing, true, player.RotationYaw))
+                MovingObjectPosition moving = player.MovingObject;
+                if (moving.IsLiquid)
                 {
-                    return new ResultHandSecond(HandManager.PauseUseItem, true)
+                    if (OnItemOnBlockPlacement(preview, stack, player, moving.BlockLiquidPosition, moving.Side,
+                        moving.Facing, true, player.RotationYaw))
                     {
-                        IsLiquid = true,
-                        UseDelay = HandManager.SecondDelay
-                    };
+                        return new ResultHandSecond(HandManager.PauseUseItem, true)
+                        {
+                            IsLiquid = true,
+                            UseDelay = HandManager.SecondDelay
+                        };
+                    }
                 }
-            }
-            else if (moving.IsBlock())
-            {
-                // Надо проверить наличие воды
-                if (moving.Block.GetBlock().IsAddLiquid(moving.Block.Met)
-                    && OnItemOnBlockPlacement(preview, stack, player, moving.BlockPosition, moving.Side,
-                    moving.Facing, true, player.RotationYaw))
+                else if (moving.IsBlock())
                 {
-                    return new ResultHandSecond(HandManager.PauseUseItem, true)
+                    // Надо проверить наличие воды
+                    if (moving.Block.GetBlock().IsAddLiquid(moving.Block.Met)
+                        && OnItemOnBlockPlacement(preview, stack, player, moving.BlockPosition, moving.Side,
+                        moving.Facing, true, player.RotationYaw))
                     {
-                        UseDelay = HandManager.SecondDelay
-                    };
+                        return new ResultHandSecond(HandManager.PauseUseItem, true)
+                        {
+                            UseDelay = HandManager.SecondDelay
+                        };
+                    }
                 }
             }
 
@@ -116,28 +119,25 @@ namespace Mvk2.Item.List.Blocks
 
                 //  Console.WriteLine((world.IsRemote ? "C" : "S") + " Water " + water);
 
-                if (!player.CreativeMode)
+                if (!player.CreativeMode && stack != null)
                 {
-                    if (stack != null) // по сути пустоты не должно быть!
+                    ItemLiquid item = BlocksRegMvk.Lava.IndexBlock == idBlockLiquid
+                        ? ItemsRegMvk.BucketLava : ItemsRegMvk.BucketWater;
+
+                    ItemStack stackLiquit = new ItemStack(item, 1,
+                        stack.ItemDamaged, (byte)water);
+                    //stack.DamageItemTool(player, water, true);
+
+                    if (stack.Amount > 1)
                     {
-                        ItemLiquid item = BlocksRegMvk.Lava.IndexBlock == idBlockLiquid
-                            ? ItemsRegMvk.BucketLava : ItemsRegMvk.BucketWater;
-
-                        ItemStack stackLiquit = new ItemStack(item, 1,
-                            stack.ItemDamaged, (byte)water);
-                        //stack.DamageItemTool(player, water, true);
-
-                        if (stack.Amount > 1)
-                        {
-                            // Много ведёр, будет добавлять
-                            player.Inventory.DecrCurrentItem(1);
-                            player.AddItemStackToInventory(stackLiquit);
-                        }
-                        else
-                        {
-                            // Одно ведро меняем этот же стак
-                            player.Inventory.SetCurrentItem(stackLiquit);
-                        }
+                        // Много ведёр, будет добавлять
+                        player.Inventory.DecrCurrentItem(1);
+                        player.AddItemStackToInventory(stackLiquit);
+                    }
+                    else
+                    {
+                        // Одно ведро меняем этот же стак
+                        player.Inventory.SetCurrentItem(stackLiquit);
                     }
                 }
                 world.SetLiquidBlockToAir(blockPos);

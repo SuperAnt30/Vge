@@ -25,7 +25,8 @@ namespace Mvk2.Item.List.Blocks
         /// <summary>
         /// Дополнительная проверка на moving, чтоб сократить последующие проверки
         /// </summary>
-        protected override bool _CheckMoving(MovingObjectPosition moving, PlayerClientOwner player)
+        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
+        protected override bool _CheckMoving(bool preview, MovingObjectPosition moving, PlayerClientOwner player)
             => moving.IsBlock() && moving.Side == Pole.Up;
 
         /// <summary>

@@ -53,7 +53,11 @@ namespace Mvk2.Item.List
                 //Console.WriteLine(counter);
                 //if (counter > 20) counter = 20;
                 // Пауза нужна для анимации
-                return new ResultHandSecond(-1, 0);
+                return new ResultHandSecond(-1, 0)
+                {
+                    UseEnd = true
+                };
+
             }
             return result;
         }
