@@ -1,5 +1,6 @@
 {
     Hardness: 4,
+    Slipperiness: 0.989,
     ParticleColors: [ "D9C09D", "C1AC8C", "CCB493" ],
     Variants: [ { Shape: "Sand" } ]
 }

@@ -68,6 +68,8 @@ namespace Vge.Item
         /// </summary>
         public ItemRenderBuffer Buffer { get; protected set; }
 
+        #region Animation
+
         /// <summary>
         /// Название анимации держать, если не указана, то будет по умолчанию 
         /// </summary>
@@ -76,6 +78,18 @@ namespace Vge.Item
         /// Название анимации действия предмета, если не указана, то будет по умолчанию 
         /// </summary>
         public string Action { get; protected set; } = "";
+        /// <summary>
+        /// Название анимации вспомогательного действия предмета, если не указана, то будет Action 
+        /// </summary>
+        public string Second { get; protected set; } = "";
+        /// <summary>
+        /// Название анимации вспомогательного действия предмета взмаха, если не указана, то будет ""
+        /// </summary>
+        public string SecondSwing { get; protected set; } = "";
+        /// <summary>
+        /// Имеется ли взмах для вспомогательного действия
+        /// </summary>
+        public bool IsSwing { get; protected set; } = false;
         /// <summary>
         /// Предмет держим двумя руками
         /// </summary>
@@ -88,6 +102,9 @@ namespace Vge.Item
         /// Коэффициент ускорения анимации для удара 0 - 1
         /// </summary>
         public float HitSpeed { get; protected set; } = 1f;
+
+        #endregion
+
         /// <summary>
         /// Группа предметов, образно все виды топоров, если 0, нет группы
         /// </summary>
@@ -394,10 +411,15 @@ namespace Vge.Item
                         else if (json.IsKey(Cti.Rebound)) Rebound = json.GetFloat();
                         else if (json.IsKey(Cti.Hold)) Hold = json.GetString();
                         else if (json.IsKey(Cti.Action)) Action = json.GetString();
+                        else if (json.IsKey(Cti.Second)) Second = json.GetString();
+                        else if (json.IsKey(Cti.SecondSwing)) SecondSwing = json.GetString();
                         else if (json.IsKey(Cti.Two)) Two = json.GetBool();
                         else if (json.IsKey(Cti.HitSpeed)) HitSpeed = json.GetFloat();
                         else if (json.IsKey(Cti.HitDelay)) HitDelay = json.GetInt();
                     }
+
+                    if (Second == "") Second = Action;
+                    IsSwing = SecondSwing != "";
                 }
                 catch
                 {

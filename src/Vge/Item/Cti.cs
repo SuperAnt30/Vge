@@ -99,6 +99,14 @@
         /// </summary>
         public const string Action = "Action";
         /// <summary>
+        /// Имя анимации вспомогательного действия предмета. (string)
+        /// </summary>
+        public const string Second = "Second";
+        /// <summary>
+        /// Название анимации вспомогательного действия предмета взмаха. (string)
+        /// </summary>
+        public const string SecondSwing = "SecondSwing";
+        /// <summary>
         /// Предмет держим двумя руками. (bool)
         /// </summary>
         public const string Two = "Two";

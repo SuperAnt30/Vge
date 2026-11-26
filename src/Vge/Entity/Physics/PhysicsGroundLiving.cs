@@ -61,8 +61,6 @@ namespace Vge.Entity.Physics
         //    }
         //}
 
-
-
         /// <summary>
         /// Проверяем наличие прыжка для живой сущности
         /// </summary>

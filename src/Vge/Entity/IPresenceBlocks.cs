@@ -61,6 +61,13 @@ namespace Vge.Entity
         /// Ускорение спуска взбираться 3,0 (майнкрафт)
         /// </summary> 
         float AccelerationDownClimb { get; }
+        /// <summary>
+        /// Скользкость блока по которому идём
+        /// 0.6 стандартная
+        /// 0.8 медленее, типа по песку
+        /// 0.98 по льду, скользко
+        /// </summary>
+        float Slipperiness { get; }
 
         /// <summary>
         /// Имеются ли замедления

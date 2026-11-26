@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Vge.Entity;
 using Vge.Entity.Particle;
+using Vge.Entity.Physics;
 using Vge.Entity.Player;
 using Vge.Json;
 using Vge.Realms;
@@ -239,15 +240,18 @@ namespace Vge.World.Block
         public float Resistance { get; private set; }
         /// <summary>
         /// Скользкость
-        /// 0.6 стандартная
-        /// 0.8 медленее, типа по песку
-        /// 0.98 по льду, скользко
+        /// f = slipperiness * 0.91
+        /// t = теряется за тик	/ тиков до остановки
+        /// 0.6 обычная     f=0.546 t=45% / 2.2
+        /// 0.8 слизь       f=0.728 t=27% / 3.7
+        /// 0.98 лёд        f=0.892 t=11% / 9.2
+        /// 0.989 синий лёд f=0.900 t=10% / 10
         /// </summary>
-        public float Slipperiness { get; private set; } = .6f;
+        public float Slipperiness { get; private set; } = Cp.DefaultSlipperiness;
         /// <summary>
         /// Горючесть материала
         /// </summary>
-        public bool Combustibility { get; private set; } = false;
+        public bool Combustibility { get; private set; }
         /// <summary>
         /// Увеличить шансы загорания 0-100 %
         /// 100 мгновенно загарается без рандома
@@ -374,8 +378,13 @@ namespace Vge.World.Block
                         FactorSlowY = ar[1];
                     }
                     if (json.IsKey(Ctb.LiquidImpulse)) LiquidImpulse = json.GetFloat();
-                    if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.Passable)) Passable = json.GetBool();
+                    if (json.IsKey(Ctb.Resistance)) Resistance = json.GetFloat();
+                    if (json.IsKey(Ctb.Slipperiness)) Slipperiness = json.GetFloat();
+                    if (json.IsKey(Ctb.Combustibility)) Combustibility = json.GetBool();
+                    if (json.IsKey(Ctb.IgniteOddsSunbathing)) IgniteOddsSunbathing = (byte)json.GetInt();
+                    if (json.IsKey(Ctb.BurnOdds)) BurnOdds = (byte)json.GetInt();
+                    if (json.IsKey(Ctb.Hardness)) Hardness = json.GetInt();
                     if (json.IsKey(Ctb.IsReplaceable)) IsReplaceable = json.GetBool();
                     if (json.IsKey(Ctb.ParticleCount)) ParticleCount = (byte)json.GetInt();
                     if (json.IsKey(Ctb.Color))
@@ -770,13 +779,11 @@ namespace Vge.World.Block
         /// <summary>
         /// Обязательный случайный эффект частички и/или звука на блоке только для клиента
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void RequiredRandomDisplayTick(WorldClient world, BlockPos blockPos, BlockState blockState) { }
 
         /// <summary>
         /// Случайный эффект блока, для сервера
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void RandomTick(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState blockState, Rand random)
             => UpdateTick(world, chunk, blockPos, blockState, random);
@@ -807,8 +814,8 @@ namespace Vge.World.Block
         /// <summary> 
         /// Проверка установка блока, можно ли его установить тут
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual bool CanBlockStay(WorldBase world, ChunkBase chunk, BlockPos blockPos, int met = 0) => true;
+        public virtual bool CanBlockStay(WorldBase world, ChunkBase chunk, 
+            BlockPos blockPos, int met = 0) => true;
 
         /// <summary>
         /// Действие перед размещеннием блока, для определения метданных

@@ -199,6 +199,16 @@
                 Chest: 50
             }
         },
+        {
+            Code: "SecondSwing",
+            Animation: "SecondSwing",
+            AnimationSpeed: 2.0,
+            ElementWeight: {
+                ArmRight: 80,
+                ForearmRight: 80,
+                Chest: 50
+            }
+        },
 
     ]
 }

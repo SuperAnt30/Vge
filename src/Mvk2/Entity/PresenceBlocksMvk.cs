@@ -77,6 +77,17 @@ namespace Mvk2.Entity
         public float AccelerationDownClimb { get; private set; } = -.1145f;
 
         /// <summary>
+        /// Скользкость
+        /// f = slipperiness * 0.91
+        /// t = теряется за тик	/ тиков до остановки
+        /// 0.6 обычная     f=0.546 t=45% / 2.2
+        /// 0.8 слизь       f=0.728 t=27% / 3.7
+        /// 0.98 лёд        f=0.892 t=11% / 9.2
+        /// 0.989 синий лёд f=0.900 t=10% / 10
+        /// </summary>
+        public float Slipperiness { get; private set; } = Cp.DefaultSlipperiness;
+
+        /// <summary>
         /// Имеются ли замедления
         /// </summary>
         public bool IsSlow { get; private set; }
@@ -181,6 +192,9 @@ namespace Mvk2.Entity
                 _CheckBlock(world, blockPos, world.GetBlockState(blockPos));
                 IsJumpLiquid = IsSurface = IsInLiquid;
             }
+
+            Slipperiness = world.GetBlockState(new BlockPos(
+                    Entity.PosX, Entity.PosY - .5f, Entity.PosZ)).GetBlock().Slipperiness;
         }
 
         private void _EmptyBlocks()

@@ -192,7 +192,7 @@ namespace Mvk2.World.Block.List
         {
             BlockState blockState = world.GetBlockState(blockPos);
             BlockBase block = blockState.GetBlock();
-            return block.Combustibility && block.IsNotTransparent && block.FullBlock;
+            return block.Combustibility;// && block.IsNotTransparent && block.FullBlock;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

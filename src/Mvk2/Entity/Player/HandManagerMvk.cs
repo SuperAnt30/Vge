@@ -1,12 +1,10 @@
 ﻿using Mvk2.Entity.List;
 using Mvk2.Item.List.Tools;
-using System;
 using System.Runtime.CompilerServices;
 using Vge.Entity.Player;
 using Vge.Games;
 using Vge.Item;
 using Vge.Network.Packets.Client;
-using Vge.Util;
 
 namespace Mvk2.Entity.Player
 {
@@ -16,6 +14,15 @@ namespace Mvk2.Entity.Player
     /// </summary>
     public class HandManagerMvk : HandManager
     {
+        /// <summary>
+        /// Если не указана анимация на активное действие, будет этот клип
+        /// </summary>
+        private const string _actionDefault = "ActionAxe";
+        /// <summary>
+        /// Если не указана анимация на дополнительна действие, будет этот клип
+        /// </summary>
+        private const string _secondDefault = "ActionAxe";
+
         private readonly PlayerClientOwnerMvk _playerMvk;
 
         /// <summary>
@@ -49,7 +56,7 @@ namespace Mvk2.Entity.Player
             }
             else
             {
-                _player.Render.SetAnimationCodeAdd("ActionAxe", itemStack.Item.HitSpeed);
+                _player.Render.SetAnimationCodeAdd(_actionDefault, itemStack.Item.HitSpeed);
             }
 
             _SendPlayerAnimation();
@@ -76,18 +83,18 @@ namespace Mvk2.Entity.Player
             {
                 _player.Render.SetAnimationCodeAdd("AttackRight");
             }
-            else if (_CheckAxis(itemStack))
+            else if (itemStack.Item.IsSwing)
             {
-                _clipSwing = "HoldTwo";
+                _clipSwing = itemStack.Item.SecondSwing;
                 _player.Render.SetAnimationCodeAdd(_clipSwing, itemStack.Item.HitSpeed);
             }
-            else if (itemStack.Item.Action != "")
+            else if (itemStack.Item.Second != "")
             {
-                _player.Render.SetAnimationCodeAdd(itemStack.Item.Action, itemStack.Item.HitSpeed);
+                _player.Render.SetAnimationCodeAdd(itemStack.Item.Second, itemStack.Item.HitSpeed);
             }
             else
             {
-                _player.Render.SetAnimationCodeAdd("ActionAxe", itemStack.Item.HitSpeed);
+                _player.Render.SetAnimationCodeAdd(_secondDefault, itemStack.Item.HitSpeed);
             }
 
             _SendPlayerAnimation();
@@ -105,7 +112,8 @@ namespace Mvk2.Entity.Player
                 _SendPlayerAnimationStoping();
                 _clipSwing = "";
 
-                _player.Render.SetAnimationCodeAdd("AttackRight");
+                _player.Render.SetAnimationCodeAdd(itemStack.Item.Second != "" 
+                    ? itemStack.Item.Second : _secondDefault, itemStack.Item.HitSpeed);
                 _SendPlayerAnimation();
             }
         }

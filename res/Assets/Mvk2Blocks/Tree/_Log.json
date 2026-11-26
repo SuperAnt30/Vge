@@ -1,5 +1,6 @@
 {
     NeedsRandomTick: true,
     IsDestorySecond: true,
+    Combustibility: true,
     Hardness: 16
 }

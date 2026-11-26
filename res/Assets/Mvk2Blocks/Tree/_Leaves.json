@@ -4,5 +4,6 @@
     LightOpacity: 2,
     NoCollision: true,
     Translucent: true,
-    NeedsRandomTick: true
+    NeedsRandomTick: true,
+    Combustibility: true
 }

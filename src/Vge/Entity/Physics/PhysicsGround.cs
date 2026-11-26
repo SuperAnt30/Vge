@@ -127,7 +127,7 @@ namespace Vge.Entity.Physics
                 //= Находимся в воздухе на твёрдой поверхности
 
                 // трение блока под ногами
-                inertiaXZ = _airborneInertia * Cp.DefaultSlipperiness; // блок под ногами
+                inertiaXZ = _airborneInertia * Entity.PresenceBlocks.Slipperiness; // блок под ногами
 
                 // Если имеется сила для движения, тогда корректируем наличие скорости
                 float speed = _LivingUpdateSpeed();
@@ -242,8 +242,6 @@ namespace Vge.Entity.Physics
             MotionY *= inertiaY;
             MotionZ *= inertiaXZ;
         }
-
-        
 
         /// <summary>
         /// Фиксация возможен ли авто прыжок
