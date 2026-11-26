@@ -26,11 +26,11 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Задержка активного действия (ЛКМ), в тактах (момент удара в анимации руки)
         /// </summary>
-        public static int ActionDelay = 2;
+        public static int ActionDelay = 1;
         /// <summary>
         /// Задержка вспомогательного действия (ПКМ), в тактах (момент взаимодействия в анимации руки)
         /// </summary>
-        public static int SecondDelay = 2;
+        public static int SecondDelay = 1;
 
         /// <summary>
         /// Импульс отскока при атаке на XZ
@@ -45,7 +45,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Класс игры
         /// </summary>
-        private readonly GameBase _game;
+        protected readonly GameBase _game;
 
         /// <summary>
         /// Пауза для активного действия (ЛКМ)
@@ -299,29 +299,19 @@ namespace Vge.Entity.Player
         /// Активное действие анимации правой руки
         /// </summary>
         /// <param name="itemStack">Предмет которым делаю действие</param>
-        /// <param name="moving">Выбранный объект</param>
-        protected virtual bool _ActionAnimationRight(ItemStack itemStack, 
-            MovingObjectPosition moving) => false;
+        protected virtual void _ActionAnimationRight(ItemStack itemStack) { }
 
         /// <summary>
         /// Вспомогательное действие анимации правой руки
         /// </summary>
         /// <param name="itemStack">Предмет которым делаю действие</param>
-        /// <param name="moving">Выбранный объект</param>
-        protected virtual bool _SecondAnimationRight(ItemStack itemStack,
-            MovingObjectPosition moving) => false;
+        protected virtual void _SecondAnimationRight(ItemStack itemStack) { }
 
         /// <summary>
-        /// Отправить анимацию на сервер
+        /// Вспомогательное действие анимации правой руки в момент окончании
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SendPlayerAnimation()
-        {
-            _game.TrancivePacket(new PacketC0APlayerAnimation(
-                _player.Render.AnimationCodeAdd,
-                PacketC0APlayerAnimation.EnumAction.CodeAdd,
-                _player.Render.SpeedAnimationCodeAdd));
-        }
+        /// <param name="itemStack">Предмет которым делаю действие</param>
+        protected virtual void _SecondAnimationRightEnd(ItemStack itemStack) { }
 
         /// <summary>
         /// Получить индекс предмета, если предмета нет, вернёт -1
@@ -375,12 +365,13 @@ namespace Vge.Entity.Player
                             if (!begin) _isStopAction = true;
                         }
                         
-                        //Console.WriteLine("OnAction " + resultAction.Action + " begin:" + begin);
+                        
                         kind = PendingKindAction.Item;
                         // Момент удара в анимации предмета, в тактах
                         delay = resultAction.HitDelay;
                         _pauseAction = resultAction.Pause;
                         if (_pauseAction == -1) _pauseAction = PauseNotItem;
+                        //Console.WriteLine("OnAction " + resultAction.Action + " begin:" + begin + " d:" + delay);
                     }
                 }
                 else if (moving.IsBlock())
@@ -417,11 +408,7 @@ namespace Vge.Entity.Player
                 if (kind != PendingKindAction.None)
                 {
                     //Console.WriteLine("Action kind");
-                    if (_ActionAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Action kind
-                    }
+                    _ActionAnimationRight(itemStack); // Action kind
 
                     _pendingKindAction = kind;
                     _pendingAction = new Pending(delay, 
@@ -435,11 +422,7 @@ namespace Vge.Entity.Player
                 else if (begin)
                 {
                     //Console.WriteLine("Action begin");
-                    if (_ActionAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Action begin
-                    }
+                    _ActionAnimationRight(itemStack); // Action begin
                 }
                 //Console.WriteLine(_pauseAction);
             }
@@ -620,11 +603,7 @@ namespace Vge.Entity.Player
                 if (kind != PendingKindSecond.None)
                 {
                     //Console.WriteLine("Second kind");
-                    if (_SecondAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Second kind
-                    }
+                    _SecondAnimationRight(itemStack); // Second kind
 
                     _pendingKindSecond = kind;
                     _pendingSecond = new Pending(delay,
@@ -638,11 +617,7 @@ namespace Vge.Entity.Player
                 else if (begin || resultSecond.Animation)
                 {
                     //Console.WriteLine("Second begin");
-                    if (_SecondAnimationRight(itemStack, moving))
-                    {
-                        // Отправить анимацию
-                        _SendPlayerAnimation(); // Second begin
-                    }
+                    _SecondAnimationRight(itemStack); // Second begin
                 }
             }
         }
@@ -745,8 +720,10 @@ namespace Vge.Entity.Player
                     {
                         _game.TrancivePacket(new PacketC05UseItem(number));
                     }
+                    //Console.WriteLine("Second kind");
                 }
             }
+            _SecondAnimationRightEnd(_player.Inventory.GetCurrentItem()); // Second End
         }
 
         /// <summary>

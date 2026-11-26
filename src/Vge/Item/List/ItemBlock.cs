@@ -119,7 +119,10 @@ namespace Vge.Item.List
                    CreateBlockState(stack), side, facing, playerYaw);
                 if (Block.CanBlockStay(world, null, blockPos, blockState.Met))
                 {
-                    if (preview) return true;
+                    if (preview)
+                    {
+                        return _CanPlaceBlockPreview(player);
+                    }
                     // Далее уже попытка установить блок(и)
                     BlockState blockStateOld = world.GetBlockState(blockPos);
                     if (world.SetBlockState(blockPos, blockState, BlockFlag.cParticle))
@@ -149,6 +152,12 @@ namespace Vge.Item.List
             }
             return false;
         }
+
+        /// <summary>
+        /// Прошла проверку возможности установить блок в превью.
+        /// Только клиент, так как превью у него только.
+        /// </summary>
+        protected virtual bool _CanPlaceBlockPreview(PlayerBase player) => true;
 
         /// <summary>
         /// Уменьшить количество предметом в текущей руке

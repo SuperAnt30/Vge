@@ -23,6 +23,7 @@ namespace Mvk2.Entity.Particle
         {
             base._Init(parameter);
             _maxAge = 20 + _rand.Next(60);
+            _noClip = true;
         }
 
         /// <summary>
@@ -60,16 +61,33 @@ namespace Mvk2.Entity.Particle
             Uv = new Vector4(0, .03125f, .03125f, .0625f);
         }
 
-        protected override void _Update()
+        //protected override void _Update()
+        //{
+        //    Scale = _flameScale * (1 + (Glm.Cos(_age * .2f) + 2f) * .16f);// .32f);
+
+        //    float v = _age * 16 / _maxAge * .03125f;
+        //    Uv = new Vector4(v, .03125f, v + .03125f, .0625f);
+
+        //    //int i = 8 * _age  / _maxAge;
+        //    //float v = _age * 16 / _maxAge * .0625f;
+        //    //Uv = new Vector4(v, .0625f, v + .0625f, .125f);
+        //}
+
+        /// <summary>
+        /// Игровой такт на сервере
+        /// </summary>
+        public override void Update()
         {
-            Scale = _flameScale * (1 + (Glm.Cos(_age * .2f) + 2f) * .32f);
-
-            float v = _age * 16 / _maxAge * .03125f;
-            Uv = new Vector4(v, .03125f, v + .03125f, .0625f);
-
-            //int i = 8 * _age  / _maxAge;
-            //float v = _age * 16 / _maxAge * .0625f;
-            //Uv = new Vector4(v, .0625f, v + .0625f, .125f);
+            if (_age++ > _maxAge)
+            {
+                SetDead();
+            }
+            else
+            {
+                Scale = _flameScale * (1 + (Glm.Cos(_age * .2f) + 2f) * .16f);
+                float v = _age * 16 / _maxAge * .03125f;
+                Uv = new Vector4(v, .03125f, v + .03125f, .0625f);
+            }
         }
     }
 }

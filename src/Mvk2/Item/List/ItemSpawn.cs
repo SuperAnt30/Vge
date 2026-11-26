@@ -24,7 +24,7 @@ namespace Mvk2.Item.List
             {
                 player.Inventory.DecrCurrentItem(1);
             }
-            return new ResultHandAction(ResultHandAction.ActionType.UseItem, HandManager.PauseNotItem,12);
+            return new ResultHandAction(ResultHandAction.ActionType.UseItem, 4, 12);
         }
 
         /// <summary>

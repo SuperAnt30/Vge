@@ -267,15 +267,16 @@ namespace Vge.Item
             if (moving.IsEntity())
             {
                 // Урон для сущности
-                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity, 
-                    HandManager.PauseNotItem, HandManager.ActionDelay);
+                return new ResultHandAction(ResultHandAction.ActionType.AttackEntity,
+                    HandManager.ActionDelay, HandManager.PauseNotItem);
             }
             if (moving.IsBlock() && player.CanDestroyedBlock(moving.Block.GetBlock()))
             {
                 // Можно разрушить блок без предмета
-                return new ResultHandAction(HandManager.PauseNotItem, HandManager.ActionDelay, 1);
+                return new ResultHandAction(HandManager.ActionDelay, HandManager.PauseNotItem, 1);
             }
-            return new ResultHandAction(ResultHandAction.ActionType.None, HandManager.ActionDelay);
+            return new ResultHandAction(ResultHandAction.ActionType.None, 
+                HandManager.ActionDelay);
         }
 
         /// <summary>

@@ -183,7 +183,6 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Добавить клип
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void AddClip(string key, float speed = 1)
         {
             if (_animationClips.Contains(key))
@@ -201,7 +200,18 @@ namespace Vge.Entity.Render
         /// Остановить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void StopingClip(string key) => _animations[key].Stoping();
+        public void _StopingClip(string key) => _animations[key].Stoping();
+
+        /// <summary>
+        /// Остановить клип
+        /// </summary>
+        public override void StopingClip(string key)
+        {
+            if (_animationClips.Contains(key))
+            {
+                _animations[key].Stoping();
+            }
+        }
 
         /// <summary>
         /// Остоновить все клипы которые держим
@@ -291,7 +301,7 @@ namespace Vge.Entity.Render
             {
                 // вызвал анимацию
                 _isActiveClipCode = true;
-                StopingClip(_activeClip);
+                _StopingClip(_activeClip);
                 _activeClip = AnimationCode;
                 AddClip(_activeClip, SpeedAnimationCode);
                 AnimationCode = "";
@@ -407,7 +417,7 @@ namespace Vge.Entity.Render
                 // Если клип поменялся
                 if (clip != _activity)
                 {
-                    StopingClip(_activeClip);
+                    _StopingClip(_activeClip);
                     AddClipActivity(clip);
                 }
                 // Обновить данные в конце после отправки данных игрового такта
@@ -679,7 +689,6 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Изменён предмет внешности (что в руках и одежда)
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void OutsideItemChanged()
         {
             if (_entityLayerRender != null && _shapeLayers != null && Entity is EntityLiving entityLiving)

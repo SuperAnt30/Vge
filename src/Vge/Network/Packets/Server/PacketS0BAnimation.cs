@@ -64,6 +64,10 @@ namespace Vge.Network.Packets.Server
                 Code = stream.String();
                 Speed = stream.Float();
             }
+            else if (Action == EnumAction.Stoping)
+            {
+                Code = stream.String();
+            }
         }
 
         public void WritePacket(WritePacket stream)
@@ -78,6 +82,10 @@ namespace Vge.Network.Packets.Server
             {
                 stream.String(Code);
                 stream.Float(Speed);
+            }
+            else if (Action == EnumAction.Stoping)
+            {
+                stream.String(Code);
             }
         }
 
@@ -99,13 +107,17 @@ namespace Vge.Network.Packets.Server
             /// </summary>
             CodeAdd = 2,
             /// <summary>
+            /// Остановка клипа
+            /// </summary>
+            Stoping = 3,
+            /// <summary>
             /// Анимация открыть глаза
             /// </summary>
-            EyeOpen = 3,
+            EyeOpen = 4,
             /// <summary>
             /// Анимация закрыть глаза
             /// </summary>
-            EyeClose = 4
+            EyeClose = 5
         }
     }
 }

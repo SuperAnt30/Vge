@@ -67,6 +67,10 @@ namespace Vge.Entity.Particle
         /// Объект генератора случайх чисел
         /// </summary>
         protected Rand _rand;
+        /// <summary>
+        /// Может проходить сквозь стены
+        /// </summary>
+        protected bool _noClip = false;
 
         public EntityFX(EnumParticleDraw typeDraw)
         {
@@ -154,7 +158,6 @@ namespace Vge.Entity.Particle
         /// </summary>
         public override void Update()
         {
-
             if (_age++ > _maxAge)
             {
                 SetDead();
@@ -174,7 +177,7 @@ namespace Vge.Entity.Particle
 
                 if (_age == 3)
                 {
-                    NoClip = false;
+                    NoClip = _noClip;
                 }
                 if (IsPositionChange())
                 {

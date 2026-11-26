@@ -61,12 +61,12 @@ namespace Mvk2.World.Block.List
             if (world.Rnd.Next(5) == 0)
             {
                 Vector3 pos = blockPos.ToVector3Center();
-                pos.Y += 1f;
+                pos.Y += .75f;
                 //world.SpawnParticle(EntitiesFXRegMvk.SmokeId, 5, pos, new Vector3(.5f), 1, 0);
 
                 //world.SpawnParticle(EntitiesFXRegMvk.FireSmokeId, 2, pos, new Vector3(.2f, 0, .2f), 1, 0);
 
-                world.SpawnParticle(EntitiesFXRegMvk.FlameId, 1, pos, new Vector3(.125f), 1, 0);
+                world.SpawnParticle(EntitiesFXRegMvk.FlameId, 2, pos, new Vector3(.25f, .0625f, .25f), 1, 0);
                 // world.SpawnParticle(Vge.Entity.Particle.EntitiesFXReg.PartColorId, 100, pos, new Vector3(2.5f), 2, 0x1000000);
             }
         }

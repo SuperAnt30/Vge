@@ -1,7 +1,5 @@
 ﻿using Mvk2.Entity.Inventory;
 using System;
-using System.Runtime.CompilerServices;
-using Vge.Entity.Inventory;
 using Vge.Entity.Player;
 using Vge.Games;
 
@@ -18,10 +16,9 @@ namespace Mvk2.Entity.List
         /// <summary>
         /// Инициализация инвенторя
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _CreateInventory()
         {
-            Inventory = new InventoryList(1, InventoryPlayerMvk.ClothCount, 1 + InventoryPlayerMvk.ClothCount);
+            Inventory = new InventoryPlayerClientMvk();
             Inventory.OutsideChanged += Inventory_OutsideChanged;
         }
 

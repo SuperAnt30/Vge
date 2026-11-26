@@ -241,25 +241,20 @@ namespace Vge.Network
             EntityBase entity = Game.World.GetEntityByID(packet.EntityId);
             if (entity != null && entity.Render != null)
             {
-                if (packet.Action == PacketS0BAnimation.EnumAction.Moving)
+                switch (packet.Action)
                 {
-                    entity.Render.SetMovingFlags(packet.Moving);
-                }
-                else if (packet.Action == PacketS0BAnimation.EnumAction.Code)
-                {
-                    entity.Render.SetAnimationCode(packet.Code, packet.Speed);
-                }
-                else if(packet.Action == PacketS0BAnimation.EnumAction.CodeAdd)
-                {
-                    entity.Render.SetAnimationCodeAdd(packet.Code, packet.Speed);
-                }
-                else if (packet.Action == PacketS0BAnimation.EnumAction.EyeOpen)
-                {
-                    entity.Render.SetEyeOpen(true);
-                }
-                else if (packet.Action == PacketS0BAnimation.EnumAction.EyeClose)
-                {
-                    entity.Render.SetEyeOpen(false);
+                    case PacketS0BAnimation.EnumAction.Moving:
+                        entity.Render.SetMovingFlags(packet.Moving); break;
+                    case PacketS0BAnimation.EnumAction.Code:
+                        entity.Render.SetAnimationCode(packet.Code, packet.Speed); break;
+                    case PacketS0BAnimation.EnumAction.CodeAdd:
+                        entity.Render.SetAnimationCodeAdd(packet.Code, packet.Speed); break;
+                    case PacketS0BAnimation.EnumAction.Stoping:
+                        entity.Render.StopingClip(packet.Code); break;
+                    case PacketS0BAnimation.EnumAction.EyeOpen:
+                        entity.Render.SetEyeOpen(true); break;
+                    case PacketS0BAnimation.EnumAction.EyeClose:
+                        entity.Render.SetEyeOpen(false); break;
                 }
             }
         }

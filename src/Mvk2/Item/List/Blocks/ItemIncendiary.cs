@@ -27,28 +27,16 @@ namespace Mvk2.Item.List.Blocks
         /// <summary>
         /// Пауза между ударами в тактах
         /// </summary>
-        public int Pause { get; protected set; } = 20;
+        public int Pause { get; protected set; } = 8;
         /// <summary>
         /// Задержка до установки блока
         /// </summary>
-        public int DelayPlacement { get; protected set; } = 10;
+        public int DelayPlacement { get; protected set; } = 4;
 
         private readonly BlockFire _blockFire;
 
         public ItemIncendiary(BlockFire blockFire) : base(blockFire)
             => _blockFire = blockFire;
-
-        /// <summary>
-        /// В зависимости от фартуны зажигаем
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Lit(PlayerClientOwner player)
-        {
-            // Не важно зажом или нет, ламаем предмет
-            player.DamageItemTool(1);
-
-            return Fartune == 1 || player.GetWorld().Rnd.NextFloat() < Fartune;
-        }
 
         /// <summary>
         /// Не удачная установка блока
@@ -62,13 +50,19 @@ namespace Mvk2.Item.List.Blocks
         }
 
         /// <summary>
-        /// Дополнительная проверка на moving, чтоб сократить последующие проверки
+        /// Прошла проверку возможности установить блок в превью.
+        /// Только клиент, так как превью у него только.
         /// </summary>
-        /// <param name="preview">Предпросмотр установки, true - без установки блока(ов)</param>
-        protected override bool _CheckMoving(bool preview, MovingObjectPosition moving, PlayerClientOwner player)
+        protected override bool _CanPlaceBlockPreview(PlayerBase player)
         {
-            if (preview) return moving.IsBlock() && Lit(player);
-            return moving.IsBlock();
+            if (player.CreativeMode) return true;
+
+            // Не важно зажат или нет, ламаем предмет
+            if (player is PlayerClientOwner playerClient)
+            {
+                playerClient.DamageItemTool(1);
+            }
+            return Fartune == 1 || player.GetWorld().Rnd.NextFloat() < Fartune;
         }
 
         /// <summary>
