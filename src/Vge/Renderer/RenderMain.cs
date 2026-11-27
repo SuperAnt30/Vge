@@ -52,6 +52,10 @@ namespace Vge.Renderer
         /// Шейдора для блоков
         /// </summary>
         public readonly ShadersBlocks ShsBlocks;
+        /// <summary>
+        /// Шейдоры для пост обработки
+        /// </summary>
+        public readonly ShaderPostProcess ShPost;
 
 
         /// <summary>
@@ -89,6 +93,7 @@ namespace Vge.Renderer
             ShGuiColor = new ShaderGuiColor(gl, "GuiColor");
             ShGuiLine = new ShaderGuiLine(gl);
             ShLine = new ShaderLine(gl);
+            ShPost = new ShaderPostProcess(gl);
             ShsBlocks = new ShadersBlocks(gl, "BlocksLow", "BlocksHigh", "BlocksDepthMap");
             ShsEntity = new ShadersEntity(gl, "EntityGui", "EntityLow", "EntityHigh",
                 "EntityItemLow", "EntityItemHigh", "EntityDepthMap");
@@ -113,11 +118,23 @@ namespace Vge.Renderer
             LightMap = new TextureLightMap(gl);
         }
 
+        public void Init()
+        {
+            ShsEntity.Init();
+            ShsBlocks.Init();
+
+            ShPost.Bind();
+            ShPost.SetUniform1("u_color", Gi.ActiveTexturePostColor);
+            ShPost.SetUniform1("u_depth", Gi.ActiveTexturePostDepth);
+            ShPost.SetUniform2("u_near_far", Gi.Near, Gi.Far);
+        }
+
         public override void Dispose()
         {
             ShGuiColor.Delete();
             ShGuiLine.Delete();
             ShLine.Delete();
+            ShPost.Delete();
             ShsBlocks.Dispose();
             ShsEntity.Dispose();
         }
@@ -182,6 +199,20 @@ namespace Vge.Renderer
             ShLine.SetUniformMatrix4("view", view);
             ShLine.SetUniform3("pos", posX, posY, posZ);
             ShLine.SetUniform1("alpha", alpha);
+        }
+
+        /// <summary>
+        /// Запуск шейдора для пост обработки
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="isEyeInWater">Находяться ли глаза в воде</param>
+        public void ShaderBindPost(float time, bool isEyeInWater)
+        {
+            ShPost.Bind();
+            ShPost.SetUniform1("u_time", time);
+            ShPost.SetUniform1("u_underwater", isEyeInWater ? 1 : 0);
+            ShPost.SetUniform3("u_underwater_color", .1f, .3f, .55f);
+            ShPost.SetUniform1("u_vignette", .35f);
         }
 
         #endregion

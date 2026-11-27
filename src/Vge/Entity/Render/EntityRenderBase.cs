@@ -28,6 +28,11 @@ namespace Vge.Entity.Render
         public float SpeedAnimationCodeAdd { get; protected set; } = 1;
 
         /// <summary>
+        /// Освещёность небесного света
+        /// </summary>
+        protected float _lightSky = .96875f;
+
+        /// <summary>
         /// Задать анимацию на клиенте по коду
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -81,7 +86,7 @@ namespace Vge.Entity.Render
         /// <summary>
         /// Отменить клип
         /// </summary>
-        public virtual void StopingClip(string key) { }
+        public virtual void StoppingClip(string key) { }
 
         /// <summary>
         /// Задать состояние открытости глаз
@@ -108,6 +113,12 @@ namespace Vge.Entity.Render
         /// Изменён предмет внешности (что в руках или одежда)
         /// </summary>
         public virtual void OutsideItemChanged() { }
+
+        /// <summary>
+        /// Получить яркость неба в положении сущности 0.03125 - 0.96875
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float GetLightSky() => _lightSky;
 
         public virtual void Dispose() { }
     }

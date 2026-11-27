@@ -142,8 +142,12 @@ namespace WinGL.OpenGL
         private glBindFramebuffer delegateBindFramebuffer;
         private delegate void glDeleteFramebuffers(uint n, uint[] framebuffers);
         private glDeleteFramebuffers delegateDeleteFramebuffers;
+        private delegate void glDeleteFramebuffersEXT(uint n, uint[] framebuffers);
+        private glDeleteFramebuffersEXT delegateDeleteFramebuffersEXT;
         private delegate void glGenFramebuffers(uint n, uint[] framebuffers);
         private glGenFramebuffers delegateGenFramebuffers;
+        private delegate void glGenFramebuffersEXT(uint n, uint[] framebuffers);
+        private glGenFramebuffersEXT delegateGenFramebuffersEXT;
         private delegate uint glCheckFramebufferStatus(uint target);
         private glCheckFramebufferStatus delegateCheckFramebufferStatus;
         private delegate void glFramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level);
@@ -495,11 +499,23 @@ namespace WinGL.OpenGL
                 delegateDeleteFramebuffers = GetDelegate<glDeleteFramebuffers>() as glDeleteFramebuffers;
             delegateDeleteFramebuffers(n, framebuffers);
         }
+        public void DeleteFramebuffersEXT(uint n, uint[] framebuffers)
+        {
+            if (delegateDeleteFramebuffersEXT == null)
+                delegateDeleteFramebuffersEXT = GetDelegate<glDeleteFramebuffersEXT>() as glDeleteFramebuffersEXT;
+            delegateDeleteFramebuffersEXT(n, framebuffers);
+        }
         public void GenFramebuffers(uint n, uint[] framebuffers)
         {
             if (delegateGenFramebuffers == null)
                 delegateGenFramebuffers = GetDelegate<glGenFramebuffers>() as glGenFramebuffers;
             delegateGenFramebuffers(n, framebuffers);
+        }
+        public void GenFramebuffersEXT(uint n, uint[] framebuffers)
+        {
+            if (delegateGenFramebuffersEXT == null)
+                delegateGenFramebuffersEXT = GetDelegate<glGenFramebuffersEXT>() as glGenFramebuffersEXT;
+            delegateGenFramebuffersEXT(n, framebuffers);
         }
         public uint CheckFramebufferStatus(uint target)
         {
@@ -577,6 +593,13 @@ namespace WinGL.OpenGL
 		/// </summary>
 		/// <param name="cap">The capability you wish to enable.</param>
 		public void Enable(uint cap) => glEnable(cap);
+
+        /// <summary>
+		/// Use this function to query if a certain OpenGL function is enabled or not.
+		/// </summary>
+		/// <param name="cap">The capability to test.</param>
+		/// <returns>True if the capability is enabled, otherwise, false.</returns>
+		public bool IsEnabled(uint cap) => glIsEnabled(cap) != 0;
 
         public void CullFace(uint mode) => glCullFace(mode);
 
@@ -739,7 +762,18 @@ namespace WinGL.OpenGL
 		public void PolygonMode(uint face, uint mode)
             => glPolygonMode(face, mode);
 
+        /// <summary>
+		/// This function sets the depth mask.
+		/// </summary>
+		/// <param name="flag">The depth mask flag, normally 1.</param>
         public void DepthMask(byte flag) => glDepthMask(flag);
+
+        /// <summary>
+        /// Specify mapping of depth values from normalized device coordinates	to window coordinates.
+        /// </summary>
+        /// <param name="zNear">Specifies the mapping of the near clipping plane to window coordinates. The initial value is 0.</param>
+        /// <param name="zFar">Specifies the mapping of the near clipping plane to window coordinates. The initial value is 1.</param>
+		public void DepthRange(double zNear, double zFar) => glDepthRange(zNear, zFar);
 
         public void PolygonOffset(float factor, float units) => glPolygonOffset(factor, units);
 

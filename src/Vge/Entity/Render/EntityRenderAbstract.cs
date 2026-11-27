@@ -1,4 +1,4 @@
-﻿using Vge.Renderer.World.Entity;
+﻿using System.Runtime.CompilerServices;
 using Vge.World;
 using Vge.World.Block;
 using Vge.World.Chunk;
@@ -23,10 +23,6 @@ namespace Vge.Entity.Render
         /// Освещёность блочного света
         /// </summary>
         protected float _lightBlock;
-        /// <summary>
-        /// Освещёность небесного света
-        /// </summary>
-        protected float _lightSky;
 
         public EntityRenderAbstract(EntityBase entity) => Entity = entity;
 

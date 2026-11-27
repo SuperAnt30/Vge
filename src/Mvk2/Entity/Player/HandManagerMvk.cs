@@ -103,15 +103,15 @@ namespace Mvk2.Entity.Player
         /// <summary>
         /// Вспомогательное действие анимации правой руки в момент окончании
         /// </summary>
-        /// <param name="itemStack">Предмет которым делаю действие</param>
-        protected override void _SecondAnimationRightEnd(ItemStack itemStack)
+        protected override void _SecondAnimationRightEnd()
         {
             if (_clipSwing != "")
             {
-                _player.Render.StopingClip(_clipSwing);
-                _SendPlayerAnimationStoping();
+                _player.Render.StoppingClip(_clipSwing);
+                _SendPlayerAnimationStopping();
                 _clipSwing = "";
 
+                ItemStack itemStack = _player.Inventory.GetCurrentItem();
                 _player.Render.SetAnimationCodeAdd(itemStack.Item.Second != "" 
                     ? itemStack.Item.Second : _secondDefault, itemStack.Item.HitSpeed);
                 _SendPlayerAnimation();
@@ -134,10 +134,10 @@ namespace Mvk2.Entity.Player
         /// Отправить остановку анимации на сервер
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _SendPlayerAnimationStoping()
+        private void _SendPlayerAnimationStopping()
         {
             _game.TrancivePacket(new PacketC0APlayerAnimation(
-                _clipSwing, PacketC0APlayerAnimation.EnumAction.Stoping));
+                _clipSwing, PacketC0APlayerAnimation.EnumAction.Stopping));
         }
 
     }

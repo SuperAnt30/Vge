@@ -200,23 +200,23 @@ namespace Vge.Entity.Render
         /// Остановить клип
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void _StopingClip(string key) => _animations[key].Stoping();
+        public void _StoppingClip(string key) => _animations[key].Stopping();
 
         /// <summary>
         /// Остановить клип
         /// </summary>
-        public override void StopingClip(string key)
+        public override void StoppingClip(string key)
         {
             if (_animationClips.Contains(key))
             {
-                _animations[key].Stoping();
+                _animations[key].Stopping();
             }
         }
 
         /// <summary>
         /// Остоновить все клипы которые держим
         /// </summary>
-        private void _StopingClipsHold()
+        private void _StoppingClipsHold()
         {
             string s;
             for (int i = 0; i < _animationClips.Count; i++)
@@ -225,7 +225,7 @@ namespace Vge.Entity.Render
                 if (s.Length >= _prefixHoldLeght && s.Substring(0, 4) == _prefixHold)
                 {
                     // Этот надо остановить
-                    _animations[s].Stoping();
+                    _animations[s].Stopping();
                 }
             }
         }
@@ -301,7 +301,7 @@ namespace Vge.Entity.Render
             {
                 // вызвал анимацию
                 _isActiveClipCode = true;
-                _StopingClip(_activeClip);
+                _StoppingClip(_activeClip);
                 _activeClip = AnimationCode;
                 AddClip(_activeClip, SpeedAnimationCode);
                 AnimationCode = "";
@@ -417,7 +417,7 @@ namespace Vge.Entity.Render
                 // Если клип поменялся
                 if (clip != _activity)
                 {
-                    _StopingClip(_activeClip);
+                    _StoppingClip(_activeClip);
                     AddClipActivity(clip);
                 }
                 // Обновить данные в конце после отправки данных игрового такта
@@ -721,7 +721,7 @@ namespace Vge.Entity.Render
                 {
                     _holdLeftPrev = holdLeft;
                     _holdRightPrev = holdRight;
-                    _StopingClipsHold();
+                    _StoppingClipsHold();
                     if (holdRight != "") AddClip(holdRight);
                     if (holdLeft != "") AddClip(holdLeft);
                 }

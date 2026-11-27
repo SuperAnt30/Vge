@@ -188,7 +188,6 @@ namespace Vge.Renderer.Shaders
             _flagActionDepthMap = false;
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
             _shderAction.Bind();
-            _shderAction.SetUniformMatrix4("view", Gi.MatrixViewEye);
             _shderAction.SetUniform1("scale", 1f);
             _shderAction.SetUniform1("brightness", Gi.EntityBrightness);
             _shderAction.SetUniform3("lightDir", Gi.ViewLightDir.X, Gi.ViewLightDir.Y, Gi.ViewLightDir.Z);

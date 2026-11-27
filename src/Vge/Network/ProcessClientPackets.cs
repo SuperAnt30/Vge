@@ -249,8 +249,8 @@ namespace Vge.Network
                         entity.Render.SetAnimationCode(packet.Code, packet.Speed); break;
                     case PacketS0BAnimation.EnumAction.CodeAdd:
                         entity.Render.SetAnimationCodeAdd(packet.Code, packet.Speed); break;
-                    case PacketS0BAnimation.EnumAction.Stoping:
-                        entity.Render.StopingClip(packet.Code); break;
+                    case PacketS0BAnimation.EnumAction.Stopping:
+                        entity.Render.StoppingClip(packet.Code); break;
                     case PacketS0BAnimation.EnumAction.EyeOpen:
                         entity.Render.SetEyeOpen(true); break;
                     case PacketS0BAnimation.EnumAction.EyeClose:

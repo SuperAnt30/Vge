@@ -40,7 +40,7 @@
                 Code = stream.String();
                 Speed = stream.Float();
             }
-            else if (Action == EnumAction.Stoping)
+            else if (Action == EnumAction.Stopping)
             {
                 Code = stream.String();
             }
@@ -58,7 +58,7 @@
                 stream.String(Code);
                 stream.Float(Speed);
             }
-            else if (Action == EnumAction.Stoping)
+            else if (Action == EnumAction.Stopping)
             {
                 stream.String(Code);
             }
@@ -84,7 +84,7 @@
             /// <summary>
             /// Остановка клипа
             /// </summary>
-            Stoping = 3,
+            Stopping = 3,
             /// <summary>
             /// Анимация открыть глаза
             /// </summary>

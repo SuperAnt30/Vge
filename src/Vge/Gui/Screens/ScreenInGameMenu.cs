@@ -33,7 +33,7 @@ namespace Vge.Gui.Screens
             => window.LScreen.Options(this, true);
 
         private void ButtonExit_Click(object sender, System.EventArgs e)
-            => window.GameStoping();
+            => window.GameStopping();
 
         #endregion
 

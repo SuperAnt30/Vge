@@ -85,7 +85,7 @@ namespace Mvk2.Games
 #if DEBUG
             Console.WriteLine("_function GameModClientMvk.ExitWorld");
 #endif
-            Game.WorldRender.WorldStoped();
+            Game.WorldRender.WorldStopping();
         }
 
         /// <summary>

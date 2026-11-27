@@ -872,6 +872,14 @@ namespace WinGL.OpenGL
         public const uint GL_DEPTH_ATTACHMENT = 0x8D00;
         public const uint GL_COLOR_ATTACHMENT0 = 0x8CE0;
 
+        // Для постобработки
+        public const uint GL_DEPTH24_STENCIL8 = 0x88F0;
+        public const uint GL_DEPTH_STENCIL = 0x84F9;
+        public const uint GL_UNSIGNED_INT_24_8 = 0x84FA;
+        public const uint GL_DEPTH_STENCIL_ATTACHMENT = 0x821A;
+
+
+
         #endregion
 
         #region The GLU DLL Constant Definitions.

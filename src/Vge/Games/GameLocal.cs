@@ -90,9 +90,9 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public override void GameStoping(string notification, bool isWarning)
+        public override void GameStopping(string notification, bool isWarning)
         {
-            base.GameStoping(notification, isWarning);
+            base.GameStopping(notification, isWarning);
 
             window.LScreen.Process(L.T("Saving") + Ce.Ellipsis);
             if (_server != null)

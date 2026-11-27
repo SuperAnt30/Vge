@@ -54,7 +54,7 @@ namespace Vge.World
         /// <summary>
         /// Сохранение регионов
         /// </summary>
-        public void WriteToFile(bool isStoping)
+        public void WriteToFile(bool isStopping)
         {
             lock (locker)
             {
@@ -63,7 +63,7 @@ namespace Vge.World
                     region.WriteToFile();
                 }
             }
-            if (!isStoping)
+            if (!isStopping)
             {
                 // Проверяем какие регионы можно выгрузить
                 List<ulong> list = _world.ChunkPrServ.GetRegionList();

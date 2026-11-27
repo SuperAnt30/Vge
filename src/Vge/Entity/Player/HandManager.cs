@@ -113,19 +113,14 @@ namespace Vge.Entity.Player
             /// </summary>
             public readonly int ItemIndexStack;
             /// <summary>
-            /// Какой объект попадает под луч в момент клика
-            /// </summary>
-            public readonly MovingObjectPosition Moving;
-            /// <summary>
             /// Начальный ли клик
             /// </summary>
             public readonly bool Begin;
 
-            public Pending(int delay, int itemIndexStack,  MovingObjectPosition moving, bool begin)
+            public Pending(int delay, int itemIndexStack, bool begin)
             {
                 Delay = delay;
                 ItemIndexStack = itemIndexStack;
-                Moving = moving;
                 Begin = begin;
             }
         }
@@ -183,7 +178,7 @@ namespace Vge.Entity.Player
             /// </summary>
             None,
             /// <summary>
-            /// Действие предмета (результат OnSection)
+            /// Действие предмета (результат OnSecond)
             /// </summary>
             Item,
             /// <summary>
@@ -201,7 +196,7 @@ namespace Vge.Entity.Player
         /// </summary>
         private PendingKindSecond _pendingKindSecond = PendingKindSecond.None;
         /// <summary>
-        /// В ожидании для ЛКМ
+        /// В ожидании для ПКМ
         /// </summary>
         private Pending _pendingSecond;
 
@@ -284,7 +279,6 @@ namespace Vge.Entity.Player
             else if (_secondPrev)
             {
                 _SecondEnd();
-                //_secondPrev = _second;
             }
 
             if (_pauseAction > 0) _pauseAction--;
@@ -310,8 +304,7 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Вспомогательное действие анимации правой руки в момент окончании
         /// </summary>
-        /// <param name="itemStack">Предмет которым делаю действие</param>
-        protected virtual void _SecondAnimationRightEnd(ItemStack itemStack) { }
+        protected virtual void _SecondAnimationRightEnd() { }
 
         /// <summary>
         /// Получить индекс предмета, если предмета нет, вернёт -1
@@ -326,13 +319,11 @@ namespace Vge.Entity.Player
         /// <summary>
         /// Такт действия
         /// Здесь только принимается решение и запускается анимация,
-        /// само действие выполняется в момент удара, в _UpdatePending
+        /// само действие выполняется в момент удара, в _ExecutePendingAction
         /// </summary>
         protected virtual void _Action(bool begin)
         {
             if (_player.IsSpectator()) return;
-
-            if (begin && _pauseAction < 0) _pauseAction = 0;
 
             // Новый замах только после паузы и когда прошлый удар уже состоялся
             if (_pauseAction == 0 && _pendingKindAction == PendingKindAction.None)
@@ -411,8 +402,7 @@ namespace Vge.Entity.Player
                     _ActionAnimationRight(itemStack); // Action kind
 
                     _pendingKindAction = kind;
-                    _pendingAction = new Pending(delay, 
-                        _GetItemIndex(itemStack), moving.Copy(), begin);
+                    _pendingAction = new Pending(delay, _GetItemIndex(itemStack), begin);
 
                     if (delay <= 0)
                     {
@@ -606,8 +596,7 @@ namespace Vge.Entity.Player
                     _SecondAnimationRight(itemStack); // Second kind
 
                     _pendingKindSecond = kind;
-                    _pendingSecond = new Pending(delay,
-                        _GetItemIndex(itemStack), moving.Copy(), begin);
+                    _pendingSecond = new Pending(delay, _GetItemIndex(itemStack), begin);
 
                     if (delay <= 0)
                     {
@@ -709,7 +698,13 @@ namespace Vge.Entity.Player
         protected virtual void _SecondEnd()
         {
             if (_player.IsSpectator()) return;
-            if (_flagUseSecondEnd)
+
+            // Если замах ещё не состоялся — выполняем его сейчас, чтобы начало ушло раньше конца
+            if (_pendingKindSecond != PendingKindSecond.None) //_ExecutePendingSecond();
+            {
+                _pendingKindSecond = PendingKindSecond.None;
+            }
+            else if (_flagUseSecondEnd)
             {
                 ItemStack itemStack = _player.Inventory.GetCurrentItem();
                 if (itemStack != null)
@@ -723,7 +718,7 @@ namespace Vge.Entity.Player
                     //Console.WriteLine("Second kind");
                 }
             }
-            _SecondAnimationRightEnd(_player.Inventory.GetCurrentItem()); // Second End
+            _SecondAnimationRightEnd(); // Second End
         }
 
         /// <summary>

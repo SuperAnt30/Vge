@@ -93,7 +93,7 @@ namespace Vge.World.Chunk
         /// <summary>
         /// Останавливаем
         /// </summary>
-        public void Stoping()
+        public void Stopping()
         {
             // Получить список всех чанков
             List<IChunkPosition> positions = _chunkMapping.GetList();

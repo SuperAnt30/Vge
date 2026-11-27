@@ -195,7 +195,7 @@ namespace WinGL
             }
             finally
             {
-                OnStoping();
+                OnStopping();
                 CleanUp();
                 if (timePeriodRun)
                 {
@@ -531,7 +531,7 @@ namespace WinGL
         /// <summary>
         /// Происходит перед остановкой приложения
         /// </summary>
-        protected virtual void OnStoping() { }
+        protected virtual void OnStopping() { }
 
         /// <summary>
         /// Изменён размер окна

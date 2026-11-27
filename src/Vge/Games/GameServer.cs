@@ -501,23 +501,23 @@ namespace Vge.Games
             }
             finally
             {
-                _Stoping();
+                _Stopping();
             }
         }
 
         /// <summary>
         /// Сохраняет все необходимые данные для подготовки к остановке сервера
         /// </summary>
-        private void _Stoping()
+        private void _Stopping()
         {
             Log.Server(Srl.Stopping);
 
             // Надо сохранить мир
-            Worlds.Stoping();
+            Worlds.Stopping();
             // Чистим все пакеты, так-как уже обрабатывать не будем
             _packets.Clear();
             // Выкидываем всех игроков
-            Players.PlayersRemoveStopingServer();
+            Players.PlayersRemoveStoppingServer();
             // Сохранить игру
             GameFile.Write(Settings, this);
 

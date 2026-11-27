@@ -173,7 +173,7 @@ namespace Vge.Management
         /// <summary>
         /// Удалить всех игроков при остановки сервера
         /// </summary>
-        public void PlayersRemoveStopingServer()
+        public void PlayersRemoveStoppingServer()
         {
             if (_players.Count > 0)
             {

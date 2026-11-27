@@ -102,13 +102,13 @@ namespace Vge.World
         /// <summary>
         /// Останавливаем мир, НЕ смена миров
         /// </summary>
-        public void Stoping()
+        public void Stopping()
         {
-            WorldRender.Stoping();
-            ChunkPrClient.Stoping();
+            WorldRender.Stopping();
+            ChunkPrClient.Stopping();
             Game.ModClient.WorldStoped();
 #if DEBUG
-            Console.WriteLine("_function WorldClient.Stoping");
+            Console.WriteLine("_function WorldClient.Stopping");
 #endif
         }
 

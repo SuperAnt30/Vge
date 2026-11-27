@@ -77,12 +77,12 @@ namespace Vge.World
         /// <summary>
         /// Останавливается сервер, остановить миры
         /// </summary>
-        public virtual void Stoping()
+        public virtual void Stopping()
         {
             // Сохраняем все миры
             for (byte i = 0; i < _count; i++)
             {
-                _worldServers[i].Stoping();
+                _worldServers[i].Stopping();
             }
         }
 

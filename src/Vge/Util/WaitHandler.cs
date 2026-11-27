@@ -63,7 +63,7 @@ namespace Vge.Util
         /// <summary>
         /// Останавливаем
         /// </summary>
-        public void Stoping()
+        public void Stopping()
         {
             _isRuning = false;
             // Сигнализируем, что waitHandler в сигнальном состоянии

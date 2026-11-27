@@ -97,7 +97,7 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBigin(float x, float y, float z, int takt, float wind,
+        public void BindUniformBegin(float x, float y, float z, int takt, float wind,
             float overview, Vector3 colorFog, float torchInHand)
         {
             _shderAction = _qualitatively ? _shaderHigh : _shaderLow;
@@ -124,7 +124,7 @@ namespace Vge.Renderer.Shaders
         /// Занести начальные юниформы для карты глубины
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void BindUniformBiginDepthMap(float x, float y, float z, int takt, float wind)
+        public void BindUniformBeginDepthMap(float x, float y, float z, int takt, float wind)
         {
             _shaderDepthMap.Bind();
             _shaderDepthMap.SetUniformMatrix4("view", Gi.MatrixViewDepthMap);

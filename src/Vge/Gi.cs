@@ -25,6 +25,15 @@ public sealed class Gi
     public static int Si = 1;
 
     /// <summary>
+    /// Ближайшая проекция матрицы
+    /// </summary>
+    public static float Near = .01f;
+    /// <summary>
+    /// Дальняя проекция матрицы
+    /// </summary>
+    public static float Far = 1450f;
+
+    /// <summary>
     /// Ширина текстового окна чата
     /// </summary>
     public static int WindowsChatWidthMessage = 472;
@@ -90,6 +99,18 @@ public sealed class Gi
     /// GL_TEXTURE0 + ActiveTextureShadowMap
     /// </summary>
     public static int ActiveTextureShadowMap = 10;
+    /// <summary>
+    /// ID Активации текстуры постобработки цвет блока
+    /// Берём свободные блоки, чтобы не перебить текстуры, которые шейдеры 
+    /// держат привязанными постоянно
+    /// GL_TEXTURE0 + ActiveTexturePostColor
+    /// </summary>
+    public static int ActiveTexturePostColor = 11;
+    /// <summary>
+    /// ID Активации текстуры постобработки глубины блока
+    /// GL_TEXTURE0 + ActiveTexturePostDepth
+    /// </summary>
+    public static int ActiveTexturePostDepth = 12;
 
     #endregion
 
@@ -223,10 +244,6 @@ public sealed class Gi
     /// Матрица просмотра Projection * LookAt
     /// </summary>
     public static readonly float[] MatrixView = new float[16];
-    /// <summary>
-    /// Матрица просмотра Projection * LookAt для модели с глаз
-    /// </summary>
-    public static readonly float[] MatrixViewEye = new float[16];
     /// <summary>
     /// Матрица просмотра Projection * LookAt для карты теней, от солнца или луны
     /// </summary>

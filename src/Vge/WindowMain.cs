@@ -360,7 +360,9 @@ namespace Vge
                 if (Screen != null)
                 {
                     Render.DepthOff();
+                    gl.DepthRange(0, 0.1);
                     Screen.Draw(timeIndex);
+                    gl.DepthRange(0, 1);
                     Render.DepthOn();
                 }
             }
@@ -457,7 +459,7 @@ namespace Vge
             if (Game != null)
             {
                 flagClose = true;
-                Game.GameStoping(Srl.ClosingTheApplication, false);
+                Game.GameStopping(Srl.ClosingTheApplication, false);
             }
             else
             {
@@ -622,11 +624,11 @@ namespace Vge
         /// <summary>
         /// Остановить игру
         /// </summary>
-        public void GameStoping()
+        public void GameStopping()
         {
             if (Game != null)
             {
-                Game.GameStoping(Srl.TheUserStoppedTheGame, false);
+                Game.GameStopping(Srl.TheUserStoppedTheGame, false);
             }
         }
 

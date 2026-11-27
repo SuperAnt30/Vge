@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Vge.Games;
 using Vge.Realms;
@@ -39,7 +38,7 @@ namespace Vge.Renderer.World
         /// <summary>
         /// Флаг потока рендера чанков
         /// </summary>
-        private bool _flagRenderLoopRunning = false;
+        private volatile bool _flagRenderLoopRunning = false;
         /// <summary>
         /// Массив очередей чанков для рендера
         /// </summary>
@@ -91,6 +90,14 @@ namespace Vge.Renderer.World
         /// Запущен ли мир для прорисовки
         /// </summary>
         private bool _isWorldDrawRun;
+        /// <summary>
+        /// Остановка мира
+        /// </summary>
+        private bool _isWorldDrawStopping;
+        /// <summary>
+        /// Объект отвечает за постобработку
+        /// </summary>
+        private readonly PostProcess _post;
 
         public WorldRenderer(GameBase game) : base(game)
         {
@@ -100,6 +107,8 @@ namespace Vge.Renderer.World
             Entities = new EntitiesRenderer(game, _arrayChunkRender);
             Particles = new ParticlesRenderer(game);
             Shadow = new ShadowMapping(gl);
+            _post = new PostProcess(gl);
+            _post.Resize(Gi.Width, Gi.Height);
 
 #if DEBUG
             Console.WriteLine("_construct WorldRenderer");
@@ -114,8 +123,7 @@ namespace Vge.Renderer.World
             Entities.GameStarting();
 
             Shadow.Init();
-            Render.ShsEntity.Init();
-            Render.ShsBlocks.Init();
+            Render.Init();
 
             // Для отладки карта теней
             Shadow.InitDebug();
@@ -247,21 +255,32 @@ namespace Vge.Renderer.World
         {
             // Запускаем отдельный поток для рендера
             _flagRenderLoopRunning = true;
-            Thread myThread = new Thread(_RenderLoop) { Name = "WorldRender" };
+            Thread myThread = new Thread(_RenderLoop) { 
+                Name = "WorldRender",
+                IsBackground = true
+            };
             myThread.Start();
         }
 
         /// <summary>
         /// Останавливаем мир, НЕ смена миров
         /// </summary>
-        public void Stoping() 
+        public void Stopping() 
         {
             _flagRenderLoopRunning = false;
             // Сигнализируем, что waitHandler в сигнальном состоянии
             _waitHandler.Set();
 #if DEBUG
-            Console.WriteLine("_function WorldRender.Stoping");
+            Console.WriteLine("_function WorldRender.Stopping");
 #endif
+        }
+
+        /// <summary>
+        /// Изменён размер окна
+        /// </summary>
+        public void OnResized(int width, int height)
+        {
+            _post.Resize(width, height);
         }
 
         /// <summary>
@@ -281,7 +300,7 @@ namespace Vge.Renderer.World
             Particles.OnTick(deltaTime);
 
             // Считаем вектор, матрицы и прочее из календаря
-            _GenVectorLightСalendar();
+            _GenVectorLightCalendar();
 
             _skyRender?.Update();
 
@@ -325,8 +344,6 @@ namespace Vge.Renderer.World
                 {
                     // --- Начало сцены ТЕНЕЙ
 
-
-
                     // Рисуем воксели сплошных и уникальных блоков
                     // gl.Enable(GL.GL_CULL_FACE);
                     //gl.Disable(GL.GL_CULL_FACE);
@@ -344,15 +361,19 @@ namespace Vge.Renderer.World
                     // --- Конец сцены ТЕНЕЙ
 
                     // Меняем буфер экрана
-                    gl.BindFramebuffer(GL.GL_FRAMEBUFFER, 0);
-                    gl.Viewport(0, 0, Gi.Width, Gi.Height);
+                    if (!Options.PostProcess)
+                    {
+                        gl.BindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+                        gl.Viewport(0, 0, Gi.Width, Gi.Height);
+                    }
                 }
 
-                gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
+                // Вместо экрана — во внеэкранный буфер
+                if (Options.PostProcess) _post.BeginScene();
 
                 // --- Начало сцены
                 gl.ClearColor(ColorFog.X, ColorFog.Y, ColorFog.Z, 1f);
+                gl.Clear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
                 // Небо
                 _skyRender.DrawSky(timeIndex);
@@ -368,27 +389,42 @@ namespace Vge.Renderer.World
                 // Частички
                 Particles.Draw(timeIndex);
                 
-                // Прорисовка руки
-                Entities.DrawOwnerEye(timeIndex);
-
                 // Облака и дождь
                 _skyRender.DrawCloudsRain(timeIndex);
 
                 // Рисуем воксели альфа
                 _DrawVoxelAlpha();
 
+                // Прорисовка руки
+                Entities.DrawOwnerEye(timeIndex);
 
                 // --- Конец сцены
 
+                if (Options.PostProcess)
+                {
+                    // Вывод на экран с эффектами
+                    _post.EndScene();
+
+                    Render.ShaderBindPost(
+                        _game.World.GetTickCounter() + timeIndex,
+                        _game.Player.InEyeWater);
+                    _post.DrawScreen();
+                }
+
                 // Отладка на экране карта глубины для теней
                 //Shadow.DrawQuadDebug(Render.GetOrtho2D());
+
+                if (_isWorldDrawStopping)
+                {
+                    _WorldStoped();
+                }
             }
         }
 
         /// <summary>
         /// Считаем вектор, матрицы и прочее из календаря
         /// </summary>
-        private void _GenVectorLightСalendar()
+        private void _GenVectorLightCalendar()
         {
             if (_game.World.Settings != null) // Если в Draw то нужна проверка на отсутствие налл
             {
@@ -494,7 +530,7 @@ namespace Vge.Renderer.World
         private void _DrawVoxelDenseDepthMap(float timeIndex)
         {
             // Биндим шейдор для вокселей
-            Render.ShsBlocks.BindUniformBiginDepthMap(
+            Render.ShsBlocks.BindUniformBeginDepthMap(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
                 (int)_game.World.GetTickCounter(), _game.World.Settings.Environment.GetWind());
 
@@ -519,7 +555,7 @@ namespace Vge.Renderer.World
         private void _DrawVoxelDense(float timeIndex)
         {
             // Биндим шейдор для вокселей
-            Render.ShsBlocks.BindUniformBigin(
+            Render.ShsBlocks.BindUniformBegin(
                 _game.Player.PosFrameX, _game.Player.PosFrameY, _game.Player.PosFrameZ,
                 (int)_game.World.GetTickCounter(), _game.World.Settings.Environment.GetWind(), 
                 OverviewBlock, ColorFog, 5);
@@ -589,7 +625,7 @@ namespace Vge.Renderer.World
                 }
             }
 
-            gl.Enable(GL.GL_POLYGON_OFFSET_FILL);
+            gl.Disable(GL.GL_POLYGON_OFFSET_FILL);
             gl.PolygonOffset(0, 0);
         }
 
@@ -601,6 +637,7 @@ namespace Vge.Renderer.World
             _skyRender?.Dispose();
             _skyRender = skyRender;
             _isWorldDrawRun = true;
+            _isWorldDrawStopping = false;
         }
 
         /// <summary>
@@ -612,9 +649,17 @@ namespace Vge.Renderer.World
         }
 
         /// <summary>
+        /// Мир останавливается, стоп и смена мира
+        /// </summary>
+        public void WorldStopping()
+        {
+            _isWorldDrawStopping = true;
+        }
+
+        /// <summary>
         /// Мир остановлен, стоп и смена мира
         /// </summary>
-        public void WorldStoped()
+        private void _WorldStoped()
         {
             _isWorldDrawRun = false;
             _skyRender?.Dispose();
@@ -630,6 +675,8 @@ namespace Vge.Renderer.World
             Entities.Dispose();
             _cursorRender.Dispose();
             Shadow.Dispose();
+            Particles.Dispose();
+            _post.Dispose();
         }
 
         public override string ToString() => ChatStyle.Gray + ChatStyle.Bolb + "WorldRenderer " + ChatStyle.Reset

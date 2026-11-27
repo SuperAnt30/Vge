@@ -195,9 +195,9 @@ namespace Vge.Games
         /// <summary>
         /// Остановка игры
         /// </summary>
-        public virtual void GameStoping(string notification, bool isWarning)
+        public virtual void GameStopping(string notification, bool isWarning)
         {
-            World.Stoping();
+            World.Stopping();
         }
 
         /// <summary>
@@ -430,6 +430,12 @@ namespace Vge.Games
         public void OnResized(int width, int height)
         {
             // Тут индикация если имеется
+            if (FlagGameStarted)
+            {
+                // Мир появляется, как загрузятся 
+                WorldRender.OnResized(width, height);
+            }
+
             if (Hud != null)
             {
                 Hud.OnResized(width, height);
@@ -454,7 +460,9 @@ namespace Vge.Games
             // Тут индикация если имеется
             if (Hud != null && !Player.IsSpectator())
             {
+                gl.DepthRange(0, 0.1);
                 Hud.Draw(timeIndex);
+                gl.DepthRange(0, 1);
             }
 
             if (Ce.IsDebugDrawChunks)
@@ -627,7 +635,7 @@ namespace Vge.Games
         public event ThreadExceptionEventHandler Error;
         protected void _OnError(Exception ex)
         {
-            WorldRender.Stoping();
+            WorldRender.Stopping();
             Error?.Invoke(this, new ThreadExceptionEventArgs(ex));
         }
 

@@ -103,9 +103,9 @@ namespace Vge.Games
             }
         }
 
-        public override void GameStoping(string notification, bool isWarning)
+        public override void GameStopping(string notification, bool isWarning)
         {
-            base.GameStoping(notification, isWarning);
+            base.GameStopping(notification, isWarning);
 
             window.LScreen.Process(L.T("Leaving") + Ce.Ellipsis);
             _stopIsWarning = isWarning;
@@ -147,13 +147,13 @@ namespace Vge.Games
         private void _Socket_Disconnected(object sender, StringEventArgs e)
         {
             _isConnected = false;
-            WorldRender.Stoping();
+            WorldRender.Stopping();
             _StopAfterTick(e.Text);
         }
 
         private void _Socket_Error(object sender, ErrorEventArgs e)
         {
-            WorldRender.Stoping();
+            WorldRender.Stopping();
             _StopAfterTick("Error: " + e.GetException().Message);
         }
 
@@ -184,7 +184,7 @@ namespace Vge.Games
             // Проверка на разрыв долгий сервера (нет связи)
             if (_flagTick && Player.TimeOut())
             {
-                GameStoping(Srl.TheServerIsNotResponding, true);
+                GameStopping(Srl.TheServerIsNotResponding, true);
             }
             base.OnTick(deltaTime);
 

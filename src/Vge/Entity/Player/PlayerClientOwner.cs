@@ -407,18 +407,21 @@ namespace Vge.Entity.Player
             else
             {
                 matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height,
-                   0.01f, 1450);// (OverviewChunk + 6) * 16f);
+                   Gi.Near, Gi.Far);
             }
             // Матрица Look
             matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
             matrix.ConvArray(Gi.MatrixView);
 
-            if (ViewCamera == EnumViewCamera.Eye)
+            if (GetWorld() is WorldBase world)
             {
-                // Если с глаз, нужна ещё матрица
-                matrix = Glm.PerspectiveFov(Fov.ValueFrame, Gi.Width, Gi.Height, 0.01f, -.2f);
-                matrix.Multiply(Glm.LookAt(pos, pos + front, new Vector3(0, 1, 0)));
-                matrix.ConvArray(Gi.MatrixViewEye);
+                // TODO::2026-11-27 доработать, определение где находяться глаза
+                // учесть что жидкость в блоке может быть
+                BlockPos blockPos = new BlockPos(PosX + pos.X, PosY + pos.Y, PosZ + pos.Z);
+                BlockState blockState = world.GetBlockState(blockPos);
+                BlockBase block = blockState.GetBlock();
+
+                InEyeWater = block.Material.Liquid;
             }
 
             // Матрица солнца, для тени
@@ -426,6 +429,8 @@ namespace Vge.Entity.Player
             //matrix = Glm.PerspectiveFov(Fov.ValueFrame, 1024, 1024, 0.01f, OverviewChunk * 22f);
             //matrix.Multiply(Glm.LookAt(PosLight, new Vector3(0, 0, 0), new Vector3(-1, 0, 0)));
         }
+
+        public bool InEyeWater;
 
         /// <summary>
         /// Определить положение камеры, при виде сзади и спереди, проверка RayCast

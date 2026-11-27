@@ -363,7 +363,9 @@ namespace Vge.Renderer.World.Entity
 
                 // Параметры шейдоров
                 ShsEntity.BindUniformBeginEye();
+                gl.DepthRange(0, 0.1);
                 _game.Player.Render.Draw(timeIndex, _game.DeltaTimeFrame);
+                gl.DepthRange(0, 1);
             }
         }
 

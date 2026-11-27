@@ -103,6 +103,8 @@ namespace Vge.World.Environment
         /// </summary>
         void JoinWorld(PlayerServer player);
 
+
+
         #region NBT
 
         /// <summary>

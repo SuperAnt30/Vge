@@ -91,7 +91,7 @@ namespace Vge.Entity.Animation
         /// Начинаем остановку клипа
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Stoping() => _stopTime = _currentTimeFull;
+        public void Stopping() => _stopTime = _currentTimeFull;
 
         /// <summary>
         /// Время микса в милисекундах
@@ -154,7 +154,7 @@ namespace Vge.Entity.Animation
                     // Надо с учётом микса остановить
                     if (_currentTimeFull > _modelClip.Duration - _GetTimeMix())
                     {
-                        Stoping();
+                        Stopping();
                     }
                 }
             }

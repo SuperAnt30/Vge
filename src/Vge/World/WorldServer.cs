@@ -199,10 +199,10 @@ namespace Vge.World
         /// <summary>
         /// Останавливаем мир
         /// </summary>
-        public void Stoping()
+        public void Stopping()
         {
             IsRuning = false;
-            Wait?.Stoping();
+            Wait?.Stopping();
             _WriteToFile();
         }
 
