@@ -214,7 +214,7 @@ namespace Vge.World.Light
                                     index = (y2 & 15) << 8 | z << 4 | x;
                                     if (chunkStorage2.CountBlock != 0)
                                     {
-                                        opacity = Ce.Blocks.GetOpacity(chunkStorage2.Data[index]);
+                                        opacity = Ce.Blocks.GetLightOpacity(chunkStorage2.Data[index]);
                                     }
                                     else opacity = 0;
                                     light = light - opacity - 1;
@@ -326,7 +326,7 @@ namespace Vge.World.Light
                     chunkStorage = Chunk.StorageArrays[yh1 >> 4];
                     if (chunkStorage.CountBlock != 0)
                     {
-                        opacity = Ce.Blocks.GetOpacity(chunkStorage.Data[(yh1 & 15) << 8 | zb << 4 | xb]);
+                        opacity = Ce.Blocks.GetLightOpacity(chunkStorage.Data[(yh1 & 15) << 8 | zb << 4 | xb]);
                     }
                     else
                     {

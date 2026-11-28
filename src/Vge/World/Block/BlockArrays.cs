@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using WinGL.Util;
 
 namespace Vge.World.Block
 {
@@ -37,15 +38,7 @@ namespace Vge.World.Block
         /// <summary>
         /// Массив прозрачности и излучаемости освещения, для ускорения алгоритмов освещения
         /// </summary>
-        private readonly byte[] _blocksLightOpacity;
-        /// <summary>
-        /// Массив прозрачности зависящий от Metdata блока
-        /// </summary>
-        private readonly bool[] _blocksOpacityMet;
-        /// <summary>
-        /// Массив излучаемости освещения зависящий от Metdata блока
-        /// </summary>
-        private readonly bool[] _blocksLightMet;
+        private readonly byte[] _blocksLightOpacityValue;
         /// <summary>
         /// Получить массив индексов блоков жидкости, посути их менять нельзя они храняться в Met
         /// </summary>
@@ -56,9 +49,7 @@ namespace Vge.World.Block
             Count = BlocksReg.Table.Count;
             BlockAlias = new string[Count];
             BlockObjects = new BlockBase[Count];
-            _blocksLightOpacity = new byte[Count];
-            _blocksOpacityMet = new bool[Count];
-            _blocksLightMet = new bool[Count];
+            _blocksLightOpacityValue = new byte[Count];
             BlocksRandomTick = new bool[Count];
             BlocksRequiredRandomTick = new bool[Count];
             _blockIndexLiquid = new int[8];
@@ -72,7 +63,7 @@ namespace Vge.World.Block
                 block = BlocksReg.Table[id];
                 block.SetIndex(id);
                 BlockObjects[id] = block;
-                _blocksLightOpacity[id] = (byte)(block.LightOpacity << 4 | block.LightValue);
+                _blocksLightOpacityValue[id] = block.LightOpacityValue;
                 BlocksRandomTick[id] = block.NeedsRandomTick;
                 BlocksRequiredRandomTick[id] = block.RequiredRandomTick;
                 if (block.Liquid && indexLiquid < 8)
@@ -116,43 +107,49 @@ namespace Vge.World.Block
         /// Получить прозрачности и излучаемости освещения блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte GetLightOpacity(int index)
+        public byte GetLightOpacityValue(int index)
         {
-            if (_blocksOpacityMet[index & 0xFFF] || _blocksLightMet[index & 0xFFF])
+            if (LiquidMet.IsAddLiquid(index >> 12))
             {
-                // Это временно, потом через метданные запустим
-                return (byte)(BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12) 
-                    | BlockObjects[index & 0xFFF].GetLightValue(index >> 12));
+                return _MaxLightOpacityValue(
+                    _blocksLightOpacityValue[LiquidMet.GetAddLiquidIndex(index >> 12)],
+                    _blocksLightOpacityValue[index & 0xFFF]
+                );
             }
-            return _blocksLightOpacity[index & 0xFFF];
+            return _blocksLightOpacityValue[index & 0xFFF];
+        }
+
+        /// <summary>
+        /// Максимум по каждой половине: непрозрачность (старшие 4 бита) и свет (младшие 4 бита) отдельно
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static byte _MaxLightOpacityValue(byte a, byte b)
+        {
+            int opacity = Mth.Max(a & 0xF0, b & 0xF0); // старшие биты, остаются на своём месте
+            int light = Mth.Max(a & 0x0F, b & 0x0F);   // младшие биты
+            return (byte)(opacity | light);
         }
 
         /// <summary>
         /// Полностью прозрачный ли блок, LightOpacity = 0 = Air
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsTransparent(int index)
-        {
-            if (_blocksOpacityMet[index & 0xFFF])
-            {
-                // Это временно, потом через метданные запустим
-                return BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12) == 0;
-            }
-            return (_blocksLightOpacity[index & 0xFFF] >> 4) == 0;
-        }
+        public bool IsTransparent(int index) => GetLightOpacity(index) == 0;
 
         /// <summary>
         /// Получить прозрачность блока
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetOpacity(int index)
+        public int GetLightOpacity(int index)
         {
-            if (_blocksOpacityMet[index & 0xFFF])
+            if (LiquidMet.IsAddLiquid(index >> 12))
             {
-                // Это временно, потом через метданные запустим
-                return BlockObjects[index & 0xFFF].GetLightOpacity(index >> 12);
+                return Mth.Max(
+                    _blocksLightOpacityValue[LiquidMet.GetAddLiquidIndex(index >> 12)] >> 4,
+                    _blocksLightOpacityValue[index & 0xFFF] >> 4
+                );
             }
-            return _blocksLightOpacity[index & 0xFFF] >> 4;
+            return _blocksLightOpacityValue[index & 0xFFF] >> 4;
         }
 
         /// <summary>
@@ -161,12 +158,29 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLightValue(int index)
         {
-            if (_blocksLightMet[index & 0xFFF])
+            if (LiquidMet.IsAddLiquid(index >> 12))
             {
-                return BlockObjects[index & 0xFFF].GetLightValue(index >> 12);
+                return Mth.Max(
+                    _blocksLightOpacityValue[LiquidMet.GetAddLiquidIndex(index >> 12)] & 0xF,
+                    _blocksLightOpacityValue[index & 0xFFF] & 0xF
+                );
             }
-            return _blocksLightOpacity[index & 0xFFF] & 0xF;
+            return _blocksLightOpacityValue[index & 0xFFF] & 0xF;
         }
+
+        /// <summary>
+        /// Сверить отличаются ли прозрачность у блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool EqualsLightOpacity(int indexOne, int indexTwo)
+            => GetLightOpacity(indexOne) != GetLightOpacity(indexTwo);
+
+        /// <summary>
+        /// Сверить отличаются ли излучаемость освещения у блоков
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool EqualsLightValue(int indexOne, int indexTwo)
+            => GetLightValue(indexOne) != GetLightValue(indexTwo);
 
         #endregion
     }

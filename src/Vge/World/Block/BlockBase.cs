@@ -46,14 +46,10 @@ namespace Vge.World.Block
 
         /// <summary>
         /// Сколько света вычитается для прохождения этого блока Air = 0
-        /// В VoxelEngine он в public static byte GetBlockLightOpacity(EnumBlock eblock)
-        /// получть инфу не создавая блок
-        /// </summary>
-        public byte LightOpacity { get; protected set; } = 15;
-        /// <summary>
         /// Количество излучаемого света (плафон)
+        /// LightOpacity << 4 | LightValue & 0xF
         /// </summary>
-        public int LightValue { get; protected set; }
+        public byte LightOpacityValue { get; protected set; } = 0xF0;
         /// <summary>
         /// Отмечает, относится ли этот блок к типу, требующему случайной пометки в тиках. 
         /// Объект ChunkStorage подсчитывает блоки, чтобы в целях эффективности отобрать фрагмент из 
@@ -303,7 +299,7 @@ namespace Vge.World.Block
 
             _InitBlockRender();
             // Задать что блок не прозрачный
-            if (LightOpacity > 13) IsNotTransparent = true;
+            if ((LightOpacityValue >> 4) > 13) IsNotTransparent = true;
 
             _InitOutline();
         }
@@ -315,8 +311,6 @@ namespace Vge.World.Block
         {
             Alias = "Air";
             _InitBlockRender();
-            // Задать что блок не прозрачный
-            if (LightOpacity > 13) IsNotTransparent = true;
         }
 
         /// <summary>
@@ -355,13 +349,15 @@ namespace Vge.World.Block
         {
             try
             {
+                int lightOpacity = 15;
+                int lightValue = 0;
                 // Статы
                 foreach (JsonKeyValue json in state.Items)
                 {
                     if (json.IsKey(Ctb.NeedsRandomTick)) NeedsRandomTick = json.GetBool();
                     if (json.IsKey(Ctb.RequiredRandomTick)) RequiredRandomTick = json.GetBool();
-                    if (json.IsKey(Ctb.LightOpacity)) LightOpacity = (byte)json.GetInt();
-                    if (json.IsKey(Ctb.LightValue)) LightValue = (byte)json.GetInt();
+                    if (json.IsKey(Ctb.LightOpacity)) lightOpacity = json.GetInt();
+                    if (json.IsKey(Ctb.LightValue)) lightValue = json.GetInt();
                     if (json.IsKey(Ctb.Translucent)) Translucent = json.GetBool();
                     if (json.IsKey(Ctb.IgnoreOwn)) IgnoreOwn = json.GetBool();
                     if (json.IsKey(Ctb.UseNeighborBrightness)) UseNeighborBrightness = json.GetBool();
@@ -412,6 +408,8 @@ namespace Vge.World.Block
                         }
                     }
                 }
+
+                LightOpacityValue = (byte)(((lightOpacity & 0xF) << 4) | (lightValue & 0xF));
             }
             catch
             {
@@ -465,39 +463,6 @@ namespace Vge.World.Block
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool CanAddLiquid() => !FullBlock && !Liquid;
-
-        /// <summary>
-        /// Имеется ли дополнительная жидкость в этом блоке
-        /// NLLL mmmm MMMM MMMM MMMM //BBBB BBBB BBBB
-        /// N - не используется
-        /// L - id блока жидкости через доп массив индексов
-        /// m - met данные жидкости
-        /// M - met данные блока
-        /// B - id блока
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAddLiquid(int met) => met >> 16 != 0;
-
-        /// <summary>
-        /// Получить дополнительный блок жидкости
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BlockBase GetAddLiquid(int met) => Ce.Blocks.GetAddLiquid(met);
-
-        /// <summary>
-        /// Получить мет данные дополнительной жидкости
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetAddLiquidMet(int met) => (met >> 12) & 0xF;
-
-        /// <summary>
-        /// Сгенерировать параметры блока, внося данные доп жидкости
-        /// </summary>
-        /// <param name="met"></param>
-        //public int GenMetdataAddLiquid(int met)
-        //{
-
-        //}
 
         #endregion
 
@@ -674,7 +639,8 @@ namespace Vge.World.Block
             АmbientOcclusion = false;
             Shadow = false;
             IsReplaceable = true;
-            LightOpacity = 0;
+            LightOpacityValue = 0;
+            IsNotTransparent = false;
             Translucent = true;
             IsCollidable = false;
             FullBlock = false;
@@ -741,21 +707,6 @@ namespace Vge.World.Block
 
         #endregion
 
-        #region Методв для освещения
-
-        /// <summary>
-        /// Сколько света вычитается для прохождения этого блока, зависящий от Metdata
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual int GetLightOpacity(int met) => LightOpacity;
-        /// <summary>
-        /// Количество излучаемого света (плафон), зависящий от Metdata
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual int GetLightValue(int met) => LightValue;
-
-        #endregion
-
         #region Методы для тиков
 
         /// <summary>
@@ -804,7 +755,7 @@ namespace Vge.World.Block
         public virtual void NeighborBlockChange(WorldServer world, ChunkServer chunk, 
             BlockPos blockPos, BlockState blockState)
         {
-            if (IsAddLiquid(blockState.Met))
+            if (LiquidMet.IsAddLiquid(blockState.Met))
             {
                 // Если имеется жидкость, надо тикать жидкость
                 world.SetBlockAddLiquidTick(blockPos, 4);
@@ -895,11 +846,11 @@ namespace Vge.World.Block
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToInfo(int met)
         {
-            if (CanAddLiquid() && IsAddLiquid(met))
+            if (CanAddLiquid() && LiquidMet.IsAddLiquid(met))
             {
                 return ToString() + " M:" 
                     + (met & 0xFFF) + ChatStyle.Blue
-                    + " Liquid " + Ce.Blocks.GetAddLiquid(met) + " M:" + GetAddLiquidMet(met)
+                    + " Liquid " + Ce.Blocks.GetAddLiquid(met) + " M:" + LiquidMet.GetAddLiquidMet(met)
                     + ChatStyle.Reset;
             }
             return ToString() + " M:" + met.ToString();

@@ -158,11 +158,11 @@ namespace Mvk2.Item.List.Blocks
                 if (water == 0 || water > 7) water = 7;
                 idBlockLiquid = block.IndexBlock;
             }
-            else if (block.IsAddLiquid(blockState.Met))
+            else if (LiquidMet.IsAddLiquid(blockState.Met))
             {
-                water = block.GetAddLiquidMet(blockState.Met);
+                water = LiquidMet.GetAddLiquidMet(blockState.Met);
                 if (water == 0 || water > 7) water = 7;
-                idBlockLiquid = block.GetAddLiquid(blockState.Met).IndexBlock;
+                idBlockLiquid = LiquidMet.GetAddLiquid(blockState.Met).IndexBlock;
             }
 
             // Доп проверка, если в бок, нужен соседний блок

@@ -866,7 +866,7 @@ namespace Mvk2.Renderer.World
                 int by = blockPos.Y;
                 int bz = blockPos.Z;
 
-                int step = 6; // Максималка 10 минималка 5
+                int step = Options.ParticlesMany ? 14 : 6; // Максималка 10 минималка 5
                 int x, z, index;
 
                 float x1, x2, y1, y2, z1, z2;

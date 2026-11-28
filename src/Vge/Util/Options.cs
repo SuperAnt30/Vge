@@ -96,7 +96,7 @@ namespace Vge.Util
         /// </summary>
         public static bool Shadow = true;
         /// <summary>
-        /// Пост обработка
+        /// Постобработка
         /// </summary>
         public static bool PostProcess = true;
         /// <summary>

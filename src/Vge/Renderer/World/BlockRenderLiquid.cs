@@ -487,9 +487,9 @@ namespace Vge.Renderer.World
                 return _metCheck;
             }
 
-            if (_blockCheck.IsAddLiquid(_metCheck))
+            if (LiquidMet.IsAddLiquid(_metCheck))
             {
-                _metCheck = _blockCheck.GetAddLiquidMet(_metCheck);
+                _metCheck = LiquidMet.GetAddLiquidMet(_metCheck);
                 // ТУТ надо вытакщить метданые доп жидкости с блока 2026-01-07
                 if (_metCheck == 0)
                 {
@@ -590,7 +590,7 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _ProcessingTranslucentDifferentTypes()
         {
-            if (_blockCheck.IsAddLiquid(_metCheck))
+            if (LiquidMet.IsAddLiquid(_metCheck))
             {
                 _resultSide[_indexSide] = -1;
             }
@@ -606,7 +606,7 @@ namespace Vge.Renderer.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void _ProcessingForceDrawFace()
         {
-            if (_blockCheck.IsAddLiquid(_metCheck))
+            if (LiquidMet.IsAddLiquid(_metCheck))
             {
                 _resultSide[_indexSide] = -1;
             }

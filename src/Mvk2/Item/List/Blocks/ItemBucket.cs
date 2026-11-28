@@ -66,7 +66,7 @@ namespace Mvk2.Item.List.Blocks
                 else if (moving.IsBlock())
                 {
                     // Надо проверить наличие воды
-                    if (moving.Block.GetBlock().IsAddLiquid(moving.Block.Met)
+                    if (LiquidMet.IsAddLiquid(moving.Block.Met)
                         && OnItemOnBlockPlacement(preview, stack, player, moving.BlockPosition, moving.Side,
                         moving.Facing, true, player.RotationYaw))
                     {
@@ -111,8 +111,8 @@ namespace Mvk2.Item.List.Blocks
                 }
                 else
                 {
-                    water = block.GetAddLiquidMet(blockState.Met);
-                    idBlockLiquid = block.GetAddLiquid(blockState.Met).IndexBlock;
+                    water = LiquidMet.GetAddLiquidMet(blockState.Met);
+                    idBlockLiquid = LiquidMet.GetAddLiquid(blockState.Met).IndexBlock;
                 }
 
                 if (water == 0 || water > 7) water = 7;

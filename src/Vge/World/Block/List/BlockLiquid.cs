@@ -163,7 +163,7 @@ namespace Vge.World.Block.List
             if (Ce.Blocks.GetAddLiquidIndex(met) == indexBlock)
             {
                 // Блок с доп жидкостью
-                met = block.GetAddLiquidMet(met);
+                met = LiquidMet.GetAddLiquidMet(met);
                 return met == 0 ? 14 : met;
             }
             return 0;
@@ -428,7 +428,7 @@ namespace Vge.World.Block.List
             if (Ce.Blocks.GetAddLiquidIndex(met) == IndexBlock)
             {
                 // Блок с доп жидкостью
-                met = block.GetAddLiquidMet(met);
+                met = LiquidMet.GetAddLiquidMet(met);
                 return met == 0 ? 14 : met;
             }
             return _CheckCan(blockState) ? 0 : -1;
@@ -448,7 +448,7 @@ namespace Vge.World.Block.List
 
             if (block.CanAddLiquid())
             {
-                bool b = block.IsAddLiquid(blockState.Met);
+                bool b = LiquidMet.IsAddLiquid(blockState.Met);
                 if (!b || (b && Ce.Blocks.GetAddLiquidIndex(blockState.Met) == IndexBlock))
                     return true;
             }

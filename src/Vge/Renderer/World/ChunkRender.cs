@@ -269,7 +269,7 @@ namespace Vge.Renderer.World
                                             Gi.Block.BlockRender.RenderSide();
 
                                             // Тут можно Gi.Block залить в метод чек Gi.Block.BlockRender.Met для понимания имеется ли жидкость
-                                            if (Gi.Block.IsAddLiquid(data >> 12))
+                                            if (LiquidMet.IsAddLiquid(data >> 12))
                                             {
                                                 _listAlphaBlock[cbY].Add((ushort)(yb << 8 | z << 4 | x));
                                                 if (Gi.Block.AlphaSort)
@@ -410,7 +410,7 @@ namespace Vge.Renderer.World
                                         }
                                     }
                                     // Проверяем дополнительную жидкость
-                                    if (Gi.Block.IsAddLiquid(data >> 12))
+                                    if (LiquidMet.IsAddLiquid(data >> 12))
                                     {
                                         Gi.Block = Ce.Blocks.GetAddLiquid(data >> 12);
                                         if (!Gi.Block.IsAir && Gi.Block.Alpha)

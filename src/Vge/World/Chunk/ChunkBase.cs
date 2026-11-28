@@ -354,18 +354,18 @@ namespace Vge.World.Chunk
                     if (blockState.Met == 0)
                     {
                         // Убираем блок
-                        if (blockOld.IsAddLiquid(blockStateOld.Met))
+                        if (LiquidMet.IsAddLiquid(blockStateOld.Met))
                         {
                             // Если прошлый есть доп жыдкость делаем её основной
                             blockState.Id = Ce.Blocks.GetAddLiquidIndex(blockStateOld.Met);
-                            blockState.Met = blockOld.GetAddLiquidMet(blockStateOld.Met);
+                            blockState.Met = LiquidMet.GetAddLiquidMet(blockStateOld.Met);
                             block = Ce.Blocks.GetAddLiquid(blockStateOld.Met);
                         }
                     }
                     else
                     {
                         // Убираем жидкость
-                        if (blockOld.IsAddLiquid(blockStateOld.Met))
+                        if (LiquidMet.IsAddLiquid(blockStateOld.Met))
                         {
                             blockState.Id = blockStateOld.Id;
                             blockState.Met = blockStateOld.Met & 0xFFF;
@@ -411,11 +411,15 @@ namespace Vge.World.Chunk
 
             if (blockOld != block) // Блоки разные
             {
+                int indexBlockOld = blockStateOld.GetIndex();
+                int indexBlock = blockState.GetIndex();
+
                 // Удалить разрушение
                 storage.Destroy.Remove(index);
 
-                bool differenceOpacity = block.LightOpacity != blockOld.LightOpacity;
-                if (differenceOpacity || block.LightValue != blockOld.LightValue)
+                bool differenceOpacity = Ce.Blocks.EqualsLightOpacity(indexBlock, indexBlockOld);
+                if (differenceOpacity ||
+                    Ce.Blocks.EqualsLightValue(indexBlock, indexBlockOld))
                 {
                     World.Light.ActionChunk(this);
                     if (differenceOpacity && World.Settings.HasNoSky)
@@ -428,7 +432,7 @@ namespace Vge.World.Chunk
                 else
                 {
                     // Проверка высоты
-                    Light.CheckHeightMap(blockPos, block.LightOpacity);
+                    Light.CheckHeightMap(blockPos, (byte)Ce.Blocks.GetLightOpacity(indexBlock));
                     if (World.IsRemote)
                     {
                         World.Light.ClearDebugString();

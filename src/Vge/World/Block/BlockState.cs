@@ -46,6 +46,12 @@ namespace Vge.World.Block
         }
 
         /// <summary>
+        /// Получить индекс блока вместе с метданными
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetIndex() => Id | (Met << 12);
+
+        /// <summary>
         /// Блок воздуха
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
